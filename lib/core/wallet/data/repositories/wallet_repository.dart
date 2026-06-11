@@ -31,14 +31,12 @@ class WalletRepository {
       StreamController<ElectrumSyncResult>.broadcast();
 
   WalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource,
-       _serversPort = serversPort {
+    required this._serversPort,
+  }) : _bdkWallet = bdkWalletDatasource,
+       _lwkWallet = lwkWalletDatasource {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets

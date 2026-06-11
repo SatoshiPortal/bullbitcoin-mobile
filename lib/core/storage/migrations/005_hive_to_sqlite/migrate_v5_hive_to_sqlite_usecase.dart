@@ -25,18 +25,13 @@ class MigrateToV5HiveToSqliteToUsecase {
   final MigrationSecureStorageDatasource _secureStorage;
   final BoltzSwapRepository _mainnetBoltzSwapRepository;
   MigrateToV5HiveToSqliteToUsecase({
-    required SeedRepository newSeedRepository,
-    required OldSeedRepository oldSeedRepository,
-    required OldWalletRepository oldWalletRepository,
-    required WalletRepository newWalletRepository,
-    required MigrationSecureStorageDatasource secureStorage,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-  }) : _newSeedRepository = newSeedRepository,
-       _oldSeedRepository = oldSeedRepository,
-       _oldWalletRepository = oldWalletRepository,
-       _newWalletRepository = newWalletRepository,
-       _secureStorage = secureStorage,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository;
+    required this._newSeedRepository,
+    required this._oldSeedRepository,
+    required this._oldWalletRepository,
+    required this._newWalletRepository,
+    required this._secureStorage,
+    required this._mainnetBoltzSwapRepository,
+  });
   // true : successful migration
   // false: migration was not required / success
   // throw: errors

@@ -9,8 +9,8 @@ class StoreVaultKeyIntoServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
   StoreVaultKeyIntoServerUsecase({
-    required RecoverBullRepository recoverBullRepository,
-  }) : _recoverBullRepository = recoverBullRepository;
+    required this._recoverBullRepository,
+  });
 
   Future<void> execute({
     required String password,

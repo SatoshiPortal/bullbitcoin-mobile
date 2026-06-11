@@ -8,8 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   final LedgerDeviceDatasource _datasource;
 
-  LedgerDeviceRepositoryImpl({required LedgerDeviceDatasource datasource})
-      : _datasource = datasource;
+  LedgerDeviceRepositoryImpl({required this._datasource});
 
   @override
   Future<List<LedgerDeviceEntity>> scanDevices({SignerDeviceEntity? deviceType}) async {

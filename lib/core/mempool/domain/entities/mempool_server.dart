@@ -9,14 +9,11 @@ class MempoolServer {
   final bool _enableSsl;
 
   MempoolServer._({
-    required String url,
-    required MempoolServerNetwork network,
-    required bool isCustom,
-    required bool enableSsl,
-  }) : _url = url,
-       _network = network,
-       _isCustom = isCustom,
-       _enableSsl = enableSsl;
+    required this._url,
+    required this._network,
+    required this._isCustom,
+    required this._enableSsl,
+  });
 
   factory MempoolServer.createCustom({
     required String url,

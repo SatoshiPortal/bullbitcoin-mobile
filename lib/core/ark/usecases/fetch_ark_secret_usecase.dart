@@ -12,10 +12,9 @@ class FetchArkSecretUsecase {
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
 
   FetchArkSecretUsecase({
-    required Bip85Repository bip85Repository,
-    required GetDefaultSeedUsecase getDefaultSeedUsecase,
-  }) : _bip85Repository = bip85Repository,
-       _getDefaultSeedUsecase = getDefaultSeedUsecase;
+    required this._bip85Repository,
+    required this._getDefaultSeedUsecase,
+  });
 
   Future<List<int>?> execute() async {
     final derivations = await _bip85Repository.fetchAll();

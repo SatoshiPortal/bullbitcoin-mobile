@@ -6,8 +6,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 class Bip85Repository {
   final Bip85Datasource _datasource;
 
-  Bip85Repository({required Bip85Datasource datasource})
-    : _datasource = datasource;
+  Bip85Repository({required this._datasource});
 
   Future<({String derivation, String hex})> deriveHex({
     required String xprvBase58,

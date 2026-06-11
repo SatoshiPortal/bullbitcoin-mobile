@@ -14,11 +14,9 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
 
   ImportWatchOnlyCubit({
     WatchOnlyWalletEntity? watchOnlyWallet,
-    required ImportWatchOnlyDescriptorUsecase importWatchOnlyDescriptorUsecase,
-    required ImportWatchOnlyXpubUsecase importWatchOnlyXpubUsecase,
-  }) : _importWatchOnlyDescriptorUsecase = importWatchOnlyDescriptorUsecase,
-       _importWatchOnlyXpubUsecase = importWatchOnlyXpubUsecase,
-       super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
+    required this._importWatchOnlyDescriptorUsecase,
+    required this._importWatchOnlyXpubUsecase,
+  }) : super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
   void init() {
     if (state.watchOnlyWallet != null) {

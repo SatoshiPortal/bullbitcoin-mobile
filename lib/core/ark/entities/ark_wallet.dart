@@ -9,8 +9,7 @@ class ArkWalletEntity {
   final ark_wallet.ArkWallet wallet;
   final List<int> _secretKey;
 
-  ArkWalletEntity({required this.wallet, required List<int> secretKey})
-    : _secretKey = secretKey;
+  ArkWalletEntity({required this.wallet, required this._secretKey});
 
   static Future<ArkWalletEntity> init({required List<int> secretKey}) async {
     try {

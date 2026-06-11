@@ -37,42 +37,22 @@ part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
-    required GetWalletsUsecase getWalletsUsecase,
-    required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
-    required CreateReceiveSwapUsecase createReceiveSwapUsecase,
-    required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
-    required BroadcastOriginalTransactionUsecase
-    broadcastOriginalTransactionUsecase,
-    required WatchPayjoinUsecase watchPayjoinUsecase,
-    required WatchWalletTransactionByAddressUsecase
-    watchWalletTransactionByAddressUsecase,
-    required WatchSwapUsecase watchSwapUsecase,
-    required LabelsFacade labelsFacade,
-    required GetSwapLimitsUsecase getSwapLimitsUsecase,
-    Wallet? wallet,
-  }) : _getWalletsUsecase = getWalletsUsecase,
-       _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
-       _createReceiveSwapUsecase = createReceiveSwapUsecase,
-       _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
-       _broadcastOriginalTransactionUsecase =
-           broadcastOriginalTransactionUsecase,
-       _watchPayjoinUsecase = watchPayjoinUsecase,
-       _watchWalletTransactionByAddressUsecase =
-           watchWalletTransactionByAddressUsecase,
-       _watchSwapUsecase = watchSwapUsecase,
-       _labelsFacade = labelsFacade,
-       _getSwapLimitsUsecase = getSwapLimitsUsecase,
-       _wallet = wallet,
-       super(const ReceiveState()) {
+    required this._getWalletsUsecase,
+    required this._getAvailableCurrenciesUsecase,
+    required this._getSettingsUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getReceiveAddressUsecase,
+    required this._getAddressAtIndexUsecase,
+    required this._createReceiveSwapUsecase,
+    required this._receiveWithPayjoinUsecase,
+    required this._broadcastOriginalTransactionUsecase,
+    required this._watchPayjoinUsecase,
+    required this._watchWalletTransactionByAddressUsecase,
+    required this._watchSwapUsecase,
+    required this._labelsFacade,
+    required this._getSwapLimitsUsecase,
+    this._wallet,
+  }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);

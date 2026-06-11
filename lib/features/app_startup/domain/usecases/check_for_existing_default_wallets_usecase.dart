@@ -10,12 +10,10 @@ class CheckForExistingDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
 
   CheckForExistingDefaultWalletsUsecase({
-    required SettingsRepository settingsRepository,
-    required WalletRepository walletRepository,
-    required SeedRepository seedRepository,
-  }) : _settingsRepository = settingsRepository,
-       _walletRepository = walletRepository,
-       _seedRepository = seedRepository;
+    required this._settingsRepository,
+    required this._walletRepository,
+    required this._seedRepository,
+  });
 
   Future<bool> execute() async {
     final settings = await _settingsRepository.fetch();

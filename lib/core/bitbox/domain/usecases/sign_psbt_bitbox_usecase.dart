@@ -8,10 +8,9 @@ class SignPsbtBitBoxUsecase {
   final SettingsRepository _settingsRepository;
 
   SignPsbtBitBoxUsecase({
-    required BitBoxDeviceRepository repository,
-    required SettingsRepository settingsRepository,
-  })  : _repository = repository,
-        _settingsRepository = settingsRepository;
+    required this._repository,
+    required this._settingsRepository,
+  });
 
   Future<String> execute(
     BitBoxDeviceEntity device, {

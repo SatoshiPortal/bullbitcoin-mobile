@@ -5,8 +5,8 @@ class DeleteCustomServerUsecase {
   final ElectrumServerRepository _electrumServerRepository;
 
   DeleteCustomServerUsecase({
-    required ElectrumServerRepository electrumServerRepository,
-  }) : _electrumServerRepository = electrumServerRepository;
+    required this._electrumServerRepository,
+  });
 
   Future<void> execute(DeleteCustomServerRequest request) async {
     await _electrumServerRepository.delete(url: request.url);

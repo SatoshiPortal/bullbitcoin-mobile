@@ -1113,7 +1113,6 @@
   "doNotShareWarning": "NON CONDIVIDI CON NESSUNO",
   "torSettingsPortNumber": "Numero della porta",
   "payNameHint": "Inserisci il nome del destinatario",
-  "autoswapWarningTriggerAmount": "Saldo massimo di 0,02 BTC",
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "pleaseWaitFetching": "Per favore, aspettate mentre prendiamo il vostro file di backup.",
   "backupWalletPhysicalBackupTag": "Senza fiducia (prendi il tuo tempo)",
@@ -2809,6 +2808,21 @@
   "bitboxScreenTroubleshootingStep3": "Riavviare il dispositivo BitBox02 rimuovendolo e ricollegandolo.",
   "torSettingsProxyPort": "Tor Proxy Port",
   "fundExchangeErrorLoadingDetails": "I dettagli di pagamento non potrebbero essere caricati in questo momento. Si prega di tornare indietro e riprovare, scegliere un altro metodo di pagamento o tornare più tardi.",
+    "fundExchangeErrorTitleOrdPo404": "Opzione di pagamento non disponibile",
+  "fundExchangeErrorTitleRcpPo404": "Opzione di pagamento non disponibile",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponibile",
+  "fundExchangeErrorTitleOrdKyc400": "Requisiti KYC mancanti",
+  "fundExchangeErrorOrdKyc400": "Non hai i requisiti KYC per questa azione: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Dati di finanziamento COP non validi",
+  "fundExchangeErrorOrdCop400": "Dati di richiesta non validi per il finanziamento COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Pagamento virtuale non attivato",
+  "fundExchangeErrorOrdCsrcp400": "Si prega di attivare l'opzione di pagamento virtuale per il destinatario SEPA con IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Richiesta non valida",
+  "fundExchangeErrorRcp400": "Richiesta non valida",
+"fundExchangeErrorOrdPo404": "Nessuna opzione di pagamento disponibile",
+  "fundExchangeErrorRcpPo404": "Non hai i permessi necessari per accedere a questa opzione di finanziamento. Il tuo KYC è insufficiente o questa opzione non è disponibile per il tuo account",
+  "fundExchangeErrorRcpPosinpe404": "Per accedere a questa opzione di finanziamento, il tuo numero di telefono deve essere registrato nella rete SINPE in Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Errore nel recupero dei codici bancari. Riprova più tardi.",
   "testCompletedSuccessTitle": "Test completato con successo!",
   "payBitcoinAmount": "Importo di Bitcoin",
   "fundExchangeSpeiTransfer": "Trasferimento SPEI",
@@ -3193,7 +3207,6 @@
   "bitboxActionImportWalletButton": "Inizio Importazione",
   "fundExchangeLabelSwiftCode": "Codice SWIFT",
   "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
-  "autoswapWarningBaseBalance": "Saldo obiettivo 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Importo di pagamento",
   "importQrDeviceSpecterStep6": "Scegliere \"Single key\"",
   "importQrDeviceJadeStep10": "Basta!",
@@ -4485,30 +4498,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstallazione richiesti",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Azione richiesta: Reinstalla l'app",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Esegui backup ora",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Più tardi",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Indietro",
   "@backButton": {
     "description": "Generic back button label"
@@ -4540,10 +4529,6 @@
   "errorReportingStandardLogsTitle": "Log standard",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Sempre attivo — ci permette di verificare che il tuo portafoglio migri in sicurezza tra le versioni dell'app.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Usa il tuo backup",
   "@appInitErrorHasBackupTitle": {
@@ -4628,7 +4613,6 @@
   "legacyStorageHasBackupImportantBody": "Si prega di non saltare questo processo a meno che non sia assolutamente necessario utilizzare il portafoglio con urgenza o si stia aspettando il completamento di uno swap.",
   "legacyStorageRiskAckButtonHasBackup": "Capisco il rischio",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Apri l'app entro 24 ore per completare il tuo swap.",
   "importMnemonicDuplicateError": "Questo mnemonic esiste già",
   "coreScreensResolvingInputs": "Risoluzione degli input della transazione...",
   "coreScreensFeeRateLabel": "Tasso commissione",

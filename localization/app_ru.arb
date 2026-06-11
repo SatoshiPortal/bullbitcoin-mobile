@@ -1110,7 +1110,6 @@
   "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
   "torSettingsPortNumber": "Номер порта",
   "payNameHint": "Имя получателя",
-  "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
@@ -2808,6 +2807,21 @@
   "bitboxScreenTroubleshootingStep3": "Перезапустите устройство BitBox02, отменив его и повторно подключив.",
   "torSettingsProxyPort": "Tor Proxy Port",
   "fundExchangeErrorLoadingDetails": "Детали оплаты не могут быть загружены в данный момент. Пожалуйста, возвращайтесь и попробуйте снова, выберите другой способ оплаты или вернемся позже.",
+    "fundExchangeErrorTitleOrdPo404": "Способ оплаты недоступен",
+  "fundExchangeErrorTitleRcpPo404": "Способ оплаты недоступен",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE недоступен",
+  "fundExchangeErrorTitleOrdKyc400": "Отсутствуют требования KYC",
+  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Неверные данные для пополнения в COP",
+  "fundExchangeErrorOrdCop400": "Неверные данные запроса для пополнения в COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Виртуальный платёж не активирован",
+  "fundExchangeErrorOrdCsrcp400": "Пожалуйста, активируйте опцию виртуального платежа для получателя SEPA с IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Неверный запрос",
+  "fundExchangeErrorRcp400": "Неверный запрос",
+"fundExchangeErrorOrdPo404": "Нет доступного способа оплаты",
+  "fundExchangeErrorRcpPo404": "У вас нет необходимых разрешений для доступа к этому способу пополнения. Либо ваш KYC недостаточен, либо этот способ недоступен для вашего аккаунта",
+  "fundExchangeErrorRcpPosinpe404": "Чтобы использовать этот способ пополнения, ваш номер телефона должен быть зарегистрирован в сети SINPE в Коста-Рике.",
+  "fundExchangeErrorFetchingBankCodes": "Ошибка при получении банковских кодов. Пожалуйста, попробуйте позже.",
   "testCompletedSuccessTitle": "Тест завершен успешно!",
   "payBitcoinAmount": "Bitcoin сумма",
   "fundExchangeSpeiTransfer": "Перевод SPEI",
@@ -3191,7 +3205,6 @@
   "bitboxActionImportWalletButton": "Начало",
   "fundExchangeLabelSwiftCode": "Код SWIFT",
   "buyEnterBitcoinAddress": "Введите адрес биткойна",
-  "autoswapWarningBaseBalance": "Целевой баланс 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Сумма выплат",
   "importQrDeviceSpecterStep6": "Выберите \"Сингл ключ\"",
   "importQrDeviceJadeStep10": "Вот так!",
@@ -4494,30 +4507,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Срочно: требуется резервное копирование и переустановка",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Требуется действие: Переустановите приложение",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Создать копию сейчас",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Позже",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -4549,10 +4538,6 @@
   "errorReportingStandardLogsTitle": "Стандартные журналы",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Всегда включено — позволяет нам видеть, безопасно ли мигрирует ваш кошелёк между версиями приложения.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Используйте резервную копию",
   "@appInitErrorHasBackupTitle": {
@@ -4637,7 +4622,6 @@
   "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
   "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
   "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "coreScreensResolvingInputs": "Разрешение входов транзакции...",
   "coreScreensFeeRateLabel": "Ставка комиссии",

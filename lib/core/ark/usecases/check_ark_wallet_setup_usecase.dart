@@ -6,10 +6,9 @@ class CheckArkWalletSetupUsecase {
   final SettingsRepository _settingsRepository;
 
   CheckArkWalletSetupUsecase({
-    required FetchArkSecretUsecase fetchArkSecretUsecase,
-    required SettingsRepository settingsRepository,
-  }) : _fetchArkSecretUsecase = fetchArkSecretUsecase,
-       _settingsRepository = settingsRepository;
+    required this._fetchArkSecretUsecase,
+    required this._settingsRepository,
+  });
 
   Future<bool> execute() async {
     try {

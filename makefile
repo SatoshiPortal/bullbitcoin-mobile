@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -31,6 +31,18 @@ deps-update:
 	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
 	@rm -f pubspec.lock ios/Podfile.lock
 	@fvm flutter pub get
+
+# Melos workspace bootstrap (pub get across the workspace + package linking).
+# Wraps `fvm dart run melos` so the pinned SDK (.fvmrc) is used — never bare
+# `melos`. Single root package today (useRootAsPackage), so this is ~equivalent
+# to `make deps`; it becomes meaningful once packages/ + features/ gain members.
+bootstrap:
+	@echo "🧩 Melos bootstrap"
+	@fvm dart run melos bootstrap
+
+analyze:
+	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
+	@fvm flutter analyze --fatal-warnings --fatal-infos
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"

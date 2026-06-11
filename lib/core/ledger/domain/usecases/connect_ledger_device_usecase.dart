@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_reposito
 class ConnectLedgerDeviceUsecase {
   final LedgerDeviceRepository _repository;
 
-  ConnectLedgerDeviceUsecase({required LedgerDeviceRepository repository})
-      : _repository = repository;
+  ConnectLedgerDeviceUsecase({required this._repository});
 
   Future<void> execute(LedgerDeviceEntity device) async {
     await _repository.connectDevice(device);

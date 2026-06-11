@@ -10,10 +10,9 @@ class GetNetworkFeesUsecase {
   final SettingsRepository _settingsRepository;
 
   GetNetworkFeesUsecase({
-    required FeesRepository feesRepository,
-    required SettingsRepository settingsRepository,
-  }) : _feesRepository = feesRepository,
-       _settingsRepository = settingsRepository;
+    required this._feesRepository,
+    required this._settingsRepository,
+  });
 
   Future<FeeOptions> execute({required bool isLiquid}) async {
     try {

@@ -4,8 +4,7 @@ import 'package:drift/drift.dart';
 class RecoverbullSettingsDatasource {
   final SqliteDatabase _sqlite;
 
-  RecoverbullSettingsDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  RecoverbullSettingsDatasource({required this._sqlite});
 
   Future<void> store(Uri url) async {
     await _sqlite

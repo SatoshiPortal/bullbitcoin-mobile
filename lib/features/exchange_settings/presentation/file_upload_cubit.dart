@@ -8,11 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FileUploadCubit extends Cubit<FileUploadState> {
   FileUploadCubit({
-    required UploadKycDocumentUsecase uploadKycDocumentUsecase,
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-  }) : _uploadKycDocumentUsecase = uploadKycDocumentUsecase,
-       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       super(const FileUploadState()) {
+    required this._uploadKycDocumentUsecase,
+    required this._getExchangeUserSummaryUsecase,
+  }) : super(const FileUploadState()) {
     _loadUserData();
   }
 

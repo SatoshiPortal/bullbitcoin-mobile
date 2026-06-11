@@ -14,10 +14,8 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
   final BuildReviewableTransactionUsecase _buildReviewableTransactionUsecase;
 
   TransactionReviewCubit({
-    required BuildReviewableTransactionUsecase
-    buildReviewableTransactionUsecase,
-  }) : _buildReviewableTransactionUsecase = buildReviewableTransactionUsecase,
-       super(const TransactionReviewState.initial());
+    required this._buildReviewableTransactionUsecase,
+  }) : super(const TransactionReviewState.initial());
 
   Future<void> loadFromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {

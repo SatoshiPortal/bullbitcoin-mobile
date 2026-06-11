@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/labels/domain/label_error.dart';
 class TrashLabelUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  TrashLabelUsecase({required LabelsRepositoryPort labelRepository})
-    : _labelRepository = labelRepository;
+  TrashLabelUsecase({required this._labelRepository});
 
   Future<void> execute(int id) async {
     try {

@@ -12,8 +12,8 @@ class SeedDatasource {
   final KeyValueStorageDatasource<String> _secureStorage;
 
   const SeedDatasource({
-    required KeyValueStorageDatasource<String> secureStorage,
-  }) : _secureStorage = secureStorage;
+    required this._secureStorage,
+  });
 
   Future<void> store({required String fingerprint, required SeedModel seed}) {
     final key = composeSeedStorageKey(fingerprint);

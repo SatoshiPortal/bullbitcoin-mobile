@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/labels/domain/label_error.dart';
 class FetchLabelByReferenceUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  FetchLabelByReferenceUsecase({required LabelsRepositoryPort labelRepository})
-    : _labelRepository = labelRepository;
+  FetchLabelByReferenceUsecase({required this._labelRepository});
 
   Future<List<ApplicationLabel>> execute(String reference) async {
     try {

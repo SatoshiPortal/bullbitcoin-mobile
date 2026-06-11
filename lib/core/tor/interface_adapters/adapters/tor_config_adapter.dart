@@ -9,10 +9,9 @@ class TorConfigAdapter implements TorConfigPort {
   final TorConnectivityService _torConnectivityService;
 
   TorConfigAdapter({
-    required SettingsRepository settingsRepository,
-    required TorConnectivityService torConnectivityService,
-  }) : _settingsRepository = settingsRepository,
-       _torConnectivityService = torConnectivityService;
+    required this._settingsRepository,
+    required this._torConnectivityService,
+  });
 
   @override
   Future<TorProxyConfig?> getAvailableExternalTorConfig() async {

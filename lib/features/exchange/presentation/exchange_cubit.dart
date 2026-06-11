@@ -15,21 +15,14 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class ExchangeCubit extends Cubit<ExchangeState> {
   ExchangeCubit({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
-    required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
-    required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
-    required GetAnnouncementsUsecase getAnnouncementsUsecase,
-    required ExchangeNotificationService exchangeNotificationService,
-    required SendSupportChatMessageUsecase sendSupportChatMessageUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
-       _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
-       _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
-       _getAnnouncementsUsecase = getAnnouncementsUsecase,
-       _exchangeNotificationService = exchangeNotificationService,
-       _sendSupportChatMessageUsecase = sendSupportChatMessageUsecase,
-       super(const ExchangeState()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._saveExchangeApiKeyUsecase,
+    required this._saveUserPreferencesUsecase,
+    required this._deleteExchangeApiKeyUsecase,
+    required this._getAnnouncementsUsecase,
+    required this._exchangeNotificationService,
+    required this._sendSupportChatMessageUsecase,
+  }) : super(const ExchangeState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
         .where(
           (message) =>

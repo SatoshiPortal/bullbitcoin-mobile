@@ -22,10 +22,9 @@ class ListCadBillersUsecase {
   final SettingsRepository _settingsRepository;
 
   ListCadBillersUsecase({
-    required RecipientsGatewayPort recipientsGateway,
-    required SettingsRepository settingsRepository,
-  }) : _recipientsGateway = recipientsGateway,
-       _settingsRepository = settingsRepository;
+    required this._recipientsGateway,
+    required this._settingsRepository,
+  });
 
   Future<ListCadBillersResult> execute(ListCadBillersParams params) async {
     final settings = await _settingsRepository.fetch();

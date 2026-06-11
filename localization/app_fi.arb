@@ -906,6 +906,21 @@
   "fundExchangeLabelRecipientNameArs": "Vastaanottajan nimi",
   "fundExchangeLabelCvu": "CVU",
   "fundExchangeErrorLoadingDetails": "Maksutietoja ei voitu ladata tällä hetkellä. Palaa takaisin ja yritä uudelleen, valitse toinen maksutapa tai tule myöhemmin uudelleen.",
+    "fundExchangeErrorTitleOrdPo404": "Maksuvaihtoehto ei ole saatavilla",
+  "fundExchangeErrorTitleRcpPo404": "Maksuvaihtoehto ei ole saatavilla",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE ei ole saatavilla",
+  "fundExchangeErrorTitleOrdKyc400": "KYC-vaatimukset puuttuvat",
+  "fundExchangeErrorOrdKyc400": "Sinulla ei ole KYC-vaatimuksia tätä toimintoa varten: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Virheelliset COP-rahoitustiedot",
+  "fundExchangeErrorOrdCop400": "Virheelliset pyyntötiedot COP-rahoitukselle: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtuaalimaksua ei aktivoitu",
+  "fundExchangeErrorOrdCsrcp400": "Aktivoi virtuaalinen maksuvaihtoehto SEPA-vastaanottajalle IBANilla: {iban}",
+  "fundExchangeErrorTitleRcp400": "Virheellinen pyyntö",
+  "fundExchangeErrorRcp400": "Virheellinen pyyntö",
+"fundExchangeErrorOrdPo404": "Maksuvaihtoehtoa ei ole saatavilla",
+  "fundExchangeErrorRcpPo404": "Sinulla ei ole tarvittavia käyttöoikeuksia tämän rahoitusvaihtoehdon käyttämiseen. Joko KYC-tietosi ovat riittämättömät tai tämä vaihtoehto ei ole käytettävissä tililläsi",
+  "fundExchangeErrorRcpPosinpe404": "Tämän rahoitusvaihtoehdon käyttämiseksi puhelinnumerosi on oltava rekisteröity SINPE-verkkoon Costa Ricassa.",
+  "fundExchangeErrorFetchingBankCodes": "Pankkikoodeja haettaessa tapahtui virhe. Yritä myöhemmin uudelleen.",
   "fundExchangeSinpeDescriptionBold": "se hylätään.",
   "fundExchangeSinpeAddedToBalance": "Kun maksu on lähetetty, se lisätään tilisi saldoon.",
   "fundExchangeSinpeWarningNoBitcoin": "Älä laita",
@@ -4125,8 +4140,6 @@
   "autoswapBaseBalanceInfoText": "Pikaisen maksulompakon saldo palaa tähän tavoitesaldoon automaattisen swapin jälkeen.",
   "autoswapWarningDescription": "Autoswap varmistaa, ettei vahingossa pidä liikaa rahaa Pikaisen maksulompakon sisällä, mikä ei ole turvallista pitkäaikaiseen säilytykseen.",
   "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
-  "autoswapWarningBaseBalance": "Tavoitesaldo 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Maksimi-saldo 0,02 BTC",
   "autoswapWarningExplanation": "Kun saldosi ylittää maksimin saldon, käynnistyy swap. Tavoitesaldo pidetään Pikaisen maksulompakon sisällä ja jäljelle jäävä summa vaihdetaan Turvalliseen Bitcoin-lompakkoosi.",
   "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
   "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
@@ -4477,30 +4490,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Kiireellinen: Varmuuskopio ja uudelleenasennus vaaditaan",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Toimenpide vaaditaan: Asenna sovellus uudelleen",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Varmuuskopioi nyt",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Myöhemmin",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Takaisin",
   "@backButton": {
     "description": "Generic back button label"
@@ -4532,10 +4521,6 @@
   "errorReportingStandardLogsTitle": "Peruslokit",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Aina päällä — näemme, siirtyykö lompakkosi turvallisesti sovellusversioiden välillä.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",
   "@appInitErrorHasBackupTitle": {
@@ -4620,7 +4605,6 @@
   "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
   "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapin.",
   "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
   "coreScreensResolvingInputs": "Selvitetään tapahtuman syötteitä...",
   "coreScreensFeeRateLabel": "Palkkioprosentti",

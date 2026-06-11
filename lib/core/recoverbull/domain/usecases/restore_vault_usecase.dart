@@ -10,10 +10,9 @@ class RestoreVaultUsecase {
   final CreateDefaultWalletsUsecase _createDefaultWallets;
 
   RestoreVaultUsecase({
-    required WalletRepository walletRepository,
+    required this._walletRepository,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
-  }) : _walletRepository = walletRepository,
-       _createDefaultWallets = createDefaultWalletsUsecase;
+  }) : _createDefaultWallets = createDefaultWalletsUsecase;
 
   Future<void> execute({required DecryptedVault decryptedVault}) async {
     try {

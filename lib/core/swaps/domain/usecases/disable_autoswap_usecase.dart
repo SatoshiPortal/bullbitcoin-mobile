@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 class DisableAutoswapUsecase {
   final BoltzSwapRepository _repository;
 
-  DisableAutoswapUsecase({required BoltzSwapRepository repository})
-    : _repository = repository;
+  DisableAutoswapUsecase({required this._repository});
 
   Future<AutoSwap> execute() async {
     final currentSettings = await _repository.getAutoSwapParams();

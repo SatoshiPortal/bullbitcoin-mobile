@@ -63,30 +63,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Khẩn cấp: Cần sao lưu và cài đặt lại",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Cần thực hiện: Cài đặt lại ứng dụng",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Sao lưu ngay",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Sau",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
   "backButton": "Quay lại",
   "@backButton": {
@@ -119,10 +95,6 @@
   "errorReportingStandardLogsTitle": "Nhật ký tiêu chuẩn",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Luôn bật — giúp chúng tôi biết ví của bạn có di chuyển an toàn giữa các phiên bản ứng dụng hay không.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Sử dụng bản sao lưu của bạn",
   "@appInitErrorHasBackupTitle": {
@@ -207,7 +179,6 @@
   "legacyStorageHasBackupImportantBody": "Vui lòng không bỏ qua quy trình này trừ khi bạn thực sự cần sử dụng ví khẩn cấp hoặc đang chờ một giao dịch hoán đổi hoàn tất.",
   "legacyStorageRiskAckButtonHasBackup": "Tôi hiểu rủi ro",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Mở ứng dụng trong vòng 24 giờ để hoàn tất hoán đổi của bạn.",
   "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
   "importMnemonicDuplicateError": "Cụm từ ghi nhớ này đã tồn tại",
   "transactionStatusPayjoinCompleted": "Payjoin đã hoàn tất",
@@ -295,5 +266,20 @@
   "onboardingAdvancedOptionsFooter": "Bạn có thể thay đổi các cài đặt này sau trong Cài đặt ứng dụng",
   "onboardingAdvancedOptionsDone": "Xong",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android"
+  "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
+    "fundExchangeErrorTitleOrdPo404": "Phương thức thanh toán không khả dụng",
+  "fundExchangeErrorTitleRcpPo404": "Phương thức thanh toán không khả dụng",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE không khả dụng",
+  "fundExchangeErrorTitleOrdKyc400": "Thiếu yêu cầu KYC",
+  "fundExchangeErrorOrdKyc400": "Bạn không có các yêu cầu KYC cần thiết cho hành động này: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Dữ liệu nạp tiền COP không hợp lệ",
+  "fundExchangeErrorOrdCop400": "Dữ liệu yêu cầu không hợp lệ để nạp tiền COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Chưa kích hoạt thanh toán ảo",
+  "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA có IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Yêu cầu không hợp lệ",
+  "fundExchangeErrorRcp400": "Yêu cầu không hợp lệ",
+"fundExchangeErrorOrdPo404": "Không có phương thức thanh toán nào",
+  "fundExchangeErrorRcpPo404": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
+  "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau."
 }

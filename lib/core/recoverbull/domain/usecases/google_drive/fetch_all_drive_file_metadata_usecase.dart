@@ -5,8 +5,8 @@ class FetchAllDriveFileMetadataUsecase {
   final GoogleDriveRepository _driveRepository;
 
   FetchAllDriveFileMetadataUsecase({
-    required GoogleDriveRepository driveRepository,
-  }) : _driveRepository = driveRepository;
+    required this._driveRepository,
+  });
 
   Future<List<DriveFileMetadata>> execute() async {
     try {

@@ -10,10 +10,9 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   final RecipientsGatewayPort _bullBitcoinTestnetApiClient;
 
   DelegatingRecipientsGateway({
-    required RecipientsGatewayPort bullbitcoinApiClient,
-    required RecipientsGatewayPort bullBitcoinTestnetApiClient,
-  }) : _bullbitcoinApiClient = bullbitcoinApiClient,
-       _bullBitcoinTestnetApiClient = bullBitcoinTestnetApiClient;
+    required this._bullbitcoinApiClient,
+    required this._bullBitcoinTestnetApiClient,
+  });
 
   @override
   Future<Recipient> saveRecipient(

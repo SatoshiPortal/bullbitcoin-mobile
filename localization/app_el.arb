@@ -2784,10 +2784,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "Μέγιστη ισορροπία 0,02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "backupWalletPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -7068,6 +7064,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
+    "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleRcpPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleRcpPosinpe404": "Το SINPE δεν είναι διαθέσιμο",
+  "fundExchangeErrorTitleOrdKyc400": "Λείπουν απαιτήσεις KYC",
+  "fundExchangeErrorOrdKyc400": "Δεν έχετε τις απαιτήσεις KYC για αυτή την ενέργεια: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Μη έγκυρα δεδομένα χρηματοδότησης COP",
+  "fundExchangeErrorOrdCop400": "Μη έγκυρα δεδομένα αιτήματος για χρηματοδότηση COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Η εικονική πληρωμή δεν έχει ενεργοποιηθεί",
+  "fundExchangeErrorOrdCsrcp400": "Ενεργοποιήστε την επιλογή εικονικής πληρωμής για τον παραλήπτη SEPA με IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Μη έγκυρο αίτημα",
+  "fundExchangeErrorRcp400": "Μη έγκυρο αίτημα",
+"fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
+  "fundExchangeErrorRcpPo404": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
+  "fundExchangeErrorRcpPosinpe404": "Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.",
+  "fundExchangeErrorFetchingBankCodes": "Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -8027,10 +8038,6 @@
   "buyEnterBitcoinAddress": "Εισάγετε διεύθυνση bitcoin",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "Target Balance 0,01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "importQrDeviceSpecterStep6": "Επιλέξτε \"Single key\"",
   "@importQrDeviceSpecterStep6": {
@@ -12472,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Επείγον: Απαιτείται αντίγραφο ασφαλείας και επανεγκατάσταση",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Απαιτείται ενέργεια: Επανεγκατάσταση εφαρμογής",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Δημιουργία αντιγράφου τώρα",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Αργότερα",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Πίσω",
   "@backButton": {
     "description": "Generic back button label"
@@ -12527,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "Τυπικά αρχεία καταγραφής",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Πάντα ενεργό — μας επιτρέπει να βλέπουμε αν το πορτοφόλι σας μεταφέρεται με ασφάλεια μεταξύ εκδόσεων της εφαρμογής.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Χρησιμοποιήστε το αντίγραφο ασφαλείας σας",
   "@appInitErrorHasBackupTitle": {
@@ -12615,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
   "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Ανοίξτε την εφαρμογή μέσα σε 24 ώρες για να ολοκληρώσετε το swap σας.",
   "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",

@@ -1,10 +1,11 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.11.0+185
+version: 6.11.1+186
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: "3.12.1"
+  flutter: "3.44.1"
 dependencies:
   flutter:
     sdk: flutter
@@ -112,7 +113,7 @@ dependencies:
   drift_flutter: ^0.2.7
   package_info_plus: ^9.0.0
   share_plus: ^12.0.1
-  font_awesome_flutter: ^10.12.0
+  font_awesome_flutter: ^11.0.0
   bolt11_decoder:
     git:
       url: https://github.com/fusion44/dart_bolt11_decoder
@@ -170,6 +171,22 @@ dev_dependencies:
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  melos: ^7.8.1
+
+# Melos monorepo workspace. Today the app is a single package living at the repo
+# root (useRootAsPackage), so this is a skeleton: no workspace members yet. As
+# core/feature code is extracted incrementally into packages/ and features/,
+# each becomes a `resolution: workspace` member listed under a `workspace:` key.
+# Invoke via `make bootstrap` (wraps `fvm dart run melos` so the pinned SDK in
+# .fvmrc is used); never run bare `melos`.
+melos:
+  useRootAsPackage: true
+  ide:
+    intellij:
+      enabled: false
+  command:
+    bootstrap:
+      enforceLockfile: true
 
 flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).

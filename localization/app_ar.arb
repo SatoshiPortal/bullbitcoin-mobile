@@ -8003,6 +8003,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "ولا يمكن تحميل تفاصيل الدفع في هذه اللحظة. الرجاء العودة ومحاولة مرة أخرى، اختيار طريقة أخرى للدفع أو العودة في وقت لاحق.",
+    "fundExchangeErrorTitleOrdPo404": "خيار الدفع غير متاح",
+  "fundExchangeErrorTitleRcpPo404": "خيار الدفع غير متوفر",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE غير متاح",
+  "fundExchangeErrorTitleOrdKyc400": "متطلبات KYC مفقودة",
+  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "بيانات تمويل COP غير صالحة",
+  "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "الدفع الافتراضي غير مُفعّل",
+  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA صاحب IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "طلب غير صالح",
+  "fundExchangeErrorRcp400": "طلب غير صالح",
+"fundExchangeErrorOrdPo404": "لا يوجد خيار دفع متاح",
+  "fundExchangeErrorRcpPo404": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
+  "fundExchangeErrorRcpPosinpe404": "للوصول إلى خيار التمويل هذا، يجب تسجيل رقم هاتفك في شبكة SINPE في Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "حدث خطأ أثناء جلب رموز البنوك. يرجى المحاولة مرة أخرى لاحقًا.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -11837,10 +11852,6 @@
   "@informationWillNotLeave": {
     "description": "First part of privacy assurance message"
   },
-  "autoswapWarningTriggerAmount": "الرصيد الأقصى البالغ 0.02",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "pleaseWaitFetching": "من فضلك انتظر بينما نحضر ملفك الإحتياطي.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -12263,10 +12274,6 @@
   "@savingToDevice": {
     "description": "Message shown when saving to device"
   },
-  "autoswapWarningBaseBalance": "الرصيد المستهدف",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "importQrDevicePassportStep8": "على جهازك المحمول، اضغطي \"كاميرا مفتوحة\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
@@ -12475,30 +12482,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "عاجل: النسخ الاحتياطي وإعادة التثبيت مطلوبان",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "إجراء مطلوب: إعادة تثبيت التطبيق",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "احتياطي الآن",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "لاحقاً",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "رجوع",
   "@backButton": {
     "description": "Generic back button label"
@@ -12530,10 +12513,6 @@
   "errorReportingStandardLogsTitle": "السجلات القياسية",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "مفعّل دائمًا — يتيح لنا التأكد من انتقال محفظتك بأمان بين إصدارات التطبيق.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",
   "@appInitErrorHasBackupTitle": {

@@ -5,8 +5,8 @@ class SetBitcoinUnitUsecase {
   final SettingsRepository _settingsRepository;
 
   SetBitcoinUnitUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(BitcoinUnit bitcoinUnit) async {
     await _settingsRepository.setBitcoinUnit(bitcoinUnit);

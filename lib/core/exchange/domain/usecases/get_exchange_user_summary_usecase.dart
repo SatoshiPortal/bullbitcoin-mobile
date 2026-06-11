@@ -9,12 +9,10 @@ class GetExchangeUserSummaryUsecase {
   final SettingsRepository _settingsRepository;
 
   GetExchangeUserSummaryUsecase({
-    required ExchangeUserRepository mainnetExchangeUserRepository,
-    required ExchangeUserRepository testnetExchangeUserRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeUserRepository = mainnetExchangeUserRepository,
-       _testnetExchangeUserRepository = testnetExchangeUserRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeUserRepository,
+    required this._testnetExchangeUserRepository,
+    required this._settingsRepository,
+  });
 
   Future<UserSummary> execute() async {
     try {

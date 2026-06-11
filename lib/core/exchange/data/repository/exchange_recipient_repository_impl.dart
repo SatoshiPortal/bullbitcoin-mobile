@@ -11,12 +11,10 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
   final bool _isTestnet;
 
   ExchangeRecipientRepositoryImpl({
-    required BullbitcoinApiDatasource bullbitcoinApiDatasource,
-    required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
-    required bool isTestnet,
-  }) : _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource,
-       _isTestnet = isTestnet;
+    required this._bullbitcoinApiDatasource,
+    required this._bullbitcoinApiKeyDatasource,
+    required this._isTestnet,
+  });
 
   Future<String> _getApiKey() async {
     final apiKey = await _bullbitcoinApiKeyDatasource.get(

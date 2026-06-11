@@ -12,8 +12,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transac
 class BuildReviewableTransactionUsecase {
   final TransactionPort _transactionPort;
 
-  BuildReviewableTransactionUsecase({required TransactionPort transactionPort})
-    : _transactionPort = transactionPort;
+  BuildReviewableTransactionUsecase({required this._transactionPort});
 
   /// Throws [TransactionReviewError] on failure. Port-layer errors are
   /// translated into feature-layer variants at the boundary so the

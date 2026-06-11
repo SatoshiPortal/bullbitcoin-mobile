@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_reposito
 class PairBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
-  PairBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+  PairBitBoxDeviceUsecase({required this._repository});
 
   Future<String> execute(BitBoxDeviceEntity device) async {
     return await _repository.pairDevice(device);

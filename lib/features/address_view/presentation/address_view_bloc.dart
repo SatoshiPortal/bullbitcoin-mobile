@@ -17,14 +17,11 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
   final GetAddressListUsecase _getAddressListUseCase;
 
   AddressViewBloc({
-    required String walletId,
-    required GetWalletUsecase getWalletUseCase,
-    required GetAddressListUsecase getAddressListUseCase,
+    required this._walletId,
+    required this._getWalletUseCase,
+    required this._getAddressListUseCase,
     int? limit,
-  }) : _walletId = walletId,
-       _limit = limit ?? 20, // Default limit if not provided
-       _getWalletUseCase = getWalletUseCase,
-       _getAddressListUseCase = getAddressListUseCase,
+  }) : _limit = limit ?? 20,
        super(const AddressViewState()) {
     on<AddressViewInitialAddressesLoaded>(_onInitialAddressesLoaded);
     on<AddressViewMoreReceiveAddressesLoaded>(_onMoreReceiveAddressesLoaded);

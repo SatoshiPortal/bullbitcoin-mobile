@@ -171,7 +171,7 @@
   "mempoolCustomServerBottomSheetDescription": "Introduzca la URL de su servidor mempool personalizado. El servidor será validado antes de guardar.",
   "mempoolSettingsUseForFeeEstimation": "Utilice para Estimación de Comisión",
   "mempoolSettingsUseForFeeEstimationDescription": "Cuando habilitado, este servidor será utilizado para estimación de comisión. Cuando inhabilitado, el servidor mempool de Bull Bitcoin será utilizado en su lugar.",
-  "bitcoinSettingsAutoTransferTitle": "Configuración de transferencia automática",
+  "bitcoinSettingsAutoTransferTitle": "Transferencia automática",
   "bitcoinSettingsLegacySeedsTitle": "Semillas heredadas",
   "bitcoinSettingsImportWalletTitle": "Importar billetera",
   "bitcoinSettingsBroadcastTransactionTitle": "Transmitir transacción",
@@ -947,6 +947,21 @@
   "fundExchangeLabelRecipientNameArs": "Nombre del destinatario",
   "fundExchangeLabelCvu": "CVU",
   "fundExchangeErrorLoadingDetails": "Los detalles de pago no se pudieron cargar en este momento. Por favor, regresa e intenta nuevamente, elige otro método de pago o regresa más tarde.",
+  "fundExchangeErrorTitleOrdPo404": "Opción de pago no disponible",
+  "fundExchangeErrorTitleRcpPo404": "Opción de pago no disponible",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE no disponible",
+  "fundExchangeErrorTitleOrdKyc400": "Requisitos KYC faltantes",
+  "fundExchangeErrorOrdKyc400": "No cumples con los requisitos KYC para esta acción: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Datos de fondeo COP inválidos",
+  "fundExchangeErrorOrdCop400": "Datos de solicitud inválidos para fondeo COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Pago virtual no activado",
+  "fundExchangeErrorOrdCsrcp400": "Por favor active la opción de pago virtual para el destinatario SEPA con IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Solicitud inválida",
+  "fundExchangeErrorRcp400": "Solicitud inválida",
+  "fundExchangeErrorOrdPo404": "No hay opción de pago disponible",
+  "fundExchangeErrorRcpPo404": "No tienes los permisos necesarios para acceder a esta opción de fondeo. Tu KYC es insuficiente o esta opción no está disponible para tu cuenta",
+  "fundExchangeErrorRcpPosinpe404": "Para acceder a esta opción de fondeo, tu número de teléfono debe estar registrado en la red SINPE de Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Error al obtener los códigos bancarios. Por favor, inténtalo de nuevo más tarde.",
   "fundExchangeSinpeDescriptionBold": "será rechazado.",
   "fundExchangeSinpeAddedToBalance": "Una vez que se envíe el pago, se agregará a tu saldo de cuenta.",
   "fundExchangeSinpeWarningNoBitcoin": "No pongas",
@@ -1447,7 +1462,7 @@
   "pinStatusCheckingDescription": "Verificando estado del PIN",
   "pinStatusProcessing": "Procesando",
   "pinStatusSettingUpDescription": "Configurando su código PIN",
-  "autoswapSettingsTitle": "Configuración de Transferencia Automática",
+  "autoswapSettingsTitle": "Transferencia Automática",
   "autoswapEnableToggleLabel": "Habilitar Transferencia Automática",
   "autoswapMaxBalanceLabel": "Saldo Máximo de Billetera Instantánea",
   "autoswapMaxBalanceInfoText": "Cuando el saldo de la billetera supere el doble de esta cantidad, se activará la transferencia automática para reducir el saldo a este nivel",
@@ -1477,8 +1492,6 @@
   "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su billetera de pagos instantáneos supera 0'02 BTC.",
   "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
   "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
-  "autoswapWarningBaseBalance": "Saldo Objetivo 0'01 BTC",
-  "autoswapWarningTriggerAmount": "Saldo máximo de 0.02 BTC",
   "autoswapWarningExplanation": "Cuando tu saldo supere el saldo máximo, se activará un intercambio. El saldo destino se mantendrá en tu billetera de pagos instantáneos y el monto restante se intercambiará en tu billetera de Bitcoin segura.",
   "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
   "autoswapWarningSettingsLink": "Llévame a la configuración de transferencia automática",
@@ -3479,7 +3492,7 @@
   "swapProgressRefunded": "Transferencia reembolsada",
   "swapProgressRefundedMessage": "La transferencia ha sido reembolsada exitosamente.",
   "swapProgressGoHome": "Ir al inicio",
-  "autoswapTitle": "Configuración de transferencia automática",
+  "autoswapTitle": "Transferencia automática",
   "autoswapEnable": "Activar transferencia automática",
   "autoswapMaxBalance": "Saldo máximo de billetera instantánea",
   "autoswapMaxBalanceInfo": "Cuando el saldo de la billetera supere el doble de esta cantidad, la transferencia automática se activará para reducir el saldo a este nivel",
@@ -4491,30 +4504,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgente: Se requiere copia de seguridad y reinstalación",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "La aplicación que estás usando utiliza un software que pronto quedará obsoleto. Por favor, sigue estos pasos:\n\n1. Haz una copia de seguridad de tu billetera\n2. Desinstala la aplicación. Elimínala completamente de tu teléfono.\n3. Reinstala la versión más reciente de la aplicación\n4. Usa la opción de recuperación en lugar de \"crear nueva billetera\".\n\nTus fondos están seguros y puedes continuar usando la aplicación ahora mismo, pero hazlo lo antes posible para evitar que la aplicación falle en un futuro próximo.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Acción requerida: Reinstalar aplicación",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "La aplicación que estás usando utiliza un software que pronto quedará obsoleto. Por favor, sigue estos pasos:\n\n1. Haz una copia de seguridad de tu billetera\n2. Desinstala la aplicación. Elimínala completamente de tu teléfono.\n3. Reinstala la versión más reciente de la aplicación\n4. Usa la opción de recuperación en lugar de \"crear nueva billetera\".\n\nTus fondos están seguros y puedes continuar usando la aplicación ahora mismo, pero hazlo lo antes posible para evitar que la aplicación falle en un futuro próximo.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Respaldar ahora",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Más tarde",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Atrás",
   "@backButton": {
     "description": "Generic back button label"
@@ -4546,10 +4535,6 @@
   "errorReportingStandardLogsTitle": "Registros estándar",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Siempre activo — nos permite saber si tu billetera migra de forma segura entre versiones de la aplicación.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Usa tu copia de seguridad",
   "@appInitErrorHasBackupTitle": {
@@ -4634,7 +4619,6 @@
   "legacyStorageHasBackupImportantBody": "Por favor, no omita este proceso a menos que necesite usar la billetera urgentemente o esté esperando a que se complete un intercambio.",
   "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Abre la aplicación dentro de 24 horas para completar tu swap.",
   "importMnemonicDuplicateError": "Esta frase mnemónica ya existe",
   "coreScreensResolvingInputs": "Resolviendo entradas de la transacción...",
   "coreScreensFeeRateLabel": "Tasa de comisión",

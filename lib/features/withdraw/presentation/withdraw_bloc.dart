@@ -15,12 +15,10 @@ part 'withdraw_state.dart';
 
 class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   WithdrawBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required this._getExchangeUserSummaryUsecase,
     required CreateWithdrawOrderUsecase createWithdrawUsecase,
-    required ConfirmWithdrawOrderUsecase confirmWithdrawUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _createWithdrawOrderUsecase = createWithdrawUsecase,
-       _confirmWithdrawUsecase = confirmWithdrawUsecase,
+    required this._confirmWithdrawUsecase,
+  }) : _createWithdrawOrderUsecase = createWithdrawUsecase,
        super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
