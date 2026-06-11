@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.d
 class TrezorCallbackDispatcherImpl implements TrezorCallbackDispatcher {
   final TrezorConnectDatasource _datasource;
 
-  TrezorCallbackDispatcherImpl({required TrezorConnectDatasource datasource})
-    : _datasource = datasource;
+  TrezorCallbackDispatcherImpl({required this._datasource});
 
   @override
   void handleCallback(Uri uri) => _datasource.handleCallback(uri);

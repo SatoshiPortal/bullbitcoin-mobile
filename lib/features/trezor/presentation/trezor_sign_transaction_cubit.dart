@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/trezor/presentation/trezor_operation_base_cub
 class TrezorSignTransactionCubit extends TrezorOperationBaseCubit<String> {
   final SignPsbtTrezorUsecase _signPsbt;
 
-  TrezorSignTransactionCubit({required SignPsbtTrezorUsecase signPsbt})
-    : _signPsbt = signPsbt;
+  TrezorSignTransactionCubit({required this._signPsbt});
 
   Future<void> sign({
     required String psbt,

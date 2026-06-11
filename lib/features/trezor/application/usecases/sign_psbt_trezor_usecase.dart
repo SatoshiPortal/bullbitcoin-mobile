@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/trezor/application/trezor_device_repository.d
 class SignPsbtTrezorUsecase {
   final TrezorDeviceRepository _repository;
 
-  SignPsbtTrezorUsecase({required TrezorDeviceRepository repository})
-    : _repository = repository;
+  SignPsbtTrezorUsecase({required this._repository});
 
   Future<String> execute({
     required String psbtBase64,

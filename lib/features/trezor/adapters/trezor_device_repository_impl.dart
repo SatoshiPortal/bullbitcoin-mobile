@@ -10,8 +10,7 @@ import 'package:trezor_connect/trezor_connect.dart' show TrezorLaunchException;
 class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   final TrezorConnectDatasource _datasource;
 
-  TrezorDeviceRepositoryImpl({required TrezorConnectDatasource datasource})
-    : _datasource = datasource;
+  TrezorDeviceRepositoryImpl({required this._datasource});
 
   @override
   Future<TrezorAccount> getDefaultAccount({

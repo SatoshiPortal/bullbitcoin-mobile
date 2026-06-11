@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/trezor/presentation/trezor_operation_base_cub
 class TrezorVerifyAddressCubit extends TrezorOperationBaseCubit<bool> {
   final VerifyAddressTrezorUsecase _verifyAddress;
 
-  TrezorVerifyAddressCubit({required VerifyAddressTrezorUsecase verifyAddress})
-    : _verifyAddress = verifyAddress;
+  TrezorVerifyAddressCubit({required this._verifyAddress});
 
   Future<void> verify({
     required String address,

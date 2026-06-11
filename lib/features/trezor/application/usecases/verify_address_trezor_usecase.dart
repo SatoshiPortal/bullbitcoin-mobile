@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/trezor/application/trezor_device_repository.d
 class VerifyAddressTrezorUsecase {
   final TrezorDeviceRepository _repository;
 
-  VerifyAddressTrezorUsecase({required TrezorDeviceRepository repository})
-    : _repository = repository;
+  VerifyAddressTrezorUsecase({required this._repository});
 
   /// Asks Trezor Suite to display the expected address on the device. The
   /// device derives the address locally from the given derivation path and

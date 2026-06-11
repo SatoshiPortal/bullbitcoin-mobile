@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
 class GetDefaultTrezorAccountUsecase {
   final TrezorDeviceRepository _repository;
 
-  GetDefaultTrezorAccountUsecase({required TrezorDeviceRepository repository})
-    : _repository = repository;
+  GetDefaultTrezorAccountUsecase({required this._repository});
 
   Future<TrezorAccount> execute({
     required ScriptType scriptType,

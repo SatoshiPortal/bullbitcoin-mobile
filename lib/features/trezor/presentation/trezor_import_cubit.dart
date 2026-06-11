@@ -10,10 +10,9 @@ class TrezorImportCubit
   final PrepareTrezorImportUsecase _prepareImport;
 
   TrezorImportCubit({
-    required GetDefaultTrezorAccountUsecase getDefaultAccount,
-    required PrepareTrezorImportUsecase prepareImport,
-  }) : _getDefaultAccount = getDefaultAccount,
-       _prepareImport = prepareImport;
+    required this._getDefaultAccount,
+    required this._prepareImport,
+  });
 
   Future<void> startImport({
     required ScriptType scriptType,

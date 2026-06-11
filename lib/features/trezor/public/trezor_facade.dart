@@ -9,8 +9,7 @@ import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
 class TrezorFacade {
   final PrepareTrezorImportUsecase _prepareTrezorImportUsecase;
 
-  TrezorFacade({required PrepareTrezorImportUsecase prepareTrezorImportUsecase})
-    : _prepareTrezorImportUsecase = prepareTrezorImportUsecase;
+  TrezorFacade({required this._prepareTrezorImportUsecase});
 
   /// Builds a watch-only descriptor entity for the chosen Trezor account,
   /// ready to hand to the import_watch_only_wallet finalize screen. Does

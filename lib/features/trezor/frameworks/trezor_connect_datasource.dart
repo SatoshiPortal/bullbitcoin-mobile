@@ -21,8 +21,7 @@ import 'package:trezor_connect/trezor_connect.dart';
 class TrezorConnectDatasource {
   final TrezorConnect _connect;
 
-  TrezorConnectDatasource({required TrezorConnect connect})
-    : _connect = connect;
+  TrezorConnectDatasource({required this._connect});
 
   void handleCallback(Uri uri) => _connect.handleCallback(uri);
 
