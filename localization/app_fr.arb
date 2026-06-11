@@ -1489,8 +1489,6 @@
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
   "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
-  "autoswapWarningBaseBalance": "Solde cible 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Solde maximal de 0,02 BTC",
   "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximal, un échange sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
   "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
@@ -4489,30 +4487,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Sauvegarder maintenant",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Plus tard",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Retour",
   "@backButton": {
     "description": "Generic back button label"
@@ -4544,10 +4518,6 @@
   "errorReportingStandardLogsTitle": "Journaux standard",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",
   "@appInitErrorHasBackupTitle": {
@@ -4632,7 +4602,6 @@
   "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
   "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Ouvrez l'application dans les 24 heures pour terminer votre swap.",
   "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
   "coreScreensFeeRateLabel": "Taux de frais",
