@@ -58,7 +58,7 @@ jobs:
           echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
 
       - name: Linter shouldn't raise errors, warnings or infos
-        run: fvm flutter analyze --fatal-warnings --fatal-infos
+        run: make analyze
 
       - name: dart fix should have nothing to suggest
         run: |

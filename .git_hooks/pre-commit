@@ -29,7 +29,7 @@ trap 'rm -f "$analyzeOut" "$fixOut"' EXIT
 
 start=$SECONDS
 
-$FLUTTER analyze >"$analyzeOut" 2>&1 &
+make analyze >"$analyzeOut" 2>&1 &
 analyzePid=$!
 
 $DART fix --dry-run >"$fixOut" 2>&1 &
