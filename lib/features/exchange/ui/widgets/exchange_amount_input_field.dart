@@ -12,26 +12,21 @@ import 'package:intl/intl.dart';
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
     super.key,
-    bool isLoading = false,
-    BitcoinUnit? bitcoinUnit,
-    required TextEditingController amountController,
-    bool isFiatCurrencyInput = true,
-    FiatCurrency? fiatCurrency,
-    void Function(bool isFiat)? onIsFiatCurrencyInputChanged,
-    UserBalance? fiatBalance,
-    bool canExceedBalance = false,
-  }) : _isLoading = isLoading,
-       _bitcoinUnit = bitcoinUnit,
-       _amountController = amountController,
-       _isFiatCurrencyInput = isFiatCurrencyInput,
-       _fiatCurrency = fiatCurrency,
-       _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged,
-       _fiatBalance = fiatBalance,
-       _canExceedBalance = canExceedBalance;
+    this._isLoading = false,
+    this._bitcoinUnit,
+    required this._amountController,
+    this._focusNode,
+    this._isFiatCurrencyInput = true,
+    this._fiatCurrency,
+    this._onIsFiatCurrencyInputChanged,
+    this._fiatBalance,
+    this._canExceedBalance = false,
+  });
 
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;
   final TextEditingController _amountController;
+  final FocusNode? _focusNode;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;
   final void Function(bool isFiat)? _onIsFiatCurrencyInputChanged;
@@ -40,14 +35,12 @@ class ExchangeAmountInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountInputDecimals =
-        _isFiatCurrencyInput
-            ? _fiatCurrency?.decimals ?? 2
-            : _bitcoinUnit!.decimals;
-    final inputCurrency =
-        _isFiatCurrencyInput
-            ? _fiatCurrency?.code ?? 'CAD'
-            : _bitcoinUnit?.code ?? 'BTC';
+    final amountInputDecimals = _isFiatCurrencyInput
+        ? _fiatCurrency?.decimals ?? 2
+        : _bitcoinUnit!.decimals;
+    final inputCurrency = _isFiatCurrencyInput
+        ? _fiatCurrency?.code ?? 'CAD'
+        : _bitcoinUnit?.code ?? 'BTC';
 
     return Column(
       crossAxisAlignment: .start,
@@ -83,6 +76,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                       Expanded(
                         child: TextFormField(
                           controller: _amountController,
+                          focusNode: _focusNode,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),

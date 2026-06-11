@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -17,12 +17,32 @@ setup: fvm-check clean deps build-runner translations hooks
 	@echo "🚀 Setup complete!"
 
 clean:
-	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
-	@fvm flutter clean && rm -f pubspec.lock && rm -f ios/Podfile.lock
+	@echo "🧹 Clean build artifacts (keeps lockfiles)"
+	@fvm flutter clean
 
 deps:
-	@echo "🏃 Fetch dependencies"
+	@echo "🏃 Fetch dependencies (enforce pubspec.lock)"
+	@fvm flutter pub get --enforce-lockfile
+
+# Intentionally re-resolve from scratch: deletes the lockfiles and lets pub pick
+# fresh versions (and, for branch refs, fresh commits). Use only when you mean to
+# update dependencies, then commit the regenerated pubspec.lock.
+deps-update:
+	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
+	@rm -f pubspec.lock ios/Podfile.lock
 	@fvm flutter pub get
+
+# Melos workspace bootstrap (pub get across the workspace + package linking).
+# Wraps `fvm dart run melos` so the pinned SDK (.fvmrc) is used — never bare
+# `melos`. Single root package today (useRootAsPackage), so this is ~equivalent
+# to `make deps`; it becomes meaningful once packages/ + features/ gain members.
+bootstrap:
+	@echo "🧩 Melos bootstrap"
+	@fvm dart run melos bootstrap
+
+analyze:
+	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
+	@fvm flutter analyze --fatal-warnings --fatal-infos
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -83,30 +103,61 @@ container-app: container-tools
 
 MODE ?= debug
 FORMAT ?= apk
+FLAVOR ?= production
 
-# Allow "make apk release" or "make apk debug" syntax
+# Allow "make android release", "make android debug" or "make android beta".
+# release/debug build the production flavor; beta is the tester channel — the
+# beta flavor (.beta applicationId, its own signing) in release mode, for direct
+# store-less distribution.
 ifneq (,$(filter release,$(MAKECMDGOALS)))
   MODE := release
 endif
 ifneq (,$(filter debug,$(MAKECMDGOALS)))
   MODE := debug
 endif
-release debug:
+ifneq (,$(filter beta,$(MAKECMDGOALS)))
+  MODE := release
+  FLAVOR := beta
+endif
+release debug beta:
 	@:
 
-# Flutter writes APK and AAB to different paths
-ifeq ($(FORMAT),aab)
-  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(MODE)/app-$(MODE).aab
-  HOST_OUTPUT := ./app-$(MODE).aab
-  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE)
+# Gradle appbundle output dir is camelCase <flavor><BuildType> (e.g. productionRelease).
+MODE_CAP := $(if $(filter release,$(MODE)),Release,Debug)
+
+# Host artifact name reflects the build target: BULL-release / BULL-debug for the
+# production flavor, and BULL-<flavor> (e.g. BULL-beta) for channel flavors. The
+# in-container Flutter output keeps its app-<flavor>-<mode> names below; only the
+# extracted host file is branded.
+#
+# Channel flavors (beta) are signed only when their key is present, mirroring the
+# gradle signingConfig guard (android/key-beta.properties). With no key the build
+# is unsigned — Flutter still names it app-<flavor>-<mode>.apk, so flag it -unsigned
+# on the host so an uninstallable build is obvious. CI requires the key, so this
+# only triggers for keyless local beta builds. Production names are left unbranded:
+# release is intentionally unsigned in the reproducibility/verify flow and both CI
+# upload and verify_build.sh depend on the exact BULL-release name.
+ifeq ($(FLAVOR),production)
+  HOST_NAME := $(MODE)
+else ifeq (,$(wildcard android/key-beta.properties))
+  HOST_NAME := $(FLAVOR)-unsigned
 else
-  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(MODE).apk
-  HOST_OUTPUT := ./app-$(MODE).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE)
+  HOST_NAME := $(FLAVOR)
 endif
 
-apk: container-app
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via $(CONTAINER)"
+# Flutter writes APK and AAB to different, flavor-namespaced paths
+ifeq ($(FORMAT),aab)
+  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(FLAVOR)$(MODE_CAP)/app-$(FLAVOR)-$(MODE).aab
+  HOST_OUTPUT := ./BULL-$(HOST_NAME).aab
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR)
+else
+  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
+  HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+endif
+
+android: container-app
+	@echo "🔨 Building $(FORMAT) ($(FLAVOR) $(MODE)) via $(CONTAINER)"
 	@$(CONTAINER) rm -f bull-build > /dev/null 2>&1 || true
 	@$(CONTAINER) run --name bull-build \
 		--ulimit nofile=65536:65536 \
@@ -117,7 +168,8 @@ apk: container-app
 				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
 				"--remap-path-prefix=/app=/build") && \
 			CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
-			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
+			CARGO_NET_GIT_FETCH_WITH_CLI=true && \
+			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS CARGO_NET_GIT_FETCH_WITH_CLI && \
 			cd /app && \
 			$(FLUTTER_BUILD)'
 	@$(CONTAINER) cp bull-build:$(CONTAINER_OUTPUT) $(HOST_OUTPUT)
@@ -139,6 +191,15 @@ unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
 
+# integration_test/all_test.dart is a single aggregator entrypoint: it runs
+# Bull.init() once, then every test file's main(isInitialized: true). On the
+# Linux desktop device the app can only be launched once per `flutter test`
+# invocation, so running this one file builds + launches once for the whole
+# suite (instead of failing every file but the first, as `flutter test
+# integration_test/` does). all_test.dart is a generated, gitignored artifact —
+# tool/gen_all_test.dart regenerates it from disk below, so adding a test file
+# needs no manual wiring.
 integration-test:
 	@echo "🧪 integration tests"
-	@fvm flutter test integration_test/ --reporter=compact
+	@fvm dart run tool/gen_all_test.dart
+	@fvm flutter test integration_test/all_test.dart --reporter=expanded

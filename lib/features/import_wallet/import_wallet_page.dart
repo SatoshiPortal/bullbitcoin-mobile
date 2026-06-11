@@ -117,7 +117,7 @@ class ImportWalletPage extends StatelessWidget {
                         )
                       : SnackBarUtils.showSnackBar(
                           context,
-                          'BitBox is only supported on Android',
+                          context.loc.importWalletBitboxAndroidOnly,
                         ),
                 ),
               ],

@@ -31,9 +31,8 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () {
-                context.goNamed(WalletRoute.walletHome.name);
-              },
+              onPressed: () =>
+                  context.goNamed(WalletRoute.walletHome.name),
             ),
           ],
         ),

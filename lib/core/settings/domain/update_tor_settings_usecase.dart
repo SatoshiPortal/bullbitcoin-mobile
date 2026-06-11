@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 class UpdateTorSettingsUsecase {
   final SettingsRepository _settingsRepository;
 
-  UpdateTorSettingsUsecase({required SettingsRepository settingsRepository})
-      : _settingsRepository = settingsRepository;
+  UpdateTorSettingsUsecase({required this._settingsRepository});
 
   Future<void> execute({
     required bool useTorProxy,

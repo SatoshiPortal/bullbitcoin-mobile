@@ -1,4 +1,12 @@
 {
+  "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
+  "backupWarningLoseReasonLostPhone": "Загубите телефона си",
+  "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
+  "backupWarningLoseReasonCriticalIssue": "Възникне критичен проблем с приложението или устройството",
+  "backupWarningLoseReasonKeystore": "Устройството анулира keystore при смяна на заключения екран или удостоверяването на устройството",
+  "backupWarningLoseReasonCloudRestore": "Възстановяване на устройството от резервно копие в облака",
+  "backupWarningNoRecovery": "Без резервно копие няма начин да възстановите портфейла си.",
+  "broadcastSignedTxBroadcastError": "Неуспешно излъчване на транзакцията",
   "translationWarningTitle": "Преводи, генерирани от ИИ",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -682,6 +690,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Получете точната сума",
+  "swapInsufficientFunds": "Недостатъчни средства",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -746,7 +755,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €20 000",
+  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €30 000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -2781,10 +2790,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "Максимален баланс от 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "Стари семена",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -3866,7 +3871,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €20 000",
+  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €30 000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -5925,6 +5930,23 @@
   "@fundExchangeHelpPaymentDescription": {
     "description": "Help text for payment description field"
   },
+  "transactionHistoryTitle": "История на транзакциите",
+  "transactionHistoryHeading": "История на транзакциите",
+  "exportTransactionsDescription": "Експортирайте всички транзакции на вашия портфейл (Bitcoin, Liquid, Lightning и суапове) като CSV файл. По избор филтрирайте по период.",
+  "exportTransactionsStartDate": "Начална дата",
+  "exportTransactionsEndDate": "Крайна дата",
+  "exportTransactionsAnyDate": "Всяка",
+  "exportTransactionsButton": "Експортирай CSV",
+  "exportTransactionsSuccess": "Транзакциите са експортирани успешно",
+  "exportTransactionsEmpty": "Няма транзакции за експорт в избрания период",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Индекс: [X7X]",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -6481,6 +6503,21 @@
     "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "Детайлите за плащането не могат да се заредят в момента. Моля върнете се назад и опитайте отново, изберете друг метод на плащане или се върнете по-късно.",
+    "fundExchangeErrorTitleOrdPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE не е наличен",
+  "fundExchangeErrorTitleOrdKyc400": "Липсващи изисквания за KYC",
+  "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Невалидни данни за финансиране в COP",
+  "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Виртуалното плащане не е активирано",
+  "fundExchangeErrorOrdCsrcp400": "Моля, активирайте опцията за виртуално плащане за получателя по SEPA с IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Невалидна заявка",
+  "fundExchangeErrorRcp400": "Невалидна заявка",
+"fundExchangeErrorOrdPo404": "Няма налична опция за плащане",
+  "fundExchangeErrorRcpPo404": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "fundExchangeErrorRcpPosinpe404": "За достъп до тази опция за финансиране телефонният ви номер трябва да е регистриран в мрежата SINPE в Коста Рика.",
+  "fundExchangeErrorFetchingBankCodes": "Грешка при извличане на банкови кодове. Моля, опитайте отново по-късно.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -7309,10 +7346,6 @@
   "buyEnterBitcoinAddress": "Въведете адрес на биткойн",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "Целевият баланс 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "transactionDetailLabelPayoutAmount": "Сума за изплащане",
   "@transactionDetailLabelPayoutAmount": {
@@ -9456,30 +9489,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Спешно: Необходимо е архивиране и преинсталиране",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Необходимо действие: Преинсталирайте приложението",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Архивирай сега",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "По-късно",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -9511,10 +9520,6 @@
   "errorReportingStandardLogsTitle": "Стандартни логове",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Винаги активно — ни позволява да видим дали портфейлът ви мигрира безопасно между версиите на приложението.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Използвайте резервното си копие",
   "@appInitErrorHasBackupTitle": {
@@ -9599,7 +9604,6 @@
   "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
   "legacyStorageRiskAckButtonHasBackup": "Разбирам риска",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Отворете приложението в рамките на 24 часа, за да завършите вашия суап.",
   "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
   "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
   "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
@@ -9668,8 +9672,8 @@
   "recipientsFieldRecipientNameLabel": "Име на получателя",
   "recipientsFieldPhoneNumber": "Телефонен номер",
   "recipientsFieldPhoneNumberHint": "Въведете телефонния номер",
-  "recipientsFieldDocumentType": "Тип на документа за самоличност",
-  "recipientsFieldDocumentNumberHint": "Въведете номера на документа",
+  "recipientsFieldDocumentType": "Тип на ID на получателя",
+  "recipientsFieldDocumentNumberHint": "Въведете ID номер на получателя",
   "recipientsFieldOwnerName": "Име на собственика",
   "recipientsFieldOwnerNameHint": "Въведете името на собственика",
   "recipientsAccountOwnerQuestion": "На кого принадлежи тази сметка?",
@@ -9698,7 +9702,7 @@
   "recipientsFieldDebitCard": "Номер на дебитна карта",
   "recipientsFieldDebitCardHint": "Въведете номера на дебитната карта",
   "recipientsFieldOwnerNameSinpeHint": "Името на собственика ще се появи тук",
-  "recipientsValidationSinpePhone": "Моля, въведете валиден 8-цифрен телефонен номер",
+  "recipientsValidationSinpePhone": "Въведете валиден 8-цифрен костарикански телефонен номер без кода на държавата",
   "recipientsValidationSinpeOwner": "Моля, потвърдете телефонния номер",
   "recipientsFieldEmailAddress": "Имейл адрес",
   "recipientsFieldEmailAddressHint": "Въведете имейл адреса",
@@ -9739,5 +9743,49 @@
   "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
   "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
   "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
-  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува"
+  "recipientsFieldSinpePhoneNumberHint": "8 цифри без код на държава",
+  "recipientsCopDocCcRecipientNumber": "Cédula номер на получателя",
+  "recipientsCopDocCeRecipientNumber": "Cédula de extranjería номер на получателя",
+  "recipientsCopDocNitRecipientNumber": "Данъчен ID номер на получателя",
+  "recipientsCopDocPassportRecipientNumber": "Номер на паспорт на получателя",
+  "recipientsCopDocTiRecipientNumber": "Номер на личната карта на получателя",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Номер от гражданския регистър на получателя",
+  "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
+  "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
+  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
+  "transactionStatusPayjoinCompleted": "Payjoin завършен",
+  "homeActionBuy": "Купи",
+  "homeActionSell": "Продай",
+  "homeActionPay": "Плати",
+  "homeActionTransfer": "Прехвърли",
+  "backupCardTitle": "Защитете своите биткойни.",
+  "backupCardSubtitle": "Архивирайте портфейла си сега.",
+  "mempoolCustomServerNoSsl": "Без SSL",
+  "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
+  "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
+  "recoverbullServerConfirmTitle": "Сървър за възстановяване на трезора",
+  "recoverbullServerUsingDefault": "Използва се сървърът по подразбиране",
+  "recoverbullServerUsingCustom": "Използва се персонализиран сървър",
+  "recoverbullServerUrlLabel": "URL на сървъра:",
+  "recoverbullServerCustomWarning": "Използвате персонализиран сървър Recoverbull. Уверете се, че се доверявате на този сървър.",
+  "recoverbullServerTorNotice": "Ще се свържем с този сървър чрез Tor",
+  "recoverbullLearnMore": "Научете повече за Recoverbull",
+  "recoverbullSettingsTitle": "Настройки на Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL на сървъра за ключове",
+  "recoverbullSettingsEdit": "Редактирай",
+  "recoverbullSettingsCancel": "Отказ",
+  "recoverbullSettingsSave": "Запази",
+  "recoverbullSettingsUrlRequired": "URL е задължителен",
+  "recoverbullSettingsUrlInvalid": "URL не е валиден",
+  "recoverbullSettingsUrlMustBeHttp": "URL трябва да е HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL трябва да завършва на .onion",
+  "onboardingAdvancedOptionsTitle": "Разширени опции",
+  "onboardingAdvancedOptionsDescription": "Конфигурирайте разширените настройки преди да създадете или възстановите портфейла си",
+  "onboardingAdvancedOptionsCustomElectrum": "Персонализиран сървър Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Персонализиран сървър Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
+  "onboardingAdvancedOptionsDone": "Готово",
+  "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android"
 }

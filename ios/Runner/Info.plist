@@ -53,6 +53,8 @@
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>UIDesignRequiresCompatibility</key>
+		<true/>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>

@@ -8,10 +8,9 @@ class ExportLabelsUsecase {
   final LabelsConverterPortRegistry _converterRegistry;
 
   ExportLabelsUsecase({
-    required LabelsRepositoryPort labelRepository,
-    required LabelsConverterPortRegistry converterRegistry,
-  }) : _labelRepository = labelRepository,
-       _converterRegistry = converterRegistry;
+    required this._labelRepository,
+    required this._converterRegistry,
+  });
 
   Future<String> call(LabelFormat format) async {
     final labels = await _labelRepository.fetchAll();

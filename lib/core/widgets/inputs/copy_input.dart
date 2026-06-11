@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -101,7 +102,7 @@ class CopyInput extends StatelessWidget {
   }
 
   void _onShowValueModal(BuildContext context, {required bool canCopy}) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     BlurredDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -136,7 +137,10 @@ class CopyInput extends StatelessWidget {
                   ClipboardData(text: clipboardText ?? text),
                 );
               },
-              child: Text('Copy', style: theme.textTheme.bodyLarge),
+              child: Text(
+                context.loc.copyDialogButton,
+                style: theme.textTheme.bodyLarge,
+              ),
             ),
           TextButton(
             style: TextButton.styleFrom(
@@ -144,7 +148,10 @@ class CopyInput extends StatelessWidget {
               textStyle: theme.textTheme.bodyLarge,
             ),
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text('Close', style: theme.textTheme.bodyLarge),
+            child: Text(
+              context.loc.closeDialogButton,
+              style: theme.textTheme.bodyLarge,
+            ),
           ),
         ],
       ),

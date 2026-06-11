@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si :",
+  "backupWarningLoseReasonLostPhone": "Vous perdez votre téléphone",
+  "backupWarningLoseReasonDeletedApp": "Vous supprimez l'application",
+  "backupWarningLoseReasonCriticalIssue": "Un problème critique lié à l'application ou à l'appareil survient",
+  "backupWarningLoseReasonKeystore": "Votre appareil invalide le keystore lorsque vous modifiez l'authentification de l'écran de verrouillage ou de l'appareil",
+  "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
+  "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@@locale": "fr",
   "translationWarningTitle": "Traductions générées par IA",
   "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
@@ -849,9 +856,9 @@
   "fundExchangeMethodCanadaPost": "Espèces ou débit en personne à Postes Canada",
   "fundExchangeMethodCanadaPostSubtitle": "Idéal pour ceux qui préfèrent payer en personne",
   "fundExchangeMethodInstantSepa": "SEPA instantané",
-  "fundExchangeMethodInstantSepaSubtitle": "Le plus rapide - Uniquement pour les transactions inférieures à 20 000 €",
+  "fundExchangeMethodInstantSepaSubtitle": "Le plus rapide - Uniquement pour les transactions inférieures à 30 000 €",
   "fundExchangeMethodRegularSepa": "SEPA régulier",
-  "fundExchangeMethodRegularSepaSubtitle": "À utiliser uniquement pour les transactions supérieures à 20 000 €",
+  "fundExchangeMethodRegularSepaSubtitle": "À utiliser uniquement pour les transactions supérieures à 30 000 €",
   "fundExchangeMethodSpeiTransfer": "Virement SPEI",
   "fundExchangeMethodSpeiTransferSubtitle": "Transférez des fonds en utilisant votre CLABE",
   "fundExchangeMethodSinpeTransfer": "Virement SINPE",
@@ -937,6 +944,21 @@
   "fundExchangeLabelRecipientNameArs": "Nom du destinataire",
   "fundExchangeLabelCvu": "CVU",
   "fundExchangeErrorLoadingDetails": "Les détails du paiement n'ont pas pu être chargés pour le moment. Veuillez revenir en arrière et réessayer, choisir un autre mode de paiement ou revenir plus tard.",
+    "fundExchangeErrorTitleOrdPo404": "Option de paiement indisponible",
+  "fundExchangeErrorTitleRcpPo404": "Option de paiement non disponible",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponible",
+  "fundExchangeErrorTitleOrdKyc400": "Exigences KYC manquantes",
+  "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action : {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Données de financement COP invalides",
+  "fundExchangeErrorOrdCop400": "Données de demande invalides pour le financement COP : {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Paiement virtuel non activé",
+  "fundExchangeErrorOrdCsrcp400": "Veuillez activer l'option de paiement virtuel pour le destinataire SEPA avec IBAN : {iban}",
+  "fundExchangeErrorTitleRcp400": "Requête invalide",
+  "fundExchangeErrorRcp400": "Requête invalide",
+"fundExchangeErrorOrdPo404": "Aucune option de paiement disponible",
+  "fundExchangeErrorRcpPo404": "Vous n'avez pas les autorisations requises pour accéder à cette option de financement. Soit votre KYC est insuffisant, soit cette option n'est pas disponible pour votre compte",
+  "fundExchangeErrorRcpPosinpe404": "Pour accéder à cette option de financement, votre numéro de téléphone doit être enregistré auprès du réseau SINPE au Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Erreur lors de la récupération des codes bancaires. Veuillez réessayer plus tard.",
   "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
   "fundExchangeSinpeAddedToBalance": "Une fois le paiement envoyé, il sera ajouté au solde de votre compte.",
   "fundExchangeSinpeWarningNoBitcoin": "Ne mettez pas",
@@ -1366,6 +1388,7 @@
   "swapToLabel": "Vers",
   "swapAmountLabel": "Montant",
   "swapReceiveExactAmountLabel": "Recevoir le montant exact",
+  "swapInsufficientFunds": "Fonds insuffisants",
   "swapSubtractFeesLabel": "Soustraire les frais du montant",
   "swapExternalAddressHint": "Entrez l'adresse du portefeuille externe",
   "swapValidationEnterAmount": "Veuillez entrer un montant",
@@ -1466,8 +1489,6 @@
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
   "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
-  "autoswapWarningBaseBalance": "Solde cible 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Solde maximal de 0,02 BTC",
   "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximal, un échange sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
   "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
@@ -3103,6 +3124,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "Historique des transactions",
+  "transactionHistoryHeading": "Historique des transactions",
+  "exportTransactionsDescription": "Exportez toutes les transactions de votre portefeuille (Bitcoin, Liquid, Lightning et swaps) sous forme de fichier CSV. Filtrez éventuellement par plage de dates.",
+  "exportTransactionsStartDate": "Date de début",
+  "exportTransactionsEndDate": "Date de fin",
+  "exportTransactionsAnyDate": "Toutes",
+  "exportTransactionsButton": "Exporter CSV",
+  "exportTransactionsSuccess": "Transactions exportées avec succès",
+  "exportTransactionsEmpty": "Aucune transaction à exporter pour la période sélectionnée",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "La date de début doit être antérieure à la date de fin",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Étiquettes BIP329",
   "bip329LabelsHeading": "Import/Export d'étiquettes BIP329",
   "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",
@@ -3126,6 +3164,7 @@
   "broadcastSignedTxTo": "À",
   "broadcastSignedTxBroadcast": "Diffuser",
   "broadcastSignedTxBroadcasting": "Diffusion en cours...",
+  "broadcastSignedTxBroadcastError": "Échec de la diffusion de la transaction",
   "broadcastSignedTxPageTitle": "Diffuser une transaction signée",
   "broadcastSignedTxPasteHint": "Coller un PSBT ou un HEX de transaction",
   "broadcastSignedTxCameraButton": "Caméra",
@@ -4404,10 +4443,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si vous perdez votre téléphone, supprimez l'application, ou si vous rencontrez un problème critique lié à l'application ou à l'appareil. Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "OUI",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4452,30 +4487,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Sauvegarder maintenant",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Plus tard",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Retour",
   "@backButton": {
     "description": "Generic back button label"
@@ -4507,10 +4518,6 @@
   "errorReportingStandardLogsTitle": "Journaux standard",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",
   "@appInitErrorHasBackupTitle": {
@@ -4595,7 +4602,6 @@
   "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
   "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Ouvrez l'application dans les 24 heures pour terminer votre swap.",
   "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
   "coreScreensFeeRateLabel": "Taux de frais",
@@ -4663,8 +4669,8 @@
   "recipientsFieldRecipientNameLabel": "Nom du destinataire",
   "recipientsFieldPhoneNumber": "Numéro de téléphone",
   "recipientsFieldPhoneNumberHint": "Saisissez le numéro de téléphone",
-  "recipientsFieldDocumentType": "Type de pièce d'identité",
-  "recipientsFieldDocumentNumberHint": "Saisissez le numéro de la pièce",
+  "recipientsFieldDocumentType": "Type de pièce d'identité du bénéficiaire",
+  "recipientsFieldDocumentNumberHint": "Saisir le numéro de pièce d'identité du bénéficiaire",
   "recipientsFieldOwnerName": "Nom du titulaire",
   "recipientsFieldOwnerNameHint": "Saisissez le nom du titulaire",
   "recipientsAccountOwnerQuestion": "À qui appartient ce compte ?",
@@ -4693,7 +4699,7 @@
   "recipientsFieldDebitCard": "Numéro de carte de débit",
   "recipientsFieldDebitCardHint": "Saisissez le numéro de carte de débit",
   "recipientsFieldOwnerNameSinpeHint": "Le nom du titulaire apparaîtra ici",
-  "recipientsValidationSinpePhone": "Veuillez saisir un numéro de téléphone valide à 8 chiffres",
+  "recipientsValidationSinpePhone": "Saisissez un numéro de téléphone costaricien valide à 8 chiffres sans l'indicatif du pays",
   "recipientsValidationSinpeOwner": "Veuillez valider le numéro de téléphone",
   "recipientsFieldEmailAddress": "Adresse e-mail",
   "recipientsFieldEmailAddressHint": "Saisissez l'adresse e-mail",
@@ -4734,5 +4740,49 @@
   "exchangeSupportChatPickFilesFailed": "Échec de la sélection des fichiers. Veuillez réessayer.",
   "exchangeSupportChatAttachLogsFailed": "Échec de l'ajout des journaux. Veuillez réessayer.",
   "exchangeSupportChatFetchFileDataFailed": "Échec de la récupération des données du fichier.",
-  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà"
+  "recipientsFieldSinpePhoneNumberHint": "8 chiffres sans l'indicatif du pays",
+  "recipientsCopDocCcRecipientNumber": "Numéro de cédula du bénéficiaire",
+  "recipientsCopDocCeRecipientNumber": "Numéro de cédula de extranjería du bénéficiaire",
+  "recipientsCopDocNitRecipientNumber": "Numéro d'identification fiscale du bénéficiaire",
+  "recipientsCopDocPassportRecipientNumber": "Numéro de passeport du bénéficiaire",
+  "recipientsCopDocTiRecipientNumber": "Numéro de carte d'identité du bénéficiaire",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Numéro d'état civil du bénéficiaire",
+  "recipientsValidationSinpePhoneCountryCode": "Retirez l'indicatif du pays (+506). Saisissez uniquement le numéro à 8 chiffres",
+  "recipientsValidationSinpePhoneInvalidChars": "Utilisez uniquement des chiffres (pas de lettres ni de symboles)",
+  "recipientsValidationSinpePhoneTooShort": "Saisissez les 8 chiffres du numéro de téléphone",
+  "transactionStatusPayjoinCompleted": "Payjoin terminé",
+  "homeActionBuy": "Acheter",
+  "homeActionSell": "Vendre",
+  "homeActionPay": "Payer",
+  "homeActionTransfer": "Transférer",
+  "backupCardTitle": "Protégez vos bitcoins.",
+  "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant.",
+  "mempoolCustomServerNoSsl": "Sans SSL",
+  "autoswapTargetBalanceLabel": "Solde cible du portefeuille instantané",
+  "autoswapMaximumBalanceLabel": "Solde maximal du portefeuille instantané",
+  "recoverbullServerConfirmTitle": "Serveur de récupération du coffre",
+  "recoverbullServerUsingDefault": "Serveur par défaut utilisé",
+  "recoverbullServerUsingCustom": "Serveur personnalisé utilisé",
+  "recoverbullServerUrlLabel": "URL du serveur :",
+  "recoverbullServerCustomWarning": "Vous utilisez un serveur Recoverbull personnalisé. Assurez-vous de faire confiance à ce serveur.",
+  "recoverbullServerTorNotice": "Nous nous connecterons à ce serveur via Tor",
+  "recoverbullLearnMore": "En savoir plus sur Recoverbull",
+  "recoverbullSettingsTitle": "Paramètres Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL du serveur de clés",
+  "recoverbullSettingsEdit": "Modifier",
+  "recoverbullSettingsCancel": "Annuler",
+  "recoverbullSettingsSave": "Enregistrer",
+  "recoverbullSettingsUrlRequired": "L'URL est requise",
+  "recoverbullSettingsUrlInvalid": "L'URL n'est pas valide",
+  "recoverbullSettingsUrlMustBeHttp": "L'URL doit être en HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "L'URL doit se terminer par .onion",
+  "onboardingAdvancedOptionsTitle": "Options avancées",
+  "onboardingAdvancedOptionsDescription": "Configurez les paramètres avancés avant de créer ou de récupérer votre portefeuille",
+  "onboardingAdvancedOptionsCustomElectrum": "Serveur Electrum personnalisé",
+  "onboardingAdvancedOptionsCustomMempool": "Serveur Mempool personnalisé",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Serveur Recoverbull personnalisé",
+  "onboardingAdvancedOptionsFooter": "Vous pourrez modifier ces paramètres plus tard dans les paramètres de l'application",
+  "onboardingAdvancedOptionsDone": "Terminé",
+  "appStartupContactSupportMessage": "Contactez le support sur app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android"
 }

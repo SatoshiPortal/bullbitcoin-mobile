@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
@@ -28,6 +29,10 @@ class TransactionsScreen extends StatelessWidget {
           onBack: () {
             context.pop();
           },
+          actionIcon: Icons.file_download,
+          onAction: () => context.pushNamed(
+            TransactionsRoute.exportTransactions.name,
+          ),
         ),
         backgroundColor: context.appColors.onPrimary,
         elevation: 0,
@@ -45,9 +50,10 @@ class _Screen extends StatelessWidget {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return BBPullableBody(
       onRefresh: () async {
+        // User gesture — bypass the coordinator throttle.
         final bloc = context.read<WalletBloc>();
-        bloc.add(const WalletRefreshed());
-        await bloc.stream.firstWhere((state) => !state.isSyncing);
+        bloc.add(const WalletRefreshed(force: true));
+        await bloc.stream.firstWhere((state) => !state.isRefreshing);
         if (!context.mounted) return;
         await context.read<TransactionsCubit>().loadTxs();
       },

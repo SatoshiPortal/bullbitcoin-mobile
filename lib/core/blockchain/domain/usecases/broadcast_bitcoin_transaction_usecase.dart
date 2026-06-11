@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:convert/convert.dart';
@@ -7,47 +6,27 @@ import 'package:convert/convert.dart';
 class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
   final SettingsRepository _settingsRepository;
-  final ElectrumServerPort _electrumServerPort;
 
   BroadcastBitcoinTransactionUsecase({
     required BitcoinBlockchainRepository bitcoinBlockchainRepository,
-    required SettingsRepository settingsRepository,
-    required ElectrumServerPort electrumServerPort,
-  }) : _bitcoinBlockchain = bitcoinBlockchainRepository,
-       _settingsRepository = settingsRepository,
-       _electrumServerPort = electrumServerPort;
+    required this._settingsRepository,
+  }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
   Future<String> execute(String transaction, {required bool isPsbt}) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
+      final isTestnet = settings.environment.isTestnet;
 
-      final electrumServers = await _electrumServerPort.getElectrumServers(
-        isTestnet: environment.isTestnet,
-        isLiquid: false,
-      );
-
-      // If no Electrum servers are available, throw an error
-      if (electrumServers.isEmpty) {
-        throw BroadcastTransactionException(
-          'No Electrum servers available for Bitcoin network.',
-        );
-      }
-
-      String txid;
       if (isPsbt) {
-        txid = await _bitcoinBlockchain.broadcastPsbt(
+        return await _bitcoinBlockchain.broadcastPsbt(
           transaction,
-          electrumServers: electrumServers,
-        );
-      } else {
-        txid = await _bitcoinBlockchain.broadcastTransaction(
-          hex.decode(transaction),
-          electrumServers: electrumServers,
+          isTestnet: isTestnet,
         );
       }
-
-      return txid;
+      return await _bitcoinBlockchain.broadcastTransaction(
+        hex.decode(transaction),
+        isTestnet: isTestnet,
+      );
     } catch (e) {
       throw BroadcastTransactionException(e.toString());
     }

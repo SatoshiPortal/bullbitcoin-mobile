@@ -18,16 +18,12 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelsFacade labelsFacade,
-    required BdkWalletDatasource bdkWalletDatasource,
-    required LwkWalletDatasource lwkWalletDatasource,
-    required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _labelsFacade = labelsFacade,
-       _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWalletDatasource = bdkWalletDatasource,
-       _lwkWalletDatasource = lwkWalletDatasource,
-       _frozenWalletUtxoDatasource = frozenWalletUtxoDatasource;
+    required this._walletMetadataDatasource,
+    required this._labelsFacade,
+    required this._bdkWalletDatasource,
+    required this._lwkWalletDatasource,
+    required this._frozenWalletUtxoDatasource,
+  });
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {

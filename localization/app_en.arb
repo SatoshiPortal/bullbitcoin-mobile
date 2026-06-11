@@ -3554,7 +3554,7 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3562,7 +3562,7 @@
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -3905,6 +3905,81 @@
   "fundExchangeErrorLoadingDetails": "The payment details could not be loaded at this moment. Please go back and try again, pick another payment method or come back later.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
+  },
+  "fundExchangeErrorTitleOrdPo404": "Payment Option Unavailable",
+  "@fundExchangeErrorTitleOrdPo404": {
+    "description": "bb-exchange errorTitleOrdPo404"
+  },
+  "fundExchangeErrorOrdPo404": "No payment option available",
+  "@fundExchangeErrorOrdPo404": {
+    "description": "bb-exchange errorMsgOrdPo404"
+  },
+  "fundExchangeErrorTitleRcpPo404": "Payment Option Not Available",
+  "@fundExchangeErrorTitleRcpPo404": {
+    "description": "bb-exchange errorTitleRcpPo404"
+  },
+  "fundExchangeErrorRcpPo404": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@fundExchangeErrorRcpPo404": {
+    "description": "bb-exchange errorMsgRcpPo404"
+  },
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Not Available",
+  "@fundExchangeErrorTitleRcpPosinpe404": {
+    "description": "bb-exchange errorTitleRcpPosinpe404"
+  },
+  "fundExchangeErrorRcpPosinpe404": "To access this funding option, your phone number must be registered with the SINPE network in Costa Rica.",
+  "@fundExchangeErrorRcpPosinpe404": {
+    "description": "bb-exchange errorMsgRcpPosinpe404"
+  },
+  "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing",
+  "@fundExchangeErrorTitleOrdKyc400": {
+    "description": "bb-exchange errorTitleOrdKyc400"
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action: {missingFields}",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400",
+    "placeholders": {
+      "missingFields": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
+  "@fundExchangeErrorTitleOrdCop400": {
+    "description": "bb-exchange errorTitleOrdCop400"
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding: {error}",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
+  "@fundExchangeErrorTitleOrdCsrcp400": {
+    "description": "bb-exchange errorTitleOrdCsrcp400"
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate virtual payment option for the SEPA recipient with IBAN: {iban}",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400",
+    "placeholders": {
+      "iban": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleRcp400": "Invalid Request",
+  "@fundExchangeErrorTitleRcp400": {
+    "description": "bb-exchange errorTitleRcp400"
+  },
+  "fundExchangeErrorRcp400": "Invalid request",
+  "@fundExchangeErrorRcp400": {
+    "description": "bb-exchange errorMsgRcp400"
+  },
+  "fundExchangeErrorFetchingBankCodes": "Error fetching bank codes. Please try again later.",
+  "@fundExchangeErrorFetchingBankCodes": {
+    "description": "bb-exchange FundingCubit._loadBankCodesCopBitso empty-list error"
   },
   "fundExchangeSinpeDescriptionBold": "it will be rejected.",
   "@fundExchangeSinpeDescriptionBold": {
@@ -5021,6 +5096,10 @@
   "swapReceiveExactAmountLabel": "Receive exact amount",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
+  },
+  "swapInsufficientFunds": "Insufficient Funds",
+  "@swapInsufficientFunds": {
+    "description": "Error shown when the amount exceeds the wallet balance during a swap"
   },
   "swapSubtractFeesLabel": "Subtract fees from amount",
   "@swapSubtractFeesLabel": {
@@ -9794,6 +9873,50 @@
       }
     }
   },
+  "transactionHistoryTitle": "Transaction History",
+  "@transactionHistoryTitle": {
+    "description": "Title for the transaction history page and settings entry"
+  },
+  "transactionHistoryHeading": "Transaction History",
+  "@transactionHistoryHeading": {
+    "description": "Main heading on the transaction history page"
+  },
+  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
+  "@exportTransactionsDescription": {
+    "description": "Description of the CSV export functionality"
+  },
+  "exportTransactionsStartDate": "Start date",
+  "@exportTransactionsStartDate": {
+    "description": "Label for the export start date field"
+  },
+  "exportTransactionsEndDate": "End date",
+  "@exportTransactionsEndDate": {
+    "description": "Label for the export end date field"
+  },
+  "exportTransactionsAnyDate": "Any",
+  "@exportTransactionsAnyDate": {
+    "description": "Placeholder shown when no date filter is selected"
+  },
+  "exportTransactionsButton": "Export CSV",
+  "@exportTransactionsButton": {
+    "description": "Button text to export transactions as CSV"
+  },
+  "exportTransactionsSuccess": "Transactions exported successfully",
+  "@exportTransactionsSuccess": {
+    "description": "Success message after exporting transactions"
+  },
+  "exportTransactionsEmpty": "No transactions to export for the selected period",
+  "@exportTransactionsEmpty": {
+    "description": "Message shown when there are no transactions to export"
+  },
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Start date must be before end date",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9862,6 +9985,10 @@
   "broadcastSignedTxBroadcasting": "Broadcasting...",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
+  },
+  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "@broadcastSignedTxBroadcastError": {
+    "description": "Headline shown when broadcasting a signed transaction fails"
   },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
@@ -12876,9 +13003,33 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if you lose your phone, delete the app, or encounter a critical application or device related issue. There is no way to recover your wallet without a backup.",
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if:",
   "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
+    "description": "Lead-in line above the list of ways the wallet can be lost"
+  },
+  "backupWarningLoseReasonLostPhone": "You lose your phone",
+  "@backupWarningLoseReasonLostPhone": {
+    "description": "Backup warning bullet: lost phone"
+  },
+  "backupWarningLoseReasonDeletedApp": "You delete the app",
+  "@backupWarningLoseReasonDeletedApp": {
+    "description": "Backup warning bullet: deleted app"
+  },
+  "backupWarningLoseReasonCriticalIssue": "A critical app or device issue occurs",
+  "@backupWarningLoseReasonCriticalIssue": {
+    "description": "Backup warning bullet: critical app or device issue"
+  },
+  "backupWarningLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
+  "@backupWarningLoseReasonKeystore": {
+    "description": "Backup warning bullet: keystore invalidation on lockscreen/auth change"
+  },
+  "backupWarningLoseReasonCloudRestore": "Restoring your device from a cloud backup",
+  "@backupWarningLoseReasonCloudRestore": {
+    "description": "Backup warning bullet: restoring device from a cloud backup"
+  },
+  "backupWarningNoRecovery": "There is no way to recover your wallet without a backup.",
+  "@backupWarningNoRecovery": {
+    "description": "Bold closing line of the backup warning"
   },
   "backupWarningBackupNow": "YES",
   "@backupWarningBackupNow": {
@@ -13352,11 +13503,15 @@
   "@recipientsFieldPhoneNumberHint": {
     "description": "Hint text for the recipient phone number field."
   },
-  "recipientsFieldDocumentType": "ID Document Type",
+  "recipientsFieldSinpePhoneNumberHint": "8 digits without country code",
+  "@recipientsFieldSinpePhoneNumberHint": {
+    "description": "Hint text for the SINPE Móvil phone number field."
+  },
+  "recipientsFieldDocumentType": "Recipient ID type",
   "@recipientsFieldDocumentType": {
     "description": "Label for the ID document type selector in Colombia recipient forms."
   },
-  "recipientsFieldDocumentNumberHint": "Enter document number",
+  "recipientsFieldDocumentNumberHint": "Enter recipient ID number",
   "@recipientsFieldDocumentNumberHint": {
     "description": "Hint text for the ID document number field."
   },
@@ -13460,6 +13615,30 @@
   "@recipientsCopDocRegistroCivil": {
     "description": "Colombia ID document type: civil registry."
   },
+  "recipientsCopDocCcRecipientNumber": "Recipient cédula number",
+  "@recipientsCopDocCcRecipientNumber": {
+    "description": "Label for the recipient cédula de ciudadanía number field."
+  },
+  "recipientsCopDocCeRecipientNumber": "Recipient cédula de extranjería number",
+  "@recipientsCopDocCeRecipientNumber": {
+    "description": "Label for the recipient cédula de extranjería number field."
+  },
+  "recipientsCopDocNitRecipientNumber": "Recipient tax ID number",
+  "@recipientsCopDocNitRecipientNumber": {
+    "description": "Label for the recipient NIT number field."
+  },
+  "recipientsCopDocPassportRecipientNumber": "Recipient passport number",
+  "@recipientsCopDocPassportRecipientNumber": {
+    "description": "Label for the recipient passport number field."
+  },
+  "recipientsCopDocTiRecipientNumber": "Recipient identity card number",
+  "@recipientsCopDocTiRecipientNumber": {
+    "description": "Label for the recipient tarjeta de identidad number field."
+  },
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient civil registry number",
+  "@recipientsCopDocRegistroCivilRecipientNumber": {
+    "description": "Label for the recipient registro civil number field."
+  },
   "recipientsFieldDebitCard": "Debit Card Number",
   "@recipientsFieldDebitCard": {
     "description": "Label for the debit card number field in the SPEI Card form."
@@ -13472,9 +13651,21 @@
   "@recipientsFieldOwnerNameSinpeHint": {
     "description": "Hint text for the owner name field while SINPE Móvil validation runs."
   },
-  "recipientsValidationSinpePhone": "Please enter a valid 8-digit phone number",
+  "recipientsValidationSinpePhone": "Enter a valid 8-digit Costa Rican phone number without the country code",
   "@recipientsValidationSinpePhone": {
     "description": "Validation error for an invalid SINPE Móvil phone number."
+  },
+  "recipientsValidationSinpePhoneCountryCode": "Remove the country code (+506). Enter only the 8-digit number",
+  "@recipientsValidationSinpePhoneCountryCode": {
+    "description": "Validation error when a SINPE Móvil phone number includes the Costa Rica country code."
+  },
+  "recipientsValidationSinpePhoneInvalidChars": "Use digits only (no letters or symbols)",
+  "@recipientsValidationSinpePhoneInvalidChars": {
+    "description": "Validation error when a SINPE Móvil phone number contains non-digit characters."
+  },
+  "recipientsValidationSinpePhoneTooShort": "Enter all 8 digits of the phone number",
+  "@recipientsValidationSinpePhoneTooShort": {
+    "description": "Validation error when a SINPE Móvil phone number has fewer than 8 digits."
   },
   "recipientsValidationSinpeOwner": "Please validate the phone number",
   "@recipientsValidationSinpeOwner": {
@@ -13644,5 +13835,173 @@
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin completed",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Shown when a Payjoin transaction has been successfully completed"
+  },
+  "homeActionBuy": "Buy",
+  "@homeActionBuy": {
+    "description": "Label for the Buy action button on the wallet home screen"
+  },
+  "homeActionSell": "Sell",
+  "@homeActionSell": {
+    "description": "Label for the Sell action button on the wallet home screen"
+  },
+  "homeActionPay": "Pay",
+  "@homeActionPay": {
+    "description": "Label for the Pay action button on the wallet home screen"
+  },
+  "homeActionTransfer": "Transfer",
+  "@homeActionTransfer": {
+    "description": "Label for the Transfer action button on the wallet home screen"
+  },
+  "backupCardTitle": "Protect your bitcoin.",
+  "@backupCardTitle": {
+    "description": "Title of the backup reminder card on the home screen"
+  },
+  "backupCardSubtitle": "Back up your wallet now.",
+  "@backupCardSubtitle": {
+    "description": "Subtitle of the backup reminder card on the home screen"
+  },
+  "logsViewerDeleteTitle": "Delete logs",
+  "@logsViewerDeleteTitle": {
+    "description": "Title of the delete logs confirmation bottom sheet"
+  },
+  "logsViewerDeleteConfirmation": "Are you sure you want to delete all logs? This action cannot be undone.",
+  "@logsViewerDeleteConfirmation": {
+    "description": "Confirmation message shown before deleting all logs"
+  },
+  "logsViewerDeleteButton": "Delete",
+  "@logsViewerDeleteButton": {
+    "description": "Button to confirm deleting all logs"
+  },
+  "logsViewerCancelButton": "Cancel",
+  "@logsViewerCancelButton": {
+    "description": "Button to cancel deleting logs"
+  },
+  "mempoolCustomServerSsl": "SSL",
+  "@mempoolCustomServerSsl": {
+    "description": "Badge shown when a custom mempool server uses SSL"
+  },
+  "mempoolCustomServerNoSsl": "No SSL",
+  "@mempoolCustomServerNoSsl": {
+    "description": "Badge shown when a custom mempool server does not use SSL"
+  },
+  "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
+  "@autoswapTargetBalanceLabel": {
+    "description": "Label for the target instant wallet balance setting in autoswap"
+  },
+  "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
+  "@autoswapMaximumBalanceLabel": {
+    "description": "Label for the maximum instant wallet balance setting in autoswap"
+  },
+  "recoverbullServerConfirmTitle": "Vault Recovery Server",
+  "@recoverbullServerConfirmTitle": {
+    "description": "AppBar title on the Recoverbull server confirmation page"
+  },
+  "recoverbullServerUsingDefault": "Using Default Server",
+  "@recoverbullServerUsingDefault": {
+    "description": "Shown when the default Recoverbull server is in use"
+  },
+  "recoverbullServerUsingCustom": "Using Custom Server",
+  "@recoverbullServerUsingCustom": {
+    "description": "Shown when a custom Recoverbull server is in use"
+  },
+  "recoverbullServerUrlLabel": "Server URL:",
+  "@recoverbullServerUrlLabel": {
+    "description": "Label for the Recoverbull server URL value"
+  },
+  "recoverbullServerCustomWarning": "You are using a custom Recoverbull server. Make sure you trust this server.",
+  "@recoverbullServerCustomWarning": {
+    "description": "Warning shown when using a custom Recoverbull server"
+  },
+  "recoverbullServerTorNotice": "We will connect to this server through Tor",
+  "@recoverbullServerTorNotice": {
+    "description": "Notice that the Recoverbull server connection goes through Tor"
+  },
+  "recoverbullLearnMore": "Learn more about Recoverbull",
+  "@recoverbullLearnMore": {
+    "description": "Link text to learn more about Recoverbull"
+  },
+  "recoverbullSettingsTitle": "Recoverbull Settings",
+  "@recoverbullSettingsTitle": {
+    "description": "AppBar title on the Recoverbull settings page"
+  },
+  "recoverbullSettingsKeyServerUrl": "Key Server URL",
+  "@recoverbullSettingsKeyServerUrl": {
+    "description": "Label for the Recoverbull key server URL field"
+  },
+  "recoverbullSettingsEdit": "Edit",
+  "@recoverbullSettingsEdit": {
+    "description": "Button to edit the Recoverbull key server URL"
+  },
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "@recoverbullSettingsUrlHint": {
+    "description": "Hint text for the Recoverbull key server URL input"
+  },
+  "recoverbullSettingsCancel": "Cancel",
+  "@recoverbullSettingsCancel": {
+    "description": "Button to cancel editing the Recoverbull key server URL"
+  },
+  "recoverbullSettingsSave": "Save",
+  "@recoverbullSettingsSave": {
+    "description": "Button to save the Recoverbull key server URL"
+  },
+  "recoverbullSettingsUrlRequired": "URL is required",
+  "@recoverbullSettingsUrlRequired": {
+    "description": "Validation error when the Recoverbull URL is empty"
+  },
+  "recoverbullSettingsUrlInvalid": "URL is not valid",
+  "@recoverbullSettingsUrlInvalid": {
+    "description": "Validation error when the Recoverbull URL is malformed"
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL must be HTTP",
+  "@recoverbullSettingsUrlMustBeHttp": {
+    "description": "Validation error when the Recoverbull URL is not HTTP"
+  },
+  "recoverbullSettingsUrlMustBeOnion": "URL must end with .onion",
+  "@recoverbullSettingsUrlMustBeOnion": {
+    "description": "Validation error when the Recoverbull URL does not end with .onion"
+  },
+  "onboardingAdvancedOptionsTitle": "Advanced Options",
+  "@onboardingAdvancedOptionsTitle": {
+    "description": "Title of the advanced options screen shown during onboarding"
+  },
+  "onboardingAdvancedOptionsDescription": "Configure advanced settings before creating or recovering your wallet",
+  "@onboardingAdvancedOptionsDescription": {
+    "description": "Description on the onboarding advanced options screen"
+  },
+  "onboardingAdvancedOptionsCustomElectrum": "Custom Electrum Server",
+  "@onboardingAdvancedOptionsCustomElectrum": {
+    "description": "Entry to configure a custom Electrum server in advanced options"
+  },
+  "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
+  "@onboardingAdvancedOptionsCustomMempool": {
+    "description": "Entry to configure a custom mempool server in advanced options"
+  },
+  "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
+  "@onboardingAdvancedOptionsCustomRecoverbull": {
+    "description": "Entry to configure a custom Recoverbull server in advanced options"
+  },
+  "onboardingAdvancedOptionsFooter": "You can change these settings later in App Settings",
+  "@onboardingAdvancedOptionsFooter": {
+    "description": "Footer note on the onboarding advanced options screen"
+  },
+  "onboardingAdvancedOptionsDone": "Done",
+  "@onboardingAdvancedOptionsDone": {
+    "description": "Button to dismiss the onboarding advanced options screen"
+  },
+  "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
+  "@appStartupContactSupportMessage": {
+    "description": "Message shown on the app startup error screen pointing to support"
+  },
+  "importWalletBitboxAndroidOnly": "BitBox is only supported on Android",
+  "@importWalletBitboxAndroidOnly": {
+    "description": "Snackbar shown when tapping BitBox import on a non-Android device"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "@importWatchOnlyXpubLabel": {
+    "description": "Label for the derived XPUB value in watch-only wallet details"
   }
 }

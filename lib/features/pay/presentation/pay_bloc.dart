@@ -36,45 +36,23 @@ part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState> {
   PayBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required PlacePayOrderUsecase placePayOrderUsecase,
-    required RefreshPayOrderUsecase refreshPayOrderUsecase,
-    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required SignBitcoinTxUsecase signBitcoinTxUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastBitcoinTransactionUsecase
-    broadcastBitcoinTransactionUsecase,
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required CalculateLiquidAbsoluteFeesUsecase
-    calculateLiquidAbsoluteFeesUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
-    required GetOrderUsecase getOrderUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _placePayOrderUsecase = placePayOrderUsecase,
-       _refreshPayOrderUsecase = refreshPayOrderUsecase,
-       _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _signBitcoinTxUsecase = signBitcoinTxUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
-       _getOrderUsecase = getOrderUsecase,
-       super(PayRecipientSelectionState()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._placePayOrderUsecase,
+    required this._refreshPayOrderUsecase,
+    required this._prepareBitcoinSendUsecase,
+    required this._prepareLiquidSendUsecase,
+    required this._signBitcoinTxUsecase,
+    required this._signLiquidTxUsecase,
+    required this._broadcastBitcoinTransactionUsecase,
+    required this._broadcastLiquidTransactionUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculateBitcoinAbsoluteFeesUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getAddressAtIndexUsecase,
+    required this._getWalletUtxosUsecase,
+    required this._getOrderUsecase,
+  }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);

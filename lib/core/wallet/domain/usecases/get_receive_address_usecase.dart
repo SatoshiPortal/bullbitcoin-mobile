@@ -6,8 +6,8 @@ class GetReceiveAddressUsecase {
   final WalletAddressRepository _walletAddressRepository;
 
   GetReceiveAddressUsecase({
-    required WalletAddressRepository walletAddressRepository,
-  }) : _walletAddressRepository = walletAddressRepository;
+    required this._walletAddressRepository,
+  });
 
   Future<WalletAddress> execute({
     required String walletId,

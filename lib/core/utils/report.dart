@@ -121,6 +121,7 @@ class Report {
 
       // ── Screen content capture
       options.attachScreenshot = false;
+      // ignore: experimental_member_use
       options.attachViewHierarchy = false;
       options.replay.sessionSampleRate = 0.0;
       options.replay.onErrorSampleRate = 0.0;
@@ -141,6 +142,7 @@ class Report {
       options.propagateTraceparent = false;
 
       // ── Profiling
+      // ignore: experimental_member_use
       options.profilesSampleRate = 0.0;
 
       // ── Misc reporting

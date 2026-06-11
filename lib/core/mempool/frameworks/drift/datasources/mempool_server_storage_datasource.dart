@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class MempoolServerStorageDatasource {
   final SqliteDatabase _sqlite;
 
-  const MempoolServerStorageDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  const MempoolServerStorageDatasource({required this._sqlite});
 
   Future<void> store(MempoolServerModel server) async {
     try {

@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_reposito
 class ConnectBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
-  ConnectBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+  ConnectBitBoxDeviceUsecase({required this._repository});
 
   Future<void> execute(BitBoxDeviceEntity device) async {
     await _repository.connectDevice(device);

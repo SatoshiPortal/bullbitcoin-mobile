@@ -11,6 +11,8 @@ ios/
 .fvm/
 
 # Local APKs/AABs built previously (host-side artifacts)
+BULL-*.apk
+BULL-*.aab
 app-*.apk
 app-*.aab
 

@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 class DecodeInvoiceUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
-  DecodeInvoiceUsecase({required BoltzSwapRepository boltzSwapRepository})
-    : _boltzSwapRepository = boltzSwapRepository;
+  DecodeInvoiceUsecase({required this._boltzSwapRepository});
 
   Future<Invoice> execute({required String invoice}) async {
     try {

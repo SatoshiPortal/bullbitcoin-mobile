@@ -11,9 +11,8 @@ class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
 
-  SettingsRepository({required SettingsDatasource settingsDatasource})
-    : _settingsDatasource = settingsDatasource,
-      _currencyChangeController = StreamController<String>.broadcast();
+  SettingsRepository({required this._settingsDatasource})
+    : _currencyChangeController = StreamController<String>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;

@@ -7,10 +7,9 @@ class DeleteWalletUsecase {
   final BoltzSwapRepository _swapRepository;
 
   DeleteWalletUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository;
+    required this._walletRepository,
+    required this._swapRepository,
+  });
 
   Future<void> execute({required String walletId}) async {
     try {

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
+  "backupWarningLoseReasonLostPhone": "Потеряете телефон",
+  "backupWarningLoseReasonDeletedApp": "Удалите приложение",
+  "backupWarningLoseReasonCriticalIssue": "Столкнётесь с критической проблемой приложения или устройства",
+  "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
+  "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
+  "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
   "translationWarningTitle": "Переводы, созданные ИИ",
   "translationWarningDescription": "Большинство переводов в этом приложении были созданы с помощью ИИ и могут содержать неточности. Если вы заметили ошибки или хотите помочь улучшить переводы, вы можете отправить исправление в наш репозиторий на GitHub.",
   "translationWarningContributeButton": "Помочь улучшить переводы",
@@ -191,6 +198,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Получить точную сумму",
+  "swapInsufficientFunds": "Недостаточно средств",
   "arkContinueButton": "Продолжить",
   "ledgerImportButton": "Начало",
   "dcaActivate": "Активировать покупку",
@@ -219,7 +227,7 @@
   "payServiceFee": "Сервисная плата",
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
-  "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €30,000",
   "dcaConfirmError": "Что-то пошло не так:",
   "@dcaConfirmError": {
     "placeholders": {
@@ -470,7 +478,7 @@
   "sendChange": "Изменение",
   "coreScreensInternalTransfer": "Внутренний перевод",
   "sendSwapWillTakeTime": "Это займет некоторое время, чтобы подтвердить",
-  "autoswapSelectWalletError": "Пожалуйста, выберите получателя Bitcoin бумажник",
+  "autoswapSelectWalletError": "Пожалуйста, выберите получателя Bitcoin кошелёк",
   "sellServiceFee": "Сервисная плата",
   "connectHardwareWalletTitle": "Соедините аппаратное обеспечение",
   "replaceByFeeCustomFeeTitle": "Пользовательские феи",
@@ -946,7 +954,7 @@
   "walletArkInstantPayments": "Арк Мгновенные платежи",
   "passwordLabel": "Пароль",
   "importQrDeviceError": "Не удалось импортировать кошелек",
-  "onboardingSplashDescription": "Суверенная самоопека Bitcoin бумажник и сервис обмена только Bitcoin.",
+  "onboardingSplashDescription": "Суверенная самоопека Bitcoin кошелёк и сервис обмена только Bitcoin.",
   "statusCheckOffline": "Оффлайн",
   "fundExchangeCrIbanCrcDescriptionEnd": "... Средства будут добавлены в ваш баланс.",
   "payAccount": "Счет",
@@ -1102,7 +1110,6 @@
   "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
   "torSettingsPortNumber": "Номер порта",
   "payNameHint": "Имя получателя",
-  "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
@@ -1314,7 +1321,7 @@
   "exchangeFileUploadDocumentTitle": "Загрузить любой документ",
   "dcaInsufficientBalanceDescription": "У вас нет достаточного баланса для создания этого порядка.",
   "pinButtonContinue": "Продолжить",
-  "importColdcardSuccess": "Холодный бумажник импортный",
+  "importColdcardSuccess": "Холодный кошелёк импортный",
   "withdrawUnauthenticatedError": "Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.",
   "sellBitcoinAmount": "Bitcoin сумма",
   "recoverbullTestCompletedTitle": "Тест завершен успешно!",
@@ -1587,7 +1594,7 @@
     }
   },
   "dcaFrequencyWeekly": "неделя",
-  "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €30,000",
   "settingsTelegramLabel": "Telegram",
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
   "exchangeLandingDisclaimerLegal": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",
@@ -2333,7 +2340,7 @@
   "transactionDetailLabelPayinMethod": "Метод оплаты",
   "sellCurrentRate": "Текущие показатели",
   "payAmountTooLow": "Сумма ниже минимального",
-  "onboardingCreateWalletButtonLabel": "Создать бумажник",
+  "onboardingCreateWalletButtonLabel": "Создать кошелёк",
   "bitboxScreenVerifyOnDevice": "Пожалуйста, проверьте этот адрес на вашем устройстве BitBox",
   "ledgerConnectTitle": "Подключите устройство Ledger",
   "withdrawAmountTitle": "Цикл:",
@@ -2530,6 +2537,23 @@
   "sellSendPaymentFastest": "Самый быстрый",
   "dcaConfirmNetwork": "Сеть",
   "allSeedViewDeleteWarningMessage": "Удаление семян является необратимым действием. Только сделайте это, если у вас есть безопасное резервное копирование этого семени или связанных с ним кошельков были полностью истощены.",
+  "transactionHistoryTitle": "История транзакций",
+  "transactionHistoryHeading": "История транзакций",
+  "exportTransactionsDescription": "Экспортируйте все транзакции вашего кошелька (Bitcoin, Liquid, Lightning и свопы) в файл CSV. При желании отфильтруйте по диапазону дат.",
+  "exportTransactionsStartDate": "Дата начала",
+  "exportTransactionsEndDate": "Дата окончания",
+  "exportTransactionsAnyDate": "Любая",
+  "exportTransactionsButton": "Экспорт CSV",
+  "exportTransactionsSuccess": "Транзакции успешно экспортированы",
+  "exportTransactionsEmpty": "Нет транзакций для экспорта за выбранный период",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Дата начала должна быть раньше даты окончания",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329",
   "walletAutoTransferAllowButton": "Разрешить",
   "autoswapSelectWalletRequired": "Выберите биткойн-кошелек*",
@@ -2783,6 +2807,21 @@
   "bitboxScreenTroubleshootingStep3": "Перезапустите устройство BitBox02, отменив его и повторно подключив.",
   "torSettingsProxyPort": "Tor Proxy Port",
   "fundExchangeErrorLoadingDetails": "Детали оплаты не могут быть загружены в данный момент. Пожалуйста, возвращайтесь и попробуйте снова, выберите другой способ оплаты или вернемся позже.",
+    "fundExchangeErrorTitleOrdPo404": "Способ оплаты недоступен",
+  "fundExchangeErrorTitleRcpPo404": "Способ оплаты недоступен",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE недоступен",
+  "fundExchangeErrorTitleOrdKyc400": "Отсутствуют требования KYC",
+  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Неверные данные для пополнения в COP",
+  "fundExchangeErrorOrdCop400": "Неверные данные запроса для пополнения в COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Виртуальный платёж не активирован",
+  "fundExchangeErrorOrdCsrcp400": "Пожалуйста, активируйте опцию виртуального платежа для получателя SEPA с IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Неверный запрос",
+  "fundExchangeErrorRcp400": "Неверный запрос",
+"fundExchangeErrorOrdPo404": "Нет доступного способа оплаты",
+  "fundExchangeErrorRcpPo404": "У вас нет необходимых разрешений для доступа к этому способу пополнения. Либо ваш KYC недостаточен, либо этот способ недоступен для вашего аккаунта",
+  "fundExchangeErrorRcpPosinpe404": "Чтобы использовать этот способ пополнения, ваш номер телефона должен быть зарегистрирован в сети SINPE в Коста-Рике.",
+  "fundExchangeErrorFetchingBankCodes": "Ошибка при получении банковских кодов. Пожалуйста, попробуйте позже.",
   "testCompletedSuccessTitle": "Тест завершен успешно!",
   "payBitcoinAmount": "Bitcoin сумма",
   "fundExchangeSpeiTransfer": "Перевод SPEI",
@@ -3166,7 +3205,6 @@
   "bitboxActionImportWalletButton": "Начало",
   "fundExchangeLabelSwiftCode": "Код SWIFT",
   "buyEnterBitcoinAddress": "Введите адрес биткойна",
-  "autoswapWarningBaseBalance": "Целевой баланс 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Сумма выплат",
   "importQrDeviceSpecterStep6": "Выберите \"Сингл ключ\"",
   "importQrDeviceJadeStep10": "Вот так!",
@@ -3536,7 +3574,7 @@
   },
   "fundExchangeOnlineBillPaymentTitle": "Оплата онлайн-билей",
   "importQrDeviceSeedsignerStep7": "На вашем мобильном устройстве нажмите Open Camera",
-  "addressViewChangeAddressesDescription": "Показать бумажник Изменение адресов",
+  "addressViewChangeAddressesDescription": "Показать кошелёк Изменение адресов",
   "sellReceiveAmount": "Вы получите",
   "bitboxCubitInvalidResponse": "Неверный ответ от устройства BitBox. Попробуй еще раз.",
   "settingsScreenTitle": "Настройка",
@@ -3679,7 +3717,7 @@
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "Удалить",
   "optionalPassphraseHint": "Факультативная фраза",
-  "importColdcardImporting": "Импорт бумажника Coldcard...",
+  "importColdcardImporting": "Импорт кошелька Coldcard...",
   "exchangeDcaHideSettings": "Настройки вызова",
   "appUnlockIncorrectPinError": "Неправильный PIN. Попробуй еще раз. {failedAttempts} {attemptsWord}",
   "@appUnlockIncorrectPinError": {
@@ -3980,6 +4018,7 @@
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
+  "broadcastSignedTxBroadcastError": "Не удалось транслировать транзакцию",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",
@@ -4424,10 +4463,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если потеряете телефон, удалите приложение или столкнётесь с критической проблемой приложения или устройства. Без резервной копии восстановить кошелёк невозможно.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "ДА",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4472,30 +4507,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Срочно: требуется резервное копирование и переустановка",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Требуется действие: Переустановите приложение",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Создать копию сейчас",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Позже",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -4527,10 +4538,6 @@
   "errorReportingStandardLogsTitle": "Стандартные журналы",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Всегда включено — позволяет нам видеть, безопасно ли мигрирует ваш кошелёк между версиями приложения.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Используйте резервную копию",
   "@appInitErrorHasBackupTitle": {
@@ -4615,7 +4622,6 @@
   "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
   "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
   "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "coreScreensResolvingInputs": "Разрешение входов транзакции...",
   "coreScreensFeeRateLabel": "Ставка комиссии",
@@ -4683,8 +4689,8 @@
   "recipientsFieldRecipientNameLabel": "Имя получателя",
   "recipientsFieldPhoneNumber": "Номер телефона",
   "recipientsFieldPhoneNumberHint": "Введите номер телефона",
-  "recipientsFieldDocumentType": "Тип документа, удостоверяющего личность",
-  "recipientsFieldDocumentNumberHint": "Введите номер документа",
+  "recipientsFieldDocumentType": "Тип ID получателя",
+  "recipientsFieldDocumentNumberHint": "Введите номер ID получателя",
   "recipientsFieldOwnerName": "Имя владельца",
   "recipientsFieldOwnerNameHint": "Введите имя владельца",
   "recipientsAccountOwnerQuestion": "Кому принадлежит этот счёт?",
@@ -4713,7 +4719,7 @@
   "recipientsFieldDebitCard": "Номер дебетовой карты",
   "recipientsFieldDebitCardHint": "Введите номер дебетовой карты",
   "recipientsFieldOwnerNameSinpeHint": "Имя владельца появится здесь",
-  "recipientsValidationSinpePhone": "Пожалуйста, введите действительный 8-значный номер телефона",
+  "recipientsValidationSinpePhone": "Введите действительный 8-значный номер телефона Коста-Рики без кода страны",
   "recipientsValidationSinpeOwner": "Пожалуйста, подтвердите номер телефона",
   "recipientsFieldEmailAddress": "Адрес электронной почты",
   "recipientsFieldEmailAddressHint": "Введите адрес электронной почты",
@@ -4754,5 +4760,49 @@
   "exchangeSupportChatPickFilesFailed": "Не удалось выбрать файлы. Попробуйте снова.",
   "exchangeSupportChatAttachLogsFailed": "Не удалось прикрепить журналы. Попробуйте снова.",
   "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла.",
-  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует"
+  "recipientsFieldSinpePhoneNumberHint": "8 цифр без кода страны",
+  "recipientsCopDocCcRecipientNumber": "Номер cédula получателя",
+  "recipientsCopDocCeRecipientNumber": "Номер cédula de extranjería получателя",
+  "recipientsCopDocNitRecipientNumber": "Налоговый ID получателя",
+  "recipientsCopDocPassportRecipientNumber": "Номер паспорта получателя",
+  "recipientsCopDocTiRecipientNumber": "Номер удостоверения личности получателя",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Номер записи гражданского реестра получателя",
+  "recipientsValidationSinpePhoneCountryCode": "Удалите код страны (+506). Введите только 8-значный номер",
+  "recipientsValidationSinpePhoneInvalidChars": "Используйте только цифры (без букв или символов)",
+  "recipientsValidationSinpePhoneTooShort": "Введите все 8 цифр номера телефона",
+  "transactionStatusPayjoinCompleted": "Payjoin завершён",
+  "homeActionBuy": "Купить",
+  "homeActionSell": "Продать",
+  "homeActionPay": "Оплатить",
+  "homeActionTransfer": "Перевести",
+  "backupCardTitle": "Защитите свои биткоины.",
+  "backupCardSubtitle": "Создайте резервную копию кошелька прямо сейчас.",
+  "mempoolCustomServerNoSsl": "Без SSL",
+  "autoswapTargetBalanceLabel": "Целевой баланс мгновенного кошелька",
+  "autoswapMaximumBalanceLabel": "Максимальный баланс мгновенного кошелька",
+  "recoverbullServerConfirmTitle": "Сервер восстановления хранилища",
+  "recoverbullServerUsingDefault": "Используется сервер по умолчанию",
+  "recoverbullServerUsingCustom": "Используется пользовательский сервер",
+  "recoverbullServerUrlLabel": "URL сервера:",
+  "recoverbullServerCustomWarning": "Вы используете пользовательский сервер Recoverbull. Убедитесь, что вы доверяете этому серверу.",
+  "recoverbullServerTorNotice": "Мы подключимся к этому серверу через Tor",
+  "recoverbullLearnMore": "Подробнее о Recoverbull",
+  "recoverbullSettingsTitle": "Настройки Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL сервера ключей",
+  "recoverbullSettingsEdit": "Изменить",
+  "recoverbullSettingsCancel": "Отмена",
+  "recoverbullSettingsSave": "Сохранить",
+  "recoverbullSettingsUrlRequired": "URL обязателен",
+  "recoverbullSettingsUrlInvalid": "URL недействителен",
+  "recoverbullSettingsUrlMustBeHttp": "URL должен быть HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL должен оканчиваться на .onion",
+  "onboardingAdvancedOptionsTitle": "Расширенные настройки",
+  "onboardingAdvancedOptionsDescription": "Настройте расширенные параметры перед созданием или восстановлением кошелька",
+  "onboardingAdvancedOptionsCustomElectrum": "Пользовательский сервер Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Пользовательский сервер Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Пользовательский сервер Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Вы можете изменить эти настройки позже в настройках приложения",
+  "onboardingAdvancedOptionsDone": "Готово",
+  "appStartupContactSupportMessage": "Обратитесь в поддержку по адресу app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android"
 }

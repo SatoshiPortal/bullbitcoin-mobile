@@ -12,10 +12,9 @@ class GetBitBoxWatchOnlyWalletUsecase {
   final SettingsRepository _settingsRepository;
 
   GetBitBoxWatchOnlyWalletUsecase({
-    required BitBoxDeviceRepository repository,
-    required SettingsRepository settingsRepository,
-  }) : _repository = repository,
-       _settingsRepository = settingsRepository;
+    required this._repository,
+    required this._settingsRepository,
+  });
 
   Future<WatchOnlyWalletEntity> execute({
     required String label,

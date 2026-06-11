@@ -29,7 +29,7 @@ class ImportMnemonicLocator {
     locator.registerFactory<ImportMnemonicCubit>(
       () => ImportMnemonicCubit(
         importWalletUsecase: locator<ImportWalletUsecase>(),
-        checkWalletUsecase: locator<TheDirtyUsecase>(),
+        checkWalletUsecase: locator<CheckWalletStatusUsecase>(),
         checkDuplicateMnemonicUsecase: locator<CheckDuplicateMnemonicUsecase>(),
       ),
     );

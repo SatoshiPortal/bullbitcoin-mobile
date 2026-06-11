@@ -56,9 +56,10 @@ class WalletDetailScreen extends StatelessWidget {
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: BBPullableBody(
                 onRefresh: () async {
+                  // User gesture — bypass the coordinator throttle.
                   final bloc = context.read<WalletBloc>();
-                  bloc.add(const WalletRefreshed());
-                  await bloc.stream.firstWhere((state) => !state.isSyncing);
+                  bloc.add(const WalletRefreshed(force: true));
+                  await bloc.stream.firstWhere((state) => !state.isRefreshing);
                 },
                 slivers: [
                   SliverToBoxAdapter(
@@ -71,15 +72,15 @@ class WalletDetailScreen extends StatelessWidget {
                   const SliverToBoxAdapter(child: Gap(16)),
                   const WalletDetailTxsList(sliver: true),
                 ],
-                bottomChild: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 40,
-                  ),
-                  child: WalletBottomButtons(wallet: wallet),
-                ),
               ),
             ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
+          child: WalletBottomButtons(wallet: wallet),
+        ),
+      ),
     );
   }
 }

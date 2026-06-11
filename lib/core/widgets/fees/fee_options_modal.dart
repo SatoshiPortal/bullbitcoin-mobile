@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -63,12 +64,22 @@ class FeeOptionsModal extends StatefulWidget {
 }
 
 class _FeeOptionsModalState extends State<FeeOptionsModal> {
+  // Owned here so [BBKeyboardActions] can attach its "Done" toolbar to the
+  // custom-fee field; passed down to [CustomFeeListItem.focusNode].
+  final _customFeeNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
     // Fire-and-forget — the controller flips its loading flag, builds
     // three unsigned PSBTs, fills the cache, and emits a new snapshot.
     widget.actions.requestPresetPreviews();
+  }
+
+  @override
+  void dispose() {
+    _customFeeNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -86,7 +97,9 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
           initialData: widget.viewState.snapshot,
           builder: (context, async) {
             final snapshot = async.data ?? widget.viewState.snapshot;
-            return SingleChildScrollView(
+            return BBKeyboardActions(
+              isDialog: true,
+              focusNodes: [_customFeeNode],
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: [
@@ -108,10 +121,10 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
                     defaultAbsolute: widget.defaultAbsoluteCustomFee,
                     tileColor: widget.customFeeColors.tile,
                     tileShadowColor: widget.customFeeColors.shadow,
-                    unselectedIconColor:
-                        widget.customFeeColors.unselectedIcon,
+                    unselectedIconColor: widget.customFeeColors.unselectedIcon,
                     previewFeeSat: snapshot.feePreviewCache.custom.feeSat,
                     previewLoading: snapshot.feePreviewCache.customLoading,
+                    focusNode: _customFeeNode,
                     onArm: widget.actions.armCustomFee,
                     onPreview: widget.actions.requestCustomFeePreview,
                     // Modal mode: the parent screen runs

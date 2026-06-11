@@ -11,12 +11,10 @@ class CreateWithdrawOrderUsecase {
   final SettingsRepository _settingsRepository;
 
   CreateWithdrawOrderUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+  });
 
   Future<WithdrawOrder> execute({
     required double fiatAmount,

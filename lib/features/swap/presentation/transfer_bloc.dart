@@ -48,61 +48,32 @@ part 'transfer_bloc.freezed.dart';
 class TransferBloc extends Bloc<TransferEvent, TransferState>
     implements FeeModalActions, FeeModalViewState {
   TransferBloc({
-    required GetSettingsUsecase getSettingsUsecase,
-    required GetWalletsUsecase getWalletsUsecase,
-    required GetSwapLimitsUsecase getSwapLimitsUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
-    required CalculateLiquidAbsoluteFeesUsecase
-    calculateLiquidAbsoluteFeesUsecase,
-    required CreateChainSwapUsecase createChainSwapUsecase,
-    required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
-    required WatchSwapUsecase watchSwapUsecase,
-    required GetWalletUsecase getWalletUsecase,
-    required SignBitcoinTxUsecase signBitcoinTxUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
-    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
-    required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
-    required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
-    required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
-    required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required PreviewBitcoinFeeUsecase previewBitcoinFeeUsecase,
-    required PreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase,
-  }) : _getSettingsUsecase = getSettingsUsecase,
-       _getWalletsUsecase = getWalletsUsecase,
-       _getSwapLimitsUsecase = getSwapLimitsUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
-       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
-       _createChainSwapUsecase = createChainSwapUsecase,
-       _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
-       _watchSwapUsecase = watchSwapUsecase,
-       _getWalletUsecase = getWalletUsecase,
-       _signBitcoinTxUsecase = signBitcoinTxUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
-       _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
-       _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
-       _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
-       _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
-       _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
-       _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _previewBitcoinFeeUsecase = previewBitcoinFeeUsecase,
-       _previewBitcoinFeePresetsUsecase = previewBitcoinFeePresetsUsecase,
-       super(const TransferState()) {
+    required this._getSettingsUsecase,
+    required this._getWalletsUsecase,
+    required this._getSwapLimitsUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._prepareBitcoinSendUsecase,
+    required this._prepareLiquidSendUsecase,
+    required this._calculateBitcoinAbsoluteFeesUsecase,
+    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._createChainSwapUsecase,
+    required this._createChainSwapToExternalUsecase,
+    required this._watchSwapUsecase,
+    required this._getWalletUsecase,
+    required this._signBitcoinTxUsecase,
+    required this._signLiquidTxUsecase,
+    required this._broadcastBitcoinTxUsecase,
+    required this._broadcastLiquidTxUsecase,
+    required this._updatePaidChainSwapUsecase,
+    required this._updateSendSwapLockupFeesUsecase,
+    required this._verifyChainSwapAmountSendUsecase,
+    required this._detectBitcoinStringUsecase,
+    required this._getReceiveAddressUsecase,
+    required this._getWalletUtxosUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._previewBitcoinFeeUsecase,
+    required this._previewBitcoinFeePresetsUsecase,
+  }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
     on<TransferAmountChanged>(_onAmountChanged);
@@ -338,7 +309,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     Emitter<TransferState> emit,
   ) async {
     if (state.amount == event.amount) return;
-    emit(state.copyWith(amount: event.amount));
+    emit(state.copyWith(amount: event.amount, swapCreationException: null));
     // Amount is part of the cache fingerprint (see _clearBitcoinFeePreviews).
     _clearBitcoinFeePreviews(emit);
   }
@@ -362,6 +333,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final inputAmountSat = state.bitcoinUnit == BitcoinUnit.sats
           ? int.parse(event.amount)
           : ConvertAmount.btcToSats(double.parse(event.amount));
+
+      // Insufficient balance is surfaced as an inline form error on the
+      // amount field (see SwapAmountInput); stop here so no swap is created.
+      final balanceSat = state.fromWallet?.balanceSat.toInt() ?? 0;
+      if (inputAmountSat > balanceSat) {
+        return;
+      }
 
       int paymentAmountSat = inputAmountSat;
       if (state.receiveExactAmount && !state.isSameChainTransfer) {
@@ -420,7 +398,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             address: swap.paymentAddress,
             amountSat: isMaxSend ? null : swap.paymentAmount,
             // FeeOptions.fastest is always RelativeFee — see fees_datasource.dart.
-          feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
+            feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
             drain: isMaxSend,
           );
 
@@ -668,14 +646,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         ),
       );
     } catch (e) {
-      final errorMessage = _isInsufficientFundsException(e)
-          ? 'Insufficient Balance To Cover Fees And Amount'
-          : e.toString();
-      emit(
-        state.copyWith(
-          swapCreationException: SwapCreationException(errorMessage),
-        ),
-      );
+      final swapCreationException = _isInsufficientFundsException(e)
+          ? InsufficientFundsSwapException()
+          : SwapCreationException(e.toString());
+      emit(state.copyWith(swapCreationException: swapCreationException));
     } finally {
       emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
     }
@@ -876,8 +850,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // The UTXO set is an unordered selection — compare as sets so a
     // re-emit of the same set (different list order) doesn't invalidate.
     final utxosChanged =
-        state.selectedUtxos.toSet().difference(event.utxos.toSet()).isNotEmpty ||
-            event.utxos.toSet().difference(state.selectedUtxos.toSet()).isNotEmpty;
+        state.selectedUtxos
+            .toSet()
+            .difference(event.utxos.toSet())
+            .isNotEmpty ||
+        event.utxos.toSet().difference(state.selectedUtxos.toSet()).isNotEmpty;
     emit(state.copyWith(selectedUtxos: event.utxos));
     if (utxosChanged) _clearBitcoinFeePreviews(emit);
     await _rebuildTransaction(emit);
@@ -998,15 +975,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final fee = state.customFee;
     final txSize = state.bitcoinTxSize ?? 140;
     if (fee != null && fee.aboveMinRelay(txSize: txSize)) {
-      await _onCustomFeeChanged(
-        TransferCustomFeeChanged(fee),
-        emit,
-      );
+      await _onCustomFeeChanged(TransferCustomFeeChanged(fee), emit);
     } else {
-      await _onCustomFeeDisarmed(
-        const TransferCustomFeeDisarmed(),
-        emit,
-      );
+      await _onCustomFeeDisarmed(const TransferCustomFeeDisarmed(), emit);
     }
   }
 
@@ -1024,8 +995,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (shape == null) return;
     emit(
       state.copyWith(
-        feePreviewCache:
-            state.feePreviewCache.copyWith(customLoading: true),
+        feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
       ),
     );
     final slot = await _previewBitcoinFeeUsecase.execute(
@@ -1062,8 +1032,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (shape == null) return;
     emit(
       state.copyWith(
-        feePreviewCache:
-            state.feePreviewCache.copyWith(presetsLoading: true),
+        feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
       ),
     );
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
@@ -1078,8 +1047,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     emit(
       state.copyWith(
         feePreviewCache: state.feePreviewCache.copyWith(
-          fastest:
-              slots[FeeSelection.fastest] ?? const BitcoinFeePreviewSlot(),
+          fastest: slots[FeeSelection.fastest] ?? const BitcoinFeePreviewSlot(),
           economic:
               slots[FeeSelection.economic] ?? const BitcoinFeePreviewSlot(),
           slow: slots[FeeSelection.slow] ?? const BitcoinFeePreviewSlot(),
@@ -1136,8 +1104,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       // Reuse the modal-preview PSBT for the user's selected fee tile.
       // BDK's coin selection is randomized — rebuilding here would
       // broadcast a different fee than the modal displayed.
-      final cachedSlot =
-          stateToUse.feePreviewCache.slotFor(stateToUse.selectedFeeOption);
+      final cachedSlot = stateToUse.feePreviewCache.slotFor(
+        stateToUse.selectedFeeOption,
+      );
       final canUseCache = cachedSlot.isCacheReady;
       if (stateToUse.isSameChainTransfer) {
         final receiveAddress = stateToUse.receiveAddress;
@@ -1451,8 +1420,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       add(TransferEvent.customFeePreviewRequested(fee));
 
   @override
-  void armCustomFee(NetworkFee fee) =>
-      add(TransferEvent.customFeeArmed(fee));
+  void armCustomFee(NetworkFee fee) => add(TransferEvent.customFeeArmed(fee));
 
   @override
   void finalizeArmedCustomFee() =>

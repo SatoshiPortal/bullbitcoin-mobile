@@ -26,17 +26,12 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   final MempoolServerValidatorPort _validator;
 
   MempoolSettingsCubit({
-    required LoadMempoolServerDataUsecase loadDataUsecase,
-    required SetCustomMempoolServerUsecase setCustomServerUsecase,
-    required DeleteCustomMempoolServerUsecase deleteCustomServerUsecase,
-    required UpdateMempoolSettingsUsecase updateSettingsUsecase,
-    required MempoolServerValidatorPort validator,
-  }) : _loadDataUsecase = loadDataUsecase,
-       _setCustomServerUsecase = setCustomServerUsecase,
-       _deleteCustomServerUsecase = deleteCustomServerUsecase,
-       _updateSettingsUsecase = updateSettingsUsecase,
-       _validator = validator,
-       super(const MempoolSettingsState());
+    required this._loadDataUsecase,
+    required this._setCustomServerUsecase,
+    required this._deleteCustomServerUsecase,
+    required this._updateSettingsUsecase,
+    required this._validator,
+  }) : super(const MempoolSettingsState());
 
   Future<void> loadData({bool? isLiquid}) async {
     emit(

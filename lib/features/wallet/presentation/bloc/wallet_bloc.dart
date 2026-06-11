@@ -11,8 +11,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -28,6 +28,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -38,50 +39,28 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
-    required GetWalletsUsecase getWalletsUsecase,
-    required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
-    required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
-    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-    required WatchElectrumSyncResultsUsecase watchElectrumSyncResultsUsecase,
-    required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
-    required InitTorUsecase initializeTorUsecase,
-    required IsTorRequiredUsecase checkForTorInitializationOnStartupUsecase,
-    required GetUnconfirmedIncomingBalanceUsecase
-    getUnconfirmedIncomingBalanceUsecase,
-    required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
-    required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
-    required DisableAutoswapWarningUsecase disableAutoswapWarningUsecase,
-    required DisableAutoswapUsecase disableAutoswapUsecase,
-    required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
-    required DeleteWalletUsecase deleteWalletUsecase,
-    required GetArkWalletUsecase getArkWalletUsecase,
-    required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
-    required SeedStoreTypeDatasource seedStoreTypeDatasource,
-    required CheckBackupNeededUsecase checkBackupNeededUsecase,
-  }) : _getWalletsUsecase = getWalletsUsecase,
-       _checkBackupNeededUsecase = checkBackupNeededUsecase,
-       _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
-       _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
-       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       _watchElectrumSyncResultsUsecase = watchElectrumSyncResultsUsecase,
-       _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
-       _initializeTorUsecase = initializeTorUsecase,
-       _checkForTorInitializationOnStartupUsecase =
-           checkForTorInitializationOnStartupUsecase,
-       _getUnconfirmedIncomingBalanceUsecase =
-           getUnconfirmedIncomingBalanceUsecase,
-       _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
-       _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
-       _disableAutoswapWarningUsecase = disableAutoswapWarningUsecase,
-       _disableAutoswapUsecase = disableAutoswapUsecase,
-       _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
-       _deleteWalletUsecase = deleteWalletUsecase,
-       _getArkWalletUsecase = getArkWalletUsecase,
-       _checkArkWalletSetupUsecase = checkArkWalletSetupUsecase,
-       _seedStoreTypeDatasource = seedStoreTypeDatasource,
-       super(const WalletState()) {
+    required this._getWalletsUsecase,
+    required this._checkWalletSyncingUsecase,
+    required this._watchStartedWalletSyncsUsecase,
+    required this._watchFinishedWalletSyncsUsecase,
+    required this._watchElectrumSyncResultsUsecase,
+    required this._syncCoordinator,
+    required this._initializeTorUsecase,
+    required this._checkForTorInitializationOnStartupUsecase,
+    required this._getUnconfirmedIncomingBalanceUsecase,
+    required this._getAutoSwapSettingsUsecase,
+    required this._saveAutoSwapSettingsUsecase,
+    required this._disableAutoswapWarningUsecase,
+    required this._disableAutoswapUsecase,
+    required this._autoSwapExecutionUsecase,
+    required this._deleteWalletUsecase,
+    required this._getArkWalletUsecase,
+    required this._checkArkWalletSetupUsecase,
+    required this._seedStoreTypeDatasource,
+    required this._checkBackupNeededUsecase,
+  }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
-    on<WalletRefreshed>(_onRefreshed);
+    on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
@@ -103,7 +82,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final WatchElectrumSyncResultsUsecase _watchElectrumSyncResultsUsecase;
-  final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
+  final SyncCoordinator _syncCoordinator;
   final InitTorUsecase _initializeTorUsecase;
   final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
@@ -201,10 +180,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletRefreshed event,
     Emitter<WalletState> emit,
   ) async {
+    emit(state.copyWith(isRefreshing: true));
     try {
-      final wallets = await _getWalletsUsecase.execute(sync: true);
+      // SyncCoordinator schedules bitcoin → liquid → swaps sequentially with
+      // per-kind dedup, throttling, and a lifecycle gate. `event.force`
+      // bypasses the throttle for explicit user gestures (pull-to-refresh);
+      // route-driven navigation triggers leave it at `false`.
+      await _syncCoordinator.sync(force: event.force);
 
-      // Initialize all wallets as not syncing
+      final wallets = await _getWalletsUsecase.execute();
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
       add(const RefreshArkWalletBalance());
@@ -230,22 +214,26 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           error: null,
           syncStatus: syncStatus,
           autoSwapSettings: autoSwapSettings,
+          isRefreshing: false,
         ),
       );
-      // After the wallets are synced we also restart the swap watcher.
-      // We do it after the syncing of the wallets to not wait for the
-      // swap watcher to be restarted before the wallets are synced.
-      await _restartSwapWatcherUsecase.execute();
     } on NoWalletsFoundException catch (e) {
       emit(
         state.copyWith(
           noWalletsFoundException: e,
           status: WalletStatus.failure,
           error: e,
+          isRefreshing: false,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(status: WalletStatus.failure, error: e));
+      emit(
+        state.copyWith(
+          status: WalletStatus.failure,
+          error: e,
+          isRefreshing: false,
+        ),
+      );
     }
   }
 

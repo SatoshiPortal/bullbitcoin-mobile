@@ -6,8 +6,8 @@ class FeesRepository {
   final FeesDatasource _feesDatasource;
 
   const FeesRepository({
-    required FeesDatasource feesDatasource,
-  }) : _feesDatasource = feesDatasource;
+    required this._feesDatasource,
+  });
 
   Future<FeeOptions> getNetworkFees({required Network network}) async {
     FeeOptions feeOptions;

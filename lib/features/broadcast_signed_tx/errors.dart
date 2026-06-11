@@ -9,6 +9,10 @@ class InvalidTxError extends BroadcastSignedTxError {
     : super('Input is not a transaction using PSBT or HEX format');
 }
 
+class BroadcastFailedError extends BroadcastSignedTxError {
+  BroadcastFailedError() : super('Failed to broadcast the transaction');
+}
+
 class PushTxNoNdefRecordsError extends BroadcastSignedTxError {
   PushTxNoNdefRecordsError() : super('PushTx: No NDEF records found');
 }

@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 class GetPayjoinByIdUsecase {
   final PayjoinRepository _payjoinRepository;
 
-  GetPayjoinByIdUsecase({required PayjoinRepository payjoinRepository})
-    : _payjoinRepository = payjoinRepository;
+  GetPayjoinByIdUsecase({required this._payjoinRepository});
 
   Future<Payjoin> execute(String payjoinId) async {
     try {

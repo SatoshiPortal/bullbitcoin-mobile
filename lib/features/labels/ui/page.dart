@@ -37,6 +37,19 @@ class Bip329LabelsPage extends StatelessWidget {
             onBack: () => context.pop(),
             title: context.loc.bip329LabelsTitle,
           ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
+            child: BlocSelector<Bip329LabelsCubit, Bip329LabelsState, bool>(
+              selector: (state) =>
+                  state.maybeWhen(loading: () => true, orElse: () => false),
+              builder: (context, isLoading) => FadingLinearProgress(
+                height: 3,
+                trigger: isLoading,
+                backgroundColor: context.appColors.onPrimary,
+                foregroundColor: context.appColors.primary,
+              ),
+            ),
+          ),
         ),
         body: SafeArea(
           child: BlocConsumer<Bip329LabelsCubit, Bip329LabelsState>(
@@ -78,7 +91,6 @@ class Bip329LabelsPage extends StatelessWidget {
                   crossAxisAlignment: .stretch,
                   children: [
                     const Gap(20),
-                    Center(child: FadingLinearProgress(trigger: isLoading)),
                     BBText(
                       context.loc.bip329LabelsHeading,
                       style: context.font.headlineLarge,

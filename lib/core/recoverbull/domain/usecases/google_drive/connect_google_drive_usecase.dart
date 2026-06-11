@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_reposito
 class ConnectToGoogleDriveUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  ConnectToGoogleDriveUsecase({required GoogleDriveRepository driveRepository})
-    : _driveRepository = driveRepository;
+  ConnectToGoogleDriveUsecase({required this._driveRepository});
 
   Future<void> execute() async {
     try {

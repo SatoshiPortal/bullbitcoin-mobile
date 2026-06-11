@@ -12,10 +12,9 @@ class BoltzStorageDatasource {
   final KeyValueStorageDatasource _secureSwapStorage;
 
   BoltzStorageDatasource({
-    required SqliteDatabase localSwapStorage,
-    required KeyValueStorageDatasource<String> secureSwapStorage,
-  }) : _localSwapStorage = localSwapStorage,
-       _secureSwapStorage = secureSwapStorage;
+    required this._localSwapStorage,
+    required KeyValueStorageDatasource<String> this._secureSwapStorage,
+  });
 
   // AUTO SWAP SETTINGS
   Future<void> storeAutoSwapSettings(AutoSwapModel settings) async {

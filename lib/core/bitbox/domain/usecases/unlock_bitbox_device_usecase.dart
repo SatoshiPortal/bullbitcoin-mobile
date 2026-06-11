@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_reposito
 class UnlockBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
-  UnlockBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+  UnlockBitBoxDeviceUsecase({required this._repository});
 
   Future<String> execute(BitBoxDeviceEntity device) async {
     return await _repository.unlockDevice(device);

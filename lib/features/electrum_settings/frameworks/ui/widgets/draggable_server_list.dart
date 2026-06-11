@@ -91,6 +91,9 @@ class DraggableServerList extends StatelessWidget {
           ReorderableListView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            // TODO: migrate to onReorderItem (newIndex is pre-adjusted for the
+            // removed item) and drop the index adjustment in ElectrumSettingsBloc.
+            // ignore: deprecated_member_use
             onReorder: (oldIndex, newIndex) {
               context.read<ElectrumSettingsBloc>().add(
                 ElectrumCustomServersPrioritized(

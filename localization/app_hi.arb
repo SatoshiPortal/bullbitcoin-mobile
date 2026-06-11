@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
+  "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
+  "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
+  "backupWarningLoseReasonCriticalIssue": "कोई गंभीर ऐप अथवा डिवाइस संबंधित समस्या आती है",
+  "backupWarningLoseReasonKeystore": "जब आप लॉकस्क्रीन या डिवाइस ऑथेंटिकेशन बदलते हैं, तो आपका डिवाइस कीस्टोर (keystore) को अमान्य कर देता है",
+  "backupWarningLoseReasonCloudRestore": "अपने डिवाइस को क्लाउड बैकअप से रिस्टोर करना",
+  "backupWarningNoRecovery": "बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
   "@@locale": "hi",
   "bitboxErrorMultipleDevicesFound": "एकाधिक बिटबॉक्स उपकरण पाए गए। कृपया सुनिश्चित करें कि केवल एक डिवाइस जुड़ा हुआ है।।",
   "@bitboxErrorMultipleDevicesFound": {
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "सटीक राशि प्राप्त करें",
+  "swapInsufficientFunds": "अपर्याप्त धनराशि",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "सबसे तेज़ - केवल €20,000 से नीचे लेनदेन के लिए",
+  "fundExchangeMethodInstantSepaSubtitle": "सबसे तेज़ - केवल €30,000 से नीचे लेनदेन के लिए",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4863,7 +4871,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "केवल €20,000 से अधिक बड़े लेनदेन के लिए उपयोग करें",
+  "fundExchangeMethodRegularSepaSubtitle": "केवल €30,000 से अधिक बड़े लेनदेन के लिए उपयोग करें",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -7780,6 +7788,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "लेनदेन इतिहास",
+  "transactionHistoryHeading": "लेनदेन इतिहास",
+  "exportTransactionsDescription": "अपने वॉलेट के सभी लेनदेन (Bitcoin, Liquid, Lightning और स्वैप) को CSV फ़ाइल के रूप में निर्यात करें। वैकल्पिक रूप से तिथि सीमा द्वारा फ़िल्टर करें।",
+  "exportTransactionsStartDate": "प्रारंभ तिथि",
+  "exportTransactionsEndDate": "समाप्ति तिथि",
+  "exportTransactionsAnyDate": "कोई भी",
+  "exportTransactionsButton": "CSV निर्यात करें",
+  "exportTransactionsSuccess": "लेनदेन सफलतापूर्वक निर्यात हो गए",
+  "exportTransactionsEmpty": "चयनित अवधि के लिए कोई लेनदेन नहीं है",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "प्रारंभ तिथि समाप्ति तिथि से पहले होनी चाहिए",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 लेबल",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -8495,6 +8520,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "इस समय भुगतान विवरण लोड नहीं किया जा सकता है। कृपया वापस जाएं और फिर से कोशिश करें, एक अन्य भुगतान विधि चुनें या बाद में वापस आ जाएं।।",
+    "fundExchangeErrorTitleOrdPo404": "भुगतान विकल्प अनुपलब्ध",
+  "fundExchangeErrorTitleRcpPo404": "भुगतान विकल्प उपलब्ध नहीं",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE उपलब्ध नहीं",
+  "fundExchangeErrorTitleOrdKyc400": "KYC आवश्यकताएँ अनुपस्थित",
+  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "अमान्य COP फंडिंग डेटा",
+  "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "वर्चुअल भुगतान सक्रिय नहीं",
+  "fundExchangeErrorOrdCsrcp400": "कृपया IBAN: {iban} वाले SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें",
+  "fundExchangeErrorTitleRcp400": "अमान्य अनुरोध",
+  "fundExchangeErrorRcp400": "अमान्य अनुरोध",
+"fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPo404": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPosinpe404": "इस फंडिंग विकल्प तक पहुँचने के लिए, आपका फ़ोन नंबर कोस्टा रिका में SINPE नेटवर्क पर पंजीकृत होना चाहिए।",
+  "fundExchangeErrorFetchingBankCodes": "बैंक कोड लाने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -11979,6 +12019,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
+  "broadcastSignedTxBroadcastError": "लेन-देन प्रसारित करने में विफल",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12438,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "बाद में",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "वापस",
   "@backButton": {
     "description": "Generic back button label"
@@ -12493,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "मानक लॉग",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
   "@appInitErrorHasBackupTitle": {
@@ -12581,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "अपने स्वैप को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
   "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
   "@recoverbullBalance": {
@@ -12778,10 +12790,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "बैकअप के बिना, यदि आप अपना फ़ोन खो देते हैं, ऐप हटा देते हैं, या किसी गंभीर ऐप अथवा डिवाइस संबंधित समस्या का सामना करते हैं, तो आप अपने Bitcoin तक पहुंच खो देंगे। बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "हाँ",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -12870,6 +12878,10 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
+  "transactionStatusPayjoinCompleted": "Payjoin पूरा हुआ",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "जब Payjoin लेनदेन सफलतापूर्वक पूरा हो जाता है तब यह दिखाया जाता है।"
+  },
   "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
   "coreScreensFeeRateLabel": "शुल्क दर",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12885,5 +12897,52 @@
   "viewerViewInExplorer": "एक्सप्लोरर में देखें",
   "transactionViewerTitle": "लेन-देन आईडी",
   "invoiceViewerTitle": "चालान",
-  "viewerCopyLink": "प्रतिरूप जोड़ना"
+  "viewerCopyLink": "प्रतिरूप जोड़ना",
+  "recipientsFieldSinpePhoneNumberHint": "देश कोड के बिना 8 अंक",
+  "recipientsCopDocCcRecipientNumber": "प्राप्तकर्ता का cédula नंबर",
+  "recipientsCopDocCeRecipientNumber": "प्राप्तकर्ता का cédula de extranjería नंबर",
+  "recipientsCopDocNitRecipientNumber": "प्राप्तकर्ता का कर आईडी नंबर",
+  "recipientsCopDocPassportRecipientNumber": "प्राप्तकर्ता का पासपोर्ट नंबर",
+  "recipientsCopDocTiRecipientNumber": "प्राप्तकर्ता का पहचान पत्र नंबर",
+  "recipientsCopDocRegistroCivilRecipientNumber": "प्राप्तकर्ता का नागरिक पंजीकरण नंबर",
+  "recipientsValidationSinpePhoneCountryCode": "देश कोड (+506) हटाएँ। केवल 8-अंकों का नंबर दर्ज करें",
+  "recipientsValidationSinpePhoneInvalidChars": "केवल अंकों का उपयोग करें (कोई अक्षर या प्रतीक नहीं)",
+  "recipientsValidationSinpePhoneTooShort": "फ़ोन नंबर के सभी 8 अंक दर्ज करें",
+  "recipientsFieldDocumentType": "प्राप्तकर्ता का आईडी प्रकार",
+  "recipientsFieldDocumentNumberHint": "प्राप्तकर्ता का आईडी नंबर दर्ज करें",
+  "recipientsValidationSinpePhone": "देश कोड के बिना एक वैध 8-अंकों का कोस्टा रिकन फ़ोन नंबर दर्ज करें",
+  "homeActionBuy": "खरीदें",
+  "homeActionSell": "बेचें",
+  "homeActionPay": "भुगतान करें",
+  "homeActionTransfer": "ट्रांसफ़र करें",
+  "backupCardTitle": "अपने बिटकॉइन को सुरक्षित रखें।",
+  "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।",
+  "mempoolCustomServerNoSsl": "कोई SSL नहीं",
+  "autoswapTargetBalanceLabel": "लक्षित Instant Wallet बैलेंस",
+  "autoswapMaximumBalanceLabel": "अधिकतम Instant Wallet बैलेंस",
+  "recoverbullServerConfirmTitle": "Vault रिकवरी सर्वर",
+  "recoverbullServerUsingDefault": "डिफ़ॉल्ट सर्वर का उपयोग कर रहे हैं",
+  "recoverbullServerUsingCustom": "कस्टम सर्वर का उपयोग कर रहे हैं",
+  "recoverbullServerUrlLabel": "सर्वर URL:",
+  "recoverbullServerCustomWarning": "आप एक कस्टम Recoverbull सर्वर का उपयोग कर रहे हैं। सुनिश्चित करें कि आप इस सर्वर पर भरोसा करते हैं।",
+  "recoverbullServerTorNotice": "हम Tor के माध्यम से इस सर्वर से कनेक्ट करेंगे",
+  "recoverbullLearnMore": "Recoverbull के बारे में और जानें",
+  "recoverbullSettingsTitle": "Recoverbull सेटिंग्स",
+  "recoverbullSettingsKeyServerUrl": "की सर्वर URL",
+  "recoverbullSettingsEdit": "संपादित करें",
+  "recoverbullSettingsCancel": "रद्द करें",
+  "recoverbullSettingsSave": "सहेजें",
+  "recoverbullSettingsUrlRequired": "URL आवश्यक है",
+  "recoverbullSettingsUrlInvalid": "URL मान्य नहीं है",
+  "recoverbullSettingsUrlMustBeHttp": "URL HTTP होना चाहिए",
+  "recoverbullSettingsUrlMustBeOnion": ".onion से समाप्त होना चाहिए URL",
+  "onboardingAdvancedOptionsTitle": "उन्नत विकल्प",
+  "onboardingAdvancedOptionsDescription": "अपना वॉलेट बनाने या रिकवर करने से पहले उन्नत सेटिंग्स कॉन्फ़िगर करें",
+  "onboardingAdvancedOptionsCustomElectrum": "कस्टम Electrum सर्वर",
+  "onboardingAdvancedOptionsCustomMempool": "कस्टम Mempool सर्वर",
+  "onboardingAdvancedOptionsCustomRecoverbull": "कस्टम Recoverbull सर्वर",
+  "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
+  "onboardingAdvancedOptionsDone": "पूर्ण",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
+  "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है"
 }

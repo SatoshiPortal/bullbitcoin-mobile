@@ -55,6 +55,7 @@ class CustomFeeListItem extends StatefulWidget {
     this.previewLoading = false,
     this.allowAbsoluteToggle = true,
     this.commitOnChange = false,
+    this.focusNode,
   });
 
   /// The currently committed `customFee` from the caller's state. Used to
@@ -129,6 +130,12 @@ class CustomFeeListItem extends StatefulWidget {
   /// typed rate. The preview line renders a shimmer placeholder.
   final bool previewLoading;
 
+  /// Optional externally-owned focus node for the input field. Passed by
+  /// callers that wrap the field in [BBKeyboardActions] so the keyboard's
+  /// "Done" toolbar can target it (e.g. the RBF screen). When null the
+  /// widget owns and disposes an internal node.
+  final FocusNode? focusNode;
+
   @override
   State<CustomFeeListItem> createState() => _CustomFeeListItemState();
 }
@@ -138,6 +145,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
   late TextEditingController _controller;
   NetworkFee? _customFee;
   late FocusNode _focusNode;
+  // True when the focus node is owned by this widget (no external one was
+  // supplied) and must therefore be disposed here.
+  late bool _ownsFocusNode;
 
   /// Debounces the preview-build trigger in modal mode. Per keystroke we
   /// fire [onArm] synchronously (cheap state update), then after this
@@ -162,7 +172,8 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     // committed fee — falls back to [defaultAbsolute] only when nothing
     // is committed yet.
     final committed = widget.initialFee;
-    final useAbsolute = widget.allowAbsoluteToggle &&
+    final useAbsolute =
+        widget.allowAbsoluteToggle &&
         (committed is AbsoluteFee ||
             (committed == null && widget.defaultAbsolute));
     _isAbsolute = useAbsolute;
@@ -170,7 +181,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     _controller = TextEditingController(
       text: _formatForInput(committed, asAbsolute: useAbsolute),
     );
-    _focusNode = FocusNode()..addListener(_onFocusChanged);
+    _ownsFocusNode = widget.focusNode == null;
+    _focusNode = (widget.focusNode ?? FocusNode())
+      ..addListener(_onFocusChanged);
   }
 
   /// Renders a committed fee back into the same string format the input
@@ -213,7 +226,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     _previewDebounce?.cancel();
     _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
-    _focusNode.dispose();
+    // Only dispose a node we created; an externally-supplied node is owned
+    // by the caller.
+    if (_ownsFocusNode) _focusNode.dispose();
     super.dispose();
   }
 
@@ -331,7 +346,8 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     // lowest sensible policy and Liquid's minrelayfee). Below 1 sat/vByte
     // we still warn the tx may take longer to confirm and may not
     // propagate to every node.
-    final bool belowFloor = customRate != null &&
+    final bool belowFloor =
+        customRate != null &&
         customRate < NetworkFeeRelayPolicy.minRelaySatPerVbyte;
     final bool subOneSatPerVbyte =
         customRate != null && customRate < 1.0 && !belowFloor;
@@ -521,9 +537,7 @@ class _PreviewLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final unit = isAbsolute
-        ? context.loc.sendSats
-        : context.loc.sendSatsPerVB;
+    final unit = isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB;
     final rateLabel = '${customFee.value} $unit';
 
     if (previewLoading) {
@@ -534,10 +548,7 @@ class _PreviewLine extends StatelessWidget {
           // Shimmer fills the rest of the line where "~ X sats" would
           // appear once the real fee lands.
           Expanded(
-            child: LoadingLineContent(
-              padding: EdgeInsets.zero,
-              height: 12,
-            ),
+            child: LoadingLineContent(padding: EdgeInsets.zero, height: 12),
           ),
         ],
       );
@@ -560,7 +571,12 @@ class _PreviewLine extends StatelessWidget {
       ..write(' ')
       ..write(context.loc.sendSats);
     if (showFiat) {
-      text..write(' (~ ')..write(fiatEq)..write(' ')..write(fiatCurrencyCode)..write(')');
+      text
+        ..write(' (~ ')
+        ..write(fiatEq)
+        ..write(' ')
+        ..write(fiatCurrencyCode)
+        ..write(')');
     }
     return BBText(text.toString(), style: context.font.labelMedium);
   }

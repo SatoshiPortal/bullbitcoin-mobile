@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
+  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
+  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
+  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
+  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
+  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
+  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
   "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Tam miktar alın",
+  "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 20.000 € Aşağıdaki işlemler için",
+  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 30.000 € Aşağıdaki işlemler için",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3305,10 +3313,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "0.02 BTC'nin maksimum dengesi",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -4847,7 +4851,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Sadece 20.000 € üzerinde daha büyük işlemler için kullanın",
+  "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -7730,6 +7734,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "transactionHistoryHeading": "İşlem geçmişi",
+  "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
+  "exportTransactionsStartDate": "Başlangıç tarihi",
+  "exportTransactionsEndDate": "Bitiş tarihi",
+  "exportTransactionsAnyDate": "Herhangi",
+  "exportTransactionsButton": "CSV olarak dışa aktar",
+  "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
+  "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Başlangıç tarihi bitiş tarihinden önce olmalıdır",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -8428,6 +8449,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
+    "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
+  "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Kullanılamıyor",
+  "fundExchangeErrorTitleOrdKyc400": "KYC Gereksinimleri Eksik",
+  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Geçersiz COP Fonlama Verisi",
+  "fundExchangeErrorOrdCop400": "COP fonlaması için geçersiz istek verisi: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Sanal Ödeme Etkinleştirilmedi",
+  "fundExchangeErrorOrdCsrcp400": "Lütfen şu IBAN'a sahip SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin: {iban}",
+  "fundExchangeErrorTitleRcp400": "Geçersiz İstek",
+  "fundExchangeErrorRcp400": "Geçersiz istek",
+"fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
+  "fundExchangeErrorRcpPo404": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
+  "fundExchangeErrorRcpPosinpe404": "Bu fonlama seçeneğine erişmek için telefon numaranız Kostarika'daki SINPE ağına kayıtlı olmalıdır.",
+  "fundExchangeErrorFetchingBankCodes": "Banka kodları alınırken hata oluştu. Lütfen daha sonra tekrar deneyin.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -9599,10 +9635,6 @@
   "buyEnterBitcoinAddress": "Bitcoin adresi girin",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "Hedef Denge 0.0 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "transactionDetailLabelPayoutAmount": "Payout amount",
   "@transactionDetailLabelPayoutAmount": {
@@ -11878,6 +11910,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
+  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12446,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Acil: Yedekleme ve Yeniden Kurulum Gerekli",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "İşlem Gerekli: Uygulamayı Yeniden Yükleyin",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Şimdi yedekle",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Daha sonra",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Geri",
   "@backButton": {
     "description": "Generic back button label"
@@ -12501,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "Standart günlükler",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",
   "@appInitErrorHasBackupTitle": {
@@ -12589,8 +12594,8 @@
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
   "coreScreensFeeRateLabel": "Ücret oranı",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12606,5 +12611,52 @@
   "viewerViewInExplorer": "Gezginde görüntüle",
   "transactionViewerTitle": "İşlem kimliği",
   "invoiceViewerTitle": "Fatura",
-  "viewerCopyLink": "Bağlantıyı kopyala"
+  "viewerCopyLink": "Bağlantıyı kopyala",
+  "recipientsFieldSinpePhoneNumberHint": "Ülke kodu olmadan 8 hane",
+  "recipientsCopDocCcRecipientNumber": "Alıcının cédula numarası",
+  "recipientsCopDocCeRecipientNumber": "Alıcının cédula de extranjería numarası",
+  "recipientsCopDocNitRecipientNumber": "Alıcının vergi kimlik numarası",
+  "recipientsCopDocPassportRecipientNumber": "Alıcının pasaport numarası",
+  "recipientsCopDocTiRecipientNumber": "Alıcının kimlik kartı numarası",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Alıcının nüfus kayıt numarası",
+  "recipientsValidationSinpePhoneCountryCode": "Ülke kodunu (+506) kaldırın. Yalnızca 8 haneli numarayı girin",
+  "recipientsValidationSinpePhoneInvalidChars": "Yalnızca rakam kullanın (harf veya sembol yok)",
+  "recipientsValidationSinpePhoneTooShort": "Telefon numarasının 8 hanesini de girin",
+  "recipientsFieldDocumentType": "Alıcı kimlik türü",
+  "recipientsFieldDocumentNumberHint": "Alıcının kimlik numarasını girin",
+  "recipientsValidationSinpePhone": "Ülke kodu olmadan geçerli 8 haneli bir Kosta Rika telefon numarası girin",
+  "homeActionBuy": "Satın Al",
+  "homeActionSell": "Sat",
+  "homeActionPay": "Öde",
+  "homeActionTransfer": "Aktar",
+  "backupCardTitle": "Bitcoin'inizi koruyun.",
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
+  "mempoolCustomServerNoSsl": "SSL Yok",
+  "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
+  "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
+  "recoverbullServerConfirmTitle": "Kasa Kurtarma Sunucusu",
+  "recoverbullServerUsingDefault": "Varsayılan Sunucu Kullanılıyor",
+  "recoverbullServerUsingCustom": "Özel Sunucu Kullanılıyor",
+  "recoverbullServerUrlLabel": "Sunucu URL'si:",
+  "recoverbullServerCustomWarning": "Özel bir Recoverbull sunucusu kullanıyorsunuz. Bu sunucuya güvendiğinizden emin olun.",
+  "recoverbullServerTorNotice": "Bu sunucuya Tor üzerinden bağlanacağız",
+  "recoverbullLearnMore": "Recoverbull hakkında daha fazla bilgi edinin",
+  "recoverbullSettingsTitle": "Recoverbull Ayarları",
+  "recoverbullSettingsKeyServerUrl": "Anahtar Sunucu URL'si",
+  "recoverbullSettingsEdit": "Düzenle",
+  "recoverbullSettingsCancel": "İptal",
+  "recoverbullSettingsSave": "Kaydet",
+  "recoverbullSettingsUrlRequired": "URL gereklidir",
+  "recoverbullSettingsUrlInvalid": "URL geçerli değil",
+  "recoverbullSettingsUrlMustBeHttp": "URL, HTTP olmalıdır",
+  "recoverbullSettingsUrlMustBeOnion": "URL, .onion ile bitmelidir",
+  "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
+  "onboardingAdvancedOptionsDescription": "Cüzdanınızı oluşturmadan veya kurtarmadan önce gelişmiş ayarları yapılandırın",
+  "onboardingAdvancedOptionsCustomElectrum": "Özel Electrum Sunucusu",
+  "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
+  "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
+  "onboardingAdvancedOptionsDone": "Tamam",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
+  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir"
 }

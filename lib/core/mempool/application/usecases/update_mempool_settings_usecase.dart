@@ -9,10 +9,9 @@ class UpdateMempoolSettingsUsecase {
   final MempoolEnvironmentPort _environmentPort;
 
   UpdateMempoolSettingsUsecase({
-    required MempoolSettingsRepository settingsRepository,
-    required MempoolEnvironmentPort environmentPort,
-  }) : _settingsRepository = settingsRepository,
-       _environmentPort = environmentPort;
+    required this._settingsRepository,
+    required this._environmentPort,
+  });
 
   Future<void> execute(UpdateMempoolSettingsRequest request) async {
     final environment = await _environmentPort.getEnvironment();

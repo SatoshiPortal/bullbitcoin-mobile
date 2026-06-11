@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -18,13 +18,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     String? walletId,
     bool exchangeOnly = false,
-    required GetTransactionsUsecase getTransactionsUsecase,
-    required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
-    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-  }) : _getTransactionsUsecase = getTransactionsUsecase,
-       _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
-       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       super(TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly)) {
+    required this._getTransactionsUsecase,
+    required this._watchStartedWalletSyncsUsecase,
+    required this._watchFinishedWalletSyncsUsecase,
+  }) : super(TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly)) {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));

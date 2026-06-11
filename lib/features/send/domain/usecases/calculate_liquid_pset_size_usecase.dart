@@ -10,14 +10,12 @@ import 'package:bb_mobile/features/send/domain/domain_errors.dart';
 class CalculateLiquidPsetSizeUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
-  CalculateLiquidPsetSizeUsecase({
-    required LiquidWalletRepository liquidWalletRepository,
-  }) : _liquidWalletRepository = liquidWalletRepository;
+  CalculateLiquidPsetSizeUsecase({required this._liquidWalletRepository});
 
   Future<int> execute({required String pset}) async {
     try {
-      final (discountedVsize, _) =
-          await _liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: pset);
+      final (discountedVsize, _) = await _liquidWalletRepository
+          .getPsetSizeAndAbsoluteFees(pset: pset);
       return discountedVsize;
     } catch (e) {
       throw CalculateLiquidPsetSizeException(e.toString());

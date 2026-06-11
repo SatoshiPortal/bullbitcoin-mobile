@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class WatchElectrumSyncResultsUsecase {
   final WalletRepository _walletRepository;
 
-  WatchElectrumSyncResultsUsecase({required WalletRepository walletRepository})
-    : _walletRepository = walletRepository;
+  WatchElectrumSyncResultsUsecase({required this._walletRepository});
 
   Stream<ElectrumSyncResult> execute() {
     try {

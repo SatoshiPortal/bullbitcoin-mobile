@@ -8,10 +8,9 @@ class GetPayjoinsUsecase {
   final SettingsRepository _settingsRepository;
 
   GetPayjoinsUsecase({
-    required PayjoinRepository payjoinRepository,
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository,
-       _payjoinRepository = payjoinRepository;
+    required this._payjoinRepository,
+    required this._settingsRepository,
+  });
 
   Future<List<Payjoin>> execute({
     String? walletId,

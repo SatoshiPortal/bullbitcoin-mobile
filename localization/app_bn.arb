@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
+  "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
+  "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যা হলে",
+  "backupWarningLoseReasonKeystore": "আপনি লকস্ক্রিন বা ডিভাইস অথেন্টিকেশন পরিবর্তন করলে আপনার ডিভাইস কীস্টোর (keystore) বাতিল করে দেয়",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
+  "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
   "@@locale": "bn",
   "settingsTelegramLabel": "Telegram",
   "@settingsTelegramLabel": {
@@ -532,6 +539,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "নির্দিষ্ট পরিমাণ গ্রহণ করুন",
+  "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -624,7 +632,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €20,000-এর নিচে লেনদেনের জন্য",
+  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €30,000-এর নিচে লেনদেনের জন্য",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4742,7 +4750,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "শুধু €20,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
+  "fundExchangeMethodRegularSepaSubtitle": "শুধু €30,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -8287,6 +8295,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "এই মুহূর্তে পেমেন্ট বিবরণ লোড করা যায়নি। ফিরে যান এবং পুনরায় চেষ্টা করুন, অন্য কোনো পেমেন্ট পদ্ধতি বেছে নিন বা পরে ফিরে আসুন।",
+    "fundExchangeErrorTitleOrdPo404": "পেমেন্ট অপশন অনুপলব্ধ",
+  "fundExchangeErrorTitleRcpPo404": "পেমেন্ট অপশন উপলব্ধ নেই",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নেই",
+  "fundExchangeErrorTitleOrdKyc400": "KYC প্রয়োজনীয়তা অনুপস্থিত",
+  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "ভার্চুয়াল পেমেন্ট সক্রিয় নয়",
+  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে IBAN: {iban} সহ SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
+  "fundExchangeErrorTitleRcp400": "অবৈধ অনুরোধ",
+  "fundExchangeErrorRcp400": "অবৈধ অনুরোধ",
+"fundExchangeErrorOrdPo404": "কোনো পেমেন্ট অপশন উপলব্ধ নেই",
+  "fundExchangeErrorRcpPo404": "এই ফান্ডিং অপশনে অ্যাক্সেস করার জন্য আপনার প্রয়োজনীয় অনুমতি নেই। হয় আপনার KYC অপর্যাপ্ত, নয়তো এই অপশন আপনার অ্যাকাউন্টের জন্য উপলব্ধ নয়",
+  "fundExchangeErrorRcpPosinpe404": "এই ফান্ডিং অপশনে অ্যাক্সেস করতে, আপনার ফোন নম্বর কোস্টা রিকার SINPE নেটওয়ার্কে নিবন্ধিত থাকতে হবে।",
+  "fundExchangeErrorFetchingBankCodes": "ব্যাংক কোড আনতে ত্রুটি হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -11688,6 +11711,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
+  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্রচার করতে ব্যর্থ হয়েছে",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12147,30 +12171,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "জরুরি: ব্যাকআপ ও পুনরায় ইনস্টল প্রয়োজন",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "পদক্ষেপ প্রয়োজন: অ্যাপ পুনরায় ইনস্টল করুন",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "এখনই ব্যাকআপ করুন",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "পরে",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "পিছনে",
   "@backButton": {
     "description": "Generic back button label"
@@ -12202,10 +12202,6 @@
   "errorReportingStandardLogsTitle": "স্ট্যান্ডার্ড লগ",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "সবসময় সক্রিয় — অ্যাপের সংস্করণগুলির মধ্যে আপনার ওয়ালেট নিরাপদে মাইগ্রেট হচ্ছে কিনা তা আমাদের দেখতে দেয়।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "আপনার ব্যাকআপ ব্যবহার করুন",
   "@appInitErrorHasBackupTitle": {
@@ -12290,7 +12286,6 @@
   "legacyStorageHasBackupImportantBody": "এই প্রক্রিয়াটি এড়িয়ে যাবেন না যদি না আপনার জরুরিভাবে ওয়ালেট ব্যবহার করার একান্ত প্রয়োজন হয় অথবা একটি স্বপ সম্পন্ন হওয়ার জন্য অপেক্ষা করছেন।",
   "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "আপনার সুয়াপ সম্পূর্ণ করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
   "importMnemonicDuplicateError": "এই নেমোনিক ইতিমধ্যে বিদ্যমান",
   "recoverbullBalance": "ব্যালেন্স: {balance}",
   "@recoverbullBalance": {
@@ -12586,6 +12581,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "লেনদেনের ইতিহাস",
+  "transactionHistoryHeading": "লেনদেনের ইতিহাস",
+  "exportTransactionsDescription": "আপনার সমস্ত ওয়ালেট লেনদেন (Bitcoin, Liquid, Lightning এবং সোয়াপ) CSV ফাইল হিসাবে এক্সপোর্ট করুন। ঐচ্ছিকভাবে তারিখের পরিসর দ্বারা ফিল্টার করুন।",
+  "exportTransactionsStartDate": "শুরুর তারিখ",
+  "exportTransactionsEndDate": "শেষ তারিখ",
+  "exportTransactionsAnyDate": "যেকোনো",
+  "exportTransactionsButton": "CSV এক্সপোর্ট করুন",
+  "exportTransactionsSuccess": "লেনদেন সফলভাবে এক্সপোর্ট হয়েছে",
+  "exportTransactionsEmpty": "নির্বাচিত সময়ের জন্য কোনো লেনদেন নেই",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "শুরুর তারিখ অবশ্যই শেষ তারিখের আগে হতে হবে",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 লেবেল",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -12780,10 +12792,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "ব্যাকআপ ছাড়া, আপনার ফোন হারালে, অ্যাপ মুছলে বা কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যায় আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন। ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "হ্যাঁ",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -12872,6 +12880,10 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
+  },
   "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
   "coreScreensFeeRateLabel": "ফি রেট",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12887,5 +12899,52 @@
   "viewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
   "transactionViewerTitle": "লেনদেন আইডি",
   "invoiceViewerTitle": "চালান",
-  "viewerCopyLink": "লিঙ্ক কপি করুন"
+  "viewerCopyLink": "লিঙ্ক কপি করুন",
+  "recipientsFieldSinpePhoneNumberHint": "দেশের কোড ছাড়া 8 সংখ্যা",
+  "recipientsCopDocCcRecipientNumber": "প্রাপকের cédula নম্বর",
+  "recipientsCopDocCeRecipientNumber": "প্রাপকের cédula de extranjería নম্বর",
+  "recipientsCopDocNitRecipientNumber": "প্রাপকের ট্যাক্স আইডি নম্বর",
+  "recipientsCopDocPassportRecipientNumber": "প্রাপকের পাসপোর্ট নম্বর",
+  "recipientsCopDocTiRecipientNumber": "প্রাপকের পরিচয়পত্রের নম্বর",
+  "recipientsCopDocRegistroCivilRecipientNumber": "প্রাপকের নাগরিক নিবন্ধনের নম্বর",
+  "recipientsValidationSinpePhoneCountryCode": "দেশের কোড (+506) সরান। শুধু 8-সংখ্যার নম্বর লিখুন",
+  "recipientsValidationSinpePhoneInvalidChars": "শুধু সংখ্যা ব্যবহার করুন (অক্ষর বা চিহ্ন নয়)",
+  "recipientsValidationSinpePhoneTooShort": "ফোন নম্বরের সব 8 সংখ্যা লিখুন",
+  "recipientsFieldDocumentType": "প্রাপকের আইডির ধরন",
+  "recipientsFieldDocumentNumberHint": "প্রাপকের আইডি নম্বর লিখুন",
+  "recipientsValidationSinpePhone": "দেশের কোড ছাড়া একটি বৈধ 8-সংখ্যার কোস্টা রিকান ফোন নম্বর লিখুন",
+  "homeActionBuy": "কিনুন",
+  "homeActionSell": "বিক্রি করুন",
+  "homeActionPay": "পেমেন্ট করুন",
+  "homeActionTransfer": "ট্রান্সফার করুন",
+  "backupCardTitle": "আপনার বিটকয়েন সুরক্ষিত করুন।",
+  "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।",
+  "mempoolCustomServerNoSsl": "কোনো SSL নেই",
+  "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet ব্যালেন্স",
+  "autoswapMaximumBalanceLabel": "সর্বোচ্চ Instant Wallet ব্যালেন্স",
+  "recoverbullServerConfirmTitle": "Vault রিকভারি সার্ভার",
+  "recoverbullServerUsingDefault": "ডিফল্ট সার্ভার ব্যবহার করছেন",
+  "recoverbullServerUsingCustom": "কাস্টম সার্ভার ব্যবহার করছেন",
+  "recoverbullServerUrlLabel": "সার্ভার URL:",
+  "recoverbullServerCustomWarning": "আপনি একটি কাস্টম Recoverbull সার্ভার ব্যবহার করছেন। নিশ্চিত করুন যে আপনি এই সার্ভারকে বিশ্বাস করেন।",
+  "recoverbullServerTorNotice": "আমরা Tor এর মাধ্যমে এই সার্ভারে সংযোগ করব",
+  "recoverbullLearnMore": "Recoverbull সম্পর্কে আরও জানুন",
+  "recoverbullSettingsTitle": "Recoverbull সেটিংস",
+  "recoverbullSettingsKeyServerUrl": "কী সার্ভার URL",
+  "recoverbullSettingsEdit": "সম্পাদনা করুন",
+  "recoverbullSettingsCancel": "বাতিল করুন",
+  "recoverbullSettingsSave": "সংরক্ষণ করুন",
+  "recoverbullSettingsUrlRequired": "URL প্রয়োজন",
+  "recoverbullSettingsUrlInvalid": "URL বৈধ নয়",
+  "recoverbullSettingsUrlMustBeHttp": "URL অবশ্যই HTTP হতে হবে",
+  "recoverbullSettingsUrlMustBeOnion": "URL অবশ্যই .onion দিয়ে শেষ হতে হবে",
+  "onboardingAdvancedOptionsTitle": "উন্নত বিকল্প",
+  "onboardingAdvancedOptionsDescription": "আপনার ওয়ালেট তৈরি বা পুনরুদ্ধার করার আগে উন্নত সেটিংস কনফিগার করুন",
+  "onboardingAdvancedOptionsCustomElectrum": "কাস্টম Electrum সার্ভার",
+  "onboardingAdvancedOptionsCustomMempool": "কাস্টম Mempool সার্ভার",
+  "onboardingAdvancedOptionsCustomRecoverbull": "কাস্টম Recoverbull সার্ভার",
+  "onboardingAdvancedOptionsFooter": "আপনি পরে App Settings এ এই সেটিংস পরিবর্তন করতে পারেন",
+  "onboardingAdvancedOptionsDone": "সম্পন্ন",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support এ সাপোর্টের সাথে যোগাযোগ করুন",
+  "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত"
 }

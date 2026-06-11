@@ -54,79 +54,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
-    Wallet? wallet,
-    required LabelsFacade labelsFacade,
-    required SelectBestWalletUsecase bestWalletUsecase,
-    required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
-    required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
-    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required SendWithPayjoinUsecase sendWithPayjoinUsecase,
-    required GetWalletsUsecase getWalletsUsecase,
-    required GetWalletUsecase getWalletUsecase,
-    required CreateSendSwapUsecase createSendSwapUsecase,
-    required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
-    required GetSwapLimitsUsecase getSwapLimitsUsecase,
-    required WatchSwapUsecase watchSwapUsecase,
-    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-    required DecodeInvoiceUsecase decodeInvoiceUsecase,
-    required SignBitcoinTxUsecase signBitcoinTxUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
-    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
-    required CalculateLiquidAbsoluteFeesUsecase
-    calculateLiquidAbsoluteFeesUsecase,
-    required CalculateLiquidPsetSizeUsecase calculateLiquidPsetSizeUsecase,
-    required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
-    required WatchWalletTransactionByTxIdUsecase
-    watchWalletTransactionByTxIdUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
-    required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
-    required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
-    required PreviewBitcoinFeeUsecase previewBitcoinFeeUsecase,
-    required PreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase,
-  }) : _wallet = wallet,
-       _labelsFacade = labelsFacade,
-       _getSettingsUsecase = getSettingsUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-       _bestWalletUsecase = bestWalletUsecase,
-       _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
-       _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _sendWithPayjoinUsecase = sendWithPayjoinUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _signBitcoinTxUsecase = signBitcoinTxUsecase,
-       _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
-       _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
-       _getWalletsUsecase = getWalletsUsecase,
-       _getWalletUsecase = getWalletUsecase,
-       _createSendSwapUsecase = createSendSwapUsecase,
-       _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
-       _getSwapLimitsUsecase = getSwapLimitsUsecase,
-       _watchSwapUsecase = watchSwapUsecase,
-       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       _decodeInvoiceUsecase = decodeInvoiceUsecase,
-       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
-       _calculateLiquidPsetSizeUsecase = calculateLiquidPsetSizeUsecase,
-       _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
-       _watchWalletTransactionByTxIdUsecase =
-           watchWalletTransactionByTxIdUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
-       _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
-       _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
-       _previewBitcoinFeeUsecase = previewBitcoinFeeUsecase,
-       _previewBitcoinFeePresetsUsecase = previewBitcoinFeePresetsUsecase,
-       super(const SendState());
+    this._wallet,
+    required this._labelsFacade,
+    required this._bestWalletUsecase,
+    required this._detectBitcoinStringUsecase,
+    required this._getSettingsUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._getWalletUtxosUsecase,
+    required this._getAvailableCurrenciesUsecase,
+    required this._prepareBitcoinSendUsecase,
+    required this._prepareLiquidSendUsecase,
+    required this._sendWithPayjoinUsecase,
+    required this._getWalletsUsecase,
+    required this._getWalletUsecase,
+    required this._createSendSwapUsecase,
+    required this._updatePaidSendSwapUsecase,
+    required this._getSwapLimitsUsecase,
+    required this._watchSwapUsecase,
+    required this._watchFinishedWalletSyncsUsecase,
+    required this._decodeInvoiceUsecase,
+    required this._signBitcoinTxUsecase,
+    required this._signLiquidTxUsecase,
+    required this._broadcastBitcoinTxUsecase,
+    required this._broadcastLiquidTxUsecase,
+    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculateLiquidPsetSizeUsecase,
+    required this._createChainSwapToExternalUsecase,
+    required this._watchWalletTransactionByTxIdUsecase,
+    required this._calculateBitcoinAbsoluteFeesUsecase,
+    required this._updateSendSwapLockupFeesUsecase,
+    required this._verifyChainSwapAmountSendUsecase,
+    required this._previewBitcoinFeeUsecase,
+    required this._previewBitcoinFeePresetsUsecase,
+  }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -269,7 +230,8 @@ class SendCubit extends Cubit<SendState>
       RegExp(r'^["\"]+|["\"]+$'),
       '',
     );
-    final recipientChanged = state.paymentRequest != paymentRequest ||
+    final recipientChanged =
+        state.paymentRequest != paymentRequest ||
         state.scannedRawPaymentRequest != scannedRawPaymentRequest;
     emit(
       state.copyWith(
@@ -356,7 +318,9 @@ class SendCubit extends Cubit<SendState>
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
+              swapCreationException: AmountlessInvoiceException(
+                'Invoice has no amount',
+              ),
             ),
           );
           return;
@@ -1016,9 +980,7 @@ class SendCubit extends Cubit<SendState>
 
     if (state.blocksSwapDueToBitcoinHardwareWallet) {
       emit(
-        state.copyWith(
-          swapCreationException: HardwareWalletSwapException(),
-        ),
+        state.copyWith(swapCreationException: HardwareWalletSwapException()),
       );
       return;
     }
@@ -1194,7 +1156,8 @@ class SendCubit extends Cubit<SendState>
     try {
       final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
       final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
-      final ratesChanged = state.bitcoinFeesList != bitcoinFees ||
+      final ratesChanged =
+          state.bitcoinFeesList != bitcoinFees ||
           state.liquidFeesList != liquidFees;
       emit(
         state.copyWith(
@@ -1345,8 +1308,7 @@ class SendCubit extends Cubit<SendState>
     }
     emit(
       state.copyWith(
-        feePreviewCache:
-            state.feePreviewCache.copyWith(customLoading: true),
+        feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
       ),
     );
     log.info(
@@ -1399,8 +1361,7 @@ class SendCubit extends Cubit<SendState>
     if (address == null || amount == null) return;
     emit(
       state.copyWith(
-        feePreviewCache:
-            state.feePreviewCache.copyWith(presetsLoading: true),
+        feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
       ),
     );
     log.info(
@@ -1489,10 +1450,7 @@ class SendCubit extends Cubit<SendState>
       // (rate / amount / utxo selection). The getter falls back to the
       // rate × txSize prediction until the rebuild emits a fresh value.
       emit(
-        state.copyWith(
-          buildingTransaction: true,
-          bitcoinAbsoluteFeesSat: null,
-        ),
+        state.copyWith(buildingTransaction: true, bitcoinAbsoluteFeesSat: null),
       );
       await loadUtxos();
       final address = state.lightningSwap != null
@@ -1617,8 +1575,9 @@ class SendCubit extends Cubit<SendState>
         // exactly what `address` and `amount` resolve to above. The
         // verification step below runs on `txPreparation.unsignedPsbt`
         // whether it came from cache or a fresh build.
-        final cachedSlot =
-            state.feePreviewCache.slotFor(state.selectedFeeOption);
+        final cachedSlot = state.feePreviewCache.slotFor(
+          state.selectedFeeOption,
+        );
         final canUseCache = cachedSlot.isCacheReady;
         log.info(
           '[create-tx] build address=$address amount=$amount '
@@ -2221,10 +2180,7 @@ class SendCubit extends Cubit<SendState>
   /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
-  Future<void> _setSelectedWallet(
-    Wallet wallet, {
-    required bool manual,
-  }) async {
+  Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
     final walletChanged = state.selectedWallet?.id != wallet.id;
     emit(
       state.copyWith(

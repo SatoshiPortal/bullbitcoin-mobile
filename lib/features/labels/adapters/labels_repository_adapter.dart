@@ -7,8 +7,7 @@ import 'package:bb_mobile/features/labels/domain/new_label.dart';
 class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   final SqliteDatabase _database;
 
-  DriftLabelsRepositoryAdapter({required SqliteDatabase database})
-    : _database = database;
+  DriftLabelsRepositoryAdapter({required this._database});
 
   @override
   Future<LabelEntity> store(NewLabel newLabel) async {

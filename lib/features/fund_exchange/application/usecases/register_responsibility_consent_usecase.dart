@@ -14,8 +14,8 @@ class RegisterResponsibilityConsentUsecase {
   final FundingGatewayPort _fundingGateway;
 
   const RegisterResponsibilityConsentUsecase({
-    required FundingGatewayPort fundingGateway,
-  }) : _fundingGateway = fundingGateway;
+    required this._fundingGateway,
+  });
 
   Future<RegisterResponsibilityConsentResult> execute(
     RegisterResponsibilityConsentCommand command,

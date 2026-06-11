@@ -23,7 +23,6 @@ Future<void> main({bool isInitialized = false}) async {
       locator<ConvertSatsToCurrencyAmountUsecase>();
 
   const currency = 'USD';
-  final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
   group('Exchange Rate Integration Tests', () {
     group('have a working BullBitcoin API', () {
@@ -56,6 +55,10 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     group('have working conversion use cases', () {
+      // The BTC price is live and ticks between calls (and a slow setUpAll —
+      // e.g. Tor bootstrapping — can delay these tests by tens of seconds), so
+      // the reference price is fetched right next to each conversion and
+      // compared with a ~1% tolerance rather than for exact equality.
       test('that get the price of one bitcoin', () async {
         final amountSat = ConversionConstants.satsAmountOfOneBitcoin;
 
@@ -63,10 +66,12 @@ Future<void> main({bool isInitialized = false}) async {
           currencyCode: currency,
           amountSat: amountSat,
         );
+        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
-        debugPrint('Converted $amountSat sats to $amount $currency');
+        debugPrint('Converted $amountSat sats to $amount $currency '
+            '(reference price $bitcoinPrice)');
 
-        expect(amount, bitcoinPrice);
+        expect(amount, closeTo(bitcoinPrice, bitcoinPrice * 0.01));
       });
 
       test('that converts currency to sats', () async {
@@ -76,12 +81,13 @@ Future<void> main({bool isInitialized = false}) async {
           currencyCode: currency,
           amountFiat: amount,
         );
+        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
         debugPrint('Converted $amount $currency to $sats sats');
 
-        final expectedSats = BigInt.from((amount * 100000000) ~/ bitcoinPrice);
+        final expectedSats = amount * 100000000 / bitcoinPrice;
 
-        expect(sats, expectedSats);
+        expect(sats.toInt(), closeTo(expectedSats, expectedSats * 0.01));
       });
 
       test('that converts sats to currency', () async {
@@ -91,11 +97,12 @@ Future<void> main({bool isInitialized = false}) async {
           currencyCode: currency,
           amountSat: sats,
         );
+        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
         debugPrint('Converted $sats sats to $amount $currency');
 
         final expectedAmount = sats / BigInt.from(100000000) * bitcoinPrice;
-        expect(amount, expectedAmount);
+        expect(amount, closeTo(expectedAmount, expectedAmount * 0.01));
       });
     });
   });

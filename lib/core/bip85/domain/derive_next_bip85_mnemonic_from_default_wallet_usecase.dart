@@ -11,12 +11,10 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final SeedRepository _seedRepository;
 
   DeriveNextBip85MnemonicFromDefaultWalletUsecase({
-    required Bip85Repository bip85Repository,
-    required WalletRepository walletRepository,
-    required SeedRepository seedRepository,
-  }) : _bip85Repository = bip85Repository,
-       _walletRepository = walletRepository,
-       _seedRepository = seedRepository;
+    required this._bip85Repository,
+    required this._walletRepository,
+    required this._seedRepository,
+  });
 
   Future<({String derivation, bip39.Mnemonic mnemonic})> execute({
     bip39.MnemonicLength length = bip39.MnemonicLength.words12,

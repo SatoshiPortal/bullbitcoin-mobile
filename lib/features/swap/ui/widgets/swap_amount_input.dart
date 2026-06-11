@@ -13,10 +13,12 @@ class SwapAmountInput extends StatelessWidget {
     super.key,
     required this.amountController,
     required this.amountSat,
+    required this.focusNode,
   });
 
   final TextEditingController amountController;
   final int amountSat;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,9 @@ class SwapAmountInput extends StatelessWidget {
     );
     final amountValidationError = context.select(
       (TransferBloc bloc) => bloc.state.amountValidationError,
+    );
+    final isInsufficientBalance = context.select(
+      (TransferBloc bloc) => bloc.state.isInsufficientBalance,
     );
 
     return Column(
@@ -64,6 +69,7 @@ class SwapAmountInput extends StatelessWidget {
                       Expanded(
                         child: TextFormField(
                           controller: amountController,
+                          focusNode: focusNode,
                           keyboardType: TextInputType.numberWithOptions(
                             decimal: bitcoinUnit == BitcoinUnit.btc,
                           ),
@@ -100,10 +106,10 @@ class SwapAmountInput extends StatelessWidget {
             ),
           ),
         ),
-        if (amountValidationError != null) ...[
+        if (amountValidationError != null || isInsufficientBalance) ...[
           const Gap(8),
           Text(
-            amountValidationError,
+            amountValidationError ?? context.loc.swapInsufficientFunds,
             style: context.font.labelLarge?.copyWith(
               color: context.appColors.error,
             ),

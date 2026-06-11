@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
+  "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
+  "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
+  "backupWarningLoseReasonCriticalIssue": "Dojde ke kritickému problému s aplikací nebo zařízením",
+  "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
+  "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
+  "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
   "durationSeconds": "{seconds} vteřin(y)",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -811,6 +818,7 @@
     "description": "Message shown while broadcasting transaction to network"
   },
   "swapReceiveExactAmountLabel": "Získejte přesné množství",
+  "swapInsufficientFunds": "Nedostatek prostředků",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -895,7 +903,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3464,10 +3472,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "Maximální zůstatek 0,02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -4916,7 +4920,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -7688,6 +7692,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "Historie transakcí",
+  "transactionHistoryHeading": "Historie transakcí",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsStartDate": "Datum od",
+  "exportTransactionsEndDate": "Datum do",
+  "exportTransactionsAnyDate": "Jakékoli",
+  "exportTransactionsButton": "Exportovat CSV",
+  "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
+  "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Datum zahájení musí být před datem ukončení",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -8379,6 +8400,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
+    "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
+  "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
+  "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
+  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Neplatná data financování COP",
+  "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtuální platba není aktivována",
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro příjemce SEPA s IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Neplatný požadavek",
+  "fundExchangeErrorRcp400": "Neplatný požadavek",
+"fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
+  "fundExchangeErrorRcpPo404": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
+  "fundExchangeErrorRcpPosinpe404": "Pro přístup k této možnosti financování musí být vaše telefonní číslo registrováno v síti SINPE v Kostarice.",
+  "fundExchangeErrorFetchingBankCodes": "Chyba při načítání bankovních kódů. Zkuste to prosím později znovu.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -9493,10 +9529,6 @@
   "buyEnterBitcoinAddress": "Zadejte adresu Bitcoin",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "Cílová rovnováha 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "transactionDetailLabelPayoutAmount": "Výplatní částka",
   "@transactionDetailLabelPayoutAmount": {
@@ -11680,6 +11712,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
+  "broadcastSignedTxBroadcastError": "Nepodařilo se odvysílat transakci",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12446,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Naléhavé: Je vyžadována záloha a přeinstalace",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Vyžadována akce: Přeinstalujte aplikaci",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Zálohovat nyní",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Později",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Zpět",
   "@backButton": {
     "description": "Generic back button label"
@@ -12501,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "Standardní protokoly",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Vždy zapnuto — umožňuje nám vidět, zda se vaše peněženka bezpečně migruje mezi verzemi aplikace.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Použijte svou zálohu",
   "@appInitErrorHasBackupTitle": {
@@ -12589,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "coreScreensResolvingInputs": "Načítání vstupů transakce...",
   "coreScreensFeeRateLabel": "Sazba poplatku",
@@ -12657,8 +12661,8 @@
   "recipientsFieldRecipientNameLabel": "Jméno příjemce",
   "recipientsFieldPhoneNumber": "Telefonní číslo",
   "recipientsFieldPhoneNumberHint": "Zadejte telefonní číslo",
-  "recipientsFieldDocumentType": "Typ dokladu totožnosti",
-  "recipientsFieldDocumentNumberHint": "Zadejte číslo dokladu",
+  "recipientsFieldDocumentType": "Typ dokladu příjemce",
+  "recipientsFieldDocumentNumberHint": "Zadejte číslo dokladu příjemce",
   "recipientsFieldOwnerName": "Jméno majitele",
   "recipientsFieldOwnerNameHint": "Zadejte jméno majitele",
   "recipientsAccountOwnerQuestion": "Komu patří tento účet?",
@@ -12687,7 +12691,7 @@
   "recipientsFieldDebitCard": "Číslo debetní karty",
   "recipientsFieldDebitCardHint": "Zadejte číslo debetní karty",
   "recipientsFieldOwnerNameSinpeHint": "Jméno majitele se zobrazí zde",
-  "recipientsValidationSinpePhone": "Zadejte platné 8místné telefonní číslo",
+  "recipientsValidationSinpePhone": "Zadejte platné 8místné kostarické telefonní číslo bez kódu země",
   "recipientsValidationSinpeOwner": "Ověřte telefonní číslo",
   "recipientsFieldEmailAddress": "E-mailová adresa",
   "recipientsFieldEmailAddressHint": "Zadejte e-mailovou adresu",
@@ -12728,5 +12732,49 @@
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
   "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
-  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
+  "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
+  "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
+  "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
+  "recipientsCopDocNitRecipientNumber": "Daňové ID číslo příjemce",
+  "recipientsCopDocPassportRecipientNumber": "Číslo pasu příjemce",
+  "recipientsCopDocTiRecipientNumber": "Číslo občanského průkazu příjemce",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
+  "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
+  "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla",
+  "transactionStatusPayjoinCompleted": "Payjoin dokončen",
+  "homeActionBuy": "Koupit",
+  "homeActionSell": "Prodat",
+  "homeActionPay": "Zaplatit",
+  "homeActionTransfer": "Převést",
+  "backupCardTitle": "Chraňte své bitcoiny.",
+  "backupCardSubtitle": "Zazálohujte si peněženku hned teď.",
+  "mempoolCustomServerNoSsl": "Bez SSL",
+  "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
+  "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
+  "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
+  "recoverbullServerUsingDefault": "Používá se výchozí server",
+  "recoverbullServerUsingCustom": "Používá se vlastní server",
+  "recoverbullServerUrlLabel": "URL serveru:",
+  "recoverbullServerCustomWarning": "Používáte vlastní server Recoverbull. Ujistěte se, že tomuto serveru důvěřujete.",
+  "recoverbullServerTorNotice": "K tomuto serveru se připojíme přes Tor",
+  "recoverbullLearnMore": "Více informací o Recoverbull",
+  "recoverbullSettingsTitle": "Nastavení Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
+  "recoverbullSettingsEdit": "Upravit",
+  "recoverbullSettingsCancel": "Zrušit",
+  "recoverbullSettingsSave": "Uložit",
+  "recoverbullSettingsUrlRequired": "URL je povinná",
+  "recoverbullSettingsUrlInvalid": "URL není platná",
+  "recoverbullSettingsUrlMustBeHttp": "URL musí být HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL musí končit na .onion",
+  "onboardingAdvancedOptionsTitle": "Pokročilé možnosti",
+  "onboardingAdvancedOptionsDescription": "Před vytvořením nebo obnovením peněženky nakonfigurujte pokročilá nastavení",
+  "onboardingAdvancedOptionsCustomElectrum": "Vlastní server Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Vlastní server Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
+  "onboardingAdvancedOptionsDone": "Hotovo",
+  "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu"
 }

@@ -530,11 +530,26 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      order.payinCurrency == 'LBTC' ||
+                          order.payinCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payinAmount),
+                              )
+                            : FormatAmount.btc(order.payinAmount)
+                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue:
+                      order.payoutCurrency == 'LBTC' ||
+                          order.payoutCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payoutAmount),
+                              )
+                            : FormatAmount.btc(order.payoutAmount)
+                      : '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -591,11 +606,26 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      order.payinCurrency == 'LBTC' ||
+                          order.payinCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payinAmount),
+                              )
+                            : FormatAmount.btc(order.payinAmount)
+                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue:
+                      order.payoutCurrency == 'LBTC' ||
+                          order.payoutCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payoutAmount),
+                              )
+                            : FormatAmount.btc(order.payoutAmount)
+                      : '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)

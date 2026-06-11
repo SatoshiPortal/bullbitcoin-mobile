@@ -10,8 +10,8 @@ import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
@@ -73,7 +73,7 @@ class LwkWalletDatasource {
 
   Future<void> sync({
     required WalletModel wallet,
-    required ElectrumServer electrumServer,
+    required ElectrumConnection electrumServer,
   }) {
     // TODO: if needed, add these debugPrint to a filterable logger.debug
     // TODO: to avoid spamming the terminal with recurring prints

@@ -1,4 +1,13 @@
 {
+  "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
+  "backupWarningLoseReasonLostPhone": "Utapoteza simu yako",
+  "backupWarningLoseReasonDeletedApp": "Utafuta programu",
+  "backupWarningLoseReasonCriticalIssue": "Tatizo kubwa la programu au kifaa litatokea",
+  "backupWarningLoseReasonKeystore": "Kifaa chako kitabatilisha hifadhi ya funguo (keystore) unapobadilisha njia ya kufungua skrini/uthibitishaji wa kifaa",
+  "backupWarningLoseReasonCloudRestore": "Utarejesha kifaa chako kutoka kwenye nakala rudufu ya wingu",
+  "backupWarningNoRecovery": "Hakuna njia ya kurejesha pochi yako bila nakala rudufu.",
+  "swapInsufficientFunds": "Fedha hazitoshi",
+  "broadcastSignedTxBroadcastError": "Imeshindwa kutangaza muamala",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
@@ -74,30 +83,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Haraka: Nakala Rudufu na Usakinishaji Upya Unahitajika",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Hatua Inahitajika: Sakinisha Upya Programu",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Hifadhi sasa",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Baadaye",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
   "backButton": "Rudi",
   "@backButton": {
@@ -130,10 +115,6 @@
   "errorReportingStandardLogsTitle": "Rekodi za kawaida",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Inaendelea kuwashwa — inatuwezesha kuona kama pochi yako inahama kwa usalama kati ya matoleo ya programu.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Tumia nakala rudufu yako",
   "@appInitErrorHasBackupTitle": {
@@ -218,10 +199,9 @@
   "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
   "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Fungua programu ndani ya saa 24 ili kukamilisha swap yako.",
   "appStartupErrorMessage": "Programu imeshindwa kuanza. Jaribu kuifunga kabisa na kuanzisha upya. Ikiwa tatizo linaendelea, wasiliana na usaidizi na shiriki logi zako.",
   "importMnemonicDuplicateError": "Msemo huu tayari upo",
-  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "transactionStatusPayjoinCompleted": "Payjoin imekamilika",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -238,8 +218,87 @@
   "viewerCopyLink": "Nakili kiungo",
   "transactionViewerTitle": "Kitambulisho cha muamala",
   "invoiceViewerTitle": "Ankara",
+  "recipientsFieldSinpePhoneNumberHint": "Tarakimu 8 bila msimbo wa nchi",
+  "recipientsCopDocCcRecipientNumber": "Nambari ya cédula ya mpokeaji",
+  "recipientsCopDocCeRecipientNumber": "Nambari ya cédula de extranjería ya mpokeaji",
+  "recipientsCopDocNitRecipientNumber": "Nambari ya utambulisho wa kodi ya mpokeaji",
+  "recipientsCopDocPassportRecipientNumber": "Nambari ya pasipoti ya mpokeaji",
+  "recipientsCopDocTiRecipientNumber": "Nambari ya kadi ya kitambulisho ya mpokeaji",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Nambari ya usajili wa kiraia ya mpokeaji",
+  "recipientsValidationSinpePhoneCountryCode": "Ondoa msimbo wa nchi (+506). Weka nambari ya tarakimu 8 tu",
+  "recipientsValidationSinpePhoneInvalidChars": "Tumia tarakimu tu (hakuna herufi au alama)",
+  "recipientsValidationSinpePhoneTooShort": "Weka tarakimu zote 8 za nambari ya simu",
+  "recipientsFieldDocumentType": "Aina ya kitambulisho cha mpokeaji",
+  "recipientsFieldDocumentNumberHint": "Weka nambari ya kitambulisho cha mpokeaji",
+  "recipientsValidationSinpePhone": "Weka nambari halali ya simu ya Costa Rica yenye tarakimu 8 bila msimbo wa nchi",
   "payDescriptionLabel": "Maelezo ya malipo (hiari)",
   "payDescriptionHint": "Ongeza dokezo kwa malipo haya",
   "payPaymentDescription": "Maelezo ya malipo",
-  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo"
+  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo",
+  "transactionHistoryTitle": "Historia ya muamala",
+  "transactionHistoryHeading": "Historia ya muamala",
+  "exportTransactionsDescription": "Hamisha miamala yote ya pochi yako (Bitcoin, Liquid, Lightning na swaps) kama faili la CSV. Chagua kuchuja kwa muda wa tarehe.",
+  "exportTransactionsStartDate": "Tarehe ya kuanza",
+  "exportTransactionsEndDate": "Tarehe ya mwisho",
+  "exportTransactionsAnyDate": "Yoyote",
+  "exportTransactionsButton": "Hamisha CSV",
+  "exportTransactionsSuccess": "Miamala imehamishwa kwa mafanikio",
+  "exportTransactionsEmpty": "Hakuna miamala ya kuhamisha kwa kipindi kilichochaguliwa",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Tarehe ya kuanza lazima iwe kabla ya tarehe ya kumaliza",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "homeActionBuy": "Nunua",
+  "homeActionSell": "Uza",
+  "homeActionPay": "Lipa",
+  "homeActionTransfer": "Hamisha",
+  "backupCardTitle": "Linda bitcoin yako.",
+  "backupCardSubtitle": "Hifadhi nakala ya pochi yako sasa.",
+  "mempoolCustomServerNoSsl": "Hakuna SSL",
+  "autoswapTargetBalanceLabel": "Salio Lengwa la Pochi ya Papo Hapo",
+  "autoswapMaximumBalanceLabel": "Salio la Juu Zaidi la Pochi ya Papo Hapo",
+  "recoverbullServerConfirmTitle": "Seva ya Urejeshaji wa Vault",
+  "recoverbullServerUsingDefault": "Inatumia Seva Chaguomsingi",
+  "recoverbullServerUsingCustom": "Inatumia Seva Maalum",
+  "recoverbullServerUrlLabel": "URL ya Seva:",
+  "recoverbullServerCustomWarning": "Unatumia seva maalum ya Recoverbull. Hakikisha unaamini seva hii.",
+  "recoverbullServerTorNotice": "Tutaunganishwa na seva hii kupitia Tor",
+  "recoverbullLearnMore": "Jifunze zaidi kuhusu Recoverbull",
+  "recoverbullSettingsTitle": "Mipangilio ya Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL ya Seva ya Ufunguo",
+  "recoverbullSettingsEdit": "Hariri",
+  "recoverbullSettingsCancel": "Ghairi",
+  "recoverbullSettingsSave": "Hifadhi",
+  "recoverbullSettingsUrlRequired": "URL inahitajika",
+  "recoverbullSettingsUrlInvalid": "URL si sahihi",
+  "recoverbullSettingsUrlMustBeHttp": "URL lazima iwe HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL lazima iishie na .onion",
+  "onboardingAdvancedOptionsTitle": "Chaguo za Kina",
+  "onboardingAdvancedOptionsDescription": "Sanidi mipangilio ya kina kabla ya kuunda au kurejesha pochi yako",
+  "onboardingAdvancedOptionsCustomElectrum": "Seva Maalum ya Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Seva Maalum ya Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Seva Maalum ya Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Unaweza kubadilisha mipangilio hii baadaye katika Mipangilio ya Programu",
+  "onboardingAdvancedOptionsDone": "Imekamilika",
+  "appStartupContactSupportMessage": "Wasiliana na usaidizi kupitia app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox inasaidiwa kwenye Android pekee",
+    "fundExchangeErrorTitleOrdPo404": "Chaguo la Malipo Halipatikani",
+  "fundExchangeErrorTitleRcpPo404": "Chaguo la Malipo Halipatikani",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Haipatikani",
+  "fundExchangeErrorTitleOrdKyc400": "Mahitaji ya KYC Yamekosekana",
+  "fundExchangeErrorOrdKyc400": "Huna mahitaji ya KYC kwa ajili ya kitendo hiki: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Data ya Ufadhili wa COP si Sahihi",
+  "fundExchangeErrorOrdCop400": "Data ya ombi si sahihi kwa ufadhili wa COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Malipo ya Mtandaoni Hayajawashwa",
+  "fundExchangeErrorOrdCsrcp400": "Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji wa SEPA mwenye IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Ombi si Sahihi",
+  "fundExchangeErrorRcp400": "Ombi si sahihi",
+"fundExchangeErrorOrdPo404": "Hakuna chaguo la malipo linalopatikana",
+  "fundExchangeErrorRcpPo404": "Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako",
+  "fundExchangeErrorRcpPosinpe404": "Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye."
 }

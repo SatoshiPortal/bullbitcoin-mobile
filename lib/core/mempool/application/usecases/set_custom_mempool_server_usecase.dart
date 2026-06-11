@@ -49,12 +49,10 @@ class SetCustomMempoolServerUsecase {
   final MempoolEnvironmentPort _environmentPort;
 
   SetCustomMempoolServerUsecase({
-    required MempoolServerRepository serverRepository,
-    required MempoolServerValidatorPort validator,
-    required MempoolEnvironmentPort environmentPort,
-  }) : _serverRepository = serverRepository,
-       _validator = validator,
-       _environmentPort = environmentPort;
+    required this._serverRepository,
+    required this._validator,
+    required this._environmentPort,
+  });
 
   Future<SetCustomMempoolServerResult> execute(
     SetCustomMempoolServerRequest request, {

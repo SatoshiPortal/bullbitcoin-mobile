@@ -6,8 +6,8 @@ class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
   final SettingsRepository _settingsRepository;
 
   SettingsEnvironmentAdapter({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   @override
   Future<Environment> getEnvironment() async {

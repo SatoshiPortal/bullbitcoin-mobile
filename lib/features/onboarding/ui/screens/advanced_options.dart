@@ -38,7 +38,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Advanced Options')),
+      appBar: AppBar(title: Text(context.loc.onboardingAdvancedOptionsTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -55,7 +55,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                           vertical: 8,
                         ),
                         child: Text(
-                          'Configure advanced settings before creating or recovering your wallet',
+                          context.loc.onboardingAdvancedOptionsDescription,
                           style: context.font.bodyMedium?.copyWith(
                             color: context.appColors.onSurface.withValues(
                               alpha: 0.7,
@@ -67,7 +67,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       const TorProxyWidget(),
                       SettingsEntryItem(
                         icon: Icons.hub,
-                        title: 'Custom Electrum Server',
+                        title: context.loc.onboardingAdvancedOptionsCustomElectrum,
                         onTap: () {
                           context.pushNamed(
                             ElectrumSettingsRoute.electrumSettings.name,
@@ -76,14 +76,15 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       ),
                       SettingsEntryItem(
                         icon: Icons.memory,
-                        title: 'Custom Mempool Server',
+                        title: context.loc.onboardingAdvancedOptionsCustomMempool,
                         onTap: () {
                           context.pushNamed(MempoolSettingsRoute.name);
                         },
                       ),
                       SettingsEntryItem(
                         icon: Icons.cloud_circle,
-                        title: 'Custom Recoverbull Server',
+                        title:
+                            context.loc.onboardingAdvancedOptionsCustomRecoverbull,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -106,7 +107,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'You can change these settings later in App Settings',
+                          context.loc.onboardingAdvancedOptionsFooter,
                           style: context.font.bodySmall?.copyWith(
                             color: context.appColors.onSurface.withValues(
                               alpha: 0.6,
@@ -121,7 +122,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
               Padding(
                 padding: EdgeInsets.only(bottom: Device.screen.height * 0.05),
                 child: BBButton.big(
-                  label: 'Done',
+                  label: context.loc.onboardingAdvancedOptionsDone,
                   onPressed: () => Navigator.of(context).pop(),
                   bgColor: context.appColors.onSurface,
                   textColor: context.appColors.surface,

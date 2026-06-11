@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 class BumpFeeUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
-  BumpFeeUsecase({required BitcoinWalletRepository bitcoinWalletRepository})
-    : _bitcoinWalletRepository = bitcoinWalletRepository;
+  BumpFeeUsecase({required this._bitcoinWalletRepository});
 
   Future<String> execute({
     required String walletId,

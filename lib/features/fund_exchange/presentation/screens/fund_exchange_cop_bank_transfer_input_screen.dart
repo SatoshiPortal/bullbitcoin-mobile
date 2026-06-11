@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart'; // FundExchangePresentationError
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +32,7 @@ class _FundExchangeCopBankTransferInputScreenState
   bool isLoadingFundingDetails = false;
   FundExchangePresentationError? _fundingDetailsError;
   late final TextEditingController _amountController;
+  final FocusNode _amountNode = FocusNode();
   late final StreamSubscription<FundExchangeState> _blocSubscription;
 
   @override
@@ -56,6 +59,7 @@ class _FundExchangeCopBankTransferInputScreenState
   void dispose() {
     _blocSubscription.cancel();
     _amountController.dispose();
+    _amountNode.dispose();
     super.dispose();
   }
 
@@ -100,230 +104,236 @@ class _FundExchangeCopBankTransferInputScreenState
         }
       },
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.fundExchangeBankTransfer),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
-            height: 3,
-            trigger: isLoadingFundingDetails,
-            backgroundColor: context.appColors.surface,
-            foregroundColor: context.appColors.primary,
+        appBar: AppBar(
+          title: Text(context.loc.fundExchangeBankTransfer),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
+            child: FadingLinearProgress(
+              height: 3,
+              trigger: isLoadingFundingDetails,
+              backgroundColor: context.appColors.surface,
+              foregroundColor: context.appColors.primary,
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: ScrollableColumn(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    color: context.appColors.tertiary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border(
-                      left: BorderSide(
-                        color: context.appColors.tertiary,
-                        width: 4.0,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 20,
-                        color: context.appColors.onSurface,
-                      ),
-                      const Gap(8.0),
-                      Expanded(
-                        child: BBText(
-                          context.loc.fundExchangeCopDailyLimitWarning,
-                          style: theme.textTheme.bodyMedium,
+        body: SafeArea(
+          child: BBKeyboardActions(
+            disableScroll: true,
+            focusNodes: [_amountNode],
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: ScrollableColumn(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: context.appColors.tertiary.withValues(
+                          alpha: 0.15,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border(
+                          left: BorderSide(
+                            color: context.appColors.tertiary,
+                            width: 4.0,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const Gap(24.0),
-                // Sender Name (read-only with copy)
-                BBText(
-                  context.loc.fundExchangeCopSenderName,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  color: context.appColors.secondary,
-                ),
-                const Gap(8.0),
-                TextFormField(
-                  initialValue: senderName,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: context.appColors.onSecondary,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: context.appColors.onSurface,
+                          ),
+                          const Gap(8.0),
+                          Expanded(
+                            child: BBText(
+                              context.loc.fundExchangeCopDailyLimitWarning,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
+                    const Gap(24.0),
+                    // Sender Name (read-only with copy)
+                    BBText(
+                      context.loc.fundExchangeCopSenderName,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      color: context.appColors.secondary,
+                    ),
+                    const Gap(8.0),
+                    TextFormField(
+                      initialValue: senderName,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: context.appColors.onSecondary,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 14.0,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: senderName));
+                          },
+                          icon: const Icon(Icons.copy, size: 20),
+                        ),
                       ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 14.0,
+                    const Gap(24.0),
+                    // Issuing Bank dropdown
+                    BBText(
+                      context.loc.fundExchangeCopIssuingBank,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      color: context.appColors.secondary,
                     ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: senderName));
+                    const Gap(8.0),
+                    DropdownButtonFormField<FundingInstitution>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: context.appColors.onSecondary,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                      ),
+                      icon: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: context.appColors.secondary,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedInstitution = value;
+                        });
                       },
-                      icon: const Icon(Icons.copy, size: 20),
+                      validator: (v) => v == null
+                          ? context.loc.fundExchangeCopSelectBankError
+                          : null,
+                      items: institutions.map((institution) {
+                        return DropdownMenuItem<FundingInstitution>(
+                          value: institution,
+                          child: Text(institution.name),
+                        );
+                      }).toList(),
                     ),
-                  ),
-                ),
-                const Gap(24.0),
-                // Issuing Bank dropdown
-                BBText(
-                  context.loc.fundExchangeCopIssuingBank,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  color: context.appColors.secondary,
-                ),
-                const Gap(8.0),
-                DropdownButtonFormField<FundingInstitution>(
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: context.appColors.onSecondary,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
+                    const Gap(24.0),
+                    // Amount field
+                    BBText(
+                      context.loc.fundExchangeCopAmount,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
                       ),
+                      color: context.appColors.secondary,
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
+                    const Gap(8.0),
+                    TextFormField(
+                      controller: _amountController,
+                      focusNode: _amountNode,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: context.appColors.onSecondary,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 14.0,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () async {
+                            final data = await Clipboard.getData(
+                              Clipboard.kTextPlain,
+                            );
+                            if (data?.text != null) {
+                              _amountController.text = data!.text!.replaceAll(
+                                RegExp(r'[^0-9]'),
+                                '',
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.content_paste, size: 20),
+                        ),
                       ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.appColors.secondary,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedInstitution = value;
-                    });
-                  },
-                  validator: (v) => v == null
-                      ? context.loc.fundExchangeCopSelectBankError
-                      : null,
-                  items: institutions.map((institution) {
-                    return DropdownMenuItem<FundingInstitution>(
-                      value: institution,
-                      child: Text(institution.name),
-                    );
-                  }).toList(),
-                ),
-                const Gap(24.0),
-                // Amount field
-                BBText(
-                  context.loc.fundExchangeCopAmount,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  color: context.appColors.secondary,
-                ),
-                const Gap(8.0),
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.done,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: context.appColors.onSecondary,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: context.appColors.secondaryFixedDim,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 14.0,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () async {
-                        final data =
-                            await Clipboard.getData(Clipboard.kTextPlain);
-                        if (data?.text != null) {
-                          _amountController.text = data!.text!
-                              .replaceAll(RegExp(r'[^0-9]'), '');
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) {
+                          return context.loc.fundExchangeCopEnterAmountError;
                         }
+                        final amount = int.tryParse(
+                          v.replaceAll(RegExp(r'[^0-9]'), ''),
+                        );
+                        if (amount == null || amount <= 0) {
+                          return context.loc.fundExchangeCopValidAmountError;
+                        }
+                        return null;
                       },
-                      icon: const Icon(Icons.content_paste, size: 20),
+                      onFieldSubmitted: (_) => _submitForm(),
                     ),
-                  ),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return context.loc.fundExchangeCopEnterAmountError;
-                    }
-                    final amount = int.tryParse(
-                      v.replaceAll(RegExp(r'[^0-9]'), ''),
-                    );
-                    if (amount == null || amount <= 0) {
-                      return context.loc.fundExchangeCopValidAmountError;
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) => _submitForm(),
+                    const Gap(32.0),
+                    if (_fundingDetailsError != null) ...[
+                      FundExchangeErrorText(error: _fundingDetailsError!),
+                      const Gap(8.0),
+                    ],
+                    BBButton.big(
+                      label: context.loc.fundExchangeCopGeneratePaymentLink,
+                      disabled:
+                          isLoadingFundingDetails ||
+                          _selectedInstitution == null,
+                      onPressed: _submitForm,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                    ),
+                  ],
                 ),
-                const Gap(32.0),
-                if (_fundingDetailsError != null) ...[
-                  BBText(
-                    context.loc.fundExchangeErrorLoadingDetails,
-                    style: theme.textTheme.bodyMedium,
-                    color: theme.colorScheme.error,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(8.0),
-                ],
-                BBButton.big(
-                  label: context.loc.fundExchangeCopGeneratePaymentLink,
-                  disabled: isLoadingFundingDetails || _selectedInstitution == null,
-                  onPressed: _submitForm,
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
-                ),
-              ],
+              ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 }
-

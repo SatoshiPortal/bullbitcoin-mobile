@@ -5,8 +5,8 @@ class CheckTorProxyConnectionUsecase {
   final TorConnectivityService _torConnectivityService;
 
   CheckTorProxyConnectionUsecase({
-    required TorConnectivityService torConnectivityService,
-  }) : _torConnectivityService = torConnectivityService;
+    required this._torConnectivityService,
+  });
 
   Future<TorStatus> execute(int port) async {
     return _torConnectivityService.checkConnection(port);

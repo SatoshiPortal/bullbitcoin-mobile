@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
+  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
+  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
+  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
+  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
+  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
+  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
   "settingsTelegramLabel": "تلگرام",
   "@settingsTelegramLabel": {
     "description": "Label for the Telegram link in settings"
@@ -1727,6 +1734,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "دریافت مقدار دقیق",
+  "swapInsufficientFunds": "وجوه ناکافی",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -1799,7 +1807,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "سریع ترین - فقط برای معاملات زیر 20،000 یورو",
+  "fundExchangeMethodInstantSepaSubtitle": "سریع ترین - فقط برای معاملات زیر 30،000 یورو",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -5375,7 +5383,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "فقط برای معاملات بزرگتر بالای 20،000 یورو استفاده کنید",
+  "fundExchangeMethodRegularSepaSubtitle": "فقط برای معاملات بزرگتر بالای 30،000 یورو استفاده کنید",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -7705,6 +7713,23 @@
   "@dcaConfirmNetwork": {
     "description": "Field label for network"
   },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "transactionHistoryHeading": "تاریخچه تراکنش‌ها",
+  "exportTransactionsDescription": "همه تراکنش‌های کیف پول خود (بیت‌کوین، لیکویید، لایتنینگ و سوآپ‌ها) را به‌صورت فایل CSV صادر کنید. به‌صورت اختیاری بر اساس بازه زمانی فیلتر کنید.",
+  "exportTransactionsStartDate": "تاریخ شروع",
+  "exportTransactionsEndDate": "تاریخ پایان",
+  "exportTransactionsAnyDate": "هر تاریخ",
+  "exportTransactionsButton": "خروجی CSV",
+  "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
+  "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "تاریخ شروع باید قبل از تاریخ پایان باشد",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "برچسب های BIP30",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -8296,6 +8321,21 @@
     "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "جزئیات پرداخت را نمی توان در این لحظه بارگذاری کرد. لطفاً برگردید و دوباره امتحان کنید، روش پرداخت دیگری را انتخاب کنید یا بعداً برگردید.",
+    "fundExchangeErrorTitleOrdPo404": "گزینه پرداخت در دسترس نیست",
+  "fundExchangeErrorTitleRcpPo404": "گزینه پرداخت موجود نیست",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE در دسترس نیست",
+  "fundExchangeErrorTitleOrdKyc400": "الزامات KYC ناقص است",
+  "fundExchangeErrorOrdKyc400": "شما الزامات KYC لازم برای این عمل را ندارید: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "داده‌های تأمین مالی COP نامعتبر است",
+  "fundExchangeErrorOrdCop400": "داده‌های درخواست برای تأمین مالی COP نامعتبر است: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "پرداخت مجازی فعال نشده است",
+  "fundExchangeErrorOrdCsrcp400": "لطفاً گزینه پرداخت مجازی را برای گیرنده SEPA با IBAN فعال کنید: {iban}",
+  "fundExchangeErrorTitleRcp400": "درخواست نامعتبر",
+  "fundExchangeErrorRcp400": "درخواست نامعتبر",
+"fundExchangeErrorOrdPo404": "گزینه پرداختی در دسترس نیست",
+  "fundExchangeErrorRcpPo404": "شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست",
+  "fundExchangeErrorRcpPosinpe404": "برای دسترسی به این گزینه تأمین مالی، شماره تلفن شما باید در شبکه SINPE در کاستاریکا ثبت شده باشد.",
+  "fundExchangeErrorFetchingBankCodes": "خطا در دریافت کدهای بانکی. لطفاً بعداً دوباره تلاش کنید.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -11192,6 +11232,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "پخش ...",
+  "broadcastSignedTxBroadcastError": "ارسال تراکنش ناموفق بود",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -11693,10 +11734,6 @@
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "autoswapWarningTriggerAmount": "حداکثر تعادل 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "informationWillNotLeave": "این اطلاعات ",
   "@informationWillNotLeave": {
     "description": "First part of privacy assurance message"
@@ -12195,10 +12232,6 @@
   "@importQrDeviceSeedsignerStep8": {
     "description": "SeedSigner instruction step 8"
   },
-  "autoswapWarningBaseBalance": "هدف قرار دادن تعادل 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "savingToDevice": "پس انداز برای دستگاه شما.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
@@ -12446,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "فوری: پشتیبان‌گیری و نصب مجدد الزامی است",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "اقدام لازم: نصب مجدد برنامه",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "اکنون پشتیبان بگیر",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "بعداً",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "بازگشت",
   "@backButton": {
     "description": "Generic back button label"
@@ -12501,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "گزارش‌های استاندارد",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
   "@appInitErrorHasBackupTitle": {
@@ -12589,8 +12594,8 @@
   "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
   "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید",
   "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12606,5 +12611,52 @@
   "viewerViewInExplorer": "مشاهده در اکسپلورر",
   "transactionViewerTitle": "شناسه تراکنش",
   "invoiceViewerTitle": "صورتحساب",
-  "viewerCopyLink": "لینک را کپی کنید"
+  "viewerCopyLink": "لینک را کپی کنید",
+  "recipientsFieldSinpePhoneNumberHint": "۸ رقم بدون کد کشور",
+  "recipientsCopDocCcRecipientNumber": "شماره cédula گیرنده",
+  "recipientsCopDocCeRecipientNumber": "شماره cédula de extranjería گیرنده",
+  "recipientsCopDocNitRecipientNumber": "شماره شناسه مالیاتی گیرنده",
+  "recipientsCopDocPassportRecipientNumber": "شماره گذرنامه گیرنده",
+  "recipientsCopDocTiRecipientNumber": "شماره کارت هویت گیرنده",
+  "recipientsCopDocRegistroCivilRecipientNumber": "شماره ثبت احوال گیرنده",
+  "recipientsValidationSinpePhoneCountryCode": "کد کشور (۵۰۶+) را حذف کنید. فقط شماره ۸ رقمی را وارد کنید",
+  "recipientsValidationSinpePhoneInvalidChars": "فقط از ارقام استفاده کنید (بدون حروف یا نمادها)",
+  "recipientsValidationSinpePhoneTooShort": "تمام ۸ رقم شماره تلفن را وارد کنید",
+  "recipientsFieldDocumentType": "نوع شناسه گیرنده",
+  "recipientsFieldDocumentNumberHint": "شماره شناسه گیرنده را وارد کنید",
+  "recipientsValidationSinpePhone": "یک شماره تلفن ۸ رقمی معتبر کاستاریکا بدون کد کشور وارد کنید",
+  "homeActionBuy": "خرید",
+  "homeActionSell": "فروش",
+  "homeActionPay": "پرداخت",
+  "homeActionTransfer": "انتقال",
+  "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
+  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
+  "mempoolCustomServerNoSsl": "بدون SSL",
+  "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
+  "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
+  "recoverbullServerConfirmTitle": "سرور بازیابی والت",
+  "recoverbullServerUsingDefault": "استفاده از سرور پیش‌فرض",
+  "recoverbullServerUsingCustom": "استفاده از سرور سفارشی",
+  "recoverbullServerUrlLabel": "آدرس سرور:",
+  "recoverbullServerCustomWarning": "شما در حال استفاده از یک سرور Recoverbull سفارشی هستید. مطمئن شوید که به این سرور اعتماد دارید.",
+  "recoverbullServerTorNotice": "ما از طریق Tor به این سرور متصل می‌شویم",
+  "recoverbullLearnMore": "درباره Recoverbull بیشتر بدانید",
+  "recoverbullSettingsTitle": "تنظیمات Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL سرور کلید",
+  "recoverbullSettingsEdit": "ویرایش",
+  "recoverbullSettingsCancel": "لغو",
+  "recoverbullSettingsSave": "ذخیره",
+  "recoverbullSettingsUrlRequired": "آدرس الزامی است",
+  "recoverbullSettingsUrlInvalid": "آدرس معتبر نیست",
+  "recoverbullSettingsUrlMustBeHttp": "آدرس باید HTTP باشد",
+  "recoverbullSettingsUrlMustBeOnion": "آدرس باید به .onion ختم شود",
+  "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
+  "onboardingAdvancedOptionsDescription": "پیش از ساخت یا بازیابی کیف پول خود، تنظیمات پیشرفته را پیکربندی کنید",
+  "onboardingAdvancedOptionsCustomElectrum": "سرور Electrum سفارشی",
+  "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
+  "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
+  "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
+  "onboardingAdvancedOptionsDone": "انجام شد",
+  "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
+  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود"
 }

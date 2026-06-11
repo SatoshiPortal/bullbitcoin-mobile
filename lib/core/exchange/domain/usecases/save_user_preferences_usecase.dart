@@ -7,12 +7,10 @@ class SaveUserPreferencesUsecase {
   final SettingsRepository _settingsRepository;
 
   SaveUserPreferencesUsecase({
-    required ExchangeUserRepository mainnetExchangeUserRepository,
-    required ExchangeUserRepository testnetExchangeUserRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeUserRepository = mainnetExchangeUserRepository,
-       _testnetExchangeUserRepository = testnetExchangeUserRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeUserRepository,
+    required this._testnetExchangeUserRepository,
+    required this._settingsRepository,
+  });
 
   Future<void> execute({
     String? language,

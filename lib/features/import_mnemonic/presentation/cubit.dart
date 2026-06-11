@@ -9,17 +9,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   final ImportWalletUsecase _importWalletUsecase;
-  final TheDirtyUsecase _checkWalletUsecase;
+  final CheckWalletStatusUsecase _checkWalletUsecase;
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
 
   ImportMnemonicCubit({
-    required ImportWalletUsecase importWalletUsecase,
-    required TheDirtyUsecase checkWalletUsecase,
-    required CheckDuplicateMnemonicUsecase checkDuplicateMnemonicUsecase,
-  }) : _importWalletUsecase = importWalletUsecase,
-       _checkWalletUsecase = checkWalletUsecase,
-       _checkDuplicateMnemonicUsecase = checkDuplicateMnemonicUsecase,
-       super(const ImportMnemonicState());
+    required this._importWalletUsecase,
+    required this._checkWalletUsecase,
+    required this._checkDuplicateMnemonicUsecase,
+  }) : super(const ImportMnemonicState());
 
   void clearError() => emit(state.copyWith(error: null));
 

@@ -6,8 +6,8 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
 
   ExchangeApiKeyRepositoryImpl({
-    required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
-  }) : _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource;
+    required this._bullbitcoinApiKeyDatasource,
+  });
 
   @override
   Future<void> saveApiKey(

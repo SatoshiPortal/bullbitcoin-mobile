@@ -1,4 +1,13 @@
 {
+  "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
+  "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
+  "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
+  "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",
+  "backupWarningLoseReasonKeystore": "თქვენი მოწყობილობა გააუქმებს გასაღებების საცავს (keystore) ეკრანის დაბლოკვის/მოწყობილობის ავთენტიფიკაციის შეცვლისას",
+  "backupWarningLoseReasonCloudRestore": "აღადგენთ თქვენს მოწყობილობას ღრუბლოვანი სარეზერვო ასლიდან",
+  "backupWarningNoRecovery": "სარეზერვო ასლის გარეშე საფულის აღდგენა შეუძლებელია.",
+  "swapInsufficientFunds": "არასაკმარისი სახსრები",
+  "broadcastSignedTxBroadcastError": "ტრანზაქციის გავრცელება ვერ მოხერხდა",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
@@ -266,30 +275,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "სასწრაფო: საჭიროა სარეზერვო ასლი და ხელახლა ინსტალაცია",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "საჭიროა მოქმედება: ხელახლა დააინსტალირეთ აპლიკაცია",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "სარეზერვო ასლი ახლავე",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "მოგვიანებით",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
   "backButton": "უკან",
   "@backButton": {
@@ -322,10 +307,6 @@
   "errorReportingStandardLogsTitle": "სტანდარტული ჟურნალები",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "ყოველთვის ჩართული — საშუალებას გვაძლევს ვნახოთ, თქვენი საფულე უსაფრთხოდ გადადის აპის ვერსიებს შორის თუ არა.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "გამოიყენეთ თქვენი სარეზერვო ასლი",
   "@appInitErrorHasBackupTitle": {
@@ -410,10 +391,9 @@
   "legacyStorageHasBackupImportantBody": "გთხოვთ, არ გამოტოვოთ ეს პროცესი, თუ არ გჭირდებათ საფულის გადაუდებელი გამოყენება ან არ ელოდებით სვოპის დასრულებას.",
   "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "გახსენით აპი 24 საათის განმავლობაში, რათა დაასრულოთ თქვენი სვოპი.",
   "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
   "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს",
-  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "transactionStatusPayjoinCompleted": "Payjoin დასრულდა",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -430,8 +410,87 @@
   "transactionViewerTitle": "ტრანსაქციის ID ",
   "invoiceViewerTitle": "ინვოისი",
   "viewerCopyLink": "ბმულის კოპირება",
+  "recipientsFieldSinpePhoneNumberHint": "8 ციფრი ქვეყნის კოდის გარეშე",
+  "recipientsCopDocCcRecipientNumber": "მიმღების cédula ნომერი",
+  "recipientsCopDocCeRecipientNumber": "მიმღების cédula de extranjería ნომერი",
+  "recipientsCopDocNitRecipientNumber": "მიმღების საგადასახადო ID ნომერი",
+  "recipientsCopDocPassportRecipientNumber": "მიმღების პასპორტის ნომერი",
+  "recipientsCopDocTiRecipientNumber": "მიმღების პირადობის მოწმობის ნომერი",
+  "recipientsCopDocRegistroCivilRecipientNumber": "მიმღების სამოქალაქო რეესტრის ნომერი",
+  "recipientsValidationSinpePhoneCountryCode": "წაშალეთ ქვეყნის კოდი (+506). შეიყვანეთ მხოლოდ 8-ციფრიანი ნომერი",
+  "recipientsValidationSinpePhoneInvalidChars": "გამოიყენეთ მხოლოდ ციფრები (ასოები ან სიმბოლოები არ შეიძლება)",
+  "recipientsValidationSinpePhoneTooShort": "შეიყვანეთ ტელეფონის ნომრის ყველა 8 ციფრი",
+  "recipientsFieldDocumentType": "მიმღების პირადობის ტიპი",
+  "recipientsFieldDocumentNumberHint": "შეიყვანეთ მიმღების პირადობის ნომერი",
+  "recipientsValidationSinpePhone": "შეიყვანეთ მოქმედი 8-ციფრიანი კოსტა რიკის ტელეფონის ნომერი ქვეყნის კოდის გარეშე",
   "payDescriptionLabel": "გადახდის აღწერა (არასავალდებულო)",
   "payDescriptionHint": "დაამატეთ შენიშვნა ამ გადახდისთვის",
   "payPaymentDescription": "გადახდის აღწერა",
-  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა"
+  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა",
+  "transactionHistoryTitle": "ტრანზაქციების ისტორია",
+  "transactionHistoryHeading": "ტრანზაქციების ისტორია",
+  "exportTransactionsDescription": "გადმოწერეთ თქვენი საფულის ყველა ტრანზაქცია (Bitcoin, Liquid, Lightning და სვაპები) CSV ფაილის სახით. სურვილისამებრ გაფილტრეთ თარიღების მიხედვით.",
+  "exportTransactionsStartDate": "დაწყების თარიღი",
+  "exportTransactionsEndDate": "დასრულების თარიღი",
+  "exportTransactionsAnyDate": "ნებისმიერი",
+  "exportTransactionsButton": "CSV-ის ექსპორტი",
+  "exportTransactionsSuccess": "ტრანზაქციები წარმატებით ექსპორტირდა",
+  "exportTransactionsEmpty": "მითითებულ პერიოდში ექსპორტისთვის ტრანზაქცია არ არის",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "homeActionBuy": "ყიდვა",
+  "homeActionSell": "გაყიდვა",
+  "homeActionPay": "გადახდა",
+  "homeActionTransfer": "გადარიცხვა",
+  "backupCardTitle": "დაიცავით თქვენი bitcoin.",
+  "backupCardSubtitle": "შექმენით თქვენი საფულის სარეზერვო ასლი ახლავე.",
+  "mempoolCustomServerNoSsl": "SSL-ის გარეშე",
+  "autoswapTargetBalanceLabel": "მყისიერი საფულის სამიზნე ბალანსი",
+  "autoswapMaximumBalanceLabel": "მყისიერი საფულის მაქსიმალური ბალანსი",
+  "recoverbullServerConfirmTitle": "საცავის აღდგენის სერვერი",
+  "recoverbullServerUsingDefault": "ნაგულისხმევი სერვერის გამოყენება",
+  "recoverbullServerUsingCustom": "მორგებული სერვერის გამოყენება",
+  "recoverbullServerUrlLabel": "სერვერის URL:",
+  "recoverbullServerCustomWarning": "თქვენ იყენებთ მორგებულ Recoverbull სერვერს. დარწმუნდით, რომ ენდობით ამ სერვერს.",
+  "recoverbullServerTorNotice": "ჩვენ დავუკავშირდებით ამ სერვერს Tor-ის მეშვეობით",
+  "recoverbullLearnMore": "შეიტყვეთ მეტი Recoverbull-ის შესახებ",
+  "recoverbullSettingsTitle": "Recoverbull-ის პარამეტრები",
+  "recoverbullSettingsKeyServerUrl": "გასაღების სერვერის URL",
+  "recoverbullSettingsEdit": "რედაქტირება",
+  "recoverbullSettingsCancel": "გაუქმება",
+  "recoverbullSettingsSave": "შენახვა",
+  "recoverbullSettingsUrlRequired": "URL აუცილებელია",
+  "recoverbullSettingsUrlInvalid": "URL არასწორია",
+  "recoverbullSettingsUrlMustBeHttp": "URL უნდა იყოს HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL უნდა მთავრდებოდეს .onion-ით",
+  "onboardingAdvancedOptionsTitle": "გაფართოებული პარამეტრები",
+  "onboardingAdvancedOptionsDescription": "დააკონფიგურირეთ გაფართოებული პარამეტრები თქვენი საფულის შექმნამდე ან აღდგენამდე",
+  "onboardingAdvancedOptionsCustomElectrum": "მორგებული Electrum სერვერი",
+  "onboardingAdvancedOptionsCustomMempool": "მორგებული Mempool სერვერი",
+  "onboardingAdvancedOptionsCustomRecoverbull": "მორგებული Recoverbull სერვერი",
+  "onboardingAdvancedOptionsFooter": "ამ პარამეტრების შეცვლა მოგვიანებით შეგიძლიათ აპლიკაციის პარამეტრებში",
+  "onboardingAdvancedOptionsDone": "მზადაა",
+  "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე",
+    "fundExchangeErrorTitleOrdPo404": "გადახდის ვარიანტი მიუწვდომელია",
+  "fundExchangeErrorTitleRcpPo404": "გადახდის ვარიანტი ხელმისაწვდომი არ არის",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE ხელმისაწვდომი არ არის",
+  "fundExchangeErrorTitleOrdKyc400": "KYC მოთხოვნები აკლია",
+  "fundExchangeErrorOrdKyc400": "თქვენ არ გაქვთ ამ მოქმედებისთვის საჭირო KYC მოთხოვნები: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "COP დაფინანსების არასწორი მონაცემები",
+  "fundExchangeErrorOrdCop400": "არასწორი მოთხოვნის მონაცემები COP დაფინანსებისთვის: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "ვირტუალური გადახდა არ არის გააქტიურებული",
+  "fundExchangeErrorOrdCsrcp400": "გთხოვთ, გაააქტიუროთ ვირტუალური გადახდის ვარიანტი SEPA მიმღებისთვის შემდეგი IBAN-ით: {iban}",
+  "fundExchangeErrorTitleRcp400": "არასწორი მოთხოვნა",
+  "fundExchangeErrorRcp400": "არასწორი მოთხოვნა",
+"fundExchangeErrorOrdPo404": "გადახდის ვარიანტი არ არის ხელმისაწვდომი",
+  "fundExchangeErrorRcpPo404": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
+  "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
+  "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით."
 }

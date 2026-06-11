@@ -14,12 +14,14 @@ class BumpFeeSelectorWidget extends StatelessWidget {
     required this.selected,
     required this.txSize,
     required this.onChanged,
+    required this.focusNode,
   });
 
   final FeeEntity fastestFeeRate;
   final FeeEntity selected;
   final int txSize;
   final void Function(FeeEntity fee) onChanged;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +53,12 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               unselectedIconColor: context.appColors.surface,
               allowAbsoluteToggle: false,
               commitOnChange: true,
+              focusNode: focusNode,
               onCommit: (fee) async {
                 // Safe cast: allowAbsoluteToggle is false so the widget
                 // only ever produces a RelativeFee here.
                 onChanged(
-                  FeeEntity(
-                    type: FeeType.custom,
-                    feeRate: fee as RelativeFee,
-                  ),
+                  FeeEntity(type: FeeType.custom, feeRate: fee as RelativeFee),
                 );
               },
             ),

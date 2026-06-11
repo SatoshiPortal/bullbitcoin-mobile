@@ -100,7 +100,6 @@ sealed class TransferState with _$TransferState {
   }
 
   int get inputAmountSat {
-    if (amount.isEmpty) return 0;
     if (bitcoinUnit == BitcoinUnit.sats) {
       return int.tryParse(amount) ?? 0;
     } else {
@@ -141,6 +140,10 @@ sealed class TransferState with _$TransferState {
 
   bool get shouldShowAdvancedOptions {
     return fromWallet?.isLiquid == false;
+  }
+
+  bool get shouldShowReceiveExactAmount {
+    return fromWallet != null && !isSameChainTransfer;
   }
 
   int get selectedUtxoTotalSat {
@@ -191,6 +194,16 @@ sealed class TransferState with _$TransferState {
     } else {
       return FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat));
     }
+  }
+
+  bool get isInsufficientBalance {
+    if (fromWallet == null) return false;
+    if (inputAmountSat <= 0) return false;
+    return inputAmountSat > fromWallet!.balanceSat.toInt();
+  }
+
+  bool get hasAmountError {
+    return amountValidationError != null || isInsufficientBalance;
   }
 
   String? get amountValidationError {

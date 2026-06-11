@@ -16,12 +16,10 @@ class CreateEncryptedVaultUsecase {
   final WalletRepository _walletRepository;
 
   CreateEncryptedVaultUsecase({
-    required RecoverBullRepository recoverBullRepository,
-    required SeedRepository seedRepository,
-    required WalletRepository walletRepository,
-  }) : _recoverBullRepository = recoverBullRepository,
-       _seedRepository = seedRepository,
-       _walletRepository = walletRepository;
+    required this._recoverBullRepository,
+    required this._seedRepository,
+    required this._walletRepository,
+  });
 
   Future<({EncryptedVault vault, String vaultKey})> execute() async {
     final defaultBitcoinWallets = await _walletRepository.getWallets(

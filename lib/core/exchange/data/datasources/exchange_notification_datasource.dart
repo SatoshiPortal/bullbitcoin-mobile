@@ -22,12 +22,10 @@ class ExchangeNotificationDatasource {
   bool get isConnected => _isConnected;
 
   ExchangeNotificationDatasource({
-    required String baseUrl,
-    required BullbitcoinApiKeyDatasource apiKeyDatasource,
-    required bool isTestnet,
-  }) : _baseUrl = baseUrl,
-       _apiKeyDatasource = apiKeyDatasource,
-       _isTestnet = isTestnet;
+    required this._baseUrl,
+    required this._apiKeyDatasource,
+    required this._isTestnet,
+  });
 
   String _buildWebSocketUrl() {
     // Clean the base URL - remove trailing slashes and whitespace

@@ -8,10 +8,9 @@ class VerifyAddressBitBoxUsecase {
   final SettingsRepository _settingsRepository;
 
   VerifyAddressBitBoxUsecase({
-    required BitBoxDeviceRepository repository,
-    required SettingsRepository settingsRepository,
-  }) : _repository = repository,
-       _settingsRepository = settingsRepository;
+    required this._repository,
+    required this._settingsRepository,
+  });
 
   Future<bool> execute({
     required BitBoxDeviceEntity device,

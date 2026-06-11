@@ -22,20 +22,32 @@ fi
 
 echo "Using Flutter: $($FLUTTER --version | head -n1)"
 
-analyzeStart=$SECONDS
-$FLUTTER analyze
-analyzeExit=$?
-echo "flutter analyze took $((SECONDS - analyzeStart))s"
+# Run analyze and dart fix in parallel; they are independent read-only checks.
+analyzeOut="$(mktemp)"
+fixOut="$(mktemp)"
+trap 'rm -f "$analyzeOut" "$fixOut"' EXIT
+
+start=$SECONDS
+
+make analyze >"$analyzeOut" 2>&1 &
+analyzePid=$!
+
+$DART fix --dry-run >"$fixOut" 2>&1 &
+fixPid=$!
+
+wait $analyzePid; analyzeExit=$?
+wait $fixPid;     fixExit=$?
+
+echo "analyze + dart fix took $((SECONDS - start))s (parallel)"
+
 if [ $analyzeExit -ne 0 ]; then
+  cat "$analyzeOut"
   echo "Flutter analyze found issues, please fix them."
   exit 1
 fi
 
-fixStart=$SECONDS
-fixOutput=$($DART fix --dry-run 2>&1)
-echo "$fixOutput"
-echo "dart fix --dry-run took $((SECONDS - fixStart))s"
-if ! echo "$fixOutput" | grep -q "Nothing to fix!"; then
+if ! grep -q "Nothing to fix!" "$fixOut"; then
+  cat "$fixOut"
   echo "dart fix has suggestions, run \`dart fix --apply\` and commit the result."
   exit 1
 fi

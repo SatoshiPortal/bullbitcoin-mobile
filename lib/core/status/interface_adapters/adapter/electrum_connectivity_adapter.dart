@@ -12,12 +12,10 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
   final SettingsRepository _settingsRepository;
 
   ElectrumConnectivityAdapter({
-    required ElectrumServerRepository electrumServerRepository,
-    required ServerStatusPort serverStatusPort,
-    required SettingsRepository settingsRepository,
-  }) : _electrumServerRepository = electrumServerRepository,
-       _serverStatusPort = serverStatusPort,
-       _settingsRepository = settingsRepository;
+    required this._electrumServerRepository,
+    required this._serverStatusPort,
+    required this._settingsRepository,
+  });
 
   @override
   Future<bool> checkServersInUseAreOnlineForNetwork(Network network) async {

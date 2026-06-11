@@ -11,8 +11,8 @@ class BullbitcoinApiKeyDatasource {
   final KeyValueStorageDatasource<String> _secureStorage;
 
   BullbitcoinApiKeyDatasource({
-    required KeyValueStorageDatasource<String> secureStorage,
-  }) : _secureStorage = secureStorage;
+    required this._secureStorage,
+  });
 
   Future<void> store(
     ExchangeApiKeyModel apiKey, {

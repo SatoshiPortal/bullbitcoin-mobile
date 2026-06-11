@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 class RevokeArkUsecase {
   final Bip85Repository _bip85Repository;
 
-  RevokeArkUsecase({required Bip85Repository bip85Repository})
-    : _bip85Repository = bip85Repository;
+  RevokeArkUsecase({required this._bip85Repository});
 
   Future<void> execute() async {
     try {

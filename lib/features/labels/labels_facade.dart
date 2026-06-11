@@ -26,14 +26,11 @@ class LabelsFacade {
   final TrashLabelUsecase _trashLabelUsecase;
 
   LabelsFacade({
-    required FetchLabelByReferenceUsecase fetchLabelByReferenceUsecase,
-    required FetchAllLabelsUsecase fetchAllLabelsUsecase,
-    required StoreLabelUsecase storeLabelsUsecase,
-    required TrashLabelUsecase trashLabelUsecase,
-  }) : _fetchLabelByReferenceUsecase = fetchLabelByReferenceUsecase,
-       _fetchAllLabelsUsecase = fetchAllLabelsUsecase,
-       _storeLabelsUsecase = storeLabelsUsecase,
-       _trashLabelUsecase = trashLabelUsecase;
+    required this._fetchLabelByReferenceUsecase,
+    required this._fetchAllLabelsUsecase,
+    required this._storeLabelsUsecase,
+    required this._trashLabelUsecase,
+  });
 
   Future<List<Label>> fetchByReference(String reference) async {
     final labels = await _fetchLabelByReferenceUsecase.execute(reference);

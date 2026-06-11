@@ -8,10 +8,9 @@ class GetArkWalletUsecase {
   final SettingsRepository _settingsRepository;
 
   GetArkWalletUsecase({
-    required FetchArkSecretUsecase fetchArkSecretUsecase,
-    required SettingsRepository settingsRepository,
-  }) : _fetchArkSecretUsecase = fetchArkSecretUsecase,
-       _settingsRepository = settingsRepository;
+    required this._fetchArkSecretUsecase,
+    required this._settingsRepository,
+  });
 
   Future<ArkWalletEntity?> execute() async {
     try {

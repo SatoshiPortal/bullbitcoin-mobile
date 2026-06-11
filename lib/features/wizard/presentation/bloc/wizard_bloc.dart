@@ -21,11 +21,9 @@ part 'wizard_state.dart';
 /// `markComplete()` again (idempotent), and clears pending.
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
   WizardBloc({
-    required SavePendingWizardChoicesUsecase savePending,
-    required MarkWizardCompleteUsecase markComplete,
-  }) : _savePending = savePending,
-       _markComplete = markComplete,
-       super(const WizardState()) {
+    required this._savePending,
+    required this._markComplete,
+  }) : super(const WizardState()) {
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);

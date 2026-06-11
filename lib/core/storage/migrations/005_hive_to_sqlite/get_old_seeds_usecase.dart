@@ -8,10 +8,9 @@ class GetOldSeedsUsecase {
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
   GetOldSeedsUsecase({
-    required OldSeedRepository oldSeedRepository,
-    required OldWalletRepository oldWalletRepository,
-  }) : _oldSeedRepository = oldSeedRepository,
-       _oldWalletRepository = oldWalletRepository;
+    required this._oldSeedRepository,
+    required this._oldWalletRepository,
+  });
   // true : successful migration
   // false: migration was not required / success
   // throw: errors

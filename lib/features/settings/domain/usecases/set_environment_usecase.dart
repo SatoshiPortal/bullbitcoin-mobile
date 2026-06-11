@@ -5,8 +5,8 @@ class SetEnvironmentUsecase {
   final SettingsRepository _settingsRepository;
 
   SetEnvironmentUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(Environment environment) async {
     await _settingsRepository.setEnvironment(environment);

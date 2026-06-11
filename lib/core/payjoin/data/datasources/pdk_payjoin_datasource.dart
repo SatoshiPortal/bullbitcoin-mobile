@@ -32,11 +32,9 @@ class PdkPayjoinDatasource {
   final Completer _sendersIsolateReady;
 
   PdkPayjoinDatasource({
-    String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
-    required Dio dio,
-  }) : _payjoinDirectoryUrl = payjoinDirectoryUrl,
-       _dio = dio,
-       _payjoinRequestedController = StreamController.broadcast(),
+    this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
+    required this._dio,
+  }) : _payjoinRequestedController = StreamController.broadcast(),
        _proposalSentController = StreamController.broadcast(),
        _expiredController = StreamController.broadcast(),
        _receiversIsolateReady = Completer(),

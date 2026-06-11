@@ -11,12 +11,10 @@ class CreateChainSwapUsecase {
   final SeedRepository _seedRepository;
 
   CreateChainSwapUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-    required SeedRepository seedRepository,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository,
-       _seedRepository = seedRepository;
+    required this._walletRepository,
+    required this._swapRepository,
+    required this._seedRepository,
+  });
 
   Future<ChainSwap> execute({
     required String bitcoinWalletId,

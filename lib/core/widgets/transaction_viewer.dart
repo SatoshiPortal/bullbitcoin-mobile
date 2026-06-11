@@ -29,9 +29,8 @@ class TransactionViewer extends StatelessWidget {
     this.style,
     this.color,
     this.clipboardText,
-    required bool isTestnet,
+    required this._isTestnet,
   }) : _network = _TransactionNetwork.bitcoin,
-       _isTestnet = isTestnet,
        _unblindedUrl = null;
 
   const TransactionViewer.liquid(
@@ -40,11 +39,9 @@ class TransactionViewer extends StatelessWidget {
     this.style,
     this.color,
     this.clipboardText,
-    required bool isTestnet,
-    String? unblindedUrl,
-  }) : _network = _TransactionNetwork.liquid,
-       _isTestnet = isTestnet,
-       _unblindedUrl = unblindedUrl;
+    required this._isTestnet,
+    this._unblindedUrl,
+  }) : _network = _TransactionNetwork.liquid;
 
   const TransactionViewer.ark(
     this.data, {
@@ -52,9 +49,8 @@ class TransactionViewer extends StatelessWidget {
     this.style,
     this.color,
     this.clipboardText,
-    bool isTestnet = false,
+    this._isTestnet = false,
   }) : _network = _TransactionNetwork.ark,
-       _isTestnet = isTestnet,
        _unblindedUrl = null;
 
   final String data;

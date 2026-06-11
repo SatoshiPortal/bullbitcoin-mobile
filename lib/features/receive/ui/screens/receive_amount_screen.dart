@@ -2,20 +2,34 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceiveAmountScreen extends StatelessWidget {
+class ReceiveAmountScreen extends StatefulWidget {
   const ReceiveAmountScreen({super.key, this.onContinueNavigation});
 
   final Function? onContinueNavigation;
+
+  @override
+  State<ReceiveAmountScreen> createState() => _ReceiveAmountScreenState();
+}
+
+class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
+  final _amountNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +42,25 @@ class ReceiveAmountScreen extends StatelessWidget {
           // Prevent using the amount from a previous receive type
           previous.type == current.type,
       listener: (context, state) {
-        onContinueNavigation?.call() ?? context.pop();
+        widget.onContinueNavigation?.call() ?? context.pop();
       },
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         behavior: .translucent,
-        child: Column(
-          mainAxisAlignment: .spaceEvenly,
-          crossAxisAlignment: .stretch,
-          children: [
-            const ReceiveAmountEntry(),
-            const _NoteTile(),
-            ReceiveAmountContinueButton(
-              onContinueNavigation: onContinueNavigation,
-            ),
-          ],
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: Column(
+            mainAxisAlignment: .spaceEvenly,
+            crossAxisAlignment: .stretch,
+            children: [
+              ReceiveAmountInput(focusNode: _amountNode),
+              const _NoteTile(),
+              ReceiveAmountContinueButton(
+                onContinueNavigation: widget.onContinueNavigation,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -93,11 +111,7 @@ class _NoteTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.edit,
-              size: 20,
-              color: context.appColors.secondary,
-            ),
+            Icon(Icons.edit, size: 20, color: context.appColors.secondary),
           ],
         ),
       ),

@@ -41,49 +41,25 @@ part 'sell_state.dart';
 
 class SellBloc extends Bloc<SellEvent, SellState> {
   SellBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-    required CreateSellOrderUsecase createSellOrderUsecase,
-    required RefreshSellOrderUsecase refreshSellOrderUsecase,
-    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required SignBitcoinTxUsecase signBitcoinTxUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastBitcoinTransactionUsecase
-    broadcastBitcoinTransactionUsecase,
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required CalculateLiquidAbsoluteFeesUsecase
-    calculateLiquidAbsoluteFeesUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
-    required GetOrderUsecase getOrderUsecase,
-    required LabelsFacade labelsFacade,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _createSellOrderUsecase = createSellOrderUsecase,
-       _refreshSellOrderUsecase = refreshSellOrderUsecase,
-       _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _signBitcoinTxUsecase = signBitcoinTxUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
-       _getOrderUsecase = getOrderUsecase,
-       _labelsFacade = labelsFacade,
-       super(const SellState.initial()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._getSettingsUsecase,
+    required this._createSellOrderUsecase,
+    required this._refreshSellOrderUsecase,
+    required this._prepareBitcoinSendUsecase,
+    required this._prepareLiquidSendUsecase,
+    required this._signBitcoinTxUsecase,
+    required this._signLiquidTxUsecase,
+    required this._broadcastBitcoinTransactionUsecase,
+    required this._broadcastLiquidTransactionUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculateBitcoinAbsoluteFeesUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getAddressAtIndexUsecase,
+    required this._getWalletUtxosUsecase,
+    required this._getOrderUsecase,
+    required this._labelsFacade,
+  }) : super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<SellWalletSelected>(_onWalletSelected);
