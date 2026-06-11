@@ -12,14 +12,11 @@ class ConfirmBuyOrderUsecase {
   final LabelsFacade _labelsFacade;
 
   ConfirmBuyOrderUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required SettingsRepository settingsRepository,
-    required LabelsFacade labelsFacade,
-  }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _settingsRepository = settingsRepository,
-       _labelsFacade = labelsFacade;
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+    required this._labelsFacade,
+  });
 
   Future<BuyOrder> execute({required String orderId}) async {
     try {

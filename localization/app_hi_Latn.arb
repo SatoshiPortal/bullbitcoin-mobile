@@ -3145,6 +3145,21 @@
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
   "fundExchangeErrorLoadingDetails": "Payment ki jaankari abhi load nahi ho saki. Wapas jao aur dobara koshish karo, doosra payment tarika chuniye ya baad mein aao.",
+    "fundExchangeErrorTitleOrdPo404": "Payment Option Uplabdh Nahin",
+  "fundExchangeErrorTitleRcpPo404": "Payment Option Uplabdh Nahin Hai",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Uplabdh Nahin",
+  "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing Hain",
+  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Galat COP Funding Data",
+  "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Activate Nahin Hai",
+  "fundExchangeErrorOrdCsrcp400": "Kripya IBAN: {iban} wale SEPA recipient ke liye virtual payment option activate karein",
+  "fundExchangeErrorTitleRcp400": "Galat Request",
+  "fundExchangeErrorRcp400": "Galat request",
+"fundExchangeErrorOrdPo404": "Koi payment option uplabdh nahin hai",
+  "fundExchangeErrorRcpPo404": "Is funding option tak pahunchne ke liye aapke paas zaroori permissions nahin hain. Ya to aapka KYC aparyaapt hai ya yeh option aapke account ke liye uplabdh nahin hai",
+  "fundExchangeErrorRcpPosinpe404": "Is funding option tak pahunchne ke liye, aapka phone number Costa Rica mein SINPE network par registered hona chahiye.",
+  "fundExchangeErrorFetchingBankCodes": "Bank codes lane mein error hua. Kripya baad mein dubara koshish karein.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

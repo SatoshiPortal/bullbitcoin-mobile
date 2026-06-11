@@ -10,12 +10,10 @@ class AccelerateBuyOrderUsecase {
   final SettingsRepository _settingsRepository;
 
   AccelerateBuyOrderUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+  });
 
   Future<BuyOrder> execute(String orderId) async {
     try {

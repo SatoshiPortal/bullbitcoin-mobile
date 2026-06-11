@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repositor
 class CheckPinCodeExistsUsecase {
   final PinCodeRepository _pinCodeRepository;
 
-  CheckPinCodeExistsUsecase({required PinCodeRepository pinCodeRepository})
-    : _pinCodeRepository = pinCodeRepository;
+  CheckPinCodeExistsUsecase({required this._pinCodeRepository});
 
   Future<bool> execute() async {
     final isPinCodeSet = await _pinCodeRepository.isPinCodeSet();

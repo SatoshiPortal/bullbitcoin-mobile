@@ -7,8 +7,8 @@ class SettingsExchangeEnvironmentAdapter implements ExchangeEnvironmentPort {
   final GetSettingsUsecase _getSettingsUsecase;
 
   SettingsExchangeEnvironmentAdapter({
-    required GetSettingsUsecase getSettingsUsecase,
-  }) : _getSettingsUsecase = getSettingsUsecase;
+    required this._getSettingsUsecase,
+  });
 
   @override
   Future<bool> get isTestnet async {

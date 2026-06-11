@@ -14,11 +14,9 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
   final ImportLabelsUsecase _importLabelsUsecase;
 
   Bip329LabelsCubit({
-    required ExportLabelsUsecase exportLabelsUsecase,
-    required ImportLabelsUsecase importLabelsUsecase,
-  }) : _exportLabelsUsecase = exportLabelsUsecase,
-       _importLabelsUsecase = importLabelsUsecase,
-       super(const Bip329LabelsState.initial());
+    required this._exportLabelsUsecase,
+    required this._importLabelsUsecase,
+  }) : super(const Bip329LabelsState.initial());
 
   Future<void> exportLabels(LabelFormat format) async {
     try {

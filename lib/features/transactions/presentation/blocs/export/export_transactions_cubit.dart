@@ -10,11 +10,9 @@ class ExportTransactionsCubit extends Cubit<ExportTransactionsState> {
   final TransactionExportSaver _saver;
 
   ExportTransactionsCubit({
-    required ExportTransactionsCsvUsecase exportTransactionsCsvUsecase,
-    required TransactionExportSaver saver,
-  }) : _exportTransactionsCsvUsecase = exportTransactionsCsvUsecase,
-       _saver = saver,
-       super(const ExportTransactionsState.initial());
+    required this._exportTransactionsCsvUsecase,
+    required this._saver,
+  }) : super(const ExportTransactionsState.initial());
 
   Future<void> exportCsv({DateTime? start, DateTime? end}) async {
     try {

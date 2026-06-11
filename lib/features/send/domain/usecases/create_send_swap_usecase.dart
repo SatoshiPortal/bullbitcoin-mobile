@@ -12,12 +12,10 @@ class CreateSendSwapUsecase {
   final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-    required SeedRepository seedRepository,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository,
-       _seedRepository = seedRepository;
+    required this._walletRepository,
+    required this._swapRepository,
+    required this._seedRepository,
+  });
 
   Future<LnSendSwap> execute({
     required String walletId,

@@ -13,15 +13,12 @@ class StartDcaUsecase {
   final ExchangeOrderRepository _testnetDcaRepository;
 
   StartDcaUsecase({
-    required SettingsRepository settingsRepository,
-    required ExchangeUserRepository mainnetExchangeUserRepository,
-    required ExchangeUserRepository testnetExchangeUserRepository,
+    required this._settingsRepository,
+    required this._mainnetExchangeUserRepository,
+    required this._testnetExchangeUserRepository,
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
-  }) : _settingsRepository = settingsRepository,
-       _mainnetExchangeUserRepository = mainnetExchangeUserRepository,
-       _testnetExchangeUserRepository = testnetExchangeUserRepository,
-       _mainnetDcaRepository = mainnetExchangeOrderRepository,
+  }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
        _testnetDcaRepository = testnetExchangeOrderRepository;
 
   Future<

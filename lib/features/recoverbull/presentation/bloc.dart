@@ -50,38 +50,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   RecoverBullBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
-    required CreateEncryptedVaultUsecase createEncryptedVaultUsecase,
-    required StoreVaultKeyIntoServerUsecase storeVaultKeyIntoServerUsecase,
-    required CheckServerConnectionUsecase checkKeyServerConnectionUsecase,
-    required FetchVaultKeyFromServerUsecase fetchVaultKeyFromServerUsecase,
-    required DecryptVaultUsecase decryptVaultUsecase,
-    required RestoreVaultUsecase restoreVaultUsecase,
-    required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required SaveVaultToGoogleDriveUsecase saveToGoogleDriveUsecase,
-    required InitTorUsecase initializeTorUsecase,
-    required WalletBloc walletBloc,
-    required FetchLatestGoogleDriveVaultUsecase
-    fetchLatestGoogleDriveVaultUsecase,
-    required UpdateLatestEncryptedVaultTestUsecase
-    updateLatestEncryptedVaultTestUsecase,
-    required TorStatusUsecase torStatusUsecase,
-    required TorConfigPort torConfigPort,
-  }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
-       _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
-       _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
-       _fetchVaultKeyFromServerUsecase = fetchVaultKeyFromServerUsecase,
-       _decryptVaultUsecase = decryptVaultUsecase,
-       _restoreVaultUsecase = restoreVaultUsecase,
-       _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
-       _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
-       _initializeTorUsecase = initializeTorUsecase,
-       _walletBloc = walletBloc,
-       _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
-       _updateLatestEncryptedVaultTestUsecase =
-           updateLatestEncryptedVaultTestUsecase,
-       _torStatusUsecase = torStatusUsecase,
-       _torConfigPort = torConfigPort,
-       super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
+    required this._createEncryptedVaultUsecase,
+    required this._storeVaultKeyIntoServerUsecase,
+    required this._checkKeyServerConnectionUsecase,
+    required this._fetchVaultKeyFromServerUsecase,
+    required this._decryptVaultUsecase,
+    required this._restoreVaultUsecase,
+    required this._connectToGoogleDriveUsecase,
+    required this._saveToGoogleDriveUsecase,
+    required this._initializeTorUsecase,
+    required this._walletBloc,
+    required this._fetchLatestGoogleDriveVaultUsecase,
+    required this._updateLatestEncryptedVaultTestUsecase,
+    required this._torStatusUsecase,
+    required this._torConfigPort,
+  }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
     on<OnVaultPasswordSet>(_onVaultPasswordSet);

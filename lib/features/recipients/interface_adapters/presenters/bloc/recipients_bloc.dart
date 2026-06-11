@@ -21,20 +21,13 @@ part 'recipients_bloc.freezed.dart';
 class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   RecipientsBloc({
     RecipientFilterCriteria? allowedRecipientFilters,
-    Future<void>? Function(RecipientViewModel recipient, {required bool isNew})?
-    onRecipientSelectedHook,
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required AddRecipientUsecase addRecipientUsecase,
-    required GetRecipientsUsecase getRecipientsUsecase,
-    required CheckSinpeUsecase checkSinpeUsecase,
-    required ListCadBillersUsecase listCadBillersUsecase,
-  }) : _onRecipientSelectedHook = onRecipientSelectedHook,
-       _addRecipientUsecase = addRecipientUsecase,
-       _getRecipientsUsecase = getRecipientsUsecase,
-       _checkSinpeUsecase = checkSinpeUsecase,
-       _listCadBillersUsecase = listCadBillersUsecase,
-       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       super(
+    this._onRecipientSelectedHook,
+    required this._getExchangeUserSummaryUsecase,
+    required this._addRecipientUsecase,
+    required this._getRecipientsUsecase,
+    required this._checkSinpeUsecase,
+    required this._listCadBillersUsecase,
+  }) : super(
          RecipientsState(
            allowedRecipientFilters:
                allowedRecipientFilters ?? const RecipientFilterCriteria(),

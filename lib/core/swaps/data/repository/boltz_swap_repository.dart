@@ -16,9 +16,7 @@ class BoltzSwapRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
 
-  BoltzSwapRepository({required BoltzDatasource boltz, required bool isTestnet})
-    : _boltz = boltz,
-      _isTestnet = isTestnet;
+  BoltzSwapRepository({required this._boltz, required this._isTestnet});
 
   Stream<Swap> get swapUpdatesStream =>
       _boltz.swapUpdatesStream.map((swapModel) => swapModel.toEntity());

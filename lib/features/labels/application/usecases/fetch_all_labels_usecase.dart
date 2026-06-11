@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class FetchAllLabelsUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  FetchAllLabelsUsecase({required LabelsRepositoryPort labelRepository})
-    : _labelRepository = labelRepository;
+  FetchAllLabelsUsecase({required this._labelRepository});
 
   Future<List<ApplicationLabel>> execute() async {
     try {

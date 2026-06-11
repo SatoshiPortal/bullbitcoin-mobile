@@ -8,8 +8,8 @@ class DriftElectrumTransactionRepository
   final ElectrumRemoteDatasource _datasource;
 
   DriftElectrumTransactionRepository({
-    required ElectrumRemoteDatasource datasource,
-  }) : _datasource = datasource;
+    required this._datasource,
+  });
 
   @override
   Future<BitcoinTx> fetch({

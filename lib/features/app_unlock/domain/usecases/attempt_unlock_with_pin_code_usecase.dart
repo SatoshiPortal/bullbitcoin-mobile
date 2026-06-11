@@ -9,12 +9,10 @@ class AttemptUnlockWithPinCodeUsecase {
   final TimeoutCalculator _timeoutCalculator;
 
   AttemptUnlockWithPinCodeUsecase({
-    required PinCodeRepository pinCodeRepository,
-    required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
-    required TimeoutCalculator timeoutCalculator,
-  }) : _pinCodeRepository = pinCodeRepository,
-       _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,
-       _timeoutCalculator = timeoutCalculator;
+    required this._pinCodeRepository,
+    required this._failedUnlockAttemptsRepository,
+    required this._timeoutCalculator,
+  });
 
   Future<UnlockAttempt> execute(String pinCode) async {
     final isCorrectPinCode = await _pinCodeRepository.verifyPinCode(pinCode);

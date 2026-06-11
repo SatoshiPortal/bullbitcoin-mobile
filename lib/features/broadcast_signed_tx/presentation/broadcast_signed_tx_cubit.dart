@@ -18,11 +18,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
 
   BroadcastSignedTxCubit({
-    required BroadcastBitcoinTransactionUsecase
-    broadcastBitcoinTransactionUsecase,
+    required this._broadcastBitcoinTransactionUsecase,
     String? unsignedPsbt,
-  }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+  }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
     try {

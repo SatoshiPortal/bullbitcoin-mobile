@@ -10,10 +10,9 @@ class FeesDatasource {
   final MempoolSettingsRepository _mempoolSettingsRepository;
 
   FeesDatasource({
-    required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
-    required MempoolSettingsRepository mempoolSettingsRepository,
-  })  : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase,
-        _mempoolSettingsRepository = mempoolSettingsRepository;
+    required this._getActiveMempoolServerUsecase,
+    required this._mempoolSettingsRepository,
+  });
 
   Future<FeeOptions> getBitcoinNetworkFeeOptions({
     required bool isTestnet,

@@ -5,8 +5,8 @@ class FetchLatestGoogleDriveVaultUsecase {
   final GoogleDriveRepository _driveRepository;
 
   FetchLatestGoogleDriveVaultUsecase({
-    required GoogleDriveRepository driveRepository,
-  }) : _driveRepository = driveRepository;
+    required this._driveRepository,
+  });
 
   Future<EncryptedVault> execute() async {
     try {

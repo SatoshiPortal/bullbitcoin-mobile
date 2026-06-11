@@ -11,15 +11,11 @@ part 'all_seed_view_state.dart';
 
 class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   AllSeedViewCubit({
-    required GetAllSeedsUsecase getAllSeedsUsecase,
-    required GetWalletsUsecase getWalletsUsecase,
-    required DeleteSeedUsecase deleteSeedUsecase,
-    required ProcessAndSeparateSeedsUsecase processAndSeparateSeedsUsecase,
-  }) : _getAllSeedsUsecase = getAllSeedsUsecase,
-       _getWalletsUsecase = getWalletsUsecase,
-       _deleteSeedUsecase = deleteSeedUsecase,
-       _processAndSeparateSeedsUsecase = processAndSeparateSeedsUsecase,
-       super(const AllSeedViewState());
+    required this._getAllSeedsUsecase,
+    required this._getWalletsUsecase,
+    required this._deleteSeedUsecase,
+    required this._processAndSeparateSeedsUsecase,
+  }) : super(const AllSeedViewState());
 
   final GetAllSeedsUsecase _getAllSeedsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;

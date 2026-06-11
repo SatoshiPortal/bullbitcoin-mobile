@@ -17,14 +17,12 @@ class WalletAddressRepository {
   final LabelsFacade _labelsFacade;
 
   WalletAddressRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required LabelsFacade labelsFacade,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource,
-       _labelsFacade = labelsFacade;
+    required this._labelsFacade,
+  }) : _bdkWallet = bdkWalletDatasource,
+       _lwkWallet = lwkWalletDatasource;
 
   Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,

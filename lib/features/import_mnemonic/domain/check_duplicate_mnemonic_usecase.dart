@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 class CheckDuplicateMnemonicUsecase {
   final SeedRepository _seedRepository;
 
-  CheckDuplicateMnemonicUsecase({required SeedRepository seedRepository})
-    : _seedRepository = seedRepository;
+  CheckDuplicateMnemonicUsecase({required this._seedRepository});
 
   Future<void> execute({
     required List<String> mnemonicWords,

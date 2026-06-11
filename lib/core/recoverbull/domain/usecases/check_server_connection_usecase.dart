@@ -4,8 +4,8 @@ class CheckServerConnectionUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
   CheckServerConnectionUsecase({
-    required RecoverBullRepository recoverBullRepository,
-  }) : _recoverBullRepository = recoverBullRepository;
+    required this._recoverBullRepository,
+  });
 
   Future<bool> execute() async {
     try {

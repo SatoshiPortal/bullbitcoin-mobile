@@ -5,8 +5,8 @@ class GetUnconfirmedIncomingBalanceUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
   GetUnconfirmedIncomingBalanceUsecase({
-    required BoltzSwapRepository boltzSwapRepository,
-  }) : _boltzSwapRepository = boltzSwapRepository;
+    required this._boltzSwapRepository,
+  });
 
   Future<int> execute({required List<String> walletIds}) async {
     final allSwaps = await _boltzSwapRepository.getAllSwaps();

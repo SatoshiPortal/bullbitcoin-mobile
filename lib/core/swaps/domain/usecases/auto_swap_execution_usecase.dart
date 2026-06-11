@@ -23,20 +23,14 @@ class AutoSwapExecutionUsecase {
   final LabelsFacade _labelsFacade;
 
   AutoSwapExecutionUsecase({
-    required BoltzSwapRepository repository,
-    required WalletRepository walletRepository,
-    required LiquidWalletRepository liquidWalletRepository,
-    required BlockchainPort blockchainPort,
-    required SeedRepository seedRepository,
-    required WalletTransactionRepository walletTxRepository,
-    required LabelsFacade labelsFacade,
-  }) : _repository = repository,
-       _walletRepository = walletRepository,
-       _liquidWalletRepository = liquidWalletRepository,
-       _blockchainPort = blockchainPort,
-       _seedRepository = seedRepository,
-       _walletTxRepository = walletTxRepository,
-       _labelsFacade = labelsFacade;
+    required this._repository,
+    required this._walletRepository,
+    required this._liquidWalletRepository,
+    required this._blockchainPort,
+    required this._seedRepository,
+    required this._walletTxRepository,
+    required this._labelsFacade,
+  });
 
   Future<Swap> execute({required bool feeBlock}) async {
     final swapRepository = _repository;

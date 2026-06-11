@@ -5,8 +5,8 @@ class SetAdvancedElectrumOptionsUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
 
   const SetAdvancedElectrumOptionsUsecase({
-    required ElectrumSettingsRepository electrumSettingsRepository,
-  }) : _electrumSettingsRepository = electrumSettingsRepository;
+    required this._electrumSettingsRepository,
+  });
 
   Future<void> execute(SetAdvancedElectrumOptionsRequest request) async {
     // Fetch current settings, update with new values, and save

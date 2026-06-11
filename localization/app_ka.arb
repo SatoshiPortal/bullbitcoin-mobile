@@ -506,5 +506,20 @@
   "onboardingAdvancedOptionsFooter": "ამ პარამეტრების შეცვლა მოგვიანებით შეგიძლიათ აპლიკაციის პარამეტრებში",
   "onboardingAdvancedOptionsDone": "მზადაა",
   "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე"
+  "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე",
+    "fundExchangeErrorTitleOrdPo404": "გადახდის ვარიანტი მიუწვდომელია",
+  "fundExchangeErrorTitleRcpPo404": "გადახდის ვარიანტი ხელმისაწვდომი არ არის",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE ხელმისაწვდომი არ არის",
+  "fundExchangeErrorTitleOrdKyc400": "KYC მოთხოვნები აკლია",
+  "fundExchangeErrorOrdKyc400": "თქვენ არ გაქვთ ამ მოქმედებისთვის საჭირო KYC მოთხოვნები: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "COP დაფინანსების არასწორი მონაცემები",
+  "fundExchangeErrorOrdCop400": "არასწორი მოთხოვნის მონაცემები COP დაფინანსებისთვის: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "ვირტუალური გადახდა არ არის გააქტიურებული",
+  "fundExchangeErrorOrdCsrcp400": "გთხოვთ, გაააქტიუროთ ვირტუალური გადახდის ვარიანტი SEPA მიმღებისთვის შემდეგი IBAN-ით: {iban}",
+  "fundExchangeErrorTitleRcp400": "არასწორი მოთხოვნა",
+  "fundExchangeErrorRcp400": "არასწორი მოთხოვნა",
+"fundExchangeErrorOrdPo404": "გადახდის ვარიანტი არ არის ხელმისაწვდომი",
+  "fundExchangeErrorRcpPo404": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
+  "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
+  "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით."
 }

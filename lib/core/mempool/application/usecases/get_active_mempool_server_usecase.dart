@@ -6,8 +6,8 @@ class GetActiveMempoolServerUsecase {
   final MempoolServerRepository _serverRepository;
 
   GetActiveMempoolServerUsecase({
-    required MempoolServerRepository serverRepository,
-  }) : _serverRepository = serverRepository;
+    required this._serverRepository,
+  });
 
   Future<MempoolServer> execute({
     required bool isTestnet,

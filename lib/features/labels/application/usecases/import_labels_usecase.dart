@@ -9,10 +9,9 @@ class ImportLabelsUsecase {
   final LabelsConverterPort _labelConverter;
 
   ImportLabelsUsecase({
-    required LabelsRepositoryPort labelRepository,
-    required LabelsConverterPort labelConverter,
-  }) : _labelRepository = labelRepository,
-       _labelConverter = labelConverter;
+    required this._labelRepository,
+    required this._labelConverter,
+  });
 
   Future<int> call(FormattedLabels labels) async {
     try {

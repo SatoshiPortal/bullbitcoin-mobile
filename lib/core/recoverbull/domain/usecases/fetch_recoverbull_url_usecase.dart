@@ -4,8 +4,8 @@ class FetchRecoverbullUrlUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
   FetchRecoverbullUrlUsecase({
-    required RecoverBullRepository recoverBullRepository,
-  }) : _recoverBullRepository = recoverBullRepository;
+    required this._recoverBullRepository,
+  });
 
   Future<Uri> execute() async {
     return await _recoverBullRepository.fetchUrl();

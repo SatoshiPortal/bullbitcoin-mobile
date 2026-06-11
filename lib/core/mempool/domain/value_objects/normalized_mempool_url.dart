@@ -8,13 +8,11 @@ class NormalizedMempoolUrl {
   final String _normalized;
   final bool _enableSsl;
 
-  NormalizedMempoolUrl(String url, {bool enableSsl = true})
-      : _normalized = url.isEmpty ? '' : MempoolUrlParser.normalizeUrl(url),
-        _enableSsl = enableSsl;
+  NormalizedMempoolUrl(String url, {this._enableSsl = true})
+      : _normalized = url.isEmpty ? '' : MempoolUrlParser.normalizeUrl(url);
 
   /// create from an already normalized URL (e.g., from database)
-  NormalizedMempoolUrl.fromNormalized(this._normalized, {bool enableSsl = true})
-      : _enableSsl = enableSsl;
+  NormalizedMempoolUrl.fromNormalized(this._normalized, {this._enableSsl = true});
 
   String get value => _normalized;
   bool get enableSsl => _enableSsl;

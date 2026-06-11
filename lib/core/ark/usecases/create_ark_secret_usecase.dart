@@ -13,10 +13,9 @@ class CreateArkSecretUsecase {
   final SettingsRepository _settingsRepository;
 
   CreateArkSecretUsecase({
-    required Bip85Repository bip85Repository,
-    required SettingsRepository settingsRepository,
-  }) : _bip85Repository = bip85Repository,
-       _settingsRepository = settingsRepository;
+    required this._bip85Repository,
+    required this._settingsRepository,
+  });
 
   Future<({String derivation, String hex})> execute({
     required Seed defaultSeed,

@@ -14,10 +14,9 @@ class UpdateLatestEncryptedVaultTestUsecase {
   final SettingsRepository _settingsRepository;
 
   UpdateLatestEncryptedVaultTestUsecase({
-    required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
-  }) : _walletRepository = walletRepository,
-       _settingsRepository = settingsRepository;
+    required this._walletRepository,
+    required this._settingsRepository,
+  });
 
   Future<void> execute({required DecryptedVault decryptedVault}) async {
     try {

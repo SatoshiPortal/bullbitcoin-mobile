@@ -25,15 +25,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   static const int _maximumFeeThreshold = 10;
 
   AutoSwapSettingsCubit({
-    required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
-    required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-    required WalletRepository walletRepository,
-  }) : _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
-       _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _walletRepository = walletRepository,
-       super(const AutoSwapSettingsState());
+    required this._getAutoSwapSettingsUsecase,
+    required this._saveAutoSwapSettingsUsecase,
+    required this._getSettingsUsecase,
+    required this._walletRepository,
+  }) : super(const AutoSwapSettingsState());
 
   Future<void> loadSettings() async {
     try {

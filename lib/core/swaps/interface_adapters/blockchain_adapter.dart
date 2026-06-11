@@ -5,9 +5,8 @@ class BlockchainAdapter implements BlockchainPort {
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
 
   BlockchainAdapter({
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-  }) : _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase;
+    required this._broadcastLiquidTransactionUsecase,
+  });
 
   @override
   Future<String> broadcastLiquidTransaction({

@@ -189,7 +189,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                       child: Column(
                         mainAxisSize: .min,
                         children: [
-                          const Icon(FontAwesomeIcons.github),
+                          const FaIcon(FontAwesomeIcons.github),
                           const Gap(8),
                           Text(
                             context.loc.settingsGithubLabel,

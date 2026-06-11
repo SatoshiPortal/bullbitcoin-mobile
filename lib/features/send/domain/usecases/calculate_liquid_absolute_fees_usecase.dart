@@ -5,8 +5,8 @@ class CalculateLiquidAbsoluteFeesUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
   CalculateLiquidAbsoluteFeesUsecase({
-    required LiquidWalletRepository liquidWalletRepository,
-  }) : _liquidWalletRepository = liquidWalletRepository;
+    required this._liquidWalletRepository,
+  });
 
   /// Returns (size, absFees)
   Future<int> execute({required String pset}) async {

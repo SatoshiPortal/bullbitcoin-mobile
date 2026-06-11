@@ -22,31 +22,19 @@ part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
-    required GetSettingsUsecase getSettingsUsecase,
-    required SetEnvironmentUsecase setEnvironmentUsecase,
-    required SetBitcoinUnitUsecase setBitcoinUnitUsecase,
-    required SetLanguageUsecase setLanguageUsecase,
-    required SetCurrencyUsecase setCurrencyUsecase,
-    required SetHideAmountsUsecase setHideAmountsUsecase,
-    required SetIsSuperuserUsecase setIsSuperuserUsecase,
-    required SetIsDevModeUsecase setIsDevModeUsecase,
-    required SetThemeModeUsecase setThemeModeUsecase,
-    required GetOldSeedsUsecase getOldSeedsUsecase,
-    required RevokeArkUsecase revokeArkUsecase,
-    required SetErrorReportingUsecase setErrorReportingUsecase,
-  }) : _setEnvironmentUsecase = setEnvironmentUsecase,
-       _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _setLanguageUsecase = setLanguageUsecase,
-       _setCurrencyUsecase = setCurrencyUsecase,
-       _setHideAmountsUsecase = setHideAmountsUsecase,
-       _setIsSuperuserUsecase = setIsSuperuserUsecase,
-       _setThemeModeUsecase = setThemeModeUsecase,
-       _getOldSeedsUsecase = getOldSeedsUsecase,
-       _setIsDevModeUsecase = setIsDevModeUsecase,
-       _revokeArkUsecase = revokeArkUsecase,
-       _setErrorReportingUsecase = setErrorReportingUsecase,
-       super(const SettingsState());
+    required this._getSettingsUsecase,
+    required this._setEnvironmentUsecase,
+    required this._setBitcoinUnitUsecase,
+    required this._setLanguageUsecase,
+    required this._setCurrencyUsecase,
+    required this._setHideAmountsUsecase,
+    required this._setIsSuperuserUsecase,
+    required this._setIsDevModeUsecase,
+    required this._setThemeModeUsecase,
+    required this._getOldSeedsUsecase,
+    required this._revokeArkUsecase,
+    required this._setErrorReportingUsecase,
+  }) : super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
   final GetSettingsUsecase _getSettingsUsecase;

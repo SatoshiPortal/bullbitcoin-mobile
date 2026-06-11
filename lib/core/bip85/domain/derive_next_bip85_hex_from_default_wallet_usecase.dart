@@ -10,12 +10,10 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
   final SeedRepository _seedRepository;
 
   DeriveNextBip85HexFromDefaultWalletUsecase({
-    required Bip85Repository bip85Repository,
-    required WalletRepository walletRepository,
-    required SeedRepository seedRepository,
-  }) : _bip85Repository = bip85Repository,
-       _walletRepository = walletRepository,
-       _seedRepository = seedRepository;
+    required this._bip85Repository,
+    required this._walletRepository,
+    required this._seedRepository,
+  });
 
   Future<({String derivation, String hex})> execute({
     required int length,

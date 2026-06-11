@@ -9,12 +9,10 @@ class GetSupportChatMessagesUsecase {
   final SettingsRepository _settingsRepository;
 
   GetSupportChatMessagesUsecase({
-    required ExchangeSupportChatRepository mainnetRepository,
-    required ExchangeSupportChatRepository testnetRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetRepository,
+    required this._testnetRepository,
+    required this._settingsRepository,
+  });
 
   Future<List<SupportChatMessage>> execute({
     int? page,

@@ -12,24 +12,16 @@ import 'package:intl/intl.dart';
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
     super.key,
-    bool isLoading = false,
-    BitcoinUnit? bitcoinUnit,
-    required TextEditingController amountController,
-    FocusNode? focusNode,
-    bool isFiatCurrencyInput = true,
-    FiatCurrency? fiatCurrency,
-    void Function(bool isFiat)? onIsFiatCurrencyInputChanged,
-    UserBalance? fiatBalance,
-    bool canExceedBalance = false,
-  }) : _isLoading = isLoading,
-       _bitcoinUnit = bitcoinUnit,
-       _amountController = amountController,
-       _focusNode = focusNode,
-       _isFiatCurrencyInput = isFiatCurrencyInput,
-       _fiatCurrency = fiatCurrency,
-       _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged,
-       _fiatBalance = fiatBalance,
-       _canExceedBalance = canExceedBalance;
+    this._isLoading = false,
+    this._bitcoinUnit,
+    required this._amountController,
+    this._focusNode,
+    this._isFiatCurrencyInput = true,
+    this._fiatCurrency,
+    this._onIsFiatCurrencyInputChanged,
+    this._fiatBalance,
+    this._canExceedBalance = false,
+  });
 
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;

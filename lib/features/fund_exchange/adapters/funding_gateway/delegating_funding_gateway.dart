@@ -13,12 +13,10 @@ class DelegatingFundingGateway implements FundingGatewayPort {
   final ExchangeEnvironmentPort _exchangeEnvironment;
 
   DelegatingFundingGateway({
-    required FundingGatewayPort bullbitcoinFundingGateway,
-    required FundingGatewayPort bullBitcoinTestnetFundingGateway,
-    required ExchangeEnvironmentPort exchangeEnvironment,
-  }) : _bullbitcoinFundingGateway = bullbitcoinFundingGateway,
-       _bullBitcoinTestnetFundingGateway = bullBitcoinTestnetFundingGateway,
-       _exchangeEnvironment = exchangeEnvironment;
+    required this._bullbitcoinFundingGateway,
+    required this._bullBitcoinTestnetFundingGateway,
+    required this._exchangeEnvironment,
+  });
 
   @override
   Future<FundingDetails> getFundingDetails({

@@ -8,13 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   DefaultWalletsCubit({
-    required GetDefaultWalletsUsecase getDefaultWalletsUsecase,
-    required SaveDefaultWalletUsecase saveDefaultWalletUsecase,
-    required DeleteDefaultWalletUsecase deleteDefaultWalletUsecase,
-  }) : _getDefaultWalletsUsecase = getDefaultWalletsUsecase,
-       _saveDefaultWalletUsecase = saveDefaultWalletUsecase,
-       _deleteDefaultWalletUsecase = deleteDefaultWalletUsecase,
-       super(const DefaultWalletsState());
+    required this._getDefaultWalletsUsecase,
+    required this._saveDefaultWalletUsecase,
+    required this._deleteDefaultWalletUsecase,
+  }) : super(const DefaultWalletsState());
 
   final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
   final SaveDefaultWalletUsecase _saveDefaultWalletUsecase;

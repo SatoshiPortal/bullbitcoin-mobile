@@ -17,13 +17,10 @@ part 'dca_state.dart';
 
 class DcaBloc extends Bloc<DcaEvent, DcaState> {
   DcaBloc({
-    required StartDcaUsecase startDcaUsecase,
-    required SetDcaUsecase setDcaUsecase,
-    required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
-  }) : _startDcaUsecase = startDcaUsecase,
-       _setDcaUsecase = setDcaUsecase,
-       _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
-       super(const DcaState.initial()) {
+    required this._startDcaUsecase,
+    required this._setDcaUsecase,
+    required this._saveUserPreferencesUsecase,
+  }) : super(const DcaState.initial()) {
     on<DcaStarted>(_onStarted);
     on<DcaBuyInputContinuePressed>(_onBuyInputContinuePressed);
     on<DcaWalletSelected>(_onWalletSelected);

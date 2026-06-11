@@ -39,20 +39,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinRepositoryImpl({
-    required LocalPayjoinDatasource localPayjoinDatasource,
-    required PdkPayjoinDatasource pdkPayjoinDatasource,
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._localPayjoinDatasource,
+    required this._pdkPayjoinDatasource,
+    required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _localPayjoinDatasource = localPayjoinDatasource,
-       _pdkPayjoinDatasource = pdkPayjoinDatasource,
-       _walletMetadataDatasource = walletMetadataDatasource,
-       _seed = seedDatasource,
+    required this._serversPort,
+  }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _blockchain = blockchainDatasource,
-       _serversPort = serversPort,
        _lock = Lock(),
        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the datasource and process them

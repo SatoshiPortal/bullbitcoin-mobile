@@ -14,8 +14,7 @@ class TorConnectivityService {
   DateTime? _cacheTime;
   static const _cacheDuration = Duration(seconds: 30);
 
-  TorConnectivityService({required SocketPort socketPort})
-    : _socketPort = socketPort;
+  TorConnectivityService({required this._socketPort});
 
   /// Checks if a Tor SOCKS5 proxy is running and accessible on the given port
   ///

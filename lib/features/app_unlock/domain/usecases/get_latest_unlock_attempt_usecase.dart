@@ -7,10 +7,9 @@ class GetLatestUnlockAttemptUsecase {
   final TimeoutCalculator _timeoutCalculator;
 
   GetLatestUnlockAttemptUsecase({
-    required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
-    required TimeoutCalculator timeoutCalculator,
-  }) : _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,
-       _timeoutCalculator = timeoutCalculator;
+    required this._failedUnlockAttemptsRepository,
+    required this._timeoutCalculator,
+  });
 
   Future<UnlockAttempt> execute() async {
     final attempts =
