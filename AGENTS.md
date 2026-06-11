@@ -6,6 +6,10 @@ Instructions for AI coding agents working in this repo. Cross-tool standard ([ag
 
 Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter/Dart, BLoC, Drift/SQLite, GoRouter, get_it DI. See [README.md](README.md) for product details.
 
+**Repo doc map:** [README.md](README.md) = product · [ARCHITECTURE.md](ARCHITECTURE.md) = layer model & design rules (read its "Entry points & code tour") · **AGENTS.md** (this file) = toolchain, conventions, commit/test rules · [FEATURES.md](FEATURES.md) = cross-feature dependency graph.
+
+**Composition root** (where to wire a new feature): `lib/main.dart` (`Bull.init()` → `initLocator()` → `runApp`) → `lib/locator.dart` (get_it; `AppLocator.setup` registers core, then every `<Feature>Locator.setup`) → `lib/router.dart` (GoRouter; `AppRouter.router` spreads each `<Feature>Router`'s routes). A new feature is added in those last two files.
+
 ## Toolchain — non-negotiable
 
 - **Always `fvm flutter` / `fvm dart`.** Never bare `flutter`/`dart`. The pinned SDK lives in [`.fvmrc`](.fvmrc); using a global SDK silently breaks builds.
@@ -43,17 +47,17 @@ Some rules below are canonical (textbook Clean/Hex Arch), others are deliberate 
 
 Hard rules:
 
-1. **Feature isolation — facade is our chosen pattern.** Modular Flutter has several valid options (facade, abstract use-case interfaces, event bus, mediator); this codebase picks facade. **Target location** (per ARCHITECTURE.md): `<feature>/public/<feature>_facade.dart`. **Current legacy** (e.g. [`labels_facade.dart`](lib/features/labels/labels_facade.dart)): facade at feature root. New facades use the target location; don't move legacy ones in unrelated PRs. Never import another feature's internals (`domain/`, `data/`, `presentation/`) — the `public/` facade is the only importable surface.
+1. **Feature isolation — facade is our chosen pattern.** Modular Flutter has several valid options (facade, abstract use-case interfaces, event bus, mediator); this codebase picks facade. **Target location** (per ARCHITECTURE.md): `<feature>/public/<feature>_facade.dart`. **Current legacy** (e.g. [`labels_facade.dart`](lib/features/labels/labels_facade.dart)): facade at feature root. New facades use the target location; don't move legacy ones in unrelated PRs. Never import another feature's internals (`domain/`, `data/`, `presentation/`) — the `public/` facade is the only importable surface. **The facade *is* the interface** — a concrete class, not an `abstract interface class`; its method surface + `export` block are the contract (add an abstract interface only for DIP-to-break-a-cycle or test mocking). **It returns only the feature's published types** (the entity itself when clean and stable, else a dedicated public DTO + mapper as `labels` does) — **never** a `data/models/` model, an `application/`-internal type, or another feature's entity, and the return type must be in the `export` block. Consumers wrap a facade call in **their own** use-case (rule #4). See ARCHITECTURE.md "The facade: a feature's public contract".
 2. **Layer direction — one chain, always.** `ui → presentation (bloc/cubit) → usecase (domain) → repository (domain interface → data impl) → datasource (data)`. **A bloc never imports a repository or a datasource** — it always goes through a use-case, the testable seam where data-layer errors are mapped to feature errors. **Use-cases are always present but stay thin: orchestration only.** Put each kind of logic in its home — **invariants in domain entities/value objects; data-shaping (mapping, aggregation, caching) in the repository; orchestration in the use-case**. Pushing data-shaping or invariants into a use-case is the "fat use-case" smell — move it down. The inward-only dependency rule is [hexagonal-canonical](https://alistair.cockburn.us/hexagonal-architecture); the MVVM-spine + repository is the official [Flutter guide](https://docs.flutter.dev/app-architecture/recommendations). See ARCHITECTURE.md "The architecture we tend toward".
 3. **Watchers go through use cases**, not repositories. `watcher → use case → repository`.
 4. **BLoCs are thin — in our architecture.** No orchestration, no business decisions, no complex transforms; those live in use cases. (Note: [bloclibrary.dev](https://bloclibrary.dev/architecture/) treats the bloc layer itself as the business-logic layer above repositories — our "BLoC is thin, use case below it" stance is a deliberate Clean-Arch refinement, not bloclibrary canon.) **Project convention**: never call another feature's facade directly from a BLoC — wrap it in your own feature's use case (in `domain/usecases/`), and the BLoC calls that wrapper. This is the cure for "business logic in presentation" that ARCHITECTURE.md flags as the most common pitfall.
 5. **Local widget state stays in `StatefulWidget`.** BLoC/Cubit is for business state only — what other layers care about. Form-field focus, animation controllers, expanded/collapsed panels, scroll positions: keep them in widget state. Mixing the two makes BLoC tests flaky and bloats state classes.
-6. **Repository: abstract interface in `domain/`, impl in `data/` — don't over-abstract the rest.** Declare the contract as `abstract interface class <Noun>Repository` in `domain/repositories/<noun>_repository.dart` (the single `repositories/` folder); put the implementation in `data/<noun>_repository_impl.dart` next to its datasources — **no second `repositories/` folder**. A datasource wraps one external system and is a **private member** of its repository (bloc/UI can't reach it). One repository is enough for trivial CRUD; add a separate datasource only for real transformation, multiple backends, or clear logic to separate — two layers that forward-call each other are noise. **Cap models per entity at two** (wire/persistence + domain), only when the stored shape diverges. The five-types-per-record pattern (entity / value-object / primitive / request-DTO / response-DTO + a mapper between each) is verbosity Google flags ("separate models adds verbosity… Use in large apps", [recommendations](https://docs.flutter.dev/app-architecture/recommendations)); collapse it. Value objects are for correctness-critical primitives (amount/sats, address, fee rate), not every field.
+6. **Repository: abstract interface in `domain/`, impl in `data/` — don't over-abstract the rest.** Declare the contract as `abstract interface class <Noun>Repository` in `domain/repositories/<noun>_repository.dart` (the single `repositories/` folder); put the implementation in `data/<noun>_repository_impl.dart` next to its datasources — **no second `repositories/` folder**. A datasource wraps one external system and is a **private member** of its repository (bloc/UI can't reach it). One repository is enough for trivial CRUD; add a separate datasource only for real transformation, multiple backends, or clear logic to separate — two layers that forward-call each other are noise. **Boundary rule (never bends):** a repository's public signatures — returns **and** params — use only domain types (entities, value objects, `Result<Entity, …>`). Wire models, library types (BDK `LocalUtxo`, LWK, a Drift row), JSON `Map`s and DTOs never cross the repository boundary — they stay inside `data/`. *(Legacy leak, don't replicate: `WalletAddressRepository` takes a `WalletModel` param — a `data/` model in a `domain/` contract.)* **Entity and model are always two separate types** (entity in `domain/entities/`, wire/persistence model in `data/models/`, mapper between) — this is the boundary above, not over-abstraction, so never collapse it into one class even when they look identical. The entity is **self-validating** (invariants in the constructor/factory; an invalid instance can't exist) and carries **no** serialization; the model is **pure data** (serialization only, no rules). **Cap is two types per record** — the five-types-per-record pattern (entity / value-object / primitive / request-DTO / response-DTO + a mapper between each) is verbosity the Flutter team flags as *Conditional* ("separate models adds verbosity… Use in large apps", [recommendations](https://docs.flutter.dev/app-architecture/recommendations)); collapse *that*. Value objects are for correctness-critical primitives (amount/sats, address, fee rate), not every field.
 7. **`/lib/core` is infrastructure only.** No feature/business logic. Generic primitives, drivers, helpers.
 8. **Shared value objects go in `lib/core/primitives/`** (planned per [FEATURES.md](FEATURES.md) — folder doesn't exist yet at audit time, and `Secret`/`Address`/`Amount`/`Fingerprint` are not yet extracted as primitives). When you create a value object that more than one feature would reasonably use, put it in `lib/core/primitives/` from the start — that's how the primitives layer gets built. Before creating one, grep `lib/` for an existing class with the same intent.
 9. **Prefer rich domain models** — methods that enforce invariants, not anemic DTOs mirroring DB rows. (Note: [Fowler's anemic-domain anti-pattern](https://www.martinfowler.com/bliki/AnemicDomainModel.html) is widely cited but [not universal](https://blog.inf.ed.ac.uk/sapm/2014/02/04/the-anaemic-domain-model-is-no-anti-pattern-its-a-solid-design/). This is our preference, aligned with ARCHITECTURE.md's "Anemic Domain Models" pitfall.)
 10. **No raw colors.** Always pull from the theme. If the user describes a color in plain language, pick the closest theme color that works in both light and dark mode. Don't edit theme files unprompted.
-11. **Errors — one sealed family per feature.** Define a sealed `<feature>_error.dart` in `domain/`. Map foreign errors at every boundary; never leak another layer's or feature's error type. Prefer returning a `Result`/sealed outcome for expected, recoverable errors at the repository boundary (`throw` only for programmer errors) — officially "a recommendation, but not a requirement" ([data-layer case study](https://docs.flutter.dev/app-architecture/case-study/data-layer)); don't mass-migrate existing exception code. **Legacy (don't replicate):** some hexagonal features split errors per layer (`domain_errors.dart` / `application_errors.dart` / `presentation_errors.dart`), and `fund_exchange` uses feature-prefixed singular (`fund_exchange_<layer>_error.dart`). Converge to one family per feature over time.
+11. **Errors — one sealed family per feature.** Define a sealed `<feature>_error.dart` in `domain/`. Map foreign errors at every boundary; never leak another layer's or feature's error type. **Each error exposes a `toTranslated(BuildContext)`** (dominant convention, 36 uses — `sell_error.dart`, `bitbox_errors.dart`, `replace_by_fee/errors.dart`; not `toTranslation`/`String get message`) returning a localized, user-safe message via `AppLocalizations` (the `context.loc` extension; see the UI Kit "no hardcoded user-facing strings" rule) — never the raw exception or dev detail, which stays in logs. The `sealed` switch makes a missing user message a compile error. **Call it UI-side only** — it takes a `BuildContext`; the bloc holds the `<Feature>Error` in state, the widget renders `error.toTranslated(context)`. A `BuildContext` in `presentation/` is a smell. **The end user never sees a dev string:** the catch-all variant (`unexpected`/`unknown`) returns a **generic localized** message, never the raw `message` — `unexpected: (message) => message` leaks dev detail; log it, show a generic string. Prefer returning a `Result`/sealed outcome for expected, recoverable errors at the repository boundary (`throw` only for programmer errors) — officially "a recommendation, but not a requirement" ([data-layer case study](https://docs.flutter.dev/app-architecture/case-study/data-layer)); don't mass-migrate existing exception code. **Legacy (don't replicate):** some hexagonal features split errors per layer (`domain_errors.dart` / `application_errors.dart` / `presentation_errors.dart`), and `fund_exchange` uses feature-prefixed singular (`fund_exchange_<layer>_error.dart`). Converge to one family per feature over time.
 12. **Acyclic feature graph.** Check [FEATURES.md](FEATURES.md) before adding a dependency.
 13. **Keep the dependency graph live.** Any PR that adds a feature, removes a feature, or changes which other features it consumes via `public/` facades **must** update the mermaid graph in [FEATURES.md](FEATURES.md) in the same commit. The graph is documentation only if it matches the code — if you change one without the other, both become useless.
 14. **Folders justify their existence — files don't justify folders.** A tiny piece of code is one file with a role suffix, not a folder of one file:
@@ -69,6 +73,8 @@ Hard rules:
 
 When a request would break these rules, explain why and propose a compliant alternative. Don't silently comply.
 
+When you **work in** a feature, file, or folder that already violates these rules (legacy, a drifted hexagonal module, a leaked boundary), don't silently work around it and don't quietly copy it. **Flag it and offer a fix:** name the specific rule it breaks and propose a **scoped refactoring** to bring it into line — as its **own** atomic commit/PR, separate from the task at hand. Then let the developer decide: take it now, defer it, or skip it. Never fold an opportunistic refactor into an unrelated change (that breaks atomic commits). This is the "leave it cleaner than you found it" rule from [ARCHITECTURE.md](ARCHITECTURE.md)'s intro, kept compatible with atomic commits — surface the opportunity, don't force it.
+
 ## Naming conventions
 
 Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most of these; the rules below reflect what the dominant code already does. Where two conventions exist, the recommendation is the more common one — migrate toward it, don't replicate the minority.
@@ -81,7 +87,8 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 | `domain/repositories/` | plural | the single `repositories/` folder — **abstract** interfaces (contracts) |
 | `domain/usecases/` | plural, no underscore | the canonical use-case home (~80% already here) |
 | `data/datasources/` | plural, no underscore | not `data_sources/`; one external system each |
-| `data/models/` | plural, optional | wire/persistence models (≤ 1 per entity) |
+| `data/models/` | plural | wire/persistence model — **1 per entity, always separate from the entity** |
+| `data/mappers/` | plural | model ↔ entity; a file only once it earns one (rule #14) |
 | `data/` (repo impl) | — | `<noun>_repository_impl.dart` lives directly here — no `data/repositories/` folder |
 | `presentation/` | — | bloc/cubit + state + event |
 | `ui/screens/`, `ui/widgets/` | plural | |
@@ -99,6 +106,8 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 | Repository impl | `<noun>_repository_impl.dart` **or** `<tech>_<noun>_repository.dart`, in `data/` | `exchange_rate_repository_impl.dart`, `drift_electrum_server_repository.dart` |
 | Datasource | `<noun>_datasource.dart` **or** `<tech>_<noun>_datasource.dart`, in `data/datasources/` | `electrum_remote_datasource.dart`, `bdk_wallet_datasource.dart` |
 | Entity / value object | `<noun>.dart` | `wallet.dart`, `auto_swap.dart` |
+| Model (wire/persistence) | `<noun>_model.dart` in `data/models/` | `wallet_utxo_model.dart` |
+| Mapper | `<noun>_mapper.dart` in `data/mappers/` | `wallet_utxo_mapper.dart` |
 | Bloc | `<feature>_bloc.dart` | `send_bloc.dart` |
 | Cubit | `<feature>_cubit.dart` | `settings_cubit.dart` |
 | State | `<feature>_state.dart` | `send_state.dart` |
@@ -109,10 +118,12 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 
 **Classes** — `PascalCase`, matching local quirks:
 
-- **Use cases**: `<Verb><Noun>Usecase` — **lowercase 'case'**, never `UseCase`. Codebase-wide convention (`GetSettingsUsecase`, `UpdateTorSettingsUsecase`, `BroadcastBitcoinTransactionUsecase`).
+- **Use cases**: `<Verb><Noun>Usecase` — **lowercase 'case'**, never `UseCase`. Codebase-wide convention (`GetSettingsUsecase`, `UpdateTorSettingsUsecase`, `BroadcastBitcoinTransactionUsecase`). Single public entry method **`execute(...)`** (206 of 209 use-cases; never `call`).
 - **Datasources**: `<Name>Datasource` — **lowercase 's'**, never `DataSource`. Codebase-wide (`BdkWalletDatasource`, `BoltzDatasource`).
 - **Repositories**: abstract interface = `<Name>Repository` (`abstract interface class`, in `domain/repositories/`); concrete impl = `<Name>RepositoryImpl` or `<Tech><Name>Repository` (in `data/`). Pick the technology prefix when the backing tech is meaningful (Drift, Bdk, Boltz, GoogleDrive, Bullbitcoin); use `Impl` when the technology label would be awkward.
 - **Entities & value objects**: bare noun, **no `Entity` suffix** (`Wallet`, `WalletUtxo`, `TransactionOutput`). Two legacy outliers (`BitboxDeviceEntity`, `LedgerDeviceEntity`) — don't replicate.
+- **Models (wire/persistence)**: `<Noun>Model` (`WalletUtxoModel`) — in `data/models/`, freezed; serialization only, never crosses the repository boundary (rule #6).
+- **Mappers**: `<Noun>Mapper` (`WalletUtxoMapper`) — in `data/mappers/`; translates model ↔ entity.
 - **Non-repository domain interfaces**: `<Name>Port` (`BlockchainPort`, `ElectrumConnectivityPort`) — a capability abstraction that is not a repository; lives in `domain/`. Repository interfaces use `<Name>Repository`, never `Port`. (The `Port` *suffix* stays for these; only the hexagonal *folders* `application/`/`adapters/`/`frameworks/` are deprecated.)
 - **Bloc/Cubit**: `<Feature>Bloc` / `<Feature>Cubit` (`SendBloc`, `SettingsCubit`).
 - **State / Event**: `<Feature>State` / `<Feature>Event`, sealed with freezed when there are multiple cases.
@@ -133,7 +144,7 @@ Workflow when you need a widget:
 3. **If genuinely new and reused by ≥ 2 features**, put it in `lib/core/widgets/<category>/` from the start — that *is* growing the UI Kit.
 4. **If used by exactly one feature**, it lives in `<feature>/ui/widgets/` — but write it composable enough to be promoted later (no hardcoded colors, no hardcoded text, take callbacks not bloc refs).
 5. **Widgets never live under `adapters/`, `frameworks/`, `domain/`, or `application/`.** UI goes in `ui/` or `lib/core/widgets/`. Full stop.
-6. **No hardcoded user-facing strings.** Always `AppLocalizations.of(context).<key>`. Add the key to [`localization/`](localization/) and run `make translations`. A duplicated literal across screens means a missing l10n key.
+6. **No hardcoded user-facing strings.** Always `context.loc.<key>` — the `BuildContext` extension (`build_context_x.dart`) that wraps `AppLocalizations.of(context)`; it is the dominant convention (≈2564 uses vs 3 raw `AppLocalizations.of`). Add the key to [`localization/`](localization/) and run `make translations`. A duplicated literal across screens means a missing l10n key.
 7. **Theme tokens only** — colors, spacing, typography pulled from the theme. See rule #10 above.
 
 When you spot a duplicate of an existing core widget in feature code, flag it in the PR description as a follow-up cleanup. Don't silently leave it. Don't fix unrelated duplicates in the same PR either — that breaks atomic commits.
@@ -156,6 +167,8 @@ Rules:
 ## Tests
 
 - Use cases and entities with business rules **must** have unit tests.
+- **Layout:** tests live in `test/` mirroring `lib/` (`test/features/<feature>/…`, core under `test/core_test/`); files end `_test.dart`.
+- **Tooling:** `bloc_test` for blocs/cubits, `mocktail`/`mockito` for collaborators; prefer **fakes** for repositories/datasources — the abstract interfaces exist precisely so you can swap a real implementation for a test double.
 - `make unit-test` for the test you wrote. Don't claim done until it's green.
 - Integration tests live in `integration_test/` and need device/.env fixtures.
 
@@ -188,6 +201,17 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 - **Learn unknown CLIs with `--help` first.** Don't guess flags. `<cmd> --help`, `<cmd> subcommand --help`, then act.
 - **Get the current date with `date -u +%Y-%m-%d`** before judging anything as "recent" or "outdated" — see the verification section above.
 
+## Security (self-custodial wallet — treat as load-bearing)
+
+This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold these as hard as the architecture rules:
+
+- **Never log secrets.** Mnemonics, seeds, xprivs, PINs, raw key material never reach logs, Sentry, or analytics. Scrub before reporting; assume anything logged is exfiltrated.
+- **Secrets are ephemeral.** Read from `flutter_secure_storage` at point of use; don't cache key material in long-lived bloc/singleton state. Treat a revealed value as short-lived.
+- **Sealed UI for display.** Show a secret through a widget that reads it internally and never returns it (the `MnemonicView` pattern — see ARCHITECTURE.md "Sealed UI as a security tool"); never add a getter that hands the raw value to a caller.
+- **Block capture on secret screens** — `no_screenshot` plus exclusion from the semantics/accessibility tree.
+- **Validate at the domain boundary.** Addresses, amounts, descriptors are value objects that reject invalid input at construction (rule #9) — never trust a raw string deeper in.
+- When a change touches key material, signing, or backup/recovery, **say so explicitly in the PR** so it gets the right review.
+
 ## Don'ts (the short list)
 
 - Don't run `flutter` / `dart` without `fvm`.
@@ -195,8 +219,10 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 - Don't bypass `.git_hooks/pre-commit`.
 - Don't import across feature internals — facade only.
 - Don't put business logic in BLoCs or `/lib/core`.
+- Don't log, cache, or expose secrets (mnemonic / seed / xpriv / PIN) — see Security.
+- Don't return a `data/` model from a repository, or a non-published type from a facade — boundaries carry domain types only.
 - Don't reinvent a widget that already exists in `lib/core/widgets/`.
-- Don't hardcode user-facing strings — use `AppLocalizations`.
+- Don't hardcode user-facing strings — use `context.loc.<key>`.
 - Don't hard-wrap prose mid-sentence in markdown, comments, PR descriptions, or commit bodies — write each sentence on one continuous line and let the editor soft-wrap. Manual line breaks belong only between paragraphs or list items.
 - Don't add `path:` deps to pubspec.
 - Don't amend or force-push without explicit ask.
