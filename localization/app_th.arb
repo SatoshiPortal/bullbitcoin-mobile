@@ -3321,10 +3321,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "สมดุลสูงสุด 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "เมล็ด",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -9711,10 +9707,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "ตัวชี้วัดพื้นฐาน 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "จํานวนเงิน",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -12487,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "เร่งด่วน: จำเป็นต้องสำรองข้อมูลและติดตั้งแอปใหม่",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "จำเป็นต้องดำเนินการ: ติดตั้งแอปใหม่",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "สำรองข้อมูลตอนนี้",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "ภายหลัง",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "ย้อนกลับ",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "บันทึกทั่วไป",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
   "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
   "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
   "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",

@@ -1113,7 +1113,6 @@
   "doNotShareWarning": "纽约总部",
   "torSettingsPortNumber": "港口数量",
   "payNameHint": "1. 输入者姓名",
-  "autoswapWarningTriggerAmount": "最大余额为 0.02 BTC",
   "legacySeedViewScreenTitle": "遗产种子",
   "pleaseWaitFetching": "等到我们找回文件的时候.",
   "backupWalletPhysicalBackupTag": "无信托能力(时间)",
@@ -3209,7 +3208,6 @@
   "bitboxActionImportWalletButton": "开始导入",
   "fundExchangeLabelSwiftCode": "缩略语",
   "buyEnterBitcoinAddress": "轨道硬币地址",
-  "autoswapWarningBaseBalance": "目标余额 0.01 BTC",
   "transactionDetailLabelPayoutAmount": "薪酬数额",
   "importQrDeviceSpecterStep6": "选择“关键”",
   "importQrDeviceJadeStep10": "这!",
@@ -4500,30 +4498,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "紧急：需要备份并重新安装",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "需要操作：重新安装应用程序",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "立即备份",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "稍后",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "返回",
   "@backButton": {
     "description": "Generic back button label"
@@ -4555,10 +4529,6 @@
   "errorReportingStandardLogsTitle": "标准日志",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "始终开启 — 让我们能看到您的钱包在应用版本之间是否安全迁移。",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "使用您的备份",
   "@appInitErrorHasBackupTitle": {
@@ -4643,7 +4613,6 @@
   "legacyStorageHasBackupImportantBody": "除非您必须紧急使用钱包或正在等待一笔兑换完成，否则请不要跳过此流程。",
   "legacyStorageRiskAckButtonHasBackup": "我了解风险",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "请在24小时内打开应用以完成您的兑换。",
   "importMnemonicDuplicateError": "该助记词已存在",
   "transactionStatusPayjoinCompleted": "Payjoin 已完成",
   "coreScreensResolvingInputs": "正在解析交易输入...",
