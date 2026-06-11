@@ -49,6 +49,7 @@ import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_us
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState>
@@ -138,6 +139,14 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
+
+  /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
+  /// captures it before its `await` and re-checks before writing results
+  /// back; if any input-shape change cleared the cache mid-flight the
+  /// token moved on and the stale build is discarded instead of
+  /// re-populating an emptied cache (which could otherwise stage a PSBT
+  /// built for the previous tx shape for broadcast).
+  int _bitcoinPreviewEpoch = 0;
 
   @override
   Future<void> close() async {
@@ -1121,7 +1130,14 @@ class SendCubit extends Cubit<SendState>
       final utxos = await _getWalletUtxosUsecase.execute(
         walletId: state.selectedWallet!.id,
       );
+      // A wallet sync can change the available coins. Any cached preview
+      // PSBT was built against the prior UTXO set, so drop it — otherwise
+      // a sync landing mid-flow could leave a stale PSBT staged for
+      // broadcast. Guarded so a no-op refresh doesn't needlessly
+      // re-shimmer an open modal.
+      final utxosChanged = !setEquals(state.utxos.toSet(), utxos.toSet());
       emit(state.copyWith(utxos: utxos));
+      if (utxosChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -1311,6 +1327,7 @@ class SendCubit extends Cubit<SendState>
         feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
       ),
     );
+    final epoch = _bitcoinPreviewEpoch;
     log.info(
       '[fee-preview] start customRate=${fee is RelativeFee ? fee.satPerVbyte : fee.value} '
       'amount=$amount drain=${state.sendMax} '
@@ -1325,6 +1342,13 @@ class SendCubit extends Cubit<SendState>
       selectedInputs: state.selectedUtxos,
       drain: state.sendMax,
     );
+    // An input-shape change cleared the cache while we were building —
+    // discard this now-stale result instead of repopulating an emptied
+    // slot (which could stage a PSBT for the prior shape at commit).
+    if (epoch != _bitcoinPreviewEpoch) {
+      log.info('[fee-preview] discarded — inputs changed mid-build');
+      return;
+    }
     if (slot.isCacheReady) {
       log.info(
         '[fee-preview] done rate=${fee is RelativeFee ? fee.satPerVbyte : fee.value} '
@@ -1364,6 +1388,7 @@ class SendCubit extends Cubit<SendState>
         feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
       ),
     );
+    final epoch = _bitcoinPreviewEpoch;
     log.info(
       '[fee-presets] start amount=$amount drain=${state.sendMax} '
       'selectedInputs=${state.selectedUtxos.length} rbf=${state.replaceByFee}',
@@ -1377,6 +1402,12 @@ class SendCubit extends Cubit<SendState>
       selectedInputs: state.selectedUtxos,
       drain: state.sendMax,
     );
+    // Discard if an input-shape change emptied the cache mid-build (see
+    // previewBitcoinCustomFee).
+    if (epoch != _bitcoinPreviewEpoch) {
+      log.info('[fee-presets] discarded — inputs changed mid-build');
+      return;
+    }
     log.info(
       '[fee-presets] done '
       'fastest=${slots[FeeSelection.fastest]?.feeSat} '
@@ -1400,6 +1431,7 @@ class SendCubit extends Cubit<SendState>
   /// (wallet, recipient, amount, UTXO selection) so we don't display
   /// stale fees for a different tx shape.
   void clearBitcoinFeePreviews() {
+    _bitcoinPreviewEpoch++;
     emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
   }
 

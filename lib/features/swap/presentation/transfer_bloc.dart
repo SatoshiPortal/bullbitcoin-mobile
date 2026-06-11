@@ -122,6 +122,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
 
+  /// Bumped by [_clearBitcoinFeePreviews]; a preview build captures it
+  /// before its `await` and re-checks before writing back, so an
+  /// input-shape change mid-build discards the stale result instead of
+  /// repopulating an emptied cache. Mirrors `SendCubit`.
+  int _bitcoinPreviewEpoch = 0;
+
   @override
   Future<void> close() async {
     await Future.wait([_swapSubscription?.cancel() ?? Future.value()]);
@@ -998,6 +1004,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
       ),
     );
+    final epoch = _bitcoinPreviewEpoch;
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: state.fromWallet!.id,
       address: shape.address,
@@ -1007,6 +1014,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       selectedInputs: state.selectedUtxos,
       drain: false,
     );
+    // Discard if an input-shape change emptied the cache mid-build.
+    if (epoch != _bitcoinPreviewEpoch) return;
     emit(
       state.copyWith(
         feePreviewCache: state.feePreviewCache
@@ -1035,6 +1044,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
       ),
     );
+    final epoch = _bitcoinPreviewEpoch;
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: state.fromWallet!.id,
@@ -1044,6 +1054,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       selectedInputs: state.selectedUtxos,
       drain: false,
     );
+    // Discard if an input-shape change emptied the cache mid-build.
+    if (epoch != _bitcoinPreviewEpoch) return;
     emit(
       state.copyWith(
         feePreviewCache: state.feePreviewCache.copyWith(
@@ -1082,6 +1094,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// keyed implicitly by (wallet, address, amount, utxos, rbf); any of
   /// those moving invalidates the cached PSBTs we'd otherwise broadcast.
   void _clearBitcoinFeePreviews(Emitter<TransferState> emit) {
+    _bitcoinPreviewEpoch++;
     emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
   }
 
