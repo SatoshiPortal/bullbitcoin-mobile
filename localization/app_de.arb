@@ -1091,7 +1091,6 @@
   "doNotShareWarning": "NICHT MIT ANDEREN TEILEN.",
   "torSettingsPortNumber": "Portnummer",
   "payNameHint": "Empfängername eingeben",
-  "autoswapWarningTriggerAmount": "Maximaler Kontostand von 0,02 BTC.",
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "pleaseWaitFetching": "Bitte warten Sie, während Ihre Sicherungsdatei abgerufen wird.",
   "backupWalletPhysicalBackupTag": "Vertrauenslos (nehmen Sie sich die Zeit)",
@@ -3165,7 +3164,6 @@
   "bitboxActionImportWalletButton": "Import starten",
   "fundExchangeLabelSwiftCode": "SWIFT-Code",
   "buyEnterBitcoinAddress": "Bitcoin-Adresse eingeben",
-  "autoswapWarningBaseBalance": "Zielsaldo 0,01 BTC.",
   "transactionDetailLabelPayoutAmount": "Auszahlungsbetrag",
   "importQrDeviceSpecterStep6": "Wählen Sie „Einzelschlüssel“",
   "importQrDeviceJadeStep10": "Das ist es!",
@@ -4393,30 +4391,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Dringend: Backup und Neuinstallation erforderlich",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Die App, die Sie verwenden, nutzt Software, die bald veraltet sein wird. Bitte führen Sie folgende Schritte durch:\n\n1. Sichern Sie Ihre Wallet\n2. Deinstallieren Sie die App. Löschen Sie sie vollständig von Ihrem Telefon.\n3. Installieren Sie die neueste Version der App erneut\n4. Verwenden Sie die Wiederherstellungsoption anstatt \"neue Wallet erstellen\".\n\nIhre Gelder sind sicher und Sie können die App jetzt weiter nutzen, aber erledigen Sie dies so bald wie möglich, um zu verhindern, dass die App in naher Zukunft nicht mehr funktioniert.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Aktion erforderlich: App neu installieren",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Die App, die Sie verwenden, nutzt Software, die bald veraltet sein wird. Bitte führen Sie folgende Schritte durch:\n\n1. Sichern Sie Ihre Wallet\n2. Deinstallieren Sie die App. Löschen Sie sie vollständig von Ihrem Telefon.\n3. Installieren Sie die neueste Version der App erneut\n4. Verwenden Sie die Wiederherstellungsoption anstatt \"neue Wallet erstellen\".\n\nIhre Gelder sind sicher und Sie können die App jetzt weiter nutzen, aber erledigen Sie dies so bald wie möglich, um zu verhindern, dass die App in naher Zukunft nicht mehr funktioniert.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Jetzt sichern",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Später",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Zurück",
   "@backButton": {
     "description": "Generic back button label"
@@ -4448,10 +4422,6 @@
   "errorReportingStandardLogsTitle": "Standardprotokolle",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Immer aktiv - ermöglicht uns zu sehen, ob Ihre Wallet sicher zwischen App-Versionen migriert",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Nutzen Sie Ihr Backup",
   "@appInitErrorHasBackupTitle": {
@@ -4536,7 +4506,6 @@
   "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
   "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
   "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-  "transactionSwapOpenWithin24Hours": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
   "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
   "coreScreensResolvingInputs": "Transaktionseingaben werden aufgelöst...",
   "coreScreensFeeRateLabel": "Gebührenrate",
