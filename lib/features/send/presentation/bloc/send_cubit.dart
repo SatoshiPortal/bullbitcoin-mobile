@@ -150,6 +150,10 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
+  String _sanitizeRawPaymentRequest(String rawPaymentRequest) {
+    return rawPaymentRequest.trim().replaceAll(RegExp(r'^["\"]+|["\"]+$'), '');
+  }
+
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -182,10 +186,7 @@ class SendCubit extends Cubit<SendState> {
     PaymentRequest? paymentRequest,
   ) async {
     clearAllExceptions();
-    final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
-      RegExp(r'^["\"]+|["\"]+$'),
-      '',
-    );
+    final sanitizedText = _sanitizeRawPaymentRequest(scannedRawPaymentRequest);
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
@@ -197,50 +198,77 @@ class SendCubit extends Cubit<SendState> {
   }
 
   /// Called when text is pasted or entered manually
-  Future<void> onChangedText(String text) async {
-    try {
-      clearAllExceptions();
-      final sanitizedText = text.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
-      final paymentRequest = await _detectBitcoinStringUsecase.execute(
-        data: sanitizedText,
-      );
-      emit(
-        state.copyWith(
-          copiedRawPaymentRequest: sanitizedText,
-          paymentRequest: paymentRequest,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          copiedRawPaymentRequest: text,
-          paymentRequest: null,
-          // Don't show exception if text field is clear
-          invalidBitcoinStringException: text.isNotEmpty
-              ? InvalidBitcoinStringException()
-              : null,
-        ),
-      );
-    }
+  void onChangedText(String text) {
+    emit(
+      state.copyWith(
+        copiedRawPaymentRequest: _sanitizeRawPaymentRequest(text),
+        paymentRequest: null,
+        loadingBestWallet: false,
+        insufficientBalanceException: null,
+        swapCreationException: null,
+        swapLimitsException: null,
+        invalidBitcoinStringException: null,
+        buildTransactionException: null,
+        confirmTransactionException: null,
+      ),
+    );
   }
 
   Future<void> continueOnAddressConfirmed() async {
     try {
-      emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
-      await unifiedBip21Prioritization();
-
-      if (!state.hasValidPaymentRequest) {
+      final rawPaymentRequest = state.copiedRawPaymentRequest;
+      final cachedPaymentRequest = state.paymentRequest;
+      if (rawPaymentRequest.isEmpty) {
         emit(
           state.copyWith(
-            loadingBestWallet: false,
+            paymentRequest: null,
             invalidBitcoinStringException: InvalidBitcoinStringException(),
           ),
         );
         return;
       }
+
+      emit(
+        state.copyWith(
+          loadingBestWallet: true,
+          invoiceHasMrh: false,
+          invalidBitcoinStringException: null,
+        ),
+      );
+
+      final PaymentRequest paymentRequest;
+      if (cachedPaymentRequest != null) {
+        paymentRequest = cachedPaymentRequest;
+      } else {
+        try {
+          paymentRequest = await _detectBitcoinStringUsecase.execute(
+            data: rawPaymentRequest,
+          );
+        } catch (_) {
+          if (state.copiedRawPaymentRequest != rawPaymentRequest) {
+            emit(
+              state.copyWith(loadingBestWallet: false, paymentRequest: null),
+            );
+            return;
+          }
+
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              invalidBitcoinStringException: InvalidBitcoinStringException(),
+            ),
+          );
+          return;
+        }
+      }
+
+      if (state.copiedRawPaymentRequest != rawPaymentRequest) {
+        emit(state.copyWith(loadingBestWallet: false, paymentRequest: null));
+        return;
+      }
+
+      emit(state.copyWith(paymentRequest: paymentRequest));
+      await unifiedBip21Prioritization();
 
       if (state.paymentRequest!.isBolt11) {
         final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
