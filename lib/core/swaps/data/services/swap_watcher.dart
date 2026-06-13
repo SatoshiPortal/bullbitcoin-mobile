@@ -84,6 +84,14 @@ class SwapWatcherService {
     log.fine('[SwapWatcher] started and listening');
   }
 
+  Future<void> stopWatching() async {
+    _reconcileTimer?.cancel();
+    _reconcileTimer = null;
+    await _swapStreamSubscription?.cancel();
+    _swapStreamSubscription = null;
+    log.fine('[SwapWatcher] stopped');
+  }
+
   Future<void> _reconcileOngoing() async {
     if (_reconciling) return;
     _reconciling = true;
@@ -735,9 +743,11 @@ class SwapWatcherService {
         txSize: txSize,
         isLiquid: isLiquid,
       );
-      // Never burn more than half the swap on fees.
+      // Never burn more than half the swap on fees, but never drop below the
+      // relay floor or the claim tx becomes unbroadcastable.
       if (amountSat != null && amountSat > 0) {
-        return min(withFloor, max(1, amountSat ~/ 2));
+        final floor = _relayFloor(txSize: txSize, isLiquid: isLiquid);
+        return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
       }
       return withFloor;
     } catch (e) {
@@ -754,13 +764,15 @@ class SwapWatcherService {
   /// Floors an absolute fee at the network's relay minimum so a low estimate
   /// can never produce an unbroadcastable transaction. Liquid floors at
   /// 0.1 sat/vb (plus discount-CT padding), Bitcoin at 1 sat/vb.
+  int _relayFloor({required int txSize, required bool isLiquid}) =>
+      isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
+
   int _absoluteWithFloor(
     int absolute, {
     required int txSize,
     required bool isLiquid,
   }) {
-    final floor = isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
-    return max(absolute, floor);
+    return max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
   }
 
   Future<String?> _resolveChainClaimAddress(ChainSwap swap) async {

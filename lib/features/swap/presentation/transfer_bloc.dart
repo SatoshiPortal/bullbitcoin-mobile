@@ -413,9 +413,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           final psbt = await _prepareLiquidSendUsecase.execute(
             walletId: liquidWalletId,
             address: swap.paymentAddress,
-            amountSat: isMaxSend
-              ? null
-              : swap.paymentAmount,
+            amountSat: isMaxSend ? null : swap.paymentAmount,
             networkFee: state.liquidNetworkFees!.fastest,
             drain: isMaxSend,
           );
@@ -452,9 +450,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               .execute(
                 walletId: bitcoinWalletId,
                 address: swap.paymentAddress,
-                amountSat: isMaxSend
-              ? null
-              : swap.paymentAmount,
+                amountSat: isMaxSend ? null : swap.paymentAmount,
                 networkFee: selectedFee,
                 drain: isMaxSend,
                 selectedInputs: state.selectedUtxos.isNotEmpty
@@ -506,9 +502,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: swap.paymentAddress,
-          amountSat: isMaxSend
-              ? null
-              : swap.paymentAmount,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: selectedFee,
           drain: isMaxSend,
           selectedInputs: state.selectedUtxos.isNotEmpty
@@ -557,9 +551,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId,
           address: swap.paymentAddress,
-          amountSat: isMaxSend
-              ? null
-              : swap.paymentAmount,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: state.liquidNetworkFees!.fastest,
           drain: isMaxSend,
         );
@@ -672,9 +664,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final swapCreationException = _isInsufficientFundsException(e)
           ? InsufficientFundsSwapException()
           : SwapCreationException(e.toString());
-      emit(
-        state.copyWith(swapCreationException: swapCreationException),
-      );
+      emit(state.copyWith(swapCreationException: swapCreationException));
     } finally {
       emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
     }
@@ -982,9 +972,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
           address: swap.paymentAddress,
-          amountSat: isMaxSend
-              ? null
-              : swap.paymentAmount,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: selectedFee,
           drain: isMaxSend,
           selectedInputs: stateToUse.selectedUtxos.isNotEmpty
