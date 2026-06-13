@@ -37,6 +37,7 @@ enum SwapStatus {
   refundable,
   canCoop,
   completed,
+  refunded,
   expired,
   failed;
 
@@ -51,12 +52,21 @@ enum SwapStatus {
         return context.loc.coreSwapsStatusInProgress;
       case SwapStatus.completed:
         return context.loc.coreSwapsStatusCompleted;
+      case SwapStatus.refunded:
+        return context.loc.coreSwapsStatusRefunded;
       case SwapStatus.expired:
         return context.loc.coreSwapsStatusExpired;
       case SwapStatus.failed:
         return context.loc.coreSwapsStatusFailed;
     }
   }
+
+  /// Done states: no further watcher action will ever run for this swap.
+  bool get isTerminal =>
+      this == SwapStatus.completed ||
+      this == SwapStatus.refunded ||
+      this == SwapStatus.expired ||
+      this == SwapStatus.failed;
 }
 
 @freezed
@@ -66,6 +76,7 @@ abstract class SwapFees with _$SwapFees {
     int? boltzFee,
     int? lockupFee,
     int? claimFee,
+    int? refundFee,
     int? serverNetworkFees,
   }) = _SwapFees;
 
@@ -81,7 +92,14 @@ abstract class SwapFees with _$SwapFees {
       total += boltzFee!;
     }
     if (lockupFee != null) total += lockupFee!;
-    if (claimFee != null) total += claimFee!;
+    // The user's spend of the locked output is one leg: a claim on success or
+    // a refund on failure — never both. When the refund happened, its actual
+    // fee replaces the claim estimate.
+    if (refundFee != null) {
+      total += refundFee!;
+    } else if (claimFee != null) {
+      total += claimFee!;
+    }
     if (serverNetworkFees != null) total += serverNetworkFees!;
     return total;
   }
@@ -155,6 +173,7 @@ sealed class Swap with _$Swap {
     required String invoice,
     String? receiveAddress,
     String? receiveTxid,
+    @Default(false) bool wasDirectPayment,
     SwapFees? fees,
     DateTime? completionTime,
   }) = LnReceiveSwap;
@@ -290,6 +309,12 @@ sealed class Swap with _$Swap {
     ChainSwap(:final receiveTxid) => receiveTxid,
   };
 
+  String? get refundTxId => switch (this) {
+    LnReceiveSwap() => null,
+    LnSendSwap(:final refundTxid) => refundTxid,
+    ChainSwap(:final refundTxid) => refundTxid,
+  };
+
   String get walletId => switch (this) {
     LnReceiveSwap(:final receiveWalletId) => receiveWalletId,
     LnSendSwap(:final sendWalletId) => sendWalletId,
@@ -303,9 +328,10 @@ sealed class Swap with _$Swap {
       status == SwapStatus.refundable;
 
   bool get swapRefunded =>
-      status == SwapStatus.completed &&
-      ((this is ChainSwap && (this as ChainSwap).refundTxid != null) ||
-          (this is LnSendSwap && (this as LnSendSwap).refundTxid != null));
+      status == SwapStatus.refunded ||
+      (status == SwapStatus.completed &&
+          ((this is ChainSwap && (this as ChainSwap).refundTxid != null) ||
+              (this is LnSendSwap && (this as LnSendSwap).refundTxid != null)));
 
   bool get isChainSwapInternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId != null;
@@ -443,6 +469,8 @@ extension SwapStatusMessage on Swap {
           return context.loc.coreSwapsLnReceiveCanCoop;
         case SwapStatus.completed:
           return context.loc.coreSwapsLnReceiveCompleted;
+        case SwapStatus.refunded:
+          return context.loc.coreSwapsLnReceiveFailed;
         case SwapStatus.expired:
           return context.loc.coreSwapsLnReceiveExpired;
         case SwapStatus.failed:
@@ -467,6 +495,8 @@ extension SwapStatusMessage on Swap {
           } else {
             return context.loc.coreSwapsLnSendCompletedSuccess;
           }
+        case SwapStatus.refunded:
+          return context.loc.coreSwapsLnSendCompletedRefunded;
         case SwapStatus.expired:
           return context.loc.coreSwapsLnSendExpired;
         case SwapStatus.failed:
@@ -496,6 +526,8 @@ extension SwapStatusMessage on Swap {
           } else {
             return context.loc.coreSwapsChainCompletedSuccess;
           }
+        case SwapStatus.refunded:
+          return context.loc.coreSwapsChainCompletedRefunded;
         case SwapStatus.expired:
           return context.loc.coreSwapsChainExpired;
         case SwapStatus.failed:

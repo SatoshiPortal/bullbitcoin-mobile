@@ -5,7 +5,9 @@ class BBSwitch extends StatelessWidget {
   const BBSwitch({super.key, required this.value, required this.onChanged});
 
   final bool value;
-  final ValueChanged<bool> onChanged;
+
+  /// Null renders the switch disabled.
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) {

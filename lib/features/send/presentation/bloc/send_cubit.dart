@@ -1604,7 +1604,11 @@ class SendCubit extends Cubit<SendState> {
       );
       if (updatedSwap is LnSendSwap) {
         emit(state.copyWith(lightningSwap: updatedSwap));
-        if (updatedSwap.status == SwapStatus.canCoop ||
+        // paid == the invoice has been paid: the recipient has the money,
+        // regardless of when the coop close handshake happens (batched
+        // sub-minimum swaps may never get one).
+        if (updatedSwap.status == SwapStatus.paid ||
+            updatedSwap.status == SwapStatus.canCoop ||
             updatedSwap.status == SwapStatus.completed) {
           emit(state.copyWith(step: SendStep.success));
           unawaited(
@@ -1621,6 +1625,10 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(chainSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
           emit(state.copyWith(step: SendStep.success));
+        }
+        if (updatedSwap.status == SwapStatus.completed ||
+            updatedSwap.status == SwapStatus.refunded) {
+          // Sync on refund too so the returned funds show up.
           unawaited(
             _getWalletUsecase
                 .execute(state.selectedWallet!.id, sync: true)

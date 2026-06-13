@@ -29,6 +29,10 @@ class CreateChainSwapToExternalUsecase {
         throw Exception('Send wallet not found');
       }
 
+      if (sendWallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
+
       final swapRepository = _swapRepository;
       final sendWalletMnemonic =
           await _seedRepository.get(sendWallet.masterFingerprint)

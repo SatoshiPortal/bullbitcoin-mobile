@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 
 class WatchSwapUsecase {
   final SwapWatcherService _watcher;
@@ -11,12 +10,7 @@ class WatchSwapUsecase {
 
   Stream<Swap> execute(String swapId) {
     try {
-      return _watcher.swapStream.where((s) {
-        log.info(
-          '[WatchSwapUsecase] swapId: ${s.id}, swap status: ${s.status}',
-        );
-        return s.id == swapId;
-      });
+      return _watcher.swapStream.where((s) => s.id == swapId);
     } catch (e) {
       throw WatchSwapException(e.toString());
     }

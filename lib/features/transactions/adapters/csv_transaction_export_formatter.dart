@@ -201,6 +201,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         SwapStatus.refundable ||
         SwapStatus.canCoop => 'pending',
         SwapStatus.completed => 'completed',
+        SwapStatus.refunded => 'refunded',
         SwapStatus.expired => 'expired',
         SwapStatus.failed => 'failed',
       };

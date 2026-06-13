@@ -55,6 +55,10 @@
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
   },
+  "coreSwapsStatusRefunded": "Refunded",
+  "@coreSwapsStatusRefunded": {
+    "description": "Display name for refunded swap status (payment failed, funds returned)"
+  },
   "coreSwapsStatusExpired": "Expired",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
