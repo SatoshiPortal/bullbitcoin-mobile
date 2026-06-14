@@ -127,9 +127,9 @@ class SwapsLocator {
 
     locator.registerFactory<WatchSwapUsecase>(
       () => WatchSwapUsecase(
-        watcherService: locator<SwapWatcherService>(
+        swapRepository: locator<BoltzSwapRepository>(
           instanceName:
-              LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
       ),
     );

@@ -24,11 +24,6 @@ class SwapStale extends SwapStatusMapping {
   const SwapStale();
 }
 
-/// Pure mapping of Boltz status events onto locally stored swaps.
-///
-/// No I/O and no clock access ([now] is injected) so the full transition
-/// table is unit-testable. The caller (BoltzDatasource) owns persistence,
-/// stream emission and subscription management.
 class SwapStatusMapper {
   const SwapStatusMapper();
 
@@ -89,8 +84,8 @@ class SwapStatusMapper {
     return now.difference(creationTime) > _stalePendingAge;
   }
 
-  /// Whether a stored status may move to [to]. Single choke point that
-  /// prevents replayed or out-of-order events from regressing a swap.
+  /// Boltz replays events and can deliver them out of order; this blocks a
+  /// stale event from regressing a swap.
   bool isAllowedTransition({
     required swap_entity.SwapStatus from,
     required swap_entity.SwapStatus to,
@@ -98,10 +93,6 @@ class SwapStatusMapper {
   }) {
     if (from == to) return true;
 
-    // A completed swap that never recorded its claim tx may be reopened for
-    // claiming. Direct (MRH) payments are exempt: no lockup exists, nothing to
-    // claim. (Legacy rows from older app versions; the current mapper never
-    // completes a swap without a claim txid.)
     if (from == swap_entity.SwapStatus.completed) {
       if (to != swap_entity.SwapStatus.claimable) return false;
       return switch (swap) {
@@ -120,7 +111,6 @@ class SwapStatusMapper {
         from == swap_entity.SwapStatus.failed) {
       final fundsAtRisk = _sendTxid(swap) != null && _refundTxid(swap) == null;
       if (to == swap_entity.SwapStatus.refundable) return fundsAtRisk;
-      // expired <-> failed reclassification carries no risk either way.
       return to == swap_entity.SwapStatus.expired ||
           to == swap_entity.SwapStatus.failed ||
           to == swap_entity.SwapStatus.refunded;
@@ -247,9 +237,6 @@ class SwapStatusMapper {
             );
           case ChainSwapModel():
             if (swap.receiveTxid == null) {
-              // Boltz claimed our lockup, which means our claim revealed the
-              // preimage but was never recorded locally. Reopen so the
-              // watcher recovers the claim txid via the outspend check.
               return swap.copyWith(
                 status: swap_entity.SwapStatus.claimable.name,
               );
@@ -333,9 +320,6 @@ class SwapStatusMapper {
     }
   }
 
-  /// Shared failure routing for send/chain swaps: funds locked and not
-  /// refunded -> refundable; already refunded -> refunded; nothing locked ->
-  /// [noFundsStatus] (failed unless the caller says expired).
   SwapModel _failureOutcome(
     SwapModel swap,
     int nowMs, {

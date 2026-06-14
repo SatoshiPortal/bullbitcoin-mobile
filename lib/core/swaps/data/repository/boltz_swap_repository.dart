@@ -370,6 +370,11 @@ class BoltzSwapRepository {
     return swapModel.toEntity();
   }
 
+  /// DB-backed: emits current state on listen + every change, so observers
+  /// can't miss a terminal update like the old broadcast stream could.
+  Stream<Swap> watchSwap({required String swapId}) =>
+      _boltz.storage.watchSwap(swapId).map((model) => model.toEntity());
+
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
