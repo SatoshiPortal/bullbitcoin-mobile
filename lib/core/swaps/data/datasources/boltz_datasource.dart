@@ -349,7 +349,7 @@ class BoltzDatasource {
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
-        _isStale(_submarineFeesFetchedAt)) {
+          _isStale(_submarineFeesFetchedAt)) {
         await updateFees(swapType: swap_entity.SwapType.bitcoinToLightning);
       }
       final submarineFees = _submarineFeesAndLimits!;
@@ -408,7 +408,7 @@ class BoltzDatasource {
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
-        _isStale(_submarineFeesFetchedAt)) {
+          _isStale(_submarineFeesFetchedAt)) {
         await updateFees(swapType: swap_entity.SwapType.liquidToLightning);
       }
       final submarineFees = _submarineFeesAndLimits!;
@@ -840,8 +840,7 @@ class BoltzDatasource {
   }
 
   Future<(int, int)> getBtcSubmarineSwapLimits() async {
-    if (_submarineFeesAndLimits == null ||
-        _isStale(_submarineFeesFetchedAt)) {
+    if (_submarineFeesAndLimits == null || _isStale(_submarineFeesFetchedAt)) {
       await updateFees(swapType: swap_entity.SwapType.bitcoinToLightning);
     }
     final submarine = _submarineFeesAndLimits!;
@@ -852,8 +851,7 @@ class BoltzDatasource {
   }
 
   Future<(int, int)> getLbtcSubmarineSwapLimits() async {
-    if (_submarineFeesAndLimits == null ||
-        _isStale(_submarineFeesFetchedAt)) {
+    if (_submarineFeesAndLimits == null || _isStale(_submarineFeesFetchedAt)) {
       await updateFees(swapType: swap_entity.SwapType.liquidToLightning);
     }
     final submarine = _submarineFeesAndLimits!;
@@ -992,9 +990,7 @@ class BoltzDatasource {
           log.warning('[Boltz] websocket error frame: ${event.error}');
           return;
         }
-        log.fine(
-          '[Boltz] event swap=${event.id} status=${event.status.name}',
-        );
+        log.fine('[Boltz] event swap=${event.id} status=${event.status.name}');
         // SWAP_TESTER: temporary verbose logging — remove after live testing.
         log.info(
           'SWAP_TESTER ws-event: ${event.id} ${event.status.name} '
@@ -1061,9 +1057,7 @@ class BoltzDatasource {
   Future<void> reconcileSwaps(List<String> swapIds) async {
     for (final swapId in swapIds) {
       try {
-        final response = await _http.get<Map<String, dynamic>>(
-          '/swap/$swapId',
-        );
+        final response = await _http.get<Map<String, dynamic>>('/swap/$swapId');
         final data = response.data;
         if (data == null) continue;
         final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
@@ -1194,6 +1188,9 @@ class BoltzDatasource {
       case swap_entity.SwapStatus.completed:
         if (swapModel is LnReceiveSwapModel) {
           return swapModel.receiveTxid != null || swapModel.wasDirectPayment;
+        }
+        if (swapModel is ChainSwapModel) {
+          return swapModel.receiveTxid != null || swapModel.refundTxid != null;
         }
         return true;
       case swap_entity.SwapStatus.refunded:

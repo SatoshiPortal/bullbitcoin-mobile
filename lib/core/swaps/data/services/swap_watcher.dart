@@ -700,12 +700,19 @@ class SwapWatcherService {
 
   // COMPLETED REPROCESSING
 
-  /// A completed LnReceive without a claim txid means the claim was never
+  /// A completed swap without a recorded claim tx means the claim was never
   /// recorded — reopen and re-claim. Direct (MRH) payments are exempt: no
-  /// lockup exists and there is nothing to claim.
+  /// lockup exists and there is nothing to claim. (Legacy rows from older app
+  /// versions; the current mapper never completes a swap without a claim txid.)
   Future<void> _processCompletedSwap(Swap swap) async {
-    if (swap is! LnReceiveSwap) return;
-    if (swap.receiveTxid != null || swap.wasDirectPayment) return;
+    final needsReclaim = switch (swap) {
+      LnReceiveSwap(:final receiveTxid, :final wasDirectPayment) =>
+        receiveTxid == null && !wasDirectPayment,
+      ChainSwap(:final receiveTxid, :final refundTxid) =>
+        receiveTxid == null && refundTxid == null,
+      LnSendSwap() => false,
+    };
+    if (!needsReclaim) return;
 
     final updated = await _boltzRepo.updateSwapFields(
       swap.id,

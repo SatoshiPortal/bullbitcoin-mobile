@@ -85,9 +85,7 @@ class SwapStatusMapper {
       return false;
     }
     if (_sendTxid(swap) != null) return false;
-    final creationTime = DateTime.fromMillisecondsSinceEpoch(
-      swap.creationTime,
-    );
+    final creationTime = DateTime.fromMillisecondsSinceEpoch(swap.creationTime);
     return now.difference(creationTime) > _stalePendingAge;
   }
 
@@ -100,13 +98,19 @@ class SwapStatusMapper {
   }) {
     if (from == to) return true;
 
-    // A completed LnReceive that never recorded its claim tx (and was not a
-    // direct payment) may be reopened for claiming.
+    // A completed swap that never recorded its claim tx may be reopened for
+    // claiming. Direct (MRH) payments are exempt: no lockup exists, nothing to
+    // claim. (Legacy rows from older app versions; the current mapper never
+    // completes a swap without a claim txid.)
     if (from == swap_entity.SwapStatus.completed) {
-      return to == swap_entity.SwapStatus.claimable &&
-          swap is LnReceiveSwapModel &&
-          swap.receiveTxid == null &&
-          !swap.wasDirectPayment;
+      if (to != swap_entity.SwapStatus.claimable) return false;
+      return switch (swap) {
+        LnReceiveSwapModel(:final receiveTxid, :final wasDirectPayment) =>
+          receiveTxid == null && !wasDirectPayment,
+        ChainSwapModel(:final receiveTxid, :final refundTxid) =>
+          receiveTxid == null && refundTxid == null,
+        LnSendSwapModel() => false,
+      };
     }
     if (from == swap_entity.SwapStatus.refunded) return false;
 
@@ -228,9 +232,7 @@ class SwapStatusMapper {
       case boltz.SwapStatus.txnConfirmed:
         switch (swap) {
           case LnReceiveSwapModel():
-            return swap.copyWith(
-              status: swap_entity.SwapStatus.claimable.name,
-            );
+            return swap.copyWith(status: swap_entity.SwapStatus.claimable.name);
           case LnSendSwapModel():
           case ChainSwapModel():
             return swap.copyWith(status: swap_entity.SwapStatus.paid.name);

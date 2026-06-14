@@ -177,10 +177,7 @@ void main() {
 
     test('completed direct payment can not be reopened to claimable', () {
       final result = map(
-        lnReceive(
-          status: 'completed',
-          wasDirectPayment: true,
-        ),
+        lnReceive(status: 'completed', wasDirectPayment: true),
         boltz.SwapStatus.invoiceSettled,
       );
       expect(result, isNot(isA<SwapUpdated>()));
@@ -287,6 +284,17 @@ void main() {
       );
       expect(statusOf(result), 'claimable');
     });
+
+    // claimable and refundable are both action states (rank 2): a chain swap
+    // reopened to claimable can still self-correct to refundable when Boltz
+    // reports the lockup failed, so the refund path is never blocked.
+    test('claimable chain swap reroutes to refundable on lockup failure', () {
+      final result = map(
+        chain(status: 'claimable', sendTxid: 'tx'),
+        boltz.SwapStatus.txnLockupFailed,
+      );
+      expect(statusOf(result), 'refundable');
+    });
   });
 
   group('stranded funds recovery', () {
@@ -339,6 +347,34 @@ void main() {
       );
       expect(statusOf(result), 'claimable');
     });
+
+    test('completed chain swap without claim txid reopens to claimable', () {
+      final result = map(
+        chain(status: 'completed', sendTxid: 'tx'),
+        boltz.SwapStatus.txnClaimed,
+      );
+      expect(statusOf(result), 'claimable');
+    });
+
+    test('completed chain swap with claim txid is not reopened', () {
+      final result = map(
+        chain(status: 'completed', sendTxid: 'tx', receiveTxid: 'rtx'),
+        boltz.SwapStatus.txnClaimed,
+      );
+      expect(statusOf(result), 'completed');
+    });
+
+    // A completed submarine swap means Boltz claimed the user's lockup — the
+    // success outcome. There is no user claim txid to be "missing", and a
+    // successful submarine swap never has a refundTxid, so completed must stay
+    // terminal: it must never be reopened to refundable.
+    test('completed submarine swap is never reopened to refundable', () {
+      final result = map(
+        lnSend(status: 'completed', sendTxid: 'tx'),
+        boltz.SwapStatus.invoiceFailedToPay,
+      );
+      expect(result, isA<SwapUnchanged>());
+    });
   });
 
   group('stale pending deletion', () {
@@ -376,10 +412,7 @@ void main() {
 
   group('no-op events', () {
     test('swap.created and invoice.set change nothing', () {
-      expect(
-        map(lnSend(), boltz.SwapStatus.swapCreated),
-        isA<SwapUnchanged>(),
-      );
+      expect(map(lnSend(), boltz.SwapStatus.swapCreated), isA<SwapUnchanged>());
       expect(map(lnSend(), boltz.SwapStatus.invoiceSet), isA<SwapUnchanged>());
     });
   });
