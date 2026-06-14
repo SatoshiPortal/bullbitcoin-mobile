@@ -336,12 +336,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
 
       // SWAP_TESTER: temporary verbose logging — remove after live testing.
-      log.info(
-        'SWAP_TESTER transfer-create: input=$inputAmountSat '
-        'max=${state.maxAmountSat} isMaxSend=$isMaxSend '
-        'receiveExact=${state.receiveExactAmount} '
-        'external=${state.sendToExternal}',
-      );
+      // log.info(
+      // 'SWAP_TESTER transfer-create: input=$inputAmountSat '
+      // 'max=${state.maxAmountSat} isMaxSend=$isMaxSend '
+      // 'receiveExact=${state.receiveExactAmount} '
+      // 'external=${state.sendToExternal}',
+      // );
 
       int paymentAmountSat = inputAmountSat;
       // Max drains the wallet, so the exact-receivable inflation can never

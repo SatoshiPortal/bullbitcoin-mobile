@@ -992,10 +992,10 @@ class BoltzDatasource {
         }
         log.fine('[Boltz] event swap=${event.id} status=${event.status.name}');
         // SWAP_TESTER: temporary verbose logging — remove after live testing.
-        log.info(
-          'SWAP_TESTER ws-event: ${event.id} ${event.status.name} '
-          'txid=${event.transaction?.id ?? "-"}',
-        );
+        // log.info(
+        // 'SWAP_TESTER ws-event: ${event.id} ${event.status.name} '
+        // 'txid=${event.transaction?.id ?? "-"}',
+        // );
         _enqueueEvent(event.id, event.status, event.transaction?.id);
       },
       onError: (error) {
@@ -1062,10 +1062,10 @@ class BoltzDatasource {
         if (data == null) continue;
         final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
         // SWAP_TESTER
-        log.info(
-          'SWAP_TESTER reconcile: $swapId REST=${status.status.name} '
-          'txid=${status.transaction?.id ?? "-"}',
-        );
+        // log.info(
+        // 'SWAP_TESTER reconcile: $swapId REST=${status.status.name} '
+        // 'txid=${status.transaction?.id ?? "-"}',
+        // );
         await _enqueueEvent(swapId, status.status, status.transaction?.id);
       } catch (e) {
         log.warning('[Boltz] reconcile failed for swap $swapId: $e');
@@ -1120,7 +1120,7 @@ class BoltzDatasource {
       switch (mapping) {
         case SwapStale():
           // SWAP_TESTER
-          log.info('SWAP_TESTER mapping: $swapId -> STALE (deleting)');
+          // log.info('SWAP_TESTER mapping: $swapId -> STALE (deleting)');
           log.info(
             '[Boltz] deleting stale pending swap $swapId '
             '(no funds at risk, expired upstream)',
@@ -1131,11 +1131,11 @@ class BoltzDatasource {
 
         case SwapUnchanged():
           // SWAP_TESTER
-          log.info(
-            'SWAP_TESTER mapping: $swapId ${boltzStatus.name} -> UNCHANGED '
-            '(local=${swapModel.status} settled=${_isSettled(swapModel)} '
-            'needsAction=${_swapNeedsProcessing(swapModel)})',
-          );
+          // log.info(
+          // 'SWAP_TESTER mapping: $swapId ${boltzStatus.name} -> UNCHANGED '
+          // '(local=${swapModel.status} settled=${_isSettled(swapModel)} '
+          // 'needsAction=${_swapNeedsProcessing(swapModel)})',
+          // );
           if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
             // Re-emit so late listeners (e.g. a screen waiting on
             // completion) get the final state, then stop watching.
@@ -1150,10 +1150,10 @@ class BoltzDatasource {
 
         case SwapUpdated(:final swap):
           // SWAP_TESTER
-          log.info(
-            'SWAP_TESTER mapping: $swapId ${boltzStatus.name}: '
-            '${swapModel.status} -> ${swap.status} (storing + emitting)',
-          );
+          // log.info(
+          // 'SWAP_TESTER mapping: $swapId ${boltzStatus.name}: '
+          // '${swapModel.status} -> ${swap.status} (storing + emitting)',
+          // );
           await _boltzStore.store(swap);
           log.info(
             '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
@@ -1239,7 +1239,7 @@ class BoltzDatasource {
       return;
     }
     // SWAP_TESTER
-    log.info('SWAP_TESTER ws-subscribe: $newSwapIds');
+    // log.info('SWAP_TESTER ws-subscribe: $newSwapIds');
     _boltzWebSocket.subscribe(newSwapIds);
     _subscribedSwapIds.addAll(newSwapIds);
   }
@@ -1253,7 +1253,7 @@ class BoltzDatasource {
       return;
     }
     // SWAP_TESTER
-    log.info('SWAP_TESTER ws-unsubscribe: $swapIdsToUnsubscribe');
+    // log.info('SWAP_TESTER ws-unsubscribe: $swapIdsToUnsubscribe');
     _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }

@@ -260,7 +260,9 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
+              swapCreationException: AmountlessInvoiceException(
+                'Invoice has no amount',
+              ),
             ),
           );
           return;
@@ -627,7 +629,11 @@ class SendCubit extends Cubit<SendState> {
     }
     emit(
       state.copyWith(
-        confirmedAmountSat: state.paymentRequest!.amountSat,
+        // Amountless external addresses carry no request amount; fall back to
+        // the entered amount so the confirm headline never flashes 0 sats
+        // before createTransaction settles it.
+        confirmedAmountSat:
+            state.paymentRequest!.amountSat ?? state.inputAmountSat,
         step: SendStep.confirm,
         loadingBestWallet: false,
       ),
@@ -911,9 +917,7 @@ class SendCubit extends Cubit<SendState> {
 
     if (state.blocksSwapDueToBitcoinHardwareWallet) {
       emit(
-        state.copyWith(
-          swapCreationException: HardwareWalletSwapException(),
-        ),
+        state.copyWith(swapCreationException: HardwareWalletSwapException()),
       );
       return;
     }
@@ -1475,11 +1479,11 @@ class SendCubit extends Cubit<SendState> {
         );
       }
       if (state.chainSwap != null) {
+        // Don't pass absoluteFees: createTransaction already persisted the
+        // real lockup fee. Passing a value here overwrites it (0 clobbered it).
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.chainSwap!.id,
-          absoluteFees:
-              0, // TODO (ishi): removed until server fees are implemented
         );
       }
 
@@ -1786,10 +1790,7 @@ class SendCubit extends Cubit<SendState> {
   /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
-  Future<void> _setSelectedWallet(
-    Wallet wallet, {
-    required bool manual,
-  }) async {
+  Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
     emit(
       state.copyWith(
         selectedWallet: wallet,

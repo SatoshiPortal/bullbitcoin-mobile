@@ -129,10 +129,10 @@ class SwapWatcherService {
     }
 
     // SWAP_TESTER
-    log.info(
-      'SWAP_TESTER watcher: restart — ensuring subscriptions + reconciling '
-      '${swapIdsToWatch.length} ongoing: $swapIdsToWatch',
-    );
+    // log.info(
+    // 'SWAP_TESTER watcher: restart — ensuring subscriptions + reconciling '
+    // '${swapIdsToWatch.length} ongoing: $swapIdsToWatch',
+    // );
     _boltzRepo.subscribeToSwaps(swapIdsToWatch);
     await _boltzRepo.reconcileSwaps(swapIdsToWatch);
   }
@@ -158,10 +158,10 @@ class SwapWatcherService {
     final existing = _inflight[swap.id];
     if (existing != null) {
       // SWAP_TESTER: temporary verbose logging — remove after live testing.
-      log.info(
-        'SWAP_TESTER watcher: ${swap.id} ${swap.status.name} COALESCED '
-        'behind in-flight action',
-      );
+      // log.info(
+      // 'SWAP_TESTER watcher: ${swap.id} ${swap.status.name} COALESCED '
+      // 'behind in-flight action',
+      // );
       _queuedNext[swap.id] = swap;
       return existing;
     }
@@ -188,11 +188,11 @@ class SwapWatcherService {
     }
 
     // SWAP_TESTER
-    log.info(
-      'SWAP_TESTER watcher: ${swap.id} processing — incoming='
-      '${incoming.status.name} fresh=${swap.status.name} '
-      'retries=${_retrySchedule[swap.id]?.attempts ?? 0}',
-    );
+    // log.info(
+    // 'SWAP_TESTER watcher: ${swap.id} processing — incoming='
+    // '${incoming.status.name} fresh=${swap.status.name} '
+    // 'retries=${_retrySchedule[swap.id]?.attempts ?? 0}',
+    // );
     final needsAction = switch (swap.status) {
       SwapStatus.claimable ||
       SwapStatus.refundable ||
@@ -322,11 +322,11 @@ class SwapWatcherService {
       amountSat: _amountSatOrNull(swap),
     );
     // SWAP_TESTER
-    log.info(
-      'SWAP_TESTER claim(lnReceive): ${swap.id} type=${swap.type.name} '
-      'address=$receiveAddress fees=$absoluteFees '
-      'storedEstimate=${swap.fees?.claimFee}',
-    );
+    // log.info(
+    // 'SWAP_TESTER claim(lnReceive): ${swap.id} type=${swap.type.name} '
+    // 'address=$receiveAddress fees=$absoluteFees '
+    // 'storedEstimate=${swap.fees?.claimFee}',
+    // );
 
     // Unsubscribe before broadcasting so a status replay can't race the
     // local state write; we re-subscribe on failure.
@@ -405,11 +405,11 @@ class SwapWatcherService {
       chainClaimAddress: claimAddress,
     );
     // SWAP_TESTER
-    log.info(
-      'SWAP_TESTER claim(chain): ${swap.id} type=${swap.type.name} '
-      'address=$claimAddress fees=$absoluteFees '
-      'storedEstimate=${swap.fees?.claimFee}',
-    );
+    // log.info(
+    // 'SWAP_TESTER claim(chain): ${swap.id} type=${swap.type.name} '
+    // 'address=$claimAddress fees=$absoluteFees '
+    // 'storedEstimate=${swap.fees?.claimFee}',
+    // );
 
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
@@ -492,10 +492,10 @@ class SwapWatcherService {
         isLiquid: isLiquid,
       );
       // SWAP_TESTER
-      log.info(
-        'SWAP_TESTER refund(lnSend): ${swap.id} type=${swap.type.name} '
-        'address=$refundAddress txSize=$txSize fees=$absoluteFees',
-      );
+      // log.info(
+      // 'SWAP_TESTER refund(lnSend): ${swap.id} type=${swap.type.name} '
+      // 'address=$refundAddress txSize=$txSize fees=$absoluteFees',
+      // );
 
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
@@ -589,10 +589,10 @@ class SwapWatcherService {
         isLiquid: refundOnLiquid,
       );
       // SWAP_TESTER
-      log.info(
-        'SWAP_TESTER refund(chain): ${swap.id} type=${swap.type.name} '
-        'address=$refundAddress txSize=$txSize fees=$absoluteFees',
-      );
+      // log.info(
+      // 'SWAP_TESTER refund(chain): ${swap.id} type=${swap.type.name} '
+      // 'address=$refundAddress txSize=$txSize fees=$absoluteFees',
+      // );
 
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
@@ -681,10 +681,10 @@ class SwapWatcherService {
       _clearRetries(swap.id);
       log.info('[SwapWatcher] coop close succeeded for ${swap.id}');
       // SWAP_TESTER
-      log.info(
-        'SWAP_TESTER coopClose: ${swap.id} done — fresh status='
-        '${updated.status.name} preimage=${swap.preimage != null}',
-      );
+      // log.info(
+      // 'SWAP_TESTER coopClose: ${swap.id} done — fresh status='
+      // '${updated.status.name} preimage=${swap.preimage != null}',
+      // );
     } catch (e, st) {
       log.severe(
         message:
