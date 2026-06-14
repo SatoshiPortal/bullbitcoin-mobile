@@ -13,20 +13,11 @@ import 'package:bull_sdk/boltz.dart' as boltz;
 
 /// Listens to swap status updates and executes the client-side swap actions:
 /// claims, refunds and cooperative closes.
-///
-/// Concurrency model: all work for one swap is strictly serialized — a second
-/// event arriving while an action runs is coalesced and re-evaluated against
-/// fresh storage state once the in-flight action finishes. Claims and refunds
-/// are idempotent (guarded by receiveTxid/refundTxid re-read from storage at
-/// entry), and failures back off exponentially per swap instead of retrying
-/// on every replayed event.
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
 
-  final StreamController<Swap> _swapStreamController =
-      StreamController<Swap>.broadcast();
   StreamSubscription<Swap>? _swapStreamSubscription;
 
   final Map<String, Future<void>> _inflight = {};
@@ -56,8 +47,6 @@ class SwapWatcherService {
     }
   }
 
-  Stream<Swap> get swapStream => _swapStreamController.stream;
-
   Future<void> startWatching() async {
     await _swapStreamSubscription?.cancel();
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
@@ -65,7 +54,6 @@ class SwapWatcherService {
         log.fine(
           '[SwapWatcher] update swap=${swap.id} status=${swap.status.name}',
         );
-        _swapStreamController.add(swap);
         await processSwap(swap);
       },
       onError: (Object error) {
@@ -109,11 +97,6 @@ class SwapWatcherService {
     }
   }
 
-  /// Ensures every ongoing swap is subscribed and reconciles their status
-  /// over REST. Deliberately non-destructive: the websocket heals itself
-  /// (ping + reconnect) and tearing it down on every sync would open a blind
-  /// window; in-flight claim/refund actions are unaffected either way since
-  /// all per-swap work is serialized through [_inflight].
   Future<void> restartWatcherWithOngoingSwaps() async {
     if (_swapStreamSubscription == null) {
       await startWatching();
@@ -121,24 +104,16 @@ class SwapWatcherService {
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toSet().toList();
 
-    // A sync is an explicit "look again now": clear retry backoffs so the
-    // reconcile below re-attempts pending actions immediately. Backoff only
-    // exists to suppress event-replay storms between syncs.
     for (final swapId in swapIdsToWatch) {
       _clearRetries(swapId);
     }
 
-    // SWAP_TESTER
-    // log.info(
-    // 'SWAP_TESTER watcher: restart — ensuring subscriptions + reconciling '
-    // '${swapIdsToWatch.length} ongoing: $swapIdsToWatch',
-    // );
     _boltzRepo.subscribeToSwaps(swapIdsToWatch);
     await _boltzRepo.reconcileSwaps(swapIdsToWatch);
   }
 
   /// Reconciles and processes every ongoing swap to completion. Used by the
-  /// background task, which has no long-lived websocket: poll, act, return.
+  /// background task, which has no long-lived websocket.
   Future<void> processOngoingSwapsOnce() async {
     final swaps = await _boltzRepo.getOngoingSwaps();
     final ids = swaps.map((s) => s.id).toSet().toList();
@@ -151,17 +126,9 @@ class SwapWatcherService {
     }
   }
 
-  /// Serialized per swap: if an action for this swap is already running, the
-  /// newest event is queued (coalescing any intermediate ones) and processed
-  /// against fresh state afterwards.
   Future<void> processSwap(Swap swap) {
     final existing = _inflight[swap.id];
     if (existing != null) {
-      // SWAP_TESTER: temporary verbose logging — remove after live testing.
-      // log.info(
-      // 'SWAP_TESTER watcher: ${swap.id} ${swap.status.name} COALESCED '
-      // 'behind in-flight action',
-      // );
       _queuedNext[swap.id] = swap;
       return existing;
     }
@@ -178,8 +145,6 @@ class SwapWatcherService {
   }
 
   Future<void> _processSwapNow(Swap incoming) async {
-    // Always act on fresh storage state: the incoming object may be stale by
-    // the time the previous action for this swap finished.
     Swap swap;
     try {
       swap = await _boltzRepo.getSwap(swapId: incoming.id);
@@ -187,12 +152,6 @@ class SwapWatcherService {
       swap = incoming;
     }
 
-    // SWAP_TESTER
-    // log.info(
-    // 'SWAP_TESTER watcher: ${swap.id} processing — incoming='
-    // '${incoming.status.name} fresh=${swap.status.name} '
-    // 'retries=${_retrySchedule[swap.id]?.attempts ?? 0}',
-    // );
     final needsAction = switch (swap.status) {
       SwapStatus.claimable ||
       SwapStatus.refundable ||
@@ -239,9 +198,6 @@ class SwapWatcherService {
       _recordFailure(swap.id);
       _boltzRepo.subscribeToSwaps([swap.id]);
     } catch (e, st) {
-      // Failures before the broadcast attempt (fee estimation, tx sizing,
-      // address resolution) land here — back off like any other failure so
-      // a persistent error can't hot-loop on every replayed event.
       log.severe(
         message: '[SwapWatcher] error processing swap ${swap.id}',
         error: e,
@@ -321,13 +277,6 @@ class SwapWatcherService {
       isLiquid: isLiquid,
       amountSat: _amountSatOrNull(swap),
     );
-    // SWAP_TESTER
-    // log.info(
-    // 'SWAP_TESTER claim(lnReceive): ${swap.id} type=${swap.type.name} '
-    // 'address=$receiveAddress fees=$absoluteFees '
-    // 'storedEstimate=${swap.fees?.claimFee}',
-    // );
-
     // Unsubscribe before broadcasting so a status replay can't race the
     // local state write; we re-subscribe on failure.
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -404,13 +353,6 @@ class SwapWatcherService {
       amountSat: swap.paymentAmount,
       chainClaimAddress: claimAddress,
     );
-    // SWAP_TESTER
-    // log.info(
-    // 'SWAP_TESTER claim(chain): ${swap.id} type=${swap.type.name} '
-    // 'address=$claimAddress fees=$absoluteFees '
-    // 'storedEstimate=${swap.fees?.claimFee}',
-    // );
-
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
     try {
@@ -491,12 +433,6 @@ class SwapWatcherService {
         txSize: txSize,
         isLiquid: isLiquid,
       );
-      // SWAP_TESTER
-      // log.info(
-      // 'SWAP_TESTER refund(lnSend): ${swap.id} type=${swap.type.name} '
-      // 'address=$refundAddress txSize=$txSize fees=$absoluteFees',
-      // );
-
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       String refundTxid;
@@ -588,12 +524,6 @@ class SwapWatcherService {
         txSize: txSize,
         isLiquid: refundOnLiquid,
       );
-      // SWAP_TESTER
-      // log.info(
-      // 'SWAP_TESTER refund(chain): ${swap.id} type=${swap.type.name} '
-      // 'address=$refundAddress txSize=$txSize fees=$absoluteFees',
-      // );
-
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       String refundTxid;
@@ -656,12 +586,10 @@ class SwapWatcherService {
 
   // COOP CLOSE
 
-  /// Provides Boltz our key-path signature so it can claim cheaply. The
-  /// repository marks the swap completed from fresh storage state; we only
-  /// emit. A failure here is not fatal: the payment is already made and the
-  /// swap completes via transaction.claimed when Boltz spends script-path
-  /// (this also covers batched sub-minimum swaps where no per-swap coop
-  /// close exists).
+  /// Provides Boltz our key-path signature so it can claim cheaply. A failure
+  /// here is not fatal: the payment is already made and the swap completes via
+  /// transaction.claimed when Boltz spends script-path (this also covers
+  /// batched sub-minimum swaps where no per-swap coop close exists).
   Future<void> _coopCloseSend(LnSendSwap swap) async {
     try {
       if (swap.preimage == null) {
@@ -675,16 +603,9 @@ class SwapWatcherService {
       } else {
         await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
       }
-      final updated = await _boltzRepo.getSwap(swapId: swap.id);
-      _swapStreamController.add(updated);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
       log.info('[SwapWatcher] coop close succeeded for ${swap.id}');
-      // SWAP_TESTER
-      // log.info(
-      // 'SWAP_TESTER coopClose: ${swap.id} done — fresh status='
-      // '${updated.status.name} preimage=${swap.preimage != null}',
-      // );
     } catch (e, st) {
       log.severe(
         message:
@@ -702,8 +623,7 @@ class SwapWatcherService {
 
   /// A completed swap without a recorded claim tx means the claim was never
   /// recorded — reopen and re-claim. Direct (MRH) payments are exempt: no
-  /// lockup exists and there is nothing to claim. (Legacy rows from older app
-  /// versions; the current mapper never completes a swap without a claim txid.)
+  /// lockup exists and there is nothing to claim.
   Future<void> _processCompletedSwap(Swap swap) async {
     final needsReclaim = switch (swap) {
       LnReceiveSwap(:final receiveTxid, :final wasDirectPayment) =>
@@ -718,8 +638,6 @@ class SwapWatcherService {
       swap.id,
       status: SwapStatus.claimable,
     );
-    _swapStreamController.add(updated);
-    // Re-enter through the queue: the current action slot must drain first.
     unawaited(processSwap(updated));
   }
 
@@ -816,9 +734,6 @@ class SwapWatcherService {
     return address.address;
   }
 
-  /// Persists the action's outcome from fresh storage state (so concurrent
-  /// writes are preserved), emits the updated swap to UI listeners and stops
-  /// retry tracking.
   Future<void> _finishAction(
     Swap swap, {
     required bool isClaim,
@@ -827,7 +742,7 @@ class SwapWatcherService {
     String? claimAddress,
     String? refundAddress,
   }) async {
-    final updated = await _boltzRepo.updateSwapFields(
+    await _boltzRepo.updateSwapFields(
       swap.id,
       status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
       receiveTxid: isClaim ? txid : null,
@@ -838,7 +753,6 @@ class SwapWatcherService {
       refundFee: isClaim ? null : actualFees,
       completionTime: DateTime.now(),
     );
-    _swapStreamController.add(updated);
     _clearRetries(swap.id);
     log.info(
       '[SwapWatcher] ${isClaim ? 'claim' : 'refund'} succeeded for '
@@ -846,9 +760,6 @@ class SwapWatcherService {
     );
   }
 
-  /// Failure path shared by claims and refunds: check whether a previous
-  /// broadcast actually succeeded (outspend recovery), otherwise re-subscribe
-  /// and back off.
   Future<void> _handleActionFailure(
     Swap swap, {
     required bool isClaim,
@@ -935,14 +846,13 @@ class SwapWatcherService {
         '[SwapWatcher] outspend recovery for ${swap.id}: '
         '${isClaim ? 'claim' : 'refund'} already on-chain as $txid',
       );
-      final updated = await _boltzRepo.updateSwapFields(
+      await _boltzRepo.updateSwapFields(
         swap.id,
         status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
         receiveTxid: isClaim ? txid : null,
         refundTxid: isClaim ? null : txid,
         completionTime: outspendStatus.timestamp ?? DateTime.now(),
       );
-      _swapStreamController.add(updated);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _clearRetries(swap.id);
       return true;

@@ -203,8 +203,6 @@ void main() {
         () async {
       final repo = FakeBoltzSwapRepository(claimableSwap());
       final service = watcher(repo);
-      final emitted = <Swap>[];
-      service.swapStream.listen(emitted.add);
 
       await service.processSwap(repo.swap);
       await Future<void>.delayed(Duration.zero);
@@ -215,7 +213,6 @@ void main() {
       // 1000 vb at 0.5 sat/vb live estimate = 500 sats — NOT the stale
       // creation-time estimate of 100.
       expect(repo.swap.fees?.claimFee, 500);
-      expect(emitted.map((s) => s.status), contains(SwapStatus.completed));
     });
 
     test('concurrent events for the same swap broadcast exactly once',
@@ -280,8 +277,6 @@ void main() {
     test('refund persists refunded status and the refund fee', () async {
       final repo = FakeBoltzSwapRepository(refundableSwap());
       final service = watcher(repo);
-      final emitted = <Swap>[];
-      service.swapStream.listen(emitted.add);
 
       await service.processSwap(repo.swap);
       await Future<void>.delayed(Duration.zero);
@@ -291,7 +286,6 @@ void main() {
       expect((repo.swap as LnSendSwap).refundTxid, 'refund-txid');
       expect(repo.swap.fees?.refundFee, 500);
       expect(repo.swap.fees?.claimFee, isNull);
-      expect(emitted.map((s) => s.status), contains(SwapStatus.refunded));
     });
 
     test('already refunded swap does nothing', () async {

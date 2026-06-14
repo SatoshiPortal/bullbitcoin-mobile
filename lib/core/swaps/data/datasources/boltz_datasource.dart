@@ -25,9 +25,6 @@ class BoltzDatasource {
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
-  /// Per-swap FIFO chains: every event for a swap is processed in arrival
-  /// order; events for different swaps run independently. Nothing is ever
-  /// dropped or delayed.
   final Map<String, Future<void>> _eventChains = {};
 
   int _reconnectAttempt = 0;
@@ -991,11 +988,6 @@ class BoltzDatasource {
           return;
         }
         log.fine('[Boltz] event swap=${event.id} status=${event.status.name}');
-        // SWAP_TESTER: temporary verbose logging — remove after live testing.
-        // log.info(
-        // 'SWAP_TESTER ws-event: ${event.id} ${event.status.name} '
-        // 'txid=${event.transaction?.id ?? "-"}',
-        // );
         _enqueueEvent(event.id, event.status, event.transaction?.id);
       },
       onError: (error) {
@@ -1005,9 +997,8 @@ class BoltzDatasource {
     );
   }
 
-  /// Reconnect with capped exponential backoff (1s, 2s, ... 60s), then
-  /// re-subscribe everything we were watching and reconcile each swap's
-  /// status over REST — subscription replay is not a documented guarantee.
+  /// On reconnect, reconcile each swap's status over REST: Boltz does not
+  /// guarantee replay of events missed while disconnected.
   void _scheduleReconnect() {
     if (_reconnectTimer?.isActive ?? false) return;
     final delaySeconds = min(60, 1 << min(_reconnectAttempt, 6));
@@ -1030,8 +1021,6 @@ class BoltzDatasource {
     });
   }
 
-  /// Appends the event to the swap's FIFO chain so events for one swap are
-  /// processed strictly in arrival order, with nothing dropped.
   Future<void> _enqueueEvent(
     String swapId,
     SwapStatus boltzStatus,
@@ -1051,9 +1040,9 @@ class BoltzDatasource {
     return next;
   }
 
-  /// Fetches the swap's current status over REST and runs it through the
-  /// same mapping pipeline as websocket events. Used after reconnects and on
-  /// watcher restarts so recovery never depends on websocket replay.
+  /// Fetches each swap's current status over REST and runs it through the same
+  /// mapping pipeline as websocket events, so recovery never depends on Boltz
+  /// replaying events missed while disconnected.
   Future<void> reconcileSwaps(List<String> swapIds) async {
     for (final swapId in swapIds) {
       try {
@@ -1061,11 +1050,6 @@ class BoltzDatasource {
         final data = response.data;
         if (data == null) continue;
         final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
-        // SWAP_TESTER
-        // log.info(
-        // 'SWAP_TESTER reconcile: $swapId REST=${status.status.name} '
-        // 'txid=${status.transaction?.id ?? "-"}',
-        // );
         await _enqueueEvent(swapId, status.status, status.transaction?.id);
       } catch (e) {
         log.warning('[Boltz] reconcile failed for swap $swapId: $e');
@@ -1073,10 +1057,7 @@ class BoltzDatasource {
     }
   }
 
-  /// Maps one Boltz status event onto the stored swap via [SwapStatusMapper]
-  /// and applies the outcome: persist + emit, delete stale rows, or
-  /// unsubscribe settled swaps. Never throws — a failure here must not break
-  /// the swap's event chain.
+  /// Never throws: a failure here must not break the swap's event chain.
   Future<void> _processSwapEvent(
     String swapId,
     SwapStatus boltzStatus, {
@@ -1096,10 +1077,9 @@ class BoltzDatasource {
         now: DateTime.now(),
       );
 
-      // The watcher writes concurrently with this event chain (e.g. a claim
-      // completing while a reconcile event is being mapped). Re-fetch right
-      // before acting and re-map if the row moved, so a store can never
-      // write back a stale row and lose a txid or regress a terminal status.
+      // The watcher writes concurrently with this event chain; re-fetch and
+      // re-map if the row moved, so a store can't lose a txid or regress a
+      // terminal status by writing back a stale row.
       if (mapping is! SwapUnchanged) {
         final latest = await _boltzStore.fetch(swapId);
         if (latest == null) {
@@ -1119,8 +1099,6 @@ class BoltzDatasource {
 
       switch (mapping) {
         case SwapStale():
-          // SWAP_TESTER
-          // log.info('SWAP_TESTER mapping: $swapId -> STALE (deleting)');
           log.info(
             '[Boltz] deleting stale pending swap $swapId '
             '(no funds at risk, expired upstream)',
@@ -1130,39 +1108,21 @@ class BoltzDatasource {
           await _boltzStore.deleteFromSecureStorage(swapId);
 
         case SwapUnchanged():
-          // SWAP_TESTER
-          // log.info(
-          // 'SWAP_TESTER mapping: $swapId ${boltzStatus.name} -> UNCHANGED '
-          // '(local=${swapModel.status} settled=${_isSettled(swapModel)} '
-          // 'needsAction=${_swapNeedsProcessing(swapModel)})',
-          // );
           if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
-            // Re-emit so late listeners (e.g. a screen waiting on
-            // completion) get the final state, then stop watching.
             _swapUpdatesController.add(swapModel);
             unsubscribeToSwaps([swapId]);
           } else if (_swapNeedsProcessing(swapModel)) {
-            // The status didn't move but the swap still needs a claim,
-            // refund or coop close — re-emit so the watcher retries (this is
-            // how reconciliation un-sticks swaps after a missed action).
+            // Status unchanged but the swap still needs a claim, refund or coop
+            // close: re-emit so reconciliation un-sticks a missed action.
             _swapUpdatesController.add(swapModel);
           }
 
         case SwapUpdated(:final swap):
-          // SWAP_TESTER
-          // log.info(
-          // 'SWAP_TESTER mapping: $swapId ${boltzStatus.name}: '
-          // '${swapModel.status} -> ${swap.status} (storing + emitting)',
-          // );
           await _boltzStore.store(swap);
           log.info(
             '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
             '(event ${boltzStatus.name})',
           );
-          // A SwapUpdated always carries a material change (status, txid,
-          // completion time, ...) — emit unconditionally so the UI also sees
-          // updates that don't change the status string, e.g. invoice.paid
-          // stamping completionTime on an already-paid submarine swap.
           _swapUpdatesController.add(swap);
           if (_isSettled(swap) && !_swapNeedsProcessing(swap)) {
             unsubscribeToSwaps([swapId]);
@@ -1238,8 +1198,6 @@ class BoltzDatasource {
     if (newSwapIds.isEmpty) {
       return;
     }
-    // SWAP_TESTER
-    // log.info('SWAP_TESTER ws-subscribe: $newSwapIds');
     _boltzWebSocket.subscribe(newSwapIds);
     _subscribedSwapIds.addAll(newSwapIds);
   }
@@ -1252,8 +1210,6 @@ class BoltzDatasource {
     if (swapIdsToUnsubscribe.isEmpty) {
       return;
     }
-    // SWAP_TESTER
-    // log.info('SWAP_TESTER ws-unsubscribe: $swapIdsToUnsubscribe');
     _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
@@ -1264,7 +1220,6 @@ class BoltzDatasource {
         s: invoice,
         boltzUrl: _httpsUrl,
       );
-      // convert decoded.msats to sats by dividing by 1000 and rounding down
       final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
       return (sats, decoded.isExpired, decoded.bip21);
     } catch (e) {
