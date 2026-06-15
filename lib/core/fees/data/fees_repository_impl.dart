@@ -26,6 +26,7 @@ class FeesRepositoryImpl implements FeesRepository {
       fastest: minRelay,
       economic: minRelay,
       slow: minRelay,
+      minRelay: minRelay,
     );
   }
 }

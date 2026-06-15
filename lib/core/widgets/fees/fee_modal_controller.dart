@@ -56,6 +56,12 @@ abstract class FeeModalActions {
   /// dismisses without typing a valid value.
   void armCustomFee(NetworkFee fee);
 
+  /// Rolls back an active arm to the pre-arm selection immediately —
+  /// dispatched by the custom-fee field when it's cleared (abs/rel toggle
+  /// flipped or text emptied) so a stale armed value can't survive to
+  /// dismissal. No-op when nothing is armed.
+  void disarmCustomFee();
+
   /// Called on modal dismissal. Commits the typed value (rebuilding
   /// the tx) when it clears `NetworkFeeRelayPolicy.minRelay`;
   /// otherwise rolls back to the pre-arm selection.

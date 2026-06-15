@@ -126,6 +126,7 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
                     previewLoading: snapshot.feePreviewCache.customLoading,
                     focusNode: _customFeeNode,
                     onArm: widget.actions.armCustomFee,
+                    onDisarm: widget.actions.disarmCustomFee,
                     onPreview: widget.actions.requestCustomFeePreview,
                     // Modal mode: the parent screen runs
                     // [FeeModalActions.finalizeArmedCustomFee] on
@@ -157,6 +158,7 @@ class _PresetList extends StatelessWidget {
     // (pre-existing l10n debt).
     final items = [
       _presetItem(
+        context: context,
         title: FeeSelection.fastest.title(),
         description: context.loc.sendEstimatedDelivery10Minutes,
         rate: snapshot.feePresets?.fastest,
@@ -166,6 +168,7 @@ class _PresetList extends StatelessWidget {
         fiatCurrencyCode: snapshot.fiatCurrencyCode,
       ),
       _presetItem(
+        context: context,
         title: FeeSelection.economic.title(),
         description: context.loc.sendEstimatedDelivery10to30Minutes,
         rate: snapshot.feePresets?.economic,
@@ -175,6 +178,7 @@ class _PresetList extends StatelessWidget {
         fiatCurrencyCode: snapshot.fiatCurrencyCode,
       ),
       _presetItem(
+        context: context,
         title: FeeSelection.slow.title(),
         description: context.loc.sendEstimatedDeliveryHours,
         rate: snapshot.feePresets?.slow,
@@ -195,6 +199,7 @@ class _PresetList extends StatelessWidget {
 /// hold a fee yet, [SelectableListItem.isSubtitle2Loading] is true so
 /// the row renders a shimmer instead of an empty subtitle.
 SelectableListItem _presetItem({
+  required BuildContext context,
   required String title,
   required String description,
   required NetworkFee? rate,
@@ -212,7 +217,7 @@ SelectableListItem _presetItem({
       isSubtitle2Loading: true,
     );
   }
-  final rateLabel = '${rate.value} sats/vB';
+  final rateLabel = '${rate.value} ${context.loc.sendSatsPerVB}';
   final previewFeeSat = slot.feeSat;
   if (previewFeeSat == null) {
     return SelectableListItem(
@@ -232,7 +237,8 @@ SelectableListItem _presetItem({
     title: title,
     subtitle1: description,
     subtitle2:
-        '$rateLabel ~ ${FormatAmount.satsApprox(previewFeeSat)} sats$fiatPart',
+        '$rateLabel ~ ${FormatAmount.satsApprox(previewFeeSat)} '
+        '${context.loc.sendSats}$fiatPart',
   );
 }
 

@@ -1278,6 +1278,7 @@ class SendCubit extends Cubit<SendState>
   /// Rolls back `selectedFeeOption` and `customFee` to the values snapshotted
   /// by [armCustomFee], if the arm is still active. No-op once cleared
   /// (the user picked a preset, which fires [feeOptionSelected]).
+  @override
   void disarmCustomFee() {
     if (state.armPriorSelection == null) return;
     emit(
@@ -1303,7 +1304,11 @@ class SendCubit extends Cubit<SendState>
     if (state.armPriorSelection == null) return;
     final fee = state.customFee;
     final txSize = state.bitcoinTxSize ?? 140;
-    if (fee != null && fee.aboveMinRelay(txSize: txSize)) {
+    if (fee != null &&
+        fee.aboveMinRelay(
+          txSize: txSize,
+          floorSatPerKwu: state.bitcoinFeesList?.minRelay.satPerKwu,
+        )) {
       await customFeesChanged(fee);
     } else {
       disarmCustomFee();
@@ -1635,7 +1640,11 @@ class SendCubit extends Cubit<SendState>
             ? (
                 unsignedPsbt: cachedSlot.unsignedPsbt!,
                 txSize: cachedSlot.txSize!,
-                isToSelf: false,
+                // The cached PSBT was built for the same address, so the
+                // to-self determination is invariant — preserve it rather
+                // than dropping it to false (which would flip the "to self"
+                // badge and mis-gate payjoin on a self-send).
+                isToSelf: state.isToSelf ?? false,
               )
             : await _prepareBitcoinSendUsecase.execute(
                 walletId: state.selectedWallet!.id,

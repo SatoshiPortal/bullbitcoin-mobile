@@ -105,15 +105,25 @@ extension NetworkFeeRelayPolicy on NetworkFee {
   static const double minRelaySatPerVbyte = 0.1;
   static const int minRelaySatPerKwu = 25;
 
-  /// True when this fee is at or above the network minrelayfee. Absolute
-  /// fees need a [txSize] to express as a rate; [txSize] ≤ 0 → false (the
-  /// caller is in a transient pre-build state and shouldn't be allowed to
-  /// commit yet).
-  bool aboveMinRelay({int? txSize}) => switch (this) {
-    RelativeFee(:final satPerKwu) => satPerKwu >= minRelaySatPerKwu,
-    AbsoluteFee(:final sats) =>
-      txSize != null && txSize > 0 && (sats / txSize) >= minRelaySatPerVbyte,
-  };
+  /// True when this fee is at or above the relay floor. The floor defaults
+  /// to the static [minRelaySatPerKwu] (0.1 sat/vByte) but callers SHOULD
+  /// pass [floorSatPerKwu] from the live mempool `minimumFee`
+  /// ([FeeOptions.minRelay]) so the gate tracks the network's current
+  /// minimum during congestion — never below the static 0.1 safety floor,
+  /// since [MempoolFeesMapper] takes `max(minimumFee, 0.1)`.
+  ///
+  /// Absolute fees need a [txSize] to express as a rate; [txSize] ≤ 0 →
+  /// false (the caller is in a transient pre-build state and shouldn't be
+  /// allowed to commit yet). The absolute comparison is done in sat/kwu
+  /// space (`sats * 250 ≥ floor * txSize`) to avoid float rounding.
+  bool aboveMinRelay({int? txSize, int? floorSatPerKwu}) {
+    final floor = floorSatPerKwu ?? minRelaySatPerKwu;
+    return switch (this) {
+      RelativeFee(:final satPerKwu) => satPerKwu >= floor,
+      AbsoluteFee(:final sats) =>
+        txSize != null && txSize > 0 && (sats * 250) >= (floor * txSize),
+    };
+  }
 }
 
 @freezed
@@ -122,6 +132,13 @@ abstract class FeeOptions with _$FeeOptions {
     required NetworkFee fastest,
     required NetworkFee economic,
     required NetworkFee slow,
+
+    /// The network's current relay floor as a rate — mempool's `minimumFee`
+    /// clamped up to the static 0.1 sat/vByte safety floor. Validation gates
+    /// (custom-fee field, commit gates) reject anything below this so the app
+    /// never builds a tx the network won't relay, even during congestion when
+    /// `minimumFee` rises above 0.1. A pure rate, never converted to absolute.
+    required RelativeFee minRelay,
   }) = _FeeOptions;
   const FeeOptions._();
 
@@ -129,6 +146,7 @@ abstract class FeeOptions with _$FeeOptions {
     fastest: fastest.toAbsolute(vsize),
     economic: economic.toAbsolute(vsize),
     slow: slow.toAbsolute(vsize),
+    minRelay: minRelay,
   );
 
   FeeOptions toRelative(int vsize) {
@@ -144,6 +162,7 @@ abstract class FeeOptions with _$FeeOptions {
       fastest: asRelative(fastest),
       economic: asRelative(economic),
       slow: asRelative(slow),
+      minRelay: minRelay,
     );
   }
 }

@@ -147,6 +147,27 @@ void main() {
       expect(fees.fastestFee, 4.0);
     });
 
+    test('falls back when precise 200 body is missing a fee field', () async {
+      // A 200 with a partial body makes MempoolFeesModel.fromJson throw;
+      // that must trigger the recommended fallback, not fail the fetch.
+      when(
+        () => dio.get<dynamic>(_precise),
+      ).thenAnswer((_) async => _ok(_precise, {'fastestFee': 2.0}));
+      when(() => dio.get<dynamic>(_recommended)).thenAnswer(
+        (_) async => _ok(_recommended, {
+          'fastestFee': 3,
+          'halfHourFee': 2,
+          'hourFee': 1,
+          'economyFee': 1,
+          'minimumFee': 1,
+        }),
+      );
+
+      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      expect(fees.fastestFee, 3.0);
+      verify(() => dio.get<dynamic>(_recommended)).called(1);
+    });
+
     test('throws MempoolFeesException when both endpoints fail', () async {
       when(
         () => dio.get<dynamic>(_precise),

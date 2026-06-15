@@ -27,6 +27,7 @@ void main() {
     int? previewFeeSat,
     bool previewLoading = false,
     void Function(NetworkFee fee)? onArm,
+    VoidCallback? onDisarm,
     void Function(NetworkFee fee)? onPreview,
     Future<void> Function(NetworkFee fee)? onCommit,
   }) async {
@@ -48,6 +49,7 @@ void main() {
             tileShadowColor: Colors.grey,
             unselectedIconColor: Colors.grey,
             onArm: onArm,
+            onDisarm: onDisarm,
             onPreview: onPreview,
             onCommit: onCommit ?? (_) async {},
             allowAbsoluteToggle: allowAbsoluteToggle,
@@ -436,6 +438,63 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       expect(find.byType(TextFormField), findsOneWidget);
+    });
+  });
+
+  group('CustomFeeListItem — disarm on clear (modal mode)', () {
+    testWidgets('flipping the abs/rel toggle disarms the parent', (
+      tester,
+    ) async {
+      var armCount = 0;
+      var disarmCount = 0;
+      await pumpTile(
+        tester,
+        onArm: (_) => armCount++,
+        onDisarm: () => disarmCount++,
+      );
+      // Type a value → arms the parent.
+      await tester.enterText(find.byType(TextFormField), '2');
+      await tester.pump();
+      expect(armCount, greaterThan(0));
+      expect(disarmCount, 0);
+
+      // Flip the absolute/relative toggle → field resets to empty, so the
+      // parent must be disarmed (otherwise the stale "2" would commit on
+      // dismissal despite an empty field).
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+      expect(disarmCount, 1);
+    });
+
+    testWidgets('clearing the field disarms the parent', (tester) async {
+      var disarmCount = 0;
+      await pumpTile(
+        tester,
+        onArm: (_) {},
+        onDisarm: () => disarmCount++,
+      );
+      await tester.enterText(find.byType(TextFormField), '2');
+      await tester.pump();
+      expect(disarmCount, 0);
+
+      await tester.enterText(find.byType(TextFormField), '');
+      await tester.pump();
+      expect(disarmCount, 1);
+    });
+
+    testWidgets('RBF mode (commitOnChange) never disarms', (tester) async {
+      var disarmCount = 0;
+      await pumpTile(
+        tester,
+        commitOnChange: true,
+        allowAbsoluteToggle: false,
+        onDisarm: () => disarmCount++,
+      );
+      await tester.enterText(find.byType(TextFormField), '2');
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField), '');
+      await tester.pump();
+      expect(disarmCount, 0);
     });
   });
 }

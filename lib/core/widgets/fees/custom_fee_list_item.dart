@@ -50,6 +50,7 @@ class CustomFeeListItem extends StatefulWidget {
     required this.unselectedIconColor,
     required this.onCommit,
     this.onArm,
+    this.onDisarm,
     this.onPreview,
     this.previewFeeSat,
     this.previewLoading = false,
@@ -101,6 +102,13 @@ class CustomFeeListItem extends StatefulWidget {
   /// without triggering a heavy rebuild — see [SendCubit.armCustomFee].
   /// Idempotent on the caller side. Ignored in RBF mode.
   final void Function(NetworkFee fee)? onArm;
+
+  /// Modal mode only. Called when the field is cleared without a valid
+  /// replacement — the abs/rel toggle is flipped (resets the input) or the
+  /// text is emptied/invalid. Rolls back any armed custom selection so a
+  /// stale pre-clear value can't be committed when the sheet is dismissed.
+  /// Ignored in RBF mode (nothing is armed there).
+  final VoidCallback? onDisarm;
 
   /// When false, hide the absolute/relative toggle. Input is treated as
   /// relative (sat/vByte) only. RBF passes false — its fee API is
@@ -239,6 +247,11 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     setState(() => _isAbsolute = newValue);
     _controller.clear();
     _customFee = null;
+    _previewDebounce?.cancel();
+    // The field reset to empty — drop any armed custom selection so a stale
+    // pre-toggle value can't be committed on dismissal (modal mode only;
+    // RBF commits per-keystroke and has nothing armed).
+    if (!widget.commitOnChange) widget.onDisarm?.call();
   }
 
   void _onValueChanged(String text) {
@@ -255,7 +268,12 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
         // the user why nothing's getting committed; modal-mode does
         // the same gating in [SendCubit.finalizeArmedCustomFee] /
         // [TransferBloc._onCustomFeeFinalized] via aboveMinRelay.
-        if (!fee.aboveMinRelay(txSize: widget.txSize)) return;
+        if (!fee.aboveMinRelay(
+          txSize: widget.txSize,
+          floorSatPerKwu: widget.feePresets?.minRelay.satPerKwu,
+        )) {
+          return;
+        }
         widget.onCommit(fee);
       } else {
         // Modal mode: arm immediately for visual selection (cheap —
@@ -273,6 +291,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     } else {
       setState(() => _customFee = null);
       _previewDebounce?.cancel();
+      // Empty/invalid input — disarm so dismissal rolls back to the prior
+      // selection instead of committing the last valid armed value.
+      if (!widget.commitOnChange) widget.onDisarm?.call();
     }
   }
 
@@ -333,7 +354,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
             economicKwu == null ||
             slowKwu == null)
         ? ''
-        : 'Estimated delivery ~ ${customKwu >= fastestKwu
+        : '${context.loc.sendEstimatedDelivery}${customKwu >= fastestKwu
               ? context.loc.sendEstimatedDelivery10Minutes
               : customKwu >= economicKwu
               ? context.loc.sendEstimatedDelivery10to30Minutes
@@ -341,14 +362,17 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
               ? context.loc.sendEstimatedDeliveryHours
               : context.loc.sendEstimatedDeliveryHoursToDays}';
 
-    // Fee-rate guards. Single source for the floor is
-    // NetworkFeeRelayPolicy.minRelaySatPerVbyte (= 0.1, Bitcoin Core's
-    // lowest sensible policy and Liquid's minrelayfee). Below 1 sat/vByte
-    // we still warn the tx may take longer to confirm and may not
-    // propagate to every node.
-    final bool belowFloor =
-        customRate != null &&
-        customRate < NetworkFeeRelayPolicy.minRelaySatPerVbyte;
+    // Fee-rate guards. The floor is the live network minimum carried by
+    // [FeeOptions.minRelay] (mempool's `minimumFee` clamped up to the static
+    // 0.1 sat/vByte safety floor), so under congestion the field rejects
+    // rates the network won't relay even though they clear the 0.1 constant.
+    // Falls back to the static 0.1 when no presets are loaded yet (e.g. RBF).
+    // Below 1 sat/vByte (but at/above the floor) we still warn the tx may
+    // take longer to confirm and may not propagate to every node.
+    final double floorSatPerVbyte =
+        feeOptions?.minRelay.satPerVbyte ??
+        NetworkFeeRelayPolicy.minRelaySatPerVbyte;
+    final bool belowFloor = customRate != null && customRate < floorSatPerVbyte;
     final bool subOneSatPerVbyte =
         customRate != null && customRate < 1.0 && !belowFloor;
 

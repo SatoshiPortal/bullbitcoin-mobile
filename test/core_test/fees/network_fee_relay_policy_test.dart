@@ -64,4 +64,32 @@ void main() {
       expect(fee.aboveMinRelay(txSize: 0), isFalse);
     });
   });
+
+  group('NetworkFee.aboveMinRelay — dynamic floor (live minimumFee)', () {
+    test('a rate at the static floor fails against a higher dynamic floor', () {
+      // 0.1 sat/vB (25 kwu) clears the static floor but not a congested
+      // 0.5 sat/vB (125 kwu) minimum reported by mempool.
+      const fee = RelativeFee(25);
+      expect(fee.aboveMinRelay(), isTrue);
+      expect(fee.aboveMinRelay(floorSatPerKwu: 125), isFalse);
+    });
+
+    test('a rate at the dynamic floor passes', () {
+      const fee = RelativeFee(125);
+      expect(fee.aboveMinRelay(floorSatPerKwu: 125), isTrue);
+    });
+
+    test('absolute fee compared against the dynamic floor (kwu space)', () {
+      // 0.5 sat/vB floor = 125 kwu. 70 sat @ 140 vsize = 0.5 sat/vB → passes;
+      // 69 sat → below.
+      expect(
+        const AbsoluteFee(70).aboveMinRelay(txSize: 140, floorSatPerKwu: 125),
+        isTrue,
+      );
+      expect(
+        const AbsoluteFee(69).aboveMinRelay(txSize: 140, floorSatPerKwu: 125),
+        isFalse,
+      );
+    });
+  });
 }

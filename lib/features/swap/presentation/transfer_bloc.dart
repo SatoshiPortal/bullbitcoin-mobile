@@ -1019,7 +1019,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (state.armPriorSelection == null) return;
     final fee = state.customFee;
     final txSize = state.bitcoinTxSize ?? 140;
-    if (fee != null && fee.aboveMinRelay(txSize: txSize)) {
+    if (fee != null &&
+        fee.aboveMinRelay(
+          txSize: txSize,
+          floorSatPerKwu: state.bitcoinNetworkFees?.minRelay.satPerKwu,
+        )) {
       await _onCustomFeeChanged(TransferCustomFeeChanged(fee), emit);
     } else {
       await _onCustomFeeDisarmed(const TransferCustomFeeDisarmed(), emit);
@@ -1051,7 +1055,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       amountSat: shape.amountSat,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      drain: false,
+      drain: state.isMaxSelected,
     );
     // Discard if an input-shape change emptied the cache mid-build.
     if (epoch != _bitcoinPreviewEpoch) return;
@@ -1091,7 +1095,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       amountSat: shape.amountSat,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      drain: false,
+      drain: state.isMaxSelected,
     );
     // Discard if an input-shape change emptied the cache mid-build.
     if (epoch != _bitcoinPreviewEpoch) return;
@@ -1477,6 +1481,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   @override
   void armCustomFee(NetworkFee fee) => add(TransferEvent.customFeeArmed(fee));
+
+  @override
+  void disarmCustomFee() => add(const TransferEvent.customFeeDisarmed());
 
   @override
   void finalizeArmedCustomFee() =>

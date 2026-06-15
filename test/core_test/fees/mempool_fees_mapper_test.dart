@@ -6,8 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// Locks the tier policy after the precise-endpoint migration:
 ///   Fastest  <- fastestFee
 ///   Economic <- hourFee
-///   Slow     <- economyFee, floored at the network minrelayfee.
-/// halfHourFee and minimumFee never reach the UI tiers.
+///   Slow     <- economyFee
+/// Every tier (and the exposed `minRelay`) is floored at
+/// max(minimumFee, 0.1 sat/vByte). halfHourFee never reaches the tiers;
+/// minimumFee feeds only the relay floor.
 MempoolFeesModel _model({
   double fastestFee = 2,
   double halfHourFee = 1.5,
@@ -62,19 +64,34 @@ void main() {
       expect(fastest, greaterThanOrEqualTo(economic));
     });
 
-    test('halfHourFee and minimumFee do not affect any tier', () {
+    test('halfHourFee does not affect any tier', () {
       final opts = MempoolFeesMapper.toFeeOptions(
-        _model(
-          fastestFee: 3,
-          halfHourFee: 99,
-          hourFee: 1.2,
-          economyFee: 0.3,
-          minimumFee: 99,
-        ),
+        _model(fastestFee: 3, halfHourFee: 99, hourFee: 1.2, economyFee: 0.3),
       );
       expect((opts.fastest as RelativeFee).satPerVbyte, 3);
       expect((opts.economic as RelativeFee).satPerVbyte, 1.2);
       expect((opts.slow as RelativeFee).satPerVbyte, 0.3);
     });
+
+    test('minRelay tracks max(minimumFee, 0.1) at a quiet mempool', () {
+      final opts = MempoolFeesMapper.toFeeOptions(_model(minimumFee: 0.1));
+      expect(opts.minRelay.satPerVbyte, 0.1);
+    });
+
+    test(
+      'a congested minimumFee raises the floor for every tier and minRelay',
+      () {
+        // minimumFee 0.5 > the 0.1 safety floor → it becomes the effective
+        // floor. economyFee (0.2) is below it, so Slow is clamped up to 0.5;
+        // minRelay reports 0.5 so the validation gates reject anything lower.
+        final opts = MempoolFeesMapper.toFeeOptions(
+          _model(fastestFee: 2, hourFee: 1, economyFee: 0.2, minimumFee: 0.5),
+        );
+        expect(opts.minRelay.satPerVbyte, 0.5);
+        expect((opts.slow as RelativeFee).satPerVbyte, 0.5);
+        expect((opts.economic as RelativeFee).satPerVbyte, 1);
+        expect((opts.fastest as RelativeFee).satPerVbyte, 2);
+      },
+    );
   });
 }

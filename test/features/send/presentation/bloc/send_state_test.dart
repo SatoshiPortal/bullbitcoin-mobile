@@ -138,6 +138,7 @@ void main() {
         fastest: NetworkFee.relativeFromSatPerVbyte(10),
         economic: NetworkFee.relativeFromSatPerVbyte(5),
         slow: NetworkFee.relativeFromSatPerVbyte(2),
+        minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
       );
       final state = SendState(
         selectedWallet: bitcoinWallet(),

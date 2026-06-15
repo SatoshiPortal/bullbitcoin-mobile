@@ -10,28 +10,34 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 /// - **Economic** ← `hourFee` (~1-hour target).
 /// - **Slow**     ← `economyFee`.
 ///
-/// Every tier is floored at the network minrelayfee so no preset can drop
-/// below what the network will relay. Because mempool returns the fields in
-/// non-increasing order (`fastestFee ≥ hourFee ≥ economyFee`) and `max` is
-/// monotonic, flooring all three preserves the Fastest ≥ Economic ≥ Slow
-/// ordering even in the pathological case where a server reports rates below
-/// the floor (which would otherwise invert Slow above Economic).
+/// The relay floor is `max(minimumFee, 0.1 sat/vByte)`: the live mempool
+/// `minimumFee` (the rate below which that node won't relay — typically 0.1
+/// at quiet blocks, higher under congestion), clamped up to the static 0.1
+/// safety floor. Every tier is floored at it, and it is exposed as
+/// [FeeOptions.minRelay] so the validation gates reject anything below the
+/// network's current minimum rather than a hardcoded constant. Because
+/// mempool returns the fields in non-increasing order (`fastestFee ≥ hourFee
+/// ≥ economyFee ≥ minimumFee`) and `max` is monotonic, flooring all three
+/// preserves the Fastest ≥ Economic ≥ Slow ordering.
 ///
-/// `halfHourFee` and `minimumFee` are intentionally unused — the app exposes
-/// exactly three tiers, and Slow is floor-protected rather than tracking
-/// mempool's `minimumFee` (which collapses to ~1 sat/vByte at quiet blocks
-/// and would make Slow indistinguishable from a real economy rate).
+/// `halfHourFee` is intentionally unused — the app exposes exactly three
+/// tiers. `minimumFee` feeds only the relay floor (above), never a tier, so
+/// Slow stays a real economy rate instead of collapsing onto the floor.
 class MempoolFeesMapper {
   const MempoolFeesMapper._();
 
   static FeeOptions toFeeOptions(MempoolFeesModel model) {
-    RelativeFee tier(double satPerVbyte) => NetworkFee.relativeFromSatPerVbyte(
-      max(satPerVbyte, NetworkFeeRelayPolicy.minRelaySatPerVbyte),
+    final floorSatPerVbyte = max(
+      model.minimumFee,
+      NetworkFeeRelayPolicy.minRelaySatPerVbyte,
     );
+    RelativeFee tier(double satPerVbyte) =>
+        NetworkFee.relativeFromSatPerVbyte(max(satPerVbyte, floorSatPerVbyte));
     return FeeOptions(
       fastest: tier(model.fastestFee),
       economic: tier(model.hourFee),
       slow: tier(model.economyFee),
+      minRelay: NetworkFee.relativeFromSatPerVbyte(floorSatPerVbyte),
     );
   }
 }

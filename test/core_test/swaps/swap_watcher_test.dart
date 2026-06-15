@@ -148,6 +148,7 @@ class FakeFeesRepository implements FeesRepository {
         fastest: NetworkFee.relativeSatPerKwu(125),
         economic: NetworkFee.relativeSatPerKwu(75),
         slow: NetworkFee.relativeSatPerKwu(25),
+        minRelay: RelativeFee(25),
       );
 
   @override

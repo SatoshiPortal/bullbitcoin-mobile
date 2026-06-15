@@ -60,30 +60,37 @@ class FeesDatasource {
 
     final http = _dioBuilder(baseUrl);
 
-    final json =
+    final fees =
         await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
         await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
-    if (json == null) {
+    if (fees == null) {
       throw MempoolFeesException(
         'No mempool fee endpoint available at $baseUrl',
       );
     }
 
-    return MempoolFeesModel.fromJson(json);
+    return fees;
   }
 
-  /// GETs a fee endpoint. Returns the JSON body on a 200 with a JSON object,
-  /// or `null` on any failure (non-200, network/Dio error, or a non-object
-  /// body) so the caller can fall back to another path.
-  Future<Map<String, dynamic>?> _getFees(Dio http, String path) async {
+  /// GETs a fee endpoint and parses it. Returns the model on a 200 with a
+  /// well-formed body, or `null` on any failure — non-200, network/Dio
+  /// error, non-object body, or a 200 whose body is missing or has a
+  /// non-numeric fee field — so the caller can fall back to the next path.
+  /// Parsing happens here (not at the call site) so a malformed-but-200
+  /// precise response falls back to recommended instead of throwing.
+  Future<MempoolFeesModel?> _getFees(Dio http, String path) async {
     try {
       final resp = await http.get<dynamic>(path);
       final data = resp.data;
       if (resp.statusCode == 200 && data is Map<String, dynamic>) {
-        return data;
+        return MempoolFeesModel.fromJson(data);
       }
       return null;
     } on DioException {
+      return null;
+    } catch (_) {
+      // A 200 with a malformed/partial body — `fromJson` throws on a missing
+      // or non-numeric fee field. Fall back rather than failing the fetch.
       return null;
     }
   }
