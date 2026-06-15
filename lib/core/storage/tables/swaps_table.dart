@@ -26,7 +26,10 @@ class Swaps extends Table {
   IntColumn get boltzFees => integer().nullable()();
   IntColumn get lockupFees => integer().nullable()();
   IntColumn get claimFees => integer().nullable()();
+  IntColumn get refundFees => integer().nullable()();
   IntColumn get serverNetworkFees => integer().nullable()();
+  BoolColumn get wasDirectPayment =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
