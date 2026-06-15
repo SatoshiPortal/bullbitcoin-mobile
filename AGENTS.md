@@ -133,6 +133,29 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 
 When the same role exists with two names in the codebase, use the dominant one and flag the outlier as legacy. Don't rename outliers in unrelated PRs — that breaks atomic commits.
 
+### Member ordering
+
+Inside a class, declare members in this order, with a blank line between each group:
+
+1. **Instance fields** — the object's state. Reading these first tells you *what the thing is*.
+2. **Constructor(s)** — how it's built, on top of the fields you just read.
+3. **Methods** — its behaviour, including `@override`s.
+
+```dart
+final class UnexpectedLabelError extends LabelError {
+  final String? message;
+
+  const UnexpectedLabelError(this.message);
+
+  @override
+  String toTranslated(BuildContext context) => context.loc.oopsSomethingWentWrong;
+}
+```
+
+This is fields-first on purpose: our domain, value, and error types are defined by their state, so surfacing it first reads most naturally (and matches the field-first habit of most other languages). It is a soft convention — the analyzer does not enforce member order, so keep it consistent by hand and in review.
+
+**Do not enable the `sort_constructors_first` lint.** It enforces the *opposite* order (constructor before fields); turning it on would fight this convention and churn every class. Widgets, whose constructor is effectively their public API, may keep the constructor first if that reads better there — don't reformat existing widgets to satisfy this rule.
+
 ## UI Kit — reuse first, build the kit as you go
 
 The codebase is migrating toward a real UI Kit. The skeleton already lives in [`lib/core/widgets/`](lib/core/widgets/) (`buttons/`, `cards/`, `inputs/`, `lists/`, `dropdown/`, `bottom_sheet/`, `text/`, `selectors/`, …) and theme tokens in [`lib/core/themes/`](lib/core/themes/). Today the same widgets get re-implemented per feature (`_SaveButton`, `_ConfirmButton`, `_BottomButtons` …) — stop adding to that pile.
