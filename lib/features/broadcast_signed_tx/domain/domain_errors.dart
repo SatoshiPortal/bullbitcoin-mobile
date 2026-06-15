@@ -1,34 +1,68 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'domain_errors.freezed.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/widgets.dart';
 
 /// Errors raised while building a [ReviewableTransaction].
 ///
-/// Discrete variants per failure mode — the presentation layer never sees
-/// a foreign error type. Port-layer errors are mapped into these by the
-/// usecase at the boundary.
-@freezed
-sealed class TransactionReviewError with _$TransactionReviewError {
-  /// Failed to fetch a parent transaction needed to resolve an input value.
-  const factory TransactionReviewError.fetchFailed({
-    required String txid,
-    String? message,
-  }) = TransactionReviewFetchFailed;
+/// Closed set of failures the transaction-review screen surfaces to the user.
+/// Port-layer errors are mapped into these variants by the usecase at the
+/// boundary — the presentation layer never sees a foreign error type. `sealed`
+/// keeps it closed; the abstract `toTranslated` keeps each user-facing message
+/// next to its variant.
+sealed class TransactionReviewError {
+  const TransactionReviewError();
 
-  /// No Electrum servers configured / reachable for the active network.
-  const factory TransactionReviewError.noServersAvailable({String? network}) =
-      TransactionReviewNoServersAvailable;
+  /// Localized, user-safe message. Never returns raw/technical detail.
+  String toTranslated(BuildContext context);
+}
 
-  /// An input's parent transaction was found but the referenced output
-  /// index does not exist.
-  const factory TransactionReviewError.inputResolutionFailed({
-    required String parentTxId,
-    required int vout,
-  }) = TransactionReviewInputResolutionFailed;
+/// Failed to fetch a parent transaction needed to resolve an input value.
+final class TransactionReviewFetchFailed extends TransactionReviewError {
+  const TransactionReviewFetchFailed({required this.txid, this.message});
 
-  /// An unexpected error escaped from the usecase or cubit.
-  const factory TransactionReviewError.unexpected(String? message) =
-      UnexpectedTransactionReviewError;
+  final String txid;
+  final String? message; // logged-only context, never shown
 
-  const TransactionReviewError._();
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.coreScreensFetchFailed(txid);
+}
+
+/// No Electrum servers configured / reachable for the active network.
+final class TransactionReviewNoServersAvailable extends TransactionReviewError {
+  final String? network;
+
+  const TransactionReviewNoServersAvailable({this.network});
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.coreScreensNoServersAvailable;
+}
+
+/// An input's parent transaction was found but the referenced output index
+/// does not exist.
+final class TransactionReviewInputResolutionFailed
+    extends TransactionReviewError {
+  final String parentTxId;
+  final int vout;
+
+  const TransactionReviewInputResolutionFailed({
+    required this.parentTxId,
+    required this.vout,
+  });
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.coreScreensInputResolutionFailed(vout, parentTxId);
+}
+
+/// Catch-all. [message] is for logs only and MUST never reach the UI —
+/// `toTranslated` returns the shared generic string, not [message].
+final class UnexpectedTransactionReviewError extends TransactionReviewError {
+  final String? message;
+
+  const UnexpectedTransactionReviewError(this.message);
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.oopsSomethingWentWrong;
 }

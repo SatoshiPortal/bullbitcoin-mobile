@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_error.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,6 +14,6 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
     @Default(false) bool isBroadcasting,
     @Default(false) bool isBroadcasted,
     @Default(null) Uri? pushTxUri,
-    @Default(null) Exception? error,
+    @Default(null) BroadcastSignedTxError? error,
   }) = _BroadcastSignedTxState;
 }
