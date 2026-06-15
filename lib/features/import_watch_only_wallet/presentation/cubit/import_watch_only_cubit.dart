@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -31,27 +33,43 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   Future<void> import() async {
-    emit(state.copyWith(error: ''));
+    emit(state.copyWith(error: null));
+
+    final wallet = state.watchOnlyWallet;
+    if (wallet == null) {
+      emit(state.copyWith(error: const NoWalletSelectedError()));
+      return;
+    }
+    if (wallet.label.isEmpty) {
+      emit(state.copyWith(error: const LabelRequiredError()));
+      return;
+    }
 
     try {
-      if (state.watchOnlyWallet == null) throw 'No watch-only wallet';
-      if (state.watchOnlyWallet!.label.isEmpty) throw 'Label required';
-
-      if (state.watchOnlyWallet is WatchOnlyDescriptorEntity) {
-        final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
-        final importedWallet = await _importWatchOnlyDescriptorUsecase(
-          watchOnlyDescriptor: entity,
+      final Wallet importedWallet;
+      if (wallet is WatchOnlyDescriptorEntity) {
+        importedWallet = await _importWatchOnlyDescriptorUsecase.execute(
+          watchOnlyDescriptor: wallet,
         );
-        emit(state.copyWith(importedWallet: importedWallet));
-      } else if (state.watchOnlyWallet is WatchOnlyXpubEntity) {
-        final entity = state.watchOnlyWallet! as WatchOnlyXpubEntity;
-        final importedWallet = await _importWatchOnlyXpubUsecase(
-          watchOnlyXpub: entity,
+      } else if (wallet is WatchOnlyXpubEntity) {
+        importedWallet = await _importWatchOnlyXpubUsecase.execute(
+          watchOnlyXpub: wallet,
         );
-        emit(state.copyWith(importedWallet: importedWallet));
+      } else {
+        return;
       }
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(importedWallet: importedWallet));
+    } on ImportWatchOnlyError catch (e) {
+      emit(state.copyWith(error: e));
+    } catch (e, st) {
+      // Unforeseen failure — keep the raw detail in the logs (Sentry) and show
+      // a generic localized message via the unexpected variant.
+      log.severe(
+        message: 'Unexpected watch-only import failure',
+        error: e,
+        trace: st,
+      );
+      emit(state.copyWith(error: UnexpectedImportError(e.toString())));
     }
   }
 
@@ -62,9 +80,9 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       try {
         final entity = await WatchOnlyWalletEntity.parse(value);
         emit(state.copyWith(watchOnlyWallet: entity));
-      } catch (e) {
-        log.warning(e.toString());
-        emit(state.copyWith(error: 'Invalid watch only format'));
+      } catch (e, st) {
+        log.warning('Failed to parse watch-only input', error: e, trace: st);
+        emit(state.copyWith(error: const InvalidFormatError()));
       }
     }
   }
