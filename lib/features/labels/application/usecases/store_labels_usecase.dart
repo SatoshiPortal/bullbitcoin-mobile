@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
@@ -22,8 +23,11 @@ class StoreLabelUsecase {
       return LabelMapper.labelEntityToApplicationLabel(storedLabel);
     } on LabelError {
       rethrow;
-    } catch (e) {
-      throw LabelError.unexpected('Failed to batch labels: $e');
+    } catch (e, st) {
+      // Keep the technical reason in the logs; the UI maps the unexpected
+      // variant to a generic message and never shows [e].
+      log.severe(message: 'Failed to store label', error: e, trace: st);
+      throw UnexpectedLabelError('Failed to store label: $e');
     }
   }
 }
