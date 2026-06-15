@@ -203,7 +203,8 @@ class SwapProgressIndicator extends StatelessWidget {
       SwapStatus.claimable => swap is ChainSwap ? 2 : 1,
       SwapStatus.refundable => swap is ChainSwap ? 2 : 1,
       SwapStatus.canCoop => swap is ChainSwap ? 2 : 1,
-      SwapStatus.completed => swap is ChainSwap ? 3 : 2,
+      SwapStatus.completed ||
+      SwapStatus.refunded => swap is ChainSwap ? 3 : 2,
       SwapStatus.failed || SwapStatus.expired => 0,
     };
   }

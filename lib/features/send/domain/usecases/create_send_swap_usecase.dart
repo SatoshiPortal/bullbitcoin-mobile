@@ -51,6 +51,10 @@ class CreateSendSwapUsecase {
       final mnemonic =
           await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
 
+      if (wallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
+
       if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
         throw Exception(
           'Liquid wallet must be used for a liquid to lightning swap',

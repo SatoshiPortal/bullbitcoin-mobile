@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class AutoSwapExecutionUsecase {
   final BoltzSwapRepository _repository;
@@ -76,11 +76,11 @@ class AutoSwapExecutionUsecase {
         'Send bitcoin wallet not found. Check autoswap settings.',
       );
     }
-    debugPrint('Found default wallet - Liquid: ${defaultLiquidWallet.id}');
+    log.fine('Found default wallet - Liquid: ${defaultLiquidWallet.id}');
 
     final walletBalance = defaultLiquidWallet.balanceSat.toInt();
 
-    debugPrint('Checking balance threshold - Current: $walletBalance sats');
+    log.fine('Checking balance threshold - Current: $walletBalance sats');
     if (!autoSwapSettings.passedRequiredBalance(walletBalance)) {
       throw BalanceThresholdException(
         currentBalance: walletBalance,
@@ -88,7 +88,7 @@ class AutoSwapExecutionUsecase {
       );
     }
 
-    debugPrint('Balance threshold exceeded, checking swap limits...');
+    log.fine('Balance threshold exceeded, checking swap limits...');
     final (swapLimits, swapFees) = await swapRepository.getSwapLimitsAndFees(
       SwapType.liquidToBitcoin,
     );
@@ -112,7 +112,7 @@ class AutoSwapExecutionUsecase {
       }
     }
 
-    debugPrint('Balance within swap limits, preparing swap...');
+    log.fine('Balance within swap limits, preparing swap...');
 
     final liquidWalletMnemonic =
         await _seedRepository.get(defaultLiquidWallet.masterFingerprint)
@@ -126,7 +126,7 @@ class AutoSwapExecutionUsecase {
         ? ApiServiceConstants.publicliquidElectrumTestUrlPath
         : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
-    debugPrint(
+    log.fine(
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',
     );
     final swap = await swapRepository.createLiquidToBitcoinSwap(
@@ -138,7 +138,7 @@ class AutoSwapExecutionUsecase {
       receiveWalletId: sendBitcoinWallet.id,
     );
 
-    debugPrint('Building PSET...');
+    log.fine('Building PSET...');
     final pset = await _liquidWalletRepository.buildPset(
       walletId: defaultLiquidWallet.id,
       address: swap.paymentAddress,
@@ -147,17 +147,17 @@ class AutoSwapExecutionUsecase {
       feeRate: const RelativeFee(25),
     );
 
-    debugPrint('Getting absolute fees from PSET...');
+    log.fine('Getting absolute fees from PSET...');
     final (_, absoluteFees) = await _liquidWalletRepository
         .getPsetSizeAndAbsoluteFees(pset: pset);
 
-    debugPrint('Signing PSET...');
+    log.fine('Signing PSET...');
     final signedPset = await _liquidWalletRepository.signPset(
       walletId: defaultLiquidWallet.id,
       pset: pset,
     );
 
-    debugPrint('Broadcasting transaction...');
+    log.fine('Broadcasting transaction...');
     final txid = await _blockchainPort.broadcastLiquidTransaction(
       signedPset: signedPset,
       isTestnet: defaultLiquidWallet.isTestnet,
@@ -172,7 +172,7 @@ class AutoSwapExecutionUsecase {
     await swapRepository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),
     );
-    debugPrint('Swap executed successfully!');
+    log.fine('Swap executed successfully!');
     // sometimes sync fails and label is not set
     final txLabel = NewLabel.tx(
       transactionId: txid,

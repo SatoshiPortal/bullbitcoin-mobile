@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
@@ -19,6 +18,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -73,7 +73,6 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         walletAddressRepository: locator<WalletAddressRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
         feesRepository: locator<FeesRepository>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
@@ -128,9 +127,9 @@ class SwapsLocator {
 
     locator.registerFactory<WatchSwapUsecase>(
       () => WatchSwapUsecase(
-        watcherService: locator<SwapWatcherService>(
+        swapRepository: locator<BoltzSwapRepository>(
           instanceName:
-              LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -205,6 +204,14 @@ class SwapsLocator {
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+    locator.registerFactory<ProcessOngoingSwapsUsecase>(
+      () => ProcessOngoingSwapsUsecase(
+        watcherService: locator<SwapWatcherService>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
         ),
       ),
     );

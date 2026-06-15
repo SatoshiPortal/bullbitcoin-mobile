@@ -696,7 +696,11 @@ class SendCubit extends Cubit<SendState>
     }
     emit(
       state.copyWith(
-        confirmedAmountSat: state.paymentRequest!.amountSat,
+        // Amountless external addresses carry no request amount; fall back to
+        // the entered amount so the confirm headline never flashes 0 sats
+        // before createTransaction settles it.
+        confirmedAmountSat:
+            state.paymentRequest!.amountSat ?? state.inputAmountSat,
         step: SendStep.confirm,
         loadingBestWallet: false,
       ),
@@ -1901,11 +1905,11 @@ class SendCubit extends Cubit<SendState>
         );
       }
       if (state.chainSwap != null) {
+        // Don't pass absoluteFees: createTransaction already persisted the
+        // real lockup fee. Passing a value here overwrites it (0 clobbered it).
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.chainSwap!.id,
-          absoluteFees:
-              0, // TODO (ishi): removed until server fees are implemented
         );
       }
 
@@ -2030,7 +2034,11 @@ class SendCubit extends Cubit<SendState>
       );
       if (updatedSwap is LnSendSwap) {
         emit(state.copyWith(lightningSwap: updatedSwap));
-        if (updatedSwap.status == SwapStatus.canCoop ||
+        // paid == the invoice has been paid: the recipient has the money,
+        // regardless of when the coop close handshake happens (batched
+        // sub-minimum swaps may never get one).
+        if (updatedSwap.status == SwapStatus.paid ||
+            updatedSwap.status == SwapStatus.canCoop ||
             updatedSwap.status == SwapStatus.completed) {
           emit(state.copyWith(step: SendStep.success));
           unawaited(
@@ -2047,6 +2055,10 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(chainSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
           emit(state.copyWith(step: SendStep.success));
+        }
+        if (updatedSwap.status == SwapStatus.completed ||
+            updatedSwap.status == SwapStatus.refunded) {
+          // Sync on refund too so the returned funds show up.
           unawaited(
             _getWalletUsecase
                 .execute(state.selectedWallet!.id, sync: true)

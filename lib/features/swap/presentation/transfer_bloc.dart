@@ -315,7 +315,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     Emitter<TransferState> emit,
   ) async {
     if (state.amount == event.amount) return;
-    emit(state.copyWith(amount: event.amount, swapCreationException: null));
+    var updated = state.copyWith(
+      amount: event.amount,
+      swapCreationException: null,
+    );
+    // Sending the max drains the wallet, so an exact receivable amount can
+    // not be honored — force the toggle off while max is selected. Editing
+    // the amount away from max re-enables the toggle (off, user re-opts-in).
+    if (updated.isMaxSelected && updated.receiveExactAmount) {
+      updated = updated.copyWith(receiveExactAmount: false);
+    }
+    emit(updated);
     // Amount is part of the cache fingerprint (see _clearBitcoinFeePreviews).
     _clearBitcoinFeePreviews(emit);
   }
@@ -347,8 +357,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         return;
       }
 
+      // For max send, paymentAmountSat = inputAmountSat = maxAmountSat
+      // (balance - estimatedFees), which is what we want to pass to newSwap
+      final isMaxSend =
+          state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
+
       int paymentAmountSat = inputAmountSat;
-      if (state.receiveExactAmount && !state.isSameChainTransfer) {
+      // Max drains the wallet, so the exact-receivable inflation can never
+      // apply: paying input + fees would exceed the balance and the drained
+      // lockup would mismatch the swap amount (lockupFailed). The UI forces
+      // the toggle off whenever the amount equals max; this is the backstop.
+      if (state.receiveExactAmount &&
+          !state.isSameChainTransfer &&
+          !isMaxSend) {
         final swapFees = state.swapFees;
         if (swapFees == null) {
           emit(
@@ -363,11 +384,20 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         paymentAmountSat = swapFees.calculateSwapAmountFromReceivableAmount(
           inputAmountSat,
         );
+        // Exact-receivable requires paying more than the requested amount —
+        // catch an over-balance payment before any swap is created.
+        if (paymentAmountSat > balanceSat) {
+          emit(
+            state.copyWith(
+              swapCreationException: SwapCreationException(
+                'Insufficient balance to receive this exact amount. Lower '
+                'the amount or turn off receive exact amount.',
+              ),
+            ),
+          );
+          return;
+        }
       }
-      // For max send, paymentAmountSat = inputAmountSat = maxAmountSat
-      // (balance - estimatedFees), which is what we want to pass to newSwap
-      final isMaxSend =
-          state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
 
       ChainSwap swap;
       String signedPsbt;
@@ -836,6 +866,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferReceiveExactAmountToggled event,
     Emitter<TransferState> emit,
   ) async {
+    if (event.enabled && state.isMaxSelected) {
+      // Max send and exact receivable are mutually exclusive.
+      return;
+    }
     emit(state.copyWith(receiveExactAmount: event.enabled));
   }
 
@@ -1391,10 +1425,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (updatedSwap is ChainSwap) {
         // ignore: invalid_use_of_visible_for_testing_member
         emit(state.copyWith(swap: updatedSwap));
-        if (updatedSwap.status == SwapStatus.completed) {
-          // Start syncing the wallet now that the swap is completed
+        if (updatedSwap.status == SwapStatus.completed ||
+            updatedSwap.status == SwapStatus.refunded) {
+          // Final outcome (success or refund): sync the affected wallets and
+          // stop watching. On refund the funds came back to the from-wallet.
           _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
-          if (!state.sendToExternal && state.toWallet != null) {
+          if (updatedSwap.status == SwapStatus.completed &&
+              !state.sendToExternal &&
+              state.toWallet != null) {
             _getWalletUsecase.execute(state.toWallet!.id, sync: true);
           }
 

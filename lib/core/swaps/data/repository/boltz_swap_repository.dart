@@ -16,7 +16,21 @@ class BoltzSwapRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
 
+  /// Serializes swap creation so two concurrent creations can never compute
+  /// the same key index from a stale table scan.
+  Future<void> _creationLock = Future.value();
+
   BoltzSwapRepository({required this._boltz, required this._isTestnet});
+
+  Future<T> _withCreationLock<T>(Future<T> Function() action) {
+    final completer = Completer<void>();
+    final previous = _creationLock;
+    _creationLock = completer.future;
+    return previous
+        .catchError((_) {})
+        .then((_) => action())
+        .whenComplete(completer.complete);
+  }
 
   Stream<Swap> get swapUpdatesStream =>
       _boltz.swapUpdatesStream.map((swapModel) => swapModel.toEntity());
@@ -31,18 +45,20 @@ class BoltzSwapRepository {
     required String claimAddress,
     String? description,
   }) async {
-    final index = await _nextRevKeyIndex(walletId);
-    final btcLnSwap = await _boltz.createBtcReverseSwap(
-      walletId: walletId,
-      mnemonic: mnemonic,
-      index: index,
-      outAmount: amountSat,
-      isTestnet: _isTestnet,
-      electrumUrl: electrumUrl,
-      magicRouteHintAddress: claimAddress,
-      description: description,
-    );
-    return btcLnSwap.toEntity() as LnReceiveSwap;
+    return _withCreationLock(() async {
+      final index = await _nextRevKeyIndex(walletId);
+      final btcLnSwap = await _boltz.createBtcReverseSwap(
+        walletId: walletId,
+        mnemonic: mnemonic,
+        index: index,
+        outAmount: amountSat,
+        isTestnet: _isTestnet,
+        electrumUrl: electrumUrl,
+        magicRouteHintAddress: claimAddress,
+        description: description,
+      );
+      return btcLnSwap.toEntity() as LnReceiveSwap;
+    });
   }
 
   Future<String> claimLightningToBitcoinSwap({
@@ -75,19 +91,21 @@ class BoltzSwapRepository {
     required String claimAddress,
     String? description,
   }) async {
-    final index = await _nextRevKeyIndex(walletId);
-    final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
-      walletId: walletId,
-      mnemonic: mnemonic,
-      index: index,
-      outAmount: amountSat,
-      isTestnet: _isTestnet,
-      electrumUrl: electrumUrl,
-      magicRouteHintAddress: claimAddress,
-      description: description,
-    );
+    return _withCreationLock(() async {
+      final index = await _nextRevKeyIndex(walletId);
+      final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
+        walletId: walletId,
+        mnemonic: mnemonic,
+        index: index,
+        outAmount: amountSat,
+        isTestnet: _isTestnet,
+        electrumUrl: electrumUrl,
+        magicRouteHintAddress: claimAddress,
+        description: description,
+      );
 
-    return lbtcLnSwap.toEntity() as LnReceiveSwap;
+      return lbtcLnSwap.toEntity() as LnReceiveSwap;
+    });
   }
 
   Future<String> claimLightningToLiquidSwap({
@@ -118,17 +136,19 @@ class BoltzSwapRepository {
     required String invoice,
     required String electrumUrl,
   }) async {
-    final index = await _nextSubKeyIndex(walletId);
-    final btcLnSwap = await _boltz.createBtcSubmarineSwap(
-      walletId: walletId,
-      mnemonic: mnemonic,
-      index: index,
-      invoice: invoice,
-      isTestnet: _isTestnet,
-      electrumUrl: electrumUrl,
-    );
+    return _withCreationLock(() async {
+      final index = await _nextSubKeyIndex(walletId);
+      final btcLnSwap = await _boltz.createBtcSubmarineSwap(
+        walletId: walletId,
+        mnemonic: mnemonic,
+        index: index,
+        invoice: invoice,
+        isTestnet: _isTestnet,
+        electrumUrl: electrumUrl,
+      );
 
-    return btcLnSwap.toEntity() as LnSendSwap;
+      return btcLnSwap.toEntity() as LnSendSwap;
+    });
   }
 
   Future<void> coopSignBitcoinToLightningSwap({required String swapId}) async {
@@ -165,17 +185,19 @@ class BoltzSwapRepository {
     required String invoice,
     required String electrumUrl,
   }) async {
-    final index = await _nextSubKeyIndex(walletId);
-    final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
-      walletId: walletId,
-      mnemonic: mnemonic,
-      index: index,
-      invoice: invoice,
-      isTestnet: _isTestnet,
-      electrumUrl: electrumUrl,
-    );
+    return _withCreationLock(() async {
+      final index = await _nextSubKeyIndex(walletId);
+      final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
+        walletId: walletId,
+        mnemonic: mnemonic,
+        index: index,
+        invoice: invoice,
+        isTestnet: _isTestnet,
+        electrumUrl: electrumUrl,
+      );
 
-    return lbtcLnSwap.toEntity() as LnSendSwap;
+      return lbtcLnSwap.toEntity() as LnSendSwap;
+    });
   }
 
   Future<void> coopSignLiquidToLightningSwap({required String swapId}) async {
@@ -213,20 +235,22 @@ class BoltzSwapRepository {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final index = await _nextChainKeyIndex(sendWalletId);
-    final chainSwap = await _boltz.createBtcToLbtcChainSwap(
-      sendWalletId: sendWalletId,
-      mnemonic: sendWalletMnemonic,
-      index: index,
-      amountSat: amountSat,
-      isTestnet: _isTestnet,
-      btcElectrumUrl: btcElectrumUrl,
-      lbtcElectrumUrl: lbtcElectrumUrl,
-      receiveWalletId: receiveWalletId,
-      externalRecipientAddress: externalRecipientAddress,
-    );
+    return _withCreationLock(() async {
+      final index = await _nextChainKeyIndex(sendWalletId);
+      final chainSwap = await _boltz.createBtcToLbtcChainSwap(
+        sendWalletId: sendWalletId,
+        mnemonic: sendWalletMnemonic,
+        index: index,
+        amountSat: amountSat,
+        isTestnet: _isTestnet,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+        receiveWalletId: receiveWalletId,
+        externalRecipientAddress: externalRecipientAddress,
+      );
 
-    return chainSwap.toEntity() as ChainSwap;
+      return chainSwap.toEntity() as ChainSwap;
+    });
   }
 
   Future<ChainSwap> createLiquidToBitcoinSwap({
@@ -238,20 +262,22 @@ class BoltzSwapRepository {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final index = await _nextChainKeyIndex(sendWalletId);
-    final chainSwap = await _boltz.createLbtcToBtcChainSwap(
-      sendWalletId: sendWalletId,
-      mnemonic: sendWalletMnemonic,
-      index: index,
-      amountSat: amountSat,
-      isTestnet: _isTestnet,
-      btcElectrumUrl: btcElectrumUrl,
-      lbtcElectrumUrl: lbtcElectrumUrl,
-      receiveWalletId: receiveWalletId,
-      externalRecipientAddress: externalRecipientAddress,
-    );
+    return _withCreationLock(() async {
+      final index = await _nextChainKeyIndex(sendWalletId);
+      final chainSwap = await _boltz.createLbtcToBtcChainSwap(
+        sendWalletId: sendWalletId,
+        mnemonic: sendWalletMnemonic,
+        index: index,
+        amountSat: amountSat,
+        isTestnet: _isTestnet,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+        receiveWalletId: receiveWalletId,
+        externalRecipientAddress: externalRecipientAddress,
+      );
 
-    return chainSwap.toEntity() as ChainSwap;
+      return chainSwap.toEntity() as ChainSwap;
+    });
   }
 
   Future<String> claimLiquidToBitcoinSwap({
@@ -344,6 +370,11 @@ class BoltzSwapRepository {
     return swapModel.toEntity();
   }
 
+  /// DB-backed: emits current state on listen + every change, so observers
+  /// can't miss a terminal update like the old broadcast stream could.
+  Stream<Swap> watchSwap({required String swapId}) =>
+      _boltz.storage.watchSwap(swapId).map((model) => model.toEntity());
+
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
@@ -373,6 +404,9 @@ class BoltzSwapRepository {
         status: swap.status == SwapStatus.pending
             ? SwapStatus.paid
             : swap.status,
+        fees: absoluteFees != null
+            ? swap.fees?.copyWith(lockupFee: absoluteFees)
+            : swap.fees,
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
@@ -503,6 +537,97 @@ class BoltzSwapRepository {
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
+  /// Single write path for the watcher: re-fetches the stored swap and
+  /// merges only the given fields, so a concurrent write (preimage, lockup
+  /// fees, sendTxid) is never clobbered by a stale in-memory copy.
+  Future<Swap> updateSwapFields(
+    String swapId, {
+    SwapStatus? status,
+    String? receiveTxid,
+    String? refundTxid,
+    String? receiveAddress,
+    String? refundAddress,
+    String? preimage,
+    int? claimFee,
+    int? refundFee,
+    DateTime? completionTime,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw 'No swap model found';
+    }
+    final swap = swapModel.toEntity();
+    final fees = (swap.fees ?? const SwapFees()).copyWith(
+      claimFee: claimFee ?? swap.fees?.claimFee,
+      refundFee: refundFee ?? swap.fees?.refundFee,
+    );
+
+    final updated = switch (swap) {
+      LnReceiveSwap() => swap.copyWith(
+        status: status ?? swap.status,
+        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveAddress: receiveAddress ?? swap.receiveAddress,
+        completionTime: completionTime ?? swap.completionTime,
+        fees: fees,
+      ),
+      LnSendSwap() => swap.copyWith(
+        status: status ?? swap.status,
+        refundTxid: refundTxid ?? swap.refundTxid,
+        refundAddress: refundAddress ?? swap.refundAddress,
+        preimage: preimage ?? swap.preimage,
+        completionTime: completionTime ?? swap.completionTime,
+        fees: fees,
+      ),
+      ChainSwap() => swap.copyWith(
+        status: status ?? swap.status,
+        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        refundTxid: refundTxid ?? swap.refundTxid,
+        receiveAddress: receiveAddress ?? swap.receiveAddress,
+        refundAddress: refundAddress ?? swap.refundAddress,
+        completionTime: completionTime ?? swap.completionTime,
+        fees: fees,
+      ),
+    };
+
+    await _boltz.storage.store(SwapModel.fromEntity(updated));
+    return updated;
+  }
+
+  Future<int> getSwapClaimTxSize({
+    required String swapId,
+    required SwapType swapType,
+    bool isCooperative = true,
+    String? claimAddressForChainSwaps,
+  }) async {
+    switch (swapType) {
+      case SwapType.lightningToBitcoin:
+        return await _boltz.getBtcLnClaimTxSize(
+          swapId: swapId,
+          isCooperative: isCooperative,
+        );
+      case SwapType.lightningToLiquid:
+        return await _boltz.getLbtcLnClaimTxSize(
+          swapId: swapId,
+          isCooperative: isCooperative,
+        );
+      case SwapType.liquidToBitcoin:
+      case SwapType.bitcoinToLiquid:
+        return await _boltz.getChainClaimTxSize(
+          swapId: swapId,
+          claimAddress: claimAddressForChainSwaps!,
+          isCooperative: isCooperative,
+        );
+      case SwapType.bitcoinToLightning:
+      case SwapType.liquidToLightning:
+        throw Exception('Submarine swaps have no claim transaction');
+    }
+  }
+
+  /// Polls each swap's current status over REST and routes it through the
+  /// same status pipeline as websocket events.
+  Future<void> reconcileSwaps(List<String> swapIds) =>
+      _boltz.reconcileSwaps(swapIds);
+
   /// Update claimFee to a specific value
   Future<void> updateClaimFee({
     required String swapId,
@@ -539,27 +664,6 @@ class BoltzSwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<void> reinitializeStreamWithSwaps({
-    required List<String> swapIds,
-  }) async {
-    final uniqueSwapIds = swapIds.toSet().toList();
-
-    _boltz.resetStream();
-    _boltz.subscribeToSwaps(uniqueSwapIds);
-    // final allSwapsToWatch = swapIds.map((swapId) async {
-    //   final swap = await _boltz.storage.fetch(swapId);
-    //   return swap?.toEntity();
-    // });
-    // add to the swapUpdateStream
-    // return Future.wait(allSwapsToWatch).then((swaps) {
-    //   for (final swap in swaps) {
-    //     if (swap != null) {
-    //       _boltz.swapUpdatesController.add(SwapModel.fromEntity(swap));
-    //     }
-    //   }
-    // });
-  }
-
   void unsubscribeFromSwaps(List<String> swapIds) {
     _boltz.unsubscribeToSwaps(swapIds);
   }
@@ -574,24 +678,47 @@ class BoltzSwapRepository {
     final allSwaps = allSwapModels
         .map((swapModel) => swapModel.toEntity())
         .toList();
+    bool needsWatching(Swap swap) {
+      switch (swap.status) {
+        case SwapStatus.pending:
+        case SwapStatus.paid:
+        case SwapStatus.canCoop:
+        case SwapStatus.claimable:
+        case SwapStatus.refundable:
+          return true;
+        case SwapStatus.completed:
+          // Completed without a recorded claim tx means the claim never
+          // happened (unless it was an MRH direct payment with no lockup).
+          if (swap is LnReceiveSwap) {
+            return swap.receiveTxid == null && !swap.wasDirectPayment;
+          }
+          if (swap is ChainSwap) {
+            return swap.receiveTxid == null && swap.refundTxid == null;
+          }
+          return false;
+        case SwapStatus.expired:
+        case SwapStatus.failed:
+          // Funds locked and never refunded: keep watching so the swap can
+          // become refundable instead of stranding the funds.
+          if (swap is LnSendSwap) {
+            return swap.sendTxid != null && swap.refundTxid == null;
+          }
+          if (swap is ChainSwap) {
+            return swap.sendTxid != null && swap.refundTxid == null;
+          }
+          return false;
+        case SwapStatus.refunded:
+          return false;
+      }
+    }
+
     return allSwaps
         .where(
           (swap) =>
               (walletId == null ||
                   swap.walletId == walletId ||
                   swap is ChainSwap && swap.receiveWalletId == walletId) &&
-              ((swap.status == SwapStatus.pending) ||
-                  (swap.status == SwapStatus.paid) ||
-                  (swap.status == SwapStatus.canCoop) ||
-                  (swap.status == SwapStatus.claimable) ||
-                  (swap.status == SwapStatus.refundable) ||
-                  (swap is ChainSwap &&
-                      swap.status == SwapStatus.completed &&
-                      swap.receiveTxid == null &&
-                      swap.refundTxid == null) ||
-                  (swap is LnReceiveSwap &&
-                      swap.status == SwapStatus.completed &&
-                      swap.receiveTxid == null)),
+              needsWatching(swap),
         )
         .toList();
   }
@@ -649,7 +776,6 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    // TODO: implement decodeInvoice
     final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
     return Invoice(sats: sats, isExpired: expired, magicBip21: bip21);
   }
@@ -817,12 +943,14 @@ class BoltzSwapRepository {
     required SwapType swapType,
     required Network network,
     outspend.SwapDirection? swapDirection,
+    bool isClaim = true,
   }) async {
     final model = await _boltz.checkSwapLockupOutspend(
       swapId: swapId,
       swapType: swapType,
       network: network,
       swapDirection: swapDirection,
+      isClaim: isClaim,
     );
     return model.toEntity();
   }

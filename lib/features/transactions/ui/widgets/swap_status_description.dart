@@ -15,7 +15,9 @@ class SwapStatusDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isFailedOrExpired =
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
-    final bool shouldShowWarning = swap.status != SwapStatus.completed;
+    final bool shouldShowWarning =
+        swap.status != SwapStatus.completed &&
+        swap.status != SwapStatus.refunded;
 
     return Column(
       crossAxisAlignment: .stretch,
@@ -147,6 +149,8 @@ class SwapStatusDescription extends StatelessWidget {
           return context.loc.transactionSwapDescLnSendPaid;
         case SwapStatus.completed:
           return context.loc.transactionSwapDescLnSendCompleted;
+        case SwapStatus.refunded:
+          return context.loc.coreSwapsLnSendCompletedRefunded;
         case SwapStatus.failed:
           return context.loc.transactionSwapDescLnSendFailed;
         case SwapStatus.expired:
@@ -166,6 +170,8 @@ class SwapStatusDescription extends StatelessWidget {
           return context.loc.transactionSwapDescChainRefundable;
         case SwapStatus.completed:
           return context.loc.transactionSwapDescChainCompleted;
+        case SwapStatus.refunded:
+          return context.loc.coreSwapsChainCompletedRefunded;
         case SwapStatus.failed:
           return context.loc.transactionSwapDescChainFailed;
         case SwapStatus.expired:

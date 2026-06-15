@@ -34,6 +34,10 @@ class CreateChainSwapUsecase {
         throw Exception('One or both wallets not found');
       }
 
+      if (bitcoinWallet.network.isTestnet || liquidWallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
+
       if (bitcoinWallet.network.isTestnet != liquidWallet.network.isTestnet) {
         throw Exception('Both wallets must be on the same network');
       }
