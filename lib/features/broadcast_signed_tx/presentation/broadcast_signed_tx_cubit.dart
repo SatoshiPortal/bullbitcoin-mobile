@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_error.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
@@ -66,8 +66,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         emit(state.copyWith(bbqr: bbqr));
         if (tx != null) emit(state.copyWith(transaction: tx));
       }
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+    } catch (e, st) {
+      log.warning('Failed to scan QR transaction', error: e, trace: st);
+      emit(
+        state.copyWith(error: UnexpectedBroadcastError(e.toString())),
+      );
     }
   }
 
@@ -81,7 +84,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       final ndefRecords = await FlutterNfcKit.readNDEFRecords();
 
       if (ndefRecords.isEmpty) {
-        emit(state.copyWith(error: PushTxNoNdefRecordsError()));
+        emit(state.copyWith(error: const InvalidPushTxError()));
         return;
       }
 
@@ -90,7 +93,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       final match = uriRegex.firstMatch(payload);
 
       if (match == null) {
-        emit(state.copyWith(error: PushTxNoUriError()));
+        emit(state.copyWith(error: const InvalidPushTxError()));
         return;
       }
 
@@ -101,7 +104,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       if (fragmentParams.isEmpty ||
           !fragmentParams.keys.contains('t') ||
           !fragmentParams.keys.contains('c')) {
-        emit(state.copyWith(error: PushTxMissingFragmentParamsError()));
+        emit(state.copyWith(error: const InvalidPushTxError()));
         return;
       }
 
@@ -113,8 +116,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       await tryParseTransaction(txBytesHex);
 
       emit(state.copyWith(pushTxUri: pushTx));
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+    } catch (e, st) {
+      log.warning('Failed to scan NFC PushTx tag', error: e, trace: st);
+      emit(
+        state.copyWith(error: UnexpectedBroadcastError(e.toString())),
+      );
     }
   }
 
@@ -124,8 +130,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     try {
       await launchUrl(state.pushTxUri!, mode: LaunchMode.externalApplication);
       emit(state.copyWith(isBroadcasted: true));
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+    } catch (e, st) {
+      log.warning('Failed to open PushTx URI', error: e, trace: st);
+      emit(
+        state.copyWith(error: UnexpectedBroadcastError(e.toString())),
+      );
     }
   }
 
@@ -146,8 +155,13 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
             transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
           ),
         );
-      } catch (e) {
-        emit(state.copyWith(error: InvalidTxError()));
+      } catch (e, st) {
+        log.warning('Pasted input is not a valid PSBT or tx', error: e, trace: st);
+        emit(
+          state.copyWith(
+            error: const InvalidTransactionError(),
+          ),
+        );
       }
     }
   }
@@ -178,7 +192,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         error: e,
         trace: st,
       );
-      emit(state.copyWith(error: BroadcastFailedError(), isBroadcasting: false));
+      emit(
+        state.copyWith(
+          error: const BroadcastFailedError(),
+          isBroadcasting: false,
+        ),
+      );
     }
   }
 }

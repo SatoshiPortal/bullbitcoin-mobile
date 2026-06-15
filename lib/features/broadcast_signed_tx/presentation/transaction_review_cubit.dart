@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
@@ -31,11 +32,18 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
       final reviewable = await _buildReviewableTransactionUsecase.execute(tx);
       emit(TransactionReviewState.loaded(transaction: reviewable));
     } on TransactionReviewError catch (e) {
-      emit(TransactionReviewState.error(error: e));
-    } catch (e) {
+      emit(TransactionReviewState.error(error: e)); // usecase already logged
+    } catch (e, st) {
+      // Defensive: an escape outside the usecase contract (e.g. the mapper).
+      // Raw detail is born here, so it is logged here (Sentry).
+      log.severe(
+        message: 'Unexpected failure loading transaction review',
+        error: e,
+        trace: st,
+      );
       emit(
         TransactionReviewState.error(
-          error: TransactionReviewError.unexpected(e.toString()),
+          error: UnexpectedTransactionReviewError(e.toString()),
         ),
       );
     }

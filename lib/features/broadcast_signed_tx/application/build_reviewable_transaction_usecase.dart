@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 
@@ -25,7 +26,7 @@ class BuildReviewableTransactionUsecase {
         final parentTx = await _transactionPort.fetch(txid: input.previousTxId);
 
         if (input.previousVout >= parentTx.outputs.length) {
-          throw TransactionReviewError.inputResolutionFailed(
+          throw TransactionReviewInputResolutionFailed(
             parentTxId: input.previousTxId,
             vout: input.previousVout,
           );
@@ -44,8 +45,15 @@ class BuildReviewableTransactionUsecase {
         rethrow;
       } on TransactionPortError catch (e) {
         throw _mapPortError(e);
-      } catch (e) {
-        throw TransactionReviewError.unexpected(e.toString());
+      } catch (e, st) {
+        // Genuinely unexpected escape — the raw reason is born here, so it is
+        // logged here (Sentry) and the UI shows a generic message.
+        log.severe(
+          message: 'Unexpected failure building reviewable transaction',
+          error: e,
+          trace: st,
+        );
+        throw UnexpectedTransactionReviewError(e.toString());
       }
     }
 
@@ -58,8 +66,8 @@ class BuildReviewableTransactionUsecase {
   TransactionReviewError _mapPortError(TransactionPortError e) =>
       switch (e) {
         TransactionPortFetchFailed(:final txid, :final message) =>
-          TransactionReviewError.fetchFailed(txid: txid, message: message),
+          TransactionReviewFetchFailed(txid: txid, message: message),
         TransactionPortNoServersAvailable(:final network) =>
-          TransactionReviewError.noServersAvailable(network: network),
+          TransactionReviewNoServersAvailable(network: network),
       };
 }

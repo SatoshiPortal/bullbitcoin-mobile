@@ -120,17 +120,6 @@ class _ErrorView extends StatelessWidget {
 
   final TransactionReviewError error;
 
-  String _message(BuildContext context) => switch (error) {
-    TransactionReviewFetchFailed(:final txid) =>
-      context.loc.coreScreensFetchFailed(txid),
-    TransactionReviewNoServersAvailable() =>
-      context.loc.coreScreensNoServersAvailable,
-    TransactionReviewInputResolutionFailed(:final parentTxId, :final vout) =>
-      context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
-    UnexpectedTransactionReviewError(:final message) =>
-      context.loc.coreScreensUnexpectedError(message ?? 'unknown'),
-  };
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -142,7 +131,7 @@ class _ErrorView extends StatelessWidget {
             Icon(Icons.error_outline, color: context.appColors.error, size: 48),
             const Gap(16),
             BBText(
-              _message(context),
+              error.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
