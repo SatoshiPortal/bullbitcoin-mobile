@@ -6800,7 +6800,7 @@
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
   },
-  "fundExchangeMethodInstantSepa": "SEPA instantâneo",
+  "fundExchangeMethodInstantSepa": "SEPA instantâneo e padrão",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -7924,7 +7924,7 @@
     }
   },
   "fundExchangeErrorLoadingDetails": "Os detalhes do pagamento não podem ser carregados neste momento. Por favor, volte e tente novamente, escolha outro método de pagamento ou volte mais tarde.",
-    "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
+  "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
   "fundExchangeErrorTitleRcpPo404": "Opção de Pagamento Não Disponível",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Não Disponível",
   "fundExchangeErrorTitleOrdKyc400": "Requisitos de KYC Ausentes",
@@ -7935,7 +7935,7 @@
   "fundExchangeErrorOrdCsrcp400": "Por favor, ative a opção de pagamento virtual para o destinatário SEPA com o IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Solicitação Inválida",
   "fundExchangeErrorRcp400": "Solicitação inválida",
-"fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
+  "fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
   "fundExchangeErrorRcpPo404": "Você não tem as permissões necessárias para acessar esta opção de financiamento. Seu KYC é insuficiente ou esta opção não está disponível para sua conta",
   "fundExchangeErrorRcpPosinpe404": "Para acessar esta opção de financiamento, seu número de telefone deve estar registrado na rede SINPE na Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Erro ao obter os códigos bancários. Por favor, tente novamente mais tarde.",

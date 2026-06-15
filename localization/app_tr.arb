@@ -7685,7 +7685,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Anında ve standart SEPA transferi",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8449,7 +8449,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
-    "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
+  "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
   "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Kullanılamıyor",
   "fundExchangeErrorTitleOrdKyc400": "KYC Gereksinimleri Eksik",
@@ -8460,7 +8460,7 @@
   "fundExchangeErrorOrdCsrcp400": "Lütfen şu IBAN'a sahip SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin: {iban}",
   "fundExchangeErrorTitleRcp400": "Geçersiz İstek",
   "fundExchangeErrorRcp400": "Geçersiz istek",
-"fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
+  "fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
   "fundExchangeErrorRcpPo404": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
   "fundExchangeErrorRcpPosinpe404": "Bu fonlama seçeneğine erişmek için telefon numaranız Kostarika'daki SINPE ağına kayıtlı olmalıdır.",
   "fundExchangeErrorFetchingBankCodes": "Banka kodları alınırken hata oluştu. Lütfen daha sonra tekrar deneyin.",

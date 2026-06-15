@@ -3546,9 +3546,9 @@
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Instant & Regular SEPA",
   "@fundExchangeMethodInstantSepa": {
-    "description": "Payment method: Instant SEPA (Europe)"
+    "description": "Payment method: Instant & Regular SEPA (Europe)"
   },
   "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
