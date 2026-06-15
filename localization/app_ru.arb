@@ -507,14 +507,6 @@
   "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
   "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите, чтобы исправить.",
   "payPasteInvoice": "Счет-фактура",
-  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Установлено",
   "dcaWalletBitcoinSubtitle": "Минимальный 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Пожалуйста, введите свой пароль на устройстве BitBox, чтобы продолжить.",
@@ -1822,14 +1814,6 @@
   },
   "rbfErrorNoFeeRate": "Пожалуйста, выберите ставку сбора",
   "backupWalletGoogleDrivePrivacyMessage1": "Эта информация ",
-  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -4025,7 +4009,14 @@
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
-  "broadcastSignedTxBroadcastError": "Не удалось транслировать транзакцию",
+  "broadcastSignedTxBroadcastError": "Не удалось передать вашу транзакцию. Проверьте подключение к интернету и попробуйте снова.",
+  "importWatchOnlyErrorNoWalletSelected": "Сначала вставьте или отсканируйте публичный ключ или дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте кошельку название перед импортом.",
+  "importWatchOnlyErrorInvalidFormat": "Это не похоже на действительный публичный ключ или дескриптор. Проверьте то, что вы вставили.",
+  "importWatchOnlyErrorImportFailed": "Не удалось импортировать этот кошелёк только для наблюдения. Пожалуйста, проверьте данные и попробуйте снова.",
+  "broadcastSignedTxErrorInvalidTransaction": "Это не похоже на действительную подписанную транзакцию. Убедитесь, что вы вставили полный PSBT или транзакцию.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не удалось прочитать транзакцию из этой метки. Пожалуйста, попробуйте отсканировать снова.",
+  "labelErrorUnsupportedType": "Этот тип метки не поддерживается.",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",
@@ -4638,7 +4629,6 @@
   "coreScreensFetchFailed": "Не удалось получить транзакцию {txid} из Electrum.",
   "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
   "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
-  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
   "coreScreensNoServersAvailable": "Нет доступных серверов Electrum.",
   "addressViewerTitle": "Адрес",
   "viewerTapToCopy": "Нажмите для копирования",

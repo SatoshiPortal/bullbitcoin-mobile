@@ -507,14 +507,6 @@
   "appStartupErrorMessage": "Falha ao iniciar a aplicação. Tente fechá-la completamente e reiniciá-la. Se o erro persistir, contacte o suporte e partilhe os seus registos.",
   "appStartupErrorMessageWithBackup": "Não foi possível inicializar. Exclua e reinstale para corrigir.",
   "payPasteInvoice": "Fatura de pasta",
-  "labelErrorUnexpected": "Erro inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Preparado",
   "dcaWalletBitcoinSubtitle": "Mínimo 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
@@ -1822,14 +1814,6 @@
   },
   "rbfErrorNoFeeRate": "Por favor, selecione uma taxa de taxa",
   "backupWalletGoogleDrivePrivacyMessage1": "Esta informação ",
-  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}",
   "@paySatsPerByte": {
     "placeholders": {
@@ -4000,7 +3984,14 @@
   "swapProgressPendingMessage": "A transferência está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
   "walletDetailsNetworkLabel": "Rede",
   "broadcastSignedTxBroadcasting": "Transmissão...",
-  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
+  "broadcastSignedTxBroadcastError": "Não foi possível transmitir a sua transação. Verifique a sua ligação à internet e tente novamente.",
+  "importWatchOnlyErrorNoWalletSelected": "Cole ou digitalize primeiro uma chave pública ou um descritor.",
+  "importWatchOnlyErrorLabelRequired": "Dê um nome à sua carteira antes de importar.",
+  "importWatchOnlyErrorInvalidFormat": "Isto não parece uma chave pública ou um descritor válido. Verifique o que colou.",
+  "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira só de leitura. Verifique os detalhes e tente novamente.",
+  "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Certifique-se de que colou o PSBT ou a transação completos.",
+  "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente digitalizar novamente.",
+  "labelErrorUnsupportedType": "Este tipo de etiqueta não é suportado.",
   "recoverbullSelectRecoverWallet": "Recuperar Carteira",
   "receivePayjoinActivated": "Payjoin ativado",
   "importMnemonicContinue": "Continue",
@@ -4684,7 +4675,6 @@
   "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
   "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
   "coreScreensParseFailed": "Falha ao analisar a transação: {message}.",
-  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
   "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível.",
   "addressViewerTitle": "Endereço",
   "viewerTapToCopy": "Toque para copiar",

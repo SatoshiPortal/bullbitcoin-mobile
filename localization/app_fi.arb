@@ -3123,7 +3123,14 @@
   "broadcastSignedTxTo": "Vastaanottaja",
   "broadcastSignedTxBroadcast": "Lähetä",
   "broadcastSignedTxBroadcasting": "Lähetetään...",
-  "broadcastSignedTxBroadcastError": "Tapahtuman lähetys epäonnistui",
+  "broadcastSignedTxBroadcastError": "Tapahtumaasi ei voitu lähettää. Tarkista internetyhteytesi ja yritä uudelleen.",
+  "importWatchOnlyErrorNoWalletSelected": "Liitä tai skannaa ensin julkinen avain tai deskriptori.",
+  "importWatchOnlyErrorLabelRequired": "Anna lompakollesi nimi ennen tuontia.",
+  "importWatchOnlyErrorInvalidFormat": "Tämä ei näytä kelvolliselta julkiselta avaimelta tai deskriptorilta. Tarkista, mitä liitit.",
+  "importWatchOnlyErrorImportFailed": "Tämän vain katselun lompakon tuonti ei onnistunut. Tarkista tiedot ja yritä uudelleen.",
+  "broadcastSignedTxErrorInvalidTransaction": "Tämä ei näytä kelvolliselta allekirjoitetulta tapahtumalta. Varmista, että liitit koko PSBT:n tai tapahtuman.",
+  "broadcastSignedTxErrorInvalidPushTx": "Tästä tunnisteesta ei voitu lukea tapahtumaa. Yritä skannata uudelleen.",
+  "labelErrorUnsupportedType": "Tätä tunnistetyyppiä ei tueta.",
   "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
   "broadcastSignedTxPasteHint": "Liitä PSBT tai transaktion HEX",
   "broadcastSignedTxCameraButton": "Kamera",
@@ -4077,22 +4084,6 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Odottamaton virhe: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
   "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
   "@labelDeleteFailed": {
@@ -4621,7 +4612,6 @@
   "coreScreensFetchFailed": "Tapahtumaa {txid} ei voitu noutaa Electrumista.",
   "coreScreensInputResolutionFailed": "Syötettä ei löydy: ulostuloa {vout} kohteesta {parentTxId} ei ole olemassa.",
   "coreScreensParseFailed": "Tapahtuman jäsennys epäonnistui: {message}.",
-  "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
   "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla.",
   "addressViewerTitle": "Osoite",
   "viewerTapToCopy": "Kopioi napauttamalla",

@@ -3094,6 +3094,10 @@
   },
   "importWatchOnlyTitle": "Importer en lecture seule",
   "importWatchOnlyPasteHint": "Coller xpub, ypub, zpub ou descripteur",
+  "importWatchOnlyErrorNoWalletSelected": "Collez ou scannez d'abord une clé publique ou un descripteur.",
+  "importWatchOnlyErrorLabelRequired": "Nommez votre portefeuille avant de l'importer.",
+  "importWatchOnlyErrorInvalidFormat": "Cela ne ressemble pas à une clé publique ou un descripteur valide. Vérifiez ce que vous avez collé.",
+  "importWatchOnlyErrorImportFailed": "Impossible d'importer ce portefeuille en lecture seule. Vérifiez les informations et réessayez.",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
@@ -3171,7 +3175,9 @@
   "broadcastSignedTxTo": "À",
   "broadcastSignedTxBroadcast": "Diffuser",
   "broadcastSignedTxBroadcasting": "Diffusion en cours...",
-  "broadcastSignedTxBroadcastError": "Échec de la diffusion de la transaction",
+  "broadcastSignedTxBroadcastError": "Impossible de diffuser votre transaction. Vérifiez votre connexion Internet et réessayez.",
+  "broadcastSignedTxErrorInvalidTransaction": "Cela ne ressemble pas à une transaction signée valide. Assurez-vous d'avoir collé le PSBT ou la transaction en entier.",
+  "broadcastSignedTxErrorInvalidPushTx": "Impossible de lire une transaction depuis ce tag. Veuillez réessayer de scanner.",
   "broadcastSignedTxPageTitle": "Diffuser une transaction signée",
   "broadcastSignedTxPasteHint": "Coller un PSBT ou un HEX de transaction",
   "broadcastSignedTxCameraButton": "Caméra",
@@ -4129,22 +4135,7 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Erreur inattendue : {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
+  "labelErrorUnsupportedType": "Ce type d'étiquette n'est pas pris en charge.",
   "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
   "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
   "@labelDeleteFailed": {
@@ -4618,7 +4609,6 @@
   "coreScreensFetchFailed": "Impossible de récupérer la transaction {txid} depuis Electrum.",
   "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
   "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
-  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
   "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
   "addressViewerTitle": "Adresse",
   "viewerTapToCopy": "Appuyez pour copier",

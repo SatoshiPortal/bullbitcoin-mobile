@@ -3174,7 +3174,14 @@
   "broadcastSignedTxTo": "A",
   "broadcastSignedTxBroadcast": "Transmitir",
   "broadcastSignedTxBroadcasting": "Transmitiendo...",
-  "broadcastSignedTxBroadcastError": "Error al difundir la transacción",
+  "broadcastSignedTxBroadcastError": "No pudimos transmitir tu transacción. Revisa tu conexión a internet e inténtalo de nuevo.",
+  "importWatchOnlyErrorNoWalletSelected": "Primero pega o escanea una clave pública o un descriptor.",
+  "importWatchOnlyErrorLabelRequired": "Ponle un nombre a tu monedero antes de importarlo.",
+  "importWatchOnlyErrorInvalidFormat": "Esto no parece una clave pública o un descriptor válido. Revisa lo que pegaste.",
+  "importWatchOnlyErrorImportFailed": "No pudimos importar este monedero de solo lectura. Revisa los datos e inténtalo de nuevo.",
+  "broadcastSignedTxErrorInvalidTransaction": "Esto no parece una transacción firmada válida. Asegúrate de haber pegado el PSBT o la transacción completos.",
+  "broadcastSignedTxErrorInvalidPushTx": "No pudimos leer una transacción de esta etiqueta. Intenta escanear de nuevo.",
+  "labelErrorUnsupportedType": "Este tipo de etiqueta no es compatible.",
   "broadcastSignedTxPageTitle": "Transmitir transacción firmada",
   "broadcastSignedTxPasteHint": "Pegar un PSBT o HEX de transacción",
   "broadcastSignedTxCameraButton": "Cámara",
@@ -4143,22 +4150,6 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "Este tipo {type} no es compatible",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Error inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorSystemCannotDelete": "Las etiquetas del sistema no se pueden eliminar.",
   "labelDeleteFailed": "No se puede eliminar \"{label}\". Por favor, inténtalo de nuevo.",
   "@labelDeleteFailed": {
@@ -4635,7 +4626,6 @@
   "coreScreensFetchFailed": "No se pudo obtener la transacción {txid} de Electrum.",
   "coreScreensInputResolutionFailed": "Entrada no encontrada: la salida {vout} de {parentTxId} no existe.",
   "coreScreensParseFailed": "Error al analizar la transacción: {message}.",
-  "coreScreensUnexpectedError": "Error inesperado: {message}.",
   "coreScreensNoServersAvailable": "No hay servidores Electrum disponibles.",
   "addressViewerTitle": "Dirección",
   "viewerTapToCopy": "Toca para copiar",
