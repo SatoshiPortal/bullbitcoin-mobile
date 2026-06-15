@@ -48,6 +48,10 @@ class CreateReceiveSwapUsecase {
           await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
       final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
 
+      if (wallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
+
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(
           'Cannot create a lightning to bitcoin with a liquid wallet',

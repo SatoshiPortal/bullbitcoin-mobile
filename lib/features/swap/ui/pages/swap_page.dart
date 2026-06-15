@@ -43,6 +43,11 @@ class SwapPageState extends State<SwapPage> {
       _amountController.text = initialAmount;
     }
     _amountController.addListener(() {
+      // Keep the bloc in sync for programmatic changes too (Max button,
+      // initial amount) — TextField.onChanged only fires for typing.
+      context.read<TransferBloc>().add(
+        TransferEvent.amountChanged(_amountController.text),
+      );
       // Keep the amount in satoshis updated so we can use it elsewhere to
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
       // and SwapFeesRow.
@@ -256,18 +261,31 @@ class SwapPageState extends State<SwapPage> {
                                     );
                                   },
                                 ),
-                                BlocSelector<TransferBloc, TransferState, bool>(
-                                  selector: (state) => state.receiveExactAmount,
-                                  builder: (context, receiveExactAmount) {
+                                BlocSelector<
+                                  TransferBloc,
+                                  TransferState,
+                                  (bool, bool)
+                                >(
+                                  selector: (state) => (
+                                    state.receiveExactAmount,
+                                    state.isMaxSelected,
+                                  ),
+                                  builder: (context, selected) {
+                                    final (receiveExactAmount, isMaxSelected) =
+                                        selected;
                                     return BBSwitch(
                                       value: receiveExactAmount,
-                                      onChanged: (value) {
-                                        context.read<TransferBloc>().add(
-                                          TransferEvent.receiveExactAmountToggled(
-                                            value,
-                                          ),
-                                        );
-                                      },
+                                      // Max drains the wallet; an exact
+                                      // receivable amount can't be honored.
+                                      onChanged: isMaxSelected
+                                          ? null
+                                          : (value) {
+                                              context.read<TransferBloc>().add(
+                                                TransferEvent.receiveExactAmountToggled(
+                                                  value,
+                                                ),
+                                              );
+                                            },
                                     );
                                   },
                                 ),
