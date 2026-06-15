@@ -20,9 +20,9 @@ Both these wallets are able to send and receive Lightning Network payments via t
 
 Translations are AI-generated and community-reviewed. To fix or improve translations, submit a pull request to the [localization folder](https://github.com/SatoshiPortal/bullbitcoin-mobile/tree/develop/localization).
 
-### [Dependencies](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/pubspec.yaml#L9)
+### [Dependencies](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/pubspec.yaml)
 
-### [Default service providers](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/lib/core/utils/constants.dart#L60)
+### [Default service providers](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/lib/core/utils/constants.dart)
 
 ### [Reproducible builds](reproducibility/README.md)
 
@@ -108,7 +108,8 @@ The roadmap is based on the Github issues. You can suggest your own ideas by cre
 
 - The project is entirely financed by [bullbitcoin.com](https://bullbitcoin.com) 
 - Created by Francis Pouliot and Vishal Menon
-- Maintainers: [i5hi](https://github.com/i5hi), [mocodesmo](https://github.com/mocodesmo), [ethicnology](https://github.com/ethicnology), [kumulynja](https://github.com/kumulynja), [basantagoswami](https://github.com/basantagoswami) and Q&A [kiranmetri](https://github.com/kiranmetri)
+- Maintainers: [i5hi](https://github.com/i5hi), [ethicnology](https://github.com/ethicnology)
+- Collaborators: [mocodesmo](https://github.com/mocodesmo), [kumulynja](https://github.com/kumulynja), [kiranmetri](https://github.com/kiranmetri), [thibistaken](https://github.com/thibistaken) [basantagoswami](https://github.com/basantagoswami), [wired-pasteque](https://github.com/wired-pasteque)
 - Thanks to all [contributors](https://github.com/SatoshiPortal/bullbitcoin-mobile/graphs/contributors)
 - Thanks to Raj for his work on Boltz-rust
 - Thanks to the BDK team: BitcoinZavior and ThunderBiscuit

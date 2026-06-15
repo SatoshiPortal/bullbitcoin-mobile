@@ -12479,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "बाद में",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "वापस",
   "@backButton": {
     "description": "Generic back button label"
@@ -12534,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "मानक लॉग",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
   "@appInitErrorHasBackupTitle": {
@@ -12622,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "अपने स्वैप को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
   "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
   "@recoverbullBalance": {

@@ -11734,10 +11734,6 @@
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "autoswapWarningTriggerAmount": "حداکثر تعادل 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "informationWillNotLeave": "این اطلاعات ",
   "@informationWillNotLeave": {
     "description": "First part of privacy assurance message"
@@ -12236,10 +12232,6 @@
   "@importQrDeviceSeedsignerStep8": {
     "description": "SeedSigner instruction step 8"
   },
-  "autoswapWarningBaseBalance": "هدف قرار دادن تعادل 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "savingToDevice": "پس انداز برای دستگاه شما.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
@@ -12487,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "فوری: پشتیبان‌گیری و نصب مجدد الزامی است",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "اقدام لازم: نصب مجدد برنامه",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "اکنون پشتیبان بگیر",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "بعداً",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "بازگشت",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "گزارش‌های استاندارد",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
   "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید",
   "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
   "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",

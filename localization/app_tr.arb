@@ -3313,10 +3313,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "0.02 BTC'nin maksimum dengesi",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -9640,10 +9636,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "Hedef Denge 0.0 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "Payout amount",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -12487,30 +12479,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Acil: Yedekleme ve Yeniden Kurulum Gerekli",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "İşlem Gerekli: Uygulamayı Yeniden Yükleyin",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Şimdi yedekle",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Daha sonra",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Geri",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12510,6 @@
   "errorReportingStandardLogsTitle": "Standart günlükler",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12594,6 @@
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",

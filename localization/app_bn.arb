@@ -12171,30 +12171,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "জরুরি: ব্যাকআপ ও পুনরায় ইনস্টল প্রয়োজন",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "পদক্ষেপ প্রয়োজন: অ্যাপ পুনরায় ইনস্টল করুন",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "এখনই ব্যাকআপ করুন",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "পরে",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "পিছনে",
   "@backButton": {
     "description": "Generic back button label"
@@ -12226,10 +12202,6 @@
   "errorReportingStandardLogsTitle": "স্ট্যান্ডার্ড লগ",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "সবসময় সক্রিয় — অ্যাপের সংস্করণগুলির মধ্যে আপনার ওয়ালেট নিরাপদে মাইগ্রেট হচ্ছে কিনা তা আমাদের দেখতে দেয়।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "আপনার ব্যাকআপ ব্যবহার করুন",
   "@appInitErrorHasBackupTitle": {
@@ -12314,7 +12286,6 @@
   "legacyStorageHasBackupImportantBody": "এই প্রক্রিয়াটি এড়িয়ে যাবেন না যদি না আপনার জরুরিভাবে ওয়ালেট ব্যবহার করার একান্ত প্রয়োজন হয় অথবা একটি স্বপ সম্পন্ন হওয়ার জন্য অপেক্ষা করছেন।",
   "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "আপনার সুয়াপ সম্পূর্ণ করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
   "importMnemonicDuplicateError": "এই নেমোনিক ইতিমধ্যে বিদ্যমান",
   "recoverbullBalance": "ব্যালেন্স: {balance}",
   "@recoverbullBalance": {

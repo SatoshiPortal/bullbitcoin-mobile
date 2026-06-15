@@ -1937,7 +1937,6 @@
   "informationWillNotLeave": "Інформація ",
   "backupWalletInstructionSecurityRisk": "Будь-який з доступом до вашого 12 резервного копіювання може вкрасти ваші біткоїни. Приховати його добре.",
   "torSettingsPortNumber": "Номер порту",
-  "autoswapWarningTriggerAmount": "Максимальний баланс 0.02 BTC",
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
   "electrumReset": "Зареєструватися",
@@ -3456,7 +3455,6 @@
   "savingToDevice": "Збереження вашого пристрою.",
   "bitboxActionImportWalletButton": "Імпорт",
   "fundExchangeLabelSwiftCode": "SWIFT код",
-  "autoswapWarningBaseBalance": "Цільовий баланс 0.01 BTC",
   "importQrDeviceSpecterStep6": "Виберіть \"Single key\"",
   "importQrDeviceJadeStep10": "Що це!",
   "importQrDevicePassportStep8": "На мобільному пристрої натисніть \"відкрита камера\"",
@@ -4497,30 +4495,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Терміново: необхідне резервне копіювання та переустановлення",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Необхідна дія: Перевстановіть додаток",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Зробити копію зараз",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Пізніше",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -4552,10 +4526,6 @@
   "errorReportingStandardLogsTitle": "Стандартні журнали",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Завжди ввімкнено — дозволяє нам бачити, чи ваш гаманець безпечно переходить між версіями застосунку.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Використайте резервну копію",
   "@appInitErrorHasBackupTitle": {
@@ -4640,7 +4610,6 @@
   "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
   "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
   "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
   "coreScreensResolvingInputs": "Розв'язання входів транзакції...",
   "coreScreensFeeRateLabel": "Ставка комісії",
