@@ -97,7 +97,7 @@ extension RelativeFeeDisplay on RelativeFee {
 
 /// Minimum-relay policy for transaction fees — single source of truth used
 /// by the cubit/bloc commit gates, the custom-fee widget's "below floor"
-/// banner, and the slow-preset pin in [BitcoinFeePresetPolicy]. The value
+/// banner, and the Slow-preset floor in [MempoolFeesMapper]. The value
 /// matches both Bitcoin Core's lowest sensible relay policy and Liquid's
 /// network minrelayfee, so the same constant is correct on both chains.
 extension NetworkFeeRelayPolicy on NetworkFee {
@@ -114,28 +114,6 @@ extension NetworkFeeRelayPolicy on NetworkFee {
     AbsoluteFee(:final sats) =>
       txSize != null && txSize > 0 && (sats / txSize) >= minRelaySatPerVbyte,
   };
-}
-
-/// Maps a mempool API response into the three preset tiers. Slow is pinned
-/// to the network minrelayfee instead of mempool's `minimumFee` — the whole
-/// point of #2133 was to offer a real sub-1 sat/vByte slot for users
-/// willing to wait, which `minimumFee` (typically 1 at quiet blocks) defeats.
-class BitcoinFeePresetPolicy {
-  const BitcoinFeePresetPolicy._();
-
-  /// Constructs the preset triple from the two mempool fields we still
-  /// trust. `fastestFee` and `economyFee` come straight from the API;
-  /// `slow` is pinned to [NetworkFeeRelayPolicy.minRelaySatPerVbyte].
-  static FeeOptions fromMempool({
-    required double fastestSatPerVbyte,
-    required double economicSatPerVbyte,
-  }) => FeeOptions(
-    fastest: NetworkFee.relativeFromSatPerVbyte(fastestSatPerVbyte),
-    economic: NetworkFee.relativeFromSatPerVbyte(economicSatPerVbyte),
-    slow: NetworkFee.relativeFromSatPerVbyte(
-      NetworkFeeRelayPolicy.minRelaySatPerVbyte,
-    ),
-  );
 }
 
 @freezed
