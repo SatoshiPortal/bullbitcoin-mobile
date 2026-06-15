@@ -15,6 +15,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
     required this.txSize,
     required this.onChanged,
     required this.focusNode,
+    this.minRelay,
   });
 
   final FeeEntity fastestFeeRate;
@@ -22,6 +23,9 @@ class BumpFeeSelectorWidget extends StatelessWidget {
   final int txSize;
   final void Function(FeeEntity fee) onChanged;
   final FocusNode focusNode;
+
+  /// Live relay floor for the custom bump field (null → static 0.1).
+  final RelativeFee? minRelay;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               initialFee: selected.feeRate,
               isCommittedAsCustom: selected.type == FeeType.custom,
               feePresets: null,
+              minRelay: minRelay,
               txSize: txSize,
               exchangeRate: 0.0,
               fiatCurrencyCode: '',

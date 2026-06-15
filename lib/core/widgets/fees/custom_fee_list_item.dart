@@ -49,6 +49,7 @@ class CustomFeeListItem extends StatefulWidget {
     required this.tileShadowColor,
     required this.unselectedIconColor,
     required this.onCommit,
+    this.minRelay,
     this.onArm,
     this.onDisarm,
     this.onPreview,
@@ -69,7 +70,15 @@ class CustomFeeListItem extends StatefulWidget {
 
   /// The preset fees, used to label the "Estimated delivery" subtitle by
   /// comparing the user's value against fastest/economic/slow thresholds.
+  /// Also supplies the relay floor via [FeeOptions.minRelay] in modal mode.
   final FeeOptions? feePresets;
+
+  /// Explicit relay floor (the live mempool `minimumFee`, clamped to 0.1)
+  /// for callers that don't carry a full [feePresets] — i.e. RBF, which
+  /// has no preset tiers but still must reject sub-minimum bumps under
+  /// congestion. Takes precedence over [feePresets]'s `minRelay`; falls
+  /// back to the static 0.1 floor when neither is supplied.
+  final RelativeFee? minRelay;
 
   /// Estimated tx vsize (vbytes). Used to convert relative → absolute for
   /// the preview line, and to convert absolute → rate for the sub-1 sat/vB
@@ -270,7 +279,8 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
         // [TransferBloc._onCustomFeeFinalized] via aboveMinRelay.
         if (!fee.aboveMinRelay(
           txSize: widget.txSize,
-          floorSatPerKwu: widget.feePresets?.minRelay.satPerKwu,
+          floorSatPerKwu:
+              (widget.minRelay ?? widget.feePresets?.minRelay)?.satPerKwu,
         )) {
           return;
         }
@@ -369,9 +379,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     // Falls back to the static 0.1 when no presets are loaded yet (e.g. RBF).
     // Below 1 sat/vByte (but at/above the floor) we still warn the tx may
     // take longer to confirm and may not propagate to every node.
+    final RelativeFee? floor = widget.minRelay ?? feeOptions?.minRelay;
     final double floorSatPerVbyte =
-        feeOptions?.minRelay.satPerVbyte ??
-        NetworkFeeRelayPolicy.minRelaySatPerVbyte;
+        floor?.satPerVbyte ?? NetworkFeeRelayPolicy.minRelaySatPerVbyte;
     final bool belowFloor = customRate != null && customRate < floorSatPerVbyte;
     final bool subOneSatPerVbyte =
         customRate != null && customRate < 1.0 && !belowFloor;

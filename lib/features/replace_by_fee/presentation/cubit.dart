@@ -52,6 +52,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
       state.copyWith(
         fastestFeeRate: fastestFeeRate,
         newFeeRate: recommendedBumpRate,
+        minRelay: fees.minRelay,
       ),
     );
   }

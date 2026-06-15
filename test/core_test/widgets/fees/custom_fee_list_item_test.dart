@@ -26,6 +26,7 @@ void main() {
     int txSize = 140,
     int? previewFeeSat,
     bool previewLoading = false,
+    RelativeFee? minRelay,
     void Function(NetworkFee fee)? onArm,
     VoidCallback? onDisarm,
     void Function(NetworkFee fee)? onPreview,
@@ -52,6 +53,7 @@ void main() {
             onDisarm: onDisarm,
             onPreview: onPreview,
             onCommit: onCommit ?? (_) async {},
+            minRelay: minRelay,
             allowAbsoluteToggle: allowAbsoluteToggle,
             commitOnChange: commitOnChange,
             previewFeeSat: previewFeeSat,
@@ -376,6 +378,50 @@ void main() {
       await tester.enterText(find.byType(TextFormField), '0.05');
       await tester.pumpAndSettle();
       expect(find.textContaining('0.1 sat'), findsOneWidget);
+    });
+  });
+
+  group('CustomFeeListItem — dynamic floor (minRelay override)', () {
+    testWidgets('blocks a rate above 0.1 but below the live minimum', (
+      tester,
+    ) async {
+      // Congested floor = 0.5 sat/vB (125 sat/kwu). 0.3 clears the static
+      // 0.1 floor but not the live minimum → below-floor error shows. This
+      // is the RBF path, which carries minRelay but no feePresets.
+      await pumpTile(tester, minRelay: const RelativeFee(125));
+      await tester.enterText(find.byType(TextFormField), '0.3');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('must be at least'), findsOneWidget);
+    });
+
+    testWidgets('accepts the same rate with no override (static 0.1)', (
+      tester,
+    ) async {
+      await pumpTile(tester);
+      await tester.enterText(find.byType(TextFormField), '0.3');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('must be at least'), findsNothing);
+    });
+
+    testWidgets('RBF commit-on-change is gated by the override floor', (
+      tester,
+    ) async {
+      NetworkFee? committed;
+      await pumpTile(
+        tester,
+        commitOnChange: true,
+        allowAbsoluteToggle: false,
+        minRelay: const RelativeFee(125),
+        onCommit: (fee) async => committed = fee,
+      );
+      // 0.3 > static 0.1 but < live 0.5 → must not commit.
+      await tester.enterText(find.byType(TextFormField), '0.3');
+      await tester.pumpAndSettle();
+      expect(committed, isNull);
+      // 0.6 ≥ live floor → commits.
+      await tester.enterText(find.byType(TextFormField), '0.6');
+      await tester.pumpAndSettle();
+      expect(committed, isNotNull);
     });
   });
 

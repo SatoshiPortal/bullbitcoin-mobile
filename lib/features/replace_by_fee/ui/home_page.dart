@@ -66,6 +66,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       txSize: widget.tx.vsize,
                       onChanged: cubit.onChangeFee,
                       focusNode: _feeNode,
+                      minRelay: state.minRelay,
                     ),
                     if (state.error != null) ...[
                       const Gap(16),
