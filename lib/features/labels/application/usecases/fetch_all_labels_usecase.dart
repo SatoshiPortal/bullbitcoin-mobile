@@ -17,9 +17,11 @@ class FetchAllLabelsUsecase {
           .toList();
     } on LabelError {
       rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw LabelError.unexpected('Failed to fetch all labels: $e');
+    } catch (e, st) {
+      // Keep the technical reason in the logs; the UI maps the unexpected
+      // variant to a generic message and never shows [e].
+      log.severe(message: 'Failed to fetch all labels', error: e, trace: st);
+      throw UnexpectedLabelError('Failed to fetch all labels: $e');
     }
   }
 }

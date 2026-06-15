@@ -1,14 +1,51 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/widgets.dart';
 
-part 'label_error.freezed.dart';
+/// Closed set of every failure the labels feature surfaces to the user.
+/// `sealed` keeps it closed (no foreign variants; exhaustive switches). The
+/// abstract `toTranslated` makes a user-facing message mandatory and keeps it
+/// next to its variant.
+sealed class LabelError {
+  const LabelError();
 
-@freezed
-sealed class LabelError with _$LabelError {
-  const factory LabelError.notFound({required String label}) = LabelNotFound;
-  const factory LabelError.unsupportedType(Type runtimeType) =
-      UnsupportedLabelType;
-  const factory LabelError.unexpected(String? message) = UnexpectedLabelError;
-  const factory LabelError.systemLabelCannotBeDeleted() =
-      SystemLabelCannotBeDeletedError;
-  const LabelError._();
+  /// Localized, user-safe message. Never returns raw/technical detail.
+  String toTranslated(BuildContext context);
+}
+
+final class LabelNotFound extends LabelError {
+  final String label;
+
+  const LabelNotFound({required this.label});
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.labelErrorNotFound(label);
+}
+
+final class UnsupportedLabelType extends LabelError {
+  const UnsupportedLabelType();
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.labelErrorUnsupportedType;
+}
+
+final class SystemLabelCannotBeDeletedError extends LabelError {
+  const SystemLabelCannotBeDeletedError();
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.labelErrorSystemCannotDelete;
+}
+
+/// Catch-all. [message] is for logs only and MUST never reach the UI —
+/// `toTranslated` returns the shared generic string, not [message].
+final class UnexpectedLabelError extends LabelError {
+  final String? message;
+
+  const UnexpectedLabelError(this.message);
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.oopsSomethingWentWrong;
 }
