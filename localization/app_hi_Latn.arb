@@ -8993,7 +8993,14 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
-  "broadcastSignedTxBroadcastError": "Len-den prasarit karne mein viphal raha",
+  "broadcastSignedTxBroadcastError": "Hum aapka transaction broadcast nahi kar sake. Apna internet connection jaanchein aur phir se koshish karein.",
+  "importWatchOnlyErrorNoWalletSelected": "Pehle koi public key ya descriptor paste ya scan karein.",
+  "importWatchOnlyErrorLabelRequired": "Import karne se pehle apne wallet ko ek naam dein.",
+  "importWatchOnlyErrorInvalidFormat": "Yeh valid public key ya descriptor nahi lagta. Aapne jo paste kiya hai use dobara jaanch lein.",
+  "importWatchOnlyErrorImportFailed": "Hum is watch-only wallet ko import nahi kar sake. Kripya jaankari jaanchein aur phir se koshish karein.",
+  "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
+  "labelErrorUnsupportedType": "Yeh label type supported nahi hai.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -11751,24 +11758,6 @@
     "description": "Error message when a label is not found",
     "placeholders": {
       "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
         "type": "String"
       }
     }

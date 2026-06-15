@@ -1496,15 +1496,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "Unexpected त्रुटि: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "निपटान",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -5576,15 +5567,6 @@
   "backupWalletGoogleDrivePrivacyMessage1": "सूचना ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
-  },
-  "labelErrorUnsupportedType": "इस प्रकार {type} समर्थित नहीं है",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
@@ -12020,7 +12002,14 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
-  "broadcastSignedTxBroadcastError": "लेन-देन प्रसारित करने में विफल",
+  "broadcastSignedTxBroadcastError": "हम आपका ट्रांज़ैक्शन ब्रॉडकास्ट नहीं कर सके। अपना इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "importWatchOnlyErrorNoWalletSelected": "पहले कोई पब्लिक की या डिस्क्रिप्टर पेस्ट या स्कैन करें।",
+  "importWatchOnlyErrorLabelRequired": "इम्पोर्ट करने से पहले अपने वॉलेट को एक नाम दें।",
+  "importWatchOnlyErrorInvalidFormat": "यह एक मान्य पब्लिक की या डिस्क्रिप्टर नहीं लगता। आपने जो पेस्ट किया है उसे दोबारा जाँच लें।",
+  "importWatchOnlyErrorImportFailed": "हम इस वॉच-ओनली वॉलेट को इम्पोर्ट नहीं कर सके। कृपया जानकारी जाँचें और फिर से कोशिश करें।",
+  "broadcastSignedTxErrorInvalidTransaction": "यह एक मान्य साइन्ड ट्रांज़ैक्शन नहीं लगता। पक्का करें कि आपने पूरा PSBT या ट्रांज़ैक्शन पेस्ट किया है।",
+  "broadcastSignedTxErrorInvalidPushTx": "हम इस टैग से कोई ट्रांज़ैक्शन नहीं पढ़ सके। कृपया फिर से स्कैन करें।",
+  "labelErrorUnsupportedType": "यह लेबल प्रकार समर्थित नहीं है।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12891,7 +12880,6 @@
   "coreScreensFetchFailed": "Electrum से लेन-देन {txid} प्राप्त नहीं हो सका।",
   "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
   "coreScreensParseFailed": "लेन-देन पार्स करने में विफल: {message}।",
-  "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
   "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
   "addressViewerTitle": "पता",
   "viewerTapToCopy": "कॉपी करने के लिए टैप करें",

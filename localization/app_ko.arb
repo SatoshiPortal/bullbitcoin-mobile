@@ -1496,15 +1496,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "오류: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "옵션 정보",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -5576,15 +5567,6 @@
   "backupWalletGoogleDrivePrivacyMessage1": "이 정보 ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
-  },
-  "labelErrorUnsupportedType": "이 유형 {type}는 지원되지 않습니다",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
@@ -12020,7 +12002,14 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
-  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
+  "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
+  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
+  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
+  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
+  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
+  "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
+  "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
+  "labelErrorUnsupportedType": "지원되지 않는 라벨 유형입니다.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12605,7 +12594,6 @@
   "coreScreensFetchFailed": "Electrum에서 거래 {txid}를 가져올 수 없습니다.",
   "coreScreensInputResolutionFailed": "입력을 찾을 수 없음: {parentTxId}의 출력 {vout}이 존재하지 않습니다.",
   "coreScreensParseFailed": "거래 분석 실패: {message}.",
-  "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
   "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다.",
   "addressViewerTitle": "주소",
   "viewerTapToCopy": "복사하려면 탭하세요",

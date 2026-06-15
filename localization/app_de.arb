@@ -500,14 +500,6 @@
   "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
   "appStartupErrorMessageWithBackup": "Initialisierung fehlgeschlagen. Löschen Sie die App und installieren Sie sie neu, um das Problem zu beheben.",
   "payPasteInvoice": "Rechnung einfügen",
-  "labelErrorUnexpected": "Unerwarteter Fehler: {message}.",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Abgerechnet",
   "dcaWalletBitcoinSubtitle": "Mindestens 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Bitte geben Sie Ihr Passwort auf dem BitBox-Gerät ein, um fortzufahren.",
@@ -1793,14 +1785,6 @@
   },
   "rbfErrorNoFeeRate": "Bitte wählen Sie einen Gebührensatz.",
   "backupWalletGoogleDrivePrivacyMessage1": "Diese Informationen",
-  "labelErrorUnsupportedType": "Der Typ {type} wird nicht unterstützt.",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}",
   "@paySatsPerByte": {
     "placeholders": {
@@ -3968,7 +3952,14 @@
   "swapProgressPendingMessage": "Die Übertragung läuft. Bitcoin-Transaktionen können eine Weile zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
   "walletDetailsNetworkLabel": "Netzwerk",
   "broadcastSignedTxBroadcasting": "Wird übertragen…",
-  "broadcastSignedTxBroadcastError": "Übertragung der Transaktion fehlgeschlagen",
+  "broadcastSignedTxBroadcastError": "Wir konnten deine Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut.",
+  "importWatchOnlyErrorNoWalletSelected": "Füge zuerst einen öffentlichen Schlüssel oder Descriptor ein oder scanne ihn.",
+  "importWatchOnlyErrorLabelRequired": "Gib deiner Wallet vor dem Importieren einen Namen.",
+  "importWatchOnlyErrorInvalidFormat": "Das sieht nicht nach einem gültigen öffentlichen Schlüssel oder Descriptor aus. Überprüfe, was du eingefügt hast.",
+  "importWatchOnlyErrorImportFailed": "Wir konnten diese Watch-only-Wallet nicht importieren. Bitte überprüfe die Angaben und versuche es erneut.",
+  "broadcastSignedTxErrorInvalidTransaction": "Das sieht nicht nach einer gültigen signierten Transaktion aus. Stelle sicher, dass du das vollständige PSBT oder die vollständige Transaktion eingefügt hast.",
+  "broadcastSignedTxErrorInvalidPushTx": "Wir konnten aus diesem Tag keine Transaktion lesen. Bitte scanne erneut.",
+  "labelErrorUnsupportedType": "Dieser Label-Typ wird nicht unterstützt.",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
   "receivePayjoinActivated": "Payjoin aktiviert",
   "importMnemonicContinue": "Fortfahren",
@@ -4516,7 +4507,6 @@
   "coreScreensFetchFailed": "Transaktion {txid} konnte nicht von Electrum abgerufen werden.",
   "coreScreensInputResolutionFailed": "Eingang nicht gefunden: Ausgang {vout} von {parentTxId} existiert nicht.",
   "coreScreensParseFailed": "Transaktion konnte nicht verarbeitet werden: {message}.",
-  "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
   "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
   "addressViewerTitle": "Adresse",
   "viewerTapToCopy": "Zum Kopieren tippen",

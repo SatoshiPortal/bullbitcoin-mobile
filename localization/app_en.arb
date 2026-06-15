@@ -9748,6 +9748,22 @@
   "@importWatchOnlyPasteHint": {
     "description": "Placeholder hint for paste input field"
   },
+  "importWatchOnlyErrorNoWalletSelected": "Paste or scan a public key or descriptor first.",
+  "@importWatchOnlyErrorNoWalletSelected": {
+    "description": "Shown when import is attempted before a wallet has been provided"
+  },
+  "importWatchOnlyErrorLabelRequired": "Give your wallet a name before importing.",
+  "@importWatchOnlyErrorLabelRequired": {
+    "description": "Shown when the wallet label is empty on import"
+  },
+  "importWatchOnlyErrorInvalidFormat": "This doesn't look like a valid public key or descriptor. Double-check what you pasted.",
+  "@importWatchOnlyErrorInvalidFormat": {
+    "description": "Shown when the pasted/scanned watch-only input cannot be parsed"
+  },
+  "importWatchOnlyErrorImportFailed": "We couldn't import this watch-only wallet. Please check the details and try again.",
+  "@importWatchOnlyErrorImportFailed": {
+    "description": "Shown when the wallet layer rejects the descriptor or xpub"
+  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -9986,9 +10002,17 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "broadcastSignedTxBroadcastError": "We couldn't broadcast your transaction. Check your internet connection and try again.",
   "@broadcastSignedTxBroadcastError": {
     "description": "Headline shown when broadcasting a signed transaction fails"
+  },
+  "broadcastSignedTxErrorInvalidTransaction": "This doesn't look like a valid signed transaction. Make sure you pasted the full PSBT or transaction.",
+  "@broadcastSignedTxErrorInvalidTransaction": {
+    "description": "Shown when pasted/scanned input is not a valid PSBT or raw transaction"
+  },
+  "broadcastSignedTxErrorInvalidPushTx": "We couldn't read a transaction from this tag. Please try scanning again.",
+  "@broadcastSignedTxErrorInvalidPushTx": {
+    "description": "Shown when an NFC PushTx tag cannot be parsed into a transaction"
   },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
@@ -12806,15 +12830,6 @@
       }
     }
   },
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
-  "@coreScreensUnexpectedError": {
-    "description": "Generic unexpected error",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "@coreScreensNoServersAvailable": {
     "description": "Error when no Electrum servers are available"
@@ -12900,23 +12915,9 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
+  "labelErrorUnsupportedType": "This label type is not supported.",
   "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when a label type is not supported"
   },
   "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
   "@labelErrorSystemCannotDelete": {

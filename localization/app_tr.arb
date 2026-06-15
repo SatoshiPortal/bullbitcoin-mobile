@@ -1492,15 +1492,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "Beklenmeyen hata: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Settled",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -5552,15 +5543,6 @@
   "backupWalletGoogleDrivePrivacyMessage1": "Bu bilgi ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
-  },
-  "labelErrorUnsupportedType": "Bu tip {type} desteklenmez",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "paySatsPerByte": "{sats} oturdu/vB",
   "@paySatsPerByte": {
@@ -11911,7 +11893,14 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
-  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
+  "broadcastSignedTxBroadcastError": "İşleminizi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "importWatchOnlyErrorNoWalletSelected": "Önce bir genel anahtar veya tanımlayıcı yapıştırın ya da tarayın.",
+  "importWatchOnlyErrorLabelRequired": "İçe aktarmadan önce cüzdanınıza bir ad verin.",
+  "importWatchOnlyErrorInvalidFormat": "Bu, geçerli bir genel anahtar veya tanımlayıcı gibi görünmüyor. Yapıştırdığınızı tekrar kontrol edin.",
+  "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
+  "broadcastSignedTxErrorInvalidTransaction": "Bu, geçerli bir imzalı işlem gibi görünmüyor. PSBT'nin ya da işlemin tamamını yapıştırdığınızdan emin olun.",
+  "broadcastSignedTxErrorInvalidPushTx": "Bu etiketten bir işlem okuyamadık. Lütfen tekrar taramayı deneyin.",
+  "labelErrorUnsupportedType": "Bu etiket türü desteklenmiyor.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12605,7 +12594,6 @@
   "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
   "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
   "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
-  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
   "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
   "addressViewerTitle": "Adres",
   "viewerTapToCopy": "Kopyalamak için dokunun",

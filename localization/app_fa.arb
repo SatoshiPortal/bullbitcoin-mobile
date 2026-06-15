@@ -1265,24 +1265,6 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "خطای غیرمنتظره: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorSystemCannotDelete": "برچسب های سیستم را نمی توان حذف کرد.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"
@@ -11233,7 +11215,14 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "پخش ...",
-  "broadcastSignedTxBroadcastError": "ارسال تراکنش ناموفق بود",
+  "broadcastSignedTxBroadcastError": "نتوانستیم تراکنش شما را منتشر کنیم. اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.",
+  "importWatchOnlyErrorNoWalletSelected": "ابتدا یک کلید عمومی یا توصیف‌گر را بچسبانید یا اسکن کنید.",
+  "importWatchOnlyErrorLabelRequired": "پیش از وارد کردن، برای کیف پول خود نامی انتخاب کنید.",
+  "importWatchOnlyErrorInvalidFormat": "این به نظر یک کلید عمومی یا توصیف‌گر معتبر نمی‌رسد. آنچه را چسبانده‌اید دوباره بررسی کنید.",
+  "importWatchOnlyErrorImportFailed": "نتوانستیم این کیف پول فقط‌مشاهده را وارد کنیم. لطفاً جزئیات را بررسی کرده و دوباره تلاش کنید.",
+  "broadcastSignedTxErrorInvalidTransaction": "این به نظر یک تراکنش امضاشده معتبر نمی‌رسد. مطمئن شوید که PSBT یا تراکنش کامل را چسبانده‌اید.",
+  "broadcastSignedTxErrorInvalidPushTx": "نتوانستیم تراکنشی از این برچسب بخوانیم. لطفاً دوباره اسکن کنید.",
+  "labelErrorUnsupportedType": "این نوع برچسب پشتیبانی نمی‌شود.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12605,7 +12594,6 @@
   "coreScreensFetchFailed": "دریافت تراکنش {txid} از Electrum ناموفق بود.",
   "coreScreensInputResolutionFailed": "ورودی یافت نشد: خروجی {vout} از {parentTxId} وجود ندارد.",
   "coreScreensParseFailed": "تحلیل تراکنش ناموفق بود: {message}.",
-  "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
   "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
   "addressViewerTitle": "آدرس",
   "viewerTapToCopy": "برای کپی ضربه بزنید",

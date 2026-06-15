@@ -1486,15 +1486,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "অপ্রত্যাশিত ত্রুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "সমাপ্ত হয়েছে",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -5426,15 +5417,6 @@
   "backupWalletGoogleDrivePrivacyMessage1": "এই তথ্যটি ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
-  },
-  "labelErrorUnsupportedType": "এই ধরনের {type} সমর্থিত নয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
@@ -11712,7 +11694,14 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
-  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্রচার করতে ব্যর্থ হয়েছে",
+  "broadcastSignedTxBroadcastError": "আমরা আপনার লেনদেন ব্রডকাস্ট করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "importWatchOnlyErrorNoWalletSelected": "প্রথমে একটি পাবলিক কী বা ডেসক্রিপ্টর পেস্ট বা স্ক্যান করুন।",
+  "importWatchOnlyErrorLabelRequired": "ইম্পোর্ট করার আগে আপনার ওয়ালেটকে একটি নাম দিন।",
+  "importWatchOnlyErrorInvalidFormat": "এটি একটি বৈধ পাবলিক কী বা ডেসক্রিপ্টর বলে মনে হচ্ছে না। আপনি যা পেস্ট করেছেন তা আবার পরীক্ষা করুন।",
+  "importWatchOnlyErrorImportFailed": "আমরা এই ওয়াচ-অনলি ওয়ালেটটি ইম্পোর্ট করতে পারিনি। অনুগ্রহ করে বিবরণ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "broadcastSignedTxErrorInvalidTransaction": "এটি একটি বৈধ স্বাক্ষরিত লেনদেন বলে মনে হচ্ছে না। নিশ্চিত করুন যে আপনি সম্পূর্ণ PSBT বা লেনদেন পেস্ট করেছেন।",
+  "broadcastSignedTxErrorInvalidPushTx": "আমরা এই ট্যাগ থেকে কোনো লেনদেন পড়তে পারিনি। অনুগ্রহ করে আবার স্ক্যান করুন।",
+  "labelErrorUnsupportedType": "এই লেবেলের ধরন সমর্থিত নয়।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12893,7 +12882,6 @@
   "coreScreensFetchFailed": "Electrum থেকে লেনদেন {txid} আনা যায়নি।",
   "coreScreensInputResolutionFailed": "ইনপুট পাওয়া যায়নি: {parentTxId}-এর আউটপুট {vout} বিদ্যমান নেই।",
   "coreScreensParseFailed": "লেনদেন পার্স করতে ব্যর্থ: {message}।",
-  "coreScreensUnexpectedError": "অপ্রত্যাশিত ত্রুটি: {message}।",
   "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।",
   "addressViewerTitle": "ঠিকানা",
   "viewerTapToCopy": "কপি করতে ট্যাপ করুন",

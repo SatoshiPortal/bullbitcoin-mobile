@@ -1265,15 +1265,6 @@
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
-  "labelErrorUnexpected": "Erro inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "electrumServerOnline": "Online",
   "@electrumServerOnline": {
     "description": "Status text for online servers"
@@ -4797,15 +4788,6 @@
   "ledgerDefaultWalletLabel": "Carteira de Ledger",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "A carregar",
   "@pinStatusLoading": {
@@ -10192,7 +10174,14 @@
     "description": "Bold label for Google/Apple cloud recommendation"
   },
   "broadcastSignedTxBroadcasting": "Transmissão...",
-  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
+  "broadcastSignedTxBroadcastError": "Não foi possível transmitir sua transação. Verifique sua conexão com a internet e tente novamente.",
+  "importWatchOnlyErrorNoWalletSelected": "Cole ou escaneie primeiro uma chave pública ou um descritor.",
+  "importWatchOnlyErrorLabelRequired": "Dê um nome à sua carteira antes de importar.",
+  "importWatchOnlyErrorInvalidFormat": "Isto não parece uma chave pública ou um descritor válido. Verifique o que você colou.",
+  "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira somente leitura. Verifique os detalhes e tente novamente.",
+  "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Verifique se você colou o PSBT ou a transação completos.",
+  "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente escanear novamente.",
+  "labelErrorUnsupportedType": "Este tipo de etiqueta não é suportado.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12600,7 +12589,6 @@
   "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
   "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
   "coreScreensParseFailed": "Falha ao analisar a transação: {message}.",
-  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
   "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível.",
   "addressViewerTitle": "Endereço",
   "viewerTapToCopy": "Toque para copiar",

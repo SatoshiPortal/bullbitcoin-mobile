@@ -1517,14 +1517,6 @@
   "appStartupErrorMessage": "Не вдалося запустити застосунок. Спробуйте повністю його закрити та перезапустити. Якщо помилка повторюється, зверніться до підтримки та поділіться логами.",
   "appStartupErrorMessageWithBackup": "Не вдалося ініціалізувати. Видаліть і перевстановіть, щоб виправити.",
   "payPasteInvoice": "Паста Invoice",
-  "labelErrorUnexpected": "Несподівана помилка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Шахрайство",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Введіть пароль на пристрої BitBox.",
@@ -2426,14 +2418,6 @@
   },
   "rbfErrorNoFeeRate": "Оберіть тариф",
   "backupWalletGoogleDrivePrivacyMessage1": "Інформація ",
-  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -4048,7 +4032,14 @@
   "dcaPaymentMethodLabel": "Спосіб оплати",
   "swapProgressPendingMessage": "Передача здійснюється в процесі. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "broadcastSignedTxBroadcasting": "Трансляція...",
-  "broadcastSignedTxBroadcastError": "Не вдалося транслювати транзакцію",
+  "broadcastSignedTxBroadcastError": "Не вдалося передати вашу транзакцію. Перевірте підключення до інтернету та спробуйте ще раз.",
+  "importWatchOnlyErrorNoWalletSelected": "Спочатку вставте або відскануйте публічний ключ чи дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте гаманцю назву перед імпортом.",
+  "importWatchOnlyErrorInvalidFormat": "Це не схоже на дійсний публічний ключ або дескриптор. Перевірте, що ви вставили.",
+  "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
+  "broadcastSignedTxErrorInvalidTransaction": "Це не схоже на дійсну підписану транзакцію. Переконайтеся, що ви вставили повний PSBT або транзакцію.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
+  "labelErrorUnsupportedType": "Цей тип мітки не підтримується.",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
@@ -4620,7 +4611,6 @@
   "coreScreensFetchFailed": "Не вдалося отримати транзакцію {txid} з Electrum.",
   "coreScreensInputResolutionFailed": "Вхід не знайдено: вихід {vout} з {parentTxId} не існує.",
   "coreScreensParseFailed": "Не вдалося розібрати транзакцію: {message}.",
-  "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
   "coreScreensNoServersAvailable": "Немає доступних серверів Electrum.",
   "addressViewerTitle": "Адреса",
   "viewerTapToCopy": "Натисніть для копіювання",
