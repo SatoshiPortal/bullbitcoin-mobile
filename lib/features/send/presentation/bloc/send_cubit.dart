@@ -1179,11 +1179,17 @@ class SendCubit extends Cubit<SendState>
       final ratesChanged =
           state.bitcoinFeesList != bitcoinFees ||
           state.liquidFeesList != liquidFees;
+      // Default to Fastest only on the first successful load. Once a
+      // selection exists, a fee refresh must preserve it — silently
+      // resetting to Fastest would clobber a committed tier (or custom).
+      final isFirstLoad = state.bitcoinFeesList == null;
       emit(
         state.copyWith(
           bitcoinFeesList: bitcoinFees,
           liquidFeesList: liquidFees,
-          selectedFeeOption: FeeSelection.fastest,
+          selectedFeeOption: isFirstLoad
+              ? FeeSelection.fastest
+              : state.selectedFeeOption,
         ),
       );
       // Mempool rates changed — preset PSBTs were built at the old
