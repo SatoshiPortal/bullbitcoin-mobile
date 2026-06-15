@@ -150,8 +150,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      resolved-ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -208,8 +208,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      resolved-ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -297,8 +297,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      resolved-ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1273,10 +1273,10 @@ packages:
     dependency: transitive
     description:
       name: ledger_flutter_plus
-      sha256: "59c5a6062505c721c2ca909fa085c52cffe93de995174b8418b54a6acf52eb70"
+      sha256: e7de0cd3d450b38955c4f04a9a729235d6ed7ca0dc463907e9e1dcc080ccf51d
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.6"
+    version: "1.6.0+1"
   ledger_usb_plus:
     dependency: transitive
     description:
@@ -1723,8 +1723,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      resolved-ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1739,28 +1739,28 @@ packages:
   satoshifier:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
-      resolved-ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
-      url: "https://github.com/SatoshiPortal/dart-satoshifier"
+      path: "packages/satoshifier"
+      ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      resolved-ref: b40f2f206e47861215ac34b0012f56bbaa5b0c8e
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
   sentry:
     dependency: transitive
     description:
       name: sentry
-      sha256: "1f78300740739ff4b4920802687879231554350eab73eb229778f463aabda440"
+      sha256: "3311f89e0c964c4df5f65670348c8a11744c94ae2b57032c947cfb26bfd03ef0"
       url: "https://pub.dev"
     source: hosted
-    version: "9.19.0"
+    version: "9.22.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: "168bbb120f7684dee6c0e100817f56ee1925bc2eb7fa55a71253337640c7e241"
+      sha256: efd3bebd7962438d0ecbe5c7b530de012e2e8efe14ef838b89195d7c2bb3f66c
       url: "https://pub.dev"
     source: hosted
-    version: "9.19.0"
+    version: "9.22.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -2091,10 +2091,10 @@ packages:
     dependency: transitive
     description:
       name: universal_ble
-      sha256: "8325ca9f5cce2fba2b4efef74a4fcfe7144f303b409d6fc6ed16197b00a1a241"
+      sha256: da15f61251299daf9c290bb8e40ded1e5313c4636fef6c796a7a656a06c93b4a
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "2.0.4"
   universal_io:
     dependency: transitive
     description:
