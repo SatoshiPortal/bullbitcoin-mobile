@@ -47,8 +47,11 @@ class ImportWatchOnlyScreen extends StatelessWidget {
               context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             }
-            if (state.error.isNotEmpty) {
-              SnackBarUtils.showSnackBar(context, state.error);
+            if (state.error != null) {
+              SnackBarUtils.showSnackBar(
+                context,
+                state.error!.toTranslated(context),
+              );
             }
           },
           builder: (context, state) {
@@ -71,10 +74,10 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.error.isNotEmpty)
+                        if (state.error != null)
                           Center(
                             child: BBText(
-                              state.error,
+                              state.error!.toTranslated(context),
                               style: TextStyle(color: context.appColors.error),
                             ),
                           ),
