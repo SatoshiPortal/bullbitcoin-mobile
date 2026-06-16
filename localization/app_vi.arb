@@ -182,7 +182,6 @@
   "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
   "importMnemonicDuplicateError": "Cụm từ ghi nhớ này đã tồn tại",
   "transactionStatusPayjoinCompleted": "Payjoin đã hoàn tất",
-  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -267,6 +266,7 @@
   "onboardingAdvancedOptionsDone": "Xong",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
+  "sendErrorUnsupportedQrCodeFormat": "Định dạng mã QR không được hỗ trợ",
   "fundExchangeErrorTitleOrdPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE không khả dụng",
@@ -282,7 +282,5 @@
   "fundExchangeErrorRcpPo404": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
   "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau.",
-  "sendErrorUnsupportedQrCodeFormat": "Định dạng mã QR không được hỗ trợ"
-}
   "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn"
 }
