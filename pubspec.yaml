@@ -6,9 +6,17 @@ version: 6.11.1+186
 environment:
   sdk: "3.12.1"
   flutter: "3.44.1"
+workspace:
+  - packages/bull_ui
+  # Dev-only catalogue. Listed here only so the shared workspace
+  # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
+  # dependency, so it is not compiled into the APK (zero build impact).
+  - packages/bull_ui_catalogue
+
 dependencies:
   flutter:
     sdk: flutter
+  bull_ui:
   bdk_dart:
     git:
       url: https://github.com/i5hi/bdk-dart

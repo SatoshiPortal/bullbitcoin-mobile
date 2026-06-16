@@ -1,9 +1,38 @@
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 enum AppThemeType { light, dark }
+
+/// Builds the `bull_ui` [BullTheme] colour extension from an [AppColors]
+/// palette. `bull_ui` is brightness-agnostic — the app hands it the right
+/// palette per brightness, so `AppColors` stays the single source of truth.
+BullTheme _bullThemeFrom(AppColors colors) {
+  return BullTheme(
+    red: colors.primary,
+    onRed: colors.onPrimary,
+    surface: colors.surface,
+    card: colors.cardBackground,
+    text: colors.text,
+    muted: colors.textMuted,
+    info: colors.info,
+    success: colors.success,
+    warning: colors.warning,
+    btc: colors.onTertiary,
+    outlineVariant: colors.outlineVariant,
+    shimmerBase: colors.shimmerBase,
+    shimmerHighlight: colors.shimmerHighlight,
+    secondary: colors.secondary,
+    onSecondary: colors.onSecondary,
+    secondaryFixedDim: colors.secondaryFixedDim,
+    border: colors.border,
+    onSurface: colors.onSurface,
+    onSurfaceVariant: colors.onSurfaceVariant,
+    scrim: colors.scrim,
+  );
+}
 
 class AppTheme {
   static ThemeData themeData(AppThemeType themeType) {
@@ -18,6 +47,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      extensions: [_bullThemeFrom(colors)],
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
         brightness: brightness,
