@@ -1,19 +1,13 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/usecases/delete_keychain_manifest_wallet_entries_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/application/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/domain_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
 import 'package:meta/meta.dart';
 
 class KeychainManifestFacade {
   final RecordKeychainManifestEntryUsecase _recordEntry;
-  final DeleteKeychainManifestWalletEntriesUsecase _deleteWalletEntries;
 
-  KeychainManifestFacade({
-    required this._recordEntry,
-    required this._deleteWalletEntries,
-  });
+  KeychainManifestFacade({required this._recordEntry});
 
   Future<KeychainManifestRecordReservedDerivationResult>
   recordReservedDerivation(
@@ -47,23 +41,6 @@ class KeychainManifestFacade {
     }
   }
 
-  Future<void> deleteInsertedMaterializations(
-    KeychainManifestRecordReservedDerivationResult result,
-  ) async {
-    try {
-      final identities = result.insertedMaterializations
-          .map(_walletMaterializationIdentity)
-          .toList(growable: false);
-      await _deleteWalletEntries.execute(
-        DeleteKeychainManifestWalletMaterializationsCommand(
-          identities: identities,
-        ),
-      );
-    } catch (e) {
-      throw KeychainManifestException.fromInternal(e);
-    }
-  }
-
   RecordKeychainManifestWalletMaterializationCommand
   _walletMaterializationCommand(
     KeychainManifestMaterializationRequest request,
@@ -79,21 +56,6 @@ class KeychainManifestFacade {
       network: request.network.name,
       walletPurpose: request.walletPurpose,
       scriptType: request.scriptType.name,
-    );
-  }
-
-  KeychainManifestWalletMaterializationIdentity _walletMaterializationIdentity(
-    KeychainManifestRecordedMaterialization materialization,
-  ) {
-    if (materialization.materializationType !=
-        KeychainManifestRecordedMaterialization.walletType) {
-      throw KeychainManifestUnsupportedMaterializationException(
-        'unsupported keychain manifest materialization: '
-        '${materialization.materializationType}',
-      );
-    }
-    return KeychainManifestWalletMaterializationIdentity(
-      walletId: materialization.materializationId,
     );
   }
 }

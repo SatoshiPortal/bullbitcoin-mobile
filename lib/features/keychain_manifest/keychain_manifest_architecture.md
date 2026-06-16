@@ -7,6 +7,13 @@ material. It records reserved BIP85 derivations and typed materializations of
 those derivations. Wallet materializations are the first supported
 materialization type, with BTCPay as the first writer.
 
+Manifest entries are durable local inventory, not product/server state. Once a
+wallet materialization has been created and recorded, product failures such as
+remote rejection, settings/default application failure, or connection-state
+persistence failure must not delete the manifest entry. Later repair flows may
+add missing proven entries idempotently, but they must not destructively edit or
+remove existing valid entries.
+
 It does not create, export, import, publish, fetch, or restore a manifest file.
 It records local derivation metadata that may serve as input to a future
 snapshot design. This PR does not define a snapshot/export contract, and
@@ -19,6 +26,8 @@ non-wallet materialization types are out of scope.
 - `bip85_registry` owns reserved path policy.
 - Product features, such as BTCPay, record entries through
   `keychain_manifest/public` only.
+- The public boundary records entries only. Product features do not receive a
+  public delete API for current-attempt rollback.
 - `keychain_manifest` must not import BTCPay, Get Paid, external receive
   wallets, Nostr, or UI features.
 

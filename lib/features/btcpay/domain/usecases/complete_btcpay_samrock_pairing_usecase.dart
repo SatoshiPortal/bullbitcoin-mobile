@@ -188,21 +188,6 @@ class CompleteBtcpaySamRockPairingUsecase {
     );
   }
 
-  Future<void> _deleteBtcpayKeychainManifestEntriesBestEffort(
-    KeychainManifestRecordReservedDerivationResult recordedEntries,
-  ) async {
-    if (recordedEntries.insertedMaterializations.isEmpty) return;
-    try {
-      await _keychainManifest.deleteInsertedMaterializations(recordedEntries);
-    } catch (e, stack) {
-      log.warning(
-        'BTCPay rejected setup and keychain manifest cleanup failed',
-        error: e,
-        trace: stack,
-      );
-    }
-  }
-
   KeychainManifestReservedDerivationRequest _btcpayKeychainManifestRequest(
     PreparedDeterministicWallets preparedWallets,
   ) {

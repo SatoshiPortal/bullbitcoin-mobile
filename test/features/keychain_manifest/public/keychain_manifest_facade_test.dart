@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
 import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/usecases/delete_keychain_manifest_wallet_entries_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/application/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -15,9 +14,6 @@ void main() {
     store = _InMemoryKeychainManifestStore();
     facade = KeychainManifestFacade(
       recordEntry: RecordKeychainManifestEntryUsecase(store: store),
-      deleteWalletEntries: DeleteKeychainManifestWalletEntriesUsecase(
-        store: store,
-      ),
     );
   });
 
@@ -102,7 +98,7 @@ void main() {
     expect(store.entries.single.bip85Index, 100);
   });
 
-  test('returns only inserted materializations for caller rollback', () async {
+  test('reports only materializations inserted by this record call', () async {
     await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
