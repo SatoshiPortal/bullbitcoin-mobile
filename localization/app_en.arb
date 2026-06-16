@@ -12050,6 +12050,10 @@
   "@sendSignWithTrezor": {
     "description": "Label for the sign-transaction button on the send screen when the wallet is a Trezor"
   },
+  "sendTransactionSignedTrezor": "Transaction signed by Trezor",
+  "@sendTransactionSignedTrezor": {
+    "description": "Snackbar shown on the send screen confirming a successful Trezor signing handoff"
+  },
   "trezorImportTitle": "Import Trezor Wallet",
   "@trezorImportTitle": {
     "description": "AppBar title for the Trezor import landing screen"

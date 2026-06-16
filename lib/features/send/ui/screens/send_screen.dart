@@ -1995,7 +1995,10 @@ class SignTrezorButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          SnackBarUtils.showSnackBar(context, 'Transaction signed by Trezor');
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.sendTransactionSignedTrezor,
+          );
           await context.read<SendCubit>().updateSignedBitcoinTx(result);
         }
       },

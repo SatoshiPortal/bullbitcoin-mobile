@@ -809,7 +809,7 @@ class VerifyAddressOnTrezorButton extends StatelessWidget {
           if (state.wallet == null || state.bitcoinAddress == null) {
             SnackBarUtils.showSnackBar(
               context,
-              'Unable to verify address: missing wallet or address',
+              context.loc.receiveVerifyAddressError,
             );
             return;
           }
