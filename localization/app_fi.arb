@@ -2118,6 +2118,7 @@
   "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
+  "sendErrorUnsupportedQrCodeFormat": "Ei-tuettu QR-koodimuoto",
   "sendErrorBuildFailed": "Rakentaminen epäonnistui",
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",

@@ -2460,6 +2460,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "অসমর্থিত QR কোড ফরম্যাট",
   "transactionLabelAmountReceived": "প্রাপ্ত পরিমাণ",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"

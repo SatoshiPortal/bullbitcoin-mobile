@@ -2169,6 +2169,7 @@
   "sendErrorInvoiceMustContainAmount": "La factura debe contener un monto",
   "sendErrorInsufficientBalanceForPayment": "Saldo insuficiente para cubrir este pago",
   "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
+  "sendErrorUnsupportedQrCodeFormat": "Formato de código QR no compatible",
   "sendErrorBuildFailed": "Error de construcción",
   "sendErrorConfirmationFailed": "Error de confirmación",
   "sendErrorInsufficientBalanceForSwap": "Saldo insuficiente para pagar este intercambio a través de Liquid y fuera de los límites de intercambio para pagar a través de Bitcoin.",

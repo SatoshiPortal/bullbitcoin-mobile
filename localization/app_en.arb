@@ -7316,6 +7316,10 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "Unsupported QR code format",
+  "@sendErrorUnsupportedQrCodeFormat": {
+    "description": "Error shown when a scanned QR code does not contain a recognisable Bitcoin payment request"
+  },
   "sendErrorBuildFailed": "Build Failed",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

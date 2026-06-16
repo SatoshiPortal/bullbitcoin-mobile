@@ -2491,6 +2491,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "Desteklenmeyen QR kodu formatı",
   "transactionLabelAmountReceived": "$ aldı",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"

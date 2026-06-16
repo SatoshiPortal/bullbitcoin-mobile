@@ -1759,6 +1759,7 @@
   "hwChooseDevice": "Виберіть апаратний гаманець, який ви хочете підключитися",
   "torSettingsConnectionStatus": "Статус на сервери",
   "sendErrorInvalidAddressOrInvoice": "Плата за неоплату Bitcoin або Invoice",
+  "sendErrorUnsupportedQrCodeFormat": "Непідтримуваний формат QR-коду",
   "recoverbullRecoveryTitle": "Recoverbull відновлення",
   "broadcastSignedTxScanQR": "Сканування QR-коду з вашого апаратного гаманця",
   "ledgerSuccessSignDescription": "Ви успішно підписалися на Вашу операцію.",

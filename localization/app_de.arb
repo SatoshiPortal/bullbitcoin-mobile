@@ -828,6 +828,7 @@
   "torSettingsConnectionStatus": "Verbindungsstatus",
   "backupInstruction1": "Wenn Sie Ihre 12 Wörter (Seed-Phrase) verlieren, können Sie den Zugriff auf die Bitcoin-Wallet nicht wiederherstellen.",
   "sendErrorInvalidAddressOrInvoice": "Ungültige Bitcoin-Adresse oder Rechnung.",
+  "sendErrorUnsupportedQrCodeFormat": "Nicht unterstütztes QR-Code-Format",
   "transactionLabelAmountReceived": "Erhaltener Betrag",
   "recoverbullRecoveryTitle": "Recoverbull-Tresor-Wiederherstellung",
   "broadcastSignedTxScanQR": "Scannen Sie den QR-Code von Ihrer Hardware-Wallet.",
