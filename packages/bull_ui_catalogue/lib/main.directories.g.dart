@@ -10,11 +10,58 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:bull_ui_catalogue/use_cases/foundation.dart'
+    as _bull_ui_catalogue_use_cases_foundation;
 import 'package:bull_ui_catalogue/use_cases/use_cases.dart'
     as _bull_ui_catalogue_use_cases_use_cases;
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookFolder(
+    name: 'Foundation',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'FoundationColours',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Colours',
+            builder: _bull_ui_catalogue_use_cases_foundation
+                .foundationColoursUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'FoundationRadius',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Radius',
+            builder:
+                _bull_ui_catalogue_use_cases_foundation.foundationRadiusUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'FoundationSpacing',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Spacing',
+            builder: _bull_ui_catalogue_use_cases_foundation
+                .foundationSpacingUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'FoundationTextStyles',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'TextStyles',
+            builder: _bull_ui_catalogue_use_cases_foundation
+                .foundationTextStylesUseCase,
+          ),
+        ],
+      ),
+    ],
+  ),
   _widgetbook.WidgetbookFolder(
     name: 'buttons',
     children: [

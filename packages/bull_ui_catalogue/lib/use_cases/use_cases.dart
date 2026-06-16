@@ -39,7 +39,7 @@ m.Widget bullIconUseCase(m.BuildContext context) {
         min: 12,
         max: 96,
       ),
-      color: context.bull.red,
+      color: context.bull.primary,
     ),
   );
 }
@@ -50,7 +50,7 @@ m.Widget bullTextUseCase(m.BuildContext context) {
     context,
     BullText(
       context.knobs.string(label: 'text', initialValue: 'The quick brown fox'),
-      style: BullTextStyles.title,
+      style: m.Theme.of(context).textTheme.headlineMedium,
       color: context.bull.text,
     ),
   );
@@ -69,8 +69,8 @@ m.Widget bullButtonBigUseCase(m.BuildContext context) {
     BullButton.big(
       label: context.knobs.string(label: 'label', initialValue: 'Continue'),
       onPressed: () {},
-      bgColor: context.bull.red,
-      textColor: context.bull.onRed,
+      bgColor: context.bull.primary,
+      textColor: context.bull.onPrimary,
       iconData: context.knobs.boolean(label: 'with icon')
           ? BullIcons.check
           : null,
@@ -145,7 +145,7 @@ m.Widget bullScaffoldUseCase(m.BuildContext context) {
         const BullTopBar(title: 'Bull Scaffold'),
         m.Expanded(
           child: m.Center(
-            child: BullText('Body content', style: BullTextStyles.body),
+            child: BullText('Body content', style: m.Theme.of(context).textTheme.bodyMedium),
           ),
         ),
       ],
@@ -238,7 +238,22 @@ m.Widget bullSwipeActionUseCase(m.BuildContext context) {
         onAction: () {},
         enabled: context.knobs.boolean(label: 'enabled', initialValue: true),
         child: BullBorderedTile(
-          child: BullText('Swipe me left', style: BullTextStyles.body),
+          child: m.Column(
+            crossAxisAlignment: m.CrossAxisAlignment.start,
+            mainAxisSize: m.MainAxisSize.min,
+            children: [
+              BullText(
+                'Swipe me left',
+                style: m.Theme.of(context).textTheme.bodyLarge,
+              ),
+              const Gap(BullSpacing.xxs),
+              BullText(
+                'to reveal the Freeze action',
+                style: m.Theme.of(context).textTheme.bodySmall,
+                color: context.bull.textMuted,
+              ),
+            ],
+          ),
         ),
       ),
     ),
@@ -468,9 +483,9 @@ m.Widget bullBorderedTileUseCase(m.BuildContext context) {
         onTap: () {},
         child: m.Row(
           children: [
-            BullText('Setting row', style: BullTextStyles.body, color: context.bull.text),
+            BullText('Setting row', style: m.Theme.of(context).textTheme.bodyMedium, color: context.bull.text),
             const m.Spacer(),
-            BullIcon(BullIcons.chevronRight, color: context.bull.muted),
+            BullIcon(BullIcons.chevronRight, color: context.bull.textMuted),
           ],
         ),
       ),
@@ -636,7 +651,7 @@ m.Widget bullCountdownUseCase(m.BuildContext context) {
     BullCountdown(
       until: DateTime.now().add(Duration(minutes: minutes)),
       onTimeout: () {},
-      textStyle: BullTextStyles.statValue.copyWith(color: context.bull.text),
+      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(fontFeatures: const [m.FontFeature.tabularFigures()], color: context.bull.text),
     ),
   );
 }
@@ -648,7 +663,7 @@ m.Widget bullCountdownShortUseCase(m.BuildContext context) {
     BullCountdown(
       until: DateTime.now().add(const Duration(seconds: 30)),
       onTimeout: () {},
-      textStyle: BullTextStyles.statValue.copyWith(color: context.bull.warning),
+      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(fontFeatures: const [m.FontFeature.tabularFigures()], color: context.bull.warning),
     ),
   );
 }
@@ -674,7 +689,7 @@ m.Widget bullRefreshIndicatorUseCase(m.BuildContext context) {
       children: [
         for (var i = 0; i < 12; i++)
           BullBorderedTile(
-            child: BullText('Pull to refresh — row $i', style: BullTextStyles.body),
+            child: BullText('Pull to refresh — row $i', style: m.Theme.of(context).textTheme.bodyMedium),
           ),
       ],
     ),
@@ -738,7 +753,7 @@ m.Widget bullScrollableColumnUseCase(m.BuildContext context) {
     children: [
       for (var i = 0; i < 8; i++)
         BullBorderedTile(
-          child: BullText('Scrollable row $i', style: BullTextStyles.body),
+          child: BullText('Scrollable row $i', style: m.Theme.of(context).textTheme.bodyMedium),
         ),
     ],
   );
@@ -749,12 +764,12 @@ m.Widget bullStackedPageUseCase(m.BuildContext context) {
   return BullStackedPage(
     bottomChild: BullButton.big(
       label: 'Confirm',
-      bgColor: context.bull.red,
-      textColor: context.bull.onRed,
+      bgColor: context.bull.primary,
+      textColor: context.bull.onPrimary,
       onPressed: () {},
     ),
     child: m.Center(
-      child: BullText('Scrolling content', style: BullTextStyles.body),
+      child: BullText('Scrolling content', style: m.Theme.of(context).textTheme.bodyMedium),
     ),
   );
 }
@@ -767,7 +782,7 @@ m.Widget bullPullableBodyUseCase(m.BuildContext context) {
       m.SliverList.builder(
         itemCount: 10,
         itemBuilder: (_, i) => BullBorderedTile(
-          child: BullText('Sliver row $i', style: BullTextStyles.body),
+          child: BullText('Sliver row $i', style: m.Theme.of(context).textTheme.bodyMedium),
         ),
       ),
     ],
@@ -786,9 +801,9 @@ m.Widget bullBottomSheetUseCase(m.BuildContext context) {
       child: m.Column(
         mainAxisSize: m.MainAxisSize.min,
         children: [
-          BullText('Bottom sheet title', style: BullTextStyles.title, color: context.bull.text),
+          BullText('Bottom sheet title', style: m.Theme.of(context).textTheme.headlineMedium, color: context.bull.text),
           const Gap(12),
-          BullText('Sheet body content goes here.', style: BullTextStyles.body, color: context.bull.muted),
+          BullText('Sheet body content goes here.', style: m.Theme.of(context).textTheme.bodyMedium, color: context.bull.textMuted),
         ],
       ),
     ),
@@ -803,12 +818,12 @@ m.Widget bullDialogUseCase(m.BuildContext context) {
       child: m.Column(
         mainAxisSize: m.MainAxisSize.min,
         children: [
-          BullText('Confirm action', style: BullTextStyles.title, color: context.bull.text),
+          BullText('Confirm action', style: m.Theme.of(context).textTheme.headlineMedium, color: context.bull.text),
           const Gap(12),
           BullButton.small(
             label: 'OK',
-            bgColor: context.bull.red,
-            textColor: context.bull.onRed,
+            bgColor: context.bull.primary,
+            textColor: context.bull.onPrimary,
             onPressed: () {},
           ),
         ],
