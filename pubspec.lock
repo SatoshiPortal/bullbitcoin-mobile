@@ -240,8 +240,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: ws-resilience
+      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: ws-resilience
+      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1763,8 +1763,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
+      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"

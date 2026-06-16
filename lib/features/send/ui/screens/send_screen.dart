@@ -1055,11 +1055,29 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendSwapId,
-            details: BBText(
-              swap!.id,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: BBText(
+                    swap!.id,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                    textAlign: .end,
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: swap.id));
+                  },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
           _divider(context),
@@ -1074,6 +1092,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const Gap(4),
@@ -1310,11 +1329,29 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendSwapId,
-            details: BBText(
-              swap!.id,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: BBText(
+                    swap!.id,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                    textAlign: .end,
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: swap.id));
+                  },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
           _divider(context),
@@ -1329,6 +1366,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const Gap(4),

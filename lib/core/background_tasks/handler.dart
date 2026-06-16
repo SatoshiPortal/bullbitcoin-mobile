@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -42,7 +42,7 @@ Future<bool> tasksHandler(String task) async {
 
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();
-    final restartSwapWatcherUsecase = locator<RestartSwapWatcherUsecase>();
+    final processOngoingSwapsUsecase = locator<ProcessOngoingSwapsUsecase>();
 
     final backgroundTask = BackgroundTask.fromName(task);
 
@@ -64,7 +64,14 @@ Future<bool> tasksHandler(String task) async {
         if (wallets.isEmpty) {
           log.warning('No wallets to sync');
         } else {
-          await restartSwapWatcherUsecase.execute();
+          // Poll + act to completion: the BG isolate dies right after this
+          // returns, so a websocket-based restart would never see an event.
+          // Bounded to respect the iOS background budget.
+          await processOngoingSwapsUsecase.execute().timeout(
+            const Duration(seconds: 25),
+            onTimeout: () =>
+                log.warning('Swaps background processing hit time budget'),
+          );
         }
       case BackgroundTask.logsPrune:
         await log.prune();

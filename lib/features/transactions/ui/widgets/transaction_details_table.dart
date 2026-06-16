@@ -56,6 +56,12 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
+    // "Send Network fee" for a send/chain swap is the user's lockup tx fee.
+    // Prefer the persisted lockupFee; fall back to the linked lockup tx's
+    // actual fee when it wasn't recorded (e.g. older swaps).
+    final swapSendNetworkFee = (swap?.fees?.lockupFee ?? 0) > 0
+        ? swap!.fees!.lockupFee
+        : txFee;
 
     final amountSent = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
@@ -78,8 +84,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     txId,
                     style: TextStyle(color: context.appColors.primary),
                     isTestnet: isTestnet,
-                    unblindedUrl:
-                        transaction?.walletTransaction?.unblindedUrl,
+                    unblindedUrl: transaction?.walletTransaction?.unblindedUrl,
                   )
                 : TransactionViewer.bitcoin(
                     txId,
@@ -811,13 +816,13 @@ class TransactionDetailsTable extends StatelessWidget {
                           ConvertAmount.satsToBtc(swap.receieveAmount!),
                         ).toUpperCase(),
                 ),
-              if (swap.fees!.lockupFee != null)
+              if (swapSendNetworkFee != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      ? FormatAmount.sats(swapSendNetworkFee).toUpperCase()
                       : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                          ConvertAmount.satsToBtc(swapSendNetworkFee),
                         ).toUpperCase(),
                 ),
             ] else if (swap.isLnSendSwap) ...[
@@ -842,13 +847,13 @@ class TransactionDetailsTable extends StatelessWidget {
                           ConvertAmount.satsToBtc(swap.receieveAmount!),
                         ).toUpperCase(),
                 ),
-              if (swap.fees!.lockupFee != null)
+              if (swapSendNetworkFee != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      ? FormatAmount.sats(swapSendNetworkFee).toUpperCase()
                       : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                          ConvertAmount.satsToBtc(swapSendNetworkFee),
                         ).toUpperCase(),
                 ),
             ] else if (swap.isLnReceiveSwap) ...[

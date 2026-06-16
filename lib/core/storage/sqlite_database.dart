@@ -98,7 +98,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// asserts that an entry for this number exists in the
   /// schema → app-version map so a future bump can't silently
   /// misclassify upgrade events.
-  static const int currentSchemaVersion = 12;
+  static const int currentSchemaVersion = 13;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -153,6 +153,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from9To10: _reportingMigration('from9To10', Schema9To10.migrate),
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
+        from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

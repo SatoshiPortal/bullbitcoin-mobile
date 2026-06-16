@@ -21,6 +21,7 @@ sealed class SwapModel with _$SwapModel {
     required String invoice,
     String? receiveAddress,
     String? receiveTxid,
+    @Default(false) bool wasDirectPayment,
     int? completionTime,
     int? boltzFees,
     int? lockupFees,
@@ -47,6 +48,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
+    int? refundFees,
   }) = LnSendSwapModel;
 
   // Chain Swap (between BTC and L-BTC)
@@ -70,6 +72,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
+    int? refundFees,
     int? serverNetworkFees,
   }) = ChainSwapModel;
 
@@ -88,6 +91,7 @@ sealed class SwapModel with _$SwapModel {
         invoice: final invoice,
         receiveAddress: final receiveAddress,
         receiveTxid: final receiveTxid,
+        wasDirectPayment: final wasDirectPayment,
         fees: final fees,
         completionTime: final completionTime,
       ) =>
@@ -102,6 +106,7 @@ sealed class SwapModel with _$SwapModel {
           invoice: invoice,
           receiveAddress: receiveAddress,
           receiveTxid: receiveTxid,
+          wasDirectPayment: wasDirectPayment,
           completionTime: completionTime?.millisecondsSinceEpoch,
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
@@ -144,6 +149,7 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
+          refundFees: fees?.refundFee,
         ),
       ChainSwap(
         id: final id,
@@ -184,6 +190,7 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
+          refundFees: fees?.refundFee,
           serverNetworkFees: fees?.serverNetworkFees,
         ),
     };
@@ -203,6 +210,7 @@ sealed class SwapModel with _$SwapModel {
         :final invoice,
         :final receiveAddress,
         :final receiveTxid,
+        :final wasDirectPayment,
         :final boltzFees,
         :final lockupFees,
         :final claimFees,
@@ -219,6 +227,7 @@ sealed class SwapModel with _$SwapModel {
           invoice: invoice,
           receiveAddress: receiveAddress,
           receiveTxid: receiveTxid,
+          wasDirectPayment: wasDirectPayment,
           fees: SwapFees(
             boltzFee: boltzFees,
             lockupFee: lockupFees,
@@ -243,6 +252,7 @@ sealed class SwapModel with _$SwapModel {
         :final boltzFees,
         :final lockupFees,
         :final claimFees,
+        :final refundFees,
         :final completionTime,
       ) =>
         Swap.lnSend(
@@ -264,6 +274,7 @@ sealed class SwapModel with _$SwapModel {
             boltzFee: boltzFees,
             lockupFee: lockupFees,
             claimFee: claimFees,
+            refundFee: refundFees,
           ),
           completionTime:
               completionTime != null
@@ -285,6 +296,7 @@ sealed class SwapModel with _$SwapModel {
         :final boltzFees,
         :final lockupFees,
         :final claimFees,
+        :final refundFees,
         :final serverNetworkFees,
         :final completionTime,
       ) =>
@@ -308,6 +320,7 @@ sealed class SwapModel with _$SwapModel {
             boltzFee: boltzFees,
             lockupFee: lockupFees,
             claimFee: claimFees,
+            refundFee: refundFees,
             serverNetworkFees: serverNetworkFees,
           ),
           completionTime:
@@ -329,19 +342,30 @@ sealed class SwapModel with _$SwapModel {
   factory SwapModel.fromJson(Map<String, dynamic> json) =>
       _$SwapModelFromJson(json);
 
+  /// Rows written before schema v13 stored refunded swaps as 'completed'.
+  /// The v13 migration backfills them, but stay defensive for rows written
+  /// by an older app version against an already-migrated database.
+  static String _backfillRefundedStatus(SwapRow swap) {
+    if (swap.status == SwapStatus.completed.name && swap.refundTxid != null) {
+      return SwapStatus.refunded.name;
+    }
+    return swap.status;
+  }
+
   factory SwapModel.fromSqlite(SwapRow swap) {
     switch (swap.direction) {
       case SwapDirection.receive:
         return SwapModel.lnReceive(
           id: swap.id,
           type: swap.type,
-          status: swap.status,
+          status: _backfillRefundedStatus(swap),
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
           receiveWalletId: swap.receiveWalletId!,
           receiveAddress: swap.receiveAddress,
           receiveTxid: swap.receiveTxid,
+          wasDirectPayment: swap.wasDirectPayment,
           completionTime: swap.completionTime,
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
@@ -352,7 +376,7 @@ sealed class SwapModel with _$SwapModel {
         return SwapModel.lnSend(
           id: swap.id,
           type: swap.type,
-          status: swap.status,
+          status: _backfillRefundedStatus(swap),
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
@@ -368,12 +392,13 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
+          refundFees: swap.refundFees,
         );
       case SwapDirection.onchain:
         return SwapModel.chain(
           id: swap.id,
           type: swap.type,
-          status: swap.status,
+          status: _backfillRefundedStatus(swap),
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
@@ -390,6 +415,7 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
+          refundFees: swap.refundFees,
           serverNetworkFees: swap.serverNetworkFees,
         );
     }
@@ -410,6 +436,7 @@ sealed class SwapModel with _$SwapModel {
         invoice: swap.invoice,
         receiveAddress: swap.receiveAddress,
         receiveTxid: swap.receiveTxid,
+        wasDirectPayment: swap.wasDirectPayment,
         completionTime: swap.completionTime,
         boltzFees: swap.boltzFees,
         lockupFees: swap.lockupFees,
@@ -437,6 +464,8 @@ sealed class SwapModel with _$SwapModel {
         boltzFees: swap.boltzFees,
         lockupFees: swap.lockupFees,
         claimFees: swap.claimFees,
+        refundFees: swap.refundFees,
+        wasDirectPayment: false,
       );
     } else if (this is ChainSwapModel) {
       final swap = this as ChainSwapModel;
@@ -462,7 +491,9 @@ sealed class SwapModel with _$SwapModel {
         boltzFees: swap.boltzFees,
         lockupFees: swap.lockupFees,
         claimFees: swap.claimFees,
+        refundFees: swap.refundFees,
         serverNetworkFees: swap.serverNetworkFees,
+        wasDirectPayment: false,
       );
     } else {
       throw UnsupportedError('$SwapModel unsupported: $runtimeType');

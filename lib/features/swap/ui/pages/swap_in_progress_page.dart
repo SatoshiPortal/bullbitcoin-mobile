@@ -103,8 +103,9 @@ class SwapInProgressPage extends StatelessWidget {
                           textAlign: .center,
                         ),
                       ],
-                      if (swap?.status == SwapStatus.completed &&
-                          swap?.refundTxid != null) ...[
+                      if (swap?.status == SwapStatus.refunded ||
+                          (swap?.status == SwapStatus.completed &&
+                              swap?.refundTxid != null)) ...[
                         Text(
                           context.loc.swapTransferRefundedTitle,
                           style: context.font.headlineLarge?.copyWith(
@@ -125,8 +126,8 @@ class SwapInProgressPage extends StatelessWidget {
                   ),
                 ),
                 const Spacer(flex: 2),
-                if (swap?.status != SwapStatus.completed) ...[
-                  if (swap?.status != SwapStatus.completed) ...[
+                if (!(swap?.status.isTerminal ?? false)) ...[
+                  if (!(swap?.status.isTerminal ?? false)) ...[
                     InfoCard(
                       description: context.loc.swapDoNotUninstallWarning,
                       tagColor: context.appColors.tertiary,

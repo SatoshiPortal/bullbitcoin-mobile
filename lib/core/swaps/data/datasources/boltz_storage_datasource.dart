@@ -83,6 +83,14 @@ class BoltzStorageDatasource {
     return SwapModel.fromSqlite(swap);
   }
 
+  Stream<SwapModel> watchSwap(String swapId) {
+    return _localSwapStorage.managers.swaps
+        .filter((f) => f.id(swapId))
+        .watchSingleOrNull()
+        .where((row) => row != null)
+        .map((row) => SwapModel.fromSqlite(row!));
+  }
+
   Future<LnReceiveSwapModel?> fetchLnReceiveSwapModel(String swapId) async {
     final SwapModel? swap = await fetch(swapId);
     if (swap == null) return null;

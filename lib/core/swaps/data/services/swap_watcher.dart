@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
@@ -11,34 +11,40 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
+/// Listens to swap status updates and executes the client-side swap actions:
+/// claims, refunds and cooperative closes.
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
-  final SettingsRepository _settingsRepository;
 
-  final StreamController<Swap> _swapStreamController =
-      StreamController<Swap>.broadcast();
   StreamSubscription<Swap>? _swapStreamSubscription;
-  final Set<String> _processingSwapIds = {};
+
+  final Map<String, Future<void>> _inflight = {};
+  final Map<String, Swap> _queuedNext = {};
+  final Map<String, ({int attempts, DateTime nextAttemptAt})> _retrySchedule =
+      {};
+
+  static const _actionTimeout = Duration(minutes: 3);
+  static const _maxRetryDelay = Duration(minutes: 30);
+
+  /// A websocket can be connected but mute (server-side subscription lost,
+  /// half-open TCP that answers protocol pings). While swaps are ongoing,
+  /// reconcile their status over REST on a fixed cadence so staleness is
+  /// bounded by this interval no matter what the socket claims.
+  static const _reconcileInterval = Duration(minutes: 3);
+  Timer? _reconcileTimer;
+  bool _reconciling = false;
 
   SwapWatcherService({
     required this._boltzRepo,
     required this._walletAddressRepository,
     required this._feesRepository,
-    required this._settingsRepository,
+    bool autoStart = true,
   }) {
-    unawaited(startWatching());
-  }
-
-  Stream<Swap> get swapStream => _swapStreamController.stream;
-
-  /// Helper method to extract readable error messages from BoltzError
-  String _extractErrorMessage(Object error) {
-    if (error is boltz.BoltzError) {
-      return error.message;
+    if (autoStart) {
+      unawaited(startWatching());
     }
-    return error.toString();
   }
 
   Future<void> startWatching() async {
@@ -46,954 +52,783 @@ class SwapWatcherService {
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
         log.fine(
-          '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "startWatching"}',
+          '[SwapWatcher] update swap=${swap.id} status=${swap.status.name}',
         );
-        _swapStreamController.add(swap);
         await processSwap(swap);
       },
-      onError: (error) {
+      onError: (Object error) {
         log.severe(
           message: 'Swap stream error in watcher',
           error: error,
           trace: StackTrace.current,
         );
       },
-      onDone: () {
-        log.fine('Swap stream done in watcher.');
-      },
       cancelOnError: false,
     );
-    log.fine('Swap watcher started and listening');
+    _reconcileTimer ??= Timer.periodic(
+      _reconcileInterval,
+      (_) => unawaited(_reconcileOngoing()),
+    );
+    log.fine('[SwapWatcher] started and listening');
+  }
+
+  Future<void> stopWatching() async {
+    _reconcileTimer?.cancel();
+    _reconcileTimer = null;
+    await _swapStreamSubscription?.cancel();
+    _swapStreamSubscription = null;
+    log.fine('[SwapWatcher] stopped');
+  }
+
+  Future<void> _reconcileOngoing() async {
+    if (_reconciling) return;
+    _reconciling = true;
+    try {
+      final swaps = await _boltzRepo.getOngoingSwaps();
+      if (swaps.isEmpty) return;
+      final ids = swaps.map((s) => s.id).toSet().toList();
+      log.fine('[SwapWatcher] heartbeat reconcile of ${ids.length} swaps');
+      _boltzRepo.subscribeToSwaps(ids);
+      await _boltzRepo.reconcileSwaps(ids);
+    } catch (e) {
+      log.warning('[SwapWatcher] heartbeat reconcile failed: $e');
+    } finally {
+      _reconciling = false;
+    }
   }
 
   Future<void> restartWatcherWithOngoingSwaps() async {
-    await _swapStreamSubscription?.cancel();
+    if (_swapStreamSubscription == null) {
+      await startWatching();
+    }
     final swaps = await _boltzRepo.getOngoingSwaps();
-    final swapIdsRaw = swaps.map((swap) => swap.id).toList();
-    final swapIdsToWatch = swapIdsRaw.toSet().toList();
+    final swapIdsToWatch = swaps.map((swap) => swap.id).toSet().toList();
 
-    await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
-    await startWatching();
-  }
-
-  Future<void> processSwap(Swap swap) async {
-    if (_processingSwapIds.contains(swap.id)) {
-      log.fine(
-        '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "delaying_already_processing", "currentlyProcessing": true, "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      await Future.delayed(const Duration(seconds: 3));
-      // return;
+    for (final swapId in swapIdsToWatch) {
+      _clearRetries(swapId);
     }
 
-    _processingSwapIds.add(swap.id);
-    log.fine(
-      '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
-    try {
-      switch (swap.status) {
-        case SwapStatus.claimable:
-          switch (swap.type) {
-            case SwapType.lightningToBitcoin:
-              await _claimReceiveLnToBitcoin(swap: swap as LnReceiveSwap);
-            case SwapType.lightningToLiquid:
-              await _claimReceiveLnToLiquid(swap: swap as LnReceiveSwap);
-            case SwapType.liquidToBitcoin:
-              await _claimChainLiquidToBitcoin(swap: swap as ChainSwap);
-            case SwapType.bitcoinToLiquid:
-              await _claimChainBitcoinToLiquid(swap: swap as ChainSwap);
-            default:
-              return;
-          }
-        case SwapStatus.refundable:
-          switch (swap.type) {
-            case SwapType.bitcoinToLightning:
-              await _refundSendBitcoinToLn(swap: swap as LnSendSwap);
-            case SwapType.liquidToLightning:
-              await _refundSendLiquidToLn(swap: swap as LnSendSwap);
-            case SwapType.liquidToBitcoin:
-              await _refundChainLiquidToBitcoin(swap: swap as ChainSwap);
-            case SwapType.bitcoinToLiquid:
-              await _refundChainBitcoinToLiquid(swap: swap as ChainSwap);
-            default:
-              return;
-          }
+    _boltzRepo.subscribeToSwaps(swapIdsToWatch);
+    await _boltzRepo.reconcileSwaps(swapIdsToWatch);
+  }
 
-        case SwapStatus.canCoop:
-          switch (swap.type) {
-            case SwapType.bitcoinToLightning:
-              await _coopCloseSendBitcoinToLn(swap: swap as LnSendSwap);
-            case SwapType.liquidToLightning:
-              await _coopCloseSendLiquidToLn(swap: swap as LnSendSwap);
-            default:
-              return;
-          }
-
-        case SwapStatus.completed:
-          await _processCompletedSwap(swap: swap);
-
-        case SwapStatus.pending:
-        case SwapStatus.paid:
-        case SwapStatus.expired:
-        case SwapStatus.failed:
-          return;
+  /// Reconciles and processes every ongoing swap to completion. Used by the
+  /// background task, which has no long-lived websocket.
+  Future<void> processOngoingSwapsOnce() async {
+    final swaps = await _boltzRepo.getOngoingSwaps();
+    final ids = swaps.map((s) => s.id).toSet().toList();
+    await _boltzRepo.reconcileSwaps(ids);
+    final refreshed = await _boltzRepo.getOngoingSwaps();
+    for (final swap in refreshed) {
+      if (swap.requiresAction) {
+        await processSwap(swap);
       }
-      // ignore: empty_catches
-    } catch (e) {
+    }
+  }
+
+  Future<void> processSwap(Swap swap) {
+    final existing = _inflight[swap.id];
+    if (existing != null) {
+      _queuedNext[swap.id] = swap;
+      return existing;
+    }
+
+    final future = _processSwapNow(swap).whenComplete(() {
+      _inflight.remove(swap.id);
+      final next = _queuedNext.remove(swap.id);
+      if (next != null) {
+        unawaited(processSwap(next));
+      }
+    });
+    _inflight[swap.id] = future;
+    return future;
+  }
+
+  Future<void> _processSwapNow(Swap incoming) async {
+    Swap swap;
+    try {
+      swap = await _boltzRepo.getSwap(swapId: incoming.id);
+    } catch (_) {
+      swap = incoming;
+    }
+
+    final needsAction = switch (swap.status) {
+      SwapStatus.claimable ||
+      SwapStatus.refundable ||
+      SwapStatus.canCoop ||
+      SwapStatus.completed => true,
+      _ => false,
+    };
+    if (!needsAction) return;
+
+    if (!_shouldAttempt(swap.id)) {
+      log.fine(
+        '[SwapWatcher] swap ${swap.id} backing off until '
+        '${_retrySchedule[swap.id]?.nextAttemptAt}',
+      );
+      return;
+    }
+
+    final actionStartedAt = DateTime.now();
+    try {
+      await _dispatch(swap).timeout(_actionTimeout);
+    } on TimeoutException {
+      // When the app is suspended mid-action the isolate freezes and the
+      // timeout fires immediately on resume — that's not a failure, the
+      // thawed action usually completes seconds later. The backoff below is
+      // kept either way: it shields the still-running action from a
+      // competing attempt.
+      final elapsed = DateTime.now().difference(actionStartedAt);
+      final wasSuspended = elapsed > _actionTimeout * 2;
+      if (wasSuspended) {
+        log.info(
+          '[SwapWatcher] action for swap ${swap.id} interrupted by app '
+          'suspension (${elapsed.inMinutes}m elapsed); it may still '
+          'complete now that the app resumed',
+        );
+      } else {
+        log.severe(
+          message:
+              '[SwapWatcher] action for swap ${swap.id} timed out after '
+              '$_actionTimeout',
+          error: TimeoutException('swap action timeout'),
+          trace: StackTrace.current,
+        );
+      }
+      _recordFailure(swap.id);
+      _boltzRepo.subscribeToSwaps([swap.id]);
+    } catch (e, st) {
       log.severe(
-        message: 'Error processing swap',
+        message: '[SwapWatcher] error processing swap ${swap.id}',
         error: e,
+        trace: st,
+      );
+      _recordFailure(swap.id);
+    }
+  }
+
+  Future<void> _dispatch(Swap swap) async {
+    switch (swap.status) {
+      case SwapStatus.claimable:
+        switch (swap.type) {
+          case SwapType.lightningToBitcoin:
+          case SwapType.lightningToLiquid:
+            await _claimLnReceive(swap as LnReceiveSwap);
+          case SwapType.liquidToBitcoin:
+          case SwapType.bitcoinToLiquid:
+            await _claimChain(swap as ChainSwap);
+          default:
+            return;
+        }
+      case SwapStatus.refundable:
+        switch (swap.type) {
+          case SwapType.bitcoinToLightning:
+          case SwapType.liquidToLightning:
+            await _refundLnSend(swap as LnSendSwap);
+          case SwapType.liquidToBitcoin:
+          case SwapType.bitcoinToLiquid:
+            await _refundChain(swap as ChainSwap);
+          default:
+            return;
+        }
+      case SwapStatus.canCoop:
+        switch (swap.type) {
+          case SwapType.bitcoinToLightning:
+          case SwapType.liquidToLightning:
+            await _coopCloseSend(swap as LnSendSwap);
+          default:
+            return;
+        }
+      case SwapStatus.completed:
+        await _processCompletedSwap(swap);
+      case SwapStatus.pending:
+      case SwapStatus.paid:
+      case SwapStatus.refunded:
+      case SwapStatus.expired:
+      case SwapStatus.failed:
+        return;
+    }
+  }
+
+  // CLAIMS
+
+  Future<void> _claimLnReceive(LnReceiveSwap swap) async {
+    if (swap.receiveTxid != null || swap.wasDirectPayment) {
+      return;
+    }
+    final receiveAddress = swap.receiveAddress;
+    if (receiveAddress == null) {
+      // Unrecoverable configuration problem: keep the swap claimable (the
+      // funds stay claimable via rescue tooling) but stop hot-looping.
+      log.severe(
+        message:
+            '[SwapWatcher] swap ${swap.id} is claimable but has no receive '
+            'address',
+        error: StateError('missing receive address'),
         trace: StackTrace.current,
       );
-    } finally {
-      Future.delayed(const Duration(seconds: 1), () {
-        _processingSwapIds.remove(swap.id);
-        log.fine(
-          '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
-        );
-      });
+      _recordFailure(swap.id);
+      return;
     }
-  }
 
-  Future<void> _claimReceiveLnToBitcoin({required LnReceiveSwap swap}) async {
-    try {
-      if (swap.receiveTxid != null) {
-        return;
-      }
-      final receiveAddress = swap.receiveAddress;
-      if (receiveAddress == null) {
-        throw Exception('Receive address is null');
-      }
-
-      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String claimTxId;
-      try {
-        claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          bitcoinAddress: swap.receiveAddress!,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              "Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend",
-          error: e,
-          trace: st,
-        );
-        claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          bitcoinAddress: swap.receiveAddress!,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        receiveTxid: claimTxId,
-        receiveAddress: swap.receiveAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to claim Lightning to Bitcoin swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processReceiveLnToBitcoinClaim',
-        isClaim: true,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
-    }
-  }
-
-  Future<void> _claimReceiveLnToLiquid({required LnReceiveSwap swap}) async {
-    try {
-      if (swap.receiveTxid != null) {
-        return;
-      }
-      final receiveAddress = swap.receiveAddress;
-      if (receiveAddress == null) {
-        throw Exception('Receive address is null');
-      }
-
-      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String claimTxId;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      try {
-        claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          liquidAddress: receiveAddress,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              'Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend. Action: coop_claim_failed_fallback_script, Timestamp: ${DateTime.now().toIso8601String()}',
-          error: e,
-          trace: st,
-        );
-        claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          liquidAddress: receiveAddress,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        receiveTxid: claimTxId,
-        receiveAddress: receiveAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-      _swapStreamController.add(updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to claim Lightning to Liquid swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processReceiveLnToLiquidClaim',
-        isClaim: true,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
-    }
-  }
-
-  Future<void> _coopCloseSendBitcoinToLn({required LnSendSwap swap}) async {
-    log.fine(
-      '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnCoopSign", "action": "coop_close_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
+    final isLiquid = swap.type == SwapType.lightningToLiquid;
+    final absoluteFees = await _claimFees(
+      swap: swap,
+      isLiquid: isLiquid,
+      amountSat: _amountSatOrNull(swap),
     );
+    // Unsubscribe before broadcasting so a status replay can't race the
+    // local state write; we re-subscribe on failure.
+    _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
+    try {
+      String claimTxId;
+      try {
+        claimTxId = isLiquid
+            ? await _boltzRepo.claimLightningToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidAddress: receiveAddress,
+              )
+            : await _boltzRepo.claimLightningToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinAddress: receiveAddress,
+              );
+      } catch (e, st) {
+        log.severe(
+          message:
+              '[SwapWatcher] coop claim failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+          error: e,
+          trace: st,
+        );
+        claimTxId = isLiquid
+            ? await _boltzRepo.claimLightningToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidAddress: receiveAddress,
+                cooperate: false,
+              )
+            : await _boltzRepo.claimLightningToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinAddress: receiveAddress,
+                cooperate: false,
+              );
+      }
+      await _finishAction(
+        swap,
+        isClaim: true,
+        txid: claimTxId,
+        actualFees: absoluteFees,
+      );
+    } catch (e, st) {
+      await _handleActionFailure(swap, isClaim: true, error: e, trace: st);
+    }
+  }
+
+  Future<void> _claimChain(ChainSwap swap) async {
+    if (swap.receiveTxid != null) {
+      return;
+    }
+    final claimAddress = await _resolveChainClaimAddress(swap);
+    if (claimAddress == null) {
+      log.severe(
+        message:
+            '[SwapWatcher] chain swap ${swap.id} is claimable but has '
+            'neither a receive wallet nor a receive address',
+        error: StateError('missing claim address'),
+        trace: StackTrace.current,
+      );
+      _recordFailure(swap.id);
+      return;
+    }
+
+    // Claim happens on the receiving chain.
+    final claimOnLiquid = swap.type == SwapType.bitcoinToLiquid;
+    final absoluteFees = await _claimFees(
+      swap: swap,
+      isLiquid: claimOnLiquid,
+      amountSat: swap.paymentAmount,
+      chainClaimAddress: claimAddress,
+    );
+    _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
+    try {
+      String claimTxid;
+      try {
+        claimTxid = claimOnLiquid
+            ? await _boltzRepo.claimBitcoinToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidClaimAddress: claimAddress,
+              )
+            : await _boltzRepo.claimLiquidToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinClaimAddress: claimAddress,
+              );
+      } catch (e, st) {
+        log.severe(
+          message:
+              '[SwapWatcher] coop claim failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+          error: e,
+          trace: st,
+        );
+        claimTxid = claimOnLiquid
+            ? await _boltzRepo.claimBitcoinToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidClaimAddress: claimAddress,
+                cooperate: false,
+              )
+            : await _boltzRepo.claimLiquidToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinClaimAddress: claimAddress,
+                cooperate: false,
+              );
+      }
+      await _finishAction(
+        swap,
+        isClaim: true,
+        txid: claimTxid,
+        actualFees: absoluteFees,
+        claimAddress: claimAddress,
+      );
+    } catch (e, st) {
+      await _handleActionFailure(swap, isClaim: true, error: e, trace: st);
+    }
+  }
+
+  // REFUNDS
+
+  Future<void> _refundLnSend(LnSendSwap swap) async {
+    if (swap.refundTxid != null) {
+      return;
+    }
+    final isLiquid = swap.type == SwapType.liquidToLightning;
+
+    try {
+      // Setup (address, fee, tx size) is inside the try so that a failure
+      // here — notably boltz's "No user_lock transaction" when a lockup was
+      // already spent/pruned — still routes through outspend recovery, which
+      // can detect an already-refunded lockup and resolve the swap.
+      final refundAddress = await _resolveRefundAddress(
+        swap.id,
+        swap.sendWalletId,
+        swap.refundAddress,
+      );
+      final networkFee = await _feesRepository.getNetworkFees(
+        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
+      );
+      final txSize = await _boltzRepo.getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+      );
+      var absoluteFees = _absoluteWithFloor(
+        networkFee.toAbsolute(txSize).fastest.value.toInt(),
+        txSize: txSize,
+        isLiquid: isLiquid,
+      );
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
+      String refundTxid;
+      try {
+        refundTxid = isLiquid
+            ? await _boltzRepo.refundLiquidToLightningSwap(
+                swapId: swap.id,
+                liquidAddress: refundAddress,
+                absoluteFees: absoluteFees,
+              )
+            : await _boltzRepo.refundBitcoinToLightningSwap(
+                swapId: swap.id,
+                bitcoinAddress: refundAddress,
+                absoluteFees: absoluteFees,
+              );
+      } catch (e, st) {
+        log.severe(
+          message:
+              '[SwapWatcher] coop refund failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+          error: e,
+          trace: st,
+        );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+        );
+        absoluteFees = _absoluteWithFloor(
+          networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
+          txSize: scriptPathTxSize,
+          isLiquid: isLiquid,
+        );
+        refundTxid = isLiquid
+            ? await _boltzRepo.refundLiquidToLightningSwap(
+                swapId: swap.id,
+                liquidAddress: refundAddress,
+                absoluteFees: absoluteFees,
+                cooperate: false,
+              )
+            : await _boltzRepo.refundBitcoinToLightningSwap(
+                swapId: swap.id,
+                bitcoinAddress: refundAddress,
+                absoluteFees: absoluteFees,
+                cooperate: false,
+              );
+      }
+      await _finishAction(
+        swap,
+        isClaim: false,
+        txid: refundTxid,
+        actualFees: absoluteFees,
+        refundAddress: refundAddress,
+      );
+    } catch (e, st) {
+      await _handleActionFailure(swap, isClaim: false, error: e, trace: st);
+    }
+  }
+
+  Future<void> _refundChain(ChainSwap swap) async {
+    if (swap.refundTxid != null) {
+      return;
+    }
+    // Refund happens on the sending chain.
+    final refundOnLiquid = swap.type == SwapType.liquidToBitcoin;
+
+    try {
+      // Setup is inside the try so a "No user_lock transaction" failure
+      // (lockup already spent/pruned) routes through outspend recovery,
+      // which can detect the already-refunded lockup and resolve the swap.
+      final refundAddress = await _resolveRefundAddress(
+        swap.id,
+        swap.sendWalletId,
+        swap.refundAddress,
+      );
+      final networkFee = await _feesRepository.getNetworkFees(
+        network: Network.fromEnvironment(
+          isTestnet: false,
+          isLiquid: refundOnLiquid,
+        ),
+      );
+      final txSize = await _boltzRepo.getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+        refundAddressForChainSwaps: refundAddress,
+      );
+      var absoluteFees = _absoluteWithFloor(
+        networkFee.toAbsolute(txSize).fastest.value.toInt(),
+        txSize: txSize,
+        isLiquid: refundOnLiquid,
+      );
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
+      String refundTxid;
+      try {
+        refundTxid = refundOnLiquid
+            ? await _boltzRepo.refundLiquidToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidRefundAddress: refundAddress,
+              )
+            : await _boltzRepo.refundBitcoinToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinRefundAddress: refundAddress,
+              );
+      } catch (e, st) {
+        log.severe(
+          message:
+              '[SwapWatcher] coop refund failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+          error: e,
+          trace: st,
+        );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+          refundAddressForChainSwaps: refundAddress,
+        );
+        absoluteFees = _absoluteWithFloor(
+          networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
+          txSize: scriptPathTxSize,
+          isLiquid: refundOnLiquid,
+        );
+        refundTxid = refundOnLiquid
+            ? await _boltzRepo.refundLiquidToBitcoinSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                liquidRefundAddress: refundAddress,
+                cooperate: false,
+              )
+            : await _boltzRepo.refundBitcoinToLiquidSwap(
+                swapId: swap.id,
+                absoluteFees: absoluteFees,
+                bitcoinRefundAddress: refundAddress,
+                cooperate: false,
+              );
+      }
+      await _finishAction(
+        swap,
+        isClaim: false,
+        txid: refundTxid,
+        actualFees: absoluteFees,
+        refundAddress: refundAddress,
+      );
+    } catch (e, st) {
+      await _handleActionFailure(swap, isClaim: false, error: e, trace: st);
+    }
+  }
+
+  // COOP CLOSE
+
+  /// Provides Boltz our key-path signature so it can claim cheaply. A failure
+  /// here is not fatal: the payment is already made and the swap completes via
+  /// transaction.claimed when Boltz spends script-path (this also covers
+  /// batched sub-minimum swaps where no per-swap coop close exists).
+  Future<void> _coopCloseSend(LnSendSwap swap) async {
     try {
       if (swap.preimage == null) {
         final preimage = await _boltzRepo.getSendSwapPreimage(swapId: swap.id);
         if (preimage != null) {
-          await _boltzRepo.updateSwap(swap: swap.copyWith(preimage: preimage));
+          await _boltzRepo.updateSwapFields(swap.id, preimage: preimage);
         }
       }
-      await _boltzRepo.coopSignBitcoinToLightningSwap(swapId: swap.id);
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnCoopSign", "action": "coop_close_succeeded", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      final updatedSwap = swap.copyWith(
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Cooperative close failed for Bitcoin to Lightning swap: ${_extractErrorMessage(e)}. Action: coop_close_failed, Timestamp: ${DateTime.now().toIso8601String()}',
-        error: e,
-        trace: st,
-      );
-      rethrow;
-    }
-  }
-
-  Future<void> _coopCloseSendLiquidToLn({required LnSendSwap swap}) async {
-    log.fine(
-      '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "coop_close_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
-    try {
-      final isBatched = swap.paymentAmount < 1000;
-      if (isBatched) {
-        // need to think about how to handle preimage for this
-        log.fine(
-          '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "batched_completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
-        );
+      if (swap.type == SwapType.bitcoinToLightning) {
+        await _boltzRepo.coopSignBitcoinToLightningSwap(swapId: swap.id);
       } else {
-        if (swap.preimage == null) {
-          final preimage = await _boltzRepo.getSendSwapPreimage(
-            swapId: swap.id,
-          );
-          if (preimage != null) {
-            await _boltzRepo.updateSwap(
-              swap: swap.copyWith(preimage: preimage),
-            );
-          }
-        }
         await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
-        log.fine(
-          '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "coop_close_succeeded", "timestamp": "${DateTime.now().toIso8601String()}"}',
-        );
       }
-      final updatedSwap = swap.copyWith(
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-      // Emit the updated swap so listeners (like SendCubit) receive the completion
-      _swapStreamController.add(updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
+      _clearRetries(swap.id);
+      log.info('[SwapWatcher] coop close succeeded for ${swap.id}');
     } catch (e, st) {
       log.severe(
         message:
-            'Cooperative close failed for Liquid to Lightning swap: ${_extractErrorMessage(e)}. Action: coop_close_failed, Timestamp: ${DateTime.now().toIso8601String()}',
+            '[SwapWatcher] coop close failed for ${swap.id} '
+            '(${_errorMessage(e)}); swap will complete via '
+            'transaction.claimed',
         error: e,
         trace: st,
       );
-      rethrow;
+      _recordFailure(swap.id);
     }
   }
 
-  Future<void> _refundSendLiquidToLn({required LnSendSwap swap}) async {
+  // COMPLETED REPROCESSING
+
+  /// A completed swap without a recorded claim tx means the claim was never
+  /// recorded — reopen and re-claim. Direct (MRH) payments are exempt: no
+  /// lockup exists and there is nothing to claim.
+  Future<void> _processCompletedSwap(Swap swap) async {
+    final needsReclaim = switch (swap) {
+      LnReceiveSwap(:final receiveTxid, :final wasDirectPayment) =>
+        receiveTxid == null && !wasDirectPayment,
+      ChainSwap(:final receiveTxid, :final refundTxid) =>
+        receiveTxid == null && refundTxid == null,
+      LnSendSwap() => false,
+    };
+    if (!needsReclaim) return;
+
+    final updated = await _boltzRepo.updateSwapFields(
+      swap.id,
+      status: SwapStatus.claimable,
+    );
+    unawaited(processSwap(updated));
+  }
+
+  // SHARED HELPERS
+
+  /// Live network fees for a claim, computed at execution time from our own
+  /// fee estimation (mempool-based), never from the creation-time Boltz
+  /// estimate. Falls back to the stored estimate only when live estimation
+  /// fails entirely.
+  Future<int> _claimFees({
+    required Swap swap,
+    required bool isLiquid,
+    required int? amountSat,
+    String? chainClaimAddress,
+  }) async {
     try {
-      if (swap.refundTxid != null) {
-        return;
-      }
-      String refundAddress;
-      if (swap.refundAddress != null) {
-        refundAddress = swap.refundAddress!;
-      } else {
-        final address = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.sendWalletId);
-        refundAddress = address.address;
-        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
-        await _boltzRepo.updateSwap(swap: updatedSwap);
-      }
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: true,
-      );
-      final networkFee = await _feesRepository.getNetworkFees(network: network);
-      final txSize = await _boltzRepo.getSwapRefundTxSize(
+      final txSize = await _boltzRepo.getSwapClaimTxSize(
         swapId: swap.id,
         swapType: swap.type,
+        claimAddressForChainSwaps: chainClaimAddress,
       );
-      final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-
-      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String refundTxid;
-      int actualFeesUsed;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnRefund", "action": "coop_refund_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
+      final networkFee = await _feesRepository.getNetworkFees(
+        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
       );
-      try {
-        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
-          swapId: swap.id,
-          liquidAddress: refundAddress,
-          absoluteFees: actualFeesUsed,
-        );
-      } catch (e, st) {
-        log.severe(
-          message: "Coop refund failed. Attempting script path spend",
-          error: e,
-          trace: st,
-        );
-        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          isCooperative: false,
-        );
-        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
-        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
-          swapId: swap.id,
-          liquidAddress: refundAddress,
-          absoluteFees: actualFeesUsed,
-          cooperate: false,
-        );
+      final live = networkFee.toAbsolute(txSize).fastest.value.toInt();
+      final withFloor = _absoluteWithFloor(
+        live,
+        txSize: txSize,
+        isLiquid: isLiquid,
+      );
+      // Never burn more than half the swap on fees, but never drop below the
+      // relay floor or the claim tx becomes unbroadcastable.
+      if (amountSat != null && amountSat > 0) {
+        final floor = _relayFloor(txSize: txSize, isLiquid: isLiquid);
+        return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
       }
-      final updatedSwap = swap.copyWith(
-        refundTxid: refundTxid,
-        refundAddress: refundAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
+      return withFloor;
+    } catch (e) {
+      final fallback = swap.fees?.claimFee;
+      log.warning(
+        '[SwapWatcher] live claim fee estimation failed for ${swap.id} '
+        '($e); falling back to stored estimate $fallback',
       );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to refund Liquid to Lightning swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processSendLiquidToLnRefund',
-        isClaim: false,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
+      if (fallback == null) rethrow;
+      return fallback;
     }
   }
 
-  Future<void> _refundSendBitcoinToLn({required LnSendSwap swap}) async {
-    try {
-      if (swap.refundTxid != null) {
-        return;
-      }
-      String refundAddress;
-      if (swap.refundAddress != null) {
-        refundAddress = swap.refundAddress!;
-      } else {
-        final address = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.sendWalletId);
-        refundAddress = address.address;
-        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
-        await _boltzRepo.updateSwap(swap: updatedSwap);
-      }
+  /// Floors an absolute fee at the network's relay minimum so a low estimate
+  /// can never produce an unbroadcastable transaction. Liquid floors at
+  /// 0.1 sat/vb (plus discount-CT padding), Bitcoin at 1 sat/vb.
+  int _relayFloor({required int txSize, required bool isLiquid}) =>
+      isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
 
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: false,
-      );
-      final networkFee = await _feesRepository.getNetworkFees(network: network);
-      final txSize = await _boltzRepo.getSwapRefundTxSize(
-        swapId: swap.id,
-        swapType: swap.type,
-      );
-      final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-
-      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String refundTxid;
-      int actualFeesUsed;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnRefund", "action": "coop_refund_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      try {
-        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
-          swapId: swap.id,
-          bitcoinAddress: refundAddress,
-          absoluteFees: actualFeesUsed,
-        );
-      } catch (e, st) {
-        log.severe(
-          message: "Coop refund failed. Attempting script path spend",
-          error: e,
-          trace: st,
-        );
-        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          isCooperative: false,
-        );
-        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
-        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
-          swapId: swap.id,
-          bitcoinAddress: refundAddress,
-          absoluteFees: actualFeesUsed,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        refundTxid: refundTxid,
-        refundAddress: refundAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to refund Bitcoin to Lightning swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processSendBitcoinToLnRefund',
-        isClaim: false,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
-    }
+  int _absoluteWithFloor(
+    int absolute, {
+    required int txSize,
+    required bool isLiquid,
+  }) {
+    return max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
   }
 
-  Future<void> _claimChainLiquidToBitcoin({required ChainSwap swap}) async {
-    try {
-      if (swap.receiveTxid != null) {
-        return;
+  Future<String?> _resolveChainClaimAddress(ChainSwap swap) async {
+    final existing = swap.receiveAddress;
+    if (existing != null) {
+      if (existing.startsWith('bitcoin:') ||
+          existing.startsWith('liquidnetwork:') ||
+          existing.startsWith('liquidtestnet:')) {
+        return bip21.decode(existing).address;
       }
-      String finalClaimAddress;
-      if (swap.receiveWalletId != null) {
-        if (swap.receiveAddress != null) {
-          // Use existing receive address if available
-          if (swap.receiveAddress!.startsWith('bitcoin:')) {
-            final uri = bip21.decode(swap.receiveAddress!);
-            final address = uri.address;
-            finalClaimAddress = address;
-          } else {
-            finalClaimAddress = swap.receiveAddress!;
-          }
-        } else {
-          // Generate new address and store it in the swap model
-          final claimAddress = await _walletAddressRepository
-              .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
-          finalClaimAddress = claimAddress.address;
-          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
-          await _boltzRepo.updateSwap(swap: updatedSwap);
-        }
-      } else {
-        if (swap.receiveAddress!.startsWith('bitcoin:')) {
-          final uri = bip21.decode(swap.receiveAddress!);
-          final address = uri.address;
-          finalClaimAddress = address;
-        } else {
-          finalClaimAddress = swap.receiveAddress!;
-        }
-      }
-      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String claimTxid;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      try {
-        claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          bitcoinClaimAddress: finalClaimAddress,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              '"Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
-          error: e,
-          trace: st,
-        );
-        claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          bitcoinClaimAddress: finalClaimAddress,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        receiveTxid: claimTxid,
-        receiveAddress: finalClaimAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to claim Liquid to Bitcoin chain swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processChainLiquidToBitcoinClaim',
-        isClaim: true,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
+      return existing;
     }
+    final receiveWalletId = swap.receiveWalletId;
+    if (receiveWalletId == null) return null;
+    final claimAddress = await _walletAddressRepository
+        .generateNewReceiveAddress(walletId: receiveWalletId);
+    await _boltzRepo.updateSwapFields(
+      swap.id,
+      receiveAddress: claimAddress.address,
+    );
+    return claimAddress.address;
   }
 
-  Future<void> _claimChainBitcoinToLiquid({required ChainSwap swap}) async {
-    try {
-      if (swap.receiveTxid != null) {
-        return;
-      }
-      String finalClaimAddress;
-      if (swap.receiveWalletId != null) {
-        if (swap.receiveAddress != null) {
-          // Use existing receive address if available
-          if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
-              swap.receiveAddress!.startsWith('liquidtestnet:')) {
-            final uri = bip21.decode(swap.receiveAddress!);
-            final address = uri.address;
-            finalClaimAddress = address;
-          } else {
-            finalClaimAddress = swap.receiveAddress!;
-          }
-        } else {
-          // Generate new address and store it in the swap model
-          final claimAddress = await _walletAddressRepository
-              .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
-          finalClaimAddress = claimAddress.address;
-          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
-          await _boltzRepo.updateSwap(swap: updatedSwap);
-        }
-      } else {
-        if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
-            swap.receiveAddress!.startsWith('liquidtestnet:')) {
-          final uri = bip21.decode(swap.receiveAddress!);
-          final address = uri.address;
-          finalClaimAddress = address;
-        } else {
-          finalClaimAddress = swap.receiveAddress!;
-        }
-      }
-
-      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String claimTxid;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      try {
-        claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          liquidClaimAddress: finalClaimAddress,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              "Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend",
-          error: e,
-          trace: st,
-        );
-        claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
-          liquidClaimAddress: finalClaimAddress,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        receiveTxid: claimTxid,
-        receiveAddress: finalClaimAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to claim Bitcoin to Liquid chain swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processChainBitcoinToLiquidClaim',
-        isClaim: true,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
-    }
+  Future<String> _resolveRefundAddress(
+    String swapId,
+    String sendWalletId,
+    String? existing,
+  ) async {
+    if (existing != null) return existing;
+    final address = await _walletAddressRepository.generateNewReceiveAddress(
+      walletId: sendWalletId,
+    );
+    await _boltzRepo.updateSwapFields(swapId, refundAddress: address.address);
+    return address.address;
   }
 
-  Future<void> _refundChainLiquidToBitcoin({required ChainSwap swap}) async {
-    try {
-      // Log entire ChainSwap object for debugging
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "action": "entering_refund_flow", "swap": $swap, "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      if (swap.refundTxid != null) {
-        return;
-      }
-      String refundAddress;
-      if (swap.refundAddress != null) {
-        refundAddress = swap.refundAddress!;
-      } else {
-        final address = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.sendWalletId);
-        refundAddress = address.address;
-        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
-        await _boltzRepo.updateSwap(swap: updatedSwap);
-      }
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: true,
-      );
-      final networkFee = await _feesRepository.getNetworkFees(network: network);
-      final txSize = await _boltzRepo.getSwapRefundTxSize(
-        swapId: swap.id,
-        swapType: swap.type,
-        refundAddressForChainSwaps: refundAddress,
-      );
-      final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-
-      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
-
-      String refundTxid;
-      int actualFeesUsed;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund", "action": "coop_refund_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      try {
-        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt() + 3;
-        refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: actualFeesUsed,
-          liquidRefundAddress: refundAddress,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              "Coop refund failed (${_extractErrorMessage(e)}). Attempting script path spend",
-          error: e,
-          trace: st,
-        );
-        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          isCooperative: false,
-          refundAddressForChainSwaps: refundAddress,
-        );
-        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
-        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt() + 3;
-        refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
-          swapId: swap.id,
-          absoluteFees: actualFeesUsed,
-          liquidRefundAddress: refundAddress,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        refundTxid: refundTxid,
-        refundAddress: refundAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to refund Liquid to Bitcoin chain swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processChainLiquidToBitcoinRefund',
-        isClaim: false,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
-    }
+  Future<void> _finishAction(
+    Swap swap, {
+    required bool isClaim,
+    required String txid,
+    required int actualFees,
+    String? claimAddress,
+    String? refundAddress,
+  }) async {
+    await _boltzRepo.updateSwapFields(
+      swap.id,
+      status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
+      receiveTxid: isClaim ? txid : null,
+      refundTxid: isClaim ? null : txid,
+      receiveAddress: claimAddress,
+      refundAddress: refundAddress,
+      claimFee: isClaim ? actualFees : null,
+      refundFee: isClaim ? null : actualFees,
+      completionTime: DateTime.now(),
+    );
+    _clearRetries(swap.id);
+    log.info(
+      '[SwapWatcher] ${isClaim ? 'claim' : 'refund'} succeeded for '
+      '${swap.id} txid=$txid fees=$actualFees',
+    );
   }
 
-  Future<void> _refundChainBitcoinToLiquid({required ChainSwap swap}) async {
-    try {
-      if (swap.refundTxid != null) {
-        return;
-      }
-      String refundAddress;
-      if (swap.refundAddress != null) {
-        refundAddress = swap.refundAddress!;
-      } else {
-        final address = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.sendWalletId);
-        refundAddress = address.address;
-        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
-        await _boltzRepo.updateSwap(swap: updatedSwap);
-      }
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: false,
-      );
-      final networkFee = await _feesRepository.getNetworkFees(network: network);
-      final txSize = await _boltzRepo.getSwapRefundTxSize(
-        swapId: swap.id,
-        swapType: swap.type,
-        refundAddressForChainSwaps: refundAddress,
-      );
-      final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+  Future<void> _handleActionFailure(
+    Swap swap, {
+    required bool isClaim,
+    required Object error,
+    required StackTrace trace,
+  }) async {
+    log.severe(
+      message:
+          '[SwapWatcher] ${isClaim ? 'claim' : 'refund'} failed for '
+          '${swap.id}: ${_errorMessage(error)}',
+      error: error,
+      trace: trace,
+    );
 
-      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+    final recovered = await _checkAndRecoverFromOutspend(
+      swap: swap,
+      isClaim: isClaim,
+    );
+    if (recovered) return;
 
-      String refundTxid;
-      int actualFeesUsed;
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidRefund", "action": "coop_refund_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
+    if (!isClaim && _isNonFinalError(error)) {
+      // Script-path refunds are only valid after the swap's timelock; stay
+      // refundable and retry later.
+      log.info(
+        '[SwapWatcher] refund for ${swap.id} not yet final (timelock); '
+        'will retry',
       );
-      try {
-        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: actualFeesUsed,
-          bitcoinRefundAddress: refundAddress,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              'Coop refund failed (${_extractErrorMessage(e)}). Attempting script path spend. Action: coop_refund_failed_fallback_script, Timestamp: ${DateTime.now().toIso8601String()}',
-          error: e,
-          trace: st,
-        );
-        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          isCooperative: false,
-          refundAddressForChainSwaps: refundAddress,
-        );
-        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
-        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
-        refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
-          swapId: swap.id,
-          absoluteFees: actualFeesUsed,
-          bitcoinRefundAddress: refundAddress,
-          cooperate: false,
-        );
-      }
-      final updatedSwap = swap.copyWith(
-        refundTxid: refundTxid,
-        refundAddress: refundAddress,
-        status: SwapStatus.completed,
-        completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
-      );
-      await _boltzRepo.updateSwap(swap: updatedSwap);
-    } catch (e, st) {
-      log.severe(
-        message:
-            'Failed to refund Bitcoin to Liquid chain swap: ${_extractErrorMessage(e)}',
-        error: e,
-        trace: st,
-      );
-
-      // Check if transaction actually succeeded despite the error
-      final recovered = await _checkAndRecoverFromOutspend(
-        swap: swap,
-        error: e,
-        functionName: '_processChainBitcoinToLiquidRefund',
-        isClaim: false,
-      );
-      if (recovered) return;
-
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
-      rethrow;
     }
+
+    _boltzRepo.subscribeToSwaps([swap.id]);
+    _recordFailure(swap.id);
   }
 
-  /// Helper method to check if a claim/refund transaction succeeded despite errors
-  /// Returns true if the transaction was found and the swap was updated
+  /// Checks whether the relevant lockup output is already spent — meaning an
+  /// earlier claim/refund broadcast actually succeeded — and if so records
+  /// the spending txid and settles the swap. Read-only and safe to run on
+  /// any failure.
   Future<bool> _checkAndRecoverFromOutspend({
     required Swap swap,
-    required Object error,
-    required String functionName,
     required bool isClaim,
   }) async {
-    final errorStr = error.toString();
-    if (!errorStr.contains('bad-txns-inputs-missingorspent') &&
-        !errorStr.contains('txn-mempool-conflict')) {
-      return false;
-    }
-
-    log.fine('{"swapId": "${swap.id}", "action": "checking_lockup_outspend"}');
-
     try {
-      // Determine network based on swap type
       final Network network;
-      final SwapDirection? swapDirection;
+      SwapDirection? swapDirection;
 
-      if (swap is ChainSwap) {
-        if (swap.type == SwapType.liquidToBitcoin) {
-          // Liquid → Bitcoin: claim on Bitcoin, refund on Liquid
+      switch (swap) {
+        case ChainSwap():
+          // Claims spend the server lockup on the receiving chain; refunds
+          // spend our own lockup on the sending chain.
+          final liquidSide = isClaim
+              ? swap.type == SwapType.bitcoinToLiquid
+              : swap.type == SwapType.liquidToBitcoin;
           network = Network.fromEnvironment(
-            isTestnet: swap.environment.isTestnet,
-            isLiquid: isClaim ? false : true,
+            isTestnet: false,
+            isLiquid: liquidSide,
           );
-          swapDirection = isClaim
+          swapDirection = swap.type == SwapType.liquidToBitcoin
               ? SwapDirection.liquidToBitcoin
-              : SwapDirection.liquidToBitcoin;
-        } else {
-          // Bitcoin → Liquid: claim on Liquid, refund on Bitcoin
-          network = Network.fromEnvironment(
-            isTestnet: swap.environment.isTestnet,
-            isLiquid: isClaim ? true : false,
-          );
-          swapDirection = isClaim
-              ? SwapDirection.bitcoinToLiquid
               : SwapDirection.bitcoinToLiquid;
-        }
-      } else if (swap is LnReceiveSwap) {
-        // Lightning → Bitcoin/Liquid: only claims
-        network = Network.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: swap.type == SwapType.lightningToLiquid,
-        );
-        swapDirection = null;
-      } else if (swap is LnSendSwap) {
-        // Bitcoin/Liquid → Lightning: only refunds
-        network = Network.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: swap.type == SwapType.liquidToLightning,
-        );
-        swapDirection = null;
-      } else {
-        return false;
+        case LnReceiveSwap():
+          network = Network.fromEnvironment(
+            isTestnet: false,
+            isLiquid: swap.type == SwapType.lightningToLiquid,
+          );
+        case LnSendSwap():
+          network = Network.fromEnvironment(
+            isTestnet: false,
+            isLiquid: swap.type == SwapType.liquidToLightning,
+          );
       }
 
       final outspendStatus = await _boltzRepo.checkSwapLockupOutspend(
@@ -1001,93 +836,84 @@ class SwapWatcherService {
         swapType: swap.type,
         network: network,
         swapDirection: swapDirection,
+        isClaim: isClaim,
       );
 
-      if (outspendStatus.txid != null) {
-        log.fine(
-          '{"swapId": "${swap.id}", "action": "outspend_found", "txid": "${outspendStatus.txid}"}',
-        );
+      final txid = outspendStatus.txid;
+      if (txid == null) return false;
 
-        // Update swap based on type and whether it's a claim or refund
-        final Swap updatedSwap;
-        if (swap is ChainSwap) {
-          if (isClaim) {
-            updatedSwap = swap.copyWith(
-              receiveTxid: outspendStatus.txid!,
-              status: SwapStatus.completed,
-              completionTime: outspendStatus.timestamp ?? DateTime.now(),
-              fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-            );
-          } else {
-            updatedSwap = swap.copyWith(
-              refundTxid: outspendStatus.txid!,
-              status: SwapStatus.completed,
-              completionTime: outspendStatus.timestamp ?? DateTime.now(),
-              fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-            );
-          }
-        } else if (swap is LnReceiveSwap) {
-          updatedSwap = swap.copyWith(
-            receiveTxid: outspendStatus.txid!,
-            status: SwapStatus.completed,
-            completionTime: outspendStatus.timestamp ?? DateTime.now(),
-            fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-          );
-        } else if (swap is LnSendSwap) {
-          updatedSwap = swap.copyWith(
-            refundTxid: outspendStatus.txid!,
-            status: SwapStatus.completed,
-            completionTime: outspendStatus.timestamp ?? DateTime.now(),
-            fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
-          );
-        } else {
-          return false;
-        }
-
-        await _boltzRepo.updateSwap(swap: updatedSwap);
-        _boltzRepo.unsubscribeFromSwaps([swap.id]);
-        return true;
-      }
-    } catch (outspendError, outspendSt) {
-      log.severe(
-        message: '{"swapId": "${swap.id}", "action": "outspend_check_failed"}',
-        error: outspendError,
-        trace: outspendSt,
+      log.info(
+        '[SwapWatcher] outspend recovery for ${swap.id}: '
+        '${isClaim ? 'claim' : 'refund'} already on-chain as $txid',
       );
-    }
-
-    return false;
-  }
-
-  Future<void> _processCompletedSwap({required Swap swap}) async {
-    try {
-      log.fine(
-        '{"swapId": "${swap.id}", "status": "completed", "function": "_processCompletedSwap"}',
+      await _boltzRepo.updateSwapFields(
+        swap.id,
+        status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
+        receiveTxid: isClaim ? txid : null,
+        refundTxid: isClaim ? null : txid,
+        completionTime: outspendStatus.timestamp ?? DateTime.now(),
       );
-
-      switch (swap.type) {
-        case SwapType.lightningToBitcoin:
-        case SwapType.lightningToLiquid:
-          if (swap is LnReceiveSwap && swap.receiveTxid == null) {
-            final updatedSwap = swap.copyWith(status: SwapStatus.claimable);
-            await _boltzRepo.updateSwap(swap: updatedSwap);
-          } else {
-            return;
-          }
-        case SwapType.bitcoinToLightning:
-        case SwapType.liquidToLightning:
-          return;
-        case SwapType.liquidToBitcoin:
-        case SwapType.bitcoinToLiquid:
-          return;
-      }
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+      _clearRetries(swap.id);
+      return true;
     } catch (e, st) {
       log.severe(
-        message: 'Failed to process completed swap: ${_extractErrorMessage(e)}',
+        message: '[SwapWatcher] outspend check failed for ${swap.id}',
         error: e,
         trace: st,
       );
-      rethrow;
+      return false;
     }
+  }
+
+  // RETRY BACKOFF
+
+  bool _shouldAttempt(String swapId) {
+    final schedule = _retrySchedule[swapId];
+    return schedule == null || DateTime.now().isAfter(schedule.nextAttemptAt);
+  }
+
+  void _recordFailure(String swapId) {
+    final attempts = (_retrySchedule[swapId]?.attempts ?? 0) + 1;
+    final delay = Duration(minutes: min(1 << min(attempts, 5), 30));
+    final clamped = delay > _maxRetryDelay ? _maxRetryDelay : delay;
+    _retrySchedule[swapId] = (
+      attempts: attempts,
+      nextAttemptAt: DateTime.now().add(clamped),
+    );
+    log.info(
+      '[SwapWatcher] swap $swapId attempt $attempts failed; next attempt '
+      'after $clamped',
+    );
+  }
+
+  void _clearRetries(String swapId) {
+    _retrySchedule.remove(swapId);
+  }
+
+  /// The receive amount requires decoding the invoice; a malformed invoice
+  /// must never block a claim, so failures just drop the fee cap.
+  int? _amountSatOrNull(Swap swap) {
+    try {
+      return swap.amountSat;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _isNonFinalError(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('non-final') ||
+        message.contains('non_final') ||
+        message.contains('nonfinal') ||
+        message.contains('non-bip68-final') ||
+        message.contains('locktime');
+  }
+
+  String _errorMessage(Object error) {
+    if (error is boltz.BoltzError) {
+      return error.message;
+    }
+    return error.toString();
   }
 }
