@@ -190,6 +190,12 @@ test: unit-test integration-test
 unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
+	@for p in packages/*/; do \
+		if [ -d "$${p}test" ]; then \
+			echo "🏃‍ running $${p}test"; \
+			( cd "$$p" && fvm flutter test --reporter=compact ); \
+		fi; \
+	done
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

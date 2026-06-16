@@ -12,7 +12,7 @@ class BullSegmented extends StatefulWidget {
     this.initialValue,
     required this.onSelected,
     this.disabledItems = const {},
-  });
+  }) : assert(items.length > 0, 'BullSegmented requires at least one item');
 
   /// The ordered set of segment labels.
   final Set<String> items;

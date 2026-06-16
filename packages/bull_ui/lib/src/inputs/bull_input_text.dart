@@ -174,7 +174,7 @@ class _BullInputTextState extends State<BullInputText> {
       maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
       style:
           widget.style ??
-          Theme.of(context).textTheme.headlineMedium?.copyWith(
+          Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w400,
             color: colors.onSurface,
           ),

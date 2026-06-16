@@ -156,7 +156,9 @@ class BullButton extends StatelessWidget {
     return Builder(
       builder: (context) {
         final overlay = Overlay.maybeOf(context);
-        if (overlay == null) return button;
+        // No tooltip for icon-only buttons (empty label → an empty bubble is
+        // worse than none) or when there's no overlay to host one.
+        if (overlay == null || label.isEmpty) return button;
         return Tooltip(
           message: label,
           waitDuration: const Duration(milliseconds: 500),
