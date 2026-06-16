@@ -1,0 +1,16 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    # A design-system package is the foundation other features build on; hold it
+    # to a stricter bar than the recommended set.
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - require_trailing_commas
+    - prefer_final_locals
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - use_super_parameters
+    - unnecessary_parenthesis

@@ -1,0 +1,25 @@
+name: bull_ui
+description: Bull Bitcoin design-system component library (Bull* widgets + theme).
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.1"
+  flutter: "3.44.1"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  gap: ^3.0.1
+  auto_size_text: ^3.0.0
+  custom_sliding_segmented_control: ^1.8.5
+  shimmer: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
