@@ -151,4 +151,93 @@ void main() {
       },
     );
   });
+
+  group('TrezorOperationBaseCubit stale-completion', () {
+    test('fallback error from grace-expiry suppresses a later success emit '
+        '(operation resolves after fallback error)', () async {
+      final cubit = _TestCubit();
+      final completer = Completer<String>();
+
+      // Kick off the operation — completer is held open so we control
+      // exactly when it resolves.
+      unawaited(cubit.run(() => completer.future));
+      await pumpEventQueue();
+      expect(cubit.state.status, TrezorOperationStatus.waitingForSuite);
+
+      // Simulate the background → foreground cycle that triggers grace.
+      cubit.didChangeAppLifecycleState(AppLifecycleState.paused);
+      cubit.didChangeAppLifecycleState(AppLifecycleState.resumed);
+
+      // Wait past grace → fallback error fires (this works today).
+      await Future<void>.delayed(const Duration(milliseconds: 2500));
+      expect(cubit.state.status, TrezorOperationStatus.error);
+      expect(cubit.state.errorMessage, contains("didn't respond"));
+
+      // NOW the original operation finally resolves with success — late
+      // arrival from a slow Suite handoff. Without the epoch guard, this
+      // would emit success on top of the fallback error.
+      completer.complete('late-result');
+      await pumpEventQueue();
+
+      // State must STAY in the fallback-error condition. The late
+      // success is silently dropped.
+      expect(cubit.state.status, TrezorOperationStatus.error);
+      expect(cubit.state.errorMessage, contains("didn't respond"));
+      expect(cubit.state.result, isNull);
+
+      await cubit.close();
+    });
+
+    test(
+      'fallback error from grace-expiry suppresses a later error emit too',
+      () async {
+        final cubit = _TestCubit();
+        final completer = Completer<String>();
+        unawaited(cubit.run(() => completer.future));
+        await pumpEventQueue();
+
+        cubit.didChangeAppLifecycleState(AppLifecycleState.paused);
+        cubit.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        await Future<void>.delayed(const Duration(milliseconds: 2500));
+
+        expect(cubit.state.status, TrezorOperationStatus.error);
+        final fallbackMessage = cubit.state.errorMessage;
+
+        // Late error arrival — e.g., Suite eventually returned `userRejected`
+        // after the grace window expired.
+        completer.completeError(const TrezorApplicationError.userRejected());
+        await pumpEventQueue();
+
+        // State must KEEP the fallback message — the late TrezorUserRejected
+        // should NOT replace it.
+        expect(cubit.state.status, TrezorOperationStatus.error);
+        expect(cubit.state.errorMessage, fallbackMessage);
+
+        await cubit.close();
+      },
+    );
+
+    test('reset bumps epoch so an old in-flight operation does not land on '
+        'the new initial state', () async {
+      final cubit = _TestCubit();
+      final completer = Completer<String>();
+      unawaited(cubit.run(() => completer.future));
+      await pumpEventQueue();
+
+      // User taps Try Again before the original operation resolves.
+      cubit.reset();
+      expect(cubit.state.status, TrezorOperationStatus.initial);
+
+      // Now the OLD operation finally resolves.
+      completer.complete('stale-result');
+      await pumpEventQueue();
+
+      // State must STAY in initial — the stale completion shouldn't
+      // clobber the fresh state with status:success.
+      expect(cubit.state.status, TrezorOperationStatus.initial);
+      expect(cubit.state.result, isNull);
+
+      await cubit.close();
+    });
+  });
 }

@@ -27,6 +27,17 @@ abstract class TrezorOperationBaseCubit<T>
   Timer? _resumeGraceTimer;
   bool _wasBackgrounded = false;
 
+  /// Monotonically increasing counter that identifies the "current" in-flight
+  /// operation. Bumped at the start of every [runOperation] call, by
+  /// [_onResumeGraceExpired] when the fallback error fires, and by [reset].
+  ///
+  /// Post-await emits inside [runOperation] check the captured-at-start epoch
+  /// against this current value; a mismatch means a fallback (or reset, or
+  /// next-operation start) already invalidated the operation, and the late
+  /// completion is silently dropped instead of clobbering whatever state
+  /// already replaced it.
+  int _operationEpoch = 0;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (this.state.status != TrezorOperationStatus.waitingForSuite) return;
@@ -52,6 +63,13 @@ abstract class TrezorOperationBaseCubit<T>
   void _onResumeGraceExpired() {
     if (isClosed) return;
     if (state.status != TrezorOperationStatus.waitingForSuite) return;
+
+    // Bump the epoch — the in-flight runOperation's captured-at-start
+    // epoch no longer matches, so its post-await success/error emits are
+    // dropped silently. This is what makes "operation resolves after
+    // fallback error" not clobber our emitted error.
+    _operationEpoch++;
+
     log.warning(
       'Trezor operation: app resumed without callback after '
       '$_resumeGracePeriod — treating as launch failure or '
@@ -69,6 +87,12 @@ abstract class TrezorOperationBaseCubit<T>
 
   Future<void> runOperation(Future<T> Function() operation) async {
     if (isClosed) return;
+    // Bump the epoch — this run is now "the current operation." Any earlier
+    // in-flight call (left dangling because grace-fallback fired or the user
+    // reset between attempts) becomes stale; its post-await emits will be
+    // dropped by the epoch checks below.
+    final myEpoch = ++_operationEpoch;
+
     emit(
       state.copyWith(
         status: TrezorOperationStatus.launching,
@@ -82,13 +106,19 @@ abstract class TrezorOperationBaseCubit<T>
 
       final result = await operation();
 
-      if (isClosed) return;
+      // Two ways our post-await emit becomes invalid:
+      //   1. Cubit was closed mid-await (existing guard).
+      //   2. The grace-expiry fallback fired during the await and already
+      //      emitted an error state — our `myEpoch` no longer matches the
+      //      cubit's current `_operationEpoch`. Late success/error must not
+      //      clobber the fallback's error.
+      if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
       emit(
         state.copyWith(status: TrezorOperationStatus.success, result: result),
       );
     } on TrezorApplicationError catch (e) {
-      if (isClosed) return;
+      if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
       log.warning('Trezor operation failed', error: e);
       emit(
@@ -104,7 +134,7 @@ abstract class TrezorOperationBaseCubit<T>
         error: e,
         trace: t,
       );
-      if (isClosed) return;
+      if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
       emit(
         state.copyWith(
@@ -117,6 +147,9 @@ abstract class TrezorOperationBaseCubit<T>
   }
 
   void reset() {
+    // Bump the epoch so any in-flight operation that resolves after the
+    // user taps Try Again doesn't land on the fresh state we're emitting.
+    _operationEpoch++;
     _cancelGrace();
     emit(TrezorOperationState<T>());
   }
