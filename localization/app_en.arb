@@ -6339,6 +6339,14 @@
   "@nfcInvalidData": {
     "description": "Error message shown when an NFC tag is read but no supported payload can be parsed"
   },
+  "nfcConnectionLost": "NFC connection lost. Hold your device near the NFC tag and try again.",
+  "@nfcConnectionLost": {
+    "description": "Error message shown when an NFC tag connection is lost before the read or write completes"
+  },
+  "nfcWriteFailed": "NFC transfer failed. Please try again.",
+  "@nfcWriteFailed": {
+    "description": "Error message shown when an NFC write to a hardware wallet fails"
+  },
   "nfcError": "NFC error: {error}",
   "@nfcError": {
     "description": "Error message shown when an NFC operation fails",

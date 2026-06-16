@@ -13,18 +13,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
 
+enum _NfcOperation { read, write }
+
 class NfcBottomSheet {
+  static const _iosReadAttempts = 3;
+
   static Future<void> showReadNfc({
     required BuildContext context,
     required String title,
     required FutureOr<void> Function(String payload) onDataReceived,
   }) async {
     var didReadRecords = false;
+    final connectionLostMessage = context.loc.nfcConnectionLost;
     final payload = await _runWithNfcSession<String?>(
       context: context,
       title: title,
+      operation: _NfcOperation.read,
       action: (_) async {
-        final payload = await _readNfcPayload();
+        final payload = Platform.isIOS
+            ? await _readNfcPayloadWithIosRetry(
+                connectionLostMessage: connectionLostMessage,
+              )
+            : await _readNfcPayload();
         didReadRecords = true;
         return payload;
       },
@@ -44,10 +54,12 @@ class NfcBottomSheet {
     required String data,
     required FutureOr<void> Function() onSuccess,
   }) async {
+    final writeFailedMessage = context.loc.nfcWriteFailed;
     final didWrite = await _runWithNfcSession<bool>(
       context: context,
       title: title,
-      action: (_) => _writeNfcData(data),
+      operation: _NfcOperation.write,
+      action: (_) => _writeNfcData(data, iosErrorMessage: writeFailedMessage),
     );
 
     if (didWrite == true) {
@@ -58,6 +70,7 @@ class NfcBottomSheet {
   static Future<T?> _runWithNfcSession<T>({
     required BuildContext context,
     required String title,
+    required _NfcOperation operation,
     required Future<T?> Function(NFCTag tag) action,
   }) async {
     final availability = await _nfcAvailability(context);
@@ -71,16 +84,24 @@ class NfcBottomSheet {
     if (!context.mounted) return null;
 
     if (Platform.isIOS) {
+      final NFCTag tag;
       try {
         // Coldcard uses NFC-V / ISO-15693.
-        final tag = await FlutterNfcKit.poll(
+        tag = await FlutterNfcKit.poll(
           iosAlertMessage: title,
           readIso15693: true,
           readIso18092: false,
         );
+      } catch (e) {
+        await _finishNfcSession();
+        _handleNfcError(context, e);
+        return null;
+      }
+
+      try {
         return await action(tag);
       } catch (e) {
-        _handleNfcError(context, e);
+        _handleNfcError(context, e, operation: operation);
         return null;
       }
     }
@@ -112,12 +133,14 @@ class NfcBottomSheet {
                   child: NfcScannerWidget(
                     onError: (error) => _handleNfcError(sheetContext, error),
                     onScanned: (tag) async {
+                      var didCompleteAction = false;
                       try {
                         result = await action(tag);
+                        didCompleteAction = true;
                       } catch (e) {
-                        _handleNfcError(sheetContext, e);
+                        _handleNfcError(sheetContext, e, operation: operation);
                       }
-                      if (sheetContext.mounted) {
+                      if (didCompleteAction && sheetContext.mounted) {
                         Navigator.of(sheetContext).pop();
                       }
                     },
@@ -151,7 +174,44 @@ class NfcBottomSheet {
     }
   }
 
-  static Future<bool> _writeNfcData(String data) async {
+  static Future<String?> _readNfcPayloadWithIosRetry({
+    required String connectionLostMessage,
+  }) async {
+    String? iosErrorMessage;
+    try {
+      for (var attempt = 1; attempt <= _iosReadAttempts; attempt++) {
+        try {
+          final records = await FlutterNfcKit.readNDEFRecords();
+          return payloadFromNdefRecords(records);
+        } catch (e) {
+          if (_isUserCancelled(e)) rethrow;
+
+          final isReadInterrupted = _isNfcReadInterrupted(e);
+          if (!isReadInterrupted || attempt == _iosReadAttempts) {
+            if (isReadInterrupted) {
+              iosErrorMessage = connectionLostMessage;
+            }
+            rethrow;
+          }
+
+          log.warning('NFC read interrupted; restarting polling', error: e);
+          iosErrorMessage = connectionLostMessage;
+          await _setIosAlertMessage(connectionLostMessage);
+          await FlutterNfcKit.iosRestartPolling();
+          iosErrorMessage = null;
+        }
+      }
+
+      return null;
+    } finally {
+      await _finishNfcSession(iosErrorMessage: iosErrorMessage);
+    }
+  }
+
+  static Future<bool> _writeNfcData(
+    String data, {
+    String? iosErrorMessage,
+  }) async {
     try {
       await FlutterNfcKit.writeNDEFRecords([
         ndef.TextRecord(
@@ -160,17 +220,29 @@ class NfcBottomSheet {
           encoding: ndef.TextEncoding.UTF8,
         ),
       ]);
-      return true;
-    } finally {
       await _finishNfcSession();
+      return true;
+    } catch (e) {
+      await _finishNfcSession(
+        iosErrorMessage: _isUserCancelled(e) ? null : iosErrorMessage,
+      );
+      rethrow;
     }
   }
 
-  static Future<void> _finishNfcSession() async {
+  static Future<void> _finishNfcSession({String? iosErrorMessage}) async {
     try {
-      await FlutterNfcKit.finish();
+      await FlutterNfcKit.finish(iosErrorMessage: iosErrorMessage);
     } catch (e) {
       log.warning('Failed to finish NFC session', error: e);
+    }
+  }
+
+  static Future<void> _setIosAlertMessage(String message) async {
+    try {
+      await FlutterNfcKit.setIosAlertMessage(message);
+    } catch (e) {
+      log.warning('Failed to update iOS NFC alert message', error: e);
     }
   }
 
@@ -188,10 +260,20 @@ class NfcBottomSheet {
     SnackBarUtils.showSnackBar(context, message);
   }
 
-  static void _handleNfcError(BuildContext context, Object error) {
+  static void _handleNfcError(
+    BuildContext context,
+    Object error, {
+    _NfcOperation? operation,
+  }) {
     log.warning('NFC operation failed', error: error);
     if (!context.mounted || _isUserCancelled(error)) return;
-    SnackBarUtils.showSnackBar(context, context.loc.nfcError(error.toString()));
+
+    final message = operation == _NfcOperation.write
+        ? context.loc.nfcWriteFailed
+        : _isNfcReadInterrupted(error)
+        ? context.loc.nfcConnectionLost
+        : context.loc.nfcError(error.toString());
+    SnackBarUtils.showSnackBar(context, message);
   }
 
   static void _showInvalidDataError(BuildContext context) {
@@ -202,4 +284,10 @@ class NfcBottomSheet {
 
   static bool _isUserCancelled(Object error) =>
       error.toString().contains('Session invalidated by user');
+
+  static bool _isNfcReadInterrupted(Object error) {
+    final message = error.toString();
+    return message.contains('Tag connection lost') ||
+        message.contains('Read NDEF error');
+  }
 }
