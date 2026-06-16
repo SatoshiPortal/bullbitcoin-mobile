@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -341,7 +342,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               crossAxisAlignment: .start,
               children: [
                 BBText(
-                  context.loc.receiveAmount,
+                  context.loc.transactionLabelSendAmount,
                   style: context.font.bodySmall,
                   color: context.appColors.onSurfaceVariant,
                 ),
@@ -365,29 +366,34 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               ],
             ),
           ),
-          if (swap?.receieveAmount != null) ...[
-            Container(color: context.appColors.surface, height: 1),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 12),
-              child: Row(
-                crossAxisAlignment: .start,
-                children: [
-                  BBText(
-                    context.loc.receiveReceiveAmount,
-                    style: context.font.bodySmall,
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                  const Spacer(),
+          Container(color: context.appColors.surface, height: 1),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 12),
+            child: Row(
+              crossAxisAlignment: .start,
+              children: [
+                BBText(
+                  context.loc.receiveReceiveAmount,
+                  style: context.font.bodySmall,
+                  color: context.appColors.onSurfaceVariant,
+                ),
+                const Spacer(),
+                if (swap?.receieveAmount == null)
+                  const LoadingLineContent(
+                    width: 90,
+                    height: 14,
+                    padding: EdgeInsets.zero,
+                  )
+                else
                   CurrencyText(
                     swap!.receieveAmount!,
                     showFiat: false,
                     style: context.font.bodyMedium,
                     color: context.appColors.secondary,
                   ),
-                ],
-              ),
+              ],
             ),
-          ],
+          ),
           if (note.isNotEmpty) ...[
             Container(color: context.appColors.surface, height: 1),
             Padding(
@@ -426,7 +432,6 @@ class ReceiveLnSwapID extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
-    if (swap == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -437,19 +442,31 @@ class ReceiveLnSwapID extends StatelessWidget {
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
-          BBText(
-            swap.id,
-            style: context.font.bodyLarge,
-            color: context.appColors.secondary,
-            textAlign: .end,
-          ),
-          const Gap(4),
-          InkWell(
-            child: Icon(Icons.copy, color: context.appColors.primary, size: 16),
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: swap.id));
-            },
-          ),
+          if (swap == null)
+            const LoadingLineContent(
+              width: 120,
+              height: 14,
+              padding: EdgeInsets.zero,
+            )
+          else ...[
+            BBText(
+              swap.id,
+              style: context.font.bodyLarge,
+              color: context.appColors.secondary,
+              textAlign: .end,
+            ),
+            const Gap(4),
+            InkWell(
+              child: Icon(
+                Icons.copy,
+                color: context.appColors.primary,
+                size: 16,
+              ),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: swap.id));
+              },
+            ),
+          ],
         ],
       ),
     );
@@ -491,7 +508,33 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
   @override
   Widget build(BuildContext context) {
     final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
-    if (swap == null) return const SizedBox.shrink();
+
+    if (swap == null) {
+      return Column(
+        children: [
+          Container(color: context.appColors.surface, height: 1),
+          const Gap(8),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                BBText(
+                  context.loc.receiveTotalFee,
+                  style: context.font.bodySmall,
+                  color: context.appColors.onSurfaceVariant,
+                ),
+                const Spacer(),
+                const LoadingLineContent(
+                  width: 90,
+                  height: 14,
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
 
     return Column(
       children: [

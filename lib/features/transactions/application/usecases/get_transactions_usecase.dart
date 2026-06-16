@@ -71,7 +71,8 @@ class GetTransactionsUsecase {
           swap = swaps.firstWhere(
             (s) =>
                 (wt.isOutgoing && s.sendTxId == wt.txId) ||
-                (wt.isIncoming && s.receiveTxId == wt.txId),
+                (wt.isIncoming &&
+                    (s.receiveTxId == wt.txId || s.refundTxId == wt.txId)),
           );
         } catch (_) {
           // If no swap is found, it means the transaction is not a swap
@@ -115,13 +116,38 @@ class GetTransactionsUsecase {
         );
       }).toList();
 
+      // A single swap can surface multiple on-chain legs in the user's own
+      // wallets — most importantly a refunded chain swap, whose lockup output
+      // and refund-back land on the SAME wallet. Represent each swap with a
+      // single row: its canonical leg (swap.txId — the lockup for send/chain,
+      // the claim for receive). Drop the secondary leg (e.g. the refund-back
+      // tx) so a refunded swap shows as one transaction, not two.
+      final swapLegToKeep = <String, String>{};
+      for (final tx in broadcastedTransactions) {
+        final s = tx.swap;
+        final wtTxId = tx.walletTransaction?.txId;
+        if (s == null || wtTxId == null) continue;
+        if (s.txId == wtTxId) {
+          swapLegToKeep[s.id] = wtTxId; // canonical leg wins
+        } else {
+          swapLegToKeep.putIfAbsent(s.id, () => wtTxId);
+        }
+      }
+      final dedupedBroadcastedTransactions = broadcastedTransactions.where((
+        tx,
+      ) {
+        final s = tx.swap;
+        if (s == null) return true;
+        return tx.walletTransaction?.txId == swapLegToKeep[s.id];
+      }).toList();
+
       // Filter out any swaps that are already included in the broadcasted transactions
       // We didn't do it in the previous step like with payjoins because one swap can
       // be associated with multiple transactions (e.g., a chain swap that has both
       // incoming and outgoing transactions). We want to make sure the swap is
       // associated with both the incoming as outgoing transaction, so we do it
       // after the broadcasted transactions are created with any associated swaps.
-      for (final tx in broadcastedTransactions) {
+      for (final tx in dedupedBroadcastedTransactions) {
         if (tx.isSwap) {
           swaps.remove(tx.swap);
         }
@@ -131,7 +157,7 @@ class GetTransactionsUsecase {
       //  ongoing and remaining payjoins that are unbroadcasted as well
       //  into a single list of Transaction entities.
       return [
-        ...broadcastedTransactions,
+        ...dedupedBroadcastedTransactions,
         ...swaps.map((s) => Transaction(swap: s)),
         ...payjoins.map((p) => Transaction(payjoin: p)),
         // If walletId is not null, the orders should be linked to a wallet transaction.

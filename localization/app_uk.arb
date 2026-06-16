@@ -952,7 +952,7 @@
   "fundExchangeLabelRecipientNameArs": "Ім'я одержувача",
   "fundExchangeLabelCvu": "КВУ",
   "fundExchangeErrorLoadingDetails": "У зв'язку з тим, що платіж не може бути завантажений. Будь ласка, поверніть і спробуйте знову, оберіть інший спосіб оплати або поверніть пізніше.",
-    "fundExchangeErrorTitleOrdPo404": "Спосіб оплати недоступний",
+  "fundExchangeErrorTitleOrdPo404": "Спосіб оплати недоступний",
   "fundExchangeErrorTitleRcpPo404": "Спосіб оплати недоступний",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE недоступний",
   "fundExchangeErrorTitleOrdKyc400": "Відсутні вимоги KYC",
@@ -963,7 +963,7 @@
   "fundExchangeErrorOrdCsrcp400": "Будь ласка, активуйте опцію віртуального платежу для отримувача SEPA з IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Невірний запит",
   "fundExchangeErrorRcp400": "Невірний запит",
-"fundExchangeErrorOrdPo404": "Немає доступного способу оплати",
+  "fundExchangeErrorOrdPo404": "Немає доступного способу оплати",
   "fundExchangeErrorRcpPo404": "У вас немає необхідних дозволів для доступу до цього способу поповнення. Або ваш KYC недостатній, або цей спосіб недоступний для вашого облікового запису",
   "fundExchangeErrorRcpPosinpe404": "Щоб отримати доступ до цього способу поповнення, ваш номер телефону має бути зареєстрований у мережі SINPE в Коста-Риці.",
   "fundExchangeErrorFetchingBankCodes": "Помилка під час отримання банківських кодів. Будь ласка, спробуйте пізніше.",
@@ -2938,7 +2938,7 @@
   "sendTypeSwap": "Обмін",
   "sendErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "bitboxActionSignTransactionSuccess": "Успішно заблоковано операцію",
-  "fundExchangeMethodInstantSepa": "Миттєвий СЕПА",
+  "fundExchangeMethodInstantSepa": "Миттєвий і стандартний SEPA-переказ",
   "buyVerificationFailed": "Перевірка не вдалося: {reason}",
   "@buyVerificationFailed": {
     "placeholders": {

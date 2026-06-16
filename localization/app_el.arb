@@ -6436,7 +6436,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Άμεση και κανονική μεταφορά SEPA",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -7065,7 +7065,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
-    "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
   "fundExchangeErrorTitleRcpPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
   "fundExchangeErrorTitleRcpPosinpe404": "Το SINPE δεν είναι διαθέσιμο",
   "fundExchangeErrorTitleOrdKyc400": "Λείπουν απαιτήσεις KYC",
@@ -7076,7 +7076,7 @@
   "fundExchangeErrorOrdCsrcp400": "Ενεργοποιήστε την επιλογή εικονικής πληρωμής για τον παραλήπτη SEPA με IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Μη έγκυρο αίτημα",
   "fundExchangeErrorRcp400": "Μη έγκυρο αίτημα",
-"fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
+  "fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
   "fundExchangeErrorRcpPo404": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
   "fundExchangeErrorRcpPosinpe404": "Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.",
   "fundExchangeErrorFetchingBankCodes": "Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.",

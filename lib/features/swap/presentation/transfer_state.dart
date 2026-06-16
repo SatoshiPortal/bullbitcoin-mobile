@@ -135,6 +135,14 @@ sealed class TransferState with _$TransferState {
     return fromWallet != null && !isSameChainTransfer;
   }
 
+  /// Max is a trigger, not a flag: the amount simply equals the computed
+  /// maximum, however it got there. A max send drains the wallet, which is
+  /// incompatible with guaranteeing an exact receivable amount.
+  bool get isMaxSelected {
+    final max = maxAmountSat;
+    return max != null && max > 0 && inputAmountSat == max;
+  }
+
   int get selectedUtxoTotalSat {
     return selectedUtxos.fold(
       0,

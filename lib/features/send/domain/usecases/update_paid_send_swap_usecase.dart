@@ -8,7 +8,7 @@ class UpdatePaidSendSwapUsecase {
   Future<void> execute({
     required String txid,
     required String swapId,
-    required int absoluteFees,
+    int? absoluteFees,
   }) async {
     try {
       return await _swapRepository.updatePaidSendSwap(

@@ -116,3 +116,6 @@ CLAUDE.md
 
 # Generated integration-test aggregator (see tool/gen_all_test.dart)
 integration_test/all_test.dart
+
+# Generated swap debug log export (written during test runs)
+bull_logs.tsv

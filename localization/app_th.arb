@@ -7727,7 +7727,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "ทันที",
+  "fundExchangeMethodInstantSepa": "โอน SEPA แบบทันทีและปกติ",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8513,7 +8513,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "รายละเอียดการชําระเงินไม่สามารถโหลดได้ โปรดกลับไปและลองอีกครั้งเลือกวิธีการชําระเงินอื่น ๆ หรือกลับมา.",
-    "fundExchangeErrorTitleOrdPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
+  "fundExchangeErrorTitleOrdPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleOrdKyc400": "ขาดข้อกำหนด KYC",
@@ -8524,7 +8524,7 @@
   "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA ที่มี IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "คำขอไม่ถูกต้อง",
   "fundExchangeErrorRcp400": "คำขอไม่ถูกต้อง",
-"fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
+  "fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
   "fundExchangeErrorRcpPo404": "คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ",
   "fundExchangeErrorRcpPosinpe404": "หากต้องการเข้าถึงตัวเลือกการเติมเงินนี้ หมายเลขโทรศัพท์ของคุณต้องลงทะเบียนในเครือข่าย SINPE ในCosta Rica",
   "fundExchangeErrorFetchingBankCodes": "เกิดข้อผิดพลาดในการดึงรหัสธนาคาร โปรดลองอีกครั้งในภายหลัง",

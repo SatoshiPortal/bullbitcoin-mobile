@@ -7639,7 +7639,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Okamžité SEPA",
+  "fundExchangeMethodInstantSepa": "Okamžitý a standardní SEPA převod",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8401,7 +8401,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
-    "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
+  "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
   "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
   "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
@@ -8412,7 +8412,7 @@
   "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro příjemce SEPA s IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Neplatný požadavek",
   "fundExchangeErrorRcp400": "Neplatný požadavek",
-"fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
+  "fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
   "fundExchangeErrorRcpPo404": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
   "fundExchangeErrorRcpPosinpe404": "Pro přístup k této možnosti financování musí být vaše telefonní číslo registrováno v síti SINPE v Kostarice.",
   "fundExchangeErrorFetchingBankCodes": "Chyba při načítání bankovních kódů. Zkuste to prosím později znovu.",
