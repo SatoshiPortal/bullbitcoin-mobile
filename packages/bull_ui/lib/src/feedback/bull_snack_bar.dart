@@ -117,7 +117,7 @@ class _BullSnackBarContent extends StatelessWidget {
         Flexible(
           child: Text(
             message,
-            style: BullTextStyles.secondary.copyWith(color: colors.surface),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.surface),
           ),
         ),
         if (actionLabel != null && onAction != null) ...[
@@ -126,8 +126,8 @@ class _BullSnackBarContent extends StatelessWidget {
             onTap: onAction,
             child: Text(
               actionLabel!,
-              style: BullTextStyles.bodyEmphasis.copyWith(
-                color: colors.red,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: colors.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -296,10 +296,10 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: colors.text.withValues(alpha: 0.92),
-                borderRadius: BorderRadius.circular(BullRadius.small),
+                borderRadius: BorderRadius.circular(BullRadius.xs),
               ),
               child: widget.content,
             ),

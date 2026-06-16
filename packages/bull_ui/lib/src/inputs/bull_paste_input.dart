@@ -1,6 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -41,12 +40,12 @@ class BullPasteInput extends StatelessWidget {
             child: text.isEmpty
                 ? BullText(
                     hint,
-                    style: BullTextStyles.caption,
+                    style: Theme.of(context).textTheme.labelSmall,
                     color: colors.onSurface,
                   )
                 : BullText(
                     text.trim(),
-                    style: BullTextStyles.body.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     color: colors.onSurface,

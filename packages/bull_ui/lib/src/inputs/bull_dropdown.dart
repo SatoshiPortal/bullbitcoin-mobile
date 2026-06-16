@@ -48,9 +48,9 @@ class BullDropdown<T> extends StatelessWidget {
           popupMenuTheme: PopupMenuThemeData(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
-              side: BorderSide(color: colors.red, width: 1.0),
+              side: BorderSide(color: colors.primary, width: 1.0),
             ),
-            color: colors.onRed,
+            color: colors.onPrimary,
             elevation: 8,
           ),
         ),
@@ -89,7 +89,7 @@ class BullDropdown<T> extends StatelessWidget {
               ),
               isDense: false,
             ),
-            icon: Icon(Icons.keyboard_arrow_down, color: colors.red),
+            icon: Icon(Icons.keyboard_arrow_down, color: colors.primary),
           ),
         ),
       ),

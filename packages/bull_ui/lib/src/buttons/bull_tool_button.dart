@@ -35,8 +35,8 @@ class BullToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final fg = primary ? colors.onRed : colors.text;
-    final bg = primary ? colors.red : colors.muted.withValues(alpha: 0.12);
+    final fg = primary ? colors.onPrimary : colors.text;
+    final bg = primary ? colors.primary : colors.textMuted.withValues(alpha: 0.12);
 
     return Semantics(
       button: true,
@@ -50,9 +50,11 @@ class BullToolButton extends StatelessWidget {
             onTap: onPressed,
             child: Container(
               height: 56,
+              constraints: const BoxConstraints(minWidth: 72),
+              padding: const EdgeInsets.symmetric(horizontal: BullSpacing.sm),
               decoration: BoxDecoration(
                 color: bg,
-                borderRadius: BorderRadius.circular(BullRadius.small),
+                borderRadius: BorderRadius.circular(BullRadius.xs),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -61,9 +63,9 @@ class BullToolButton extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     label,
-                    style: BullTextStyles.pill.copyWith(
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: fg,
-                      fontSize: 11.5,
                     ),
                   ),
                 ],

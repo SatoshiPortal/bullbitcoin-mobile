@@ -29,7 +29,7 @@ class BullBottomSheet extends StatelessWidget {
       barrierColor: colors.text.withValues(alpha: 0.4),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(BullRadius.sheet),
+          top: Radius.circular(BullRadius.lg),
         ),
       ),
       builder: (_) => BullBottomSheet(child: child),

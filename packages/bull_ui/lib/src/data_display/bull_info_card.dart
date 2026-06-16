@@ -46,7 +46,7 @@ class BullInfoCard extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(BullRadius.card),
+          borderRadius: BorderRadius.circular(BullRadius.xs),
         ),
         child: IntrinsicHeight(
           child: Row(
@@ -75,7 +75,7 @@ class BullInfoCard extends StatelessWidget {
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
                                 title!,
-                                style: BullTextStyles.body.copyWith(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: tagColor,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -84,7 +84,7 @@ class BullInfoCard extends StatelessWidget {
                             ],
                             Text(
                               description,
-                              style: BullTextStyles.body.copyWith(
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: colors.onSurfaceVariant,
                                 fontWeight: boldDescription
                                     ? FontWeight.bold

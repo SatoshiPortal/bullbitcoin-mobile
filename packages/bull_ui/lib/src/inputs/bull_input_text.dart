@@ -135,7 +135,7 @@ class _BullInputTextState extends State<BullInputText> {
     if (widget.hideBorder) return InputBorder.none;
 
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(BullRadius.card),
+      borderRadius: BorderRadius.circular(BullRadius.xs),
       borderSide: BorderSide(color: context.bull.border),
     );
   }
@@ -174,7 +174,7 @@ class _BullInputTextState extends State<BullInputText> {
       maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
       style:
           widget.style ??
-          BullTextStyles.title.copyWith(
+          Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w400,
             color: colors.onSurface,
           ),
@@ -184,7 +184,7 @@ class _BullInputTextState extends State<BullInputText> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: widget.hintStyle ?? TextStyle(color: colors.muted),
+        hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
         prefixIcon: widget.fixedPrefix != null
             ? Container(
                 padding: const EdgeInsets.symmetric(
@@ -193,7 +193,7 @@ class _BullInputTextState extends State<BullInputText> {
                 ),
                 child: Text(
                   widget.fixedPrefix!,
-                  style: BullTextStyles.body.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
@@ -202,7 +202,7 @@ class _BullInputTextState extends State<BullInputText> {
             : null,
         suffixIcon: widget.rightIcon != null
             ? IconButton(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.all(4),
                 icon: widget.rightIcon!,
                 onPressed: () => widget.onRightTap?.call(),
               )

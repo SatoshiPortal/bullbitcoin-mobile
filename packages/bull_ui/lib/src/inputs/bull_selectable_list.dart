@@ -88,7 +88,7 @@ class _BullSelectableRow extends StatelessWidget {
       onTap: onSelected,
       child: Material(
         elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(BullRadius.card),
+        borderRadius: BorderRadius.circular(BullRadius.xs),
         clipBehavior: Clip.hardEdge,
         color: colors.surface,
         shadowColor: colors.border,
@@ -106,21 +106,21 @@ class _BullSelectableRow extends StatelessWidget {
                   children: [
                     BullText(
                       item.title,
-                      style: BullTextStyles.title.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const Gap(4),
-                    BullText(item.subtitle1, style: BullTextStyles.label),
+                    BullText(item.subtitle1, style: Theme.of(context).textTheme.labelMedium),
                     const Gap(2),
-                    BullText(item.subtitle2, style: BullTextStyles.label),
+                    BullText(item.subtitle2, style: Theme.of(context).textTheme.labelMedium),
                   ],
                 ),
               ),
               const Gap(8),
               Icon(
                 Icons.radio_button_checked_outlined,
-                color: isSelected ? colors.red : colors.muted,
+                color: isSelected ? colors.primary : colors.textMuted,
               ),
             ],
           ),

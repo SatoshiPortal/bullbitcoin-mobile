@@ -1,7 +1,6 @@
 import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -114,7 +113,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                 flex: 2,
                 child: Text(
                   widget.label,
-                  style: BullTextStyles.body.copyWith(color: colors.onSurface),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.onSurface),
                 ),
               ),
 
@@ -132,7 +131,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                                   widget.displayValue!,
                                   textAlign: TextAlign.end,
                                   overflow: TextOverflow.clip,
-                                  style: BullTextStyles.body.copyWith(
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: colors.onSurface,
                                     decoration: widget.isUnderline
                                         ? TextDecoration.underline
@@ -147,7 +146,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          splashColor: colors.red.withValues(alpha: 0.12),
+                          splashColor: colors.primary.withValues(alpha: 0.12),
                           onTap: () {
                             Clipboard.setData(
                               ClipboardData(text: widget.copyValue!),
@@ -160,7 +159,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                           child: Icon(
                             Icons.copy_outlined,
                             size: 18,
-                            color: colors.red,
+                            color: colors.primary,
                           ),
                         ),
                       ),
@@ -177,7 +176,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                           child: Icon(
                             _expanded ? Icons.expand_less : Icons.expand_more,
                             size: 18,
-                            color: colors.red,
+                            color: colors.primary,
                           ),
                         ),
                       ),

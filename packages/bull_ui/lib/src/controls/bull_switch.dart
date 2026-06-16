@@ -18,7 +18,7 @@ class BullSwitch extends StatelessWidget {
       value: value,
       activeThumbColor: colors.surface,
       activeTrackColor: colors.text,
-      inactiveThumbColor: colors.muted,
+      inactiveThumbColor: colors.textMuted,
       inactiveTrackColor: colors.outlineVariant,
       trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
         (states) => Colors.transparent,

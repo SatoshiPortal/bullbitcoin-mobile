@@ -30,8 +30,8 @@ class BullCheckbox extends StatelessWidget {
     final borderColor = disabled
         ? colors.outlineVariant
         : checked
-        ? colors.red
-        : colors.muted;
+        ? colors.primary
+        : colors.textMuted;
 
     return Semantics(
       checked: checked,
@@ -48,12 +48,12 @@ class BullCheckbox extends StatelessWidget {
               width: 22,
               height: 22,
               decoration: BoxDecoration(
-                color: checked ? colors.red : null,
-                borderRadius: BorderRadius.circular(BullRadius.button),
+                color: checked ? colors.primary : null,
+                borderRadius: BorderRadius.circular(BullRadius.xs),
                 border: Border.all(color: borderColor, width: 2),
               ),
               child: checked
-                  ? BullIcon(BullIcons.check, size: 16, color: colors.onRed)
+                  ? BullIcon(BullIcons.check, size: 16, color: colors.onPrimary)
                   : null,
             ),
           ),

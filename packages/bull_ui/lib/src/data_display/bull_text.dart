@@ -23,7 +23,7 @@ class BullText extends StatelessWidget {
   /// When set, the text auto-sizes to fit this many lines.
   final int? maxLines;
 
-  /// The base text style (typically a [TextStyle] from `BullTextStyles`).
+  /// The base text style (typically a `Theme.of(context).textTheme` role).
   final TextStyle? style;
 
   /// Overrides the style colour.

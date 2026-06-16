@@ -1,107 +1,43 @@
-import 'package:flutter/widgets.dart';
-
-/// Brightness-invariant corner radii (px), per the design spec (§14).
+/// Brightness-invariant corner-radius scale (px).
+///
+/// A fixed design-system scale — radii never scale with screen size.
 abstract final class BullRadius {
-  /// Buttons and cards.
-  static const double button = 2;
+  /// No rounding.
+  static const double zero = 0;
 
-  /// Cards (alias of [button]).
-  static const double card = 2;
+  /// Extra-small — buttons, cards, small chips, inputs.
+  static const double xs = 4;
 
-  /// Small chips / tool buttons.
-  static const double small = 4;
+  /// Small.
+  static const double sm = 8;
 
-  /// Bottom-sheet top corners.
-  static const double sheet = 16;
+  /// Medium.
+  static const double md = 12;
 
-  /// Pills and grabbers (fully rounded).
-  static const double pill = 100;
+  /// Large — bottom-sheet top corners.
+  static const double lg = 16;
+
+  /// Extra-large.
+  static const double xl = 28;
+
+  /// 2x extra-large.
+  static const double xxl = 32;
+
+  /// Fully rounded — pills and grabbers.
+  static const double full = 999;
 }
 
 /// Brightness-invariant spacing scale (px).
+///
+/// A fixed design-system scale — spacing never scales with screen size.
 abstract final class BullSpacing {
-  static const double xs = 4;
-  static const double s = 8;
-  static const double m = 11;
-  static const double l = 14;
-  static const double xl = 16;
-}
-
-/// Typed text styles over the Golos Text family, the type used throughout these
-/// screens (Bebas Neue is hero-only and unused here). Brightness-invariant —
-/// colour is applied at the call site via `context.bull`.
-abstract final class BullTextStyles {
-  static const String _family = 'Golos Text';
-
-  /// Amount line — 15.5/w600, tabular figures.
-  static const TextStyle amount = TextStyle(
-    fontFamily: _family,
-    fontSize: 15.5,
-    fontWeight: FontWeight.w600,
-    fontFeatures: [FontFeature.tabularFigures()],
-  );
-
-  /// Title — 16/w600.
-  static const TextStyle title = TextStyle(
-    fontFamily: _family,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-  );
-
-  /// Bold value — 15/w700, tabular figures (summary stat value).
-  static const TextStyle statValue = TextStyle(
-    fontFamily: _family,
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-    fontFeatures: [FontFeature.tabularFigures()],
-  );
-
-  /// Body — 14/w400.
-  static const TextStyle body = TextStyle(
-    fontFamily: _family,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-  );
-
-  /// Body emphasis — 13.5/w600.
-  static const TextStyle bodyEmphasis = TextStyle(
-    fontFamily: _family,
-    fontSize: 13.5,
-    fontWeight: FontWeight.w600,
-  );
-
-  /// Secondary — 13.5/w400.
-  static const TextStyle secondary = TextStyle(
-    fontFamily: _family,
-    fontSize: 13.5,
-    fontWeight: FontWeight.w400,
-  );
-
-  /// Label — 12/w400.
-  static const TextStyle label = TextStyle(
-    fontFamily: _family,
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-  );
-
-  /// Pill / badge text — 11/w600.
-  static const TextStyle pill = TextStyle(
-    fontFamily: _family,
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-  );
-
-  /// Uppercase badge — 10.5/w600.
-  static const TextStyle badge = TextStyle(
-    fontFamily: _family,
-    fontSize: 10.5,
-    fontWeight: FontWeight.w600,
-  );
-
-  /// Caption — 11/w400.
-  static const TextStyle caption = TextStyle(
-    fontFamily: _family,
-    fontSize: 11,
-    fontWeight: FontWeight.w400,
-  );
+  static const double zero = 0;
+  static const double xxs = 4;
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 24;
+  static const double xl = 32;
+  static const double xxl = 48;
+  static const double xxxl = 64;
 }

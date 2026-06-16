@@ -46,9 +46,9 @@ class BullInfoBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: accent.withValues(alpha: 0.12),
         border: Border(left: BorderSide(color: accent, width: 4)),
-        borderRadius: BorderRadius.circular(BullRadius.small),
+        borderRadius: BorderRadius.circular(BullRadius.xs),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -57,7 +57,7 @@ class BullInfoBar extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: BullTextStyles.secondary.copyWith(color: colors.text),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.text),
             ),
           ),
         ],

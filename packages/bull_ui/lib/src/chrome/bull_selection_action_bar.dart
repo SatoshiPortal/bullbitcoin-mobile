@@ -36,20 +36,20 @@ class BullSelectionActionBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 22),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 summary,
-                style: BullTextStyles.bodyEmphasis.copyWith(color: colors.text),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.text),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   for (var i = 0; i < actions.length; i++) ...[
-                    if (i > 0) const SizedBox(width: BullSpacing.s),
+                    if (i > 0) const SizedBox(width: BullSpacing.xs),
                     Expanded(child: actions[i]),
                   ],
                 ],

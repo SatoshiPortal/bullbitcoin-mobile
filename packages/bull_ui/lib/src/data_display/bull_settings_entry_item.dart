@@ -49,12 +49,12 @@ class BullSettingsEntryItem extends StatelessWidget {
     final colors = context.bull;
     final effectiveIcon = isSuperUser ? Icons.admin_panel_settings : icon;
     final effectiveIconColor = isSuperUser
-        ? colors.red
+        ? colors.primary
         : (iconColor ?? colors.onSurface);
 
     return ListTile(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(BullRadius.card),
+        borderRadius: BorderRadius.circular(BullRadius.xs),
       ),
       tileColor: Colors.transparent,
       contentPadding: contentPadding,
@@ -63,7 +63,7 @@ class BullSettingsEntryItem extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: BullTextStyles.body.copyWith(
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
           color: textColor ?? colors.onSurface,
         ),

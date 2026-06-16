@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 /// A `m:ss` countdown to a [DateTime] that fires [onTimeout] when it elapses —
 /// duplicated from `core/widgets/timers/countdown.dart`.
@@ -97,7 +96,7 @@ class BullCountdownState extends State<BullCountdown> {
       '${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
       style:
           widget.textStyle ??
-          BullTextStyles.bodyEmphasis.copyWith(color: colors.red),
+          Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.primary),
     );
   }
 }

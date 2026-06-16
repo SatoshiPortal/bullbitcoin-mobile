@@ -22,19 +22,19 @@ class BullFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
-      padding: const EdgeInsets.only(left: 10, right: 6, top: 4, bottom: 4),
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
       decoration: BoxDecoration(
-        color: colors.red.withValues(alpha: 0.11),
-        borderRadius: BorderRadius.circular(BullRadius.pill),
+        color: colors.primary.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(BullRadius.full),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: BullTextStyles.pill.copyWith(color: colors.red)),
+          Text(label, style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.primary)),
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onRemove,
-            child: BullIcon(BullIcons.close, size: 13, color: colors.red),
+            child: BullIcon(BullIcons.close, size: 13, color: colors.primary),
           ),
         ],
       ),

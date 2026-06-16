@@ -95,7 +95,7 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = widget.actionForeground ?? context.bull.onRed;
+    final foreground = widget.actionForeground ?? context.bull.onPrimary;
     return ClipRect(
       child: Stack(
         children: [
@@ -112,22 +112,38 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
                     width: widget.revealWidth,
                     color: widget.actionColor,
                     alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BullIcon(
-                          widget.actionIcon,
-                          size: 22,
-                          color: foreground,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.actionLabel,
-                          style: BullTextStyles.pill.copyWith(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: BullSpacing.xs,
+                    ),
+                    // OverflowBox gives the icon+label column unbounded height so
+                    // it lays out at its natural size and centres in the panel —
+                    // never asserting an overflow, however short the row is
+                    // (ClipRect at the root trims any excess on a tiny row).
+                    child: OverflowBox(
+                      minHeight: 0,
+                      maxHeight: double.infinity,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          BullIcon(
+                            widget.actionIcon,
+                            size: 22,
                             color: foreground,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: BullSpacing.xxs),
+                          Text(
+                            widget.actionLabel,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: foreground,
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

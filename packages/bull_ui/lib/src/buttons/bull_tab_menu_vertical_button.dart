@@ -1,6 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -49,7 +48,7 @@ class BullTabMenuVerticalButton extends StatelessWidget {
               const Gap(8),
               BullText(
                 title,
-                style: BullTextStyles.title.copyWith(
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),

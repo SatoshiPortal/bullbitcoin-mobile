@@ -1,7 +1,6 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/overlays/bull_bottom_sheet.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -68,7 +67,7 @@ class BullInstructionsSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Column(
               children: [
                 const Gap(20),
@@ -80,7 +79,7 @@ class BullInstructionsSheet extends StatelessWidget {
                     Expanded(
                       child: BullText(
                         title,
-                        style: BullTextStyles.title,
+                        style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -96,7 +95,7 @@ class BullInstructionsSheet extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: BullText(
                       subtitle!,
-                      style: BullTextStyles.body,
+                      style: Theme.of(context).textTheme.bodyMedium,
                       color: colors.text,
                       textAlign: TextAlign.left,
                     ),
@@ -116,6 +115,7 @@ class BullInstructionsSheet extends StatelessWidget {
                       .entries
                       .map(
                         (entry) => _buildInstructionStep(
+                          context,
                           '${entry.key + 1}. ${entry.value}',
                         ),
                       )
@@ -129,10 +129,14 @@ class BullInstructionsSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildInstructionStep(String text) {
+  Widget _buildInstructionStep(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: BullText(text, style: BullTextStyles.body, maxLines: 3),
+      child: BullText(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium,
+        maxLines: 3,
+      ),
     );
   }
 }

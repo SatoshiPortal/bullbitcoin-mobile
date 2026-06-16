@@ -1,13 +1,22 @@
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
 /// Centered modal dialog — duplicated from
 /// `core/widgets/dialog/blurred_dialog.dart`. Used for the freeze confirm modal.
 class BullDialog extends StatelessWidget {
-  const BullDialog({super.key, required this.child});
+  const BullDialog({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(BullSpacing.lg),
+  });
 
   /// The dialog content.
   final Widget child;
+
+  /// Inset around [child]. Defaults to `BullSpacing.lg` so content never sits
+  /// flush against the dialog border; pass `EdgeInsets.zero` to opt out.
+  final EdgeInsetsGeometry padding;
 
   /// Present [builder]'s widget as a centered, themed dialog. The builder
   /// receives the dialog's own [BuildContext] (use it for `Navigator.of`).
@@ -29,12 +38,12 @@ class BullDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Dialog(
-      backgroundColor: colors.card,
+      backgroundColor: colors.cardBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: colors.outlineVariant),
       ),
-      child: child,
+      child: Padding(padding: padding, child: child),
     );
   }
 }

@@ -37,27 +37,27 @@ class BullLabelChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: colors.muted.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(BullRadius.small),
+          color: colors.textMuted.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(BullRadius.xs),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BullIcon(icon, size: 11, color: colors.muted),
+            BullIcon(icon, size: 11, color: colors.textMuted),
             const SizedBox(width: 4),
             Flexible(
               child: Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: BullTextStyles.pill.copyWith(color: colors.muted),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.textMuted),
               ),
             ),
             if (onRemove != null) ...[
               const SizedBox(width: 4),
               GestureDetector(
                 onTap: onRemove,
-                child: BullIcon(BullIcons.close, size: 11, color: colors.muted),
+                child: BullIcon(BullIcons.close, size: 11, color: colors.textMuted),
               ),
             ],
           ],

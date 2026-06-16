@@ -45,7 +45,7 @@ class BullBackupOptionCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(color: colors.border, offset: const Offset(0, 2)),
           ],
-          borderRadius: BorderRadius.circular(BullRadius.card),
+          borderRadius: BorderRadius.circular(BullRadius.xs),
         ),
         child: Row(
           children: [
@@ -62,15 +62,15 @@ class BullBackupOptionCard extends StatelessWidget {
                       children: [
                         BullText(
                           title,
-                          style: BullTextStyles.title.copyWith(
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const Gap(10),
                         BullText(
                           description,
-                          style: BullTextStyles.body.copyWith(
-                            color: colors.muted,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: colors.textMuted,
                           ),
                           maxLines: 3,
                         ),

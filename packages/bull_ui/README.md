@@ -14,11 +14,25 @@ feature-by-feature in later scoped PRs as usages migrate. Nothing is moved or re
 `bull_ui` is **brightness-agnostic** and never hardcodes a colour. The app injects the
 palette: it builds a `BullTheme` (a `ThemeExtension`) from `AppColors.light` and another
 from `AppColors.dark`, and registers each on the matching `ThemeData` via `extensions:`.
-Components read colours through `context.bull` (e.g. `context.bull.red`); derived fills use
-`tokenColor.withValues(alpha: …)` so they adapt to both light and dark automatically.
+Components read colours through `context.bull` (e.g. `context.bull.primary`). `BullTheme` is a
+**1:1 mirror of the app's `AppColors`** — same field names — so the app wires every field through
+without translation. Derived fills use `tokenColor.withValues(alpha: …)` so they adapt to both
+light and dark automatically.
 
-Brightness-invariant tokens (radii, spacing, type over Golos Text) are static consts:
-`BullRadius`, `BullSpacing`, `BullTextStyles`. Icons are wrapped via `BullIcon(BullIcons.…)`.
+## Foundation tokens
+
+Brightness-invariant tokens are static consts, from the design system:
+
+- **`BullRadius`** — `zero·xs·sm·md·lg·xl·xxl·full` = `0·4·8·12·16·28·32·999`.
+- **`BullSpacing`** — `zero·xxs·xs·sm·md·lg·xl·xxl·xxxl` = `0·4·8·12·16·24·32·48·64`.
+- **Type** comes from the Material `TextTheme` (`Theme.of(context).textTheme`, sourced from
+  `AppFonts`) — there is no separate text-token class.
+- **Icons** via `BullIcon(BullIcons.…)`.
+
+**Tokens are fixed — never scaled by screen size.** Responsiveness is a *layout* concern
+(breakpoints, `LayoutBuilder`, max-width wrappers, adaptive columns), not a token concern; text
+already honours the user's `MediaQuery.textScaler`. The catalogue (`packages/bull_ui_catalogue`)
+has a `Foundation/` section showcasing colours, radius, spacing and the text scale.
 
 Fonts (Golos Text, Bebas Neue) are declared at the app root and resolve by family name
 across the workspace — `bull_ui` references them by name and does not re-ship the `.ttf`s.

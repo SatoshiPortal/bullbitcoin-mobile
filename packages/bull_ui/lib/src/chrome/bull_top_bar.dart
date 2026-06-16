@@ -1,6 +1,5 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Top bar — back button + centered title + an optional trailing action.
@@ -58,7 +57,7 @@ class BullTopBar extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Text(
                 title,
-                style: BullTextStyles.title.copyWith(color: colors.text),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colors.text),
               ),
             ),
           ),
@@ -81,7 +80,7 @@ class BullTopBar extends StatelessWidget {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: colors.red,
+                        color: colors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),

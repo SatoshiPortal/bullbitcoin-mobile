@@ -1,6 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -39,11 +38,11 @@ class BullViewerActionButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 14, color: colors.red),
+              Icon(icon, size: 14, color: colors.primary),
               const Gap(4),
               BullText(
                 label,
-                style: BullTextStyles.body,
+                style: Theme.of(context).textTheme.bodyMedium,
                 color: colors.secondary,
               ),
             ],

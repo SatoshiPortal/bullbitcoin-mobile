@@ -15,7 +15,7 @@ class BullBorderedTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     required this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.backgroundColor,
   });
 

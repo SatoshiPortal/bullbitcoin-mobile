@@ -1,6 +1,5 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -60,11 +59,11 @@ class BullAddressText extends StatelessWidget {
                 _truncated,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: BullTextStyles.label.copyWith(color: colors.muted),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.textMuted),
               ),
             ),
             const SizedBox(width: 4),
-            BullIcon(BullIcons.contentCopy, size: 12, color: colors.muted),
+            BullIcon(BullIcons.contentCopy, size: 12, color: colors.textMuted),
           ],
         ),
       ),
