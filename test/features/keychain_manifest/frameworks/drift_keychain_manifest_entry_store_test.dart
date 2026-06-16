@@ -28,9 +28,6 @@ void main() {
       final byWallet = await store.fetchWalletMaterializationRecordByWalletId(
         record.walletId,
       );
-      final byIdentity = await store.fetchWalletMaterializationRecordByIdentity(
-        record.walletMaterializationIdentity,
-      );
 
       expect(byWallet!.walletId, record.walletId);
       expect(byWallet.entry.parentFingerprint, record.entry.parentFingerprint);
@@ -38,7 +35,6 @@ void main() {
         byWallet.walletMaterialization.childSeedFingerprint,
         record.walletMaterialization.childSeedFingerprint,
       );
-      expect(byIdentity!.walletId, record.walletId);
     },
   );
 
@@ -80,40 +76,6 @@ void main() {
     expect(entries, hasLength(1));
     expect(bindings, hasLength(2));
   });
-
-  test(
-    'deletes requested wallet materializations and orphaned entries',
-    () async {
-      final bitcoin = _record();
-      final liquid = _record(walletId: 'lbtc-wallet', network: 'liquidMainnet');
-      await store.insertWalletMaterializationRecord(bitcoin);
-      await store.insertWalletMaterializationRecord(liquid);
-
-      await store.deleteWalletMaterializationRecordsByIdentities([
-        bitcoin.walletMaterializationIdentity,
-      ]);
-
-      var entries = await database
-          .select(database.keychainManifestEntries)
-          .get();
-      var bindings = await database
-          .select(database.keychainManifestWalletBindings)
-          .get();
-      expect(entries, hasLength(1));
-      expect(bindings.map((binding) => binding.walletId), [liquid.walletId]);
-
-      await store.deleteWalletMaterializationRecordsByIdentities([
-        liquid.walletMaterializationIdentity,
-      ]);
-
-      entries = await database.select(database.keychainManifestEntries).get();
-      bindings = await database
-          .select(database.keychainManifestWalletBindings)
-          .get();
-      expect(entries, isEmpty);
-      expect(bindings, isEmpty);
-    },
-  );
 }
 
 KeychainManifestWalletMaterializationRecord _record({

@@ -47,7 +47,7 @@ void main() {
   test(
     'records reserved derivation commands with registry-owned metadata',
     () async {
-      final results = await usecase.execute(
+      await usecase.execute(
         const RecordReservedKeychainDerivationCommand(
           reservationId: 'btcpay_wallet_seed',
           parentFingerprint: 'fedcba98',
@@ -64,7 +64,6 @@ void main() {
         now: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
       );
 
-      expect(results.single.inserted, isTrue);
       expect(store.entries.single.reservationId, 'btcpay_wallet_seed');
       expect(store.entries.single.entryType, 'walletSeed');
       expect(store.entries.single.ownerFeature, 'btcpay');
@@ -74,11 +73,9 @@ void main() {
   );
 
   test('records exact duplicates idempotently', () async {
-    final first = await usecase.execute(_command());
-    final second = await usecase.execute(_command());
+    await usecase.execute(_command());
+    await usecase.execute(_command());
 
-    expect(first.single.inserted, isTrue);
-    expect(second.single.inserted, isFalse);
     expect(store.records, hasLength(1));
   });
 
@@ -120,7 +117,7 @@ void main() {
     );
   });
 
-  test('cleans up inserted batch records if a later record fails', () async {
+  test('keeps inserted batch records if a later record fails', () async {
     store.failOnWalletId = 'lbtc-wallet';
 
     await expectLater(
@@ -140,8 +137,29 @@ void main() {
       throwsA(isA<StateError>()),
     );
 
-    expect(store.records, isEmpty);
-    expect(store.entries, isEmpty);
+    expect(store.records.map((record) => record.walletId), ['btc-wallet']);
+    expect(store.entries, hasLength(1));
+
+    store.failOnWalletId = null;
+    await usecase.execute(
+      _command(
+        extraWalletMaterializations: [
+          const RecordKeychainManifestWalletMaterializationCommand(
+            walletId: 'lbtc-wallet',
+            childSeedFingerprint: '0123abcd',
+            network: 'liquidMainnet',
+            walletPurpose: 'liquid',
+            scriptType: 'bip84',
+          ),
+        ],
+      ),
+    );
+
+    expect(store.records.map((record) => record.walletId), [
+      'btc-wallet',
+      'lbtc-wallet',
+    ]);
+    expect(store.entries, hasLength(1));
   });
 }
 
@@ -221,36 +239,6 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
   String? failOnWalletId;
 
   @override
-  Future<void> deleteWalletMaterializationRecordsByIdentities(
-    List<KeychainManifestWalletMaterializationIdentity> identities,
-  ) async {
-    records.removeWhere((record) {
-      return identities.any((identity) {
-        return record.walletMaterializationIdentity.walletId ==
-            identity.walletId;
-      });
-    });
-    entries.removeWhere((entry) {
-      return !records.any((record) => record.entry.entryId == entry.entryId);
-    });
-  }
-
-  @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByIdentity(
-    KeychainManifestWalletMaterializationIdentity identity,
-  ) async {
-    return records
-        .cast<KeychainManifestWalletMaterializationRecord?>()
-        .firstWhere(
-          (record) =>
-              record!.walletMaterializationIdentity.walletId ==
-              identity.walletId,
-          orElse: () => null,
-        );
-  }
-
-  @override
   Future<KeychainManifestWalletMaterializationRecord?>
   fetchWalletMaterializationRecordByWalletId(String walletId) async {
     return records
@@ -269,11 +257,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
       throw StateError('insert failed');
     }
     if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
-            null ||
-        await fetchWalletMaterializationRecordByIdentity(
-              record.walletMaterializationIdentity,
-            ) !=
-            null) {
+        null) {
       throw const KeychainManifestDuplicateException('duplicate');
     }
     final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(

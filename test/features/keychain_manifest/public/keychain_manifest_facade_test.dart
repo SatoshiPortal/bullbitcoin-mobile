@@ -49,30 +49,8 @@ void main() {
     );
   });
 
-  test(
-    'rejects unsupported materialization types at the public boundary',
-    () async {
-      await expectLater(
-        facade.recordReservedDerivation(
-          const KeychainManifestReservedDerivationRequest(
-            reservationId: 'btcpay_wallet_seed',
-            parentFingerprint: 'fedcba98',
-            materializations: [_UnsupportedMaterializationRequest()],
-          ),
-        ),
-        throwsA(
-          isA<KeychainManifestException>().having(
-            (error) => error.cause,
-            'cause',
-            isA<KeychainManifestUnsupportedMaterializationException>(),
-          ),
-        ),
-      );
-    },
-  );
-
   test('derives reserved path and owner metadata from the registry', () async {
-    final result = await facade.recordReservedDerivation(
+    await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
         parentFingerprint: 'fedcba98',
@@ -81,15 +59,6 @@ void main() {
       now: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
     );
 
-    expect(result.insertedMaterializations, hasLength(1));
-    expect(
-      result.insertedMaterializations.single.materializationType,
-      'wallet',
-    );
-    expect(
-      result.insertedMaterializations.single.materializationId,
-      'btc-wallet',
-    );
     expect(store.entries.single.reservationId, 'btcpay_wallet_seed');
     expect(store.entries.single.ownerFeature, 'btcpay');
     expect(store.entries.single.entryType, 'walletSeed');
@@ -98,7 +67,7 @@ void main() {
     expect(store.entries.single.bip85Index, 100);
   });
 
-  test('reports only materializations inserted by this record call', () async {
+  test('records additional wallet materializations idempotently', () async {
     await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
@@ -107,7 +76,7 @@ void main() {
       ),
     );
 
-    final result = await facade.recordReservedDerivation(
+    await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
         parentFingerprint: 'fedcba98',
@@ -122,11 +91,10 @@ void main() {
       ),
     );
 
-    expect(result.insertedMaterializations, hasLength(1));
-    expect(
-      result.insertedMaterializations.single.materializationId,
+    expect(store.records.map((record) => record.walletId), [
+      'btc-wallet',
       'lbtc-wallet',
-    );
+    ]);
   });
 }
 
@@ -146,44 +114,9 @@ KeychainManifestWalletMaterializationRequest _walletMaterialization({
   );
 }
 
-class _UnsupportedMaterializationRequest
-    extends KeychainManifestMaterializationRequest {
-  const _UnsupportedMaterializationRequest();
-}
-
 class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
   final entries = <KeychainManifestEntry>[];
   final records = <KeychainManifestWalletMaterializationRecord>[];
-
-  @override
-  Future<void> deleteWalletMaterializationRecordsByIdentities(
-    List<KeychainManifestWalletMaterializationIdentity> identities,
-  ) async {
-    records.removeWhere((record) {
-      return identities.any((identity) {
-        return record.walletMaterializationIdentity.walletId ==
-            identity.walletId;
-      });
-    });
-    entries.removeWhere((entry) {
-      return !records.any((record) => record.entry.entryId == entry.entryId);
-    });
-  }
-
-  @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByIdentity(
-    KeychainManifestWalletMaterializationIdentity identity,
-  ) async {
-    return records
-        .cast<KeychainManifestWalletMaterializationRecord?>()
-        .firstWhere(
-          (record) =>
-              record!.walletMaterializationIdentity.walletId ==
-              identity.walletId,
-          orElse: () => null,
-        );
-  }
 
   @override
   Future<KeychainManifestWalletMaterializationRecord?>
@@ -201,11 +134,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
     KeychainManifestWalletMaterializationRecord record,
   ) async {
     if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
-            null ||
-        await fetchWalletMaterializationRecordByIdentity(
-              record.walletMaterializationIdentity,
-            ) !=
-            null) {
+        null) {
       throw const KeychainManifestDuplicateException('duplicate');
     }
     final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(

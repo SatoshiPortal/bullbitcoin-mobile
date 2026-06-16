@@ -84,6 +84,17 @@ class BtcpayPairingCubit extends Cubit<BtcpayPairingState> {
     );
   }
 
+  void clearPairingFailure() {
+    if (state.isSubmitting || state.failure == null) return;
+    emit(
+      state.copyWith(
+        status: BtcpayPairingStatus.idle,
+        clearFailure: true,
+        showPairingForm: true,
+      ),
+    );
+  }
+
   Future<void> submit(String pairingUrl) async {
     if (state.isSubmitting) return;
     emit(

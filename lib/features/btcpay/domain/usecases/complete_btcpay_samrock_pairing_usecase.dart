@@ -183,7 +183,7 @@ class CompleteBtcpaySamRockPairingUsecase {
   _recordBtcpayKeychainManifestEntries(
     PreparedDeterministicWallets preparedWallets,
   ) async {
-    return _keychainManifest.recordReservedDerivation(
+    await _keychainManifest.recordReservedDerivation(
       _btcpayKeychainManifestRequest(preparedWallets),
     );
   }

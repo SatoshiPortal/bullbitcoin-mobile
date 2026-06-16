@@ -21,19 +21,6 @@ class DriftKeychainManifestEntryStore implements KeychainManifestEntryStore {
   }
 
   @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByIdentity(
-    KeychainManifestWalletMaterializationIdentity identity,
-  ) async {
-    final bindingQuery = _database.select(
-      _database.keychainManifestWalletBindings,
-    )..where((table) => table.walletId.equals(identity.walletId));
-    final binding = await bindingQuery.getSingleOrNull();
-    if (binding == null) return null;
-    return _recordForBinding(binding);
-  }
-
-  @override
   Future<void> insertWalletMaterializationRecord(
     KeychainManifestWalletMaterializationRecord record,
   ) async {
@@ -96,24 +83,6 @@ class DriftKeychainManifestEntryStore implements KeychainManifestEntryStore {
         );
   }
 
-  @override
-  Future<void> deleteWalletMaterializationRecordsByIdentities(
-    List<KeychainManifestWalletMaterializationIdentity> identities,
-  ) async {
-    for (final identity in identities) {
-      final bindingQuery = _database.select(
-        _database.keychainManifestWalletBindings,
-      )..where((table) => table.walletId.equals(identity.walletId));
-      final binding = await bindingQuery.getSingleOrNull();
-      await (_database.delete(
-        _database.keychainManifestWalletBindings,
-      )..where((table) => table.walletId.equals(identity.walletId))).go();
-      if (binding != null) {
-        await _deleteOrphanEntry(binding.entryId);
-      }
-    }
-  }
-
   Future<KeychainManifestWalletMaterializationRecord> _recordForBinding(
     KeychainManifestWalletBindingRow binding,
   ) async {
@@ -124,17 +93,6 @@ class DriftKeychainManifestEntryStore implements KeychainManifestEntryStore {
       entry: _rowToEntry(entry),
       walletMaterialization: _rowToWalletBinding(binding),
     );
-  }
-
-  Future<void> _deleteOrphanEntry(String entryId) async {
-    final remainingQuery = _database.select(
-      _database.keychainManifestWalletBindings,
-    )..where((table) => table.entryId.equals(entryId));
-    final remaining = await remainingQuery.getSingleOrNull();
-    if (remaining != null) return;
-    await (_database.delete(
-      _database.keychainManifestEntries,
-    )..where((table) => table.entryId.equals(entryId))).go();
   }
 
   KeychainManifestEntry _rowToEntry(KeychainManifestEntryRow row) {

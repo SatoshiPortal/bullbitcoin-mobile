@@ -138,9 +138,6 @@ class KeychainManifestWalletMaterialization {
     }
   }
 
-  KeychainManifestWalletMaterializationIdentity get identity =>
-      KeychainManifestWalletMaterializationIdentity(walletId: walletId);
-
   bool sameRecordAs(KeychainManifestWalletMaterialization other) {
     return walletId == other.walletId &&
         entryId == other.entryId &&
@@ -162,8 +159,6 @@ class KeychainManifestWalletMaterializationRecord {
 
   String get walletId => walletMaterialization.walletId;
   KeychainManifestEntryIdentity get identity => entry.identity;
-  KeychainManifestWalletMaterializationIdentity
-  get walletMaterializationIdentity => walletMaterialization.identity;
 
   bool sameRecordAs(KeychainManifestWalletMaterializationRecord other) {
     return entry.sameRecordAs(other.entry) &&
@@ -189,16 +184,6 @@ class KeychainManifestEntryIdentity {
     parentFingerprint: parentFingerprint,
     bip85DerivationPath: bip85DerivationPath,
   );
-}
-
-class KeychainManifestWalletMaterializationIdentity {
-  final String walletId;
-
-  KeychainManifestWalletMaterializationIdentity({required this.walletId}) {
-    if (walletId.trim().isEmpty) {
-      throw KeychainManifestInvalidEntryException('wallet id is required');
-    }
-  }
 }
 
 class KeychainManifestEntryId {

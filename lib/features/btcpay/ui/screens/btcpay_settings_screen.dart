@@ -77,8 +77,12 @@ class _BtcpaySettingsScreenState extends State<BtcpaySettingsScreen> {
                       formKey: _formKey,
                       urlController: _urlController,
                       isSubmitting: state.isSubmitting,
+                      failureMessage: state.isFailure
+                          ? _errorMessage(context, state)
+                          : null,
                       onSubmit: _submit,
                       onScan: _scanPairingCode,
+                      onChanged: _clearPairingFailure,
                     ),
             ),
           ),
@@ -145,6 +149,11 @@ class _BtcpaySettingsScreenState extends State<BtcpaySettingsScreen> {
     );
     if (scanned == null || !mounted) return;
     _urlController.text = scanned;
+    _clearPairingFailure();
+  }
+
+  void _clearPairingFailure() {
+    context.read<BtcpayPairingCubit>().clearPairingFailure();
   }
 
   String _capabilitySummary(
@@ -168,15 +177,19 @@ class _BtcpayPairingForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController urlController;
   final bool isSubmitting;
+  final String? failureMessage;
   final VoidCallback onSubmit;
   final VoidCallback onScan;
+  final VoidCallback onChanged;
 
   const _BtcpayPairingForm({
     required this.formKey,
     required this.urlController,
     required this.isSubmitting,
+    required this.failureMessage,
     required this.onSubmit,
     required this.onScan,
+    required this.onChanged,
   });
 
   @override
@@ -188,6 +201,10 @@ class _BtcpayPairingForm extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (failureMessage != null) ...[
+              _BtcpayPairingFailurePanel(message: failureMessage!),
+              const Gap(16),
+            ],
             TextFormField(
               controller: urlController,
               enabled: !isSubmitting,
@@ -198,6 +215,7 @@ class _BtcpayPairingForm extends StatelessWidget {
               minLines: 3,
               maxLines: 5,
               onFieldSubmitted: (_) => isSubmitting ? null : onSubmit(),
+              onChanged: (_) => onChanged(),
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: context.loc.btcpayPairingUrlLabel,
@@ -231,6 +249,27 @@ class _BtcpayPairingForm extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _BtcpayPairingFailurePanel extends StatelessWidget {
+  final String message;
+
+  const _BtcpayPairingFailurePanel({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.appColors.error),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(message, style: context.font.bodyMedium),
       ),
     );
   }
