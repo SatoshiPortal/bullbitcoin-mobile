@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -203,3 +203,12 @@ integration-test:
 	@echo "🧪 integration tests"
 	@fvm dart run tool/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
+
+# Build & render the bull_ui design-system catalogue (Widgetbook) locally in the
+# browser. Dev-only tooling — never shipped in the app. Regenerates the
+# @UseCase directories, then runs the catalogue app on Chrome (hot-reload).
+catalogue:
+	@echo "📚 Building & rendering the bull_ui catalogue in the browser"
+	@cd packages/bull_ui_catalogue && \
+		fvm dart run build_runner build --delete-conflicting-outputs && \
+		fvm flutter run -d chrome

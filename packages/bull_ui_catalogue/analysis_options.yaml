@@ -1,0 +1,17 @@
+include: package:flutter_lints/flutter.yaml
+
+# This is a dev-only catalogue app, not the design-system package. We relax the
+# documentation / const-perfection lints that bull_ui itself is held to — the
+# use-cases are illustrative sample code, not production API surface.
+analyzer:
+  errors:
+    # Generated *.directories.g.dart is checked into the tree; never lint it.
+    todo: ignore
+  exclude:
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    public_member_api_docs: false
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
