@@ -286,7 +286,7 @@
   "onboardingAdvancedOptionsDone": "Imekamilika",
   "appStartupContactSupportMessage": "Wasiliana na usaidizi kupitia app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox inasaidiwa kwenye Android pekee",
-    "fundExchangeErrorTitleOrdPo404": "Chaguo la Malipo Halipatikani",
+  "fundExchangeErrorTitleOrdPo404": "Chaguo la Malipo Halipatikani",
   "fundExchangeErrorTitleRcpPo404": "Chaguo la Malipo Halipatikani",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Haipatikani",
   "fundExchangeErrorTitleOrdKyc400": "Mahitaji ya KYC Yamekosekana",
@@ -297,8 +297,9 @@
   "fundExchangeErrorOrdCsrcp400": "Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji wa SEPA mwenye IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Ombi si Sahihi",
   "fundExchangeErrorRcp400": "Ombi si sahihi",
-"fundExchangeErrorOrdPo404": "Hakuna chaguo la malipo linalopatikana",
+  "fundExchangeErrorOrdPo404": "Hakuna chaguo la malipo linalopatikana",
   "fundExchangeErrorRcpPo404": "Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako",
   "fundExchangeErrorRcpPosinpe404": "Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.",
-  "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye."
+  "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye.",
+  "fundExchangeMethodInstantSepa": "Uhawilishaji wa SEPA wa haraka na wa kawaida"
 }

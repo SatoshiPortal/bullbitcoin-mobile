@@ -7730,7 +7730,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "즉시 SEPA",
+  "fundExchangeMethodInstantSepa": "즉시 및 일반 SEPA 송금",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8520,7 +8520,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "지불 세부사항은 이 순간에 적재될 수 없습니다. 다시 가서 다시 시도, 다른 지불 방법을 선택하거나 나중에 다시 온다.",
-    "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
+  "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
   "fundExchangeErrorTitleRcpPo404": "결제 옵션을 사용할 수 없음",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE 사용 불가",
   "fundExchangeErrorTitleOrdKyc400": "KYC 요건 미충족",
@@ -8531,7 +8531,7 @@
   "fundExchangeErrorOrdCsrcp400": "IBAN이 {iban}인 SEPA 수취인에 대해 가상 결제 옵션을 활성화해 주세요.",
   "fundExchangeErrorTitleRcp400": "잘못된 요청",
   "fundExchangeErrorRcp400": "잘못된 요청",
-"fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
+  "fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
   "fundExchangeErrorRcpPo404": "이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다",
   "fundExchangeErrorRcpPosinpe404": "이 자금 조달 옵션에 액세스하려면 전화번호가 코스타리카 SINPE 네트워크에 등록되어 있어야 합니다.",
   "fundExchangeErrorFetchingBankCodes": "은행 코드를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.",

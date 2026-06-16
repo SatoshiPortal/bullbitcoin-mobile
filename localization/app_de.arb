@@ -2476,7 +2476,7 @@
   "sendTypeSwap": "Swap",
   "sendErrorAmountExceedsMaximum": "Höchstbetrag überschritten",
   "bitboxActionSignTransactionSuccess": "Transaktion erfolgreich signiert",
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "SEPA-Sofort und SEPA-Standard",
   "buyVerificationFailed": "Verifizierung nicht möglich: {reason}",
   "@buyVerificationFailed": {
     "placeholders": {

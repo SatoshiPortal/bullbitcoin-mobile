@@ -7730,7 +7730,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "तत्काल और सामान्य SEPA ट्रांसफर",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8520,7 +8520,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "इस समय भुगतान विवरण लोड नहीं किया जा सकता है। कृपया वापस जाएं और फिर से कोशिश करें, एक अन्य भुगतान विधि चुनें या बाद में वापस आ जाएं।।",
-    "fundExchangeErrorTitleOrdPo404": "भुगतान विकल्प अनुपलब्ध",
+  "fundExchangeErrorTitleOrdPo404": "भुगतान विकल्प अनुपलब्ध",
   "fundExchangeErrorTitleRcpPo404": "भुगतान विकल्प उपलब्ध नहीं",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE उपलब्ध नहीं",
   "fundExchangeErrorTitleOrdKyc400": "KYC आवश्यकताएँ अनुपस्थित",
@@ -8531,7 +8531,7 @@
   "fundExchangeErrorOrdCsrcp400": "कृपया IBAN: {iban} वाले SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें",
   "fundExchangeErrorTitleRcp400": "अमान्य अनुरोध",
   "fundExchangeErrorRcp400": "अमान्य अनुरोध",
-"fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
+  "fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
   "fundExchangeErrorRcpPo404": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
   "fundExchangeErrorRcpPosinpe404": "इस फंडिंग विकल्प तक पहुँचने के लिए, आपका फ़ोन नंबर कोस्टा रिका में SINPE नेटवर्क पर पंजीकृत होना चाहिए।",
   "fundExchangeErrorFetchingBankCodes": "बैंक कोड लाने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",

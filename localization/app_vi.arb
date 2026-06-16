@@ -267,7 +267,7 @@
   "onboardingAdvancedOptionsDone": "Xong",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
-    "fundExchangeErrorTitleOrdPo404": "Phương thức thanh toán không khả dụng",
+  "fundExchangeErrorTitleOrdPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE không khả dụng",
   "fundExchangeErrorTitleOrdKyc400": "Thiếu yêu cầu KYC",
@@ -278,8 +278,9 @@
   "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA có IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Yêu cầu không hợp lệ",
   "fundExchangeErrorRcp400": "Yêu cầu không hợp lệ",
-"fundExchangeErrorOrdPo404": "Không có phương thức thanh toán nào",
+  "fundExchangeErrorOrdPo404": "Không có phương thức thanh toán nào",
   "fundExchangeErrorRcpPo404": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
   "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
-  "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau."
+  "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau.",
+  "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn"
 }

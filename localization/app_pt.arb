@@ -2495,7 +2495,7 @@
   "sendTypeSwap": "Swap",
   "sendErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
   "bitboxActionSignTransactionSuccess": "Transação assinada com sucesso",
-  "fundExchangeMethodInstantSepa": "SEPA instantâneo",
+  "fundExchangeMethodInstantSepa": "SEPA instantâneo e regular",
   "buyVerificationFailed": "Verificação falhada: {reason}",
   "@buyVerificationFailed": {
     "placeholders": {
@@ -2790,7 +2790,7 @@
   "bitboxScreenTroubleshootingStep3": "Reinicie seu dispositivo BitBox02 desconectando e reconectando-o.",
   "torSettingsProxyPort": "Porto Proxy de Tor",
   "fundExchangeErrorLoadingDetails": "Os detalhes do pagamento não podem ser carregados neste momento. Por favor, volte e tente novamente, escolha outro método de pagamento ou volte mais tarde.",
-    "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
+  "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
   "fundExchangeErrorTitleRcpPo404": "Opção de Pagamento Não Disponível",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Não Disponível",
   "fundExchangeErrorTitleOrdKyc400": "Requisitos de KYC em Falta",
@@ -2801,7 +2801,7 @@
   "fundExchangeErrorOrdCsrcp400": "Por favor, ative a opção de pagamento virtual para o destinatário SEPA com o IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Pedido Inválido",
   "fundExchangeErrorRcp400": "Pedido inválido",
-"fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
+  "fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
   "fundExchangeErrorRcpPo404": "Você não tem as permissões necessárias para aceder a esta opção de financiamento. Ou o seu KYC é insuficiente ou esta opção não está disponível para a sua conta",
   "fundExchangeErrorRcpPosinpe404": "Para aceder a esta opção de financiamento, o seu número de telefone deve estar registado na rede SINPE na Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Erro ao obter os códigos bancários. Por favor, tente novamente mais tarde.",
