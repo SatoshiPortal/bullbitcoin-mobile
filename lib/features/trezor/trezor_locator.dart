@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.d
 import 'package:bb_mobile/features/trezor/presentation/trezor_import_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_sign_transaction_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_verify_address_cubit.dart';
-import 'package:bb_mobile/features/trezor/public/trezor_facade.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trezor_connect/trezor_connect.dart';
 
@@ -19,7 +18,6 @@ class TrezorLocator {
     _registerFrameworks(locator);
     _registerAdapters(locator);
     _registerUsecases(locator);
-    _registerFacade(locator);
     _registerCubits(locator);
   }
 
@@ -65,14 +63,6 @@ class TrezorLocator {
     locator.registerFactory<SignPsbtTrezorUsecase>(
       () =>
           SignPsbtTrezorUsecase(repository: locator<TrezorDeviceRepository>()),
-    );
-  }
-
-  static void _registerFacade(GetIt locator) {
-    locator.registerLazySingleton<TrezorFacade>(
-      () => TrezorFacade(
-        prepareTrezorImportUsecase: locator<PrepareTrezorImportUsecase>(),
-      ),
     );
   }
 
