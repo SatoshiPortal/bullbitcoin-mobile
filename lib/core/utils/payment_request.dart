@@ -86,6 +86,17 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (result != null) return result;
       }
 
+      final lnAddressRe = RegExp(
+        r'[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}',
+      );
+      final lnAddressMatch = lnAddressRe.firstMatch(trimmed);
+
+      if (lnAddressMatch != null) {
+        final decoded = Uri.decodeComponent(lnAddressMatch.group(0)!);
+        final result = await _tryParseLnAddress(decoded);
+        if (result != null) return result;
+      }
+
       if (trimmed.toLowerCase().startsWith('lnbc') ||
           trimmed.toLowerCase().startsWith('lntb') ||
           trimmed.toLowerCase().startsWith('lightning:')) {
