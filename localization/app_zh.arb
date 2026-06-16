@@ -846,6 +846,7 @@
   "torSettingsConnectionStatus": "关系",
   "backupInstruction1": "如果您丢失了12个单词备份，您将会无法恢复对该比特币钱包的访问权限",
   "sendErrorInvalidAddressOrInvoice": "Invalid Pay Address or Invoice",
+  "sendErrorUnsupportedQrCodeFormat": "不支持的二维码格式",
   "transactionLabelAmountReceived": "收到的资金",
   "recoverbullRecoveryTitle": "2. 追回被盗资产",
   "broadcastSignedTxScanQR": "your",

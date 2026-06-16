@@ -236,7 +236,10 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             loadingBestWallet: false,
-            invalidBitcoinStringException: InvalidBitcoinStringException(),
+            invalidBitcoinStringException:
+                state.scannedRawPaymentRequest.isNotEmpty
+                ? UnsupportedQrFormatException()
+                : InvalidBitcoinStringException(),
           ),
         );
         return;
