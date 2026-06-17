@@ -990,6 +990,15 @@ class SendCubit extends Cubit<SendState> {
           lnAddress: state.paymentRequestAddress,
           amountSat: state.confirmedAmountSat,
         );
+        try {
+          final decodedInvoice = await _decodeInvoiceUsecase.execute(
+            invoice: swap.invoice,
+          );
+          final memo = decodedInvoice.description?.trim() ?? '';
+          if (memo.isNotEmpty && state.label.isEmpty) {
+            emit(state.copyWith(label: memo));
+          }
+        } catch (_) {}
         emit(state.copyWith(creatingSwap: false));
         await Future.delayed(const Duration(seconds: 1));
         emit(
