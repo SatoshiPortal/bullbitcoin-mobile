@@ -3,9 +3,10 @@
 # Zola
 docs/zola/public/
 
-# # Untrack unused platform files
-macos/
-windows/
+# # Untrack unused platform files (repo-root Flutter runners only — anchored so
+# # these don't also match nested dirs like .devcontainer/macos/)
+/macos/
+/windows/
 
 # Files and directories created by pub
 .dart_tool/

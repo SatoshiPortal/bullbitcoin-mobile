@@ -1,7 +1,9 @@
+// Linux host dev container. Builds ../../Containerfile.tools and forwards the
+// host GPU (/dev/dri) + X11/Wayland so the Flutter Linux desktop GUI can run.
 {
   "name": "${localWorkspaceFolderBasename}",
   "build": {
-    "dockerfile": "../Containerfile.tools",
+    "dockerfile": "../../Containerfile.tools",
     "args": {
       "USERNAME": "${localEnv:USER}",
     },
@@ -9,7 +11,7 @@
   "remoteUser": "${localEnv:USER}",
   "updateRemoteUserUID": true,
   "shutdownAction": "stopContainer",
-  "initializeCommand": "sh -c '.devcontainer/init-ssh-agent.sh && .devcontainer/init-adb.sh'",
+  "initializeCommand": "sh -c '.devcontainer/linux/init-ssh-agent.sh && .devcontainer/linux/init-adb.sh'",
   "runArgs": [
     "--name",
     "${localWorkspaceFolderBasename}",
@@ -17,6 +19,10 @@
     "bull",
     "--memory=8g",
     "--device=/dev/dri",
+    // Pin DNS to public resolvers: podman's VM/netns default resolver has been
+    // unreliable for pub.dev/crates.io fetches. On networks that require an
+    // internal/split-horizon resolver (corp VPN, captive portal), drop or
+    // change these two pairs.
     "--dns",
     "1.1.1.1",
     "--dns",
@@ -25,13 +31,13 @@
     "label=disable",
   ],
   "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached,readonly",
-    "source=${localEnv:HOME}/.ssh-agent-devcontainer.sock,target=/ssh-agent,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached",
-    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly",
+    "source=${localEnv:HOME}/.ssh-agent-devcontainer.sock,target=/ssh-agent,type=bind",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind",
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
     "source=${localWorkspaceFolderBasename}-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
     "source=${localWorkspaceFolderBasename}-keyrings,target=/home/${localEnv:USER}/.local/share/keyrings,type=volume",
-    "source=${localEnv:XDG_RUNTIME_DIR},target=/run/host-runtime,type=bind,consistency=cached",
+    "source=${localEnv:XDG_RUNTIME_DIR},target=/run/host-runtime,type=bind",
   ],
   "containerEnv": {
     "SSH_AUTH_SOCK": "/ssh-agent",
@@ -43,5 +49,5 @@
     "DBUS_SESSION_BUS_ADDRESS": "unix:path=/tmp/dbus-session.sock",
   },
   "postCreateCommand": "sudo chown -R ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.local /home/${localEnv:USER}/.history && touch /home/${localEnv:USER}/.history/bash_history",
-  "postStartCommand": ".devcontainer/init-keyring.sh",
+  "postStartCommand": ".devcontainer/linux/init-keyring.sh",
 }

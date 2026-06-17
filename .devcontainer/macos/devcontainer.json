@@ -1,0 +1,66 @@
+// macOS (Apple Silicon) dev container.
+//
+// Builds the same ../../Containerfile.tools image as ../linux, but is a trimmed
+// sibling: the macOS podman-machine VM (applehv) can't provide the host
+// integration the Linux config relies on, and the macOS use case is the
+// Android (x86_64-via-Rosetta) build + tests, not the Linux desktop GUI.
+// Each folder carries its OWN copy of the lifecycle scripts — they are not
+// shared. Removed vs. linux:
+//
+//   * --device=/dev/dri        — applehv exposes no DRI node; passing it aborts
+//                                container creation. (GPU passthrough would need
+//                                a krunkit/libkrun machine; not required here.)
+//   * X11 / Wayland mounts+env — no Linux display server on macOS, and
+//                                ${localEnv:XDG_RUNTIME_DIR} is unset.
+//   * SSH agent forwarding     — impossible through the podman VM on macOS
+//                                (virtiofs; containers/podman#23785). Keys are
+//                                still mounted read-only for direct use.
+//   * keyring / dbus           — libsecret (flutter_secure_storage_linux) only
+//                                runs in the rendered Linux app, which macOS
+//                                can't display, so no keyring bootstrap.
+//
+// See ../README.md.
+{
+  "name": "${localWorkspaceFolderBasename}",
+  "build": {
+    "dockerfile": "../../Containerfile.tools",
+    "args": {
+      "USERNAME": "${localEnv:USER}",
+    },
+  },
+  "remoteUser": "${localEnv:USER}",
+  "updateRemoteUserUID": true,
+  "shutdownAction": "stopContainer",
+  // macos-setup.sh ensures Rosetta is active in the podman VM before build;
+  // without it the x86_64 base image falls back to QEMU and crashes (SIGSEGV).
+  "initializeCommand": "sh -c '.devcontainer/macos/macos-setup.sh && .devcontainer/macos/init-mounts.sh && .devcontainer/macos/init-adb.sh'",
+  "runArgs": [
+    "--name",
+    "${localWorkspaceFolderBasename}",
+    "--hostname",
+    "bull",
+    "--memory=8g",
+    // Pin DNS to public resolvers: podman's VM/netns default resolver has been
+    // unreliable for pub.dev/crates.io fetches. On networks that require an
+    // internal/split-horizon resolver (corp VPN, captive portal), drop or
+    // change these two pairs.
+    "--dns",
+    "1.1.1.1",
+    "--dns",
+    "9.9.9.9",
+    "--security-opt",
+    "label=disable",
+  ],
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind",
+    "source=${localWorkspaceFolderBasename}-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
+  ],
+  "containerEnv": {
+    "ADB_SERVER_SOCKET": "tcp:host.containers.internal:5037",
+  },
+  // Only the bash-history volume needs chowning on macOS (it mounts root-owned).
+  // The Linux config also chowns ~/.local for its keyrings volume — macOS has
+  // neither that volume nor ~/.local, so chowning it would fail (no such path).
+  "postCreateCommand": "sudo chown -R ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.history && touch /home/${localEnv:USER}/.history/bash_history",
+}
