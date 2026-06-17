@@ -26,7 +26,7 @@ sealed class PinCodeSettingState with _$PinCodeSettingState {
     @Default(true) bool obscurePinCode,
     @Default(false) bool isPinCodeSet,
     @Default(false) bool showConfirmationError,
-    Object? error,
+    PinCodeError? error,
   }) = _PinCodeSettingState;
   const PinCodeSettingState._();
 

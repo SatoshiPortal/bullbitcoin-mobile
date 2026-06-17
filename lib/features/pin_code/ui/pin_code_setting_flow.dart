@@ -30,6 +30,13 @@ class PinCodeSettingFlow extends StatelessWidget {
               context.pop();
             case PinCodeSettingStatus.failure:
               log.info('Pin Code Set Failed');
+              if (state.error != null) {
+                SnackBarUtils.showSnackBar(
+                  context,
+                  state.error!.toTranslated(context),
+                );
+              }
+              context.pop();
             case PinCodeSettingStatus.deleted:
               log.info('Pin Code Deleted');
               context.pop();
