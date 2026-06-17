@@ -105,31 +105,27 @@ class CoinsScreen extends StatelessWidget {
 
   Future<void> _freeze(BuildContext context, List<String> outpoints) async {
     final cubit = context.read<CoinsCubit>();
-    await cubit.freeze(outpoints);
-    if (!context.mounted) return;
-    if (cubit.state.error == null) {
-      BullSnackBar.show(
-        context,
-        message: context.loc.coinsFrozenToast(outpoints.length),
-        leadingIcon: BullIcons.acUnit,
-      );
-    }
+    final ok = await cubit.freeze(outpoints);
+    if (!context.mounted || !ok) return;
+    BullSnackBar.show(
+      context,
+      message: context.loc.coinsFrozenToast(outpoints.length),
+      leadingIcon: BullIcons.acUnit,
+    );
   }
 
   Future<void> _unfreeze(BuildContext context, List<String> outpoints) async {
     final cubit = context.read<CoinsCubit>();
     if (outpoints.isEmpty) return;
-    await cubit.unfreeze(outpoints);
-    if (!context.mounted) return;
-    if (cubit.state.error == null) {
-      BullSnackBar.show(
-        context,
-        message: context.loc.coinsUnfrozenToast(outpoints.length),
-        leadingIcon: BullIcons.lockOpen,
-        actionLabel: context.loc.coinsUndo,
-        onAction: () => cubit.freeze(outpoints),
-      );
-    }
+    final ok = await cubit.unfreeze(outpoints);
+    if (!context.mounted || !ok) return;
+    BullSnackBar.show(
+      context,
+      message: context.loc.coinsUnfrozenToast(outpoints.length),
+      leadingIcon: BullIcons.lockOpen,
+      actionLabel: context.loc.coinsUndo,
+      onAction: () => cubit.freeze(outpoints),
+    );
   }
 }
 
@@ -460,8 +456,8 @@ class _UtxoList extends StatelessWidget {
   ) async {
     final cubit = context.read<CoinsCubit>();
     if (isFrozen) {
-      await cubit.unfreeze([key]);
-      if (!context.mounted || cubit.state.error != null) return;
+      final ok = await cubit.unfreeze([key]);
+      if (!context.mounted || !ok) return;
       BullSnackBar.show(
         context,
         message: context.loc.coinsUnfrozenToast(1),
@@ -470,8 +466,8 @@ class _UtxoList extends StatelessWidget {
         onAction: () => cubit.freeze([key]),
       );
     } else {
-      await cubit.freeze([key]);
-      if (!context.mounted || cubit.state.error != null) return;
+      final ok = await cubit.freeze([key]);
+      if (!context.mounted || !ok) return;
       BullSnackBar.show(
         context,
         message: context.loc.coinsFrozenToast(1),

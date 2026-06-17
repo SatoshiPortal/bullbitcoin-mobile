@@ -180,8 +180,9 @@ void main() {
       cubit.enterSelect();
       cubit.toggle('a:0');
 
-      await cubit.freeze(['a:0']);
+      final ok = await cubit.freeze(['a:0']);
 
+      expect(ok, isTrue);
       expect(cubit.state.selecting, isFalse);
       expect(cubit.state.selectedOutpoints, isEmpty);
       expect(cubit.state.error, isNull);
@@ -209,8 +210,12 @@ void main() {
       cubit.enterSelect();
       cubit.toggle('a:0');
 
-      await cubit.freeze(['a:0']);
+      final ok = await cubit.freeze(['a:0']);
 
+      // Returns false on failure so the UI can gate the success toast on the
+      // return value rather than re-reading state.error (which the listener
+      // clears before the awaiting caller resumes).
+      expect(ok, isFalse);
       expect(cubit.state.selecting, isTrue);
       expect(cubit.state.selectedOutpoints, {'a:0'});
       expect(cubit.state.error, isA<FreezeFailedCoinsError>());
@@ -232,8 +237,9 @@ void main() {
       cubit.enterSelect();
       cubit.toggle('a:0');
 
-      await cubit.unfreeze(['a:0']);
+      final ok = await cubit.unfreeze(['a:0']);
 
+      expect(ok, isFalse);
       expect(cubit.state.selecting, isTrue);
       expect(cubit.state.selectedOutpoints, {'a:0'});
       expect(cubit.state.error, isA<UnfreezeFailedCoinsError>());

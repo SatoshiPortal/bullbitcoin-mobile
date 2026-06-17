@@ -65,6 +65,7 @@ class CoinsCubit extends Cubit<CoinsState> {
       }
       final utxos = await _getUtxosUsecase.execute(walletId: state.walletId);
       final labels = await _labelsFacade.fetchDistinctLabels();
+      if (isClosed) return;
 
       final stillPresent = utxos.map(utxoOutpointKey).toSet();
       final prunedSelection = state.selectedOutpoints
@@ -147,7 +148,11 @@ class CoinsCubit extends Cubit<CoinsState> {
 
   // ── Freeze / Unfreeze ─────────────────────────────────────────────────────
 
-  Future<void> freeze(List<String> outpointKeys) async {
+  /// Returns `true` on success, `false` if the freeze failed (error emitted).
+  /// Callers must gate any success UI on the return value rather than
+  /// re-reading [state] — the error listener clears [CoinsState.error]
+  /// before an awaiting caller's continuation runs.
+  Future<bool> freeze(List<String> outpointKeys) async {
     try {
       await _freezeUtxosUsecase.execute(
         walletId: state.walletId,
@@ -155,13 +160,17 @@ class CoinsCubit extends Cubit<CoinsState> {
       );
       await load();
       if (!isClosed) exitSelect();
+      return true;
     } on CoinsError catch (e) {
       // Preserve selection; surface the error.
       if (!isClosed) emit(state.copyWith(error: e));
+      return false;
     }
   }
 
-  Future<void> unfreeze(List<String> outpointKeys) async {
+  /// Returns `true` on success, `false` if the unfreeze failed (error emitted).
+  /// See [freeze] for why callers must use the return value, not [state].
+  Future<bool> unfreeze(List<String> outpointKeys) async {
     try {
       await _unfreezeUtxosUsecase.execute(
         walletId: state.walletId,
@@ -169,8 +178,10 @@ class CoinsCubit extends Cubit<CoinsState> {
       );
       await load();
       if (!isClosed) exitSelect();
+      return true;
     } on CoinsError catch (e) {
       if (!isClosed) emit(state.copyWith(error: e));
+      return false;
     }
   }
 

@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart'
+    show NoSpendableUtxoException;
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -124,6 +126,105 @@ void main() {
     verify(() => walletUtxo.getFrozenOutpoints(walletId: walletId)).called(1);
     verify(() => payjoin.getUtxosFrozenByOngoingPayjoins()).called(1);
     expect(capturedUnspendable(), isEmpty);
+  });
+
+  test('drain: unspendable still carries both sources (exclusion on drain too)',
+      () async {
+    when(
+      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
+    when(
+      () => payjoin.getUtxosFrozenByOngoingPayjoins(),
+    ).thenAnswer((_) async => [(txId: 'tx-payjoin', vout: 2)]);
+
+    await usecase.execute(
+      walletId: walletId,
+      address: address,
+      networkFee: networkFee,
+      drain: true,
+    );
+
+    // Capture drain + unspendable together (a second verify on the same call
+    // would report "no matching calls").
+    final captured = verify(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: captureAny(named: 'drain'),
+        unspendable: captureAny(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).captured;
+    expect(captured[0] as bool?, isTrue);
+    final unspendable = captured[1] as List<Outpoint>?;
+    expect(unspendable, contains((txId: 'tx-user', vout: 1)));
+    expect(unspendable, contains((txId: 'tx-payjoin', vout: 2)));
+  });
+
+  test('NoSpendableUtxoException is rethrown unchanged (not wrapped)', () async {
+    when(
+      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
+    when(
+      () => payjoin.getUtxosFrozenByOngoingPayjoins(),
+    ).thenAnswer((_) async => []);
+    when(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).thenThrow(NoSpendableUtxoException('all frozen'));
+
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        drain: true,
+      ),
+      throwsA(isA<NoSpendableUtxoException>()),
+    );
+  });
+
+  test('any other build failure is wrapped in PrepareBitcoinSendException',
+      () async {
+    when(
+      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
+    when(
+      () => payjoin.getUtxosFrozenByOngoingPayjoins(),
+    ).thenAnswer((_) async => []);
+    when(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).thenThrow(Exception('insufficient funds'));
+
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        amountSat: 50000,
+      ),
+      throwsA(isA<PrepareBitcoinSendException>()),
+    );
   });
 
   test('user-frozen ∪ payjoin-derived are merged + deduped into unspendable',

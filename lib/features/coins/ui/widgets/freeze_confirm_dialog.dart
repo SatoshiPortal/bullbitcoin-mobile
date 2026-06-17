@@ -3,8 +3,8 @@ import 'package:bull_ui/bull_ui.dart';
 
 /// Freeze confirmation modal (§14). Snowflake header, explanatory body, an
 /// optional [BullInfoBar] warning when freezing would drop the spendable
-/// balance to zero, and Cancel / Freeze buttons. Returns `true` from
-/// [BullDialog.show] when the user confirms.
+/// balance to zero, and Cancel / Freeze buttons. Outcome is delivered via the
+/// [onCancel] / [onConfirm] callbacks — [BullDialog.show] returns no value.
 class FreezeConfirmDialog extends StatelessWidget {
   const FreezeConfirmDialog({
     super.key,
