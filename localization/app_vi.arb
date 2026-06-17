@@ -295,5 +295,8 @@
   "fundExchangeErrorRcpPo404": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
   "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau.",
-  "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn"
+  "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn",
+  "pinCodeSaveError": "Không thể lưu mã PIN của bạn. Vui lòng thử lại.",
+  "pinCodeDeleteError": "Không thể xóa mã PIN của bạn. Vui lòng thử lại.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

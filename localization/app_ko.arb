@@ -12653,5 +12653,8 @@
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
-  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다"
+  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
+  "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

@@ -4784,5 +4784,8 @@
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "onboardingAdvancedOptionsDone": "Valmis",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa"
+  "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
+  "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
+  "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }
