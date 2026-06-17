@@ -117,6 +117,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     required this._selectedFeeOptionTitle,
     this._onFeePriorityTap,
     this._isToSelf = false,
+    this._note = '',
   });
   final String _sendWalletLabel;
   final String _receiveWalletLabel;
@@ -126,6 +127,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final String _selectedFeeOptionTitle;
   final VoidCallback? _onFeePriorityTap;
   final bool _isToSelf;
+  final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
@@ -167,6 +169,19 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                   color: context.appColors.secondary,
                   size: 20,
                 ),
+              ),
+            ),
+          ],
+          if (_note.isNotEmpty) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.receiveNote,
+              details: BBText(
+                _note,
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.appColors.secondary,
+                ),
+                textAlign: .end,
               ),
             ),
           ],
