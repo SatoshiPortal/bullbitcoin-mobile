@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/application/application_errors.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/framework_errors.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
-import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
-import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
 import 'package:trezor_connect/models.dart';
 import 'package:trezor_connect/trezor_connect.dart' show TrezorLaunchException;
 
@@ -106,28 +106,28 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     );
   }
 
-  TrezorApplicationError _mapError(Exception e) {
+  TrezorError _mapError(Exception e) {
     if (e is TrezorAddressMismatchException) {
-      return TrezorApplicationError.addressMismatch(
+      return TrezorError.addressMismatch(
         expected: e.expected,
         returned: e.returned,
       );
     }
     if (e is TrezorMissingDescriptorException) {
-      return const TrezorApplicationError.missingDescriptor();
+      return const TrezorError.missingDescriptor();
     }
     if (e is TrezorLaunchException) {
-      return const TrezorApplicationError.suiteNotInstalled();
+      return const TrezorError.suiteNotInstalled();
     }
     final s = e.toString().toLowerCase();
     if (s.contains('user rejected') ||
         s.contains('cancelled') ||
         s.contains('user cancelled')) {
-      return const TrezorApplicationError.userRejected();
+      return const TrezorError.userRejected();
     }
     if (s.contains('not installed') || s.contains('no app can handle')) {
-      return const TrezorApplicationError.suiteNotInstalled();
+      return const TrezorError.suiteNotInstalled();
     }
-    return TrezorApplicationError.unknown(e.toString());
+    return TrezorError.unknown(e.toString());
   }
 }

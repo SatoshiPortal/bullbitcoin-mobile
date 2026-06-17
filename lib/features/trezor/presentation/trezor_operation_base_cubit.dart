@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/trezor/application/application_errors.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,7 +79,7 @@ abstract class TrezorOperationBaseCubit<T>
       state.copyWith(
         status: TrezorOperationStatus.error,
         errorMessage: _messageFor(
-          const TrezorApplicationError.suiteUnresponsive(),
+          const TrezorError.suiteUnresponsive(),
         ),
       ),
     );
@@ -117,7 +117,7 @@ abstract class TrezorOperationBaseCubit<T>
       emit(
         state.copyWith(status: TrezorOperationStatus.success, result: result),
       );
-    } on TrezorApplicationError catch (e) {
+    } on TrezorError catch (e) {
       if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
       log.warning('Trezor operation failed', error: e);
@@ -167,17 +167,17 @@ abstract class TrezorOperationBaseCubit<T>
     return super.close();
   }
 
-  /// Maps an application-layer error to a user-facing message.
+  /// Maps a feature error to a user-facing message.
   ///
   /// These strings deliberately stay hardcoded English (matching the
   /// existing Ledger / BitBox cubits in this repo) because the cubit
   /// does not have BuildContext access — localizing requires either
   /// passing context into the cubit (anti-pattern), or restructuring
-  /// TrezorOperationState to carry the typed TrezorApplicationError
-  /// itself and resolving it via context.loc in each screen. The
-  /// state-shape refactor is meaningful scope; defer to a follow-up
-  /// alongside the same Ledger/BitBox cleanup.
-  String _messageFor(TrezorApplicationError e) => switch (e) {
+  /// TrezorOperationState to carry the typed TrezorError itself and
+  /// resolving it via context.loc in each screen. The state-shape
+  /// refactor is meaningful scope; defer to a follow-up alongside the
+  /// same Ledger/BitBox cleanup.
+  String _messageFor(TrezorError e) => switch (e) {
     TrezorUserRejected() => 'Request rejected in Trezor Suite',
     TrezorSuiteNotInstalled() =>
       'Trezor Suite is not installed. Install it from the App Store or Play Store to continue.',

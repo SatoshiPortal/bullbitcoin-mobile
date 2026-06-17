@@ -1,12 +1,12 @@
-import 'package:bb_mobile/features/trezor/adapters/trezor_callback_dispatcher_impl.dart';
-import 'package:bb_mobile/features/trezor/adapters/trezor_device_repository_impl.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_callback_dispatcher.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/get_default_trezor_account_usecase.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/sign_psbt_trezor_usecase.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/verify_address_trezor_usecase.dart';
-import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/trezor_callback_dispatcher_impl.dart';
+import 'package:bb_mobile/features/trezor/data/trezor_device_repository_impl.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/get_default_trezor_account_usecase.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/prepare_trezor_import_usecase.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/sign_psbt_trezor_usecase.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/verify_address_trezor_usecase.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_import_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_sign_transaction_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_verify_address_cubit.dart';
@@ -15,13 +15,13 @@ import 'package:trezor_connect/trezor_connect.dart';
 
 class TrezorLocator {
   static void setup(GetIt locator) {
-    _registerFrameworks(locator);
-    _registerAdapters(locator);
+    _registerDatasources(locator);
+    _registerRepositories(locator);
     _registerUsecases(locator);
     _registerCubits(locator);
   }
 
-  static void _registerFrameworks(GetIt locator) {
+  static void _registerDatasources(GetIt locator) {
     locator.registerLazySingleton<TrezorConnect>(
       () => TrezorConnect(
         'bullbitcoin://trezor-callback',
@@ -33,7 +33,7 @@ class TrezorLocator {
     );
   }
 
-  static void _registerAdapters(GetIt locator) {
+  static void _registerRepositories(GetIt locator) {
     locator.registerLazySingleton<TrezorDeviceRepository>(
       () => TrezorDeviceRepositoryImpl(
         datasource: locator<TrezorConnectDatasource>(),

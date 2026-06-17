@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
+import 'package:bb_mobile/features/trezor/data/framework_errors.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:trezor_connect/trezor_connect.dart';
@@ -17,7 +17,7 @@ import 'package:trezor_connect/trezor_connect.dart';
 ///     matches the callback scheme.
 ///
 /// Errors thrown here are raw package errors; the repository implementation
-/// maps them to `TrezorApplicationError` at the layer boundary
+/// maps them to `TrezorError` at the layer boundary
 class TrezorConnectDatasource {
   final TrezorConnect _connect;
 

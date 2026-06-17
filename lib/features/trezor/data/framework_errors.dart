@@ -16,7 +16,7 @@ class TrezorAddressMismatchException implements Exception {
 /// only be extracted from BIP-380 descriptor's origin section. The
 /// `trezor_connect` package documents `descriptor` as not available for
 /// Model One (and possibly other devices with older firmware), so the
-/// adapter translates this to `TrezorApplicationError.missingDescriptor`
+/// repository impl translates this to `TrezorError.missingDescriptor`
 /// at the layer boundary.
 class TrezorMissingDescriptorException implements Exception {
   /// The raw descriptor returned by Trezor — `null` if no descriptor field

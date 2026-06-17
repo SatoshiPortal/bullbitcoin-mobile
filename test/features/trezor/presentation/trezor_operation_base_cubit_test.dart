@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/trezor/application/application_errors.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_base_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:flutter/widgets.dart';
@@ -44,7 +44,7 @@ void main() {
       final inflight = cubit.run(() => completer.future);
       await cubit.close();
 
-      completer.completeError(const TrezorApplicationError.userRejected());
+      completer.completeError(const TrezorError.userRejected());
 
       await expectLater(inflight, completes);
     });
@@ -205,7 +205,7 @@ void main() {
 
         // Late error arrival — e.g., Suite eventually returned `userRejected`
         // after the grace window expired.
-        completer.completeError(const TrezorApplicationError.userRejected());
+        completer.completeError(const TrezorError.userRejected());
         await pumpEventQueue();
 
         // State must KEEP the fallback message — the late TrezorUserRejected

@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_capabilities.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_capabilities.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_import_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -277,7 +277,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
 
   // Build the dropdown from kTrezorSupportedScriptTypes so adding or
   // removing a Trezor-supported script type happens in one place
-  // (lib/features/trezor/application/trezor_capabilities.dart) and
+  // (lib/features/trezor/domain/trezor_capabilities.dart) and
   // automatically updates the visible options here.
   Future<void> _showScriptTypeSelection(BuildContext context) async {
     final scriptTypeItems = <SelectableListItem>[

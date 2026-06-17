@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
-import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 /// Prepares a Trezor-backed watch-only descriptor entity, ready to hand to
@@ -31,7 +31,7 @@ class PrepareTrezorImportUsecase {
           )
           as WatchOnlyDescriptorEntity;
     } catch (e) {
-      throw TrezorApplicationError.unknown(e.toString());
+      throw TrezorError.unknown(e.toString());
     }
   }
 }

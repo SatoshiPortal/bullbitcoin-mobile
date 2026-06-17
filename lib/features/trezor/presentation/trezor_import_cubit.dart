@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/get_default_trezor_account_usecase.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/get_default_trezor_account_usecase.dart';
+import 'package:bb_mobile/features/trezor/domain/usecases/prepare_trezor_import_usecase.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_base_cubit.dart';
 
 class TrezorImportCubit

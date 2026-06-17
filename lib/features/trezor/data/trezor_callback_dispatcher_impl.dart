@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/trezor/application/trezor_callback_dispatcher.dart';
-import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';
 
 class TrezorCallbackDispatcherImpl implements TrezorCallbackDispatcher {
   final TrezorConnectDatasource _datasource;

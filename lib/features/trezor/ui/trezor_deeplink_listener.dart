@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_callback_dispatcher.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 

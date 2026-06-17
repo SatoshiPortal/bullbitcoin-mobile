@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/application/application_errors.dart';
-import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 
 class SignPsbtTrezorUsecase {
   final TrezorDeviceRepository _repository;
@@ -28,12 +28,12 @@ class SignPsbtTrezorUsecase {
           )
           .timeout(
             const Duration(minutes: 5),
-            onTimeout: () => throw const TrezorApplicationError.timeout(),
+            onTimeout: () => throw const TrezorError.timeout(),
           );
-    } on TrezorApplicationError {
+    } on TrezorError {
       rethrow;
     } catch (e) {
-      throw TrezorApplicationError.unknown(e.toString());
+      throw TrezorError.unknown(e.toString());
     }
   }
 }
