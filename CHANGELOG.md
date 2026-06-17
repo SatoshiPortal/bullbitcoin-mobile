@@ -4,6 +4,14 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## [Unreleased]
+
+### New Features
+
+- **Coins (UTXO) view**: See every unspent output in a Bitcoin wallet — amount, label, keychain, and confirmation status — from a new "Coins" entry on the wallet screen. Sort and filter your coins, then freeze any you don't want to spend; frozen coins are excluded from every transaction until you unfreeze them, and the freeze survives app restarts. ([#760](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/760))
+
+---
+
 ## [6.11.0] - 2026-06-08
 
 ### New Features
