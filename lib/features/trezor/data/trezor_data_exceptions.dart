@@ -1,4 +1,6 @@
-/// Framework-layer exceptions for the Trezor slice.
+/// Internal data-layer exceptions for the Trezor slice. These never cross
+/// the repository boundary — `TrezorDeviceRepositoryImpl._mapError` maps
+/// them to a [TrezorError] variant first.
 ///
 /// Thrown by `TrezorConnectDatasource.verifyAddress` when Trezor returns an
 /// address that doesn't match the one we asked it to display.
