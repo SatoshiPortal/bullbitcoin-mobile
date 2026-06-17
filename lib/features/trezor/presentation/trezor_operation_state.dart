@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'trezor_operation_state.freezed.dart';
@@ -16,7 +17,7 @@ abstract class TrezorOperationState<T> with _$TrezorOperationState<T> {
 
   const factory TrezorOperationState({
     @Default(TrezorOperationStatus.initial) TrezorOperationStatus status,
-    String? errorMessage,
+    TrezorError? error,
     T? result,
   }) = _TrezorOperationState<T>;
 

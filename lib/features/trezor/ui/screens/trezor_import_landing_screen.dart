@@ -82,7 +82,8 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
               } else if (state.isError) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  _getErrorMessage(context, state.errorMessage),
+                  state.error?.toTranslated(context) ??
+                      context.loc.trezorImportErrorSnackbarFallback,
                 );
               }
             },
@@ -252,7 +253,8 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
       return context.loc.trezorImportWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? context.loc.trezorImportFailedFallback;
+      return state.error?.toTranslated(context) ??
+          context.loc.trezorImportFailedFallback;
     }
     return context.loc.trezorImportInitialSubtitle;
   }
@@ -265,13 +267,6 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
     ScriptType.bip49 => context.loc.trezorScriptTypeBip49Title,
     ScriptType.bip44 => context.loc.trezorScriptTypeBip44Title,
   };
-
-  String _getErrorMessage(BuildContext context, String? errorMessage) {
-    if (errorMessage == null || errorMessage.isEmpty) {
-      return context.loc.trezorImportErrorSnackbarFallback;
-    }
-    return errorMessage;
-  }
 
   // ───────────────────────── Actions ─────────────────────────
 

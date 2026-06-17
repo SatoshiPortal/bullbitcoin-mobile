@@ -92,10 +92,10 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       expect(cubit.state.status, TrezorOperationStatus.waitingForSuite);
 
-      // Past grace: error emitted with Suite-not-installed message.
+      // Past grace: error emitted as TrezorSuiteUnresponsive.
       await Future<void>.delayed(const Duration(milliseconds: 2000));
       expect(cubit.state.status, TrezorOperationStatus.error);
-      expect(cubit.state.errorMessage, contains("didn't respond"));
+      expect(cubit.state.error, isA<TrezorSuiteUnresponsive>());
 
       await cubit.close();
     });
@@ -171,7 +171,7 @@ void main() {
       // Wait past grace → fallback error fires (this works today).
       await Future<void>.delayed(const Duration(milliseconds: 2500));
       expect(cubit.state.status, TrezorOperationStatus.error);
-      expect(cubit.state.errorMessage, contains("didn't respond"));
+      expect(cubit.state.error, isA<TrezorSuiteUnresponsive>());
 
       // NOW the original operation finally resolves with success — late
       // arrival from a slow Suite handoff. Without the epoch guard, this
@@ -182,7 +182,7 @@ void main() {
       // State must STAY in the fallback-error condition. The late
       // success is silently dropped.
       expect(cubit.state.status, TrezorOperationStatus.error);
-      expect(cubit.state.errorMessage, contains("didn't respond"));
+      expect(cubit.state.error, isA<TrezorSuiteUnresponsive>());
       expect(cubit.state.result, isNull);
 
       await cubit.close();
@@ -201,17 +201,18 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 2500));
 
         expect(cubit.state.status, TrezorOperationStatus.error);
-        final fallbackMessage = cubit.state.errorMessage;
+        final fallbackError = cubit.state.error;
+        expect(fallbackError, isA<TrezorSuiteUnresponsive>());
 
         // Late error arrival — e.g., Suite eventually returned `userRejected`
         // after the grace window expired.
         completer.completeError(const TrezorError.userRejected());
         await pumpEventQueue();
 
-        // State must KEEP the fallback message — the late TrezorUserRejected
+        // State must KEEP the fallback error — the late TrezorUserRejected
         // should NOT replace it.
         expect(cubit.state.status, TrezorOperationStatus.error);
-        expect(cubit.state.errorMessage, fallbackMessage);
+        expect(cubit.state.error, equals(fallbackError));
 
         await cubit.close();
       },

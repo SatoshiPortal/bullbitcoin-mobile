@@ -64,7 +64,8 @@ class _SignTransactionView extends StatelessWidget {
               } else if (state.isError) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  state.errorMessage ?? context.loc.trezorSignErrorSnackbarFallback,
+                  state.error?.toTranslated(context) ??
+                      context.loc.trezorSignErrorSnackbarFallback,
                 );
               }
             },
@@ -172,7 +173,8 @@ class _SignTransactionView extends StatelessWidget {
       return context.loc.trezorSignWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? context.loc.trezorSignFailedFallback;
+      return state.error?.toTranslated(context) ??
+          context.loc.trezorSignFailedFallback;
     }
     return context.loc.trezorSignInitialSubtitle;
   }

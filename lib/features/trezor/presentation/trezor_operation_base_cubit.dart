@@ -78,9 +78,7 @@ abstract class TrezorOperationBaseCubit<T>
     emit(
       state.copyWith(
         status: TrezorOperationStatus.error,
-        errorMessage: _messageFor(
-          const TrezorError.suiteUnresponsive(),
-        ),
+        error: const TrezorError.suiteUnresponsive(),
       ),
     );
   }
@@ -96,7 +94,7 @@ abstract class TrezorOperationBaseCubit<T>
     emit(
       state.copyWith(
         status: TrezorOperationStatus.launching,
-        errorMessage: null,
+        error: null,
       ),
     );
 
@@ -122,10 +120,7 @@ abstract class TrezorOperationBaseCubit<T>
       _cancelGrace();
       log.warning('Trezor operation failed', error: e);
       emit(
-        state.copyWith(
-          status: TrezorOperationStatus.error,
-          errorMessage: _messageFor(e),
-        ),
+        state.copyWith(status: TrezorOperationStatus.error, error: e),
       );
       rethrow;
     } catch (e, t) {
@@ -136,10 +131,13 @@ abstract class TrezorOperationBaseCubit<T>
       );
       if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
+      // Raw exception text stays in the log above; the UI renders the
+      // generic localized string from TrezorError.unknown — never the
+      // raw message (AGENTS.md rule #11).
       emit(
         state.copyWith(
           status: TrezorOperationStatus.error,
-          errorMessage: e.toString(),
+          error: TrezorError.unknown(e.toString()),
         ),
       );
       rethrow;
@@ -167,29 +165,4 @@ abstract class TrezorOperationBaseCubit<T>
     return super.close();
   }
 
-  /// Maps a feature error to a user-facing message.
-  ///
-  /// These strings deliberately stay hardcoded English (matching the
-  /// existing Ledger / BitBox cubits in this repo) because the cubit
-  /// does not have BuildContext access — localizing requires either
-  /// passing context into the cubit (anti-pattern), or restructuring
-  /// TrezorOperationState to carry the typed TrezorError itself and
-  /// resolving it via context.loc in each screen. The state-shape
-  /// refactor is meaningful scope; defer to a follow-up alongside the
-  /// same Ledger/BitBox cleanup.
-  String _messageFor(TrezorError e) => switch (e) {
-    TrezorUserRejected() => 'Request rejected in Trezor Suite',
-    TrezorSuiteNotInstalled() =>
-      'Trezor Suite is not installed. Install it from the App Store or Play Store to continue.',
-    TrezorSuiteUnresponsive() =>
-      "Trezor Suite didn't respond. Make sure it's installed, then try again.",
-    TrezorTimeout() => 'Timed out waiting for Trezor Suite. Try again.',
-    TrezorAddressMismatch() =>
-      'Address mismatch — Trezor displayed a different address. Do not use this address.',
-    TrezorMissingDescriptor() =>
-      'Your Trezor didn\'t return the data needed to import this wallet. '
-          'This can happen with older firmware. Update Trezor Suite and your '
-          'device firmware to the latest versions, then try again.',
-    TrezorUnknown(:final message) => message,
-  };
 }

@@ -64,7 +64,8 @@ class _VerifyAddressView extends StatelessWidget {
           } else if (state.isError) {
             SnackBarUtils.showSnackBar(
               context,
-              state.errorMessage ?? context.loc.trezorVerifyErrorSnackbarFallback,
+              state.error?.toTranslated(context) ??
+                  context.loc.trezorVerifyErrorSnackbarFallback,
             );
           }
         },
@@ -236,7 +237,8 @@ class _VerifyAddressView extends StatelessWidget {
       return context.loc.trezorVerifyWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? context.loc.trezorVerifyFailedFallback;
+      return state.error?.toTranslated(context) ??
+          context.loc.trezorVerifyFailedFallback;
     }
     return context.loc.trezorVerifyInitialSubtitle;
   }

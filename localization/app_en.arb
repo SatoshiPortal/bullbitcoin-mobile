@@ -14167,5 +14167,33 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "trezorErrorUserRejected": "Request rejected in Trezor Suite",
+  "@trezorErrorUserRejected": {
+    "description": "User-facing message when the user rejects a Trezor Suite request"
+  },
+  "trezorErrorSuiteNotInstalled": "Trezor Suite is not installed. Install it from the App Store or Play Store to continue.",
+  "@trezorErrorSuiteNotInstalled": {
+    "description": "User-facing message when Trezor Suite is missing on the device"
+  },
+  "trezorErrorSuiteUnresponsive": "Trezor Suite didn't respond. Make sure it's installed, then try again.",
+  "@trezorErrorSuiteUnresponsive": {
+    "description": "User-facing message when Trezor Suite returns no callback within the grace window"
+  },
+  "trezorErrorTimeout": "Timed out waiting for Trezor Suite. Try again.",
+  "@trezorErrorTimeout": {
+    "description": "User-facing message when a Trezor operation exceeds its timeout"
+  },
+  "trezorErrorAddressMismatch": "Address mismatch — Trezor displayed a different address. Do not use this address.",
+  "@trezorErrorAddressMismatch": {
+    "description": "User-facing message when Trezor returns an address different from the one the app sent"
+  },
+  "trezorErrorMissingDescriptor": "Your Trezor didn't return the data needed to import this wallet. This can happen with older firmware. Update Trezor Suite and your device firmware to the latest versions, then try again.",
+  "@trezorErrorMissingDescriptor": {
+    "description": "User-facing message when Trezor's response lacks the BIP-380 descriptor needed for account import (commonly older firmware / Model One)"
+  },
+  "trezorErrorUnknown": "Something went wrong with Trezor. Try again.",
+  "@trezorErrorUnknown": {
+    "description": "Generic user-facing message for an unexpected Trezor failure. NEVER includes the raw dev error text — that goes to logs only."
   }
 }
