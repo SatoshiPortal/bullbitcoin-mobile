@@ -157,11 +157,9 @@ packages:
   bitbox_transport:
     dependency: "direct main"
     description:
-      path: "packages/bitbox-transport"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
-    source: git
+      path: "../bull_sdk/packages/bitbox-transport"
+      relative: true
+    source: path
     version: "0.1.0"
   bitcoin_base:
     dependency: "direct main"
@@ -215,11 +213,9 @@ packages:
   boltz_stream:
     dependency: "direct main"
     description:
-      path: "packages/boltz-stream"
-      ref: ws-resilience
-      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
-    source: git
+      path: "../bull_sdk/packages/boltz-stream"
+      relative: true
+    source: path
     version: "0.1.0"
   boolean_selector:
     dependency: transitive
@@ -304,11 +300,9 @@ packages:
   bull_sdk:
     dependency: "direct main"
     description:
-      path: "packages/bull_sdk"
-      ref: ws-resilience
-      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
-    source: git
+      path: "../bull_sdk/packages/bull_sdk"
+      relative: true
+    source: path
     version: "1.0.0+1"
   camera:
     dependency: transitive
@@ -1297,10 +1291,10 @@ packages:
     dependency: transitive
     description:
       name: ledger_flutter_plus
-      sha256: "59c5a6062505c721c2ca909fa085c52cffe93de995174b8418b54a6acf52eb70"
+      sha256: e7de0cd3d450b38955c4f04a9a729235d6ed7ca0dc463907e9e1dcc080ccf51d
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.6"
+    version: "1.6.0+1"
   ledger_usb_plus:
     dependency: transitive
     description:
@@ -1754,11 +1748,9 @@ packages:
   rust_lib_bull_sdk:
     dependency: transitive
     description:
-      path: "packages/bull_sdk/rust_builder"
-      ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
-      resolved-ref: "8b4effee7c2b308b5b815a4684715ba4f1dde69d"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
-    source: git
+      path: "../bull_sdk/packages/bull_sdk/rust_builder"
+      relative: true
+    source: path
     version: "0.0.1"
   rxdart:
     dependency: transitive
@@ -1771,11 +1763,9 @@ packages:
   satoshifier:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
-      resolved-ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
-      url: "https://github.com/SatoshiPortal/dart-satoshifier"
-    source: git
+      path: "../bull_sdk/packages/satoshifier"
+      relative: true
+    source: path
     version: "0.0.1"
   sentry:
     dependency: transitive
@@ -2123,10 +2113,10 @@ packages:
     dependency: transitive
     description:
       name: universal_ble
-      sha256: "8325ca9f5cce2fba2b4efef74a4fcfe7144f303b409d6fc6ed16197b00a1a241"
+      sha256: da15f61251299daf9c290bb8e40ded1e5313c4636fef6c796a7a656a06c93b4a
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "2.0.4"
   universal_io:
     dependency: transitive
     description:

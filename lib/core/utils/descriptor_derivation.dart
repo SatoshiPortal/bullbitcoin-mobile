@@ -48,7 +48,7 @@ class DescriptorDerivation {
   }) async {
     final lwk.Descriptor confidentialDescriptor =
         await lwk.Descriptor.newConfidential(
-          network: isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+          network: isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
           mnemonic: mnemonic,
         );
 

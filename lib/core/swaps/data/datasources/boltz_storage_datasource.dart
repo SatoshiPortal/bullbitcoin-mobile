@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
+import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bull_sdk/boltz.dart';
@@ -165,6 +169,56 @@ class BoltzStorageDatasource {
     } catch (e) {
       log.fine('Error deleting swap from secure storage: $e');
     }
+  }
+
+  // SECURE STORAGE — SWAP MASTER KEY (keyed per network)
+  Future<void> storeSwapMasterKey(SwapMasterKeyModel swapMasterKey) async {
+    final key =
+        '${SecureStorageKeyPrefixConstants.swapMasterKey}${swapMasterKey.network}';
+    await _secureSwapStorage.saveValue(
+      key: key,
+      value: jsonEncode(swapMasterKey.toJson()),
+    );
+  }
+
+  Future<bool> swapMasterKeyExists(BoltzNetwork network) async {
+    try {
+      final key =
+          '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
+      final value = await _secureSwapStorage.getValue(key);
+      return value != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<SwapMasterKeyModel> fetchSwapMasterKey(BoltzNetwork network) async {
+    final key =
+        '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
+    final jsonString = await _secureSwapStorage.getValue(key) as String;
+    return SwapMasterKeyModel.fromJson(
+      jsonDecode(jsonString) as Map<String, dynamic>,
+    );
+  }
+
+  // Global, per-network swap derivation index (under the swap master key).
+  // null when never set, so callers can initialise it.
+  Future<int?> getSwapKeyIndex(BoltzNetwork network) async {
+    try {
+      final key =
+          '${SecureStorageKeyPrefixConstants.swapKeyIndex}${network.value}';
+      final value = await _secureSwapStorage.getValue(key);
+      if (value == null) return null;
+      return int.tryParse(value as String);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> setSwapKeyIndex(BoltzNetwork network, int index) async {
+    final key =
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}${network.value}';
+    await _secureSwapStorage.saveValue(key: key, value: index.toString());
   }
 
   // SECURE STORAGE

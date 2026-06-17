@@ -210,7 +210,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         final networkValidation = await lwk.Address.validate(
           addressString: address,
         );
-        if (networkValidation != lwk.Network.mainnet) {
+        if (networkValidation != lwk.LiquidNetwork.mainnet) {
           throw 'Invalid liquid mainnet address';
         }
       } else if (uri.scheme == 'liquidtestnet') {
@@ -218,7 +218,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         final networkValidation = await lwk.Address.validate(
           addressString: address,
         );
-        if (networkValidation != lwk.Network.testnet) {
+        if (networkValidation != lwk.LiquidNetwork.testnet) {
           throw 'Invalid liquid testnet address';
         }
       } else {
@@ -265,7 +265,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       final network = await lwk.Address.validate(addressString: data);
       return PaymentRequest.liquid(
         address: data,
-        isTestnet: network == lwk.Network.testnet,
+        isTestnet: network == lwk.LiquidNetwork.testnet,
       );
     } catch (e) {
       log.warning(e.toString());

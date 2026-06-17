@@ -59,6 +59,38 @@
   "@coreSwapsStatusRefunded": {
     "description": "Display name for refunded swap status (payment failed, funds returned)"
   },
+  "swapRestoreTitle": "Swap restore",
+  "@swapRestoreTitle": {
+    "description": "Title for the swap restore settings page"
+  },
+  "swapRestoreSummary": "{stored} of {total} already in your wallet",
+  "@swapRestoreSummary": {
+    "description": "Summary count of restored swaps already stored locally",
+    "placeholders": {
+      "stored": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "swapRestoreNoSwaps": "No swaps found to restore",
+  "@swapRestoreNoSwaps": {
+    "description": "Empty state when the restore endpoint returns no swaps"
+  },
+  "swapRestoreFailed": "Couldn't restore swaps",
+  "@swapRestoreFailed": {
+    "description": "Error message when restoring swaps fails"
+  },
+  "swapRestoreKindBitcoinLightning": "Lightning (Bitcoin)",
+  "@swapRestoreKindBitcoinLightning": {
+    "description": "Label for a Bitcoin Lightning swap in the restore list"
+  },
+  "swapRestoreKindLiquidLightning": "Lightning (Liquid)",
+  "@swapRestoreKindLiquidLightning": {
+    "description": "Label for a Liquid Lightning swap in the restore list"
+  },
+  "swapRestoreKindChain": "Chain swap",
+  "@swapRestoreKindChain": {
+    "description": "Label for a chain swap in the restore list"
+  },
   "coreSwapsStatusExpired": "Expired",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"

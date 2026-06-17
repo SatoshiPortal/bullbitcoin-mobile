@@ -1,15 +1,17 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class BoltzSwapRepository {
@@ -46,7 +48,7 @@ class BoltzSwapRepository {
     String? description,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextRevKeyIndex(walletId);
+      final index = await _reserveSwapKeyIndex(1);
       final btcLnSwap = await _boltz.createBtcReverseSwap(
         walletId: walletId,
         mnemonic: mnemonic,
@@ -92,7 +94,7 @@ class BoltzSwapRepository {
     String? description,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextRevKeyIndex(walletId);
+      final index = await _reserveSwapKeyIndex(1);
       final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
         walletId: walletId,
         mnemonic: mnemonic,
@@ -137,7 +139,7 @@ class BoltzSwapRepository {
     required String electrumUrl,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextSubKeyIndex(walletId);
+      final index = await _reserveSwapKeyIndex(1);
       final btcLnSwap = await _boltz.createBtcSubmarineSwap(
         walletId: walletId,
         mnemonic: mnemonic,
@@ -186,7 +188,7 @@ class BoltzSwapRepository {
     required String electrumUrl,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextSubKeyIndex(walletId);
+      final index = await _reserveSwapKeyIndex(1);
       final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
         walletId: walletId,
         mnemonic: mnemonic,
@@ -236,7 +238,7 @@ class BoltzSwapRepository {
     String? externalRecipientAddress,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextChainKeyIndex(sendWalletId);
+      final index = await _reserveSwapKeyIndex(2);
       final chainSwap = await _boltz.createBtcToLbtcChainSwap(
         sendWalletId: sendWalletId,
         mnemonic: sendWalletMnemonic,
@@ -263,7 +265,7 @@ class BoltzSwapRepository {
     String? externalRecipientAddress,
   }) async {
     return _withCreationLock(() async {
-      final index = await _nextChainKeyIndex(sendWalletId);
+      final index = await _reserveSwapKeyIndex(2);
       final chainSwap = await _boltz.createLbtcToBtcChainSwap(
         sendWalletId: sendWalletId,
         mnemonic: sendWalletMnemonic,
@@ -476,61 +478,20 @@ class BoltzSwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<int> _nextRevKeyIndex(String walletId) async {
-    final swaps = await _getRevSwapsForWallet(walletId);
-    final nextWalletIndex = swaps.isEmpty
-        ? 0
-        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
-    return nextWalletIndex;
-  }
-
-  Future<List<Swap>> _getRevSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.fetchAll())
-        .map((swapModel) => swapModel.toEntity())
-        .where(
-          (swap) =>
-              swap.type == SwapType.lightningToBitcoin ||
-              swap.type == SwapType.lightningToLiquid,
-        )
-        .toList();
-  }
-
-  Future<int> _nextSubKeyIndex(String walletId) async {
-    final swaps = await _getSubSwapsForWallet(walletId);
-    final nextWalletIndex = swaps.isEmpty
-        ? 0
-        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
-    return nextWalletIndex;
-  }
-
-  Future<List<Swap>> _getSubSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.fetchAll())
-        .map((swapModel) => swapModel.toEntity())
-        .where(
-          (swap) =>
-              swap.type == SwapType.bitcoinToLightning ||
-              swap.type == SwapType.liquidToLightning,
-        )
-        .toList();
-  }
-
-  Future<int> _nextChainKeyIndex(String walletId) async {
-    final swaps = await _getChainSwapsForWallet(walletId);
-    final nextWalletIndex = swaps.isEmpty
-        ? 0
-        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
-    return nextWalletIndex;
-  }
-
-  Future<List<Swap>> _getChainSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.fetchAll())
-        .map((swapModel) => swapModel.toEntity())
-        .where(
-          (swap) =>
-              swap.type == SwapType.bitcoinToLiquid ||
-              swap.type == SwapType.liquidToBitcoin,
-        )
-        .toList();
+  // Single global swap-derivation index under the swap master key. Reverse and
+  // submarine swaps consume 1 index; chain swaps consume 2 (boltz derives the
+  // refund key at `index` and the claim key at `index + 1`). Persisted per
+  // network so indices stay sequential (boltz restore scans the xpub's children
+  // 0..gap). On first use it seeds from existing swaps so no index is reused.
+  Future<int> _reserveSwapKeyIndex(int count) async {
+    final network = _isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    // Fresh swap-master-key index space starts at 0 (boltz restore scans the
+    // xpub's children from 0). Old swaps used a different key space, so we do
+    // NOT seed from their keyIndex.
+    final current = await _boltz.storage.getSwapKeyIndex(network) ?? 0;
+    await _boltz.storage.setSwapKeyIndex(network, current + count);
+    log.info('SWAP_KEY: reserved index $current (count=$count) on $network');
+    return current;
   }
 
   Future<void> updateSwap({required Swap swap}) {
@@ -732,6 +693,67 @@ class BoltzSwapRepository {
         .map((swapModel) => swapModel.toEntity())
         .toList();
     return allSwaps;
+  }
+
+  /// Returns the swap master key (mnemonic / xpub / fingerprint) for display,
+  /// deriving + persisting it from [mnemonic] on first use.
+  Future<({String mnemonic, String xpub, String fingerprint})>
+  getSwapMasterKeyInfo({
+    required String mnemonic,
+    required bool isTestnet,
+  }) async {
+    final model = await _boltz.ensureSwapMasterKey(
+      mnemonic: mnemonic,
+      isTestnet: isTestnet,
+    );
+    return (
+      mnemonic: model.mnemonic,
+      xpub: model.xpub,
+      fingerprint: model.fingerprint,
+    );
+  }
+
+  /// Restores all swaps derivable from the dedicated swap master key via Boltz,
+  /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
+  /// them into local storage is handled separately.
+  Future<List<RestoredSwap>> restoreSwaps({
+    required String mnemonic,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+  }) async {
+    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+      mnemonic: mnemonic,
+      isTestnet: isTestnet,
+    );
+    log.info(
+      'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
+      '(${swapMasterKey.network})',
+    );
+    final btcLn = await _boltz.restoreBtcLnSwaps(
+      swapMasterKey: swapMasterKey,
+      electrumUrl: btcElectrumUrl,
+    );
+    log.info('SWAP_RESTORE: btc-ln endpoint returned ${btcLn.length}');
+    final lbtcLn = await _boltz.restoreLbtcLnSwaps(
+      swapMasterKey: swapMasterKey,
+      electrumUrl: lbtcElectrumUrl,
+    );
+    log.info('SWAP_RESTORE: lbtc-ln endpoint returned ${lbtcLn.length}');
+    final chain = await _boltz.restoreChainSwaps(
+      swapMasterKey: swapMasterKey,
+      btcElectrumUrl: btcElectrumUrl,
+      lbtcElectrumUrl: lbtcElectrumUrl,
+    );
+    log.info('SWAP_RESTORE: chain endpoint returned ${chain.length}');
+    return [
+      for (final s in btcLn)
+        RestoredSwap(id: s.id, kind: RestoredSwapKind.bitcoinLightning),
+      for (final s in lbtcLn)
+        RestoredSwap(id: s.id, kind: RestoredSwapKind.liquidLightning),
+      for (final s in chain)
+        RestoredSwap(id: s.id, kind: RestoredSwapKind.chain),
+    ];
   }
 
   Future<Swap?> getSwapByTxId(String txId) async {

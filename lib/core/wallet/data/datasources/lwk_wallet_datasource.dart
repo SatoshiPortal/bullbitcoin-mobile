@@ -414,7 +414,7 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
       final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+        network: wallet.isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
         pset: pset,
         mnemonic: wallet.mnemonic,
       );
@@ -526,12 +526,12 @@ class LwkWalletDatasource {
 }
 
 extension NetworkX on Network {
-  lwk.Network get lwkNetwork {
+  lwk.LiquidNetwork get lwkNetwork {
     switch (this) {
       case Network.liquidMainnet:
-        return lwk.Network.mainnet;
+        return lwk.LiquidNetwork.mainnet;
       case Network.liquidTestnet:
-        return lwk.Network.testnet;
+        return lwk.LiquidNetwork.testnet;
       default:
         throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }
