@@ -291,4 +291,9 @@ extension BullThemeX on BuildContext {
   /// `bull_ui` consumer must wrap its tree in a [Theme] carrying a [BullTheme]
   /// extension (the app does this in its `ThemeData`).
   BullTheme get bull => Theme.of(this).extension<BullTheme>()!;
+
+  /// The ambient [TextTheme] (Golos Text roles). Exposed so feature code that
+  /// may only import `package:bull_ui/bull_ui.dart` can style text from the
+  /// design-system typography without touching Material's `Theme` directly.
+  TextTheme get bullText => Theme.of(this).textTheme;
 }

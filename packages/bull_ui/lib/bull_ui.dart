@@ -12,23 +12,30 @@ export 'package:flutter/widgets.dart'
     show
         Align,
         Alignment,
+        AlwaysScrollableScrollPhysics,
         AnimatedContainer,
         AnimatedPositioned,
         AspectRatio,
         Axis,
+        Border,
         BorderRadius,
+        BorderSide,
         BoxConstraints,
         BoxDecoration,
+        BoxShape,
         BuildContext,
         Center,
         Color,
         Column,
         ConstrainedBox,
+        Container,
         CrossAxisAlignment,
         EdgeInsets,
         EdgeInsetsGeometry,
         Expanded,
         Flexible,
+        FontFeature,
+        FontWeight,
         FractionallySizedBox,
         GestureDetector,
         HitTestBehavior,
@@ -37,6 +44,7 @@ export 'package:flutter/widgets.dart'
         ListView,
         MainAxisAlignment,
         MainAxisSize,
+        NeverScrollableScrollPhysics,
         Opacity,
         Padding,
         Positioned,
@@ -53,19 +61,22 @@ export 'package:flutter/widgets.dart'
         Text,
         TextAlign,
         TextBaseline,
+        TextDecoration,
         TextDirection,
         TextEditingController,
         TextOverflow,
         TextStyle,
         ValueChanged,
+        ValueKey,
         VerticalDirection,
         VoidCallback,
         Widget,
-        Wrap;
+        Wrap,
+        WrapCrossAlignment;
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show DropdownMenuItem, FormFieldValidator, RefreshCallback;
+    show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
@@ -83,6 +94,7 @@ export 'src/chrome/bull_top_bar.dart';
 
 // Buttons.
 export 'src/buttons/bull_button.dart';
+export 'src/buttons/bull_sync_button.dart';
 export 'src/buttons/bull_tab_menu_vertical_button.dart';
 export 'src/buttons/bull_tool_button.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
