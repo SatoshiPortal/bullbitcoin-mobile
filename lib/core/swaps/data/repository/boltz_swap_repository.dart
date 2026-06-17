@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
@@ -777,26 +776,15 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    final (sats, expired, bip21, _) = await _boltz.decodeInvoice(invoice);
-
-    String? description;
-    try {
-      final bolt11 = Bolt11PaymentRequest(invoice);
-      final descTag = bolt11.tags.firstWhere(
-        (t) => t.type == 'd',
-        orElse: () => throw Exception('No description tag'),
-      );
-      final raw = descTag.data;
-      if (raw is String && raw.trim().isNotEmpty) {
-        description = raw.trim();
-      }
-    } catch (_) {}
-
+    final (sats, expired, bip21, description) =
+        await _boltz.decodeInvoice(invoice);
     return Invoice(
       sats: sats,
       isExpired: expired,
       magicBip21: bip21,
-      description: description,
+      description: (description != null && description.trim().isNotEmpty)
+          ? description.trim()
+          : null,
     );
   }
 
