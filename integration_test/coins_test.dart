@@ -124,12 +124,21 @@ Future<void> main({bool isInitialized = false}) async {
   group(
     'Coins / freeze enforcement (funded testnet)',
     () {
-      final walletRepository = locator<WalletRepository>();
-      final addressRepository = locator<WalletAddressRepository>();
-      final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
+      // Resolve from the locator inside setUpAll, NOT in the group body: a
+      // group callback runs at test-collection time for every group — even a
+      // skipped one — so resolving here crashed loading the whole aggregated
+      // all_test.dart when this group is skipped (no TEST_ALICE_MNEMONIC).
+      // setUpAll only runs when the group actually runs.
+      late final WalletRepository walletRepository;
+      late final WalletAddressRepository addressRepository;
+      late final PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
       late Wallet wallet;
 
       setUpAll(() async {
+        walletRepository = locator<WalletRepository>();
+        addressRepository = locator<WalletAddressRepository>();
+        prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
+
         await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
         final seed = SeedModel.mnemonic(
           mnemonicWords: mnemonic!.split(' '),
