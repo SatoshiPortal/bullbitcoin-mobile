@@ -111,13 +111,15 @@ class _BullSnackBarContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (leadingIcon != null) ...[
-          BullIcon(leadingIcon!, size: 20, color: colors.surface),
+          BullIcon(leadingIcon!, size: 20, color: colors.onSecondaryFixed),
           const SizedBox(width: 12),
         ],
         Flexible(
           child: Text(
             message,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.surface),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colors.onSecondaryFixed,
+            ),
           ),
         ),
         if (actionLabel != null && onAction != null) ...[
@@ -126,8 +128,10 @@ class _BullSnackBarContent extends StatelessWidget {
             onTap: onAction,
             child: Text(
               actionLabel!,
+              // Design coral (#ff8a80); error reads as a warm red on the
+              // fixed-dark toast in both brightnesses.
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.primary,
+                color: colors.error,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -297,8 +301,10 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
             color: Colors.transparent,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              // Fixed-dark toast surface (design #23252b) — secondaryFixed is
+              // the dark ink in both brightnesses, so the toast never inverts.
               decoration: BoxDecoration(
-                color: colors.text.withValues(alpha: 0.92),
+                color: colors.secondaryFixed,
                 borderRadius: BorderRadius.circular(BullRadius.xs),
               ),
               child: widget.content,

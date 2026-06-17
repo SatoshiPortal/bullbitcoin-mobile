@@ -17,6 +17,7 @@ const testBullTheme = BullTheme(
   tertiary: Color(0xFFFFCC00),
   onTertiary: Color(0xFFFF9500),
   tertiaryContainer: Color(0xFFFFF4E6),
+  bitcoinOrange: Color(0xFFF7931A),
   background: Color(0xFFF5F5F5),
   surface: Color(0xFFFFFFFF),
   surfaceContainer: Color(0xFFF5F5F5),

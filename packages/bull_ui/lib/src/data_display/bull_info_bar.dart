@@ -42,25 +42,42 @@ class BullInfoBar extends StatelessWidget {
         ? BullIcons.schedule
         : BullIcons.acUnit;
 
-    return Container(
-      decoration: BoxDecoration(
+    // ClipRRect + a stretched leading bar gives the 4px left accent without a
+    // non-uniform Border, which Flutter forbids combining with a borderRadius.
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(BullRadius.xs),
+      child: ColoredBox(
         color: accent.withValues(alpha: 0.12),
-        border: Border(left: BorderSide(color: accent, width: 4)),
-        borderRadius: BorderRadius.circular(BullRadius.xs),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BullIcon(icon ?? defaultIcon, size: 16, color: accent),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.text),
-            ),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 4, color: accent),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BullIcon(icon ?? defaultIcon, size: 16, color: accent),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.text),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

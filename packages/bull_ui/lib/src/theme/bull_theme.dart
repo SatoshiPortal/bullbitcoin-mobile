@@ -27,6 +27,7 @@ class BullTheme extends ThemeExtension<BullTheme> {
     required this.tertiary,
     required this.onTertiary,
     required this.tertiaryContainer,
+    required this.bitcoinOrange,
     required this.background,
     required this.surface,
     required this.surfaceContainer,
@@ -74,6 +75,10 @@ class BullTheme extends ThemeExtension<BullTheme> {
   final Color tertiary;
   final Color onTertiary;
   final Color tertiaryContainer;
+
+  /// Bitcoin asset colour (`#f7931a`). Used for the on-chain keychain badge and
+  /// other BTC-specific accents.
+  final Color bitcoinOrange;
 
   // Surface colours.
   final Color background;
@@ -131,6 +136,7 @@ class BullTheme extends ThemeExtension<BullTheme> {
     Color? tertiary,
     Color? onTertiary,
     Color? tertiaryContainer,
+    Color? bitcoinOrange,
     Color? background,
     Color? surface,
     Color? surfaceContainer,
@@ -173,6 +179,7 @@ class BullTheme extends ThemeExtension<BullTheme> {
       tertiary: tertiary ?? this.tertiary,
       onTertiary: onTertiary ?? this.onTertiary,
       tertiaryContainer: tertiaryContainer ?? this.tertiaryContainer,
+      bitcoinOrange: bitcoinOrange ?? this.bitcoinOrange,
       background: background ?? this.background,
       surface: surface ?? this.surface,
       surfaceContainer: surfaceContainer ?? this.surfaceContainer,
@@ -233,6 +240,7 @@ class BullTheme extends ThemeExtension<BullTheme> {
         other.tertiaryContainer,
         t,
       )!,
+      bitcoinOrange: Color.lerp(bitcoinOrange, other.bitcoinOrange, t)!,
       background: Color.lerp(background, other.background, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
       surfaceContainer: Color.lerp(

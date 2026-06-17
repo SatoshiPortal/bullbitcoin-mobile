@@ -138,6 +138,7 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: foreground,
                                 ),
