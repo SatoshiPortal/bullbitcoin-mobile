@@ -6741,6 +6741,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "ডেভ মোড",
+  "exchangeTestnetBasicAuthTitle": "Testnet এক্সচেঞ্জ শংসাপত্র",
+  "exchangeTestnetBasicAuthDescription": "Testnet এক্সচেঞ্জ ওয়েব পৃষ্ঠার জন্য HTTP বেসিক অথ (লগইন এবং KYC)।",
+  "exchangeTestnetBasicAuthUsernameLabel": "ব্যবহারকারীর নাম",
+  "exchangeTestnetBasicAuthPasswordLabel": "পাসওয়ার্ড",
+  "exchangeTestnetBasicAuthClearButton": "সাফ করুন",
+  "exchangeTestnetBasicAuthSaveButton": "সংরক্ষণ করুন",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

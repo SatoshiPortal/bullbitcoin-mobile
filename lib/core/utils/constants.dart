@@ -126,10 +126,6 @@ class ApiServiceConstants {
   // Error reports
   static const String sentryDsn =
       'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
-
-  // Exchange basic auth
-  static const String basicAuthUsername = 'bbadmin';
-  static const String basicAuthPassword = 'We are staging 05!';
 }
 
 class LocatorInstanceNameConstants {

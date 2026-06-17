@@ -6920,6 +6920,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev मोड",
+  "exchangeTestnetBasicAuthTitle": "Testnet एक्सचेंज क्रेडेंशियल",
+  "exchangeTestnetBasicAuthDescription": "Testnet एक्सचेंज वेब पेजों के लिए HTTP बेसिक ऑथ (लॉगिन और KYC)।",
+  "exchangeTestnetBasicAuthUsernameLabel": "उपयोगकर्ता नाम",
+  "exchangeTestnetBasicAuthPasswordLabel": "पासवर्ड",
+  "exchangeTestnetBasicAuthClearButton": "साफ़ करें",
+  "exchangeTestnetBasicAuthSaveButton": "सहेजें",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
