@@ -9789,7 +9789,7 @@
   "onboardingAdvancedOptionsDone": "সম্পূৰ্ণ",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
   "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত",
-  "walletButtonCoins": "কইন",
+  "walletButtonCoins": "কইন পৰিচালনা কৰক",
   "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
   "coinsTitle": "কইন",
   "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
@@ -9884,5 +9884,9 @@
   "coinsErrorUnfreezeFailed": "বাছনি কৰা কইনবোৰ আনফ্ৰীজ কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
   "coinsErrorUnexpected": "কিবা ভুল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"}
+  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "walletCoinsEntryFrozen": "{amount} জমা কৰা",
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
 }

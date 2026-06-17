@@ -289,7 +289,7 @@
   "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։",
   "sendErrorUnsupportedQrCodeFormat": "Չաջակցվող QR կոդ ձևաչափ",
   "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում",
-  "walletButtonCoins": "Մետաղադրամներ",
+  "walletButtonCoins": "Կառավարել մետաղադրամները",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
@@ -523,5 +523,23 @@
   "coinsErrorUnexpected": "Ինչ-որ բան սխալ գնաց։ Խնդրում ենք կրկին փորձել։",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} սառեցված",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

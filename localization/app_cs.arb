@@ -12784,7 +12784,7 @@
   "onboardingAdvancedOptionsDone": "Hotovo",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
-  "walletButtonCoins": "Mince",
+  "walletButtonCoins": "Spravovat mince",
   "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
   "coinsTitle": "Mince",
   "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
@@ -12879,5 +12879,9 @@
   "coinsErrorUnfreezeFailed": "Nepodařilo se rozmrazit vybrané mince. Zkuste to prosím znovu.",
   "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
   "coinsErrorUnexpected": "Něco se pokazilo. Zkuste to prosím znovu.",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"}
+  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "walletCoinsEntryUtxoCount": "{count, plural, one{1 UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "walletCoinsEntryFrozen": "{amount} zmrazeno",
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
 }

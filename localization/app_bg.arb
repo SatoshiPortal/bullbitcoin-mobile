@@ -9795,7 +9795,7 @@
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android",
-  "walletButtonCoins": "Монети",
+  "walletButtonCoins": "Управление на монети",
   "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
   "coinsTitle": "Монети",
   "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
@@ -9890,5 +9890,9 @@
   "coinsErrorUnfreezeFailed": "Не успяхме да размразим избраните монети. Моля, опитайте отново.",
   "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
   "coinsErrorUnexpected": "Нещо се обърка. Моля, опитайте отново.",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"}
+  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "walletCoinsEntryFrozen": "{amount} замразени",
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
 }

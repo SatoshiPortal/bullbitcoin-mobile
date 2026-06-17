@@ -4781,7 +4781,7 @@
   "backupWarningBackupNow": "JA",
   "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
   "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
-  "walletButtonCoins": "Coins",
+  "walletButtonCoins": "Coins verwalten",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
@@ -5015,5 +5015,9 @@
   "coinsErrorUnexpected": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
-  }
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "walletCoinsEntryFrozen": "{amount} gefroren",
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
 }

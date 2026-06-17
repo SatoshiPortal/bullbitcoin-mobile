@@ -289,7 +289,7 @@
   "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau.",
   "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn",
-  "walletButtonCoins": "Đồng coin",
+  "walletButtonCoins": "Quản lý đồng coin",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
@@ -523,5 +523,23 @@
   "coinsErrorUnexpected": "Đã xảy ra lỗi. Vui lòng thử lại.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} đã đóng băng",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

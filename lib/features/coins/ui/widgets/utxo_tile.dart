@@ -94,12 +94,25 @@ class UtxoTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (selecting) ...[
-                BullCheckbox(
-                  checked: selected,
-                  disabled: utxo.isFrozen,
-                  onChanged: (_) => onToggle(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: BullCheckbox(
+                    checked: selected,
+                    disabled: utxo.isFrozen,
+                    onChanged: (_) => onToggle(),
+                  ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 11),
+              ] else if (utxo.isFrozen) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: BullIcon(
+                    BullIcons.acUnit,
+                    size: 20,
+                    color: colors.info,
+                  ),
+                ),
+                const SizedBox(width: 11),
               ],
               Expanded(
                 child: Column(
@@ -110,11 +123,14 @@ class UtxoTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         hideAmounts ? '••••' : fiat,
-                        style: context.bullText.bodyMedium
-                            ?.copyWith(color: colors.textMuted),
+                        style: context.bullText.labelLarge?.copyWith(
+                          fontSize: 12,
+                          color: colors.textMuted,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ],
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 7),
                     _line3(context),
                     const SizedBox(height: 8),
                     _line4(context),
@@ -157,6 +173,7 @@ class UtxoTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.bullText.titleMedium?.copyWith(
+              fontSize: 15.5,
               fontWeight: FontWeight.w600,
               color: colors.text,
               fontFeatures: const [FontFeature.tabularFigures()],
@@ -173,17 +190,15 @@ class UtxoTile extends StatelessWidget {
     final colors = context.bull;
     final isReceive =
         utxo.addressKeyChain == WalletAddressKeyChain.external;
-    // Receive uses the bitcoin-orange accent (the design's --bitcoin-orange);
-    // BullTheme has no dedicated btc field, so `onTertiary` (the orange accent)
-    // is the closest token. Change uses the muted token.
-    final accent = isReceive ? colors.onTertiary : colors.textMuted;
+    // Receive = bitcoin-orange text on orange@14%; Change = muted on muted@16%.
+    final accent = isReceive ? colors.bitcoinOrange : colors.textMuted;
     return BullBadge(
       label: isReceive
           ? context.loc.coinsKeychainReceive
           : context.loc.coinsKeychainChange,
       uppercase: true,
-      radius: BullRadius.xs,
-      background: accent.withValues(alpha: 0.16),
+      radius: BullRadius.xxs,
+      background: accent.withValues(alpha: isReceive ? 0.14 : 0.16),
       foreground: accent,
     );
   }
@@ -202,19 +217,27 @@ class UtxoTile extends StatelessWidget {
 
   Widget _confPill(BuildContext context) {
     final colors = context.bull;
-    if (utxo.confirmations == 0) {
-      return BullPill(
-        label: context.loc.coinsPending,
-        icon: BullIcons.schedule,
-        background: colors.warning.withValues(alpha: 0.14),
-        foreground: colors.warning,
-      );
-    }
-    return BullPill(
-      label: context.loc.coinsConfsCount(utxo.confirmations),
-      icon: BullIcons.checkCircle,
-      background: colors.textMuted.withValues(alpha: 0.12),
-      foreground: colors.textMuted,
+    final pending = utxo.confirmations == 0;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        BullIcon(
+          pending ? BullIcons.schedule : BullIcons.checkCircle,
+          size: 13,
+          color: pending ? colors.warning : colors.success,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          pending
+              ? context.loc.coinsPending
+              : context.loc.coinsConfsCount(utxo.confirmations),
+          style: context.bullText.labelLarge?.copyWith(
+            fontSize: 11,
+            fontWeight: pending ? FontWeight.w500 : FontWeight.w400,
+            color: pending ? colors.warning : colors.textMuted,
+          ),
+        ),
+      ],
     );
   }
 

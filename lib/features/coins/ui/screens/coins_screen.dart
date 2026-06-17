@@ -254,8 +254,8 @@ class _SubHeader extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: filtered
                         ? colors.primary.withValues(alpha: 0.08)
-                        : colors.transparent,
-                    borderRadius: BorderRadius.circular(BullRadius.full),
+                        : colors.surface,
+                    borderRadius: BorderRadius.circular(BullRadius.xxs),
                     border: Border.all(
                       color: filtered ? colors.primary : colors.outlineVariant,
                     ),
@@ -265,13 +265,14 @@ class _SubHeader extends StatelessWidget {
                     children: [
                       BullIcon(
                         BullIcons.tune,
-                        size: 15,
+                        size: 16,
                         color: filtered ? colors.primary : colors.text,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         loc.coinsSortFilter,
                         style: context.bullText.labelMedium?.copyWith(
+                          fontSize: 12.5,
                           color: filtered ? colors.primary : colors.text,
                           fontWeight: FontWeight.w600,
                         ),
@@ -301,7 +302,8 @@ class _SubHeader extends StatelessWidget {
                   textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.bullText.bodySmall?.copyWith(
+                  style: context.bullText.labelLarge?.copyWith(
+                    fontSize: 12,
                     color: colors.textMuted,
                   ),
                 ),
@@ -534,20 +536,21 @@ class _EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: colors.textMuted.withValues(alpha: 0.12),
+                color: colors.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
               child: BullIcon(
                 BullIcons.accountBalanceWallet,
-                size: 34,
+                size: 36,
                 color: colors.textMuted,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             Text(
               context.loc.coinsEmptyTitle,
               textAlign: TextAlign.center,
               style: context.bullText.titleMedium?.copyWith(
+                fontSize: 17,
                 fontWeight: FontWeight.w600,
                 color: colors.text,
               ),
@@ -557,6 +560,8 @@ class _EmptyState extends StatelessWidget {
               context.loc.coinsEmptyBody,
               textAlign: TextAlign.center,
               style: context.bullText.bodyMedium?.copyWith(
+                fontSize: 13.5,
+                height: 1.5,
                 color: colors.textMuted,
               ),
             ),
@@ -585,23 +590,31 @@ class _FilteredEmptyState extends StatelessWidget {
               size: 40,
               color: colors.textMuted,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               context.loc.coinsFilteredEmptyTitle,
               textAlign: TextAlign.center,
               style: context.bullText.titleMedium?.copyWith(
+                fontSize: 14.5,
                 fontWeight: FontWeight.w600,
                 color: colors.text,
               ),
             ),
-            const SizedBox(height: 16),
-            BullButton.small(
-              label: context.loc.coinsClearFilters,
-              onPressed: cubit.clearFilters,
-              bgColor: colors.transparent,
-              textColor: colors.primary,
-              outlined: true,
-              borderColor: colors.primary,
+            const SizedBox(height: 6),
+            GestureDetector(
+              onTap: cubit.clearFilters,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Text(
+                  context.loc.coinsClearFilters,
+                  style: context.bullText.labelLarge?.copyWith(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: colors.primary,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -660,7 +673,7 @@ class _FooterHint extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BullIcon(BullIcons.swipe, size: 15, color: colors.textMuted),
+            BullIcon(BullIcons.swipe, size: 16, color: colors.textMuted),
             const SizedBox(width: 6),
             Flexible(
               child: Text(
@@ -668,7 +681,8 @@ class _FooterHint extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.bullText.bodySmall?.copyWith(
+                style: context.bullText.labelLarge?.copyWith(
+                  fontSize: 11.5,
                   color: colors.textMuted,
                 ),
               ),

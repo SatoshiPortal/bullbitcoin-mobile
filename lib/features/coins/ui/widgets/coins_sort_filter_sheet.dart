@@ -53,8 +53,11 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           const SizedBox(height: 16),
           Text(
             loc.coinsSortFilter,
-            style: context.bullText.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600, color: colors.text),
+            style: context.bullText.titleLarge?.copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: colors.text,
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -175,8 +178,11 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text.toUpperCase(),
-        style: context.bullText.labelSmall
-            ?.copyWith(color: context.bull.textMuted),
+        style: context.bullText.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.3,
+          color: context.bull.textMuted,
+        ),
       ),
     );
   }
@@ -248,22 +254,32 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
   Widget _toggleChip(BuildContext context, String label, bool active) {
     final colors = context.bull;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
       decoration: BoxDecoration(
-        color: active
-            ? colors.primary.withValues(alpha: 0.11)
-            : colors.textMuted.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(BullRadius.full),
+        color: active ? colors.primary.withValues(alpha: 0.08) : colors.surface,
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         border: Border.all(
-          color: active ? colors.primary : colors.transparent,
+          color: active ? colors.primary : colors.outlineVariant,
+          width: active ? 1.5 : 1,
         ),
       ),
-      child: Text(
-        label,
-        style: context.bullText.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: active ? colors.primary : colors.text,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BullIcon(
+            BullIcons.sell,
+            size: 12,
+            color: active ? colors.primary : colors.textMuted,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: context.bullText.labelMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: active ? colors.primary : colors.text,
+            ),
+          ),
+        ],
       ),
     );
   }

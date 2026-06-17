@@ -2,8 +2,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -94,48 +98,133 @@ class WalletDetailScreen extends StatelessWidget {
   }
 }
 
-/// Tappable "Coins" entry shown on Bitcoin wallet-detail screens. Navigates to
-/// the Coins (UTXO) view. Hidden for Liquid (freeze-exclusion plumbing exists
-/// for Bitcoin only); shown for watch-only Bitcoin wallets.
-class _CoinsEntryTile extends StatelessWidget {
+/// Tappable "Manage coins" entry shown on Bitcoin wallet-detail screens.
+/// Navigates to the Coins (UTXO) view and surfaces the wallet's UTXO count and
+/// frozen total as a subtitle. Hidden for Liquid (freeze-exclusion plumbing
+/// exists for Bitcoin only); shown for watch-only Bitcoin wallets.
+class _CoinsEntryTile extends StatefulWidget {
   const _CoinsEntryTile({required this.wallet});
 
   final Wallet wallet;
 
   @override
+  State<_CoinsEntryTile> createState() => _CoinsEntryTileState();
+}
+
+class _CoinsEntryTileState extends State<_CoinsEntryTile> {
+  late final Future<List<WalletUtxo>> _utxos;
+
+  @override
+  void initState() {
+    super.initState();
+    // Read once on entry (no network sync — reads the synced wallet's utxos).
+    _utxos = locator<GetWalletUtxosUsecase>().execute(
+      walletId: widget.wallet.id,
+    );
+  }
+
+  /// `{n} UTXOs · {frozen} frozen`, with the frozen clause omitted when none
+  /// are frozen. Returns null while loading / on error so only the title shows.
+  String? _subtitle(BuildContext context, List<WalletUtxo> utxos) {
+    final utxosLabel = context.loc.walletCoinsEntryUtxoCount(utxos.length);
+    final frozenSat = utxos
+        .where((u) => u.isFrozen)
+        .fold<BigInt>(BigInt.zero, (sum, u) => sum + u.amountSat);
+    if (frozenSat <= BigInt.zero) return utxosLabel;
+    final frozen = FormatAmount.btc(ConvertAmount.satsToBtc(frozenSat.toInt()));
+    return '$utxosLabel · ${context.loc.walletCoinsEntryFrozen(frozen)}';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(2);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: radius,
         onTap: () =>
-            context.pushNamed(CoinsRoute.coins.name, extra: wallet),
+            context.pushNamed(CoinsRoute.coins.name, extra: widget.wallet),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.appColors.surfaceContainer),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.account_tree_outlined,
-                size: 20,
-                color: context.appColors.onSurface,
-              ),
-              const Gap(12),
-              Expanded(
-                child: BBText(
-                  context.loc.walletButtonCoins,
-                  style: context.font.bodyLarge,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                size: 20,
-                color: context.appColors.onSurfaceVariant,
+            color: context.appColors.cardBackground,
+            borderRadius: radius,
+            border: Border.all(color: context.appColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: context.appColors.scrim,
+                offset: const Offset(0, 1),
+                blurRadius: 3,
               ),
             ],
+          ),
+          // ClipRRect + a stretched leading bar gives the 4px bitcoin-orange
+          // left accent without a non-uniform Border (which can't be combined
+          // with a borderRadius).
+          child: ClipRRect(
+            borderRadius: radius,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(width: 4, color: context.appColors.bitcoinOrange),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 13,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.account_tree,
+                            size: 24,
+                            color: context.appColors.bitcoinOrange,
+                          ),
+                          const Gap(12),
+                          Expanded(
+                            child: FutureBuilder<List<WalletUtxo>>(
+                              future: _utxos,
+                              builder: (context, snapshot) {
+                                final subtitle = snapshot.hasData
+                                    ? _subtitle(context, snapshot.data!)
+                                    : null;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    BBText(
+                                      context.loc.walletButtonCoins,
+                                      style: context.font.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    if (subtitle != null) ...[
+                                      const Gap(2),
+                                      BBText(
+                                        subtitle,
+                                        style: context.font.labelMedium
+                                            ?.copyWith(
+                                              color: context.appColors.textMuted,
+                                            ),
+                                      ),
+                                    ],
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 22,
+                            color: context.appColors.textMuted,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

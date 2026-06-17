@@ -49,7 +49,6 @@ class CoinsSelectionBar extends StatelessWidget {
           BullToolButton(
             label: loc.coinsFreeze,
             icon: BullIcons.acUnit,
-            primary: true,
             onPressed: onFreeze,
           ),
         if (anyFrozen)

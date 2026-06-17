@@ -12666,7 +12666,7 @@
   "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
-  "walletButtonCoins": "코인",
+  "walletButtonCoins": "코인 관리",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
@@ -12900,5 +12900,23 @@
   "coinsErrorUnexpected": "문제가 발생했습니다. 다시 시도하세요.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, other{UTXO {count}개}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} 동결됨",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

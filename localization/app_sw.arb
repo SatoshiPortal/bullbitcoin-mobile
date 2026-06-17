@@ -309,7 +309,7 @@
   "fundExchangeErrorRcpPosinpe404": "Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye.",
   "fundExchangeMethodInstantSepa": "Uhawilishaji wa SEPA wa haraka na wa kawaida",
-  "walletButtonCoins": "Sarafu",
+  "walletButtonCoins": "Dhibiti sarafu",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
@@ -543,5 +543,23 @@
   "coinsErrorUnexpected": "Hitilafu imetokea. Tafadhali jaribu tena.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, one{UTXO 1} other{UTXO {count}}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} iliyogandishwa",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }
