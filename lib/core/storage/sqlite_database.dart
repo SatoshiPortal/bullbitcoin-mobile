@@ -96,10 +96,8 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   /// Current drift schema version. Bump in lockstep with adding a new
-  /// `Schema<N-1>To<N>.migrate` step in [migration]. `Report.init`
-  /// asserts that an entry for this number exists in the
-  /// schema → app-version map so a future bump can't silently
-  /// misclassify upgrade events.
+  /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
+  /// schema snapshots (`make drift-migrations`).
   static const int currentSchemaVersion = 14;
 
   @override
