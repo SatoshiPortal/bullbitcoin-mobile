@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
@@ -36,7 +37,6 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final sqlite = locator<SqliteDatabase>();
   final frozenDatasource = locator<FrozenWalletUtxoDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();
 
@@ -58,40 +58,34 @@ Future<void> main({bool isInitialized = false}) async {
     tearDown(clear);
 
     test('freeze is durable across a database restart', () async {
-      // Freeze the outpoint through the repository (writes origin = 'user').
-      await utxoRepository.freezeUtxos(
+      // Use a dedicated on-disk database, fully isolated from the locator's
+      // shared SqliteDatabase singleton. Closing that singleton (the previous
+      // approach) killed the connection for every other test in the aggregated
+      // integration run. Here: write through one handle, close it, then reopen
+      // a SECOND handle on the SAME file — a fresh connection only sees
+      // committed-to-disk rows, which is exactly what "survives a restart"
+      // means.
+      final dir = await Directory.systemTemp.createTemp('coins_restart');
+      addTearDown(() => dir.delete(recursive: true));
+      final dbFile = File('${dir.path}/restart.sqlite');
+
+      final before = SqliteDatabase(NativeDatabase(dbFile));
+      await FrozenWalletUtxoDatasource(db: before).freezeOutpoints(
         walletId: walletId,
         outpoints: [outpoint],
       );
+      await before.close();
 
-      // Confirm it landed.
-      final beforeRestart = await utxoRepository.getFrozenOutpoints(
-        walletId: walletId,
-      );
-      expect(beforeRestart, contains(outpoint));
+      final after = SqliteDatabase(NativeDatabase(dbFile));
+      addTearDown(after.close);
+      final afterRestart = await FrozenWalletUtxoDatasource(
+        db: after,
+      ).getFrozenOutpoints(walletId: walletId);
 
-      // Simulate an app restart: drop the in-memory drift handle and reopen the
-      // database from the same on-disk file, then read through a fresh
-      // datasource bound to the reopened database. The frozen row must survive.
-      await sqlite.close();
-      final reopened = SqliteDatabase();
-      addTearDown(reopened.close);
-      final reopenedDatasource = FrozenWalletUtxoDatasource(db: reopened);
-
-      final afterRestart = await reopenedDatasource.getFrozenOutpoints(
-        walletId: walletId,
-      );
       expect(
         afterRestart,
         contains(outpoint),
         reason: 'a user-frozen outpoint must persist across an app restart',
-      );
-
-      // Cleanup on the reopened handle so the shared next-test datasource is
-      // clean (the original `sqlite` handle is now closed).
-      await reopenedDatasource.unfreezeOutpoints(
-        walletId: walletId,
-        outpoints: [outpoint],
       );
     });
 
