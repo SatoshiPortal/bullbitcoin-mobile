@@ -4774,5 +4774,8 @@
   "backupWarningTitle": "SICHERN SIE IHRE WALLET JETZT",
   "backupWarningBackupNow": "JA",
   "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
-  "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen."
+  "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
+  "pinCodeSaveError": "PIN konnte nicht gespeichert werden. Bitte versuche es erneut.",
+  "pinCodeDeleteError": "PIN konnte nicht gelöscht werden. Bitte versuche es erneut.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

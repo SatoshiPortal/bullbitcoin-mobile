@@ -494,5 +494,8 @@
   "fundExchangeErrorRcpPo404": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
   "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
   "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.",
-  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა"
+  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა",
+  "pinCodeSaveError": "PIN-ის შენახვა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
+  "pinCodeDeleteError": "PIN-ის წაშლა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

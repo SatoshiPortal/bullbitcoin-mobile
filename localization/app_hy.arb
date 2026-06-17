@@ -281,6 +281,9 @@
   "fundExchangeErrorRcpPo404": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",
   "fundExchangeErrorRcpPosinpe404": "Այս ֆինանսավորման տարբերակին մուտք գործելու համար ձեր հեռախոսահամարը պետք է գրանցված լինի SINPE ցանցում Costa Rica-ում։",
   "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։",
+  "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում",
   "sendErrorUnsupportedQrCodeFormat": "Չաջակցվող QR կոդ ձևաչափ",
-  "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում"
+  "pinCodeSaveError": "Հնարավոր չէ պահպանել ձեր PIN-ը։ Խնդրում ենք կրկին փորձել։",
+  "pinCodeDeleteError": "Հնարավոր չէ ջնջել ձեր PIN-ը։ Խնդրում ենք կրկին փորձել։",
+  "pinCodeNotSetError": "No PIN code has been set."
 }
