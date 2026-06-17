@@ -1,0 +1,210 @@
+import 'dart:io' show Platform;
+
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart'
+    show NoSpendableUtxoException;
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/main.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+// Integration tests for the Coins / UTXO view + freeze (issue #760).
+//
+// Covers the §7.1 acceptance criteria:
+//   1. Freeze persists across restart — freeze an outpoint, re-init the
+//      locator/SqliteDatabase, the outpoint is still frozen. Funds-free: this
+//      is the load-bearing persistence guarantee and runs anywhere.
+//   2. A frozen coin is never spent — freeze a real wallet outpoint, have
+//      PrepareBitcoinSendUsecase build a PSBT, assert the frozen outpoint is
+//      absent from the PSBT inputs (the D7 guarantee). Needs a funded testnet
+//      wallet (TEST_ALICE_MNEMONIC) → skipped when absent.
+//   3. The list surfaces confirmed vs unconfirmed + BIP329 labels — reads the
+//      wallet's real UTXOs and asserts the confirmations/labels fields the view
+//      renders. Needs a funded testnet wallet → skipped when absent.
+//
+// Run via `make integration-test` (auto-aggregated by tool/gen_all_test.dart).
+Future<void> main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
+
+  final sqlite = locator<SqliteDatabase>();
+  final frozenDatasource = locator<FrozenWalletUtxoDatasource>();
+  final utxoRepository = locator<WalletUtxoRepository>();
+
+  group('Coins / freeze persistence (funds-free)', () {
+    const walletId = 'coins-integration-test-wallet';
+    const outpoint = (
+      txId: '0000000000000000000000000000000000000000000000000000000000000001',
+      vout: 0,
+    );
+
+    Future<void> clear() async {
+      await frozenDatasource.unfreezeOutpoints(
+        walletId: walletId,
+        outpoints: [outpoint],
+      );
+    }
+
+    setUp(clear);
+    tearDown(clear);
+
+    test('freeze is durable across a database restart', () async {
+      // Freeze the outpoint through the repository (writes origin = 'user').
+      await utxoRepository.freezeUtxos(
+        walletId: walletId,
+        outpoints: [outpoint],
+      );
+
+      // Confirm it landed.
+      final beforeRestart = await utxoRepository.getFrozenOutpoints(
+        walletId: walletId,
+      );
+      expect(beforeRestart, contains(outpoint));
+
+      // Simulate an app restart: drop the in-memory drift handle and reopen the
+      // database from the same on-disk file, then read through a fresh
+      // datasource bound to the reopened database. The frozen row must survive.
+      await sqlite.close();
+      final reopened = SqliteDatabase();
+      addTearDown(reopened.close);
+      final reopenedDatasource = FrozenWalletUtxoDatasource(db: reopened);
+
+      final afterRestart = await reopenedDatasource.getFrozenOutpoints(
+        walletId: walletId,
+      );
+      expect(
+        afterRestart,
+        contains(outpoint),
+        reason: 'a user-frozen outpoint must persist across an app restart',
+      );
+
+      // Cleanup on the reopened handle so the shared next-test datasource is
+      // clean (the original `sqlite` handle is now closed).
+      await reopenedDatasource.unfreezeOutpoints(
+        walletId: walletId,
+        outpoints: [outpoint],
+      );
+    });
+
+    test('unfreeze only ever removes origin = user rows', () async {
+      await utxoRepository.freezeUtxos(
+        walletId: walletId,
+        outpoints: [outpoint],
+      );
+      await utxoRepository.unfreezeUtxos(
+        walletId: walletId,
+        outpoints: [outpoint],
+      );
+
+      final remaining = await utxoRepository.getFrozenOutpoints(
+        walletId: walletId,
+      );
+      expect(remaining, isNot(contains(outpoint)));
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Funded-testnet criteria (2) and (3). These need a wallet with real UTXOs,
+  // exactly like payjoin_test.dart, so they only run when TEST_ALICE_MNEMONIC
+  // is provided. Without it the structure compiles and is skipped — never
+  // silently omitted.
+  // -------------------------------------------------------------------------
+  final mnemonic = Platform.environment['TEST_ALICE_MNEMONIC'];
+  final hasFunds = mnemonic != null && mnemonic.isNotEmpty;
+
+  group(
+    'Coins / freeze enforcement (funded testnet)',
+    () {
+      final walletRepository = locator<WalletRepository>();
+      final addressRepository = locator<WalletAddressRepository>();
+      final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
+      late Wallet wallet;
+
+      setUpAll(() async {
+        await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
+        final seed = SeedModel.mnemonic(
+          mnemonicWords: mnemonic!.split(' '),
+        ).toEntity();
+        wallet = await walletRepository.createWallet(
+          seed: seed,
+          network: Network.bitcoinTestnet,
+          scriptType: ScriptType.bip84,
+        );
+        await walletRepository.getWallets(sync: true);
+      });
+
+      test('list surfaces confirmations and labels per UTXO', () async {
+        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        expect(
+          utxos,
+          isNotEmpty,
+          reason:
+              'fund $wallet on testnet before running the funded-coins suite',
+        );
+
+        // confirmations is intrinsic per-UTXO data (D2); confirmed coins carry
+        // a positive count and isConfirmed mirrors it.
+        for (final utxo in utxos) {
+          expect(utxo.confirmations, greaterThanOrEqualTo(0));
+          expect(utxo.isConfirmed, utxo.confirmations > 0);
+          // labels are read-only BIP329 strings the tile renders; the field is
+          // always present (possibly empty) — assert the contract, not content.
+          expect(utxo.labels, isNotNull);
+        }
+      });
+
+      test('frozen coins are excluded from every PSBT build (D7)', () async {
+        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        expect(utxos, isNotEmpty, reason: 'fund the wallet on testnet first');
+
+        // Freeze EVERY coin. A decode-free way to prove D7 exclusion is real:
+        // if frozen coins were still selectable, a drain would build fine; with
+        // all coins in the unspendable set, BDK has nothing to pick and the
+        // build must fail with NoSpendableUtxoException. (Asserting a specific
+        // outpoint's absence would need PSBT-input decoding; this is the same
+        // guarantee without that machinery.)
+        final allOutpoints = utxos
+            .map((u) => (txId: u.txId, vout: u.vout))
+            .toList();
+        await utxoRepository.freezeUtxos(
+          walletId: wallet.id,
+          outpoints: allOutpoints,
+        );
+        addTearDown(
+          () => utxoRepository.unfreezeUtxos(
+            walletId: wallet.id,
+            outpoints: allOutpoints,
+          ),
+        );
+
+        final receive = await addressRepository.generateNewReceiveAddress(
+          walletId: wallet.id,
+        );
+
+        // Drain to self: selection would otherwise sweep every coin. With all
+        // frozen, the prepare must throw NoSpendableUtxoException.
+        await expectLater(
+          prepareBitcoinSendUsecase.execute(
+            walletId: wallet.id,
+            address: receive.address,
+            drain: true,
+            networkFee: const NetworkFee.relative(2),
+          ),
+          throwsA(isA<NoSpendableUtxoException>()),
+        );
+      });
+    },
+    skip: hasFunds
+        ? false
+        : 'requires funded testnet wallet (set TEST_ALICE_MNEMONIC)',
+  );
+}

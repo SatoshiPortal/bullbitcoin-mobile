@@ -12951,5 +12951,240 @@
   "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
   "onboardingAdvancedOptionsDone": "पूर्ण",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
-  "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है"
+  "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है",
+  "walletButtonCoins": "कॉइन",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "कॉइन",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 कॉइन} other{{count} कॉइन}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "फ्रोज़न",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "खर्च योग्य",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "कोई फ्रोज़न नहीं",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "क्रमबद्ध और फ़िल्टर करें",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{total} में से {visible} दिखाए गए",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 अव्ययित आउटपुट} other{{count} अव्ययित आउटपुट}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "सिंक करें",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "सभी हटाएँ",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "राशि: अधिक से कम",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "राशि: कम से अधिक",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "तिथि: नवीनतम",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "तिथि: सबसे पुराना",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "कीचेन",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "सभी",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "प्राप्त करें",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "चेंज",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "फ्रोज़न स्थिति",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "सभी",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "फ्रोज़न",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "अनफ्रोज़न",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "लेबल",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "रीसेट करें",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "लागू करें",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 चयनित} other{{count} चयनित}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "सभी चुनें",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "फ्रीज़ करें",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "अनफ्रीज़ करें",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "पूर्ववत करें",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{1 कॉइन फ्रीज़ करें?} other{{count} कॉइन फ्रीज़ करें?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "फ्रोज़न कॉइन आपके वॉलेट में रहते हैं लेकिन जब तक आप उन्हें अनफ्रीज़ नहीं करते, तब तक खर्च से बाहर रहते हैं।",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "इन कॉइन को फ्रीज़ करने से आपके पास कोई खर्च योग्य शेष नहीं बचेगा।",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 कॉइन फ्रोज़न · खर्च से बाहर} other{{count} कॉइन फ्रोज़न · खर्च से बाहर}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 कॉइन अनफ्रोज़न} other{{count} कॉइन अनफ्रोज़न}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 कन्फर्म} other{{count} कन्फर्म}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "लंबित",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "अभी कोई कॉइन नहीं",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "जब आप बिटकॉइन प्राप्त करेंगे तो कॉइन यहाँ दिखाई देंगे।",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "कोई कॉइन मेल नहीं खाता",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "फ़िल्टर हटाएँ",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "पुनः प्रयास करें",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "फ्रीज़ करने के लिए कॉइन को स्वाइप करें · चुनने के लिए लॉन्ग-प्रेस करें",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "आपके कॉइन लोड नहीं हो सके। पुनः प्रयास करने के लिए पुल टू रिफ्रेश करें।",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "चयनित कॉइन फ्रीज़ नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "चयनित कॉइन अनफ्रीज़ नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  }
 }

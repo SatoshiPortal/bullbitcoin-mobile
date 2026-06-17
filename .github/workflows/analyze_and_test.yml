@@ -74,6 +74,13 @@ jobs:
       - name: Linter shouldn't raise errors, warnings or infos
         run: make analyze
 
+      - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
+        run: |
+          if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then
+            echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"
+            exit 1
+          fi
+
       - name: dart fix should have nothing to suggest
         run: |
           output=$(fvm dart fix --dry-run)

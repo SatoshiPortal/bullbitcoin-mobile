@@ -12665,5 +12665,240 @@
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น"
+  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
+  "walletButtonCoins": "เหรียญ",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "เหรียญ",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 เหรียญ} other{{count} เหรียญ}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "ถูกแช่แข็ง",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "ใช้ได้",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "ไม่มีที่ถูกแช่แข็ง",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "จัดเรียงและกรอง",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "แสดง {visible} จาก {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 เอาต์พุตที่ยังไม่ถูกใช้} other{{count} เอาต์พุตที่ยังไม่ถูกใช้}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "ซิงค์",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "ล้างทั้งหมด",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "จำนวน: มากไปน้อย",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "จำนวน: น้อยไปมาก",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "วันที่: ใหม่สุด",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "วันที่: เก่าสุด",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "พวงกุญแจ",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "ทั้งหมด",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "รับ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "เงินทอน",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "สถานะการแช่แข็ง",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "ทั้งหมด",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "ถูกแช่แข็ง",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "ไม่ถูกแช่แข็ง",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "ป้ายกำกับ",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "รีเซ็ต",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "นำไปใช้",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{เลือกแล้ว 1} other{เลือกแล้ว {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "เลือกทั้งหมด",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "แช่แข็ง",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "ยกเลิกการแช่แข็ง",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "เลิกทำ",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{แช่แข็ง 1 เหรียญหรือไม่?} other{แช่แข็ง {count} เหรียญหรือไม่?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "เหรียญที่ถูกแช่แข็งจะยังอยู่ในกระเป๋าเงินของคุณ แต่จะถูกกันออกจากการใช้จ่ายจนกว่าคุณจะยกเลิกการแช่แข็ง",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "การแช่แข็งเหรียญเหล่านี้จะทำให้คุณไม่มียอดคงเหลือที่ใช้ได้",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{แช่แข็ง 1 เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย} other{แช่แข็ง {count} เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{ยกเลิกการแช่แข็ง 1 เหรียญแล้ว} other{ยกเลิกการแช่แข็ง {count} เหรียญแล้ว}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 การยืนยัน} other{{count} การยืนยัน}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "รอดำเนินการ",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "ยังไม่มีเหรียญ",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "เหรียญจะปรากฏที่นี่เมื่อคุณได้รับบิตคอยน์",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "ไม่มีเหรียญที่ตรงกัน",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "ล้างตัวกรอง",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "ลองอีกครั้ง",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "ปัดที่เหรียญเพื่อแช่แข็ง · กดค้างเพื่อเลือก",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "ไม่สามารถโหลดเหรียญของคุณได้ ดึงลงเพื่อรีเฟรชและลองอีกครั้ง",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "ไม่สามารถแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "ไม่สามารถยกเลิกการแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  }
 }

@@ -4780,5 +4780,240 @@
   "backupWarningTitle": "SICHERN SIE IHRE WALLET JETZT",
   "backupWarningBackupNow": "JA",
   "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
-  "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen."
+  "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
+  "walletButtonCoins": "Coins",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Coins",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 Coin} other{{count} Coins}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Eingefroren",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Verfügbar",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Nichts eingefroren",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Sortieren & Filtern",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} von {total} angezeigt",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 nicht ausgegebener Output} other{{count} nicht ausgegebene Outputs}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Synchronisieren",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Alle löschen",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Betrag: Hoch nach Niedrig",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Betrag: Niedrig nach Hoch",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Datum: Neueste",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Datum: Älteste",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Schlüsselbund",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Alle",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Empfangen",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Wechselgeld",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Frier-Status",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Alle",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Eingefroren",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Nicht eingefroren",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Labels",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Zurücksetzen",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Anwenden",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 ausgewählt} other{{count} ausgewählt}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Alle auswählen",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Einfrieren",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Auftauen",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Rückgängig",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{1 Coin einfrieren?} other{{count} Coins einfrieren?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Eingefrorene Coins bleiben in Ihrer Wallet, werden aber von Ausgaben ausgeschlossen, bis Sie sie auftauen.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Das Einfrieren dieser Coins lässt Sie ohne verfügbares Guthaben zurück.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 Coin eingefroren · von Ausgaben ausgeschlossen} other{{count} Coins eingefroren · von Ausgaben ausgeschlossen}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 Coin aufgetaut} other{{count} Coins aufgetaut}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 Best.} other{{count} Best.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Ausstehend",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Noch keine Coins",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Coins erscheinen hier, sobald Sie Bitcoin empfangen.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Keine passenden Coins",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Filter löschen",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Erneut versuchen",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Coin wischen zum Einfrieren · gedrückt halten zum Auswählen",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Ihre Coins konnten nicht geladen werden. Ziehen Sie zum Aktualisieren, um es erneut zu versuchen.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Die ausgewählten Coins konnten nicht eingefroren werden. Bitte versuchen Sie es erneut.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Die ausgewählten Coins konnten nicht aufgetaut werden. Bitte versuchen Sie es erneut.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  }
 }

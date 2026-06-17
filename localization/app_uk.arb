@@ -4799,5 +4799,240 @@
   "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android"
+  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android",
+  "walletButtonCoins": "Монети",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Монети",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, one{{count} монета} few{{count} монети} many{{count} монет} other{{count} монети}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Заморожено",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Доступно для витрат",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Нічого не заморожено",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Сортування та фільтр",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "Показано {visible} з {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, one{{count} невитрачений вихід} few{{count} невитрачені виходи} many{{count} невитрачених виходів} other{{count} невитрачених виходів}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Синхронізувати",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Очистити все",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Сума: від більшої до меншої",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Сума: від меншої до більшої",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Дата: найновіші",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Дата: найстаріші",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Ланцюжок ключів",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Усі",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Отримання",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Решта",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Статус заморожування",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Усі",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Заморожені",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Незаморожені",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Мітки",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Скинути",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Застосувати",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, one{Вибрано {count}} few{Вибрано {count}} many{Вибрано {count}} other{Вибрано {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Вибрати все",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Заморозити",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Розморозити",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Скасувати",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, one{Заморозити {count} монету?} few{Заморозити {count} монети?} many{Заморозити {count} монет?} other{Заморозити {count} монети?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Заморожені монети залишаються у вашому гаманці, але виключаються з витрачання, доки ви їх не розморозите.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Заморожування цих монет залишить вас без доступного для витрат балансу.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, one{{count} монету заморожено · виключено з витрачання} few{{count} монети заморожено · виключено з витрачання} many{{count} монет заморожено · виключено з витрачання} other{{count} монети заморожено · виключено з витрачання}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, one{{count} монету розморожено} few{{count} монети розморожено} many{{count} монет розморожено} other{{count} монети розморожено}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, one{{count} підтвердження} few{{count} підтвердження} many{{count} підтверджень} other{{count} підтвердження}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "В очікуванні",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Поки що немає монет",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Монети зʼявляться тут, щойно ви отримаєте біткоїн.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Немає відповідних монет",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Очистити фільтри",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Повторити",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Проведіть по монеті, щоб заморозити · утримуйте, щоб вибрати",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Не вдалося завантажити ваші монети. Потягніть, щоб оновити та спробувати знову.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Не вдалося заморозити вибрані монети. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Не вдалося розморозити вибрані монети. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Щось пішло не так. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  }
 }
