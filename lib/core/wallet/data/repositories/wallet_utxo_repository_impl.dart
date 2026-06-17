@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -49,8 +50,10 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     final utxoModels = metadata.isBitcoin
         ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
         : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
-    final frozenUtxos = await _frozenWalletUtxoDatasource.getFrozenWalletUtxos(
+    // `isFrozen` (what the Coins UI shows/toggles) reflects user freezes only.
+    final frozenUtxos = await _frozenWalletUtxoDatasource.getFrozenOutpoints(
       walletId: walletId,
+      origins: const {'user'},
     );
 
     final utxos = await Future.wait(
@@ -95,5 +98,38 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     );
 
     return utxos;
+  }
+
+  @override
+  Future<void> freezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) {
+    return _frozenWalletUtxoDatasource.freezeOutpoints(
+      walletId: walletId,
+      outpoints: outpoints,
+    );
+  }
+
+  @override
+  Future<void> unfreezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) {
+    return _frozenWalletUtxoDatasource.unfreezeOutpoints(
+      walletId: walletId,
+      outpoints: outpoints,
+    );
+  }
+
+  @override
+  Future<List<Outpoint>> getFrozenOutpoints({
+    required String walletId,
+    Set<String>? origins,
+  }) {
+    return _frozenWalletUtxoDatasource.getFrozenOutpoints(
+      walletId: walletId,
+      origins: origins,
+    );
   }
 }

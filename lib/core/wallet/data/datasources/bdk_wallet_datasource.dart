@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -311,6 +313,9 @@ class BdkWalletDatasource {
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final unspent = bdkWallet.listUnspent();
+    // Chain tip read once from the already-synced wallet (no extra network
+    // calls); reused for every utxo's confirmation count.
+    final tip = bdkWallet.latestCheckpoint().height;
     final utxos = await Future.wait(
       unspent.map((unspent) async {
         final address =
@@ -318,6 +323,16 @@ class BdkWalletDatasource {
               unspent.txout.scriptPubkey.toBytes(),
               isTestnet: wallet.isTestnet,
             );
+        // Confirmation count from the utxo's chain position (mirrors the
+        // handling in getTransactions); unconfirmed utxos report 0.
+        final chainPosition = unspent.chainPosition;
+        final confirmedHeight = chainPosition is bdk.ConfirmedChainPosition
+            ? chainPosition.confirmationBlockTime.blockId.height
+            : null;
+        final confirmations = confirmationsFromTip(
+          tip: tip,
+          height: confirmedHeight,
+        );
         return WalletUtxoModel.bitcoin(
           txId: unspent.outpoint.txid.toString(),
           vout: unspent.outpoint.vout,
@@ -327,6 +342,7 @@ class BdkWalletDatasource {
           // but we return an empty string in case it is for some reason
           address: address ?? '',
           isExternalKeyChain: unspent.keychain == bdk.KeychainKind.external_,
+          confirmations: confirmations,
         );
       }),
     );
@@ -757,6 +773,14 @@ class UnsupportedBdkNetworkException extends BullException {
 
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);
+}
+
+/// Confirmation count for an output confirmed at [height], given the current
+/// chain [tip]. A `null` height (unconfirmed) returns 0; the result is clamped
+/// to 0 to guard a reorg / mid-sync window where `tip < height` (D2).
+int confirmationsFromTip({required int tip, required int? height}) {
+  if (height == null) return 0;
+  return max(0, tip - height + 1);
 }
 
 class _DryScanParams {
