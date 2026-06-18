@@ -13121,5 +13121,8 @@
   "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
   "onboardingAdvancedOptionsDone": "Done",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
-  "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai"
+  "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
+  "pinCodeSaveError": "Aapka PIN save nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

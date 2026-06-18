@@ -12765,5 +12765,8 @@
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "onboardingAdvancedOptionsDone": "Τέλος",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android"
+  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
+  "pinCodeSaveError": "Αδυναμία αποθήκευσης PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }

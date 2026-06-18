@@ -12647,5 +12647,8 @@
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "onboardingAdvancedOptionsDone": "انجام شد",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
-  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود"
+  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
+  "pinCodeSaveError": "ذخیره پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
+  "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
+  "pinCodeNotSetError": "No PIN code has been set."
 }
