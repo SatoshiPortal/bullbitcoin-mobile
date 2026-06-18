@@ -2102,6 +2102,8 @@
     "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "appUnlockButton": "আনলক কৰক",
+  "appUnlockPinCheckError": "সুৰক্ষা ছেটিংছ লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি এপ্‌টো পুনৰাৰম্ভ কৰক।",
+  "appUnlockPinVerifyError": "আপোনাৰ PIN যাচাই কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

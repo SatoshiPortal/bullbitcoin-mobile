@@ -297,5 +297,8 @@
   "sendErrorUnsupportedQrCodeFormat": "Չաջակցվող QR կոդ ձևաչափ",
   "pinCodeSaveError": "Հնարավոր չէ պահպանել ձեր PIN-ը։ Խնդրում ենք կրկին փորձել։",
   "pinCodeDeleteError": "Հնարավոր չէ ջնջել ձեր PIN-ը։ Խնդրում ենք կրկին փորձել։",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "Անհնար է բեռնել անվտանգության կարգավորումները: Խնդրում ենք վերագործարկել հավելվածը:",
+  "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:"
 }
+

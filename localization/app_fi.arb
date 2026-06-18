@@ -1423,6 +1423,8 @@
   "appUnlockAttemptSingular": "epäonnistunut yritys",
   "appUnlockAttemptPlural": "epäonnistunutta yritystä",
   "appUnlockButton": "Avaa",
+  "appUnlockPinCheckError": "Suojausasetusten lataaminen epäonnistui. Käynnistä sovellus uudelleen.",
+  "appUnlockPinVerifyError": "PIN-koodisi tarkistaminen epäonnistui. Yritä uudelleen.",
   "pinStatusLoading": "Ladataan",
   "pinStatusCheckingDescription": "Tarkistetaan PIN-koodia",
   "pinStatusProcessing": "Käsitellään",

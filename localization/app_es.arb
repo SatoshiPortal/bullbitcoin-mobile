@@ -1464,6 +1464,8 @@
   "appUnlockAttemptSingular": "intento fallido",
   "appUnlockAttemptPlural": "intentos fallidos",
   "appUnlockButton": "Desbloquear",
+  "appUnlockPinCheckError": "No se pueden cargar los ajustes de seguridad. Reinicia la aplicación.",
+  "appUnlockPinVerifyError": "No se puede verificar tu PIN. Por favor, inténtalo de nuevo.",
   "pinStatusLoading": "Cargando",
   "pinStatusCheckingDescription": "Verificando estado del PIN",
   "pinStatusProcessing": "Procesando",

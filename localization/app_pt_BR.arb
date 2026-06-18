@@ -647,6 +647,8 @@
     "description": "Status message for in-flight payment"
   },
   "appUnlockButton": "Desbloqueio",
+  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
+  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

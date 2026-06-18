@@ -617,6 +617,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "আনলক",
+  "appUnlockPinCheckError": "নিরাপত্তা সেটিংস লোড করা যাচ্ছে না। অ্যাপটি পুনরায় চালু করুন।",
+  "appUnlockPinVerifyError": "আপনার PIN যাচাই করা যাচ্ছে না। আবার চেষ্টা করুন।",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

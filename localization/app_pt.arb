@@ -223,6 +223,8 @@
   "dcaWalletLiquidSubtitle": "Requer carteira compatível",
   "fundExchangeCrIbanCrcTitle": "Transferência Bancária (CRC)",
   "appUnlockButton": "Desbloqueio",
+  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
+  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
   "payServiceFee": "Taxa de serviço",
   "transactionStatusSwapExpired": "Swap Expirou",
   "swapAmountPlaceholder": "0",

@@ -609,6 +609,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "ปลดล็อค",
+  "appUnlockPinCheckError": "ไม่สามารถโหลดการตั้งค่าความปลอดภัยได้ กรุณาเปิดแอปใหม่",
+  "appUnlockPinVerifyError": "ไม่สามารถยืนยัน PIN ของคุณได้ กรุณาลองอีกครั้ง",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
