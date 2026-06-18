@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -296,7 +297,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       label: label.label,
       origin: state.walletTransaction!.walletId,
     );
-    final storedLabel = await _labelsFacade.store(txLabel);
+    final Label storedLabel;
+    switch (await _labelsFacade.store(txLabel)) {
+      case Ok(:final value):
+        storedLabel = value;
+      case Err():
+        // Persisting the note failed (logged at the boundary); leave the UI
+        // unchanged rather than render an unsaved label as saved.
+        return;
+    }
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
@@ -338,23 +347,26 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     final walletTransaction = state.walletTransaction;
     if (walletTransaction == null) return;
 
-    try {
-      await _labelsFacade.trash(note.id);
+    switch (await _labelsFacade.trash(note.id)) {
+      case Ok():
+        final updatedLabels = [
+          ...?state.transaction?.walletTransaction?.labels,
+        ];
+        updatedLabels.remove(note);
 
-      final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
-      updatedLabels.remove(note);
-
-      final updatedWalletTransaction = state.transaction?.walletTransaction
-          ?.copyWith(labels: updatedLabels);
-      emit(
-        state.copyWith(
-          transaction: state.transaction?.copyWith(
-            walletTransaction: updatedWalletTransaction,
+        final updatedWalletTransaction = state.transaction?.walletTransaction
+            ?.copyWith(labels: updatedLabels);
+        emit(
+          state.copyWith(
+            transaction: state.transaction?.copyWith(
+              walletTransaction: updatedWalletTransaction,
+            ),
           ),
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(err: e));
+        );
+      case Err():
+        // Deletion failed (logged at the boundary); keep the note in the UI
+        // rather than show it as removed.
+        break;
     }
   }
 
