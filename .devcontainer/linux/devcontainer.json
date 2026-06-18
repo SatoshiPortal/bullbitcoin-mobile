@@ -1,7 +1,7 @@
 // Linux host dev container. Builds ../../Containerfile.tools and forwards the
 // host GPU (/dev/dri) + X11/Wayland so the Flutter Linux desktop GUI can run.
 {
-  "name": "${localWorkspaceFolderBasename}",
+  "name": "bull",
   "build": {
     "dockerfile": "../../Containerfile.tools",
     "args": {
@@ -14,7 +14,7 @@
   "initializeCommand": "sh -c '.devcontainer/linux/init-ssh-agent.sh && .devcontainer/linux/init-adb.sh'",
   "runArgs": [
     "--name",
-    "${localWorkspaceFolderBasename}",
+    "bull",
     "--hostname",
     "bull",
     "--memory=8g",
@@ -35,8 +35,8 @@
     "source=${localEnv:HOME}/.ssh-agent-devcontainer.sock,target=/ssh-agent,type=bind",
     "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind",
     "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
-    "source=${localWorkspaceFolderBasename}-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
-    "source=${localWorkspaceFolderBasename}-keyrings,target=/home/${localEnv:USER}/.local/share/keyrings,type=volume",
+    "source=bull-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
+    "source=bull-keyrings,target=/home/${localEnv:USER}/.local/share/keyrings,type=volume",
     "source=${localEnv:XDG_RUNTIME_DIR},target=/run/host-runtime,type=bind",
   ],
   "containerEnv": {

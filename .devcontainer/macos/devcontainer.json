@@ -19,9 +19,14 @@
 //                                runs in the rendered Linux app, which macOS
 //                                can't display, so no keyring bootstrap.
 //
+// Container/volume names are hardcoded to "bull" (not the workspace basename)
+// so two clones of this repo share one container + its volume. Whichever clone
+// is opened first has its tree mounted at /workspaces; later opens attach to
+// the same running container.
+//
 // See ../README.md.
 {
-  "name": "${localWorkspaceFolderBasename}",
+  "name": "bull",
   "build": {
     "dockerfile": "../../Containerfile.tools",
     "args": {
@@ -36,7 +41,7 @@
   "initializeCommand": "sh -c '.devcontainer/macos/macos-setup.sh && .devcontainer/macos/init-mounts.sh && .devcontainer/macos/init-adb.sh'",
   "runArgs": [
     "--name",
-    "${localWorkspaceFolderBasename}",
+    "bull",
     "--hostname",
     "bull",
     "--memory=8g",
@@ -54,7 +59,7 @@
   "mounts": [
     "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly",
     "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind",
-    "source=${localWorkspaceFolderBasename}-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
+    "source=bull-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
   ],
   "containerEnv": {
     "ADB_SERVER_SOCKET": "tcp:host.containers.internal:5037",
