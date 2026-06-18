@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
+import 'package:bb_mobile/features/pin_code/presentation/pin_code_failure_x.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/pin_settings_screen.dart';
@@ -30,10 +31,10 @@ class PinCodeSettingFlow extends StatelessWidget {
               context.pop();
             case PinCodeSettingStatus.failure:
               log.info('Pin Code Set Failed');
-              if (state.error != null) {
+              if (state.failure != null) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  state.error!.toTranslated(context),
+                  state.failure!.toTranslated(context),
                 );
               }
               context.pop();
