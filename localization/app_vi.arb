@@ -292,5 +292,8 @@
   "fundExchangeMethodInstantSepa": "Chuyển SEPA tức thời và tiêu chuẩn",
   "pinCodeSaveError": "Không thể lưu mã PIN của bạn. Vui lòng thử lại.",
   "pinCodeDeleteError": "Không thể xóa mã PIN của bạn. Vui lòng thử lại.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "Không thể tải cài đặt bảo mật. Vui lòng khởi động lại ứng dụng.",
+  "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại."
 }
+

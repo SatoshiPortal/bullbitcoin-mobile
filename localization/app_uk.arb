@@ -1316,6 +1316,8 @@
   "save": "Зберегти",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
   "appUnlockButton": "Розблокувати",
+  "appUnlockPinCheckError": "Не вдалося завантажити налаштування безпеки. Будь ласка, перезапустіть додаток.",
+  "appUnlockPinVerifyError": "Не вдалося перевірити ваш PIN. Будь ласка, спробуйте ще раз.",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
   "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",

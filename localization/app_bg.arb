@@ -748,6 +748,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "Разблокирай",
+  "appUnlockPinCheckError": "Не може да се заредят настройките за сигурност. Моля, рестартирайте приложението.",
+  "appUnlockPinVerifyError": "Не може да се провери вашият PIN. Моля, опитайте отново.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

@@ -1774,6 +1774,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "قفل باز",
+  "appUnlockPinCheckError": "بارگذاری تنظیمات امنیتی ناموفق بود. لطفاً برنامه را مجدداً راه‌اندازی کنید.",
+  "appUnlockPinVerifyError": "تأیید PIN شما ناموفق بود. لطفاً دوباره امتحان کنید.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

@@ -224,6 +224,8 @@
   "dcaWalletLiquidSubtitle": "Требуется совместимый кошелек",
   "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
   "appUnlockButton": "Разблокировка",
+  "appUnlockPinCheckError": "Не удалось загрузить настройки безопасности. Пожалуйста, перезапустите приложение.",
+  "appUnlockPinVerifyError": "Не удалось проверить ваш PIN. Пожалуйста, попробуйте снова.",
   "payServiceFee": "Сервисная плата",
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",

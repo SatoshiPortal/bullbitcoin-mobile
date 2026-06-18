@@ -312,5 +312,8 @@
   "fundExchangeMethodInstantSepa": "Uhawilishaji wa SEPA wa haraka na wa kawaida",
   "pinCodeSaveError": "Imeshindwa kuhifadhi PIN yako. Tafadhali jaribu tena.",
   "pinCodeDeleteError": "Imeshindwa kufuta PIN yako. Tafadhali jaribu tena.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
+  "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena."
 }
+

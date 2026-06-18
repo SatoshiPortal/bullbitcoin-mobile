@@ -223,6 +223,8 @@
   "dcaWalletLiquidSubtitle": "Erfordert kompatible Wallet",
   "fundExchangeCrIbanCrcTitle": "Banküberweisung (CRC)",
   "appUnlockButton": "Entsperren",
+  "appUnlockPinCheckError": "Sicherheitseinstellungen konnten nicht geladen werden. Bitte starten Sie die App neu.",
+  "appUnlockPinVerifyError": "Ihre PIN konnte nicht verifiziert werden. Bitte versuchen Sie es erneut.",
   "payServiceFee": "Servicegebühr",
   "transactionStatusSwapExpired": "Swap abgelaufen",
   "swapAmountPlaceholder": "0",

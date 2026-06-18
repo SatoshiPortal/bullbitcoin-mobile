@@ -585,6 +585,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "إفتح",
+  "appUnlockPinCheckError": "تعذّر تحميل إعدادات الأمان. يرجى إعادة تشغيل التطبيق.",
+  "appUnlockPinVerifyError": "تعذّر التحقق من رمز PIN. يرجى المحاولة مرة أخرى.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
