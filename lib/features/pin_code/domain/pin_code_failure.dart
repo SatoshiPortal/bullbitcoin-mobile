@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/failures/failure.dart';
 /// Closed set of every failure the PIN-code flow surfaces to the user.
 /// `sealed` keeps it closed (exhaustive switches; no foreign variants). Pure
 /// Dart — the user-facing message lives in the presentation extension
-/// `pin_code_failure_x.dart`, never here.
+/// `pin_code_failure_l10n.dart`, never here.
 sealed class PinCodeFailure extends Failure {
   const PinCodeFailure([super.logMessage]);
 }
