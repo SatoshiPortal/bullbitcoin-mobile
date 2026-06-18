@@ -14,7 +14,6 @@
   "importWatchOnlyErrorImportFailed": "ვერ მოვახერხეთ ამ მხოლოდ-სათვალთვალო საფულის იმპორტი. გთხოვთ, შეამოწმოთ დეტალები და სცადოთ ხელახლა.",
   "broadcastSignedTxErrorInvalidTransaction": "ეს არ ჰგავს ვალიდურ ხელმოწერილ ტრანზაქციას. დარწმუნდით, რომ ჩასვით სრული PSBT ან ტრანზაქცია.",
   "broadcastSignedTxErrorInvalidPushTx": "ვერ წავიკითხეთ ტრანზაქცია ამ ტეგიდან. გთხოვთ, ხელახლა სცადოთ სკანირება.",
-  "labelErrorUnsupportedType": "ამ ტიპის ლეიბლი არ არის მხარდაჭერილი.",
   "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {

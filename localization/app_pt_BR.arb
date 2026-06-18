@@ -4221,10 +4221,6 @@
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
   },
-  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
   "@ledgerWalletTypeSegwitDescription": {
     "description": "Description for Segwit wallet type"
@@ -9453,15 +9449,6 @@
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
   },
-  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "arkReceiveButton": "Receber",
   "@arkReceiveButton": {
     "description": "Bottom button to navigate to receive page"
@@ -10181,7 +10168,6 @@
   "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira somente leitura. Verifique os detalhes e tente novamente.",
   "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Verifique se você colou o PSBT ou a transação completos.",
   "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente escanear novamente.",
-  "labelErrorUnsupportedType": "Este tipo de etiqueta não é suportado.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

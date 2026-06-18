@@ -4419,10 +4419,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "सिस्टम लेबल को हटाया नहीं जा सकता है।।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "कॉपी",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -9519,15 +9515,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "लेबल \"{label}\" नहीं मिला।।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "निजी भुगतान",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -12009,7 +11996,6 @@
   "importWatchOnlyErrorImportFailed": "हम इस वॉच-ओनली वॉलेट को इम्पोर्ट नहीं कर सके। कृपया जानकारी जाँचें और फिर से कोशिश करें।",
   "broadcastSignedTxErrorInvalidTransaction": "यह एक मान्य साइन्ड ट्रांज़ैक्शन नहीं लगता। पक्का करें कि आपने पूरा PSBT या ट्रांज़ैक्शन पेस्ट किया है।",
   "broadcastSignedTxErrorInvalidPushTx": "हम इस टैग से कोई ट्रांज़ैक्शन नहीं पढ़ सके। कृपया फिर से स्कैन करें।",
-  "labelErrorUnsupportedType": "यह लेबल प्रकार समर्थित नहीं है।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

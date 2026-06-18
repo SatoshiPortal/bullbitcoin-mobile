@@ -1415,7 +1415,6 @@
   "withdrawConfirmAmount": "Betrag",
   "transactionSwapDoNotUninstall": "Deinstallieren Sie die App erst, wenn der Swap abgeschlossen ist",
   "payDefaultCommentHint": "Standardkommentar eingeben",
-  "labelErrorSystemCannotDelete": "Systemlabels können nicht gelöscht werden.",
   "copyDialogButton": "Kopieren",
   "bitboxActionImportWalletProcessing": "Wallet wird importiert…",
   "swapConfirmTransferTitle": "Bestätigen",
@@ -3094,14 +3093,6 @@
   "coldcardStep10": "Tippen Sie auf die Schaltflächen, um die Transaktion auf Ihrer Coldcard zu signieren",
   "sendErrorAmountBelowSwapLimits": "Betrag unterhalb der Swap-Grenze.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Erwägen Sie, Sofortzahlungen aufzuladen, um kleinere Zahlungen zu tätigen.",
-  "labelErrorNotFound": "Label „{label}“ nicht gefunden.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Private Zahlung",
   "autoswapDefaultWalletLabel": "Bitcoin-Wallet",
   "recoverbullTestSuccessDescription": "Sie können den Zugriff auf eine verlorene Bitcoin-Wallet wiederherstellen.",
@@ -3959,7 +3950,6 @@
   "importWatchOnlyErrorImportFailed": "Wir konnten diese Watch-only-Wallet nicht importieren. Bitte überprüfe die Angaben und versuche es erneut.",
   "broadcastSignedTxErrorInvalidTransaction": "Das sieht nicht nach einer gültigen signierten Transaktion aus. Stelle sicher, dass du das vollständige PSBT oder die vollständige Transaktion eingefügt hast.",
   "broadcastSignedTxErrorInvalidPushTx": "Wir konnten aus diesem Tag keine Transaktion lesen. Bitte scanne erneut.",
-  "labelErrorUnsupportedType": "Dieser Label-Typ wird nicht unterstützt.",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
   "receivePayjoinActivated": "Payjoin aktiviert",
   "importMnemonicContinue": "Fortfahren",

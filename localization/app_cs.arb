@@ -4492,10 +4492,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "Čeština",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -9338,15 +9334,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Privátní platba",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -11702,7 +11689,6 @@
   "importWatchOnlyErrorImportFailed": "Tuto peněženku pouze pro sledování se nepodařilo importovat. Zkontrolujte údaje a zkuste to znovu.",
   "broadcastSignedTxErrorInvalidTransaction": "Tohle nevypadá jako platná podepsaná transakce. Ujistěte se, že jste vložili celý PSBT nebo celou transakci.",
   "broadcastSignedTxErrorInvalidPushTx": "Z tohoto štítku se nepodařilo načíst transakci. Zkuste skenování znovu.",
-  "labelErrorUnsupportedType": "Tento typ štítku není podporován.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
