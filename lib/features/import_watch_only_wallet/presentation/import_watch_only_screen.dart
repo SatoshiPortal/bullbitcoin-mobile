@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_method_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
@@ -47,10 +48,10 @@ class ImportWatchOnlyScreen extends StatelessWidget {
               context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             }
-            if (state.error != null) {
+            if (state.failure != null) {
               SnackBarUtils.showSnackBar(
                 context,
-                state.error!.toTranslated(context),
+                state.failure!.toTranslated(context),
               );
             }
           },
@@ -74,10 +75,10 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.error != null)
+                        if (state.failure != null)
                           Center(
                             child: BBText(
-                              state.error!.toTranslated(context),
+                              state.failure!.toTranslated(context),
                               style: TextStyle(color: context.appColors.error),
                             ),
                           ),
