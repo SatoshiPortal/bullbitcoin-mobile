@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
@@ -28,28 +29,28 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       _deletingLabels.add(label);
     });
 
-    try {
-      if (widget.onDelete != null) {
+    // The optional [onDelete] callback is external and still throw-based, so it
+    // keeps a guard. The facade's trash returns a Result the UI translates.
+    if (widget.onDelete != null) {
+      try {
         await widget.onDelete!(label);
-      } else {
-        await _labelsFacade.trash(label.id);
+      } catch (e) {
+        if (mounted) {
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.labelDeleteFailed(label.label),
+          );
+        }
       }
-      if (mounted) {
-        setState(() => _deletingLabels.remove(label));
-      }
-    } on LabelError catch (e) {
-      if (mounted) {
-        setState(() => _deletingLabels.remove(label));
-        SnackBarUtils.showSnackBar(context, e.toTranslated(context));
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _deletingLabels.remove(label));
-        SnackBarUtils.showSnackBar(
-          context,
-          context.loc.labelDeleteFailed(label.label),
-        );
-      }
+      if (mounted) setState(() => _deletingLabels.remove(label));
+      return;
+    }
+
+    final result = await _labelsFacade.trash(label.id);
+    if (!mounted) return;
+    setState(() => _deletingLabels.remove(label));
+    if (result case Err(:final failure)) {
+      SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
     }
   }
 
