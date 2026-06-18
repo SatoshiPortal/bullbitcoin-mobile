@@ -136,7 +136,8 @@ RUN rm /tmp/fvm-install.sh
 ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
 # Install Flutter via FVM
-RUN fvm install ${FLUTTER_VERSION}
+ENV FVM_USE_GIT_CACHE=false
+RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 
