@@ -70,7 +70,7 @@ Every call from the UI goes `bloc → usecase → repository`. **A bloc never im
 
 Keeping the use-case *thin* (per the table above) is what prevents the "use-cases are overhead" trap the Flutter team warns about — the overhead is logic with no home, not the seam itself. The Flutter team rates a dedicated domain/use-case layer *Conditional* ("in most apps they add unnecessary overhead", [recommendations](https://docs.flutter.dev/app-architecture/recommendations)); we knowingly accept that small, uniform cost in exchange for one predictable pattern, and we pay it back by keeping use-cases thin.
 
-- **Owns:** coordinating **multiple** repositories/ports, sequencing a multi-step workflow, and **mapping data-layer errors → the feature's `<Feature>Error`**.
+- **Owns:** coordinating **multiple** repositories/ports, sequencing a multi-step workflow, and **mapping data-layer errors → the feature's `<Feature>Failure`** (when wrapping a shared core repo that still throws; a feature-local repo maps at the repo boundary).
 - **Never:** shaping data, re-checking an invariant the entity's constructor already guarantees, or touching a datasource.
 - **Smell:** a use-case that imports from `data/`; a use-case that re-validates what the entity already enforces.
 
@@ -142,7 +142,7 @@ How the layers hand off on a real read — fetching a wallet's UTXOs:
 ui  ── user opens a screen that lists coins
  └─ bloc       e.g. SendCubit / SellBloc   holds List<WalletUtxo> in state; no logic
      └─ usecase  GetWalletUtxosUsecase.execute(walletId)
-                  coordinates, maps failures → WalletError
+                  coordinates, maps failures → WalletFailure
          └─ repo  WalletUtxoRepository.getWalletUtxos(walletId)     [interface: domain/]
              │     impl merges datasources, maps model → entity     [impl: data/]
              ├─ datasource  WalletMetadataDatasource              → WalletMetadataModel
@@ -154,10 +154,14 @@ Calls flow **down**; data flows **up**, transformed once per boundary: **wire mo
 
 ### Error handling
 
-- **One sealed error family per feature** by default (`<feature>_error.dart`). Most features are not deep enough to justify an error file per layer. Map foreign errors at every boundary; never leak another layer's or feature's error type.
-- **A user-facing message per error.** Each error carries a `toTranslated(BuildContext)` method (the established codebase convention — see `sell_error.dart`) that returns a clean, localized message for the end user via `AppLocalizations` (accessed through the `context.loc` extension) — never the developer-facing detail. The raw error (exception text, stack, foreign codes) stays in logs; the UI shows only what `toTranslated` returns. This keeps the sealed family the single source of truth for both *what went wrong* (for us) and *what the user sees* (for them), and the `sealed` switch guarantees every error variant has a user message. The **end user must never see a dev error string.** The **catch-all variant** (`unexpected`, `unknown`) returns a **generic localized** message (e.g. `context.loc.somethingWentWrong`), **never** the raw `message` — the `unexpected: (message) => message` shortcut in some current errors leaks dev detail to the user and is the anti-pattern to avoid; log the raw text, show the generic string.
-- **Prefer a `Result` at the repository boundary** for expected, recoverable failures; `throw` for programmer errors. Dart exceptions are unchecked — callers aren't forced to handle them ([dart.dev](https://dart.dev/language/error-handling)) — so a `Result` makes failure explicit in the signature. The Flutter team offers `Result` but explicitly as *"a recommendation, but not a requirement"* ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer)). Adopt where it pays; don't mass-migrate existing exception code.
-- **The flow, end to end.** Repository returns a `Result` carrying a data-layer error → the **use-case** maps that to the feature's sealed `<Feature>Error` (the boundary where foreign errors are translated) → the bloc holds that `<Feature>Error` in its state → the **UI** renders it via `error.toTranslated(context)`. Because `toTranslated` needs a `BuildContext`, it is called UI-side only — never in the bloc (a `BuildContext` in `presentation/` is itself a smell).
+Three words, three jobs, kept strictly apart: **`Exception`** = thrown, low-level, recoverable (data layer, caught at the boundary); **`Error`** = a `dart:core` programmer bug, never caught (crashes → Sentry); **`Failure`** = a modeled, recoverable **value** that lives in `domain/` and is the only error kind the UI ever sees. `Error` is **never** a domain type — name domain failures `<Feature>Failure`, never `<Feature>Error`.
+
+- **One sealed `Failure` family per feature** in `domain/<feature>_failure.dart` (`sealed class <Feature>Failure extends Failure`), **Flutter-free**. Most features aren't deep enough to justify a family per layer. Cross-cutting modes (network, storage-locked, not-found, timeout, auth, device, insufficient-funds) come from the shared `sealed CoreFailure` in `lib/core/failures/` (alongside the `Failure` base; the legacy `lib/core/errors/` is the graveyard until emptied), composed rather than redefined per feature. Map foreign errors at the boundary; never leak another layer's or feature's type.
+- **Translation lives in presentation, not on the failure.** Because the repository (data layer) constructs the failure, the failure type must stay Flutter-free — so `toTranslated(BuildContext)` is a **presentation-layer extension** (`presentation/<feature>_failure_x.dart`), the only place that imports `flutter` / `context.loc`. The `sealed` switch in the extension still makes a missing user message a compile error. **The end user never sees a dev string:** the catch-all variant returns a **generic** localized message (`context.loc.oopsSomethingWentWrong`), never the raw `logMessage` — that text is logged at the boundary and is for us only. (`unexpected: (message) => message` leaks dev detail; the anti-pattern to avoid.)
+- **`Result<T, F extends Failure>` at the boundary** for expected, recoverable failures (variants `Ok` / `Err`; `throw` only for `dart:core`-style programmer bugs). Dart exceptions are unchecked — callers aren't forced to handle them ([dart.dev](https://dart.dev/language/error-handling)) — so a `Result` makes failure explicit in the signature ([Flutter Result](https://docs.flutter.dev/app-architecture/design-patterns/result)). Generic over `F` so consumers never cast; annotate returning methods `@useResult`; helpers `fold` / `map` / `mapErr`.
+- **The flow, end to end.** The **repository** is the one `try/catch`: it catches the foreign `Exception`, logs the raw reason, maps it to the feature's `<Feature>Failure`, and returns `Result<T, F>`. *(When a feature wraps a shared **core** repo that still throws, this mapping moves up to the feature's **use-case** — the first layer the feature owns.)* The **use-case** forwards or composes `Result`s (no `try/catch`). The **bloc** consumes with an exhaustive `switch`, storing the typed `<Feature>Failure` in state — no cast, no `BuildContext`. The **UI** renders `failure.toTranslated(context)`. A domain `Failure` in the bloc is correct (presentation → domain), not a leak; the leak prevented is a *data* exception crossing the boundary.
+
+> **Migration (#1895).** Sanitizing user-facing errors to this standard is a **sanctioned, staged migration** (issue #1895), not opportunistic. Existing features still using `BullException`, `<Feature>Error` naming, `toTranslated` *on* the error, or `throw`-based propagation are **legacy-to-converge** — don't replicate them; bring a feature fully in line when you touch it, one feature per PR.
 
 ### The facade: a feature's public contract
 
@@ -201,7 +205,7 @@ The repository's own interface is the canonical port (the Ports-&-Adapters analo
 - `domain/entities/` — entities and value objects; **rich** models that enforce their own invariants in the constructor/factory (an invalid instance can't exist), never anemic DB mirrors. Never carry serialization — that's the model's job.
 - `domain/repositories/` — the **abstract** repository interfaces (the contracts use-cases depend on).
 - `domain/usecases/` — one per user intent; **thin orchestration** only.
-- `domain/<feature>_error.dart` — the feature's sealed error family; each variant exposes `toTranslated(context)` for its user-facing message.
+- `domain/<feature>_failure.dart` — the feature's sealed `Failure` family (Flutter-free); its `toTranslated(context)` lives in a `presentation/<feature>_failure_x.dart` extension, never on the failure itself.
 - `data/datasources/` — stateless wrappers around one external system each; private to their repository.
 - `data/<noun>_repository_impl.dart` — the concrete repository implementation.
 - `data/models/` — the wire/persistence model, one per entity, always separate from the domain entity (serialization only). `data/mappers/` — model ↔ entity; a file only once it earns one (rule #14), inline/extension when trivial.
@@ -220,13 +224,13 @@ The repository's own interface is the canonical port (the Ports-&-Adapters analo
     entities/         # (+ value objects) — rich models
     repositories/     # abstract interfaces (the contracts)
     usecases/         # one per intent, thin orchestration
-    <feature>_error.dart
+    <feature>_failure.dart   # sealed Failure family, Flutter-free
   data/
     datasources/      # one external system each, private to the repo
     models/           # wire/persistence model, always separate from the entity
     mappers/          # model ↔ entity (a file only once it earns one)
     <noun>_repository_impl.dart
-  presentation/       # <feature>_bloc.dart + state + event
+  presentation/       # <feature>_bloc.dart + state + event + <feature>_failure_x.dart (toTranslated)
   ui/
     screens/
     widgets/
@@ -255,9 +259,9 @@ A feature whose data is **shared** does not hold `domain/` + `data/` itself — 
 
 For a new user-facing flow in `lib/features/<feature>/`, working **outside-in is fine but design domain-first**:
 
-1. **Domain.** Rich entity + value objects (`domain/entities/`), the `abstract interface class <Noun>Repository` (`domain/repositories/`), the sealed `<feature>_error.dart` (each variant with `toTranslated(context)`), and one `<Verb><Noun>Usecase` per intent (entry method `execute(...)`).
+1. **Domain.** Rich entity + value objects (`domain/entities/`), the `abstract interface class <Noun>Repository` (`domain/repositories/`), the sealed `<feature>_failure.dart` (`<Feature>Failure extends Failure`, Flutter-free — translation comes later as a presentation extension), and one `<Verb><Noun>Usecase` per intent (entry method `execute(...)`).
 2. **Data.** Datasource(s) (`data/datasources/`, one external system each), wire model + mapper (`data/models/`, `data/mappers/`), and `<noun>_repository_impl.dart`. The repository returns entities only — never a model (see "boundary rule").
-3. **Presentation.** `<Feature>Bloc`/`Cubit` + sealed state/event (`presentation/`). It calls use-cases only — never a repository or datasource.
+3. **Presentation.** `<Feature>Bloc`/`Cubit` + sealed state/event, plus the `<feature>_failure_x.dart` extension exposing `toTranslated(BuildContext)` (`presentation/`). The bloc stores the `<Feature>Failure` in state; it calls use-cases only — never a repository or datasource.
 4. **UI.** Screens/widgets (`ui/`), reusing `lib/core/widgets/` first; all strings via `context.loc.<key>`, all colors from the theme (see AGENTS.md "UI Kit").
 5. **Wire it in** (the two composition-root files from "Entry points & code tour"): add `<feature>_locator.dart` and register `<Feature>Locator.setup(locator)` in **`lib/locator.dart`**; add `<feature>_router.dart` (`<Feature>Router` + `<Feature>Route`) and spread `...<Feature>Router.routes` into **`lib/router.dart`**.
 6. **Expose only if cross-feature.** Add `public/<feature>_facade.dart` returning published types only (see "The facade"), and update the graph in [FEATURES.md](FEATURES.md).
@@ -272,7 +276,7 @@ For a new user-facing flow in `lib/features/<feature>/`, working **outside-in is
 | Rule | Lever |
 |---|---|
 | Repository is a contract | `abstract interface class <Noun>Repository` (Dart class modifiers) — the compiler forbids `extends`, forces `implements` |
-| Exhaustive error/state handling | `sealed class <Feature>Error` / sealed states — a missing `switch` case is a compile error |
+| Exhaustive failure/state handling | `sealed class <Feature>Failure` / sealed states — a missing `switch` case is a compile error |
 | A returned `Result` must be handled | `@useResult` (`package:meta`) on repo methods — the analyzer warns if the result is discarded |
 | Cross-feature facade-only | melos package boundaries + the `implementation_imports` lint (a package's `src/` is unreachable from outside); an analyzer-plugin or `custom_lint` rule for in-`lib/` features |
 | Bloc never imports `data/` | an analyzer-plugin or `custom_lint` rule banning `data/` imports from `presentation/` + `ui/` |
