@@ -20,7 +20,6 @@
   "importWatchOnlyErrorImportFailed": "Chúng tôi không thể nhập ví chỉ xem này. Vui lòng kiểm tra thông tin và thử lại.",
   "broadcastSignedTxErrorInvalidTransaction": "Đây có vẻ không phải là giao dịch đã ký hợp lệ. Hãy đảm bảo bạn đã dán đầy đủ PSBT hoặc giao dịch.",
   "broadcastSignedTxErrorInvalidPushTx": "Chúng tôi không thể đọc giao dịch từ thẻ này. Vui lòng quét lại.",
-  "labelErrorUnsupportedType": "Loại nhãn này không được hỗ trợ.",
   "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Ứng dụng không thể khởi động",

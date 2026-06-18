@@ -3181,7 +3181,6 @@
   "importWatchOnlyErrorImportFailed": "No pudimos importar este monedero de solo lectura. Revisa los datos e inténtalo de nuevo.",
   "broadcastSignedTxErrorInvalidTransaction": "Esto no parece una transacción firmada válida. Asegúrate de haber pegado el PSBT o la transacción completos.",
   "broadcastSignedTxErrorInvalidPushTx": "No pudimos leer una transacción de esta etiqueta. Intenta escanear de nuevo.",
-  "labelErrorUnsupportedType": "Este tipo de etiqueta no es compatible.",
   "broadcastSignedTxPageTitle": "Transmitir transacción firmada",
   "broadcastSignedTxPasteHint": "Pegar un PSBT o HEX de transacción",
   "broadcastSignedTxCameraButton": "Cámara",
@@ -4142,15 +4141,6 @@
   "systemLabelSelfSpend": "Auto Gasto",
   "systemLabelExchangeBuy": "Comprar",
   "systemLabelExchangeSell": "Vender",
-  "labelErrorNotFound": "Etiqueta \"{label}\" no encontrada.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Las etiquetas del sistema no se pueden eliminar.",
   "labelDeleteFailed": "No se puede eliminar \"{label}\". Por favor, inténtalo de nuevo.",
   "@labelDeleteFailed": {
     "placeholders": {

@@ -1444,7 +1444,6 @@
   "withdrawConfirmAmount": "数额",
   "transactionSwapDoNotUninstall": "不要 app,直到打完 complete.",
   "payDefaultCommentHint": "加入违约评论",
-  "labelErrorSystemCannotDelete": "系统标签不能删除.",
   "copyDialogButton": "页: 1",
   "bitboxActionImportWalletProcessing": "导入钱包中",
   "swapConfirmTransferTitle": "1. 集体转让",
@@ -3143,14 +3142,6 @@
   "coldcardStep10": "• 在 but子上签署交易.",
   "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
   "sendErrorAmountBelowSwapLimitsBitcoin": "考虑为即时支付充值以进行小额支付。",
-  "labelErrorNotFound": "Label “{label}”没有发现.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "私人支付",
   "autoswapDefaultWalletLabel": "页: 1",
   "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
@@ -4016,7 +4007,6 @@
   "importWatchOnlyErrorImportFailed": "无法导入此只读钱包。请检查信息后重试。",
   "broadcastSignedTxErrorInvalidTransaction": "这看起来不是有效的已签名交易。请确认您粘贴了完整的 PSBT 或交易。",
   "broadcastSignedTxErrorInvalidPushTx": "无法从此标签读取交易。请重新扫描。",
-  "labelErrorUnsupportedType": "不支持此标签类型。",
   "recoverbullSelectRecoverWallet": "恢复钱包",
   "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",

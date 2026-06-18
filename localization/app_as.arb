@@ -6811,7 +6811,6 @@
   "importWatchOnlyErrorImportFailed": "আমি এই ৱাচ-অনলী ৱালেটটো ইম্প'ৰ্ট কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি বিৱৰণ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "broadcastSignedTxErrorInvalidTransaction": "এইটো এটা বৈধ স্বাক্ষৰিত লেনদেন যেন নালাগে। আপুনি সম্পূৰ্ণ PSBT বা লেনদেন পেষ্ট কৰাটো নিশ্চিত কৰক।",
   "broadcastSignedTxErrorInvalidPushTx": "আমি এই টেগৰ পৰা কোনো লেনদেন পঢ়িব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ স্কেন কৰক।",
-  "labelErrorUnsupportedType": "এই লেবেলৰ ধৰণ সমৰ্থিত নহয়।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -9559,19 +9558,6 @@
   "systemLabelExchangeSell": "বিক্ৰয়",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "লেবেল \"{label}\" পোৱা নগ'ল।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "চিস্টেম লেবেলসমূহ মচিব নোৱাৰি।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "\"{label}\" মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@labelDeleteFailed": {

@@ -9006,7 +9006,6 @@
   "importWatchOnlyErrorImportFailed": "Hum is watch-only wallet ko import nahi kar sake. Kripya jaankari jaanchein aur phir se koshish karein.",
   "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
   "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
-  "labelErrorUnsupportedType": "Yeh label type supported nahi hai.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -11758,19 +11757,6 @@
   "systemLabelExchangeSell": "Sell",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "\"{label}\" delete karne mein asmarth. Kripya dobara try karo.",
   "@labelDeleteFailed": {

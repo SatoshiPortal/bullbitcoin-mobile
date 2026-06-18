@@ -8,20 +8,6 @@ sealed class LabelFailure extends Failure {
   const LabelFailure([super.logMessage]);
 }
 
-final class LabelNotFoundFailure extends LabelFailure {
-  final String label;
-
-  const LabelNotFoundFailure({required this.label});
-}
-
-final class UnsupportedLabelTypeFailure extends LabelFailure {
-  const UnsupportedLabelTypeFailure();
-}
-
-final class SystemLabelCannotBeDeletedFailure extends LabelFailure {
-  const SystemLabelCannotBeDeletedFailure();
-}
-
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class LabelUnexpectedFailure extends LabelFailure {

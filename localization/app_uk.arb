@@ -2152,7 +2152,6 @@
   "bip329LabelsImportButton": "Імпорт етикеток",
   "arkStatusConfirmed": "Підтвердження",
   "withdrawConfirmAmount": "Сума",
-  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
   "copyDialogButton": "Партнерство",
   "bitboxActionImportWalletProcessing": "Імпорт гаманця",
   "swapConfirmTransferTitle": "Підтвердження трансферу",
@@ -3396,14 +3395,6 @@
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
-  "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Приватний платіж",
   "autoswapDefaultWalletLabel": "Bitcoin гаманець",
   "recoverbullTestSuccessDescription": "Ви можете відновити доступ до втраченого біткойн-гаманця",
@@ -4045,7 +4036,6 @@
   "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
   "broadcastSignedTxErrorInvalidTransaction": "Це не схоже на дійсну підписану транзакцію. Переконайтеся, що ви вставили повний PSBT або транзакцію.",
   "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
-  "labelErrorUnsupportedType": "Цей тип мітки не підтримується.",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",

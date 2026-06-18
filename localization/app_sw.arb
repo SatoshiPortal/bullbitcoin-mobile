@@ -20,7 +20,6 @@
   "importWatchOnlyErrorImportFailed": "Hatukuweza kuingiza pochi hii ya kutazama-pekee. Tafadhali angalia maelezo na ujaribu tena.",
   "broadcastSignedTxErrorInvalidTransaction": "Hii haionekani kuwa muamala halali uliosainiwa. Hakikisha umebandika PSBT kamili au muamala mzima.",
   "broadcastSignedTxErrorInvalidPushTx": "Hatukuweza kusoma muamala kutoka kwa lebo hii. Tafadhali jaribu kuchanganua tena.",
-  "labelErrorUnsupportedType": "Aina hii ya lebo haitumiki.",
   "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {

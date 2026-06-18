@@ -1256,19 +1256,6 @@
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
   },
-  "labelErrorNotFound": "برچسب \"{label}\" یافت نشد.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "برچسب های سیستم را نمی توان حذف کرد.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "labelDeleteFailed": "برای حذف \"{label} لطفا دوباره امتحان کنید.",
   "@labelDeleteFailed": {
     "description": "Error message when label deletion fails",
@@ -11228,7 +11215,6 @@
   "importWatchOnlyErrorImportFailed": "نتوانستیم این کیف پول فقط‌مشاهده را وارد کنیم. لطفاً جزئیات را بررسی کرده و دوباره تلاش کنید.",
   "broadcastSignedTxErrorInvalidTransaction": "این به نظر یک تراکنش امضاشده معتبر نمی‌رسد. مطمئن شوید که PSBT یا تراکنش کامل را چسبانده‌اید.",
   "broadcastSignedTxErrorInvalidPushTx": "نتوانستیم تراکنشی از این برچسب بخوانیم. لطفاً دوباره اسکن کنید.",
-  "labelErrorUnsupportedType": "این نوع برچسب پشتیبانی نمی‌شود.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

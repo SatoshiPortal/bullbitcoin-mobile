@@ -1441,7 +1441,6 @@
   "withdrawConfirmAmount": "Montante",
   "transactionSwapDoNotUninstall": "Não desinstale o aplicativo até que o swap seja concluído.",
   "payDefaultCommentHint": "Insira o comentário padrão",
-  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
   "copyDialogButton": "Entendido",
   "bitboxActionImportWalletProcessing": "Carteira de importação",
   "swapConfirmTransferTitle": "Confirmar transferência",
@@ -3122,14 +3121,6 @@
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar Pagamentos Instantâneos para fazer pagamentos menores.",
-  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Pagamento Privado",
   "autoswapDefaultWalletLabel": "Carteira Bitcoin",
   "recoverbullTestSuccessDescription": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
@@ -3991,7 +3982,6 @@
   "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira só de leitura. Verifique os detalhes e tente novamente.",
   "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Certifique-se de que colou o PSBT ou a transação completos.",
   "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente digitalizar novamente.",
-  "labelErrorUnsupportedType": "Este tipo de etiqueta não é suportado.",
   "recoverbullSelectRecoverWallet": "Recuperar Carteira",
   "receivePayjoinActivated": "Payjoin ativado",
   "importMnemonicContinue": "Continue",

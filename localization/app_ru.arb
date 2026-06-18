@@ -1441,7 +1441,6 @@
   "withdrawConfirmAmount": "Сумма",
   "transactionSwapDoNotUninstall": "Не удаляйте приложение до завершения обмена.",
   "payDefaultCommentHint": "Введите комментарий по умолчанию",
-  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
   "copyDialogButton": "Копировать",
   "bitboxActionImportWalletProcessing": "Импорт кошелька",
   "swapConfirmTransferTitle": "Подтверждение передачи",
@@ -3140,14 +3139,6 @@
   "coldcardStep10": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard.",
   "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
-  "labelErrorNotFound": "Лейбл «{label}» не найден.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Частная оплата",
   "autoswapDefaultWalletLabel": "Bitcoin Wallet",
   "recoverbullTestSuccessDescription": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
@@ -4016,7 +4007,6 @@
   "importWatchOnlyErrorImportFailed": "Не удалось импортировать этот кошелёк только для наблюдения. Пожалуйста, проверьте данные и попробуйте снова.",
   "broadcastSignedTxErrorInvalidTransaction": "Это не похоже на действительную подписанную транзакцию. Убедитесь, что вы вставили полный PSBT или транзакцию.",
   "broadcastSignedTxErrorInvalidPushTx": "Не удалось прочитать транзакцию из этой метки. Пожалуйста, попробуйте отсканировать снова.",
-  "labelErrorUnsupportedType": "Этот тип метки не поддерживается.",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",

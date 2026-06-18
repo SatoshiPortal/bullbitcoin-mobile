@@ -4419,10 +4419,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "คัดลอก",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -9517,15 +9513,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "ป้ายชื่อ \"X7X].",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "ชําระเงิน",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -12007,7 +11994,6 @@
   "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
   "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
   "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
-  "labelErrorUnsupportedType": "ไม่รองรับป้ายกำกับประเภทนี้",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

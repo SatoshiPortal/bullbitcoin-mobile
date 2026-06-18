@@ -3702,10 +3702,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "Οι ετικέτες συστήματος δεν μπορούν να διαγραφούν.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "Αντιγραφή",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -7895,15 +7891,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Το Label \"{label}\" δεν βρέθηκε.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Ιδιωτική πληρωμή",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9938,7 +9925,6 @@
   "importWatchOnlyErrorImportFailed": "Δεν μπορέσαμε να εισαγάγουμε αυτό το πορτοφόλι μόνο για παρακολούθηση. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
   "broadcastSignedTxErrorInvalidTransaction": "Αυτό δεν μοιάζει με έγκυρη υπογεγραμμένη συναλλαγή. Βεβαιωθείτε ότι επικολλήσατε ολόκληρο το PSBT ή τη συναλλαγή.",
   "broadcastSignedTxErrorInvalidPushTx": "Δεν μπορέσαμε να διαβάσουμε συναλλαγή από αυτή την ετικέτα. Δοκιμάστε να σαρώσετε ξανά.",
-  "labelErrorUnsupportedType": "Αυτός ο τύπος ετικέτας δεν υποστηρίζεται.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

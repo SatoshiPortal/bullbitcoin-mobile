@@ -4127,16 +4127,6 @@
   "systemLabelSelfSpend": "Auto transfert",
   "systemLabelExchangeBuy": "Achat",
   "systemLabelExchangeSell": "Vente",
-  "labelErrorNotFound": "Label \"{label}\" introuvable.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ce type d'étiquette n'est pas pris en charge.",
-  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
   "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
   "@labelDeleteFailed": {
     "placeholders": {

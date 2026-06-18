@@ -4419,10 +4419,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "관련 기사",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -9525,15 +9521,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "레이블 \"{label}\"을 찾을 수 없습니다.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "지불 방법",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -12015,7 +12002,6 @@
   "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
   "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
   "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
-  "labelErrorUnsupportedType": "지원되지 않는 라벨 유형입니다.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
