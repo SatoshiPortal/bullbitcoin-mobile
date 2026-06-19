@@ -303,12 +303,31 @@ abstract class SendState with _$SendState {
     }
   }
 
+  /// Amount (sats) locked in user-frozen coins ([WalletUtxo.isFrozen], which is
+  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded, and zero in
+  /// practice for Liquid because freeze isn't surfaced there (the Coins entry is
+  /// Bitcoin-only) — not because the network is intrinsically exempt.
+  ///
+  /// Note: this intentionally excludes payjoin-derived locks, which the spend
+  /// path also treats as unspendable. So with an active payjoin the real drain
+  /// may produce slightly less than [spendableBalanceSat] reports — it never
+  /// over-spends (the build re-excludes both sets), only fails closed.
+  int get frozenBalanceSat => utxos
+      .where((u) => u.isFrozen)
+      .fold(0, (sum, u) => sum + u.amountSat.toInt());
+
+  /// Spendable balance (sats) — the wallet balance minus the amount locked in
+  /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
+  /// must validate against this, not the raw wallet balance. Falls back to the
+  /// full balance before [utxos] have loaded so it never under-reports.
+  int get spendableBalanceSat =>
+      (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
       ? false
-      : (inputAmountSat > 0 &&
-            inputAmountSat <= selectedWallet!.balanceSat.toInt());
+      : (inputAmountSat > 0 && inputAmountSat <= spendableBalanceSat);
 
   String sendTypeName() {
     switch (sendType) {

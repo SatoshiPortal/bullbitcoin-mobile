@@ -732,8 +732,12 @@ class SendCubit extends Cubit<SendState> {
         state.paymentRequest == null) {
       return false;
     }
-    final wallet = state.selectedWallet!;
     final paymentRequest = state.paymentRequest!;
+    // D7: frozen coins are never spendable, so every balance check compares
+    // against the spendable balance (wallet balance − frozen total), not the
+    // raw wallet balance. Degrades to the full balance on Liquid / before
+    // utxos load (nothing frozen there).
+    final spendableSat = state.spendableBalanceSat;
     switch (paymentRequest) {
       case Bolt11PaymentRequest _:
         // final swapLimits = state.swapLimits!.;
@@ -744,17 +748,17 @@ class SendCubit extends Cubit<SendState> {
         final feeEstimate =
             state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return wallet.balanceSat.toInt() > totalPayable;
+        return spendableSat > totalPayable;
 
       case LnAddressPaymentRequest _:
         final invoiceAmount = state.inputAmountSat;
         final feeEstimate =
             state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return wallet.balanceSat.toInt() > totalPayable;
+        return spendableSat > totalPayable;
 
       default:
-        return wallet.balanceSat.toInt() >=
+        return spendableSat >=
             (state.inputAmountSat + (state.absoluteFees ?? 0));
     }
   }
@@ -798,14 +802,15 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(inputAmountCurrencyCode: bitcoinUnit.code));
         }
 
-        final totalBalanceSat = state.selectedWallet?.balanceSat ?? BigInt.zero;
+        // D7: Max drains only spendable coins (frozen are excluded at build),
+        // so the Max amount must reflect spendable balance, not the raw
+        // wallet balance — otherwise Max overshoots by the frozen total.
+        final spendableSat = state.spendableBalanceSat;
         if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-          validatedAmount = totalBalanceSat.toString();
+          validatedAmount = spendableSat.toString();
         } else {
-          final totalBalanceBtc = ConvertAmount.satsToBtc(
-            totalBalanceSat.toInt(),
-          );
-          validatedAmount = totalBalanceBtc.toStringAsFixed(8);
+          final spendableBtc = ConvertAmount.satsToBtc(spendableSat);
+          validatedAmount = spendableBtc.toStringAsFixed(8);
         }
       } else {
         if (amount.isEmpty) {
@@ -1743,7 +1748,11 @@ class SendCubit extends Cubit<SendState> {
         );
         emit(state.copyWith(bitcoinTxSize: dummyDrainTxInfo.txSize));
       }
-      final balance = state.selectedWallet!.balanceSat.toInt();
+      // D7: base MAX on the spendable balance — the funding drain excludes
+      // frozen coins, so committing `fullBalance - fee` would overstate the
+      // swap amount by the frozen total and trip the Step 3b verify. Equals the
+      // full balance on Liquid (freeze isn't surfaced there).
+      final balance = state.spendableBalanceSat;
       final maxAmount = balance - absoluteFees;
       if (state.bitcoinUnit == BitcoinUnit.sats) {
         emit(state.copyWith(amount: maxAmount.toString()));
@@ -1794,14 +1803,25 @@ class SendCubit extends Cubit<SendState> {
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
   Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
+    final walletChanged = state.selectedWallet?.id != wallet.id;
     emit(
       state.copyWith(
         selectedWallet: wallet,
         isWalletManuallySelected: manual,
         insufficientBalanceException: null,
+        // Drop the previous wallet's utxos on a change so spendable-balance math
+        // never mixes the new wallet's balance with the old wallet's frozen
+        // coins in the window before loadUtxos() repopulates (it degrades to the
+        // full balance meanwhile — the safe fallback).
+        utxos: walletChanged ? const [] : state.utxos,
       ),
     );
     setSelectedSwapLimits();
+    // Load utxos up front so the spendable balance (which excludes frozen
+    // coins, D7) is known during amount entry — not only after the first sync.
+    // Guarded on an actual wallet change so the per-keystroke auto-pick
+    // (updateBestWallet) doesn't re-read utxos on every keypress.
+    if (walletChanged) await loadUtxos();
     await _selectedWalletSyncingSubscription?.cancel();
     _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
         .execute(walletId: wallet.id)
