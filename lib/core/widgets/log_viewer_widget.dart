@@ -3,13 +3,14 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 class LogsViewerWidget extends StatefulWidget {
   final List<String> logs;
@@ -90,16 +91,29 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
     });
   }
 
+  Future<void> _onShareTapped() async {
+    await showLogsShareSheet(
+      context: context,
+      onShare: _shareLogs,
+      onExport: _exportLogs,
+    );
+  }
+
   Future<void> _shareLogs() async {
     if (_filteredLogs.isEmpty) return;
-    final logsToShare = _filteredLogs.join('\n');
-    await SharePlus.instance.share(
-      ShareParams(
-        text: logsToShare,
-        subject: 'bull_logs.tsv',
-        title: 'bull_logs.tsv',
-      ),
-    );
+    await shareLogsAsText(_filteredLogs);
+  }
+
+  Future<void> _exportLogs() async {
+    if (widget.logs.isEmpty) return;
+    try {
+      final saved = await exportLogsAsFile(widget.logs);
+      if (!context.mounted) return;
+      if (saved) SnackBarUtils.showSnackBar(context, 'Logs exported successfully');
+    } catch (e) {
+      if (!context.mounted) return;
+      SnackBarUtils.showSnackBar(context, 'Failed to export logs');
+    }
   }
 
   @override
@@ -117,10 +131,9 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               outlined: true,
               onPressed: _selectDateRange,
               iconData: Icons.date_range,
-              label:
-                  _startDate != null && _endDate != null
-                      ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
-                      : 'Filter by Date',
+              label: _startDate != null && _endDate != null
+                  ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
+                  : 'Filter by Date',
             ),
             const Gap(8),
             Row(
@@ -160,8 +173,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   Color iconColor = context.appColors.secondary;
                   if (parts.length > 1) {
                     final colorForLevel = switch (parts[1]) {
-                      'FINEST' => context.appColors.success.withValues(alpha: 0.5),
-                      'FINER' => context.appColors.success.withValues(alpha: 0.7),
+                      'FINEST' => context.appColors.success.withValues(
+                        alpha: 0.5,
+                      ),
+                      'FINER' => context.appColors.success.withValues(
+                        alpha: 0.7,
+                      ),
                       'FINE' => context.appColors.success,
                       'CONFIG' => context.appColors.textMuted,
                       'INFO' => context.appColors.info,
@@ -188,9 +205,8 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   return Row(
                     children: [
                       IconButton(
-                        onPressed:
-                            () =>
-                                Clipboard.setData(ClipboardData(text: logLine)),
+                        onPressed: () =>
+                            Clipboard.setData(ClipboardData(text: logLine)),
                         icon: Icon(Icons.copy, color: iconColor),
                       ),
                       SelectableText(
@@ -220,7 +236,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
             BBButton.small(
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
-              onPressed: _shareLogs,
+              onPressed: _onShareTapped,
               label: 'Share',
             ),
           ],

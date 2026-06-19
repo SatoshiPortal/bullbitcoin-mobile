@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:share_plus/share_plus.dart';
 
 class ShareLogsWidget extends StatelessWidget {
   const ShareLogsWidget({super.key});
@@ -17,7 +17,7 @@ class ShareLogsWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
           tileColor: context.appColors.transparent,
           title: Text(context.loc.shareLogsLabel),
-          onTap: () => _shareLogs(context),
+          onTap: () => _onShareTapped(context),
           trailing: const Icon(Icons.share_sharp),
         ),
         const Gap(8),
@@ -46,11 +46,19 @@ class ShareLogsWidget extends StatelessWidget {
     SnackBarUtils.showSnackBar(context, context.loc.logsDeletedMessage);
   }
 
+  Future<void> _onShareTapped(BuildContext context) async {
+    await showLogsShareSheet(
+      context: context,
+      onShare: () => _shareLogs(context),
+      onExport: () => _exportLogs(context),
+    );
+  }
+
   Future<void> _shareLogs(BuildContext context) async {
     try {
       final logs = await log.readLogs();
       if (!context.mounted) return;
-      await _shareTextLogs(logs.join('\n'));
+      await shareLogsAsText(logs);
     } catch (e) {
       if (!context.mounted) return;
       SnackBarUtils.showSnackBar(
@@ -60,9 +68,15 @@ class ShareLogsWidget extends StatelessWidget {
     }
   }
 
-  Future<void> _shareTextLogs(String text) async {
-    await SharePlus.instance.share(
-      ShareParams(text: text, subject: 'bull_logs.tsv', title: 'bull_logs.tsv'),
-    );
+  Future<void> _exportLogs(BuildContext context) async {
+    try {
+      final logs = await log.readLogs();
+      final saved = await exportLogsAsFile(logs);
+      if (!context.mounted) return;
+      if (saved) SnackBarUtils.showSnackBar(context, 'Logs exported successfully');
+    } catch (e) {
+      if (!context.mounted) return;
+      SnackBarUtils.showSnackBar(context, 'Failed to export logs');
+    }
   }
 }
