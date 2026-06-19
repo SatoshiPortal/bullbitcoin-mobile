@@ -14,7 +14,6 @@
   "importWatchOnlyErrorImportFailed": "Չկարողացանք ներմուծել այս միայն-դիտման դրամապանակը։ Խնդրում ենք ստուգել տվյալները և կրկին փորձել։",
   "broadcastSignedTxErrorInvalidTransaction": "Սա վավեր ստորագրված գործարքի տեսք չունի։ Համոզվեք, որ փակցրել եք ամբողջ PSBT-ն կամ գործարքը։",
   "broadcastSignedTxErrorInvalidPushTx": "Չկարողացանք գործարք կարդալ այս պիտակից։ Խնդրում ենք կրկին փորձել սկանավորել։",
-  "labelErrorUnsupportedType": "Այս պիտակի տեսակը չի աջակցվում։",
   "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",

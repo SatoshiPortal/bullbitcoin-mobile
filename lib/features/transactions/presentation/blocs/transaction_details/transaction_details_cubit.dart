@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -296,7 +297,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       label: label.label,
       origin: state.walletTransaction!.walletId,
     );
-    final storedLabel = await _labelsFacade.store(txLabel);
+    final Label storedLabel;
+    switch (await _labelsFacade.store(txLabel)) {
+      case Ok(:final value):
+        storedLabel = value;
+      case Err():
+        // Persisting the note failed (logged at the boundary); leave the UI
+        // unchanged rather than render an unsaved label as saved.
+        return;
+    }
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
@@ -334,13 +343,14 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> deleteTransactionNote(Label note) async {
+  /// Deletes a transaction note. Returns the [Result] so the caller can give
+  /// the user feedback on failure; on success the note is dropped from state.
+  Future<Result<Null, LabelFailure>> deleteTransactionNote(Label note) async {
     final walletTransaction = state.walletTransaction;
-    if (walletTransaction == null) return;
+    if (walletTransaction == null) return const Ok(null);
 
-    try {
-      await _labelsFacade.trash(note.id);
-
+    final result = await _labelsFacade.trash(note.id);
+    if (result case Ok()) {
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
       updatedLabels.remove(note);
 
@@ -353,9 +363,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           ),
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(err: e));
     }
+    // On Err the note is kept in state; the caller surfaces the failure.
+    return result;
   }
 
   Future<void> processSwap(Swap swap) async {

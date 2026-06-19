@@ -4169,10 +4169,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "نسخ",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -8936,15 +8932,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "(لابل) لم يعثر عليه.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "المدفوعات الخاصة",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -11264,7 +11251,6 @@
   "importWatchOnlyErrorImportFailed": "تعذّر علينا استيراد هذه المحفظة للعرض فقط. يُرجى التحقق من التفاصيل والمحاولة مرة أخرى.",
   "broadcastSignedTxErrorInvalidTransaction": "لا تبدو هذه معاملة موقّعة صالحة. تأكد من أنك لصقت PSBT أو المعاملة كاملةً.",
   "broadcastSignedTxErrorInvalidPushTx": "تعذّر علينا قراءة معاملة من هذا الوسم. يُرجى المحاولة بالمسح مرة أخرى.",
-  "labelErrorUnsupportedType": "نوع التسمية هذا غير مدعوم.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

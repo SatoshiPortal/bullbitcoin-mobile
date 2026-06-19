@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
-import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
+import 'package:bb_mobile/features/labels/domain/label_failure.dart';
+import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,8 +36,12 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
           break;
       }
       emit(Bip329LabelsState.exportSuccess());
-    } catch (e) {
-      emit(Bip329LabelsState.error(message: 'Export failed: $e'));
+    } catch (e, st) {
+      // The cubit is the boundary for the throwing export use-case and the
+      // file picker: keep the raw reason in the logs, surface a sanitized
+      // failure value the UI translates to a generic message.
+      log.warning('Failed to export labels', error: e, trace: st);
+      emit(Bip329LabelsState.error(failure: LabelUnexpectedFailure('$e')));
     }
   }
 
@@ -55,8 +61,11 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
           break;
       }
       emit(Bip329LabelsState.importSuccess(labelsCount: importedLabels));
-    } catch (e) {
-      emit(Bip329LabelsState.error(message: 'Import failed: $e'));
+    } catch (e, st) {
+      // Boundary for the throwing import use-case: keep the raw reason in the
+      // logs, surface a sanitized failure the UI translates generically.
+      log.warning('Failed to import labels', error: e, trace: st);
+      emit(Bip329LabelsState.error(failure: LabelUnexpectedFailure('$e')));
     }
   }
 }

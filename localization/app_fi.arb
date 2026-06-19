@@ -3124,7 +3124,6 @@
   "importWatchOnlyErrorImportFailed": "Tämän vain katselun lompakon tuonti ei onnistunut. Tarkista tiedot ja yritä uudelleen.",
   "broadcastSignedTxErrorInvalidTransaction": "Tämä ei näytä kelvolliselta allekirjoitetulta tapahtumalta. Varmista, että liitit koko PSBT:n tai tapahtuman.",
   "broadcastSignedTxErrorInvalidPushTx": "Tästä tunnisteesta ei voitu lukea tapahtumaa. Yritä skannata uudelleen.",
-  "labelErrorUnsupportedType": "Tätä tunnistetyyppiä ei tueta.",
   "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
   "broadcastSignedTxPasteHint": "Liitä PSBT tai transaktion HEX",
   "broadcastSignedTxCameraButton": "Kamera",
@@ -4070,15 +4069,6 @@
   "systemLabelSelfSpend": "Oma siirto",
   "systemLabelExchangeBuy": "Osta",
   "systemLabelExchangeSell": "Myy",
-  "labelErrorNotFound": "Tunnistetta \"{label}\" ei löytynyt.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
   "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
   "@labelDeleteFailed": {
     "placeholders": {

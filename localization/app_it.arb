@@ -1444,7 +1444,6 @@
   "withdrawConfirmAmount": "Importo",
   "transactionSwapDoNotUninstall": "Non disinstallare l'app finché non si completa lo swap.",
   "payDefaultCommentHint": "Inserisci commento predefinito",
-  "labelErrorSystemCannotDelete": "Le etichette di sistema non possono essere eliminate.",
   "copyDialogButton": "Copia",
   "bitboxActionImportWalletProcessing": "Importazione di Wallet",
   "swapConfirmTransferTitle": "Confermare il trasferimento",
@@ -3136,14 +3135,6 @@
   "coldcardStep10": "Fare clic sui pulsanti per firmare la transazione sulla Coldcard.",
   "sendErrorAmountBelowSwapLimits": "L'importo è inferiore ai limiti di swap",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considera di finanziare Pagamenti Istantanei per effettuare pagamenti più piccoli.",
-  "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Pagamento privato",
   "autoswapDefaultWalletLabel": "Portafoglio Bitcoin",
   "recoverbullTestSuccessDescription": "Sei in grado di recuperare l'accesso a un portafoglio Bitcoin perso",
@@ -4012,7 +4003,6 @@
   "importWatchOnlyErrorImportFailed": "Non siamo riusciti a importare questo portafoglio di sola lettura. Controlla i dettagli e riprova.",
   "broadcastSignedTxErrorInvalidTransaction": "Questa non sembra una transazione firmata valida. Assicurati di aver incollato il PSBT o la transazione completi.",
   "broadcastSignedTxErrorInvalidPushTx": "Non siamo riusciti a leggere una transazione da questo tag. Prova a scansionare di nuovo.",
-  "labelErrorUnsupportedType": "Questo tipo di etichetta non è supportato.",
   "recoverbullSelectRecoverWallet": "Recuperare Wallet",
   "receivePayjoinActivated": "Payjoin attivato",
   "importMnemonicContinue": "Continua",

@@ -57,7 +57,7 @@ Hard rules:
 8. **Shared value objects go in `lib/core/primitives/`** (planned per [FEATURES.md](FEATURES.md) — folder doesn't exist yet at audit time, and `Secret`/`Address`/`Amount`/`Fingerprint` are not yet extracted as primitives). When you create a value object that more than one feature would reasonably use, put it in `lib/core/primitives/` from the start — that's how the primitives layer gets built. Before creating one, grep `lib/` for an existing class with the same intent.
 9. **Prefer rich domain models** — methods that enforce invariants, not anemic DTOs mirroring DB rows. (Note: [Fowler's anemic-domain anti-pattern](https://www.martinfowler.com/bliki/AnemicDomainModel.html) is widely cited but [not universal](https://blog.inf.ed.ac.uk/sapm/2014/02/04/the-anaemic-domain-model-is-no-anti-pattern-its-a-solid-design/). This is our preference, aligned with ARCHITECTURE.md's "Anemic Domain Models" pitfall.)
 10. **No raw colors.** Always pull from the theme. If the user describes a color in plain language, pick the closest theme color that works in both light and dark mode. Don't edit theme files unprompted.
-11. **Failures — one sealed family per feature, `*Failure` not `*Error`.** Three words, kept apart: **`Exception`** = thrown infra (data layer, caught at the boundary); **`Error`** = a `dart:core` programmer bug, never caught (→ Sentry); **`Failure`** = a modeled, recoverable **value** in `domain/`. Define a sealed `<Feature>Failure extends Failure` in `domain/<feature>_failure.dart`, **Flutter-free**; cross-cutting modes (network, storage-locked, not-found, timeout, auth, device, insufficient-funds) come from the shared `sealed CoreFailure` in `lib/core/failures/` (alongside the `Failure` base; the legacy `lib/core/errors/` is the graveyard until emptied). Map foreign errors at the boundary; never leak another layer's or feature's type. **Translation is a presentation extension, not a method on the failure:** `presentation/<feature>_failure_x.dart` exposes `toTranslated(BuildContext)` — the only place `context.loc` / `flutter` touches a failure (keeps `domain/`+`data/` Flutter-free); the `sealed` switch makes a missing user message a compile error. **The end user never sees a dev string:** the catch-all variant returns a **generic localized** message (`oopsSomethingWentWrong`), never the raw `logMessage` (logged at the boundary, for us only) — `unexpected: (m) => m` leaks dev detail. **Propagation:** repositories return `Result<T, F extends Failure>` (variants `Ok`/`Err`, generic over `F` so consumers never cast, `@useResult`; helpers `fold`/`map`/`mapErr`); `throw` only for `dart:core` bugs ([Flutter Result](https://docs.flutter.dev/app-architecture/design-patterns/result)). The **repository** is the one `try/catch` boundary (or the feature **use-case** when wrapping a shared core repo that still throws); use-cases forward/compose `Result`s; the bloc `switch`es and holds the typed `<Feature>Failure` in state (no `BuildContext` in `presentation/` logic); the UI renders `failure.toTranslated(context)`. **Migration (#1895) is sanctioned and staged** — bring a feature fully in line when you touch it, one feature per PR. **Legacy (don't replicate, converge per-feature):** `BullException` + hardcoded English; `<Feature>Error` naming; `toTranslated` *on* the error; per-layer splits (`domain_errors.dart`/`application_errors.dart`/…); `fund_exchange`'s feature-prefixed singular.
+11. **Failures — one sealed family per feature, `*Failure` not `*Error`.** Three words, kept apart: **`Exception`** = thrown infra (data layer, caught at the boundary); **`Error`** = a `dart:core` programmer bug, never caught (→ Sentry); **`Failure`** = a modeled, recoverable **value** in `domain/`. Define a sealed `<Feature>Failure extends Failure` in `domain/<feature>_failure.dart`, **Flutter-free**; cross-cutting modes (network, storage-locked, not-found, timeout, auth, device, insufficient-funds) come from the shared `sealed CoreFailure` in `lib/core/failures/` (alongside the `Failure` base; the legacy `lib/core/errors/` is the graveyard until emptied). Map foreign errors at the boundary; never leak another layer's or feature's type. **Translation is a presentation extension, not a method on the failure:** `presentation/<feature>_failure_l10n.dart` exposes `toTranslated(BuildContext)` — the only place `context.loc` / `flutter` touches a failure (keeps `domain/`+`data/` Flutter-free); the `sealed` switch makes a missing user message a compile error. **The end user never sees a dev string:** the catch-all variant returns a **generic localized** message (`oopsSomethingWentWrong`), never the raw `logMessage` (logged at the boundary, for us only) — `unexpected: (m) => m` leaks dev detail. **Propagation:** repositories return `Result<T, F extends Failure>` (variants `Ok`/`Err`, generic over `F` so consumers never cast, `@useResult`; helpers `fold`/`map`/`mapErr`); `throw` only for `dart:core` bugs ([Flutter Result](https://docs.flutter.dev/app-architecture/design-patterns/result)). The **repository** is the one `try/catch` boundary (or the feature **use-case** when wrapping a shared core repo that still throws); use-cases forward/compose `Result`s; the bloc `switch`es and holds the typed `<Feature>Failure` in state (no `BuildContext` in `presentation/` logic); the UI renders `failure.toTranslated(context)`. **Migration (#1895) is sanctioned and staged** — bring a feature fully in line when you touch it, one feature per PR. **Legacy (don't replicate, converge per-feature):** `BullException` + hardcoded English; `<Feature>Error` naming; `toTranslated` *on* the error; per-layer splits (`domain_errors.dart`/`application_errors.dart`/…); `fund_exchange`'s feature-prefixed singular.
 12. **Acyclic feature graph.** Check [FEATURES.md](FEATURES.md) before adding a dependency.
 13. **Keep the dependency graph live.** Any PR that adds a feature, removes a feature, or changes which other features it consumes via `public/` facades **must** update the mermaid graph in [FEATURES.md](FEATURES.md) in the same commit. The graph is documentation only if it matches the code — if you change one without the other, both become useless.
 14. **Folders justify their existence — files don't justify folders.** A tiny piece of code is one file with a role suffix, not a folder of one file:
@@ -114,7 +114,7 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 | Event | `<feature>_event.dart` | `send_event.dart` |
 | Facade | `<feature>_facade.dart` | `labels_facade.dart` |
 | Locator | `<feature>_locator.dart` | `wallet_locator.dart` |
-| Failure (family) | `<feature>_failure.dart` (domain) + `<feature>_failure_x.dart` (presentation) | per rule #11 |
+| Failure (family) | `<feature>_failure.dart` (domain) + `<feature>_failure_l10n.dart` (presentation) | per rule #11 |
 
 **Classes** — `PascalCase`, matching local quirks:
 
@@ -142,13 +142,14 @@ Inside a class, declare members in this order, with a blank line between each gr
 3. **Methods** — its behaviour, including `@override`s.
 
 ```dart
-final class UnexpectedLabelError extends LabelError {
-  final String? message;
+class Amount {
+  final BigInt sats;
 
-  const UnexpectedLabelError(this.message);
+  Amount(this.sats) {
+    if (sats < BigInt.zero) throw ArgumentError('Amount cannot be negative');
+  }
 
-  @override
-  String toTranslated(BuildContext context) => context.loc.oopsSomethingWentWrong;
+  bool get isDust => sats < BigInt.from(546);
 }
 ```
 

@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,28 +26,32 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
   }) async {
     if (state is TransactionReviewLoading) return;
     emit(const TransactionReviewState.loading());
+
+    // The cubit owns the foreign BDK -> domain mapping, so it is the boundary
+    // for that one call: a defensive catch keeps the raw reason in the logs
+    // (Sentry) and surfaces a sanitized failure.
+    final Transaction tx;
     try {
-      final tx = TransactionMapper.fromBitcoinTx(
-        bitcoinTx,
-        isTestnet: isTestnet,
-      );
-      final reviewable = await _buildReviewableTransactionUsecase.execute(tx);
-      emit(TransactionReviewState.loaded(transaction: reviewable));
-    } on TransactionReviewError catch (e) {
-      emit(TransactionReviewState.error(error: e)); // usecase already logged
+      tx = TransactionMapper.fromBitcoinTx(bitcoinTx, isTestnet: isTestnet);
     } catch (e, st) {
-      // Defensive: an escape outside the usecase contract (e.g. the mapper).
-      // Raw detail is born here, so it is logged here (Sentry).
       log.severe(
-        message: 'Unexpected failure loading transaction review',
+        message: 'Unexpected failure mapping transaction for review',
         error: e,
         trace: st,
       );
       emit(
         TransactionReviewState.error(
-          error: UnexpectedTransactionReviewError(e.toString()),
+          failure: TransactionReviewUnexpectedFailure(e.toString()),
         ),
       );
+      return;
+    }
+
+    switch (await _buildReviewableTransactionUsecase.execute(tx)) {
+      case Ok(:final value):
+        emit(TransactionReviewState.loaded(transaction: value));
+      case Err(:final failure):
+        emit(TransactionReviewState.error(failure: failure));
     }
   }
 }

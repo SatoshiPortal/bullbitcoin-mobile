@@ -4399,10 +4399,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "Sistem etiketleri silinemez.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "Kopya kopya",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -9440,15 +9436,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Etiket \"{label} bulunamadı.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Özel Ödeme",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -11900,7 +11887,6 @@
   "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
   "broadcastSignedTxErrorInvalidTransaction": "Bu, geçerli bir imzalı işlem gibi görünmüyor. PSBT'nin ya da işlemin tamamını yapıştırdığınızdan emin olun.",
   "broadcastSignedTxErrorInvalidPushTx": "Bu etiketten bir işlem okuyamadık. Lütfen tekrar taramayı deneyin.",
-  "labelErrorUnsupportedType": "Bu etiket türü desteklenmiyor.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

@@ -1,7 +1,8 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,7 +30,7 @@ void main() {
 
   group('ImportWatchOnlyDescriptorUsecase', () {
     test(
-      'maps a foreign repository failure to ImportWatchOnlyError.importFailed '
+      'maps a foreign repository failure to ImportFailedFailure '
       'without leaking the raw exception',
       () async {
         when(
@@ -38,33 +39,17 @@ void main() {
           ),
         ).thenThrow(Exception('BDK: descriptor checksum mismatch 0xdeadbeef'));
 
-        await expectLater(
-          usecase.execute(watchOnlyDescriptor: entity),
-          throwsA(
-            isA<ImportWatchOnlyError>().having(
-              (e) => e,
-              'variant',
-              const ImportFailedError(),
-            ),
-          ),
-        );
+        final result = await usecase.execute(watchOnlyDescriptor: entity);
+
+        expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
+        final failure = (result as Err<Wallet, ImportWatchOnlyFailure>).failure;
+        expect(failure, isA<ImportFailedFailure>());
+        // The sanitized failure carries no raw reason for the UI to render.
+        expect(failure.logMessage, isNull);
       },
     );
 
-    test('rethrows an ImportWatchOnlyError unchanged', () async {
-      when(
-        () => repository.importDescriptor(
-          watchOnlyDescriptor: entity,
-        ),
-      ).thenThrow(const InvalidFormatError());
-
-      await expectLater(
-        usecase.execute(watchOnlyDescriptor: entity),
-        throwsA(const InvalidFormatError()),
-      );
-    });
-
-    test('returns the wallet on success', () async {
+    test('returns Ok with the wallet on success', () async {
       final wallet = _MockWallet();
       when(
         () => repository.importDescriptor(
@@ -74,7 +59,8 @@ void main() {
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 
-      expect(result, same(wallet));
+      expect(result, isA<Ok<Wallet, ImportWatchOnlyFailure>>());
+      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value, same(wallet));
     });
   });
 }
