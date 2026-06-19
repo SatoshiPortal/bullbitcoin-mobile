@@ -503,5 +503,8 @@
   "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა",
   "pinCodeSaveError": "PIN-ის შენახვა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
   "pinCodeDeleteError": "PIN-ის წაშლა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "უსაფრთხოების პარამეტრების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, გადატვირთოთ აპლიკაცია.",
+  "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ."
 }
+

@@ -225,6 +225,8 @@
   "dcaWalletLiquidSubtitle": "要求兼容的钱包",
   "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
   "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "无法加载安全设置。请重启应用。",
+  "appUnlockPinVerifyError": "无法验证您的 PIN。请重试。",
   "payServiceFee": "Service Fee",
   "transactionStatusSwapExpired": "页: 1",
   "swapAmountPlaceholder": "页: 1",

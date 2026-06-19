@@ -4287,6 +4287,8 @@
     "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "appUnlockButton": "Unlock Karo",
+  "appUnlockPinCheckError": "Security settings load nahi ho sake. Kripaya app restart karein.",
+  "appUnlockPinVerifyError": "Aapka PIN verify nahi ho saka. Kripaya dobara try karein.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },

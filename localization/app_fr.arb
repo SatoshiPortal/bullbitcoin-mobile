@@ -1455,6 +1455,8 @@
   "appUnlockAttemptSingular": "tentative échouée",
   "appUnlockAttemptPlural": "tentatives échouées",
   "appUnlockButton": "Déverrouiller",
+  "appUnlockPinCheckError": "Impossible de charger les paramètres de sécurité. Veuillez redémarrer l'application.",
+  "appUnlockPinVerifyError": "Impossible de vérifier votre code PIN. Veuillez réessayer.",
   "pinStatusLoading": "Chargement",
   "pinStatusCheckingDescription": "Vérification du statut du code PIN",
   "pinStatusProcessing": "Traitement en cours",
