@@ -25,6 +25,11 @@ class BoltzDatasource {
 
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
+
+  /// Resolves the mnemonic the swap master key is derived from. The swap master
+  /// key MUST always come from one canonical seed (the default wallet) — see
+  /// [_ensureSwapMasterKey].
+  final Future<String> Function() _defaultSwapMnemonic;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -47,6 +52,7 @@ class BoltzDatasource {
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required this._boltzStore,
+    required this._defaultSwapMnemonic,
   }) : _baseUrl = url {
     _httpsUrl = 'https://$_baseUrl';
     _http = Dio(BaseOptions(baseUrl: _httpsUrl));
@@ -153,24 +159,23 @@ class BoltzDatasource {
     return model;
   }
 
-  Future<SwapMasterKeyModel> ensureSwapMasterKey({
-    required String mnemonic,
-    required bool isTestnet,
-  }) => _ensureSwapMasterKey(mnemonic, isTestnet);
+  Future<SwapMasterKeyModel> ensureSwapMasterKey({required bool isTestnet}) =>
+      _ensureSwapMasterKey(isTestnet);
 
-  // Migration: new swaps derive keys from a single persisted master key. On
-  // first use (or until the startup usecase lands) it is derived from the
-  // wallet mnemonic and persisted; existing swaps keep resolving from their
-  // own stored secrets independently.
-  Future<SwapMasterKeyModel> _ensureSwapMasterKey(
-    String mnemonic,
-    bool isTestnet,
-  ) async {
+  // New swaps derive keys from a single persisted master key, derived on first
+  // use and persisted; existing swaps keep resolving from their own stored
+  // secrets independently. The master key is ALWAYS derived from the default
+  // wallet seed (via [_defaultSwapMnemonic]), never from the funding wallet: a
+  // swap can be created from any wallet, but restore on a fresh install only
+  // has the default seed, so creation and restore must agree on one canonical
+  // seed.
+  Future<SwapMasterKeyModel> _ensureSwapMasterKey(bool isTestnet) async {
     final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
     if (await _boltzStore.swapMasterKeyExists(network)) {
       return _boltzStore.fetchSwapMasterKey(network);
     }
-    return createSwapMasterKey(mnemonic: mnemonic, network: network);
+    final canonicalMnemonic = await _defaultSwapMnemonic();
+    return createSwapMasterKey(mnemonic: canonicalMnemonic, network: network);
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
@@ -216,7 +221,6 @@ class BoltzDatasource {
   // REVERSE SWAPS
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required int outAmount,
     required bool isTestnet,
@@ -230,8 +234,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newReverse(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -294,7 +297,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLBtcReverseSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required int outAmount,
     required bool isTestnet,
@@ -308,8 +310,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newReverse(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -416,7 +417,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createBtcSubmarineSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required String invoice,
     required bool isTestnet,
@@ -429,8 +429,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newSubmarine(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -476,7 +475,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLbtcSubmarineSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required String invoice,
     required bool isTestnet,
@@ -489,8 +487,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -634,7 +631,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createBtcToLbtcChainSwap({
     required String sendWalletId,
-    required String mnemonic,
     required int index,
     required int amountSat,
     required bool isTestnet,
@@ -649,8 +645,7 @@ class BoltzDatasource {
       }
       final chainFees = _chainFeesAndLimits!;
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.btcToLbtc,
@@ -696,7 +691,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLbtcToBtcChainSwap({
     required String sendWalletId,
-    required String mnemonic,
     required int index,
     required int amountSat,
     required bool isTestnet,
@@ -712,8 +706,7 @@ class BoltzDatasource {
       final chainFees = _chainFeesAndLimits!;
 
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await _ensureSwapMasterKey(mnemonic, isTestnet))
-            .toBoltz(),
+        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.lbtcToBtc,

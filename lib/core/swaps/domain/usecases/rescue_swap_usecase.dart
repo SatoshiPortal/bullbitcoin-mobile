@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
@@ -16,13 +14,11 @@ class RescueSwapUsecase {
   final BoltzSwapRepository _swapRepository;
   final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
-  final SeedRepository _seedRepository;
 
   RescueSwapUsecase({
     required this._swapRepository,
     required this._settingsRepository,
     required this._walletRepository,
-    required this._seedRepository,
   });
 
   Future<Swap> execute({
@@ -32,24 +28,6 @@ class RescueSwapUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-
-      // Swap keys derive from the default bitcoin wallet's seed (same key used
-      // to restore), regardless of which wallet receives the funds.
-      final defaultBitcoin = await _walletRepository.getWallets(
-        onlyDefaults: true,
-        onlyBitcoin: true,
-        environment: settings.environment,
-      );
-      if (defaultBitcoin.isEmpty) {
-        throw RescueSwapException('No default bitcoin wallet found');
-      }
-      final seed = await _seedRepository.get(
-        defaultBitcoin.first.masterFingerprint,
-      );
-      if (seed is! MnemonicSeed) {
-        throw RescueSwapException('Default wallet seed is not a mnemonic');
-      }
-      final mnemonic = seed.mnemonicWords.join(' ');
 
       final btcElectrumUrl = isTestnet
           ? ApiServiceConstants.publicElectrumTestUrl
@@ -98,7 +76,6 @@ class RescueSwapUsecase {
         'send=$sendWalletId receive=$receiveWalletId',
       );
       return await _swapRepository.rescueSwap(
-        mnemonic: mnemonic,
         restored: restored,
         sendWalletId: sendWalletId,
         receiveWalletId: receiveWalletId,

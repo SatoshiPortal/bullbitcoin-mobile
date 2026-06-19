@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -48,10 +49,37 @@ class SwapsLocator {
     );
   }
 
+  /// The mnemonic every swap master key is derived from: the default bitcoin
+  /// wallet's seed for the active environment. Centralizing it here is what
+  /// guarantees swap creation and restore agree on one canonical seed.
+  static Future<String> _defaultSwapMnemonic(GetIt locator) async {
+    final settings = await locator<SettingsRepository>().fetch();
+    final wallets = await locator<WalletRepository>().getWallets(
+      onlyDefaults: true,
+      onlyBitcoin: true,
+      environment: settings.environment,
+    );
+    if (wallets.isEmpty) {
+      throw StateError(
+        'No default bitcoin wallet to derive the swap master key',
+      );
+    }
+    final seed = await locator<SeedRepository>().get(
+      wallets.first.masterFingerprint,
+    );
+    if (seed is! MnemonicSeed) {
+      throw StateError('Default wallet seed is not a mnemonic');
+    }
+    return seed.mnemonicWords.join(' ');
+  }
+
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BoltzSwapRepository>(
       () => BoltzSwapRepository(
-        boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
+        boltz: BoltzDatasource(
+          boltzStore: locator<BoltzStorageDatasource>(),
+          defaultSwapMnemonic: () => _defaultSwapMnemonic(locator),
+        ),
         isTestnet: false,
       ),
       instanceName:
@@ -143,8 +171,6 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
       ),
     );
     locator.registerFactory<RescueSwapUsecase>(
@@ -155,7 +181,6 @@ class SwapsLocator {
         ),
         settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
       ),
     );
     locator.registerFactory<UpdatePaidChainSwapUsecase>(
@@ -207,7 +232,6 @@ class SwapsLocator {
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
         blockchainPort: locator<BlockchainPort>(),
-        seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
@@ -215,7 +239,6 @@ class SwapsLocator {
     locator.registerFactory<CreateChainSwapUsecase>(
       () => CreateChainSwapUsecase(
         walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -225,7 +248,6 @@ class SwapsLocator {
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
       () => CreateChainSwapToExternalUsecase(
         walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

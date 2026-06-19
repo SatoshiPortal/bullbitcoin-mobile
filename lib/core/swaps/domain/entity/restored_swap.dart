@@ -46,10 +46,14 @@ class RestoredSwap {
   };
 
   /// A swap whose funds come back to us (refund) vs are claimed forward.
+  ///
+  /// Refund vs claim is a state property, not an asset one: the same chain-swap
+  /// pair claims forward while the swap is live and refunds once it can no
+  /// longer complete. The restore endpoint never reports `refundable` (it maps
+  /// an on-chain-but-unclaimed lockup to `claimable` — see
+  /// `_restoreStatusToSwapStatus`), so a terminal failure is the refund signal.
   bool get isRefundAction =>
-      status == SwapStatus.refundable ||
-      status == SwapStatus.failed ||
-      status == SwapStatus.expired;
+      status == SwapStatus.failed || status == SwapStatus.expired;
 }
 
 /// A restored swap paired with whether it is already stored locally.

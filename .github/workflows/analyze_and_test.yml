@@ -26,12 +26,18 @@ jobs:
           path: ~/fvm/versions
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
+      # No restore-keys here on purpose: the pub cache holds the bull_sdk git
+      # clone, and a fuzzy fallback can restore a checkout from an OLDER lock
+      # whose pinned commit differs. pub then resolves against that stale clone,
+      # so `pub get --enforce-lockfile` sees deps the committed lock doesn't (it
+      # fails wanting to drop them). The exact key already pins the commit via
+      # pubspec.lock, so an unchanged lock still hits; a changed lock does one
+      # clean fetch and re-caches.
       - name: Cache pub (hosted + git deps)
         uses: actions/cache@v5
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: pub-${{ runner.os }}-
 
       - name: Cache Cargo (FRB native crates)
         uses: actions/cache@v5

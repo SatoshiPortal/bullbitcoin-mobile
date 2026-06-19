@@ -41,7 +41,6 @@ class BoltzSwapRepository {
   /// RECEIVE LN TO BTC
 
   Future<LnReceiveSwap> createLightningToBitcoinSwap({
-    required String mnemonic,
     required String walletId,
     required int amountSat,
     required String electrumUrl,
@@ -52,7 +51,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(1);
       final btcLnSwap = await _boltz.createBtcReverseSwap(
         walletId: walletId,
-        mnemonic: mnemonic,
         index: index,
         outAmount: amountSat,
         isTestnet: _isTestnet,
@@ -87,7 +85,6 @@ class BoltzSwapRepository {
   /// RECEIVE LN TO LBTC
 
   Future<LnReceiveSwap> createLightningToLiquidSwap({
-    required String mnemonic,
     required String walletId,
     required int amountSat,
     required String electrumUrl,
@@ -98,7 +95,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(1);
       final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
         walletId: walletId,
-        mnemonic: mnemonic,
         index: index,
         outAmount: amountSat,
         isTestnet: _isTestnet,
@@ -134,7 +130,6 @@ class BoltzSwapRepository {
   /// SEND BTC TO LN
 
   Future<LnSendSwap> createBitcoinToLightningSwap({
-    required String mnemonic,
     required String walletId,
     required String invoice,
     required String electrumUrl,
@@ -143,7 +138,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(1);
       final btcLnSwap = await _boltz.createBtcSubmarineSwap(
         walletId: walletId,
-        mnemonic: mnemonic,
         index: index,
         invoice: invoice,
         isTestnet: _isTestnet,
@@ -183,7 +177,6 @@ class BoltzSwapRepository {
   /// SEND LBTC TO LN
 
   Future<LnSendSwap> createLiquidToLightningSwap({
-    required String mnemonic,
     required String walletId,
     required String invoice,
     required String electrumUrl,
@@ -192,7 +185,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(1);
       final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
         walletId: walletId,
-        mnemonic: mnemonic,
         index: index,
         invoice: invoice,
         isTestnet: _isTestnet,
@@ -230,7 +222,6 @@ class BoltzSwapRepository {
   }
 
   Future<ChainSwap> createBitcoinToLiquidSwap({
-    required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
     required String btcElectrumUrl,
@@ -242,7 +233,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(2);
       final chainSwap = await _boltz.createBtcToLbtcChainSwap(
         sendWalletId: sendWalletId,
-        mnemonic: sendWalletMnemonic,
         index: index,
         amountSat: amountSat,
         isTestnet: _isTestnet,
@@ -257,7 +247,6 @@ class BoltzSwapRepository {
   }
 
   Future<ChainSwap> createLiquidToBitcoinSwap({
-    required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
     required String btcElectrumUrl,
@@ -269,7 +258,6 @@ class BoltzSwapRepository {
       final index = await _reserveSwapKeyIndex(2);
       final chainSwap = await _boltz.createLbtcToBtcChainSwap(
         sendWalletId: sendWalletId,
-        mnemonic: sendWalletMnemonic,
         index: index,
         amountSat: amountSat,
         isTestnet: _isTestnet,
@@ -696,37 +684,11 @@ class BoltzSwapRepository {
     return allSwaps;
   }
 
-  /// Returns the swap master key (mnemonic / xpub / fingerprint) for display,
-  /// deriving + persisting it from [mnemonic] on first use.
-  Future<({String mnemonic, String xpub, String fingerprint})>
-  getSwapMasterKeyInfo({
-    required String mnemonic,
-    required bool isTestnet,
-  }) async {
-    final model = await _boltz.ensureSwapMasterKey(
-      mnemonic: mnemonic,
-      isTestnet: isTestnet,
-    );
-    return (
-      mnemonic: model.mnemonic,
-      xpub: model.xpub,
-      fingerprint: model.fingerprint,
-    );
-  }
-
   /// Restores all swaps derivable from the dedicated swap master key via Boltz,
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
-  Future<List<RestoredSwap>> restoreSwaps({
-    required String mnemonic,
-    required bool isTestnet,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
-  }) async {
-    final swapMasterKey = await _boltz.ensureSwapMasterKey(
-      mnemonic: mnemonic,
-      isTestnet: isTestnet,
-    );
+  Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
+    final swapMasterKey = await _boltz.ensureSwapMasterKey(isTestnet: isTestnet);
     log.info(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
@@ -803,7 +765,6 @@ class BoltzSwapRepository {
   /// lockup/refund side; [receiveWalletId] receives the claim (required for
   /// reverse, optional for chain).
   Future<Swap> rescueSwap({
-    required String mnemonic,
     required RestoredSwap restored,
     required String sendWalletId,
     String? receiveWalletId,
@@ -811,7 +772,6 @@ class BoltzSwapRepository {
     required String lbtcElectrumUrl,
   }) async {
     final swapMasterKey = await _boltz.ensureSwapMasterKey(
-      mnemonic: mnemonic,
       isTestnet: _isTestnet,
     );
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
