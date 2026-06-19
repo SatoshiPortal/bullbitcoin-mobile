@@ -118,6 +118,13 @@ RUN rustup component add clippy rustfmt
 ENV RUSTUP_TOOLCHAIN=${RUST_VERSION}
 ENV RUSTUP_AUTO_INSTALL=0
 
+# Use the system git binary for cargo's git dependency fetches instead of the
+# built-in libgit2. libgit2's TLS backend intermittently fails on some git
+# hosts with `SSL error: unknown error; class=Ssl (16)`; the system git (built
+# against OpenSSL, with proper CA certs) handles these reliably. cargokit pulls
+# bull_sdk's Rust git deps (bbqr-rust, ark-wallet-dart) this way.
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
 # Add Android Rust targets
 RUN rustup target add aarch64-linux-android
 RUN rustup target add armv7-linux-androideabi
