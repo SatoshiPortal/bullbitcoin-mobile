@@ -2499,6 +2499,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "지원되지 않는 QR 코드 형식",
   "transactionLabelAmountReceived": "지불 방법",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"

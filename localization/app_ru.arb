@@ -843,6 +843,7 @@
   "torSettingsConnectionStatus": "Состояние подключения",
   "backupInstruction1": "Если вы потеряете резервное копирование на 12 слов, вы не сможете восстановить доступ к Bitcoin Wallet.",
   "sendErrorInvalidAddressOrInvoice": "Неверный адрес оплаты Bitcoin или счет",
+  "sendErrorUnsupportedQrCodeFormat": "Неподдерживаемый формат QR-кода",
   "transactionLabelAmountReceived": "Полученная сумма",
   "recoverbullRecoveryTitle": "Восстановление хранилища",
   "broadcastSignedTxScanQR": "Сканировать QR-код из вашего аппаратного кошелька",

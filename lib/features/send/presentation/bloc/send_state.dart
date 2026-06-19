@@ -472,7 +472,8 @@ class AmountlessInvoiceException extends SwapCreationException {
 }
 
 class HardwareWalletSwapException extends SwapCreationException {
-  HardwareWalletSwapException() : super('Hardware wallets cannot be used for swaps');
+  HardwareWalletSwapException()
+    : super('Hardware wallets cannot be used for swaps');
 }
 
 class ExpiredInvoiceException extends SwapCreationException {
@@ -490,6 +491,8 @@ class InvalidBitcoinStringException extends BullException {
     super.message = 'Invalid Bitcoin Payment Address or Invoice',
   ]);
 }
+
+class UnsupportedQrFormatException extends InvalidBitcoinStringException {}
 
 /// Exception for swap limit violations.
 /// Stored in SendState with min/max limit values for localized error messages.

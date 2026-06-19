@@ -262,7 +262,9 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (invalidAddress != null) {
       return BBText(
-        context.loc.sendErrorInvalidAddressOrInvoice,
+        invalidAddress is UnsupportedQrFormatException
+            ? context.loc.sendErrorUnsupportedQrCodeFormat
+            : context.loc.sendErrorInvalidAddressOrInvoice,
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,

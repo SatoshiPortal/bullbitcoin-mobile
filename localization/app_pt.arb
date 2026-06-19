@@ -843,6 +843,7 @@
   "torSettingsConnectionStatus": "Estado de conexão",
   "backupInstruction1": "Se você perder seu backup de 12 palavras, você não será capaz de recuperar o acesso à carteira Bitcoin.",
   "sendErrorInvalidAddressOrInvoice": "Endereço de pagamento Bitcoin inválido ou fatura",
+  "sendErrorUnsupportedQrCodeFormat": "Formato de código QR não suportado",
   "transactionLabelAmountReceived": "Montante recebido",
   "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
   "broadcastSignedTxScanQR": "Digitalizar o código QR da sua carteira de hardware",
