@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
@@ -14,6 +13,7 @@ import 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';
+export 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 export 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 export 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 export 'package:bb_mobile/features/labels/router.dart';
@@ -46,15 +46,12 @@ class LabelsFacade {
 
   Future<List<Label>> fetchByReference(String reference) async {
     final result = await _fetchLabelByReferenceUsecase.execute(reference);
+    // Best-effort enrichment: a lookup failure is already logged at the
+    // use-case boundary, so degrade to no labels rather than abort the caller.
     return result.fold(
       (labels) =>
           labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
-      (failure) {
-        // Best-effort enrichment: a lookup failure is already logged at the
-        // use-case boundary; degrade to no labels rather than abort the caller.
-        log.warning('Label lookup by reference failed', error: failure.logMessage);
-        return const <Label>[];
-      },
+      (_) => const <Label>[],
     );
   }
 
@@ -63,10 +60,7 @@ class LabelsFacade {
     return result.fold(
       (labels) =>
           labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
-      (failure) {
-        log.warning('Fetch all labels failed', error: failure.logMessage);
-        return const <Label>[];
-      },
+      (_) => const <Label>[],
     );
   }
 

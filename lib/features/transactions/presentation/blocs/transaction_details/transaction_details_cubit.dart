@@ -343,31 +343,29 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> deleteTransactionNote(Label note) async {
+  /// Deletes a transaction note. Returns the [Result] so the caller can give
+  /// the user feedback on failure; on success the note is dropped from state.
+  Future<Result<Null, LabelFailure>> deleteTransactionNote(Label note) async {
     final walletTransaction = state.walletTransaction;
-    if (walletTransaction == null) return;
+    if (walletTransaction == null) return const Ok(null);
 
-    switch (await _labelsFacade.trash(note.id)) {
-      case Ok():
-        final updatedLabels = [
-          ...?state.transaction?.walletTransaction?.labels,
-        ];
-        updatedLabels.remove(note);
+    final result = await _labelsFacade.trash(note.id);
+    if (result case Ok()) {
+      final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
+      updatedLabels.remove(note);
 
-        final updatedWalletTransaction = state.transaction?.walletTransaction
-            ?.copyWith(labels: updatedLabels);
-        emit(
-          state.copyWith(
-            transaction: state.transaction?.copyWith(
-              walletTransaction: updatedWalletTransaction,
-            ),
+      final updatedWalletTransaction = state.transaction?.walletTransaction
+          ?.copyWith(labels: updatedLabels);
+      emit(
+        state.copyWith(
+          transaction: state.transaction?.copyWith(
+            walletTransaction: updatedWalletTransaction,
           ),
-        );
-      case Err():
-        // Deletion failed (logged at the boundary); keep the note in the UI
-        // rather than show it as removed.
-        break;
+        ),
+      );
     }
+    // On Err the note is kept in state; the caller surfaces the failure.
+    return result;
   }
 
   Future<void> processSwap(Swap swap) async {

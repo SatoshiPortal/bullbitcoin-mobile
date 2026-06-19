@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
