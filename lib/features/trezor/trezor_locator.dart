@@ -17,6 +17,7 @@ class TrezorLocator {
   static void setup(GetIt locator) {
     _registerDatasources(locator);
     _registerRepositories(locator);
+    _registerPorts(locator);
     _registerUsecases(locator);
     _registerCubits(locator);
   }
@@ -39,6 +40,9 @@ class TrezorLocator {
         datasource: locator<TrezorConnectDatasource>(),
       ),
     );
+  }
+
+  static void _registerPorts(GetIt locator) {
     locator.registerLazySingleton<TrezorCallbackPort>(
       () => TrezorCallbackPortImpl(
         datasource: locator<TrezorConnectDatasource>(),
