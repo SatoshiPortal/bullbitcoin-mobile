@@ -144,7 +144,13 @@ bool _matchesFilter(WalletUtxo utxo, CoinsFilter filter) {
   }
 
   if (filter.labels.isNotEmpty) {
-    final utxoLabels = utxo.labels.map((l) => l.label).toSet();
+    // Match the same label union the tile displays (output + address + tx
+    // labels), so filtering by any label visible on a coin actually selects it.
+    final utxoLabels = <String>{
+      ...utxo.labels.map((l) => l.label),
+      ...utxo.addressLabels.map((l) => l.label),
+      ...utxo.txLabels.map((l) => l.label),
+    };
     final intersects = filter.labels.any(utxoLabels.contains);
     if (!intersects) return false;
   }
