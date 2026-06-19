@@ -1,8 +1,8 @@
+import 'package:bb_mobile/features/trezor/data/trezor_callback_port_impl.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_connect_datasource.dart';
-import 'package:bb_mobile/features/trezor/data/trezor_callback_dispatcher_impl.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_device_repository_impl.dart';
-import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';
 import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_callback_port.dart';
 import 'package:bb_mobile/features/trezor/domain/usecases/get_default_trezor_account_usecase.dart';
 import 'package:bb_mobile/features/trezor/domain/usecases/prepare_trezor_import_usecase.dart';
 import 'package:bb_mobile/features/trezor/domain/usecases/sign_psbt_trezor_usecase.dart';
@@ -39,8 +39,8 @@ class TrezorLocator {
         datasource: locator<TrezorConnectDatasource>(),
       ),
     );
-    locator.registerLazySingleton<TrezorCallbackDispatcher>(
-      () => TrezorCallbackDispatcherImpl(
+    locator.registerLazySingleton<TrezorCallbackPort>(
+      () => TrezorCallbackPortImpl(
         datasource: locator<TrezorConnectDatasource>(),
       ),
     );

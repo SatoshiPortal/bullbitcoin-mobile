@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_callback_port.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
@@ -51,7 +51,7 @@ class _TrezorDeeplinkListenerState extends State<TrezorDeeplinkListener> {
       return;
     }
     try {
-      locator<TrezorCallbackDispatcher>().handleCallback(uri);
+      locator<TrezorCallbackPort>().handleCallback(uri);
     } catch (e, t) {
       log.severe(message: 'Trezor handleCallback failed', error: e, trace: t);
     }
