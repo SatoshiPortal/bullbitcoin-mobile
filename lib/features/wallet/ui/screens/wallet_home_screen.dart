@@ -118,47 +118,40 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {},
-        child: Stack(
-          children: [
-            // Black background visible only during iOS top overscroll
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: ColoredBox(
-                color: AppColors.dark.background,
-                child: const SizedBox(height: 300),
-              ),
-            ),
-            BBPullableBody(
-              indicatorKey: _indicatorKey,
-              onRefresh: () async {
-                // User gesture — bypass the coordinator throttle.
-                final bloc = context.read<WalletBloc>();
-                bloc.add(const WalletRefreshed(force: true));
-                await bloc.stream.firstWhere((state) => !state.isRefreshing);
-              },
-              slivers: [
-                const SliverToBoxAdapter(child: WalletHomeTopSection()),
-                const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
-                SliverToBoxAdapter(
-                  child: WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
+        child: ColoredBox(
+          // Covers iOS top overscroll where WalletHomeTopSection's dark
+          // background would otherwise stretch to white.
+          color: AppColors.dark.background,
+          child: Column(
+            children: [
+              Expanded(
+                child: BBPullableBody(
+                  indicatorKey: _indicatorKey,
+                  onRefresh: () async {
+                    final bloc = context.read<WalletBloc>();
+                    bloc.add(const WalletRefreshed(force: true));
+                    await bloc.stream.firstWhere(
+                      (state) => !state.isRefreshing,
+                    );
+                  },
+                  slivers: [
+                    const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                    const SliverToBoxAdapter(child: HomeWarnings()),
+                    const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
+                    SliverToBoxAdapter(
+                      child: WalletCards(
+                        onTap: (w) {
+                          context.pushNamed(
+                            WalletRoute.walletDetail.name,
+                            pathParameters: {'walletId': w.id},
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(
+              ),
+              SafeArea(
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -168,8 +161,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   child: WalletBottomButtons(),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
