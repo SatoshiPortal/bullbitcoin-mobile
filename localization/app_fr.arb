@@ -4785,5 +4785,13 @@
   "onboardingAdvancedOptionsFooter": "Vous pourrez modifier ces paramètres plus tard dans les paramètres de l'application",
   "onboardingAdvancedOptionsDone": "Terminé",
   "appStartupContactSupportMessage": "Contactez le support sur app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android"
+  "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android",
+  "logsViewerFilterByDate": "Filtrer par date",
+  "logsViewerShowingCount": "Affichage de {shown} sur {total} journaux",
+  "logsViewerClearFilter": "Effacer le filtre",
+  "logsViewerShareButton": "Partager",
+  "logsShareOptionShare": "Partager",
+  "logsShareOptionExport": "Exporter",
+  "logsExportedMessage": "Journaux exportés avec succès",
+  "logsExportFailedMessage": "Échec de l'exportation des journaux"
 }

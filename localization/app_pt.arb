@@ -4851,5 +4851,13 @@
   "onboardingAdvancedOptionsFooter": "Pode alterar estas definições mais tarde nas definições da aplicação",
   "onboardingAdvancedOptionsDone": "Concluído",
   "appStartupContactSupportMessage": "Contacte o suporte em app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "A BitBox só é suportada no Android"
+  "importWalletBitboxAndroidOnly": "A BitBox só é suportada no Android",
+  "logsViewerFilterByDate": "Filtrar por data",
+  "logsViewerShowingCount": "A mostrar {shown} de {total} registos",
+  "logsViewerClearFilter": "Limpar filtro",
+  "logsViewerShareButton": "Partilhar",
+  "logsShareOptionShare": "Partilhar",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registos exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registos"
 }

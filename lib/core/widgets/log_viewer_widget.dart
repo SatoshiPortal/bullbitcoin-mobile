@@ -109,10 +109,10 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
     try {
       final saved = await exportLogsAsFile(widget.logs);
       if (!context.mounted) return;
-      if (saved) SnackBarUtils.showSnackBar(context, 'Logs exported successfully');
+      if (saved) SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
     } catch (e) {
       if (!context.mounted) return;
-      SnackBarUtils.showSnackBar(context, 'Failed to export logs');
+      SnackBarUtils.showSnackBar(context, context.loc.logsExportFailedMessage);
     }
   }
 
@@ -133,14 +133,14 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               iconData: Icons.date_range,
               label: _startDate != null && _endDate != null
                   ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
-                  : 'Filter by Date',
+                  : context.loc.logsViewerFilterByDate,
             ),
             const Gap(8),
             Row(
               mainAxisAlignment: .spaceAround,
               children: [
                 BBText(
-                  'Showing ${logs.length} of ${widget.logs.length} logs',
+                  context.loc.logsViewerShowingCount(logs.length, widget.logs.length),
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.6),
                   ),
@@ -151,7 +151,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   IconButton(
                     onPressed: _clearDateRange,
                     icon: Icon(Icons.clear, color: context.appColors.primary),
-                    tooltip: 'Clear filter',
+                    tooltip: context.loc.logsViewerClearFilter,
                   ),
                 ],
               ],
@@ -229,7 +229,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
           children: [
             BBButton.small(
               onPressed: () => _showConfirmDeleteLogsBottomSheet(context),
-              label: 'Delete',
+              label: context.loc.logsViewerDeleteButton,
               bgColor: context.appColors.primary,
               textColor: context.appColors.onPrimary,
             ),
@@ -237,7 +237,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
               onPressed: _onShareTapped,
-              label: 'Share',
+              label: context.loc.logsViewerShareButton,
             ),
           ],
         ),

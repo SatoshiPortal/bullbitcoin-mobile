@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ Future<void> showLogsShareSheet({
               onShare();
             },
             icon: const Icon(Icons.share_sharp),
-            label: const Text('Share', style: TextStyle(fontSize: 16)),
+            label: Text(context.loc.logsShareOptionShare, style: const TextStyle(fontSize: 16)),
           ),
           const Divider(),
           TextButton.icon(
@@ -33,7 +34,7 @@ Future<void> showLogsShareSheet({
               onExport();
             },
             icon: const Icon(Icons.file_download_outlined),
-            label: const Text('Export', style: TextStyle(fontSize: 16)),
+            label: Text(context.loc.logsShareOptionExport, style: const TextStyle(fontSize: 16)),
           ),
         ],
       ),

@@ -12659,5 +12659,13 @@
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "onboardingAdvancedOptionsDone": "انجام شد",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
-  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود"
+  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
+  "logsViewerFilterByDate": "فیلتر بر اساس تاریخ",
+  "logsViewerShowingCount": "نمایش {shown} از {total} گزارش",
+  "logsViewerClearFilter": "پاک کردن فیلتر",
+  "logsViewerShareButton": "اشتراک‌گذاری",
+  "logsShareOptionShare": "اشتراک‌گذاری",
+  "logsShareOptionExport": "صدور",
+  "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود"
 }
