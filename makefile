@@ -91,8 +91,13 @@ CONTAINER ?= podman
 # command-line DEVCONTAINER_OS override flows into DEVCONTAINER_CONFIG/POSTSTART.
 DEVCONTAINER_OS ?= $(if $(filter Darwin,$(shell uname)),macos,linux)
 DEVCONTAINER_CONFIG = ./.devcontainer/$(DEVCONTAINER_OS)/devcontainer.json
-# Container name == ${localWorkspaceFolderBasename} in devcontainer.json.
-DEVCONTAINER_NAME := $(notdir $(CURDIR))
+# Container name is pinned to `bull` in both devcontainer.json runArgs (--name) —
+# a static name so repeated opens / worktrees reuse one container instead of
+# creating a per-folder one. Must stay in sync with that runArgs value.
+DEVCONTAINER_NAME := bull
+# The workspace mounts at /workspaces/<folder-basename> (devcontainer's
+# localWorkspaceFolderBasename), independent of the container name above.
+DEVCONTAINER_WORKDIR := /workspaces/$(notdir $(CURDIR))
 # postStart lifecycle to replay when reusing an existing container: `devcontainer
 # up` runs postStartCommand on create, but a plain `start` does not, and the
 # session dbus + gnome-keyring daemons die on stop. Only linux bootstraps a
@@ -101,12 +106,24 @@ DEVCONTAINER_POSTSTART = $(if $(filter linux,$(DEVCONTAINER_OS)),.devcontainer/l
 
 container-tools:
 	@echo "🔧 Building tools image"
-	@$(CONTAINER) build -f Containerfile.tools -t bull-tools \
-		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
-		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
-		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
-		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
-		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
+	@set -e; \
+	flutter_version=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc); \
+	jvm_target=$$(grep -E '^android\.jvmTarget=' android/gradle.properties | cut -d= -f2); \
+	android_api=$$(grep -E '^android\.compileSdk=' android/gradle.properties | cut -d= -f2); \
+	android_build_tools=$$(grep -E '^android\.buildToolsVersion=' android/gradle.properties | cut -d= -f2); \
+	android_ndk=$$(grep -E '^android\.ndkVersion=' android/gradle.properties | cut -d= -f2); \
+	for kv in "flutter (.fvmrc)=$$flutter_version" "android.jvmTarget=$$jvm_target" "android.compileSdk=$$android_api" "android.buildToolsVersion=$$android_build_tools" "android.ndkVersion=$$android_ndk"; do \
+		if [ -z "$${kv#*=}" ]; then \
+			echo "ERROR: $${kv%%=*} resolved empty — check .fvmrc / android/gradle.properties" >&2; \
+			exit 1; \
+		fi; \
+	done; \
+	$(CONTAINER) build -f Containerfile.tools -t bull-tools \
+		--build-arg FLUTTER_VERSION=$$flutter_version \
+		--build-arg JVM_TARGET=$$jvm_target \
+		--build-arg ANDROID_API_LEVEL=$$android_api \
+		--build-arg ANDROID_BUILD_TOOLS=$$android_build_tools \
+		--build-arg ANDROID_NDK=$$android_ndk \
 		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
 
@@ -212,9 +229,15 @@ devcontainer-up:
 	@if $(CONTAINER) container exists $(DEVCONTAINER_NAME) 2>/dev/null; then \
 		echo "↻ $(DEVCONTAINER_NAME) already exists — starting it (not recreating)"; \
 		$(CONTAINER) start $(DEVCONTAINER_NAME) >/dev/null; \
+		if ! $(CONTAINER) exec $(DEVCONTAINER_NAME) test -d $(DEVCONTAINER_WORKDIR) 2>/dev/null; then \
+			echo "✋ Container '$(DEVCONTAINER_NAME)' is bound to a different checkout ($(DEVCONTAINER_WORKDIR) is not mounted inside it)."; \
+			echo "   The name is shared across clones/worktrees, so only one tree can use it at a time."; \
+			echo "   Rebind to this checkout with: $(CONTAINER) rm -f $(DEVCONTAINER_NAME) && make devcontainer"; \
+			exit 1; \
+		fi; \
 		if [ -n "$(DEVCONTAINER_POSTSTART)" ]; then \
 			echo "  replaying postStart: $(DEVCONTAINER_POSTSTART)"; \
-			$(CONTAINER) exec -w /workspaces/$(DEVCONTAINER_NAME) $(DEVCONTAINER_NAME) $(DEVCONTAINER_POSTSTART); \
+			$(CONTAINER) exec -w $(DEVCONTAINER_WORKDIR) $(DEVCONTAINER_NAME) $(DEVCONTAINER_POSTSTART); \
 		fi; \
 	else \
 		echo "🏗️ Building Dev Container ($(DEVCONTAINER_OS))"; \

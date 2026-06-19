@@ -19,10 +19,7 @@ container if one is present** — it only builds/creates when no container exist
 yet, otherwise it just (re)starts it (replaying the Linux keyring bootstrap,
 which dies on stop). So stopping and starting is safe and never rebuilds.
 
-The container is named after your checkout folder
-(`${localWorkspaceFolderBasename}` — `$(notdir $(CURDIR))` in the makefile), so
-on the canonical `bullbitcoin-mobile` checkout it is `bullbitcoin-mobile`, not
-`bull` (that is only the `--hostname`).
+The container is named **`bull`** — a static `--name` pinned in both `devcontainer.json` files and mirrored by `DEVCONTAINER_NAME` in the makefile — so repeated opens reuse the one container instead of creating a per-folder one. The workspace itself still mounts at `/workspaces/<checkout-folder>`. Because the name is shared, two different clones/worktrees can't each run their own container side by side: the second open attaches to whichever tree was mounted first.
 
 ```bash
 make devcontainer                          # host-detected
@@ -33,7 +30,7 @@ make devcontainer DEVCONTAINER_OS=macos    # force macos
 > **Applying a config change:** because `make devcontainer` never recreates an
 > existing container, edits to `devcontainer.json` / `Containerfile.tools` won't
 > take effect until you remove the old container first:
-> `podman rm -f "$(basename "$PWD")" && make devcontainer`.
+> `podman rm -f bull && make devcontainer`.
 
 Or invoke the CLI directly (this *will* recreate on a config change):
 
