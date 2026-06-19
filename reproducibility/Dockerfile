@@ -1,7 +1,9 @@
 # Verification tools container for reproducible build verification
 # Contains: apktool, bundletool, Java 21
 
-FROM --platform=linux/amd64 ubuntu:24.04
+# Base pinned by digest for reproducibility (the `24.04` tag is rolling).
+# Refresh: docker buildx imagetools inspect ubuntu:24.04 --format '{{.Manifest.Digest}}'
+FROM --platform=linux/amd64 ubuntu:24.04@sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54
 
 ENV DEBIAN_FRONTEND=noninteractive
 
