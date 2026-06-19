@@ -62,6 +62,20 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
   /// Fraction of the reveal width past which the action commits.
   static const double _commitFraction = 0.6;
 
+  @override
+  void didUpdateWidget(BullSwipeAction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When the gesture is disabled (e.g. the list enters selection mode after a
+    // long-press), snap the row closed so a partially-revealed action panel
+    // can't linger over the row content.
+    if (oldWidget.enabled && !widget.enabled && _dx != 0) {
+      setState(() {
+        _dx = 0;
+        _animating = true;
+      });
+    }
+  }
+
   void _onDragUpdate(DragUpdateDetails d) {
     if (!widget.enabled) return;
     setState(() {

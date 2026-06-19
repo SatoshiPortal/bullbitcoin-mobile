@@ -52,7 +52,13 @@ class BullSnackBar {
         child: SafeArea(
           top: false,
           minimum: const EdgeInsets.only(bottom: 8),
-          child: _BullSnackBarWidget(content: content),
+          // Size the bubble to its content and centre it, so the trailing
+          // action (e.g. "Undo") hugs the message instead of being stranded at
+          // the far edge of a forced full-width bar.
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: _BullSnackBarWidget(content: content),
+          ),
         ),
       ),
     );
