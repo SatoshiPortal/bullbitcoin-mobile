@@ -142,16 +142,14 @@ Inside a class, declare members in this order, with a blank line between each gr
 3. **Methods** — its behaviour, including `@override`s.
 
 ```dart
-// Illustrative failure variant: fields, then constructor, then methods.
-// Translation is NOT here — it lives in the presentation `_failure_l10n.dart`
-// extension (rule #11), so the failure type stays Flutter-free.
-final class LabelFetchFailure extends LabelFailure {
-  final String reference;
+class Amount {
+  final BigInt sats;
 
-  const LabelFetchFailure({required this.reference});
+  Amount(this.sats) {
+    if (sats < BigInt.zero) throw ArgumentError('Amount cannot be negative');
+  }
 
-  @override
-  String toString() => 'LabelFetchFailure($reference)';
+  bool get isDust => sats < BigInt.from(546);
 }
 ```
 
