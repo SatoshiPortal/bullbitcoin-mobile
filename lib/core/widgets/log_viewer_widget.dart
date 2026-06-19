@@ -101,15 +101,19 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
 
   Future<void> _shareLogs() async {
     if (_filteredLogs.isEmpty) return;
-    await shareLogsAsText(_filteredLogs);
+    try {
+      await shareLogsAsText(_filteredLogs);
+    } catch (_) {}
   }
 
   Future<void> _exportLogs() async {
-    if (widget.logs.isEmpty) return;
+    if (_filteredLogs.isEmpty) return;
     try {
-      final saved = await exportLogsAsFile(widget.logs);
+      final saved = await exportLogsAsFile(_filteredLogs);
       if (!context.mounted) return;
-      if (saved) SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
+      if (saved) {
+        SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
+      }
     } catch (e) {
       if (!context.mounted) return;
       SnackBarUtils.showSnackBar(context, context.loc.logsExportFailedMessage);
@@ -140,7 +144,10 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               mainAxisAlignment: .spaceAround,
               children: [
                 BBText(
-                  context.loc.logsViewerShowingCount(logs.length, widget.logs.length),
+                  context.loc.logsViewerShowingCount(
+                    logs.length,
+                    widget.logs.length,
+                  ),
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.6),
                   ),

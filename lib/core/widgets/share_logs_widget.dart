@@ -73,7 +73,9 @@ class ShareLogsWidget extends StatelessWidget {
       final logs = await log.readLogs();
       final saved = await exportLogsAsFile(logs);
       if (!context.mounted) return;
-      if (saved) SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
+      if (saved) {
+        SnackBarUtils.showSnackBar(context, context.loc.logsExportedMessage);
+      }
     } catch (e) {
       if (!context.mounted) return;
       SnackBarUtils.showSnackBar(context, context.loc.logsExportFailedMessage);

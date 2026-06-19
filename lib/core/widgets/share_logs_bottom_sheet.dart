@@ -25,7 +25,10 @@ Future<void> showLogsShareSheet({
               onShare();
             },
             icon: const Icon(Icons.share_sharp),
-            label: Text(context.loc.logsShareOptionShare, style: const TextStyle(fontSize: 16)),
+            label: Text(
+              context.loc.logsShareOptionShare,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
           const Divider(),
           TextButton.icon(
@@ -34,7 +37,10 @@ Future<void> showLogsShareSheet({
               onExport();
             },
             icon: const Icon(Icons.file_download_outlined),
-            label: Text(context.loc.logsShareOptionExport, style: const TextStyle(fontSize: 16)),
+            label: Text(
+              context.loc.logsShareOptionExport,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),
