@@ -304,14 +304,6 @@ class _SubHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              BullSyncButton(
-                label: loc.coinsSync,
-                syncing: state.syncing,
-                onPressed: () => context.read<WalletBloc>().add(
-                  const WalletRefreshed(force: true),
-                ),
-              ),
             ],
           ),
           if (filtered) ...[
@@ -420,7 +412,12 @@ class _UtxoList extends StatelessWidget {
 
     return BullRefreshIndicator(
       onRefresh: () async {
-        context.read<WalletBloc>().add(const WalletRefreshed(force: true));
+        final walletBloc = context.read<WalletBloc>();
+        walletBloc.add(const WalletRefreshed(force: true));
+        // Wait for the chain sync to actually finish (same pattern as wallet
+        // detail) so the pull-to-refresh spinner reflects the real sync, not
+        // just the near-instant local reload.
+        await walletBloc.stream.firstWhere((s) => !s.isRefreshing);
         await cubit.refresh();
       },
       child: ListView.builder(
