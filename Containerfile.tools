@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
 ENV USER=$USERNAME
-ARG FVM_VERSION="4.1.0"
+ARG FVM_VERSION="4.1.1"
 ARG FLUTTER_VERSION="3.44.1"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
@@ -136,7 +136,8 @@ RUN rm /tmp/fvm-install.sh
 ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
 # Install Flutter via FVM
-RUN fvm install ${FLUTTER_VERSION}
+ENV FVM_USE_GIT_CACHE=false
+RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 

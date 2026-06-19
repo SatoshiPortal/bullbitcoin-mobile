@@ -14,8 +14,15 @@
 # replug). adb's server binds to 127.0.0.1 by default — unreachable from the
 # container's network namespace — so we (re)start it with -a (all interfaces).
 #
-# NOTE: host and container adb must be the same version (container ships
-# platform-tools 37.0.0); a mismatch makes adb refuse to connect.
+# SECURITY: -a binds the adb server to 0.0.0.0:5037, so any host on the same
+# network can drive it (install APKs, open an adb shell). adb has no per-
+# interface bind for its server, so on untrusted networks (cafe/airport Wi-Fi)
+# either skip this adb bridge or firewall tcp/5037 to localhost + the podman
+# gateway.
+#
+# NOTE: host and container adb must be the same version or adb refuses to
+# connect. The container's platform-tools is whatever sdkmanager ships latest
+# (unpinned), so match the host to the container's `adb --version`.
 set -e
 
 # No adb on the host (or not on PATH) -> nothing to expose; the container falls

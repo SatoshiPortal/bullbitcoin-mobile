@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -83,6 +83,21 @@ ios-sqlite-update:
 # Container runtime — default podman, override with CONTAINER=docker for
 # environments without podman.
 CONTAINER ?= podman
+
+# Pick the host-appropriate dev container config: macos on Darwin, linux
+# elsewhere. The two differ only in host integration (GPU/X11/Rosetta); both
+# build the same Containerfile.tools image. Override with
+# `make devcontainer DEVCONTAINER_OS=linux|macos`. Recursively-expanded (=) so a
+# command-line DEVCONTAINER_OS override flows into DEVCONTAINER_CONFIG/POSTSTART.
+DEVCONTAINER_OS ?= $(if $(filter Darwin,$(shell uname)),macos,linux)
+DEVCONTAINER_CONFIG = ./.devcontainer/$(DEVCONTAINER_OS)/devcontainer.json
+# Container name == ${localWorkspaceFolderBasename} in devcontainer.json.
+DEVCONTAINER_NAME := $(notdir $(CURDIR))
+# postStart lifecycle to replay when reusing an existing container: `devcontainer
+# up` runs postStartCommand on create, but a plain `start` does not, and the
+# session dbus + gnome-keyring daemons die on stop. Only linux bootstraps a
+# keyring (macOS has none). The script is idempotent.
+DEVCONTAINER_POSTSTART = $(if $(filter linux,$(DEVCONTAINER_OS)),.devcontainer/linux/init-keyring.sh,)
 
 container-tools:
 	@echo "🔧 Building tools image"
@@ -181,9 +196,30 @@ verify:
 	@echo "🔍 Verifying reproducible build"
 	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
-devcontainer: container-tools
-	@echo "🏗️ Building Dev Container"
-	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
+# `make devcontainer` auto-detects the host OS (DEVCONTAINER_OS above); override
+# with `make devcontainer DEVCONTAINER_OS=linux|macos`.
+devcontainer: devcontainer-up
+
+# Create the dev container only if one does not already exist; otherwise just
+# (re)start the existing one and replay its postStart lifecycle — never recreate.
+#
+# No container-tools prerequisite: the devcontainer CLI builds its OWN image
+# from Containerfile.tools with USERNAME=$USER. That ARG is set near the top of
+# the Containerfile, so it cache-busts every layer relative to the bull-tools
+# image (USERNAME=bull) — building container-tools first is wasted work, not a
+# cache source. bull-tools stays a prerequisite of container-app/android only.
+devcontainer-up:
+	@if $(CONTAINER) container exists $(DEVCONTAINER_NAME) 2>/dev/null; then \
+		echo "↻ $(DEVCONTAINER_NAME) already exists — starting it (not recreating)"; \
+		$(CONTAINER) start $(DEVCONTAINER_NAME) >/dev/null; \
+		if [ -n "$(DEVCONTAINER_POSTSTART)" ]; then \
+			echo "  replaying postStart: $(DEVCONTAINER_POSTSTART)"; \
+			$(CONTAINER) exec -w /workspaces/$(DEVCONTAINER_NAME) $(DEVCONTAINER_NAME) $(DEVCONTAINER_POSTSTART); \
+		fi; \
+	else \
+		echo "🏗️ Building Dev Container ($(DEVCONTAINER_OS))"; \
+		devcontainer up --workspace-folder . --config $(DEVCONTAINER_CONFIG); \
+	fi
 
 test: unit-test integration-test
 
