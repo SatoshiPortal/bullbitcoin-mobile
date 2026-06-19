@@ -469,6 +469,8 @@ class _UtxoList extends StatelessWidget {
         context,
         message: context.loc.coinsFrozenToast(1),
         leadingIcon: BullIcons.acUnit,
+        actionLabel: context.loc.coinsUndo,
+        onAction: () => cubit.unfreeze([key]),
       );
     }
   }
