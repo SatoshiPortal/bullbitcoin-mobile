@@ -1,11 +1,19 @@
-FROM --platform=linux/amd64 debian:trixie
+# Base pinned by digest for reproducibility (the `trixie` tag is rolling).
+# Refresh: docker buildx imagetools inspect debian:trixie --format '{{.Manifest.Digest}}'
+FROM --platform=linux/amd64 debian:trixie@sha256:fe7312b5f05bf5f43fad76bcd8945642e4e47a68aefd1b73f447615899d0fac1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
 ENV USER=$USERNAME
+# IMPORTANT: these ARG defaults are the single source of truth ONLY for the dev
+# container, which builds this file passing just USERNAME. `make container-tools`
+# overrides FLUTTER_VERSION (from .fvmrc) and the ANDROID_* args (from
+# android/gradle.properties); the FVM CI install pins FVM separately. Keep these
+# defaults in sync with .fvmrc / android/gradle.properties so the dev container
+# and the reproducible release build never diverge on toolchain versions.
 ARG FVM_VERSION="4.1.1"
-ARG FLUTTER_VERSION="3.44.1"
+ARG FLUTTER_VERSION="3.44.2"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)
@@ -135,7 +143,12 @@ RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
 RUN rm /tmp/fvm-install.sh
 ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
-# Install Flutter via FVM
+# Install Flutter via FVM.
+# Run the Flutter tool in non-interactive "bot" mode for the whole build: its
+# bot_detector treats the `CI` env var as CI, so it skips the analytics prompt,
+# animated spinners and any stdin waits that can hang a non-TTY `podman build`.
+# GitHub Actions sets this automatically; a local/container build does not.
+ENV CI=true
 ENV FVM_USE_GIT_CACHE=false
 RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
 RUN fvm global ${FLUTTER_VERSION}
