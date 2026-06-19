@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
 import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_account.dart';
 import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 
 class GetDefaultTrezorAccountUsecase {

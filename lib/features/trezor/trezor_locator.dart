@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/trezor_connect_datasource.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_callback_dispatcher_impl.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_device_repository_impl.dart';
 import 'package:bb_mobile/features/trezor/domain/repositories/trezor_callback_dispatcher.dart';

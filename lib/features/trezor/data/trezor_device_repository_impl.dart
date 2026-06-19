@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/trezor_connect_datasource.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_data_exceptions.dart';
-import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
-import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:bb_mobile/features/trezor/domain/repositories/trezor_device_repository.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_account.dart';
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
 import 'package:trezor_connect/models.dart';
 import 'package:trezor_connect/trezor_connect.dart' show TrezorLaunchException;
 

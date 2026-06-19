@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/trezor/data/datasources/trezor_connect_datasource.dart';
+import 'package:bb_mobile/features/trezor/data/trezor_connect_datasource.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_data_exceptions.dart';
 import 'package:bb_mobile/features/trezor/data/trezor_device_repository_impl.dart';
 import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
