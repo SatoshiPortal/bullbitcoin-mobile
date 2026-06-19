@@ -23,9 +23,3 @@ final class InvalidFormatFailure extends ImportWatchOnlyFailure {
 final class ImportFailedFailure extends ImportWatchOnlyFailure {
   const ImportFailedFailure();
 }
-
-/// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
-/// the presentation extension returns the shared generic string.
-final class ImportWatchOnlyUnexpectedFailure extends ImportWatchOnlyFailure {
-  const ImportWatchOnlyUnexpectedFailure([super.logMessage]);
-}

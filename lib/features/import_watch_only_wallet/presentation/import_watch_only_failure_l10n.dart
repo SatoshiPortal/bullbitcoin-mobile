@@ -12,7 +12,5 @@ extension ImportWatchOnlyFailureL10n on ImportWatchOnlyFailure {
         LabelRequiredFailure() => context.loc.importWatchOnlyErrorLabelRequired,
         InvalidFormatFailure() => context.loc.importWatchOnlyErrorInvalidFormat,
         ImportFailedFailure() => context.loc.importWatchOnlyErrorImportFailed,
-        ImportWatchOnlyUnexpectedFailure() =>
-          context.loc.oopsSomethingWentWrong,
       };
 }
