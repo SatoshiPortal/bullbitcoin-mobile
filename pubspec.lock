@@ -157,9 +157,11 @@ packages:
   bitbox_transport:
     dependency: "direct main"
     description:
-      path: "../bull_sdk/packages/bitbox-transport"
-      relative: true
-    source: path
+      path: "packages/bitbox-transport"
+      ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      resolved-ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
     version: "0.1.0"
   bitcoin_base:
     dependency: "direct main"
@@ -213,9 +215,11 @@ packages:
   boltz_stream:
     dependency: "direct main"
     description:
-      path: "../bull_sdk/packages/boltz-stream"
-      relative: true
-    source: path
+      path: "packages/boltz-stream"
+      ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      resolved-ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
     version: "0.1.0"
   boolean_selector:
     dependency: transitive
@@ -300,9 +304,11 @@ packages:
   bull_sdk:
     dependency: "direct main"
     description:
-      path: "../bull_sdk/packages/bull_sdk"
-      relative: true
-    source: path
+      path: "packages/bull_sdk"
+      ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      resolved-ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
     version: "1.0.0+1"
   camera:
     dependency: transitive
@@ -1748,9 +1754,11 @@ packages:
   rust_lib_bull_sdk:
     dependency: transitive
     description:
-      path: "../bull_sdk/packages/bull_sdk/rust_builder"
-      relative: true
-    source: path
+      path: "packages/bull_sdk/rust_builder"
+      ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      resolved-ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
     version: "0.0.1"
   rxdart:
     dependency: transitive
@@ -1763,9 +1771,11 @@ packages:
   satoshifier:
     dependency: "direct main"
     description:
-      path: "../bull_sdk/packages/satoshifier"
-      relative: true
-    source: path
+      path: "packages/satoshifier"
+      ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      resolved-ref: "0d29c5a25e1091913ac94506f594f9f256833a59"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
     version: "0.0.1"
   sentry:
     dependency: transitive

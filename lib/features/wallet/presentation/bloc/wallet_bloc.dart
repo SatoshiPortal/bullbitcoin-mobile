@@ -582,8 +582,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final updatedSettings =
-          await _disableAutoswapWarningUsecase.execute();
+      final updatedSettings = await _disableAutoswapWarningUsecase.execute();
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {

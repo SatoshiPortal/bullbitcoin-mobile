@@ -175,6 +175,15 @@ class BoltzDatasource {
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
   // in a later pass.
+
+  // One restore call returning id/kind/status/amount per swap — for listing.
+  Future<List<RestoredSwapSummary>> restoreSwapSummaries({
+    required SwapMasterKeyModel swapMasterKey,
+  }) => boltz.restoreSwapSummaries(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    boltzUrl: _httpsUrl,
+  );
+
   Future<List<BtcLnSwap>> restoreBtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,

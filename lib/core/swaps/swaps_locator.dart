@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
@@ -137,6 +138,17 @@ class SwapsLocator {
     );
     locator.registerFactory<RestoreSwapsUsecase>(
       () => RestoreSwapsUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerFactory<RescueSwapUsecase>(
+      () => RescueSwapUsecase(
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

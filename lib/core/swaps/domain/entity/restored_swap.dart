@@ -1,0 +1,61 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+
+enum RestoredSwapKind { lightningSend, lightningReceive, crossChain }
+
+/// A swap returned by the Boltz restore endpoints, identified by its Boltz id.
+class RestoredSwap {
+  final String id;
+  final RestoredSwapKind kind;
+
+  /// Boltz swap status mapped to the app's status, for display.
+  final SwapStatus status;
+
+  /// True when on-chain funds are locked and not yet claimed/refunded — i.e. the
+  /// swap can still be rescued (claimed or refunded). Drives whether the row is
+  /// actionable; resolved/never-funded swaps are not.
+  final bool recoverable;
+
+  /// On-chain amount locked in the swap, in sats.
+  final int amountSat;
+  final DateTime createdAt;
+
+  /// Boltz asset symbols, e.g. "BTC" / "L-BTC". Drive which chain a rescue
+  /// claims/refunds onto.
+  final String fromAsset;
+  final String toAsset;
+
+  const RestoredSwap({
+    required this.id,
+    required this.kind,
+    required this.status,
+    required this.recoverable,
+    required this.amountSat,
+    required this.createdAt,
+    required this.fromAsset,
+    required this.toAsset,
+  });
+
+  /// Whether the on-chain side this rescue acts on is Liquid (vs Bitcoin).
+  /// Lightning swaps act on their on-chain leg; a chain claim lands on [toAsset],
+  /// a chain refund returns on [fromAsset].
+  bool get actsOnLiquid => switch (kind) {
+    RestoredSwapKind.lightningSend => fromAsset == 'L-BTC',
+    RestoredSwapKind.lightningReceive => toAsset == 'L-BTC',
+    RestoredSwapKind.crossChain =>
+      isRefundAction ? fromAsset == 'L-BTC' : toAsset == 'L-BTC',
+  };
+
+  /// A swap whose funds come back to us (refund) vs are claimed forward.
+  bool get isRefundAction =>
+      status == SwapStatus.refundable ||
+      status == SwapStatus.failed ||
+      status == SwapStatus.expired;
+}
+
+/// A restored swap paired with whether it is already stored locally.
+class RestorableSwap {
+  final RestoredSwap swap;
+  final bool existsLocally;
+
+  const RestorableSwap({required this.swap, required this.existsLocally});
+}

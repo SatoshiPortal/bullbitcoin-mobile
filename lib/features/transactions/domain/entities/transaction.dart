@@ -77,6 +77,10 @@ sealed class Transaction with _$Transaction {
   bool get isChainSwap => isSwap && swap!.isChainSwap;
 
   DateTime? get timestamp =>
+      // Completed swaps are displayed (and should sort) by when they finished,
+      // not when they were created — otherwise a just-claimed rescued swap
+      // (created long ago) lands far down the list under its old creation time.
+      swap?.completionTime ??
       swap?.creationTime ??
       payjoin?.createdAt ??
       order?.createdAt ??

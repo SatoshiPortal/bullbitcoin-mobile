@@ -284,18 +284,25 @@ sealed class Swap with _$Swap {
   };
 
   int get amountSat => switch (this) {
-    LnReceiveSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
-    LnSendSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
+    LnSendSwap(:final invoice) => _invoiceAmountSat(invoice),
     ChainSwap(:final paymentAmount) => paymentAmount,
   };
+
+  // Restored/rescued LN swaps can carry an empty invoice (Boltz's restore
+  // response doesn't return it), so parse defensively instead of crashing the
+  // bolt11 bech32 decoder ("separator '1' at invalid position: -1").
+  static int _invoiceAmountSat(String invoice) {
+    if (invoice.isEmpty) return 0;
+    try {
+      return (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt();
+    } catch (_) {
+      return 0;
+    }
+  }
 
   String? get sendTxId => switch (this) {
     LnReceiveSwap() => null,
@@ -383,13 +390,7 @@ sealed class Swap with _$Swap {
     }(),
     LnReceiveSwap(:final invoice, :final fees) => () {
       if (fees == null) return null;
-      final invoiceAmount =
-          (Bolt11PaymentRequest(invoice).amount *
-                  Decimal.fromBigInt(
-                    ConversionConstants.satsAmountOfOneBitcoin,
-                  ))
-              .toBigInt()
-              .toInt();
+      final invoiceAmount = _invoiceAmountSat(invoice);
       final totalFees = fees.totalFees(invoiceAmount);
       return invoiceAmount - totalFees;
     }(),
@@ -404,16 +405,7 @@ sealed class Swap with _$Swap {
       if (fees == null) return null;
       return paymentAmount;
     }(),
-    LnReceiveSwap(:final invoice) => () {
-      final invoiceAmount =
-          (Bolt11PaymentRequest(invoice).amount *
-                  Decimal.fromBigInt(
-                    ConversionConstants.satsAmountOfOneBitcoin,
-                  ))
-              .toBigInt()
-              .toInt();
-      return invoiceAmount;
-    }(),
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
   };
 }
 

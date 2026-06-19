@@ -256,14 +256,15 @@ class SwapWatcherService {
     if (swap.receiveTxid != null || swap.wasDirectPayment) {
       return;
     }
-    final receiveAddress = swap.receiveAddress;
+    // Rescued swaps carry no stored claim address; derive one from the receive
+    // wallet (mirrors chain-swap claims and submarine refunds).
+    final receiveAddress = await _resolveLnReceiveClaimAddress(swap);
     if (receiveAddress == null) {
-      // Unrecoverable configuration problem: keep the swap claimable (the
-      // funds stay claimable via rescue tooling) but stop hot-looping.
+      // Keep the swap claimable (funds stay recoverable) but stop hot-looping.
       log.severe(
         message:
             '[SwapWatcher] swap ${swap.id} is claimable but has no receive '
-            'address',
+            'address and none could be derived',
         error: StateError('missing receive address'),
         trace: StackTrace.current,
       );
@@ -653,10 +654,11 @@ class SwapWatcherService {
     required int? amountSat,
     String? chainClaimAddress,
   }) async {
-    try {
+    Future<int> estimate(bool cooperative) async {
       final txSize = await _boltzRepo.getSwapClaimTxSize(
         swapId: swap.id,
         swapType: swap.type,
+        isCooperative: cooperative,
         claimAddressForChainSwaps: chainClaimAddress,
       );
       final networkFee = await _feesRepository.getNetworkFees(
@@ -675,14 +677,25 @@ class SwapWatcherService {
         return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
       }
       return withFloor;
+    }
+
+    try {
+      return await estimate(true);
     } catch (e) {
-      final fallback = swap.fees?.claimFee;
-      log.warning(
-        '[SwapWatcher] live claim fee estimation failed for ${swap.id} '
-        '($e); falling back to stored estimate $fallback',
-      );
-      if (fallback == null) rethrow;
-      return fallback;
+      // Cooperative sizing round-trips Boltz and can fail (notably for rescued
+      // swaps); the script-path size is computed locally, so try that next.
+      try {
+        return await estimate(false);
+      } catch (e2) {
+        final fallback = swap.fees?.claimFee;
+        log.warning(
+          '[SwapWatcher] live claim fee estimation failed for ${swap.id} '
+          '(coop: ${_errorMessage(e)}; script: ${_errorMessage(e2)}); '
+          'falling back to stored estimate $fallback',
+        );
+        if (fallback == null) rethrow;
+        return fallback;
+      }
     }
   }
 
@@ -698,6 +711,27 @@ class SwapWatcherService {
     required bool isLiquid,
   }) {
     return max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
+  }
+
+  Future<String?> _resolveLnReceiveClaimAddress(LnReceiveSwap swap) async {
+    final existing = swap.receiveAddress;
+    if (existing != null) return existing;
+    try {
+      final claimAddress = await _walletAddressRepository
+          .generateNewReceiveAddress(walletId: swap.receiveWalletId);
+      await _boltzRepo.updateSwapFields(
+        swap.id,
+        receiveAddress: claimAddress.address,
+      );
+      return claimAddress.address;
+    } catch (e, st) {
+      log.severe(
+        message: '[SwapWatcher] could not derive claim address for ${swap.id}',
+        error: e,
+        trace: st,
+      );
+      return null;
+    }
   }
 
   Future<String?> _resolveChainClaimAddress(ChainSwap swap) async {

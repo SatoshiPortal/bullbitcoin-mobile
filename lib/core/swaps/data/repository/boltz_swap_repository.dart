@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_sdk/boltz.dart' as boltz;
 
 class BoltzSwapRepository {
   final BoltzDatasource _boltz;
@@ -730,30 +731,201 @@ class BoltzSwapRepository {
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
     );
-    final btcLn = await _boltz.restoreBtcLnSwaps(
+    final summaries = await _boltz.restoreSwapSummaries(
       swapMasterKey: swapMasterKey,
-      electrumUrl: btcElectrumUrl,
     );
-    log.info('SWAP_RESTORE: btc-ln endpoint returned ${btcLn.length}');
-    final lbtcLn = await _boltz.restoreLbtcLnSwaps(
-      swapMasterKey: swapMasterKey,
-      electrumUrl: lbtcElectrumUrl,
-    );
-    log.info('SWAP_RESTORE: lbtc-ln endpoint returned ${lbtcLn.length}');
-    final chain = await _boltz.restoreChainSwaps(
-      swapMasterKey: swapMasterKey,
-      btcElectrumUrl: btcElectrumUrl,
-      lbtcElectrumUrl: lbtcElectrumUrl,
-    );
-    log.info('SWAP_RESTORE: chain endpoint returned ${chain.length}');
+    log.info('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
     return [
-      for (final s in btcLn)
-        RestoredSwap(id: s.id, kind: RestoredSwapKind.bitcoinLightning),
-      for (final s in lbtcLn)
-        RestoredSwap(id: s.id, kind: RestoredSwapKind.liquidLightning),
-      for (final s in chain)
-        RestoredSwap(id: s.id, kind: RestoredSwapKind.chain),
+      for (final s in summaries)
+        RestoredSwap(
+          id: s.id,
+          kind: _restoredKind(s.kind),
+          status: _restoreStatusToSwapStatus(s.status),
+          recoverable: s.recoverable,
+          amountSat: s.amount.toInt(),
+          createdAt: DateTime.fromMillisecondsSinceEpoch(
+            s.createdAt.toInt() * 1000,
+          ),
+          fromAsset: s.from,
+          toAsset: s.to,
+        ),
     ];
+  }
+
+  // Submarine = on-chain → Lightning (Lightning Send); Reverse = Lightning →
+  // on-chain (Lightning Receive); Chain = cross-chain.
+  RestoredSwapKind _restoredKind(boltz.SwapType kind) => switch (kind) {
+    boltz.SwapType.submarine => RestoredSwapKind.lightningSend,
+    boltz.SwapType.reverse => RestoredSwapKind.lightningReceive,
+    boltz.SwapType.chain => RestoredSwapKind.crossChain,
+  };
+
+  // Coarse mapping of the raw boltz status to the app's status for list display.
+  // The rescue flow reconciles the precise per-type state (e.g. a chain
+  // `transaction.claimed` where the user's own claim is still pending).
+  SwapStatus _restoreStatusToSwapStatus(String boltzStatus) {
+    switch (boltzStatus) {
+      case 'transaction.claimed':
+      case 'invoice.settled':
+      case 'transaction.direct':
+        return SwapStatus.completed;
+      case 'swap.refunded':
+      case 'transaction.refunded':
+        return SwapStatus.refunded;
+      case 'swap.expired':
+      case 'invoice.expired':
+        return SwapStatus.expired;
+      case 'transaction.lockupFailed':
+      case 'transaction.failed':
+      case 'invoice.failedToPay':
+      case 'swap.error':
+        return SwapStatus.failed;
+      case 'transaction.mempool':
+      case 'transaction.confirmed':
+      case 'transaction.server.mempool':
+      case 'transaction.server.confirmed':
+      case 'transaction.claim.pending':
+      case 'invoice.paid':
+        return SwapStatus.claimable;
+      default:
+        return SwapStatus.pending;
+    }
+  }
+
+  // Whether an LN swap's on-chain leg is Liquid (vs Bitcoin). Boltz labels pure
+  // BTC lightning swaps "BTC"->"BTC"; anything else involves L-BTC.
+  bool _lnSwapIsLiquid(RestoredSwap r) =>
+      !(r.fromAsset == 'BTC' && r.toAsset == 'BTC');
+
+  /// Rebuilds a restored swap's full object from Boltz, persists it (secure
+  /// blob + local row) under the given wallets, and hands it to the watcher so
+  /// an orphaned claim/refund can be completed. [sendWalletId] funds the
+  /// lockup/refund side; [receiveWalletId] receives the claim (required for
+  /// reverse, optional for chain).
+  Future<Swap> rescueSwap({
+    required String mnemonic,
+    required RestoredSwap restored,
+    required String sendWalletId,
+    String? receiveWalletId,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+  }) async {
+    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+      mnemonic: mnemonic,
+      isTestnet: _isTestnet,
+    );
+    final creationTime = restored.createdAt.millisecondsSinceEpoch;
+    final status = restored.status.name;
+    final id = restored.id;
+    final isLiquid = _lnSwapIsLiquid(restored);
+
+    final SwapModel model;
+    switch (restored.kind) {
+      case RestoredSwapKind.lightningReceive:
+        if (isLiquid) {
+          final swaps = await _boltz.restoreLbtcLnSwaps(
+            swapMasterKey: swapMasterKey,
+            electrumUrl: lbtcElectrumUrl,
+          );
+          final obj = swaps.firstWhere((s) => s.id == id);
+          await _boltz.storage.storeLbtcLnSwap(obj);
+          model = SwapModel.lnReceive(
+            id: obj.id,
+            type: SwapType.lightningToLiquid.name,
+            status: status,
+            isTestnet: _isTestnet,
+            keyIndex: obj.keyIndex.toInt(),
+            creationTime: creationTime,
+            receiveWalletId: receiveWalletId!,
+            invoice: obj.invoice,
+          );
+        } else {
+          final swaps = await _boltz.restoreBtcLnSwaps(
+            swapMasterKey: swapMasterKey,
+            electrumUrl: btcElectrumUrl,
+          );
+          final obj = swaps.firstWhere((s) => s.id == id);
+          await _boltz.storage.storeBtcLnSwap(obj);
+          model = SwapModel.lnReceive(
+            id: obj.id,
+            type: SwapType.lightningToBitcoin.name,
+            status: status,
+            isTestnet: _isTestnet,
+            keyIndex: obj.keyIndex.toInt(),
+            creationTime: creationTime,
+            receiveWalletId: receiveWalletId!,
+            invoice: obj.invoice,
+          );
+        }
+      case RestoredSwapKind.lightningSend:
+        if (isLiquid) {
+          final swaps = await _boltz.restoreLbtcLnSwaps(
+            swapMasterKey: swapMasterKey,
+            electrumUrl: lbtcElectrumUrl,
+          );
+          final obj = swaps.firstWhere((s) => s.id == id);
+          await _boltz.storage.storeLbtcLnSwap(obj);
+          model = SwapModel.lnSend(
+            id: obj.id,
+            type: SwapType.liquidToLightning.name,
+            status: status,
+            isTestnet: _isTestnet,
+            keyIndex: obj.keyIndex.toInt(),
+            creationTime: creationTime,
+            sendWalletId: sendWalletId,
+            invoice: obj.invoice,
+            paymentAddress: obj.scriptAddress,
+            paymentAmount: obj.outAmount.toInt(),
+          );
+        } else {
+          final swaps = await _boltz.restoreBtcLnSwaps(
+            swapMasterKey: swapMasterKey,
+            electrumUrl: btcElectrumUrl,
+          );
+          final obj = swaps.firstWhere((s) => s.id == id);
+          await _boltz.storage.storeBtcLnSwap(obj);
+          model = SwapModel.lnSend(
+            id: obj.id,
+            type: SwapType.bitcoinToLightning.name,
+            status: status,
+            isTestnet: _isTestnet,
+            keyIndex: obj.keyIndex.toInt(),
+            creationTime: creationTime,
+            sendWalletId: sendWalletId,
+            invoice: obj.invoice,
+            paymentAddress: obj.scriptAddress,
+            paymentAmount: obj.outAmount.toInt(),
+          );
+        }
+      case RestoredSwapKind.crossChain:
+        final swaps = await _boltz.restoreChainSwaps(
+          swapMasterKey: swapMasterKey,
+          btcElectrumUrl: btcElectrumUrl,
+          lbtcElectrumUrl: lbtcElectrumUrl,
+        );
+        final obj = swaps.firstWhere((s) => s.id == id);
+        await _boltz.storage.storeChainSwap(obj);
+        model = SwapModel.chain(
+          id: obj.id,
+          type: restored.fromAsset == 'BTC'
+              ? SwapType.bitcoinToLiquid.name
+              : SwapType.liquidToBitcoin.name,
+          status: status,
+          isTestnet: _isTestnet,
+          keyIndex: obj.refundIndex.toInt(),
+          creationTime: creationTime,
+          sendWalletId: sendWalletId,
+          receiveWalletId: receiveWalletId,
+          paymentAddress: obj.scriptAddress,
+          paymentAmount: obj.outAmount.toInt(),
+        );
+    }
+
+    await _boltz.storage.store(model);
+    subscribeToSwaps([id]);
+    await reconcileSwaps([id]);
+    log.info('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
+    return model.toEntity();
   }
 
   Future<Swap?> getSwapByTxId(String txId) async {
