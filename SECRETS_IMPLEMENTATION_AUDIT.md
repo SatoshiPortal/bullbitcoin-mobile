@@ -198,6 +198,36 @@ Result: **119 secrets + 25 primitives tests green**, `analyze --fatal-infos` +
 full first-party analyzer **plugin** (the `seal-check` grep gate covers its
 security intent today).
 
+## 8. User-data migration safety (3 fresh audit agents, post-refactor)
+
+Three fresh agents audited the whole branch with a focus on **not losing
+existing users' funds** when the app adopts the package. The critical finding
+(confirmed by a concrete trace): the new on-disk format
+(`s1:`+base64(`{kind,words,…}`)) is **incompatible** with what the live app has
+written (`{"mnemonicWords":[…],"runtimeType":"mnemonic"}`, no prefix) — a naive
+swap would make **every existing seed unreadable** → destructive-recovery / fund
+loss. The fingerprint derivation is byte-identical old↔new (proven), so keys
+align *once the decoder can read the payload*.
+
+**FIXED:** `Mnemonic.fromStorageBytes` is now **backward-compatible** — it reads
+(1) this package's `kind`/`words` format, (2) the current app's
+`runtimeType`/`mnemonicWords` SeedModel JSON, and (3) the pre-0.4 OldSeed
+`{"mnemonic":"word word …","passphrases":[…]}` shape; a bytes-only seed is
+explicitly + safely rejected (never silently lost). A 9-test migration suite
+(`test/migration/legacy_format_test.dart`) writes the **exact historical on-disk
+JSON** and proves words/passphrase are recovered AND the derived fingerprint
+equals the storage key (12/24-word, passphrase, legacy, and the sealed
+`MnemonicReader` display path).
+
+**STILL APP-SIDE (F1, not the package):** wiring the package in must (a) run the
+existing 004/005 migrations first, (b) have the reconciler self-heal a
+found-but-unindexed seed by upserting `SeedInfo` (never treat readable-but-
+unindexed as "missing → recover"), and (c) NEVER call `SecretStorePort.purge()`
+during migration (it wipes all keys, incl. app-owned `swap_*`/PIN). Per spec G1,
+`swap_*` per-swap KeyPairs stay app-managed. A device-level `integration_test`
+against real `flutter_secure_storage` is the final belt-and-suspenders proof;
+the in-package suite already covers the decode + fingerprint-alignment risk.
+
 ## 7. Cybersecurity-expert review (4 parallel domain auditors)
 
 A dedicated security review across four threat domains (seal/egress, signing &
