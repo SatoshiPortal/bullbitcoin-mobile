@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check seal-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -43,6 +43,10 @@ bootstrap:
 analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
+
+seal-check:
+	@echo "🔒 Verify the secrets package seal (no external src/ imports, no internal exports)"
+	@bash tool/seal_check.sh
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"

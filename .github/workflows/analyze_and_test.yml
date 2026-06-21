@@ -74,6 +74,9 @@ jobs:
       - name: Linter shouldn't raise errors, warnings or infos
         run: make analyze
 
+      - name: secrets package seal must hold
+        run: make seal-check
+
       - name: dart fix should have nothing to suggest
         run: |
           output=$(fvm dart fix --dry-run)
