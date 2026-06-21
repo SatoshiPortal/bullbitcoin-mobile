@@ -1,3 +1,13 @@
+> **Naming update (Port/Adapter refactor + seed/mnemonic remodel):** since this
+> audit was written, capability impls were renamed `*PortImpl → *Adapter`
+> (`SeedRepository`→`SeedPort`/`SeedAdapter`, `SecretStore`→`SecretStorePort`/
+> `FssSecretStoreAdapter`, `SeedIndex`→`SeedIndexPort`, …), ports moved to
+> `src/domain/ports/` and adapters to `src/data/adapters/`, the duplicated
+> `_guard` blocks were centralized into one `SecretGuard`, and the secret model
+> was corrected to `Mnemonic` (stored) + derived `Seed` — the unused bytes-seed
+> path was deleted. Read class/path names below with that mapping in mind; the
+> behaviour audited is unchanged.
+
 # `secrets` — Full File-by-File Audit (2026-06-21)
 
 Every file in `packages/primitives`, `packages/secrets`, and the two new

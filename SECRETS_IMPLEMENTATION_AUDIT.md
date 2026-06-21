@@ -198,6 +198,43 @@ Result: **119 secrets + 25 primitives tests green**, `analyze --fatal-infos` +
 full first-party analyzer **plugin** (the `seal-check` grep gate covers its
 security intent today).
 
+## 9. Fresh end-to-end audit (5 independent agents) — findings + dispositions
+
+A second, fully-independent audit (data-loss, signing, seal, crypto/supply-chain,
+architecture/consequences). Real findings, **FIXED**:
+- 🔴 **Legacy OldSeed passphrase bug** — the decoder I added guessed a passphrase
+  from the OldSeed `passphrases` list; for a multi-passphrase seed that derives a
+  DIFFERENT fingerprint than the storage key → unfindable seed. Fixed: the raw-fp
+  OldSeed key is the BARE-mnemonic fingerprint, so it now decodes as the bare
+  mnemonic (no passphrase guess); fingerprint==key proven by test.
+- 🔴 **Log-sanitizer one-typo leak** — a 12-word phrase with one mistyped word
+  left the other 11 (brute-forceable) words un-redacted. Fixed: redact a ≥12-token
+  span with ≤2 non-BIP39 inside (typo-tolerant); prose stays readable; tested.
+- 🟠 **`purge()` wiped the whole shared keychain** (incl. app-owned `swap_*`/PIN/
+  hive). Fixed: scoped to the seed keys this store owns; tested.
+- 🟠 **Release-stripped `assert`** in the locator → runtime `StateError`.
+- 🟡 Bitcoin fee BigInt/u64 range guard; `hiveEncryptionKey` constant; transient-
+  read retry parity; native-test `@Tags(['native'])`; seal-check `part`-ban;
+  payjoin integration note.
+
+**Documented residuals (cannot be fully closed in-package — integration work):**
+- ✅ **fss9 / EncryptedSharedPreferences cohort — RESOLVED (see §13).** The app's
+  storage migration standardized every install on fss10 (verified `SeedStoreType`
+  flag); the package's fss10-only `.standard()` adapter is therefore correct for
+  every user. The fss9/ESP path survives in the app only as a transitional
+  fallback. No dual/migrating backend is needed in the package.
+- 🔴 **Liquid send validates fee only** (confidential outputs unprovable) — known.
+- 🟠 **Native bdk/lwk/boltz signing/swap execution is unit-untested** — needs a
+  device/testnet integration suite before production trust.
+- 🟠 **Supply chain:** `bull_sdk` rides a moving `main`/`ws-resilience` ref and
+  `bdk_dart` is a personal-account fork (both SHA-resolved via the lockfile today);
+  pin repo-wide before production.
+- 🟠 **F1 consumer migration** (app wiring, the startup `reconcileSeeds` call +
+  self-heal, the run-005-first / never-purge orchestration) is app-side, unbuilt.
+- 🟡 KATs are self-generated regression anchors — add one published BIP85 spec
+  vector; l10n failure→string mapping is planned but unbuilt; per-adapter
+  "unexpected" failures collapse into `Signing/Vault/Unexpected` (UX/triage).
+
 ## 8. User-data migration safety (3 fresh audit agents, post-refactor)
 
 Three fresh agents audited the whole branch with a focus on **not losing
@@ -278,3 +315,173 @@ still require exact order); `clearRecoverbullPath` unanchored replace (faithful
 port of the app's existing behavior, ~2⁻³¹ trigger); `Bip85HexView`
 `SelectableText` clipboard egress (hex is meant to be copyable — flagged for a
 guarded-copy follow-up); `Psbt` base64 check is shallow (bdk rejects at decode).
+
+---
+
+## §10 — Round-3 fresh audit (3 independent agents) + fixes
+
+Third full audit (verify-latest-fixes / codebase-consequences / independent
+security sweep). The package's seal, signing gate, migration decode, and
+fail-closed behavior were independently re-confirmed sound. Fixed findings:
+
+1. **log_sanitizer spread-typo seed leak (MED→fixed).** The old
+   `(span - bip39count) <= 2` cap was a fixed typo budget; 3 *isolated* typos
+   never break the adjacency run yet blow the budget, leaving all real BIP39
+   words in cleartext. Reproduced a 12-word phrase leaking. Replaced with a
+   COUNT-based trigger (`bip39count >= 12 || (bip39count >= 9 && density>=75%)`)
+   so any number of spread typos can't expose the words. +2 regression tests.
+2. **seal_check FSS allow-list bypassable by filename (LOW→fixed).** Unanchored,
+   unescaped `grep -vE` let `…storage_locator.dart.bak.dart` slip through.
+   Switched to exact whole-line matching (`grep -vxF`). Verified the bypass is
+   now caught.
+3. **seal_check comment contradicted decision G1 (doc→fixed).** Comment claimed
+   the 3 grandfathered app files "shrink to just the adapter" after F1; G1 keeps
+   swap/PIN/api-key on the shared keychain, so the live storage layer keeps
+   keychain access permanently. Comment corrected; the enforceable invariant is
+   "raw plugin confined to the adapter + live storage layer; the SEED is owned
+   only by secrets."
+4. **Bip85HexView clipboard sink (LOW→fixed).** `SelectableText` exposed the
+   derived hex secret to the clipboard (uncovered by PrivacyGuard). Switched to
+   non-selectable `BullText`, matching the mnemonic views.
+
+**Residuals (unchanged, documented):** sanitizer doesn't redact base64 blobs
+(a blanket base64 redactor would over-redact legit logs; realistic leak bounded
+to <12 partial words via FormatException echo); `Psbt._isBase64` shallow
+(non-secret, bdk/lwk re-parse). **F1 integration consequences** (not package
+bugs — consumer-migration scope, already in MIGRATION_PLAN): ~~the package needs a
+real dual-backend / migrating `SecretStorePort` for the fss9/ESP cohort~~
+(SUPERSEDED — see §13: the app is fss10-universal, `.standard()` is correct for
+all users); the app must ship a Drift
+`seed_index` table + backfill before wiring `SeedIndexPort`; ~58 seed-consuming
+call sites move to ports. State: 137 secrets + 25 primitives tests green,
+analyze clean, seal-check (incl. FSS gate) passes.
+
+---
+
+## §11 — Codebase-wide audit + impact vs develop (4 fresh agents) + fixes
+
+Full file-by-file audit of the whole branch and its impact on `develop`. Scope
+confirmed **additive & surgical**: outside the new packages, the branch touches
+only 4 existing files — root `pubspec.yaml` (2 workspace members), `makefile`
+(`seal-check` target), `.github/workflows/analyze_and_test.yml` (CI step),
+`packages/bull_ui/lib/bull_ui.dart` (2 brick exports).
+
+**Impact verdict: does NOT break develop.** `fvm flutter pub get` at root
+resolves clean with NO lockfile delta vs develop (new packages use
+`resolution: workspace`, `^3.10.0` SDK satisfied by the root `3.12.2`, git refs
+governed by the existing root `dependency_overrides`). CI step has no
+`|| true`/`continue-on-error` so a seal breach correctly fails the build.
+
+Fixes applied this round:
+1. **primitives `Network.fromName` / `ScriptType.fromName`** threw a bare
+   `StateError` on unknown input (inconsistent with the package's `ArgumentError`
+   convention). Added `orElse: throw ArgumentError.value(...)` + tests for both
+   throwing factories (the gap that hid this).
+2. **bull_ui `BullMnemonicGrid`** index column was a fixed `SizedBox(width:28)`
+   that could clip 2-digit indices (10–24) at large text scale. Switched to
+   `ConstrainedBox(minWidth:28)` (grows instead of clipping) + a 12-word test
+   covering the 2-digit path and end-of-list numbering.
+3. **bull_ui barrel** A–Z order broken (`seed_warning_card` before `price_card`).
+   Re-sorted.
+4. **secrets `bip32_derivation.xprvFromSeed`** testnet `NetworkType.wif` was the
+   mainnet byte `0x80`; corrected to testnet `0xEF`. Latent (only `toBase58()`/
+   xprv is used, so no output changed) but now correct for any future WIF export.
+
+**Reported, not fixed (out of scope / pre-existing):** the root
+`dependency_overrides` pins `bull_sdk`/`boltz_stream` to a moving branch ref
+(`ws-resilience`), not a SHA — a pre-existing repo-wide supply-chain item on
+develop, not introduced by this branch; recommend SHA-pinning repo-wide
+separately. Cosmetic-only items left as-is: `Bip85HexResult.path` label is a
+reconstructed display string (bytes correct); `BullSeedWarningCard` uses a
+filled panel vs siblings' accent-bar (design choice).
+
+State: primitives 27 + secrets 137 tests + bull_ui suite green, `analyze` clean
+in all three packages, seal-check passes, root `pub get` clean.
+
+---
+
+## §12 — Security audit (before/after gains) + hardening, no-defer round (4 fresh agents)
+
+Deep before/after security audit comparing the app's CURRENT secret handling on
+`develop` to the `secrets` package, then fixed every package-scope item that is
+buildable now. NOTE the package is still DORMANT (the app imports nothing yet:
+`grep -r "package:secrets" lib/` is empty), so the gains below are realized once
+the app is wired (F1) — but the *posture* is now in place.
+
+### Security GAINS vs the "before" baseline (top 5)
+1. **#1703 intent gate / fail-closed signing** vs today's BLIND signing of BTC
+   PSBT (`bdk_wallet_datasource` with `trustWitnessUtxo:true`), Liquid PSET,
+   payjoin and swaps.
+2. **`trustWitnessUtxo:false`** vs the live `true` (SegWit fee-inflation footgun).
+3. **Log sanitizer + redacted `toString`/no-`toJson` VOs** vs the live path where
+   freezed `SeedModel.toString()`/`toJson()` + an unredacting `logger.dart` can
+   ship a raw mnemonic to disk/Sentry.
+4. **SecretGuard single read chokepoint + library-private seal** vs ~15 direct
+   raw-seed reads scattered across 9 app features today.
+5. **Untrusted-Boltz-address swap commitment proof** vs trusting the server's
+   address.
+(Already-good on develop: locked≠missing handling; no keychain `deleteAll` wipe.)
+
+### Hardening applied this round (all buildable in-package now)
+1. **Swap locktime binding** (HIGH): `SwapIntent.timeout` existed but was NEVER
+   validated. Added `SwapScriptLeg.locktime` + an opt-in (`expectedLocktime>0`)
+   equality check in `validateSwapCommitment`; the chain validator binds the
+   LOCKUP leg (our funds) to the intent timeout, not the claim leg (differs per
+   chain). Threaded `Btc/LBtcSwapScriptStr.locktime` from the adapter. +4 tests.
+2. **LiquidDescriptor privacy leak** (A1): the ct descriptor embeds the master
+   blinding key; `toString()` printed it in full and it was mislabeled
+   "NON-secret". Redacted `toString` + corrected the doc. +1 test.
+3. **Sealed-blob log redaction**: `sanitizeLog` now redacts the at-rest
+   `s1:`+base64 blob (anchored on the `s1:` tag → no over-redaction of ordinary
+   base64). +2 tests.
+4. **Constant-time backup-verify**: removed the early-break word compare in
+   `verify_backup_view` (visit every word; OR a mismatch flag).
+5. **Independent KAT vectors**: added official BIP39 (TREZOR) seed + BIP32 vector
+   1 (fingerprint `3442193e` + master xprv) cross-checks — catches a
+   systematically-wrong derivation that self-frozen vectors cannot. PASS.
+6. **Migration test gaps**: added case-1 (`kind:mnemonic`) fingerprint==key and
+   a bytes-vs-mnemonic precedence test.
+
+### Genuinely deferred (cannot be done safely in-package now — honest)
+- **Liquid confidential output validation** (HIGH-1): Liquid sends remain fee-cap
+  only. Per-output/recipient/change validation needs the blinding keys to unblind
+  outputs — only available in the app's LWK wallet context, not to the pure
+  validator. A fragile/incorrect check would be worse than the documented limit;
+  it must be done when wired, with the wallet's blinding data.
+- **Dual fss9/ESP backend**: NO LONGER NEEDED (see §13) — the app is
+  fss10-universal post-migration, so the package's fss10-only `.standard()` is
+  correct for every user. Dropped from the work list.
+- **Swap amount/out-address binding** (MED): server-computed amount semantics
+  differ per swap type; binding needs the app's expected-value context to avoid
+  rejecting valid swaps.
+- **Secret zeroization**: Dart can't guarantee (GC + immutable String words);
+  best-effort `fillRange` on transient buffers offers little and risks clearing
+  still-referenced data — left as a documented platform limitation.
+- **Vault HMAC/enc key separation** (MED-5): lives in the pinned `recoverbull`
+  dep, not in `secrets` (upstream fix).
+- **bull_sdk moving git ref**: pre-existing repo-wide override, not this branch.
+
+State: 147 secrets + 27 primitives tests green, analyze clean, seal-check passes.
+
+---
+
+## §13 — fss10 is now universal: dual-backend concern resolved
+
+User confirmation: since the recent storage update, every install is on fss10 by
+default. Verified against `lib/core/storage/storage_locator.dart` — startup
+probes fss10, then verifies and persists a fss10 `SeedStoreType` flag; the
+fss9/ESP (`flutter_secure_storage_legacy`) branch remains only as a transitional
+fallback for a not-yet-migrated install.
+
+Consequence: the package's fss10-only `FlutterSecureStorageAdapter.standard()`
+is correct for EVERY user. The previously-flagged "dual / migrating
+`SecretStorePort` for the fss9/ESP cohort" (prior §8 🔴, §11, §12) is **no longer
+needed and is dropped from the work list**. The `.standard()` factory comment was
+rewritten from a fund-loss DATA-MIGRATION warning to an accurate note (fss10 is
+universal; inject a custom backend only for the unlikely not-yet-migrated case).
+No package code changed beyond the comment — the dual backend was only ever
+documented as deferred, never built, so there is no dead code to remove.
+
+The remaining genuine residual on the storage axis is none; the open
+integration items are unchanged (Drift `seed_index` + backfill, ~58 call-site
+rewires, Liquid confidential-output validation — all F1/app scope).
