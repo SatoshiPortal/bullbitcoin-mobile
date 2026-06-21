@@ -1,0 +1,91 @@
+import 'package:convert/convert.dart' as conv;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/src/crypto/bip85_port_impl.dart';
+import 'package:secrets/src/data/datasources/fss_secret_store.dart';
+import 'package:secrets/src/data/seed_repository_impl.dart';
+import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/bip85_types.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
+import 'package:secrets/src/domain/value_objects/seed_info.dart';
+
+import '../data/fake_secure_key_value_store.dart';
+
+const zooWords = [
+  'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'zoo', //
+  'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'wrong',
+];
+const recoverbullKeyForPath =
+    '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
+const arkSecretForZooSeed =
+    'a30097fcca0406e6003b46b0a8ac5e4af856bf0d31f901b2f580df7d3f5395a3';
+
+class _FakeSeedIndex implements SeedIndex {
+  final Map<String, SeedInfo> _m = {};
+  @override
+  Future<List<SeedInfo>> all() async => _m.values.toList();
+  @override
+  Future<SeedInfo?> get(Fingerprint fp) async => _m[fp.hex];
+  @override
+  Future<void> remove(Fingerprint fp) async => _m.remove(fp.hex);
+  @override
+  Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
+}
+
+T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw StateError('expected Ok, got $failure'),
+    };
+
+void main() {
+  late FssSecretStore store;
+  late Bip85PortImpl bip85;
+  late Fingerprint zooFp;
+
+  setUp(() async {
+    final kv = FakeSecureKeyValueStore();
+    store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
+    final repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
+    zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
+    bip85 = Bip85PortImpl(store);
+  });
+
+  test('deriveRecoverbullKey matches the frozen KAT vector', () async {
+    final key = _unwrap(await bip85.deriveRecoverbullKey(
+      masterSeed: zooFp,
+      path: Bip85Path("1608'/0'/586053381"),
+    ));
+    expect(conv.hex.encode(key.bytes), recoverbullKeyForPath);
+  });
+
+  test('deriveChildMnemonic returns the right path + 12 words', () async {
+    final d = _unwrap(await bip85.deriveChildMnemonic(
+      masterSeed: zooFp,
+      length: MnemonicLength.words12,
+      index: 0,
+    ));
+    expect(d.path.path, "39'/0'/12'/0'");
+    expect(d.kind, SeedKind.mnemonic);
+    expect(d.words, hasLength(12));
+  });
+
+  test('deriveArkSecret matches the frozen vector', () async {
+    final ark = _unwrap(await bip85.deriveArkSecret(masterSeed: zooFp));
+    expect(conv.hex.encode(ark.bytes), arkSecretForZooSeed);
+  });
+
+  test('deriveHex returns the requested byte length', () async {
+    final hexRes = _unwrap(await bip85.deriveHex(
+      masterSeed: zooFp,
+      numBytes: 16,
+      index: 0,
+    ));
+    expect(hexRes.hexForView.length, 32); // 16 bytes = 32 hex chars
+  });
+
+  test('missing seed → SeedNotFoundFailure (not locked, not a crash)', () async {
+    final res = await bip85.deriveArkSecret(masterSeed: Fingerprint('00000000'));
+    expect((res as Err).failure, isA<SeedNotFoundFailure>());
+  });
+}
