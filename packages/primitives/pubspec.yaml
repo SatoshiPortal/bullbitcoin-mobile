@@ -1,0 +1,19 @@
+name: primitives
+description: >-
+  Pure-Dart shared primitives for the Bull monorepo: the canonical Result/Failure
+  pair (issue #1895 shapes), plus the cross-cutting value types Fingerprint,
+  Network, ScriptType and XpubType. Zero Flutter, zero domain dependencies.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dependencies:
+  meta: ^1.17.0
+
+dev_dependencies:
+  test: ^1.26.3
+  lints: ^6.0.0
