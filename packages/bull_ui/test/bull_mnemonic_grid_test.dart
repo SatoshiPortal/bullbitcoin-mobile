@@ -20,6 +20,24 @@ void main() {
       expect(find.byType(BullMnemonicWord), findsNWidgets(5));
     });
 
+    testWidgets('renders 12 words with 2-digit numbering and no overflow',
+        (tester) async {
+      final words = [for (var i = 1; i <= 12; i++) 'word$i'];
+      await tester.pumpWidget(
+        wrapWithTheme(SingleChildScrollView(
+          child: BullMnemonicGrid(words: words),
+        )),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.byType(BullMnemonicWord), findsNWidgets(12));
+      // Every index 1..12 is shown exactly once (covers the 2-digit path),
+      // and numbering stops at the word count (no phantom 13th).
+      for (var n = 1; n <= 12; n++) {
+        expect(find.text('$n'), findsOneWidget);
+      }
+      expect(find.text('13'), findsNothing);
+    });
+
     testWidgets('handles odd word counts without overflow', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(const SingleChildScrollView(

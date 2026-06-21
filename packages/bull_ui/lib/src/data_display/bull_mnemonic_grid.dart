@@ -30,8 +30,11 @@ class BullMnemonicWord extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: 28,
+          // minWidth (not a fixed width) keeps single-digit indices aligned
+          // while letting 2-digit indices (10–24) grow at large text scale
+          // instead of clipping.
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 28),
             child: BullText(
               '$number',
               style: Theme.of(context).textTheme.bodyMedium,
