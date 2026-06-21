@@ -71,10 +71,65 @@ void main() {
       expect(sanitizeLog('keychain is locked'), 'keychain is locked');
     });
 
+    test('redacts the at-rest s1: sealed blob (the base64 mnemonic JSON)', () {
+      // The format FssSecretStoreAdapter writes; a decode error can echo it.
+      const blob =
+          's1:eyJraW5kIjoibW5lbW9uaWMiLCJ3b3JkcyI6WyJ6b28iLCJ3cm9uZyJdfQ==';
+      final out = sanitizeLog('FormatException reading $blob from store');
+      expect(out, contains('[REDACTED_SEALED_BLOB]'));
+      expect(out, isNot(contains('eyJraW5')));
+    });
+
+    test('does NOT redact ordinary base64 without the s1: tag', () {
+      const msg = 'payload: SGVsbG8gd29ybGQgYmFzZTY0IGRhdGE';
+      expect(sanitizeLog(msg), msg);
+    });
+
     test('does NOT over-redact ordinary prose (12+ non-BIP39 words)', () {
       const prose = 'the user tried again but the read was null after the '
           'retry loop ran out and then it simply gave up entirely here';
       // None of these are BIP39 words → must stay fully readable for debugging.
+      expect(sanitizeLog(prose), prose);
+    });
+
+    test('redacts a 12-word phrase with ONE typo word (no partial leak)', () {
+      // A mistyped/checksum-failing word must not let the other 11 real words
+      // leak — 11/12 BIP39 words is brute-forceable.
+      const phrase =
+          'zoo zoo zoo zoo zoo TYPOWORD zoo zoo zoo zoo zoo wrong';
+      final out = sanitizeLog('invalid mnemonic: $phrase');
+      expect(out, contains('[REDACTED_MNEMONIC]'));
+      expect(out, isNot(contains('zoo zoo')));
+      expect(out, isNot(contains('TYPOWORD')));
+    });
+
+    test('redacts a 12-word phrase with THREE spread-out typos (no leak)', () {
+      // The leak the count-based rule closes: 3 isolated typos never break the
+      // adjacency run, but a fixed `nonBip39 <= 2` budget would have left all
+      // 12 real BIP39 words in cleartext (brute-forceable).
+      const phrase =
+          'zoo zoo zoo XX zoo zoo YY zoo zoo ZZ zoo zoo zoo';
+      // Trailing marker is digit-guarded so it is not word-adjacent to the run.
+      final out = sanitizeLog('bad mnemonic: $phrase 9stopmarker');
+      expect(out, contains('[REDACTED_MNEMONIC]'));
+      expect(out, isNot(contains('zoo zoo')));
+      expect(out, isNot(contains('XX')));
+      expect(out, contains('9stopmarker')); // trailing prose survives
+    });
+
+    test('redacts a 12-word phrase with typos reducing it to 9 BIP39 words', () {
+      // 3 of the 12 words mistyped -> only 9 real BIP39 words, but at 9/12=75%
+      // density it is still a mnemonic and must not leak.
+      const phrase =
+          'zoo zoo zoo AAA zoo zoo BBB zoo zoo CCC zoo zoo';
+      final out = sanitizeLog('phrase: $phrase');
+      expect(out, contains('[REDACTED_MNEMONIC]'));
+      expect(out, isNot(contains('zoo zoo')));
+    });
+
+    test('still leaves ordinary prose readable (no over-redaction)', () {
+      const prose = 'the user could not load the wallet after the recent '
+          'update so they tried again twice and then gave up here';
       expect(sanitizeLog(prose), prose);
     });
 

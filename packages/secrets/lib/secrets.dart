@@ -1,20 +1,20 @@
 /// `secrets` — the sole owner of user secrets for the Bull wallet.
 ///
 /// This barrel is the ENTIRE public surface. It intentionally never exports
-/// `src/crypto/*`, the `SecretStore`/`SecureKeyValueStore` ports, the
-/// `SeedSecret`/`MnemonicSeedSecret` models, `MnemonicReader`, or any `*Impl` —
+/// `src/crypto/*`, the `SecretStorePort`/`SecureKeyValueStorePort` ports, the
+/// `Mnemonic`/`Mnemonic` models, `MnemonicReader`, or any `*Impl` —
 /// raw secret material has no path out of the package. Callers get non-secret
 /// info, operation results, or sealed display widgets.
 library;
 
 // ── Contracts (interfaces only; impls stay internal) ──────────────────────
-export 'src/domain/seed_repository.dart' show SeedRepository;
-export 'src/domain/key_derivation_port.dart' show KeyDerivationPort;
-export 'src/domain/signer_port.dart' show SignerPort;
-export 'src/domain/swap_signer_port.dart' show SwapSignerPort;
-export 'src/domain/backup_vault_port.dart' show BackupVaultPort;
-export 'src/domain/bip85_port.dart' show Bip85Port;
-export 'src/domain/seed_index.dart' show SeedIndex; // app implements this
+export 'src/domain/ports/seed_port.dart' show SeedPort;
+export 'src/domain/ports/key_derivation_port.dart' show KeyDerivationPort;
+export 'src/domain/ports/signer_port.dart' show SignerPort;
+export 'src/domain/ports/swap_signer_port.dart' show SwapSignerPort;
+export 'src/domain/ports/backup_vault_port.dart' show BackupVaultPort;
+export 'src/domain/ports/bip85_port.dart' show Bip85Port;
+export 'src/domain/ports/seed_index_port.dart' show SeedIndexPort; // app implements this
 
 // ── Failures (all public-by-design; sealed, secret-free) ──────────────────
 export 'src/domain/secrets_failure.dart'
@@ -31,7 +31,7 @@ export 'src/domain/secrets_failure.dart'
         SecretsUnexpectedFailure;
 
 // ── Value objects (non-secret, or secret-bearing with redacted toString) ──
-export 'src/domain/value_objects/seed_info.dart' show SeedInfo, SeedKind;
+export 'src/domain/value_objects/seed_info.dart' show SeedInfo;
 export 'src/domain/value_objects/mnemonic_length.dart' show MnemonicLength;
 export 'src/domain/value_objects/descriptors.dart'
     show Xpub, BitcoinDescriptor, LiquidDescriptor;

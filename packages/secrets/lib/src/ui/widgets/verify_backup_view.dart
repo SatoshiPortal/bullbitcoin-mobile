@@ -79,15 +79,14 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
     });
     if (_picked.length == _correct.length) {
       final reconstructed = _picked.map((i) => _shuffled[i]).toList();
-      var ok = true;
+      // Constant-time-ish compare: visit EVERY word (no early break) so the
+      // verify-tap timing doesn't leak how many leading words were correct.
+      var mismatch = 0;
       for (var i = 0; i < _correct.length; i++) {
-        if (reconstructed[i] != _correct[i]) {
-          ok = false;
-          break;
-        }
+        if (reconstructed[i] != _correct[i]) mismatch |= 1;
       }
       _done = true; // onResult fires exactly once
-      widget.onResult(ok);
+      widget.onResult(mismatch == 0);
     }
   }
 

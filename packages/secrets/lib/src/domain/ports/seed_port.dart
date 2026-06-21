@@ -1,30 +1,27 @@
-import 'dart:typed_data';
-
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'secrets_failure.dart';
-import 'value_objects/mnemonic_length.dart';
-import 'value_objects/seed_info.dart';
+import '../secrets_failure.dart';
+import '../value_objects/mnemonic_length.dart';
+import '../value_objects/seed_info.dart';
 
-/// The ONLY Repository in `secrets` — the seed lifecycle. Every method returns
-/// the canonical `Result<_, SecretsFailure>`; none throw recoverable exceptions
-/// across this boundary. `get`/`getAllMnemonicSeeds` are deliberately absent:
-/// no seed entity escapes — callers get non-secret [SeedInfo] only.
-abstract interface class SeedRepository {
+/// The seed/wallet-key-material port (the package's only "repository"). The
+/// stored secret is always a mnemonic; this port imports/generates them and
+/// exposes the non-secret [SeedInfo]. Every method returns the canonical
+/// `Result<_, SecretsFailure>` and none throw recoverable exceptions across the
+/// boundary. `get`/`getAll` are deliberately absent — no secret escapes.
+abstract interface class SeedPort {
   @useResult
   Future<Result<Fingerprint, SecretsFailure>> importMnemonic({
     required List<String> words,
     String? passphrase,
+    String language = 'english',
   });
 
   @useResult
   Future<Result<Fingerprint, SecretsFailure>> generateMnemonic({
     MnemonicLength length = MnemonicLength.words12,
   });
-
-  @useResult
-  Future<Result<Fingerprint, SecretsFailure>> importBytes(Uint8List bytes);
 
   /// Trust-gated: the caller is responsible for a confirmed use-case (a public
   /// [Fingerprint] conveys identity, not authority).
@@ -45,5 +42,6 @@ abstract interface class SeedRepository {
   Future<Result<Fingerprint, SecretsFailure>> fingerprintOf({
     required List<String> words,
     String? passphrase,
+    String language = 'english',
   });
 }

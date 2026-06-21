@@ -122,16 +122,31 @@ void main() {
       expect(m.fingerprint.hex, zooFingerprint);
     });
 
-    test('legacy passphrase recovered', () async {
-      const pass = 'pw';
-      final fp = Mnemonic(words: zooWords, passphrase: pass).fingerprint.hex;
+    test('OldSeed is read as the BARE mnemonic even with a passphrases list',
+        () async {
+      // The raw-fp OldSeed key IS the bare-mnemonic fingerprint; its
+      // `passphrases` list is metadata for DERIVED wallets (migrated separately
+      // into their own passphrase-fingerprinted SeedModel). Attaching one here
+      // would derive a DIFFERENT fingerprint than the key → an unfindable seed.
+      // So the decoder must NOT guess a passphrase: bare mnemonic, null pass,
+      // fingerprint == the bare key.
+      final v = jsonEncode({
+        'mnemonic': zooWords.join(' '),
+        'mnemonicFingerprint': zooFingerprint,
+        'network': 'bitcoin',
+        'passphrases': [
+          {'passphrase': '', 'sourceFingerprint': zooFingerprint},
+          {'passphrase': 'TREZOR', 'sourceFingerprint': 'deadbeef'},
+        ],
+      });
       final kv = FakeSecureKeyValueStore()
-        ..seed(SecretStoreKeys.seedKey(fp),
-            legacyOldSeedValue(zooWords, fingerprint: fp, passphrase: pass));
+        ..seed(SecretStoreKeys.seedKey(zooFingerprint), v);
       final m = await _store(kv).useAndForget(
-          SecretStoreKeys.seedKey(fp), (b) async => Mnemonic.fromStorageBytes(b));
-      expect(m.passphrase, pass);
-      expect(m.fingerprint.hex, fp);
+          SecretStoreKeys.seedKey(zooFingerprint),
+          (b) async => Mnemonic.fromStorageBytes(b));
+      expect(m.words, zooWords);
+      expect(m.passphrase, isNull); // never guessed from the list
+      expect(m.fingerprint.hex, zooFingerprint); // bare fp == key → findable
     });
   });
 
@@ -145,6 +160,34 @@ void main() {
       final m = await store.useAndForget(
           SecretStoreKeys.seedKey(zooFingerprint),
           (b) async => Mnemonic.fromStorageBytes(b));
+      expect(m.words, zooWords);
+      expect(m.fingerprint.hex, zooFingerprint);
+    });
+  });
+
+  group('decodes the package-native {kind:mnemonic} map (case 1)', () {
+    test('raw kind:mnemonic JSON → words recovered AND fingerprint == key', () {
+      final v = jsonEncode({
+        'kind': 'mnemonic',
+        'words': zooWords,
+        'passphrase': null,
+        'language': 'english',
+      });
+      final m = Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v)));
+      expect(m.words, zooWords);
+      expect(m.fingerprint.hex, zooFingerprint); // findable under its own key
+    });
+
+    test('a map carrying BOTH mnemonicWords AND bytes resolves to the mnemonic',
+        () {
+      // Precedence guard: a stray `bytes` field must never shadow real words and
+      // get the value wrongly rejected as bytes-only.
+      final v = jsonEncode({
+        'mnemonicWords': zooWords,
+        'runtimeType': 'mnemonic',
+        'bytes': [1, 2, 3],
+      });
+      final m = Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v)));
       expect(m.words, zooWords);
       expect(m.fingerprint.hex, zooFingerprint);
     });

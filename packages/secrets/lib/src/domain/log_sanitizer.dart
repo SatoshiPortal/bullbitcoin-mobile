@@ -8,6 +8,12 @@ final Set<String> _bip39English =
 final RegExp _xprv =
     RegExp(r'\b(?:xprv|tprv|yprv|zprv|uprv|vprv)[1-9A-HJ-NP-Za-km-z]{50,}');
 final RegExp _hex = RegExp(r'\b[0-9a-fA-F]{32,}\b');
+// The at-rest sealed-secret format written by FssSecretStoreAdapter: the `s1:`
+// version tag + base64 of the mnemonic JSON. A storage/decode error can echo a
+// stored value verbatim (e.g. `FormatException: ... s1:eyJ...`); anchoring on
+// the `s1:` tag redacts exactly that blob without touching ordinary base64
+// (tx hex, descriptors) elsewhere in a log line.
+final RegExp _sealedBlob = RegExp(r's1:[A-Za-z0-9+/]{16,}={0,2}');
 final RegExp _word = RegExp(r'[A-Za-z]+');
 // Tokens that can sit BETWEEN mnemonic words and still mean "same phrase":
 // whitespace, commas, AND the quotes/brackets/punctuation a phrase picks up
@@ -32,6 +38,7 @@ final RegExp _separators = RegExp(r'''^[\s,"'\[\]{}()|/:;.\-]+$''');
 String sanitizeLog(String? input) {
   if (input == null || input.isEmpty) return '';
   var out = input;
+  out = out.replaceAll(_sealedBlob, '[REDACTED_SEALED_BLOB]');
   out = out.replaceAll(_xprv, '[REDACTED_XPRV]');
   out = out.replaceAll(_hex, '[REDACTED_HEX]');
   out = _redactMnemonics(out);
@@ -48,19 +55,52 @@ String _redactMnemonics(String input) {
   bool adjacent(int a, int b) =>
       _separators.hasMatch(input.substring(words[a].end, words[b].start));
 
+  // Redact a contiguous run of word-tokens that looks like a mnemonic,
+  // TOLERATING mistyped / checksum-failing words inside it (a typo must not let
+  // the other ~11 real words leak). The run is grown across <= 2 CONSECUTIVE
+  // non-BIP39 tokens; 3+ in a row, or a non-separator gap, ends it — so
+  // ordinary prose (sparse BIP39 words) is never redacted.
+  //
+  // The redaction trigger is COUNT-based, not a typo budget: a run is a
+  // mnemonic when it holds >= 12 BIP39 words, OR >= 9 BIP39 words at >= 75%
+  // density. Counting (rather than the old `nonBip39 <= 2` cap) is what closes
+  // the leak where typos are SPREAD OUT singly: 3 isolated typos never break
+  // the run yet would blow a fixed budget, leaving 9..12 real words — still
+  // brute-forceable — exposed.
   final ranges = <List<int>>[]; // [start, end] char offsets to redact
+  final n = words.length;
   var i = 0;
-  while (i < words.length) {
+  while (i < n) {
     if (!isWord[i]) {
       i++;
       continue;
     }
-    var j = i + 1;
-    while (j < words.length && isWord[j] && adjacent(j - 1, j)) {
+    var j = i;
+    var lastBip39 = i;
+    var bip39count = 0;
+    var consecutiveNon = 0;
+    while (j < n) {
+      if (j > i && !adjacent(j - 1, j)) break; // non-phrase gap ends the run
+      if (isWord[j]) {
+        bip39count++;
+        lastBip39 = j;
+        consecutiveNon = 0;
+      } else if (++consecutiveNon > 2) {
+        break; // 3+ non-BIP39 in a row → prose, not a phrase
+      }
       j++;
     }
-    if (j - i >= 12) ranges.add([words[i].start, words[j - 1].end]);
-    i = j;
+    // A BIP39-bounded run (first..last BIP39 word) is a mnemonic when it holds
+    // >= 12 BIP39 words, OR >= 9 BIP39 words at >= 75% density. Plain prose
+    // never assembles 9+ adjacent BIP39 words at that density, so it stays
+    // readable; any number of spread-out typos can no longer leave the real
+    // words exposed.
+    final span = lastBip39 - i + 1;
+    final nonBip39 = span - bip39count;
+    if (bip39count >= 12 || (bip39count >= 9 && nonBip39 * 4 <= span)) {
+      ranges.add([words[i].start, words[lastBip39].end]);
+    }
+    i = j > i ? j : i + 1;
   }
   if (ranges.isEmpty) return input;
 

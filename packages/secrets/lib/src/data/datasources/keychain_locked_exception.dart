@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-/// Thrown by `FssSecretStore` when the OS keychain/keystore is locked.
+/// Thrown by `FssSecretStoreAdapter` when the OS keychain/keystore is locked.
 ///
 /// This is the package-internal "foreign exception" for the locked condition;
 /// the repository boundary converts it to `KeychainLockedFailure`. It is NEVER

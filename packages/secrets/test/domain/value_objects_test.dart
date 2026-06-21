@@ -67,7 +67,6 @@ void main() {
     test('Bip85Derivation.toString omits the words', () {
       final d = Bip85Derivation(
         path: Bip85Path("39'/0'/12'/0'"),
-        kind: SeedKind.mnemonic,
         length: MnemonicLength.words12,
         words: const ['zoo', 'zoo', 'wrong'],
       );
@@ -92,20 +91,28 @@ void main() {
       final s = ArkSecret(Uint8List.fromList(List.filled(32, 9)));
       expect(s.toString(), 'ArkSecret(32 bytes)');
     });
+
+    test('LiquidDescriptor.toString omits the ct descriptor (blinding key)', () {
+      const ct = 'ct(slip77(deadbeefblindingkey),elwpkh(xpubABC))';
+      final d = LiquidDescriptor(ct);
+      expect(d.toString(), isNot(contains('slip77')));
+      expect(d.toString(), isNot(contains('deadbeefblindingkey')));
+      expect(d.ctDescriptor, ct); // value still accessible for watch-only use
+    });
   });
 
   group('SeedInfo is non-secret metadata', () {
-    test('carries fingerprint, kind, wordCount, passphrase flag', () {
+    test('carries fingerprint, wordCount, passphrase flag, language', () {
       final info = SeedInfo(
         fingerprint: Fingerprint('deadbeef'),
-        kind: SeedKind.mnemonic,
         wordCount: 12,
         hasPassphrase: true,
+        language: 'english',
       );
       expect(info.fingerprint.hex, 'deadbeef');
-      expect(info.kind, SeedKind.mnemonic);
       expect(info.wordCount, 12);
       expect(info.hasPassphrase, isTrue);
+      expect(info.language, 'english');
     });
   });
 }

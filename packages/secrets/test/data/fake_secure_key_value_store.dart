@@ -1,9 +1,9 @@
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
-import 'package:secrets/src/storage/secure_key_value_store.dart';
+import 'package:secrets/src/domain/ports/secure_key_value_store_port.dart';
 
-/// In-memory [SecureKeyValueStore] for unit tests. Can simulate a locked
+/// In-memory [SecureKeyValueStorePort] for unit tests. Can simulate a locked
 /// keychain and a transient null read (eventual consistency).
-class FakeSecureKeyValueStore implements SecureKeyValueStore {
+class FakeSecureKeyValueStore implements SecureKeyValueStorePort {
   final Map<String, String> _m = {};
 
   bool locked = false;

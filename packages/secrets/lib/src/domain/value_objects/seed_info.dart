@@ -1,47 +1,44 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-/// Whether a stored seed is a BIP39 mnemonic or raw bytes.
-enum SeedKind { mnemonic, bytesOnly }
-
-/// NON-secret metadata about a stored seed. This is the richest thing a caller
-/// ever learns about a seed without going through a sealed operation/widget —
-/// it contains no mnemonic words and no seed bytes.
+/// NON-secret metadata about a stored mnemonic. The richest thing a caller ever
+/// learns about a wallet's key material without a sealed operation/widget — it
+/// contains no words and no seed bytes. (The stored secret is always a
+/// mnemonic today; a future seed-bytes variant would extend this.)
 @immutable
 class SeedInfo {
   const SeedInfo({
     required this.fingerprint,
-    required this.kind,
+    required this.wordCount,
     required this.hasPassphrase,
-    this.wordCount,
+    required this.language,
     this.createdAt,
   });
 
   final Fingerprint fingerprint;
-  final SeedKind kind;
-
-  /// Null for [SeedKind.bytesOnly].
-  final int? wordCount;
+  final int wordCount;
   final bool hasPassphrase;
 
-  /// Sourced from the app-side `SeedIndex`; null for legacy-migrated seeds.
+  /// BIP39 language name (e.g. `english`). A mnemonic always has one.
+  final String language;
+
+  /// Sourced from the app-side `SeedIndexPort`; null for legacy-migrated seeds.
   final DateTime? createdAt;
 
   @override
   bool operator ==(Object other) =>
       other is SeedInfo &&
       other.fingerprint == fingerprint &&
-      other.kind == kind &&
       other.wordCount == wordCount &&
       other.hasPassphrase == hasPassphrase &&
+      other.language == language &&
       other.createdAt == createdAt;
 
   @override
   int get hashCode =>
-      Object.hash(fingerprint, kind, wordCount, hasPassphrase, createdAt);
+      Object.hash(fingerprint, wordCount, hasPassphrase, language, createdAt);
 
   @override
-  String toString() =>
-      'SeedInfo(${fingerprint.hex}, $kind, words: $wordCount, '
-      'passphrase: $hasPassphrase)';
+  String toString() => 'SeedInfo(${fingerprint.hex}, words: $wordCount, '
+      'passphrase: $hasPassphrase, $language)';
 }

@@ -3,20 +3,20 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/seed_reconciler.dart';
-import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
 import 'package:secrets/src/domain/value_objects/seed_info.dart';
 
 import 'fake_secure_key_value_store.dart';
 
-FssSecretStore _store(FakeSecureKeyValueStore kv) =>
+FssSecretStoreAdapter _store(FakeSecureKeyValueStore kv) =>
     // zero retry delay so tests don't sleep
-    FssSecretStore(kv, initialRetryDelay: Duration.zero);
+    FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
 
-class _FakeSeedIndex implements SeedIndex {
+class _FakeSeedIndex implements SeedIndexPort {
   final Map<String, SeedInfo> _m = {};
   @override
   Future<List<SeedInfo>> all() async => _m.values.toList();
@@ -29,7 +29,7 @@ class _FakeSeedIndex implements SeedIndex {
 }
 
 void main() {
-  group('FssSecretStore round-trip', () {
+  group('FssSecretStoreAdapter round-trip', () {
     test('store then useAndForget returns the bytes', () async {
       final kv = FakeSecureKeyValueStore();
       final store = _store(kv);
@@ -77,6 +77,24 @@ void main() {
       await store.store(SecretStoreKeys.seedKey('aaaa0000'), Uint8List(1));
       await store.purge();
       expect(await store.keys(), isEmpty);
+    });
+
+    test('SECURITY: purge wipes ONLY seed keys, never app-owned secrets',
+        () async {
+      final kv = FakeSecureKeyValueStore()
+        ..seed(SecretStoreKeys.seedKey('deadbeef'), 's1:AA==')
+        ..seed('a1b2c3d4', 'legacy-raw-fp-seed') // legacy seed → also purged
+        ..seed('swap_xyz', 'per-swap-keypair') // app-owned → MUST survive
+        ..seed(SecretStoreKeys.legacyHiveEncryption, 'hive-key') // MUST survive
+        ..seed('pin', '0000'); // app-owned → MUST survive
+      final store = _store(kv);
+      await store.purge();
+      final remaining = await store.keys();
+      expect(remaining, contains('swap_xyz'));
+      expect(remaining, contains(SecretStoreKeys.legacyHiveEncryption));
+      expect(remaining, contains('pin'));
+      expect(remaining, isNot(contains(SecretStoreKeys.seedKey('deadbeef'))));
+      expect(remaining, isNot(contains('a1b2c3d4')));
     });
   });
 
@@ -142,8 +160,9 @@ void main() {
       await store.store(SecretStoreKeys.seedKey('deadbeef'), Uint8List(1));
       await index.upsert(SeedInfo(
         fingerprint: Fingerprint('deadbeef'),
-        kind: SeedKind.mnemonic,
+        wordCount: 12,
         hasPassphrase: false,
+        language: 'english',
       ));
       final report = await reconcileSeeds(index: index, store: store);
       expect(report.isClean, isTrue);
@@ -167,8 +186,9 @@ void main() {
       final index = _FakeSeedIndex();
       await index.upsert(SeedInfo(
         fingerprint: Fingerprint('cafebabe'),
-        kind: SeedKind.mnemonic,
+        wordCount: 12,
         hasPassphrase: false,
+        language: 'english',
       ));
       final report = await reconcileSeeds(index: index, store: store);
       expect(report.danglingIndexFingerprints, [Fingerprint('cafebabe')]);

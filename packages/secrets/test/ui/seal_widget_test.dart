@@ -1,12 +1,11 @@
-import 'dart:typed_data';
 import 'package:bull_ui/bull_ui.dart' show BullSeedWarningCard;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/data/seed_repository_impl.dart';
-import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/seed_adapter.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
@@ -25,7 +24,7 @@ const zooWords = [
   'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'wrong',
 ];
 
-class _FakeSeedIndex implements SeedIndex {
+class _FakeSeedIndex implements SeedIndexPort {
   final Map<String, SeedInfo> _m = {};
   @override
   Future<List<SeedInfo>> all() async => _m.values.toList();
@@ -53,8 +52,8 @@ void main() {
 
   setUp(() async {
     final kv = FakeSecureKeyValueStore();
-    final store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
-    final repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
+    final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+    final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
     zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
     reader = MnemonicReader(store);
   });
@@ -62,7 +61,7 @@ void main() {
   // A reader over a locked keychain — its read() throws, exercising the
   // widgets' error path.
   MnemonicReader lockedReader() => MnemonicReader(
-        FssSecretStore(FakeSecureKeyValueStore()..locked = true,
+        FssSecretStoreAdapter(FakeSecureKeyValueStore()..locked = true,
             initialRetryDelay: Duration.zero),
       );
 
@@ -99,21 +98,6 @@ void main() {
     });
   });
 
-  group('MnemonicView bytes-only seed', () {
-    testWidgets('shows a warning (no phrase) instead of an empty grid',
-        (tester) async {
-      final kv = FakeSecureKeyValueStore();
-      final store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
-      final repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
-      final fp = _unwrap(
-          await repo.importBytes(Uint8List.fromList(List.filled(32, 1))));
-      await tester.pumpWidget(
-          _wrap(MnemonicView(seed: fp, reader: MnemonicReader(store))));
-      await tester.pumpAndSettle();
-      expect(find.byType(BullSeedWarningCard), findsOneWidget);
-    });
-  });
-
   group('VerifyBackupView unavailable path', () {
     testWidgets('shows a warning and never hangs when read fails',
         (tester) async {
@@ -135,7 +119,6 @@ void main() {
         (tester) async {
       final d = Bip85Derivation(
         path: Bip85Path("39'/0'/12'/0'"),
-        kind: SeedKind.mnemonic,
         length: MnemonicLength.words12,
         words: const ['alpha', 'bravo', 'charlie'],
       );
@@ -188,8 +171,8 @@ void main() {
         'breeze', 'fade', 'idle', 'dilemma', 'subway', 'mix',
       ];
       final kv = FakeSecureKeyValueStore();
-      final store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
-      final repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
+      final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+      final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
       final fp = _unwrap(await repo.importMnemonic(words: distinct));
 
       bool? outcome;

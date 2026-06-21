@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 
 import 'mnemonic_length.dart';
-import 'seed_info.dart';
 
 /// BIP85 application, mirroring the SDK app-numbers used across the codebase.
 enum Bip85Application {
@@ -61,13 +60,11 @@ class Bip85Path {
 class Bip85Derivation {
   const Bip85Derivation({
     required this.path,
-    required this.kind,
     required List<String> words,
     this.length,
   }) : _words = words;
 
   final Bip85Path path;
-  final SeedKind kind;
   final MnemonicLength? length;
 
   final List<String> _words;
@@ -78,7 +75,7 @@ class Bip85Derivation {
   List<String> get words => List.unmodifiable(_words);
 
   @override
-  String toString() => 'Bip85Derivation(${path.path}, $kind, '
+  String toString() => 'Bip85Derivation(${path.path}, '
       'length: ${length?.words})'; // words intentionally omitted
 }
 

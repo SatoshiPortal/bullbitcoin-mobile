@@ -31,16 +31,23 @@ class TxFacts {
   final String? lockupScriptAddress;
 }
 
-/// One swap redeem-script's relevant pubkeys + hashlock (a BTC or LBTC leg).
+/// One swap redeem-script's relevant pubkeys + hashlock + locktime (a BTC or
+/// LBTC leg).
 class SwapScriptLeg {
   const SwapScriptLeg({
     required this.receiverPubkey,
     required this.senderPubkey,
     required this.hashlock,
+    required this.locktime,
   });
   final String receiverPubkey;
   final String senderPubkey;
   final String hashlock;
+
+  /// The CLTV timeout block in the redeem script. The refund branch (our funds)
+  /// is reachable only at/after this height — it MUST match what the user
+  /// intended, or the server could push our refund window out arbitrarily.
+  final int locktime;
 }
 
 /// Pure validation of a [SigningIntent] against extracted [TxFacts]. A signer
@@ -109,6 +116,12 @@ class IntentValidator {
     return const Ok(null);
   }
 
+  /// NOTE (integration): the only Bitcoin signer does not yet populate
+  /// `facts.inputOutpoints`, so any non-empty `originalInputs` fails CLOSED here
+  /// — payjoin is unusable until the extractor supplies outpoints in the same
+  /// format the [PayjoinIntent] uses. The original-output check is presence-only
+  /// (the receiver legitimately adds/reorders outputs in BIP78); the value bound
+  /// is the fee-contribution cap. Finalize both before wiring payjoin.
   static Result<void, SecretsFailure> _validatePayjoin(
     PayjoinIntent intent,
     TxFacts facts,
@@ -161,6 +174,8 @@ class IntentValidator {
     required String scriptReceiverPubkey,
     required String scriptSenderPubkey,
     required String scriptHashlock,
+    int scriptLocktime = 0,
+    int? expectedLocktime,
   }) {
     if (ownClaimPubkey == null && ownRefundPubkey == null) {
       return const Err(
@@ -189,6 +204,17 @@ class IntentValidator {
     if (scriptHashlock != intent.preimageHash) {
       return const Err(SigningFailure('swap hashlock mismatch vs intent'));
     }
+    // Bind the redeem-script locktime to the user's intended timeout. Opt-in:
+    // only enforced when the caller supplies a positive [expectedLocktime]
+    // (the Boltz-quoted timeout it asked for), so a caller that can't know the
+    // server value ahead of time is not blocked — but when it can, the server
+    // can no longer push our refund window out.
+    if (expectedLocktime != null &&
+        expectedLocktime > 0 &&
+        scriptLocktime != expectedLocktime) {
+      return Err(SigningFailure(
+          'swap locktime $scriptLocktime mismatch vs intent $expectedLocktime'));
+    }
     return const Ok(null);
   }
 
@@ -215,6 +241,9 @@ class IntentValidator {
       scriptReceiverPubkey: lockup.receiverPubkey,
       scriptSenderPubkey: lockup.senderPubkey,
       scriptHashlock: lockup.hashlock,
+      // The LOCKUP leg holds OUR funds: bind its refund locktime to the intent.
+      scriptLocktime: lockup.locktime,
+      expectedLocktime: intent.timeout,
     );
     if (refundLeg is Err<void, SecretsFailure>) return refundLeg;
     return validateSwapCommitment(
@@ -223,6 +252,9 @@ class IntentValidator {
       scriptReceiverPubkey: claim.receiverPubkey,
       scriptSenderPubkey: claim.senderPubkey,
       scriptHashlock: claim.hashlock,
+      // The CLAIM leg's locktime protects Boltz, not our funds (and differs per
+      // chain), so it is not bound to the single intent timeout.
+      scriptLocktime: claim.locktime,
     );
   }
 

@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'secrets_failure.dart';
-import 'value_objects/backup.dart';
+import '../secrets_failure.dart';
+import '../value_objects/backup.dart';
 
 /// Encrypted-vault encryption/restore. The plaintext (the seed) never leaves
 /// the package: [encryptVault] returns ciphertext + key; [restoreVault] decrypts

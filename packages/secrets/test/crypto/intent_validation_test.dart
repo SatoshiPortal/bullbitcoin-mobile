@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
-import 'package:secrets/src/crypto/signer_port_impl.dart';
+import 'package:secrets/src/data/adapters/signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/descriptors.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
@@ -201,10 +201,17 @@ void main() {
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
+        // BTC = lockup: its locktime must match the intent timeout (1).
         btcScript: const SwapScriptLeg(
-            receiverPubkey: 'server', senderPubkey: 'myrefund', hashlock: 'ph'),
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 1),
         lbtcScript: const SwapScriptLeg(
-            receiverPubkey: 'myclaim', senderPubkey: 'server', hashlock: 'ph'),
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999), // claim leg locktime is not bound
       );
       expect(_isOk(ok), isTrue);
 
@@ -215,11 +222,69 @@ void main() {
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
         btcScript: const SwapScriptLeg(
-            receiverPubkey: 'server', senderPubkey: 'myrefund', hashlock: 'ph'),
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 1),
         lbtcScript: const SwapScriptLeg(
-            receiverPubkey: 'attacker', senderPubkey: 'server', hashlock: 'ph'),
+            receiverPubkey: 'attacker',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999),
       );
       expect(_err(tampered), isA<SigningFailure>());
+    });
+
+    test('chain: REJECTS when the LOCKUP leg locktime != intent timeout', () {
+      const chain = SwapIntent(
+        preimageHash: 'ph', claimPubkey: 'myclaim', refundPubkey: 'myrefund',
+        timeout: 100, amountSat: 1, direction: SwapDirection.chain,
+      );
+      final r = IntentValidator.validateChainSwapCommitment(
+        chain,
+        direction: ChainDirection.btcToLbtc,
+        ownClaimPubkey: 'myclaim',
+        ownRefundPubkey: 'myrefund',
+        // BTC lockup leg locktime (50) pushed away from the intended 100.
+        btcScript: const SwapScriptLeg(
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 50),
+        lbtcScript: const SwapScriptLeg(
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999),
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('single leg: REJECTS a script locktime that differs from the intent',
+        () {
+      final r = IntentValidator.validateSwapCommitment(
+        reverse, // timeout: 100
+        ownClaimPubkey: 'mykey',
+        scriptReceiverPubkey: 'mykey',
+        scriptSenderPubkey: 'boltzkey',
+        scriptHashlock: 'ph',
+        scriptLocktime: 777, // server pushed the refund window out
+        expectedLocktime: 100,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('single leg: accepts a matching script locktime', () {
+      final r = IntentValidator.validateSwapCommitment(
+        reverse, // timeout: 100
+        ownClaimPubkey: 'mykey',
+        scriptReceiverPubkey: 'mykey',
+        scriptSenderPubkey: 'boltzkey',
+        scriptHashlock: 'ph',
+        scriptLocktime: 100,
+        expectedLocktime: 100,
+      );
+      expect(_isOk(r), isTrue);
     });
 
     test('chain lbtcToBtc: legs swap chains (BTC claim / LBTC lockup)', () {
@@ -233,9 +298,16 @@ void main() {
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
         btcScript: const SwapScriptLeg(
-            receiverPubkey: 'myclaim', senderPubkey: 'server', hashlock: 'ph'),
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999), // claim leg, not bound
+        // LBTC = lockup here: its locktime must match the intent timeout (1).
         lbtcScript: const SwapScriptLeg(
-            receiverPubkey: 'server', senderPubkey: 'myrefund', hashlock: 'ph'),
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 1),
       );
       expect(_isOk(ok), isTrue);
     });
@@ -409,8 +481,8 @@ void main() {
 
   group('Liquid fee-cap (sound under confidential outputs)', () {
     test('SendIntent: accepts fee within cap, rejects above', () {
-      expect(SignerPortImpl.debugValidateLiquidFee(_send, 1500), isNull);
-      expect(SignerPortImpl.debugValidateLiquidFee(_send, 9999),
+      expect(SignerAdapter.debugValidateLiquidFee(_send, 1500), isNull);
+      expect(SignerAdapter.debugValidateLiquidFee(_send, 9999),
           isA<SigningFailure>());
     });
 
@@ -419,7 +491,7 @@ void main() {
         preimageHash: 'ph', claimPubkey: 'c', refundPubkey: 'r',
         timeout: 1, amountSat: 1, direction: SwapDirection.reverse,
       );
-      expect(SignerPortImpl.debugValidateLiquidFee(swap, 0),
+      expect(SignerAdapter.debugValidateLiquidFee(swap, 0),
           isA<SigningFailure>());
     });
   });

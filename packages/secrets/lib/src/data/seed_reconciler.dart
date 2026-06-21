@@ -1,10 +1,10 @@
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/domain/seed_index.dart';
-import 'package:secrets/src/storage/secret_store.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
 
-/// The outcome of reconciling the non-secret [SeedIndex] against the
-/// [SecretStore]. Removing `getAll` from the secret store means the index is
+/// The outcome of reconciling the non-secret [SeedIndexPort] against the
+/// [SecretStorePort]. Removing `getAll` from the secret store means the index is
 /// the source of truth for enumeration — so a drift between the two must be
 /// caught, never silently lose a seed (= lose funds).
 class ReconcileReport {
@@ -36,8 +36,8 @@ class ReconcileReport {
 /// Compares the index against the store and reports drift. Pure logic over the
 /// two ports — does not mutate either; the caller decides how to heal/surface.
 Future<ReconcileReport> reconcileSeeds({
-  required SeedIndex index,
-  required SecretStore store,
+  required SeedIndexPort index,
+  required SecretStorePort store,
 }) async {
   final storeFingerprints = <Fingerprint>{};
   final malformed = <String>[];

@@ -23,7 +23,13 @@ class Bip85HexView extends StatelessWidget {
             color: context.bull.textMuted,
           ),
           const Gap(BullSpacing.sm),
-          SelectableText(result.hexForView),
+          // Non-selectable on purpose: the clipboard is a broad, persistent
+          // sink PrivacyGuard cannot cover, so the derived secret is displayed
+          // read-only — same stance as the mnemonic views.
+          BullText(
+            result.hexForView,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ],
       ),
     );

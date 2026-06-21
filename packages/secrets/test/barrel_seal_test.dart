@@ -8,13 +8,13 @@ import 'package:secrets/secrets.dart';
 void main() {
   test('public contracts and failures are exported', () {
     // These references compile ONLY because the barrel exports them.
-    expect(SeedRepository, isNotNull);
+    expect(SeedPort, isNotNull);
     expect(KeyDerivationPort, isNotNull);
     expect(SignerPort, isNotNull);
     expect(SwapSignerPort, isNotNull);
     expect(BackupVaultPort, isNotNull);
     expect(Bip85Port, isNotNull);
-    expect(SeedIndex, isNotNull);
+    expect(SeedIndexPort, isNotNull);
     expect(SecretsLocator, isNotNull);
   });
 

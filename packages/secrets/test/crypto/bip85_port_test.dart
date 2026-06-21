@@ -1,10 +1,10 @@
 import 'package:convert/convert.dart' as conv;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/bip85_port_impl.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/data/seed_repository_impl.dart';
-import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/data/adapters/bip85_adapter.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/seed_adapter.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
@@ -21,7 +21,7 @@ const recoverbullKeyForPath =
 const arkSecretForZooSeed =
     'a30097fcca0406e6003b46b0a8ac5e4af856bf0d31f901b2f580df7d3f5395a3';
 
-class _FakeSeedIndex implements SeedIndex {
+class _FakeSeedIndex implements SeedIndexPort {
   final Map<String, SeedInfo> _m = {};
   @override
   Future<List<SeedInfo>> all() async => _m.values.toList();
@@ -39,16 +39,16 @@ T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
     };
 
 void main() {
-  late FssSecretStore store;
-  late Bip85PortImpl bip85;
+  late FssSecretStoreAdapter store;
+  late Bip85Adapter bip85;
   late Fingerprint zooFp;
 
   setUp(() async {
     final kv = FakeSecureKeyValueStore();
-    store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
-    final repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
+    store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+    final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
     zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
-    bip85 = Bip85PortImpl(store);
+    bip85 = Bip85Adapter(store);
   });
 
   test('deriveRecoverbullKey matches the frozen KAT vector', () async {
@@ -66,7 +66,6 @@ void main() {
       index: 0,
     ));
     expect(d.path.path, "39'/0'/12'/0'");
-    expect(d.kind, SeedKind.mnemonic);
     expect(d.words, hasLength(12));
   });
 

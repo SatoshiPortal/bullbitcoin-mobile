@@ -1,16 +1,12 @@
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
-import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
-import 'package:secrets/src/data/models/seed_secret.dart';
-import 'package:secrets/src/domain/log_sanitizer.dart';
+import 'package:secrets/src/data/adapters/secret_guard.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
+import 'package:secrets/src/domain/ports/swap_signer_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
-import 'package:secrets/src/domain/swap_signer_port.dart';
 import 'package:secrets/src/domain/value_objects/created_swap.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
-import 'package:secrets/src/storage/secret_store.dart';
 
 /// Creates Boltz swaps from the master seed (read internally; the mnemonic is
 /// handed to the Boltz SDK from inside the package and never escapes). After
@@ -21,11 +17,9 @@ import 'package:secrets/src/storage/secret_store.dart';
 /// Claim/refund of an existing swap stay in the `swaps` feature (stored
 /// per-swap KeyPair). Native (Boltz/electrum) execution is integration-tier;
 /// the security-critical commitment check is pure and unit-tested.
-class SwapSignerPortImpl implements SwapSignerPort {
-  SwapSignerPortImpl(this._store);
-  final SecretStore _store;
-
-  String _key(Fingerprint seed) => SecretStoreKeys.seedKey(seed.hex);
+class SwapSignerAdapter implements SwapSignerPort {
+  SwapSignerAdapter(SecretStorePort store) : _secretGuard = SecretGuard(store);
+  final SecretGuard _secretGuard;
 
   static boltz.Chain _btcChain(bool t) =>
       t ? boltz.Chain.bitcoinTestnet : boltz.Chain.bitcoin;
@@ -160,11 +154,13 @@ class SwapSignerPortImpl implements SwapSignerPort {
             receiverPubkey: swap.btcScriptStr.receiverPubkey,
             senderPubkey: swap.btcScriptStr.senderPubkey,
             hashlock: swap.btcScriptStr.hashlock,
+            locktime: swap.btcScriptStr.locktime,
           ),
           lbtcScript: SwapScriptLeg(
             receiverPubkey: swap.lbtcScriptStr.receiverPubkey,
             senderPubkey: swap.lbtcScriptStr.senderPubkey,
             hashlock: swap.lbtcScriptStr.hashlock,
+            locktime: swap.lbtcScriptStr.locktime,
           ),
         );
         return verdict.map(
@@ -189,6 +185,8 @@ class SwapSignerPortImpl implements SwapSignerPort {
         scriptReceiverPubkey: swap.swapScript.receiverPubkey,
         scriptSenderPubkey: swap.swapScript.senderPubkey,
         scriptHashlock: swap.swapScript.hashlock,
+        scriptLocktime: swap.swapScript.locktime,
+        expectedLocktime: intent.timeout,
       ).map((_) => CreatedSwap(
             id: swap.id,
             scriptAddress: swap.scriptAddress,
@@ -209,6 +207,8 @@ class SwapSignerPortImpl implements SwapSignerPort {
         scriptReceiverPubkey: swap.swapScript.receiverPubkey,
         scriptSenderPubkey: swap.swapScript.senderPubkey,
         scriptHashlock: swap.swapScript.hashlock,
+        scriptLocktime: swap.swapScript.locktime,
+        expectedLocktime: intent.timeout,
       ).map((_) => CreatedSwap(
             id: swap.id,
             scriptAddress: swap.scriptAddress,
@@ -216,25 +216,14 @@ class SwapSignerPortImpl implements SwapSignerPort {
             invoice: swap.invoice,
           ));
 
+  /// Reads the mnemonic and hands the SDK its sentence form (stays in-package).
   Future<Result<CreatedSwap, SecretsFailure>> _guard(
     Fingerprint seed,
     Future<Result<CreatedSwap, SecretsFailure>> Function(String mnemonic) body,
-  ) async {
-    try {
-      return await _store.useAndForget(_key(seed), (bytes) async {
-        final secret = SeedSecret.fromStorageBytes(bytes);
-        if (secret is! MnemonicSeedSecret) {
-          return const Err(
-              NotAMnemonicSeedFailure('swap creation requires a mnemonic seed'));
-        }
-        return body(secret.words.join(' '));
-      });
-    } on KeychainLockedException catch (e) {
-      return Err(KeychainLockedFailure(sanitizeLog(e.toString())));
-    } on SecretNotFoundException {
-      return Err(SeedNotFoundFailure(seed));
-    } on Exception catch (e) {
-      return Err(SigningFailure(sanitizeLog(e.toString())));
-    }
-  }
+  ) =>
+      _secretGuard.read(
+        seed,
+        (m) => body(m.words.join(' ')),
+        onError: SigningFailure.new,
+      );
 }

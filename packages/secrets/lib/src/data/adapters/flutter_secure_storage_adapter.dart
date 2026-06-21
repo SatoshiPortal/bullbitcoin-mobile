@@ -1,12 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
-import 'package:secrets/src/storage/secure_key_value_store.dart';
+import 'package:secrets/src/domain/ports/secure_key_value_store_port.dart';
 
 /// The ONLY code in `secrets` that touches the platform channel. Thin: it maps
-/// `FlutterSecureStorage` to [SecureKeyValueStore] and translates a locked
+/// `FlutterSecureStorage` to [SecureKeyValueStorePort] and translates a locked
 /// keychain into [KeychainLockedException]. All logic lives above it in
-/// `FssSecretStore` (which is what the unit tests exercise via a fake).
-class FlutterSecureStorageAdapter implements SecureKeyValueStore {
+/// `FssSecretStoreAdapter` (which is what the unit tests exercise via a fake).
+class FlutterSecureStorageAdapter implements SecureKeyValueStorePort {
   FlutterSecureStorageAdapter(this._storage);
 
   /// Builds an instance configured for seed custody:
@@ -14,6 +14,15 @@ class FlutterSecureStorageAdapter implements SecureKeyValueStore {
   ///    `ThisDeviceOnly` blocks iCloud/Google backup of the seed),
   ///  - `resetOnError: false` — the SatoshiPortal fork defaults to `true`
   ///    ("permanently erase on error"), a seed-wipe footgun (dep-audit §11.2).
+  ///
+  /// Storage backend: this is fss10 (EncryptedSharedPreferences-OFF), which is
+  /// the app's UNIVERSAL seed backend since the storage migration standardized
+  /// every install on fss10 (`lib/core/storage/storage_locator.dart` verifies
+  /// and persists a fss10 `SeedStoreType` flag on startup). So `.standard()` is
+  /// correct for every user. The old fss9/ESP path
+  /// (`flutter_secure_storage_legacy`) remains in the app only as a transitional
+  /// fallback for a not-yet-migrated install; in the unlikely case one must be
+  /// served, inject a matching `FlutterSecureStorage` instead of `.standard()`.
   factory FlutterSecureStorageAdapter.standard() {
     return FlutterSecureStorageAdapter(
       const FlutterSecureStorage(

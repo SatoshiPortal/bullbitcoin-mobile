@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
-import 'package:secrets/src/storage/secret_store.dart';
-import 'package:secrets/src/storage/secure_key_value_store.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
+import 'package:secrets/src/domain/ports/secure_key_value_store_port.dart';
 
 /// Secure-storage key prefixes (mirrors the app's
 /// `SecureStorageKeyPrefixConstants` + the legacy patterns migration 005 left
@@ -16,7 +16,7 @@ class SecretStoreKeys {
   /// Legacy artifacts that `keys()` must surface for reconciliation/purge:
   /// pre-0.4 seeds stored under a raw 8-hex fingerprint (no prefix), the Hive
   /// encryption key, and per-swap sensitive blobs.
-  static const legacyHiveEncryption = 'hiveEncryption';
+  static const legacyHiveEncryption = 'hiveEncryptionKey';
   static const legacySwapTxSensitivePrefix = 'swapTxSensitive_';
   static final legacyRawFingerprint = RegExp(r'^[0-9a-f]{8}$');
 
@@ -27,21 +27,21 @@ class SecretStoreKeys {
       key.startsWith(seed) || legacyRawFingerprint.hasMatch(key);
 }
 
-/// The only [SecretStore] backend today: adapts `flutter_secure_storage`.
+/// The only [SecretStorePort] backend today: adapts `flutter_secure_storage`.
 ///
 /// Replicates the live `seed_datasource` behavior: 5-attempt exponential
 /// backoff on transient null reads, [KeychainLockedException] rethrown (never
 /// converted to not-found), `resetOnError: false` (configured in the adapter).
 /// Stores bytes as base64; never logs values.
-class FssSecretStore implements SecretStore {
-  FssSecretStore(
+class FssSecretStoreAdapter implements SecretStorePort {
+  FssSecretStoreAdapter(
     this._kv, {
     int maxReadRetries = 5,
     Duration initialRetryDelay = const Duration(milliseconds: 300),
   })  : _maxReadRetries = maxReadRetries,
         _initialRetryDelay = initialRetryDelay;
 
-  final SecureKeyValueStore _kv;
+  final SecureKeyValueStorePort _kv;
   final int _maxReadRetries;
   final Duration _initialRetryDelay;
 
@@ -75,6 +75,7 @@ class FssSecretStore implements SecretStore {
       String key, Future<R> Function(Uint8List bytes) use) async {
     var delay = _initialRetryDelay;
     for (var attempt = 0; attempt < _maxReadRetries; attempt++) {
+      final isLast = attempt == _maxReadRetries - 1;
       String? value;
       try {
         value = await _kv.read(key);
@@ -82,12 +83,21 @@ class FssSecretStore implements SecretStore {
         // Retrying cannot help — the lock clears only on user unlock. Rethrow
         // so the boundary surfaces KeychainLockedFailure, never not-found.
         rethrow;
+      } on Exception {
+        // A TRANSIENT platform/channel error (not a lock) — retry with backoff
+        // before giving up, matching the live datasource's resilience. Rethrow
+        // on the last attempt so it surfaces as a typed failure (never silently
+        // a not-found).
+        if (isLast) rethrow;
+        await Future<void>.delayed(delay);
+        delay *= 2;
+        continue;
       }
 
       if (value != null) {
         return use(_decode(value));
       }
-      if (attempt < _maxReadRetries - 1) {
+      if (!isLast) {
         await Future<void>.delayed(delay);
         delay *= 2;
       }
@@ -111,8 +121,19 @@ class FssSecretStore implements SecretStore {
   @override
   Future<void> trash(String key) => _kv.delete(key);
 
+  /// Wipes only the SEED keys this store owns (`seed_*` + legacy raw-fingerprint
+  /// blobs) — NOT the whole secure-storage namespace. The package shares the
+  /// keychain with the app (`swap_*` KeyPairs, the Hive encryption key, the PIN/
+  /// api-key); a blind `deleteAll` here would destroy app-owned secrets and
+  /// brick in-flight swaps. Deleting those is the app's responsibility.
   @override
-  Future<void> purge() => _kv.deleteAll();
+  Future<void> purge() async {
+    for (final key in await keys()) {
+      if (SecretStoreKeys.isSeedKey(key)) {
+        await _kv.delete(key);
+      }
+    }
+  }
 
   @override
   Future<List<String>> keys() async {

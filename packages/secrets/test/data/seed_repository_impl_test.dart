@@ -1,10 +1,9 @@
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/data/seed_repository_impl.dart';
-import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/seed_adapter.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/seed_info.dart';
 
@@ -25,7 +24,7 @@ SecretsFailure _unwrapErr<T>(Result<T, SecretsFailure> r) => switch (r) {
       Err(:final failure) => failure,
     };
 
-class _FakeSeedIndex implements SeedIndex {
+class _FakeSeedIndex implements SeedIndexPort {
   final Map<String, SeedInfo> _m = {};
   @override
   Future<List<SeedInfo>> all() async => _m.values.toList();
@@ -37,12 +36,12 @@ class _FakeSeedIndex implements SeedIndex {
   Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
 }
 
-({SeedRepositoryImpl repo, FakeSecureKeyValueStore kv, _FakeSeedIndex index})
+({SeedAdapter repo, FakeSecureKeyValueStore kv, _FakeSeedIndex index})
     _make() {
   final kv = FakeSecureKeyValueStore();
   final index = _FakeSeedIndex();
-  final repo = SeedRepositoryImpl(
-    store: FssSecretStore(kv, initialRetryDelay: Duration.zero),
+  final repo = SeedAdapter(
+    store: FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero),
     index: index,
   );
   return (repo: repo, kv: kv, index: index);
@@ -58,8 +57,8 @@ void main() {
       expect(_unwrap(await m.repo.exists(fp)), isTrue);
       final infos = _unwrap(await m.repo.listSeeds());
       expect(infos, hasLength(1));
-      expect(infos.single.kind, SeedKind.mnemonic);
       expect(infos.single.wordCount, 12);
+      expect(infos.single.language, 'english');
     });
 
     test('duplicate fingerprint is rejected (collision-safe handle)', () async {
@@ -97,15 +96,17 @@ void main() {
     });
   });
 
-  group('importBytes', () {
-    test('stores a bytes-only seed', () async {
+  group('importMnemonic with passphrase', () {
+    test('a passphrase yields a different fingerprint + hasPassphrase flag',
+        () async {
       final m = _make();
-      final res =
-          await m.repo.importBytes(Uint8List.fromList(List.filled(32, 3)));
-      expect(res, isA<Ok>());
+      final noPass = _unwrap(await m.repo.importMnemonic(words: zooWords));
+      final withPass = _unwrap(
+          await m.repo.importMnemonic(words: zooWords, passphrase: 'x'));
+      expect(withPass, isNot(noPass)); // BIP39: passphrase changes the seed
       final infos = _unwrap(await m.repo.listSeeds());
-      expect(infos.single.kind, SeedKind.bytesOnly);
-      expect(infos.single.wordCount, isNull);
+      expect(infos.firstWhere((i) => i.fingerprint == withPass).hasPassphrase,
+          isTrue);
     });
   });
 

@@ -146,16 +146,16 @@ class Mnemonic {
         passphrase: m['passphrase'] as String?,
       );
     }
-    // 3. The pre-0.4 OldSeed JSON (single space-joined string + per-source
-    //    passphrase list). The seed's own passphrase is the entry whose
-    //    sourceFingerprint matches its mnemonicFingerprint.
+    // 3. The pre-0.4 OldSeed JSON (single space-joined string). This blob is
+    //    keyed by the BARE-mnemonic fingerprint (`mnemonicFingerprint`), so it
+    //    represents the bare mnemonic — passphrase MUST be null. The old model's
+    //    `passphrases` list is wallet-level metadata for DERIVED wallets (each
+    //    migrated by 005 into its own passphrase-fingerprinted SeedModel, read
+    //    by case 2); attaching one here would derive a different fingerprint
+    //    than this key → an unfindable seed. So we never guess a passphrase.
     if (m['mnemonic'] is String && (m['mnemonic'] as String).isNotEmpty) {
-      final words =
-          (m['mnemonic'] as String).trim().split(RegExp(r'\s+'));
-      return Mnemonic(
-        words: words,
-        passphrase: _legacyPassphrase(m),
-      );
+      final words = (m['mnemonic'] as String).trim().split(RegExp(r'\s+'));
+      return Mnemonic(words: words);
     }
     // A bytes-only seed (`runtimeType:"bytes"`) was never created in practice
     // (zero callers) and this package stores only mnemonics — reject it
@@ -164,20 +164,6 @@ class Mnemonic {
       throw const FormatException('bytes-only seeds are not supported');
     }
     throw const FormatException('unrecognized stored-secret format');
-  }
-
-  static String? _legacyPassphrase(Map<String, dynamic> m) {
-    final fp = m['mnemonicFingerprint'];
-    final list = m['passphrases'];
-    if (list is! List) return null;
-    for (final p in list) {
-      if (p is Map &&
-          (p['sourceFingerprint'] == fp || list.length == 1)) {
-        final pass = p['passphrase'];
-        if (pass is String && pass.isNotEmpty) return pass;
-      }
-    }
-    return null;
   }
 
   @override

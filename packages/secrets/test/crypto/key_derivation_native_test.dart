@@ -1,12 +1,14 @@
+@Tags(['native'])
+library;
 // Native (bdk) integration test — the bdk FFI lib loads under `flutter test` on
 // this host, so the previously-untested public-key/descriptor derivation path
 // is exercised for real here (not just the pure logic).
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/key_derivation_port_impl.dart';
-import 'package:secrets/src/data/datasources/fss_secret_store.dart';
-import 'package:secrets/src/data/seed_repository_impl.dart';
-import 'package:secrets/src/domain/seed_index.dart';
+import 'package:secrets/src/data/adapters/key_derivation_adapter.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/seed_adapter.dart';
+import 'package:secrets/src/domain/ports/seed_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/seed_info.dart';
 
@@ -17,7 +19,7 @@ const zooWords = [
   'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'wrong',
 ];
 
-class _FakeSeedIndex implements SeedIndex {
+class _FakeSeedIndex implements SeedIndexPort {
   final Map<String, SeedInfo> _m = {};
   @override
   Future<List<SeedInfo>> all() async => _m.values.toList();
@@ -35,16 +37,16 @@ T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
     };
 
 void main() {
-  late KeyDerivationPortImpl kd;
-  late SeedRepositoryImpl repo;
+  late KeyDerivationAdapter kd;
+  late SeedAdapter repo;
   late Fingerprint zooFp;
 
   setUp(() async {
     final kv = FakeSecureKeyValueStore();
-    final store = FssSecretStore(kv, initialRetryDelay: Duration.zero);
-    repo = SeedRepositoryImpl(store: store, index: _FakeSeedIndex());
+    final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+    repo = SeedAdapter(store: store, index: _FakeSeedIndex());
     zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
-    kd = KeyDerivationPortImpl(store);
+    kd = KeyDerivationAdapter(store);
   });
 
   test('masterFingerprint round-trips to the stored handle', () async {

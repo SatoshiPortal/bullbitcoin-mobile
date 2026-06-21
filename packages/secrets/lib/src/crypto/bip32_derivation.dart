@@ -31,7 +31,9 @@ class Bip32Derivation {
   static String xprvFromSeed(Uint8List seedBytes, Network network) {
     final nw = network == Network.bitcoinTestnet
         ? bip32.NetworkType(
-            wif: 0x80,
+            // testnet WIF prefix (0xEF); only `toBase58()`/xprv is used here so
+            // this field is latent, but keep it correct for any future export.
+            wif: 0xEF,
             bip32:
                 bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
           )

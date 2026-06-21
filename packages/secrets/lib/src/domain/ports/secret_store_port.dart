@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-/// What a [SecretStore] backend can guarantee. Lets the package assert a
+/// What a [SecretStorePort] backend can guarantee. Lets the package assert a
 /// capability baseline (e.g. never downgrade `thisDeviceOnly`).
 class StoreCapabilities {
   const StoreCapabilities({
@@ -23,8 +23,8 @@ class StoreCapabilities {
 /// for secret storage. Deliberately **use-and-forget shaped** (no `read()`, no
 /// `getAll()`) so a future hardware backend (oubliette) drops in unchanged.
 ///
-/// The only implementation today is `FssSecretStore` (flutter_secure_storage).
-abstract interface class SecretStore {
+/// The only implementation today is `FssSecretStoreAdapter` (flutter_secure_storage).
+abstract interface class SecretStorePort {
   /// Idempotent backend initialization.
   Future<void> init();
 
@@ -44,7 +44,9 @@ abstract interface class SecretStore {
   /// Remove a single [key].
   Future<void> trash(String key);
 
-  /// Wipe ALL secrets (logout / reset).
+  /// Wipe the SEED secrets this store owns (logout / reset). Implementations
+  /// MUST scope this to their own keys — never the whole shared keychain (the
+  /// app owns `swap_*`/PIN/hive keys in the same namespace).
   Future<void> purge();
 
   /// Enumerate stored keys, INCLUDING legacy raw-fingerprint / `hiveEncryption`

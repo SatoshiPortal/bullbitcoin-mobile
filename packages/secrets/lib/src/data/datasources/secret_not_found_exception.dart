@@ -1,4 +1,4 @@
-/// Thrown by a [SecretStore] when `useAndForget` is asked for a key that is not
+/// Thrown by a [SecretStorePort] when `useAndForget` is asked for a key that is not
 /// present. The repository/port boundary maps it to `SeedNotFoundFailure` —
 /// which is DISTINCT from `KeychainLockedFailure` (a locked keychain is NOT a
 /// missing seed).
@@ -9,7 +9,7 @@ class SecretNotFoundException implements Exception {
   String toString() => 'SecretNotFoundException($key)';
 }
 
-/// Thrown by `SecretStore.store` when the key already exists (no silent
+/// Thrown by `SecretStorePort.store` when the key already exists (no silent
 /// overwrite — oubliette parity). It is an `Exception` (not a `dart:core`
 /// `Error`) so the repository can map a concurrent-import race to a benign
 /// `DuplicateSeedFailure` rather than crash.

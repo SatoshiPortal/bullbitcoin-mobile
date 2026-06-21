@@ -61,6 +61,43 @@ void main() {
     });
   });
 
+  group('BIP39/BIP32 independent published vectors (cross-check, not frozen)', () {
+    // These come from the official BIP39 (TREZOR) and BIP32 spec test vectors,
+    // NOT from our own output — they catch a SYSTEMATICALLY wrong derivation
+    // that a self-frozen vector cannot.
+    const bip39AbandonAbout = [
+      'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', //
+      'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
+    ];
+
+    test('BIP39: "abandon…about" + "TREZOR" → the official 64-byte seed', () {
+      final seed = bip39.Mnemonic.fromWords(
+        words: bip39AbandonAbout,
+        passphrase: 'TREZOR',
+      ).seed;
+      final hexStr =
+          seed.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+      expect(
+        hexStr,
+        'c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e5349553'
+        '1f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04',
+      );
+    });
+
+    test('BIP32: seed 000102…0f → master fingerprint 3442193e + master xprv',
+        () {
+      final seed = Uint8List.fromList(
+        List.generate(16, (i) => i), // 000102030405060708090a0b0c0d0e0f
+      );
+      expect(Bip32Derivation.fingerprintHex(seed), '3442193e');
+      expect(
+        Bip32Derivation.xprvFromSeed(seed, Network.bitcoinMainnet),
+        'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKm'
+        'PGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
+      );
+    });
+  });
+
   group('BIP85 recoverbull backup key (KAT)', () {
     test('m/1608\'/0\'/586053381 derives the frozen key', () {
       final key = Bip85Crypto.deriveBackupKeyHex(

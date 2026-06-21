@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'secrets_failure.dart';
-import 'value_objects/descriptors.dart';
+import '../secrets_failure.dart';
+import '../value_objects/descriptors.dart';
 
 /// Public-key / descriptor derivation. Everything returned is NON-secret
 /// (xpub, watch-only descriptors). The seed is referenced by [Fingerprint]; the

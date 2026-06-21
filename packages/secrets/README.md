@@ -13,15 +13,34 @@ non-secret info, operation results, or sealed display widgets.
 
 ## What you get
 
-| Contract | Returns (all `Result<_, SecretsFailure>`) |
+| Port (interface) | Returns (all `Result<_, SecretsFailure>`) |
 |---|---|
-| `SeedRepository` | seed lifecycle → `Fingerprint` / `SeedInfo` (never the seed) |
+| `SeedPort` | seed/mnemonic lifecycle → `Fingerprint` / `SeedInfo` (never the secret) |
 | `KeyDerivationPort` | `Xpub`, `BitcoinDescriptor`, `LiquidDescriptor` (watch-only) |
 | `SignerPort` | `SignedPsbt` — validates a `SigningIntent` BEFORE signing |
 | `SwapSignerPort` | `CreatedSwap` — asserts the lockup commits to your key |
 | `BackupVaultPort` | `EncryptedVault` + `BackupKey` / restored `Fingerprint`s |
 | `Bip85Port` | sealed `Bip85Derivation` / `Bip85HexResult`, `BackupKey`, `ArkSecret` |
 | Widgets | `MnemonicView`, `VerifyBackupView`, `Bip85MnemonicView`, `Bip85HexView` |
+
+## Naming & layering (this package's convention)
+
+Ports-and-adapters, enforced by `make seal-check`:
+
+- **`*Port`** — an interface (the public capability contract), in `src/domain/ports/`.
+- **`*Adapter`** — its implementation, in `src/data/adapters/` (internal, never
+  exported). Multiple backends are tech-prefixed: `FssSecretStoreAdapter` today,
+  `OublietteSecretStoreAdapter` tomorrow; the app's Drift `SeedIndexPort`
+  implementation is `DriftSeedIndexAdapter`.
+- **Mnemonic vs Seed.** The *stored* secret is a `Mnemonic` (words + optional
+  passphrase + language). A `Seed` is the *derived* PBKDF2 bytes (hex-only, no
+  words). Only mnemonics are stored today; the storage format is discriminated
+  so a future raw-`Seed` import slots in without a break. Both are internal.
+- Folders speak the layered language: `domain/ports` + `domain/value_objects`
+  (interfaces + entities), `data/adapters` + `data/models` (impls + the secret
+  model), `crypto` (pure derivation/validation, no I/O). A `*Port` = the app's
+  "repository interface"; a driven-port adapter wrapping one external system
+  (`FlutterSecureStorageAdapter`) = the app's "datasource".
 
 ## How the seal works
 
@@ -49,7 +68,7 @@ non-secret info, operation results, or sealed display widgets.
 - **At rest only** is hardware-adjacent: BIP32/39/85 are pure Dart, so the seed
   transits the Dart heap during each derive/sign and **cannot be zeroized**
   (moving GC). A hardware backend (oubliette) is a future initiative behind the
-  internal `SecretStore` seam.
+  internal `SecretStorePort` seam.
 - **Liquid signing** enforces the fee cap (the only soundly-checkable invariant
   on confidential outputs); per-output change-ownership is not provable on
   blinded outputs and is a documented residual. Liquid uses an ephemeral temp
@@ -57,17 +76,17 @@ non-secret info, operation results, or sealed display widgets.
 
 ## Storage
 
-FSS-only today (`FssSecretStore` over `flutter_secure_storage`). The internal
-`SecretStore` port is use-and-forget shaped so a hardware backend drops in
-unchanged. The non-secret `SeedIndex` (app-side Drift) is reconciled against the
+FSS-only today (`FssSecretStoreAdapter` over `flutter_secure_storage`). The internal
+`SecretStorePort` is use-and-forget shaped so a hardware backend drops in
+unchanged. The non-secret `SeedIndexPort` (app-side Drift) is reconciled against the
 store at startup; drift is surfaced, never silently dropped.
 
 ## Wiring
 
 ```dart
-SecretsLocator.registerDatasources(locator);   // FssSecretStore + MnemonicReader
-// app registers its Drift-backed SeedIndex here
-SecretsLocator.registerRepositories(locator);   // the 6 ports (asserts SeedIndex)
+SecretsLocator.registerDatasources(locator);   // FssSecretStoreAdapter + MnemonicReader
+// app registers its Drift-backed SeedIndexPort here
+SecretsLocator.registerRepositories(locator);   // the ports (asserts SeedIndexPort)
 ```
 
 See `SECRETS_REFACTORING_SPEC.md`, `SECRETS_IMPLEMENTATION_AUDIT.md`, and

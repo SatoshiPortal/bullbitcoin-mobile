@@ -56,7 +56,12 @@ class BitcoinDescriptor {
   String toString() => 'BitcoinDescriptor($external, $internal)';
 }
 
-/// A confidential Liquid descriptor string. NON-secret (watch-only ct).
+/// A confidential Liquid descriptor string (`ct(slip77(KEY),elwpkh(XPUB))`).
+/// WATCH-ONLY (no spending key) but PRIVACY-SENSITIVE: the
+/// `slip77(...)` argument is the wallet's raw master blinding key, which lets
+/// anyone holding it unblind every Liquid tx of this wallet forever. The value
+/// is intentionally accessible (the app needs it to build a watch-only wallet),
+/// but [toString] is REDACTED so it can never reach logs/Sentry.
 @immutable
 class LiquidDescriptor {
   factory LiquidDescriptor(String ctDescriptor) {
@@ -77,6 +82,8 @@ class LiquidDescriptor {
   @override
   int get hashCode => ctDescriptor.hashCode;
 
+  // Redacted: the ct descriptor embeds the master blinding key — never log it.
   @override
-  String toString() => 'LiquidDescriptor($ctDescriptor)';
+  String toString() =>
+      'LiquidDescriptor(<redacted ct descriptor, ${ctDescriptor.length} chars>)';
 }
