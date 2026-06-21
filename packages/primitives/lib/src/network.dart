@@ -46,7 +46,10 @@ enum Network {
   });
 
   factory Network.fromName(String name) {
-    return Network.values.firstWhere((network) => network.name == name);
+    return Network.values.firstWhere(
+      (network) => network.name == name,
+      orElse: () => throw ArgumentError.value(name, 'name', 'unknown Network'),
+    );
   }
 
   /// Non-throwing parse for untrusted/persisted input.

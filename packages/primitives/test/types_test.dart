@@ -26,6 +26,11 @@ void main() {
       expect(Network.bitcoinMainnet.coinType, 0);
       expect(Network.liquidMainnet.coinType, 1776);
     });
+
+    test('fromName parses known, throws ArgumentError on unknown', () {
+      expect(Network.fromName('liquidTestnet'), Network.liquidTestnet);
+      expect(() => Network.fromName('garbage'), throwsArgumentError);
+    });
   });
 
   group('ScriptType', () {
@@ -54,6 +59,11 @@ void main() {
     test('tryFromName is non-throwing', () {
       expect(ScriptType.tryFromName('bip84'), ScriptType.bip84);
       expect(ScriptType.tryFromName('nope'), isNull);
+    });
+
+    test('fromName parses known, throws ArgumentError on unknown', () {
+      expect(ScriptType.fromName('bip49'), ScriptType.bip49);
+      expect(() => ScriptType.fromName('nope'), throwsArgumentError);
     });
   });
 

@@ -10,7 +10,11 @@ enum ScriptType {
   const ScriptType({required this.purpose});
 
   factory ScriptType.fromName(String name) {
-    return ScriptType.values.firstWhere((script) => script.name == name);
+    return ScriptType.values.firstWhere(
+      (script) => script.name == name,
+      orElse: () =>
+          throw ArgumentError.value(name, 'name', 'unknown ScriptType'),
+    );
   }
 
   /// Non-throwing parse for untrusted input.
