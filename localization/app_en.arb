@@ -5810,13 +5810,29 @@
   "@bitboxErrorPermissionDenied": {
     "description": "Error when USB permissions are not granted for BitBox"
   },
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
+  "@bitboxErrorBluetoothPermissionDenied": {
+    "description": "Error when Bluetooth permissions are not granted for BitBox"
+  },
+  "bitboxErrorBluetoothUnavailable": "Bluetooth is unavailable. Turn on Bluetooth and try again.",
+  "@bitboxErrorBluetoothUnavailable": {
+    "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
+  },
   "bitboxErrorNoDevicesFound": "No BitBox devices found. Make sure your device is powered on and connected via USB.",
   "@bitboxErrorNoDevicesFound": {
     "description": "Error when no BitBox devices are detected"
   },
+  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
+  "@bitboxErrorNoBleDevicesFound": {
+    "description": "Error when no BitBox02 Nova BLE devices are detected"
+  },
   "bitboxErrorMultipleDevicesFound": "Multiple BitBox devices found. Please ensure only one device is connected.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
+  "@bitboxErrorMultipleBleDevicesFound": {
+    "description": "Error when multiple BitBox02 Nova BLE devices are detected"
   },
   "bitboxErrorDeviceNotFound": "BitBox device not found.",
   "@bitboxErrorDeviceNotFound": {
@@ -5861,6 +5877,10 @@
   "bitboxErrorOperationCancelled": "Operation was cancelled. Please try again.",
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
+  },
+  "bitboxErrorOperationFailed": "BitBox operation failed. Please try again.",
+  "@bitboxErrorOperationFailed": {
+    "description": "Generic error when a BitBox operation fails"
   },
   "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
   "@bitboxActionUnlockDeviceTitle": {
@@ -6019,9 +6039,17 @@
   "@bitboxScreenConnectSubtext": {
     "description": "Subtext for initial state"
   },
+  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
+  "@bitboxScreenConnectSubtextBluetooth": {
+    "description": "Subtext for initial Bluetooth state"
+  },
   "bitboxScreenScanningSubtext": "Looking for your BitBox device...",
   "@bitboxScreenScanningSubtext": {
     "description": "Subtext when scanning"
+  },
+  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
+  "@bitboxScreenScanningSubtextBluetooth": {
+    "description": "Subtext when scanning over Bluetooth"
   },
   "bitboxScreenConnectingSubtext": "Establishing secure connection...",
   "@bitboxScreenConnectingSubtext": {
@@ -6083,9 +6111,17 @@
   "@bitboxScreenTroubleshootingTitle": {
     "description": "Title for troubleshooting instructions"
   },
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "@bitboxScreenTroubleshootingBluetoothTitle": {
+    "description": "Title for Bluetooth troubleshooting instructions"
+  },
   "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
   "@bitboxScreenTroubleshootingSubtitle": {
     "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "If your device still doesn't connect with the app, try the following:",
+  "@bitboxScreenTroubleshootingBluetoothSubtitle": {
+    "description": "Subtitle for Bluetooth troubleshooting instructions"
   },
   "bitboxScreenTroubleshootingStep1": "Make sure you have the latest firmware installed on your BitBox.",
   "@bitboxScreenTroubleshootingStep1": {
@@ -6098,6 +6134,18 @@
   "bitboxScreenTroubleshootingStep3": "Restart your BitBox02 device by unplugging and reconnecting it.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep1": "Make sure Bluetooth is turned on and permitted for this app.",
+  "@bitboxScreenTroubleshootingBluetoothStep1": {
+    "description": "Bluetooth troubleshooting step 1"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
+  "@bitboxScreenTroubleshootingBluetoothStep2": {
+    "description": "Bluetooth troubleshooting step 2"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
+  "@bitboxScreenTroubleshootingBluetoothStep3": {
+    "description": "Bluetooth troubleshooting step 3"
   },
   "bitboxScreenTryAgainButton": "Try Again",
   "@bitboxScreenTryAgainButton": {
@@ -9631,6 +9679,14 @@
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletBitBox": "BitBox02",
+  "@importWalletBitBox": {
+    "description": "Button label for BitBox02 hardware wallet"
+  },
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "@importWalletBitBoxNova": {
+    "description": "Button label for BitBox02 Nova hardware wallet"
   },
   "importWalletJade": "Blockstream Jade",
   "@importWalletJade": {
@@ -13995,10 +14051,6 @@
   "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
   "@appStartupContactSupportMessage": {
     "description": "Message shown on the app startup error screen pointing to support"
-  },
-  "importWalletBitboxAndroidOnly": "BitBox is only supported on Android",
-  "@importWalletBitboxAndroidOnly": {
-    "description": "Snackbar shown when tapping BitBox import on a non-Android device"
   },
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {

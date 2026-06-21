@@ -12658,6 +12658,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "onboardingAdvancedOptionsDone": "완료",
-  "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
-  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다"
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요"
 }

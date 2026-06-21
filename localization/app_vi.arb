@@ -265,7 +265,6 @@
   "onboardingAdvancedOptionsFooter": "Bạn có thể thay đổi các cài đặt này sau trong Cài đặt ứng dụng",
   "onboardingAdvancedOptionsDone": "Xong",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
   "sendErrorUnsupportedQrCodeFormat": "Định dạng mã QR không được hỗ trợ",
   "fundExchangeErrorTitleOrdPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPo404": "Phương thức thanh toán không khả dụng",

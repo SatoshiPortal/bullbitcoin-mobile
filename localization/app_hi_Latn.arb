@@ -13131,6 +13131,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
   "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
   "onboardingAdvancedOptionsDone": "Done",
-  "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
-  "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai"
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo"
 }

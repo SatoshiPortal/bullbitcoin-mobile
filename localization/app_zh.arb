@@ -4677,6 +4677,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "自定义 Recoverbull 服务器",
   "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
   "onboardingAdvancedOptionsDone": "完成",
-  "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
-  "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android"
+  "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持"
 }

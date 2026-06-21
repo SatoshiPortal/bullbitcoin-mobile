@@ -12658,6 +12658,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
   "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
   "onboardingAdvancedOptionsDone": "Tamam",
-  "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
-  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir"
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin"
 }

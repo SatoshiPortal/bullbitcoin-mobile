@@ -4792,6 +4792,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Власний сервер Recoverbull",
   "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
   "onboardingAdvancedOptionsDone": "Готово",
-  "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android"
+  "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support"
 }

@@ -12776,6 +12776,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
   "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
   "onboardingAdvancedOptionsDone": "Hotovo",
-  "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu"
+  "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support"
 }

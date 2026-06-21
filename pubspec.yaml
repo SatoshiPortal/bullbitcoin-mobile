@@ -66,6 +66,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/bull_sdk
       ref: main
       path: packages/bitbox-transport
+  universal_ble: ^1.2.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^1.1.0
@@ -165,6 +166,12 @@ dependency_overrides:
       url: https://github.com/SatoshiPortal/bull_sdk
       ref: ws-resilience
       path: packages/boltz-stream
+  # BitBox02 Nova BLE until merged into bull_sdk main.
+  bitbox_transport:
+    git:
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: refs/pull/4/head
+      path: packages/bitbox-transport
 
 dev_dependencies:
   build_runner: ^2.10.4

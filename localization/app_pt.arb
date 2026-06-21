@@ -4850,6 +4850,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
   "onboardingAdvancedOptionsFooter": "Pode alterar estas definições mais tarde nas definições da aplicação",
   "onboardingAdvancedOptionsDone": "Concluído",
-  "appStartupContactSupportMessage": "Contacte o suporte em app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "A BitBox só é suportada no Android"
+  "appStartupContactSupportMessage": "Contacte o suporte em app.bullbitcoin.com/support"
 }

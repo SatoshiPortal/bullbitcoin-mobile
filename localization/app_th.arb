@@ -12658,6 +12658,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
-  "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น"
+  "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support"
 }

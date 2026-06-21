@@ -4787,6 +4787,5 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Mukautettu Recoverbull-palvelin",
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "onboardingAdvancedOptionsDone": "Valmis",
-  "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa"
+  "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support"
 }

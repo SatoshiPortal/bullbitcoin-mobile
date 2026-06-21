@@ -265,7 +265,6 @@
   "onboardingAdvancedOptionsFooter": "Այս կարգավորումները կարող եք փոխել ավելի ուշ Հավելվածի կարգավորումներում",
   "onboardingAdvancedOptionsDone": "Պատրաստ է",
   "appStartupContactSupportMessage": "Կապվեք աջակցության հետ app.bullbitcoin.com/support հասցեով",
-  "importWalletBitboxAndroidOnly": "BitBox-ը աջակցվում է միայն Android-ում",
   "fundExchangeErrorTitleOrdPo404": "Վճարման տարբերակը հասանելի չէ",
   "fundExchangeErrorTitleRcpPo404": "Վճարման տարբերակը հասանելի չէ",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE-ն հասանելի չէ",
