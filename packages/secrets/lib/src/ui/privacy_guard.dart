@@ -14,6 +14,12 @@ class PrivacyGuard extends StatefulWidget {
   const PrivacyGuard({super.key, required this.child});
   final Widget child;
 
+  /// Test seam for the `no_screenshot` side effect. Production leaves this null
+  /// and the real platform channel is used; a test can inject a spy to assert
+  /// the ref-counted enable/disable transitions without a platform channel.
+  @visibleForTesting
+  static void Function({required bool enabled})? debugSetCapture;
+
   @override
   State<PrivacyGuard> createState() => _PrivacyGuardState();
 }
@@ -39,6 +45,11 @@ class _PrivacyGuardState extends State<PrivacyGuard> {
   }
 
   void _set({required bool enabled}) {
+    final override = PrivacyGuard.debugSetCapture;
+    if (override != null) {
+      override(enabled: enabled);
+      return;
+    }
     try {
       final ns = NoScreenshot.instance;
       enabled ? ns.screenshotOff() : ns.screenshotOn();
