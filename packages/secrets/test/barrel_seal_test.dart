@@ -1,7 +1,12 @@
-// Importing ONLY the public barrel, assert the seal: the public surface
-// resolves the contracts/VOs/widgets, and there is no exported path to raw
-// secret material. If someone later adds `export 'src/...'` for an internal
-// type, this file (and the analyzer) is where it should surface.
+// SMOKE TEST of the PUBLIC surface only — NOT the seal enforcement.
+//
+// This file merely confirms the documented public types ARE exported (they
+// compile when imported from the barrel). It can NOT prove the inverse — that
+// an INTERNAL type is NOT exported — because a runtime test cannot assert the
+// absence of an export. The real seal enforcement lives in `tool/seal_check.sh`
+// (run via `make seal-check` in CI), which scans for stray `export 'src/...'`
+// lines and confines flutter_secure_storage imports. Treat this file as a
+// quick public-API regression check, not the boundary guarantee.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 
