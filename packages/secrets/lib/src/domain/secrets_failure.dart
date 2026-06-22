@@ -10,8 +10,11 @@ import 'package:primitives/primitives.dart';
 /// thrown across the public API. Translation happens app-side (the package
 /// stays pure / l10n-free); see SECRETS_API_CONTRACTS §14.
 ///
-/// `logMessage` is for logs/Sentry ONLY and is sanitized at the boundary (see
-/// [sanitizeLog]) so it can never echo secret input into a sink.
+/// `logMessage` is for logs/Sentry ONLY. The package NEVER puts secret-bearing
+/// text in it: at the `SecretGuard` boundary a foreign exception contributes
+/// only its runtime *type* name, never its message, so a secret input can never
+/// be echoed into a sink. Messages constructed in-package (fees, counts) carry
+/// no secret material.
 @immutable
 sealed class SecretsFailure extends Failure {
   const SecretsFailure([super.logMessage]);

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -71,6 +72,29 @@ void main() {
       vaultKey: BackupKey(Uint8List.fromList(List.filled(32, 0))),
     );
     expect((res as Err).failure, isA<VaultFailure>());
+  });
+
+  test('restore of a TAMPERED ciphertext → VaultFailure (HMAC rejects)',
+      () async {
+    final enc = _unwrap(await vaultPort.encryptVault(seed: zooFp));
+    // Flip one byte inside the authenticated (nonce‖ciphertext‖HMAC) blob, then
+    // re-wrap as valid JSON so the failure is the MAC check — not a parse error
+    // — proving the vault authenticates ciphertext (encrypt-then-MAC), distinct
+    // from the wrong-key case above.
+    final map = jsonDecode(enc.vault.ciphertextJson) as Map<String, dynamic>;
+    final blob = base64.decode(map['ciphertext'] as String);
+    blob[blob.length ~/ 2] ^= 0xFF; // mutate a middle (ciphertext) byte
+    map['ciphertext'] = base64.encode(blob);
+    final tampered = EncryptedVault(jsonEncode(map));
+
+    await repo.delete(zooFp); // restore must actually decrypt, not short-circuit
+    final res = await vaultPort.restoreVault(
+      vault: tampered,
+      vaultKey: enc.vaultKey, // CORRECT key — only the ciphertext is tampered
+    );
+    expect((res as Err).failure, isA<VaultFailure>());
+    // The rejected vault imported nothing.
+    expect(_unwrap(await repo.exists(zooFp)), isFalse);
   });
 
   test('encrypt of a missing seed → SeedNotFoundFailure', () async {

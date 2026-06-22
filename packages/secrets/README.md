@@ -54,7 +54,9 @@ Ports-and-adapters, enforced by `make seal-check`:
 3. **`make seal-check`** — CI gate against external `src/` imports, internal
    barrel exports, and suppression of the internal-member lint.
 4. **Redacted `toString` + no `toJson`** on every secret-bearing type; the
-   boundary sanitizes `logMessage` (12/24-word + 64-hex + xprv) before logging.
+   boundary never logs secret-bearing text — a foreign exception contributes
+   only its runtime *type* name (never its message) to `logMessage`, alongside
+   the public fingerprint.
 
 ## Security guarantees (and honest limits)
 

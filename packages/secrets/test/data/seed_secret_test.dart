@@ -34,7 +34,7 @@ void main() {
       );
     });
 
-    test('unknown language falls back to english (no crash)', () {
+    test('unknown language falls back to english (correct wordlist)', () {
       final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
         'kind': 'mnemonic',
         'words': ['zoo', 'zoo', 'wrong'],
@@ -42,7 +42,28 @@ void main() {
         'language': 'klingon',
       })));
       final secret = Mnemonic.fromStorageBytes(bytes);
-      expect(secret, isA<Mnemonic>());
+      // Must be ENGLISH specifically — a fallback to any other wordlist would
+      // derive a different fingerprint and make the seed unfindable.
+      expect(secret.language, bip39.Language.english);
+      expect(secret.words, ['zoo', 'zoo', 'wrong']);
+    });
+
+    test('empty word list → FormatException (native format)', () {
+      final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
+        'kind': 'mnemonic',
+        'words': <String>[],
+      })));
+      expect(() => Mnemonic.fromStorageBytes(bytes),
+          throwsA(isA<FormatException>()));
+    });
+
+    test('empty word list → FormatException (app SeedModel format)', () {
+      final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
+        'runtimeType': 'mnemonic',
+        'mnemonicWords': <String>[],
+      })));
+      expect(() => Mnemonic.fromStorageBytes(bytes),
+          throwsA(isA<FormatException>()));
     });
   });
 

@@ -5,15 +5,21 @@ import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart'
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
-import 'package:secrets/src/domain/log_sanitizer.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 
 /// The SINGLE security-critical chokepoint for reading a secret and converting
-/// foreign exceptions into a sanitized [SecretsFailure]. Defined once so the
-/// rules every adapter depends on — `KeychainLocked` ≠ `SeedNotFound`, sanitize
-/// `logMessage`, invalid mnemonic → `InvalidMnemonicFailure` — cannot drift
-/// across copy-pasted `try/catch` blocks.
+/// foreign exceptions into a [SecretsFailure]. Defined once so the rules every
+/// adapter depends on — `KeychainLocked` ≠ `SeedNotFound`, invalid mnemonic →
+/// `InvalidMnemonicFailure` — cannot drift across copy-pasted `try/catch`
+/// blocks.
+///
+/// SECRET-SAFE LOGGING: a foreign exception's *message* can echo its secret
+/// input (e.g. "bad mnemonic: zoo zoo zoo …", "invalid xprv: tprv8…"). Rather
+/// than try to scrub that text (a losing game — see the removed log sanitizer),
+/// we NEVER pass `e.toString()` into a failure. The only diagnostic recorded is
+/// the exception's runtime *type* (a class name, never input) plus the
+/// (public) fingerprint. Nothing sensitive can reach a log/Sentry sink.
 ///
 /// `useAndForget` is reached only from here + the sealed UI reader, keeping the
 /// secret's lifetime minimal and the allow-list tiny.
@@ -22,12 +28,12 @@ class SecretGuard {
   final SecretStorePort _store;
 
   /// Reads the stored [Mnemonic] for [seed] and runs [use]. [onError] builds the
-  /// adapter-specific failure for an unexpected foreign exception (already
-  /// sanitized).
+  /// adapter-specific failure for an unexpected foreign exception; it receives
+  /// only the exception's runtime type name (never its secret-bearing message).
   Future<Result<T, SecretsFailure>> read<T>(
     Fingerprint seed,
     Future<Result<T, SecretsFailure>> Function(Mnemonic mnemonic) use, {
-    required SecretsFailure Function(String sanitizedLog) onError,
+    required SecretsFailure Function(String errorType) onError,
   }) =>
       run(
         () => _store.useAndForget(
@@ -43,20 +49,22 @@ class SecretGuard {
   Future<Result<T, SecretsFailure>> run<T>(
     Future<Result<T, SecretsFailure>> Function() body, {
     Fingerprint? seed,
-    required SecretsFailure Function(String sanitizedLog) onError,
+    required SecretsFailure Function(String errorType) onError,
   }) async {
     try {
       return await body();
-    } on KeychainLockedException catch (e) {
-      return Err(KeychainLockedFailure(sanitizeLog(e.toString())));
+    } on KeychainLockedException {
+      return const Err(KeychainLockedFailure());
     } on SecretNotFoundException catch (e) {
       return Err(seed != null
           ? SeedNotFoundFailure(seed)
-          : onError(sanitizeLog(e.toString())));
+          : onError(e.runtimeType.toString()));
     } on bip39.MnemonicException catch (e) {
-      return Err(InvalidMnemonicFailure(sanitizeLog(e.toString())));
+      // Record only the exception CLASS (e.g. MnemonicInvalidChecksumException);
+      // `e.toString()` would echo the rejected mnemonic words.
+      return Err(InvalidMnemonicFailure(e.runtimeType.toString()));
     } on Exception catch (e) {
-      return Err(onError(sanitizeLog(e.toString())));
+      return Err(onError(e.runtimeType.toString()));
     }
   }
 }

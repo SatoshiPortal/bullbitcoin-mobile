@@ -3,7 +3,6 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
 import 'package:secrets/src/data/adapters/signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
-import 'package:secrets/src/domain/value_objects/descriptors.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
 const _recipient = Output(scriptPubKey: 'recipient_spk', amountSat: 100000);
@@ -12,9 +11,8 @@ const _attacker = Output(scriptPubKey: 'attacker_spk', amountSat: 49000);
 
 bool _ownsMyChange(String spk) => spk == 'my_change_spk';
 
-final _send = SendIntent(
-  outputs: const [_recipient],
-  walletDescriptor: BitcoinDescriptor(external: 'ext', internal: 'int'),
+const _send = SendIntent(
+  outputs: [_recipient],
   maxFeeSat: 2000,
 );
 
@@ -157,8 +155,22 @@ void main() {
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
       );
       expect(_isOk(r), isTrue);
+    });
+
+    test('reverse: REJECTS a Boltz amount that differs from the intent', () {
+      // The server quotes a smaller outAmount than the user intended (50000).
+      final r = IntentValidator.validateSwapCommitment(
+        reverse,
+        ownClaimPubkey: 'mykey',
+        scriptReceiverPubkey: 'mykey',
+        scriptSenderPubkey: 'boltzkey',
+        scriptHashlock: 'ph',
+        actualAmountSat: 40000, // under-pays the reverse
+      );
+      expect(_err(r), isA<SigningFailure>());
     });
 
     test('reverse: REJECTS when Boltz script uses a different claim key', () {
@@ -168,6 +180,7 @@ void main() {
         scriptReceiverPubkey: 'attackerkey', // not ours
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
@@ -179,8 +192,28 @@ void main() {
         scriptReceiverPubkey: 'boltzkey',
         scriptSenderPubkey: 'mykey',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
+        // A refund leg holds our funds, so its locktime binding is mandatory.
+        scriptLocktime: 100,
+        expectedLocktime: 100,
       );
       expect(_isOk(r), isTrue);
+    });
+
+    test('submarine: REJECTS a refund leg with no expected locktime to bind',
+        () {
+      // Fail-closed: a refund leg without a positive expectedLocktime leaves
+      // the refund window unbound (the server could set it arbitrarily).
+      final r = IntentValidator.validateSwapCommitment(
+        submarine,
+        ownRefundPubkey: 'mykey',
+        scriptReceiverPubkey: 'boltzkey',
+        scriptSenderPubkey: 'mykey',
+        scriptHashlock: 'ph',
+        actualAmountSat: 50000,
+        // expectedLocktime omitted on purpose
+      );
+      expect(_err(r), isA<SigningFailure>());
     });
 
     test('submarine: REJECTS a hashlock that differs from the intent', () {
@@ -190,6 +223,9 @@ void main() {
         scriptReceiverPubkey: 'boltzkey',
         scriptSenderPubkey: 'mykey',
         scriptHashlock: 'WRONG',
+        actualAmountSat: 50000,
+        scriptLocktime: 100,
+        expectedLocktime: 100,
       );
       expect(_err(r), isA<SigningFailure>());
     });
@@ -206,6 +242,9 @@ void main() {
         scriptReceiverPubkey: 'ck',
         scriptSenderPubkey: 'rk',
         scriptHashlock: 'ph',
+        actualAmountSat: 1,
+        scriptLocktime: 1,
+        expectedLocktime: 1,
       );
       expect(_isOk(ok), isTrue);
       final bad = IntentValidator.validateSwapCommitment(
@@ -215,6 +254,9 @@ void main() {
         scriptReceiverPubkey: 'ck',
         scriptSenderPubkey: 'attacker', // refund side tampered
         scriptHashlock: 'ph',
+        actualAmountSat: 1,
+        scriptLocktime: 1,
+        expectedLocktime: 1,
       );
       expect(_err(bad), isA<SigningFailure>());
     });
@@ -232,6 +274,7 @@ void main() {
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
+        actualAmountSat: 1,
         // BTC = lockup: its locktime must match the intent timeout (1).
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
@@ -252,6 +295,7 @@ void main() {
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
+        actualAmountSat: 1,
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
             senderPubkey: 'myrefund',
@@ -276,6 +320,7 @@ void main() {
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
+        actualAmountSat: 1,
         // BTC lockup leg locktime (50) pushed away from the intended 100.
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
@@ -299,6 +344,7 @@ void main() {
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
         scriptLocktime: 777, // server pushed the refund window out
         expectedLocktime: 100,
       );
@@ -312,6 +358,7 @@ void main() {
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
         scriptLocktime: 100,
         expectedLocktime: 100,
       );
@@ -328,6 +375,7 @@ void main() {
         direction: ChainDirection.lbtcToBtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
+        actualAmountSat: 1,
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'myclaim',
             senderPubkey: 'server',
@@ -349,6 +397,7 @@ void main() {
         scriptReceiverPubkey: 'x',
         scriptSenderPubkey: 'y',
         scriptHashlock: 'ph',
+        actualAmountSat: 50000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
@@ -364,6 +413,7 @@ void main() {
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'b',
         scriptHashlock: 'ph',
+        actualAmountSat: 1,
       );
       expect(_err(r), isA<SigningFailure>());
     });

@@ -1,7 +1,5 @@
 import 'package:meta/meta.dart';
 
-import 'descriptors.dart';
-
 /// Direction of a Boltz swap. Submarine = on-chain → Lightning (uses the refund
 /// key); reverse = Lightning → on-chain (uses the claim key); chain commits to
 /// BOTH.
@@ -40,18 +38,19 @@ sealed class SigningIntent {
   const SigningIntent();
 }
 
-/// A plain send. Change must be provably owned ([walletDescriptor]) and the fee
-/// capped ([maxFeeSat]).
+/// A plain send. Every input and every non-recipient (change) output must be
+/// provably owned by the SIGNING wallet — ownership is decided by the signer
+/// from the seed-derived descriptor (`wallet.isMine`), not carried in the
+/// intent — and the fee is capped ([maxFeeSat]).
 final class SendIntent extends SigningIntent {
   const SendIntent({
     required this.outputs,
-    required this.walletDescriptor,
     required this.maxFeeSat,
   });
 
-  /// Assert every change output is owned by [walletDescriptor].
+  /// The recipient outputs the user authorized. Any extra tx output must be
+  /// owned change; any of these missing from the tx is rejected.
   final List<Output> outputs;
-  final BitcoinDescriptor walletDescriptor;
 
   /// Reject if the implied fee exceeds this.
   final int maxFeeSat;

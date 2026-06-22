@@ -184,12 +184,22 @@ class IntentValidator {
     required String scriptReceiverPubkey,
     required String scriptSenderPubkey,
     required String scriptHashlock,
+    required int actualAmountSat,
     int scriptLocktime = 0,
     int? expectedLocktime,
   }) {
     if (ownClaimPubkey == null && ownRefundPubkey == null) {
       return const Err(
           SigningFailure('swap commitment: no own key supplied to verify'));
+    }
+    // The Boltz-quoted amount MUST match what the user intended. `outAmount` is
+    // the canonical swap amount the rest of the app treats as `paymentAmount`,
+    // so a malicious/buggy server quoting a different value (under-paying a
+    // reverse, over-charging a submarine lockup) is refused here. Callers MUST
+    // set `intent.amountSat` to the expected NET `outAmount`.
+    if (actualAmountSat != intent.amountSat) {
+      return Err(SigningFailure(
+          'swap amount $actualAmountSat mismatch vs intent ${intent.amountSat}'));
     }
     if (ownClaimPubkey != null) {
       if (scriptReceiverPubkey != ownClaimPubkey) {
@@ -210,15 +220,21 @@ class IntentValidator {
         return const Err(
             SigningFailure('swap refund pubkey mismatch vs intent'));
       }
+      // A refund leg holds OUR funds: its locktime IS our refund window, so the
+      // caller MUST bind it. Fail CLOSED if no positive [expectedLocktime] was
+      // supplied — otherwise the server could set an arbitrary refund window.
+      if (expectedLocktime == null || expectedLocktime <= 0) {
+        return const Err(SigningFailure(
+            'swap refund leg requires an expected locktime to bind'));
+      }
     }
     if (scriptHashlock != intent.preimageHash) {
       return const Err(SigningFailure('swap hashlock mismatch vs intent'));
     }
-    // Bind the redeem-script locktime to the user's intended timeout. Opt-in:
-    // only enforced when the caller supplies a positive [expectedLocktime]
-    // (the Boltz-quoted timeout it asked for), so a caller that can't know the
-    // server value ahead of time is not blocked — but when it can, the server
-    // can no longer push our refund window out.
+    // Bind the redeem-script locktime to the user's intended timeout. For a
+    // refund leg this is now mandatory (enforced above); for a claim-only leg
+    // (the server's window, not ours) it is enforced only when the caller can
+    // supply the value.
     if (expectedLocktime != null &&
         expectedLocktime > 0 &&
         scriptLocktime != expectedLocktime) {
@@ -241,6 +257,7 @@ class IntentValidator {
     required String ownRefundPubkey,
     required SwapScriptLeg btcScript,
     required SwapScriptLeg lbtcScript,
+    required int actualAmountSat,
   }) {
     final (lockup, claim) = direction == ChainDirection.btcToLbtc
         ? (btcScript, lbtcScript)
@@ -251,6 +268,7 @@ class IntentValidator {
       scriptReceiverPubkey: lockup.receiverPubkey,
       scriptSenderPubkey: lockup.senderPubkey,
       scriptHashlock: lockup.hashlock,
+      actualAmountSat: actualAmountSat,
       // The LOCKUP leg holds OUR funds: bind its refund locktime to the intent.
       scriptLocktime: lockup.locktime,
       expectedLocktime: intent.timeout,
@@ -262,6 +280,7 @@ class IntentValidator {
       scriptReceiverPubkey: claim.receiverPubkey,
       scriptSenderPubkey: claim.senderPubkey,
       scriptHashlock: claim.hashlock,
+      actualAmountSat: actualAmountSat,
       // The CLAIM leg's locktime protects Boltz, not our funds (and differs per
       // chain), so it is not bound to the single intent timeout.
       scriptLocktime: claim.locktime,

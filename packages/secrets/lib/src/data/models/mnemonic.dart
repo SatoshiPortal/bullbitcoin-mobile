@@ -133,16 +133,24 @@ class Mnemonic {
 
     // 1. This package's native format.
     if (m['kind'] == 'mnemonic') {
+      final words = (m['words'] as List).cast<String>();
+      if (words.isEmpty) {
+        throw const FormatException('stored mnemonic has no words');
+      }
       return Mnemonic(
-        words: (m['words'] as List).cast<String>(),
+        words: words,
         passphrase: m['passphrase'] as String?,
         language: lang(m['language']),
       );
     }
     // 2. The current app's SeedModel JSON (freezed: `runtimeType` + `mnemonicWords`).
     if (m['runtimeType'] == 'mnemonic' || m.containsKey('mnemonicWords')) {
+      final words = (m['mnemonicWords'] as List).cast<String>();
+      if (words.isEmpty) {
+        throw const FormatException('stored mnemonic has no words');
+      }
       return Mnemonic(
-        words: (m['mnemonicWords'] as List).cast<String>(),
+        words: words,
         passphrase: m['passphrase'] as String?,
       );
     }

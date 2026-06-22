@@ -10,6 +10,13 @@ import 'package:no_screenshot/no_screenshot.dart';
 /// Screen-capture blocking is best-effort (Apple offers no guaranteed block);
 /// `no_screenshot` calls are swallowed if the platform channel is unavailable
 /// (e.g. in widget tests) so the seal never depends on them succeeding.
+///
+/// APP-SWITCHER SNAPSHOT: the OS snapshots the app when it backgrounds, and on
+/// iOS `FLAG_SECURE` does not cover that snapshot. So whenever the app is not
+/// `resumed` the child is covered by an opaque box — the secret never appears
+/// in the multitasking thumbnail. The child stays in the tree (kept under the
+/// cover via a passthrough `Stack`) so its state/identity survive backgrounding
+/// and it is not re-read on resume.
 class PrivacyGuard extends StatefulWidget {
   const PrivacyGuard({super.key, required this.child});
   final Widget child;
@@ -20,11 +27,16 @@ class PrivacyGuard extends StatefulWidget {
   @visibleForTesting
   static void Function({required bool enabled})? debugSetCapture;
 
+  /// Key of the opaque cover painted over the child while backgrounded.
+  @visibleForTesting
+  static const coverKey = Key('privacy_guard_cover');
+
   @override
   State<PrivacyGuard> createState() => _PrivacyGuardState();
 }
 
-class _PrivacyGuardState extends State<PrivacyGuard> {
+class _PrivacyGuardState extends State<PrivacyGuard>
+    with WidgetsBindingObserver {
   /// `no_screenshot` is a GLOBAL, non-ref-counted singleton. If two guards are
   /// mounted at once, a naive `screenshotOn()` in one's `dispose` would re-enable
   /// capture while the other's secret is still visible. Ref-count so capture is
@@ -32,16 +44,28 @@ class _PrivacyGuardState extends State<PrivacyGuard> {
   /// unmounts.
   static int _mounted = 0;
 
+  /// True while the app is not foreground-`resumed`: cover the child so the
+  /// secret is absent from the OS app-switcher snapshot.
+  bool _obscured = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (_mounted++ == 0) _set(enabled: true);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (--_mounted == 0) _set(enabled: false);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final obscure = state != AppLifecycleState.resumed;
+    if (obscure != _obscured) setState(() => _obscured = obscure);
   }
 
   void _set({required bool enabled}) {
@@ -59,5 +83,19 @@ class _PrivacyGuardState extends State<PrivacyGuard> {
   }
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(child: widget.child);
+  Widget build(BuildContext context) => ExcludeSemantics(
+        // Passthrough so the child lays out exactly as it would unwrapped; the
+        // opaque cover is painted over it only while backgrounded.
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            widget.child,
+            if (_obscured)
+              const Positioned.fill(
+                child: ColoredBox(
+                    key: PrivacyGuard.coverKey, color: Color(0xFF000000)),
+              ),
+          ],
+        ),
+      );
 }

@@ -22,29 +22,53 @@ hits=$(grep -rnE "import\s+['\"]package:secrets/src/" \
 [ -n "$hits" ] && note "external import of package:secrets/src/:
 $hits"
 
-# 2) The barrel must never export an internal type / src path. Only inspect
-#    actual `export` directives (doc comments may legitimately name them).
+# 2) The barrel is the ENTIRE public surface. DEFAULT-DENY: every `export
+#    'src/...'` path MUST appear on the explicit public allow-list below.
+#    Adding a new internal src/ file and exporting it FAILS until it is
+#    deliberately listed here — unlike a blocklist, this cannot silently pass a
+#    newly-added internal (the old rule missed `src/domain/log_sanitizer.dart`
+#    and `src/data/datasources/*`). To make a file public: add an explicit
+#    `show` export AND its path here, in the same review.
 barrel=packages/secrets/lib/secrets.dart
-exports=$(grep -E "^\s*export\b" "$barrel" 2>/dev/null || true)
-# Internal src trees + internal ui helpers (only src/ui/widgets/* are public).
-if echo "$exports" | grep -qE "src/(crypto|data)/|src/domain/ports/(secret_store_port|secure_key_value_store_port)|src/ui/(mnemonic_reader|privacy_guard)"; then
-  note "barrel exports an internal src/ path"
-fi
-if echo "$exports" | grep -qE "\b(SecretStorePort|SecureKeyValueStorePort|Mnemonic|Seed|MnemonicReader|SecretGuard|[A-Za-z]+Adapter|[A-Za-z]+Impl)\b"; then
-  note "barrel exports an internal adapter/model type"
-fi
+public_exports='src/domain/ports/seed_port.dart
+src/domain/ports/key_derivation_port.dart
+src/domain/ports/signer_port.dart
+src/domain/ports/swap_signer_port.dart
+src/domain/ports/backup_vault_port.dart
+src/domain/ports/bip85_port.dart
+src/domain/ports/seed_index_port.dart
+src/domain/secrets_failure.dart
+src/domain/value_objects/seed_info.dart
+src/domain/value_objects/mnemonic_length.dart
+src/domain/value_objects/descriptors.dart
+src/domain/value_objects/psbt.dart
+src/domain/value_objects/bip85_types.dart
+src/domain/value_objects/backup.dart
+src/domain/value_objects/ark_secret.dart
+src/domain/value_objects/signing_intent.dart
+src/domain/value_objects/created_swap.dart
+src/ui/widgets/mnemonic_view.dart
+src/ui/widgets/verify_backup_view.dart
+src/ui/widgets/bip85_mnemonic_view.dart
+src/ui/widgets/bip85_hex_view.dart'
+
 # A `part` directive re-exposes a file's internals while sidestepping the export
-# grep above — the barrel must only `export`.
+# grep below — the barrel must only `export`.
 if grep -qE "^\s*part\s+['\"]" "$barrel" 2>/dev/null; then
   note "barrel uses a 'part' directive (can leak internals past the export check)"
 fi
-# Any src/ export MUST use a `show` allowlist — a bare re-export leaks every
-# public name in that file (incl. internal helpers). Parse FULL statements
-# (export ... ;) since they may span multiple lines.
+# Parse FULL export statements (export … ;) since they may span multiple lines.
 statements=$(tr '\n' ' ' < "$barrel" | grep -oE "export[[:space:]]+['\"][^;]*;" || true)
 while IFS= read -r stmt; do
   [ -z "$stmt" ] && continue
-  if echo "$stmt" | grep -q "src/" && ! echo "$stmt" | grep -qE "\bshow\b"; then
+  path=$(echo "$stmt" | grep -oE "src/[A-Za-z0-9_/]+\.dart" || true)
+  [ -z "$path" ] && continue # non-src export (e.g. locator.dart) — not internal
+  if ! echo "$public_exports" | grep -qxF "$path"; then
+    note "barrel exports a non-allow-listed src/ path (default-deny): $path"
+  fi
+  # Every src/ export MUST use a `show` allowlist — a bare re-export leaks every
+  # public name in that file (incl. internal helpers).
+  if ! echo "$stmt" | grep -qE "\bshow\b"; then
     note "barrel has a src/ export without a 'show' allowlist: $stmt"
   fi
 done <<< "$statements"
@@ -76,8 +100,11 @@ $impl"
 # 5) `useAndForget` (the raw secret-read) is allow-listed to the single guard +
 #    the sealed UI reader. Anywhere else widens the secret's exposure surface.
 # Match actual call sites (`.useAndForget(`), not the declaration/doc comments.
+# Anchored on the FULL allow-listed path (leading `^`, literal dots, trailing
+# `:` from grep -n) so a name that merely CONTAINS an allow-listed basename
+# (e.g. `evil_secret_guard.dart`) is NOT exempted.
 uaf=$(grep -rnE "\.useAndForget\(" --include='*.dart' "$pkg" 2>/dev/null \
-  | grep -vE "secret_guard.dart|mnemonic_reader.dart" \
+  | grep -vE "^($pkg/src/data/adapters/secret_guard\.dart|$pkg/src/ui/mnemonic_reader\.dart):" \
   || true)
 [ -n "$uaf" ] && note "useAndForget called outside the guard/reader allow-list:
 $uaf"

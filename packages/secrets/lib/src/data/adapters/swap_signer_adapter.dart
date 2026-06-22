@@ -150,6 +150,7 @@ class SwapSignerAdapter implements SwapSignerPort {
           direction: direction,
           ownClaimPubkey: swap.claimKeys.publicKey,
           ownRefundPubkey: swap.refundKeys.publicKey,
+          actualAmountSat: swap.outAmount.toInt(),
           btcScript: SwapScriptLeg(
             receiverPubkey: swap.btcScriptStr.receiverPubkey,
             senderPubkey: swap.btcScriptStr.senderPubkey,
@@ -185,6 +186,7 @@ class SwapSignerAdapter implements SwapSignerPort {
         scriptReceiverPubkey: swap.swapScript.receiverPubkey,
         scriptSenderPubkey: swap.swapScript.senderPubkey,
         scriptHashlock: swap.swapScript.hashlock,
+        actualAmountSat: swap.outAmount.toInt(),
         scriptLocktime: swap.swapScript.locktime,
         expectedLocktime: intent.timeout,
       ).map((_) => CreatedSwap(
@@ -207,6 +209,7 @@ class SwapSignerAdapter implements SwapSignerPort {
         scriptReceiverPubkey: swap.swapScript.receiverPubkey,
         scriptSenderPubkey: swap.swapScript.senderPubkey,
         scriptHashlock: swap.swapScript.hashlock,
+        actualAmountSat: swap.outAmount.toInt(),
         scriptLocktime: swap.swapScript.locktime,
         expectedLocktime: intent.timeout,
       ).map((_) => CreatedSwap(

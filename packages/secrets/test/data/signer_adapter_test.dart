@@ -3,7 +3,6 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
 import 'package:secrets/src/data/adapters/signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
-import 'package:secrets/src/domain/value_objects/descriptors.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
 // COVERAGE NOTE (audit item: SignerAdapter PSBT/PSET fact-extraction).
@@ -31,9 +30,8 @@ const _attacker = Output(scriptPubKey: 'attacker_spk', amountSat: 49000);
 
 bool _ownsMyChange(String spk) => spk == 'my_change_spk';
 
-final _send = SendIntent(
-  outputs: const [_recipient],
-  walletDescriptor: BitcoinDescriptor(external: 'ext', internal: 'int'),
+const _send = SendIntent(
+  outputs: [_recipient],
   maxFeeSat: 2000,
 );
 

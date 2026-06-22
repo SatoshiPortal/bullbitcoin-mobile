@@ -57,4 +57,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(transitions, [false]);
   });
+
+  testWidgets('covers the child whenever the app is not resumed (app-switcher)',
+      (tester) async {
+    const secretKey = Key('secret');
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: PrivacyGuard(child: Text('shh', key: secretKey)),
+      ),
+    );
+    // Resumed: the child is visible and not covered.
+    expect(find.byKey(secretKey), findsOneWidget);
+    expect(find.byKey(PrivacyGuard.coverKey), findsNothing);
+
+    // Backgrounded (the OS snapshots here): an opaque cover is painted over the
+    // child so the secret is absent from the multitasking thumbnail. The child
+    // stays in the tree (state preserved), just hidden under the cover.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    expect(find.byKey(PrivacyGuard.coverKey), findsOneWidget);
+    expect(find.byKey(secretKey), findsOneWidget);
+
+    // Resumed again: cover removed.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(find.byKey(PrivacyGuard.coverKey), findsNothing);
+  });
 }
