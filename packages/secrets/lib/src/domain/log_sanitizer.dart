@@ -5,9 +5,13 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 final Set<String> _bip39English =
     bip39.Language.english.list.map((w) => w.toLowerCase()).toSet();
 
-final RegExp _xprv =
-    RegExp(r'\b(?:xprv|tprv|yprv|zprv|uprv|vprv)[1-9A-HJ-NP-Za-km-z]{50,}');
-final RegExp _hex = RegExp(r'\b[0-9a-fA-F]{32,}\b');
+final RegExp _xprv = RegExp(
+    r'\b(?:xprv|tprv|yprv|zprv|uprv|vprv)[1-9A-HJ-NP-Za-km-z]{50,}',
+    caseSensitive: false);
+// No leading `\b`: a hex run preceded by `0x` (where `0`/`x` are word chars)
+// would NOT be at a word boundary, so an `0x<64hex>` blob would leak in clear.
+// The trailing `\b` still keeps an 8-char fingerprint (len < 32) safe.
+final RegExp _hex = RegExp(r'[0-9a-fA-F]{32,}\b');
 // The at-rest sealed-secret format written by FssSecretStoreAdapter: the `s1:`
 // version tag + base64 of the mnemonic JSON. A storage/decode error can echo a
 // stored value verbatim (e.g. `FormatException: ... s1:eyJ...`); anchoring on

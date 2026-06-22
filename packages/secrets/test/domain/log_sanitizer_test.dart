@@ -21,6 +21,16 @@ void main() {
       expect(out, contains('deadbeef'));
     });
 
+    test('redacts a 0x-prefixed 64-hex blob (leading \\b would miss it)', () {
+      // `0x` makes `0`/`x` word chars, so a leading `\b` anchor fails to match
+      // and the secret hex would leak in clear.
+      const hex =
+          '32255e6651db67fa5b5a44240b6a5d2189cb58666bcc3830c35aff5a2b01b84f';
+      final out = sanitizeLog('key=0x$hex end');
+      expect(out, contains('[REDACTED_HEX]'));
+      expect(out, isNot(contains(hex)));
+    });
+
     test('redacts a 12-word mnemonic phrase', () {
       const phrase =
           'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
@@ -57,6 +67,14 @@ void main() {
           'tprv8ZgxMBicQKsPeDgjzfV8mP1c3J5p3aQ6zR1Z6ZcZ7m8aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9aF7m9';
       final out = sanitizeLog('bad key $tprv end');
       expect(out, contains('[REDACTED_XPRV]'));
+    });
+
+    test('redacts an UPPERCASE XPRV (case-insensitive tag match)', () {
+      const xprv =
+          'XPRV9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
+      final out = sanitizeLog('failed to parse $xprv here');
+      expect(out, contains('[REDACTED_XPRV]'));
+      expect(out, isNot(contains(xprv)));
     });
 
     test('redacts an extended private key', () {
