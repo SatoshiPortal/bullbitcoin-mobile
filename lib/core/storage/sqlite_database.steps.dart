@@ -6289,7 +6289,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape35 settings = Shape35(
+  late final Shape37 settings = Shape37(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -6308,6 +6308,8 @@ final class Schema14 extends i0.VersionedSchema {
         _column_156,
         _column_157,
         _column_233,
+        _column_235,
+        _column_236,
       ],
       attachedDatabase: database,
     ),
@@ -6429,7 +6431,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape37 swaps = Shape37(
+  late final Shape38 swaps = Shape38(
     source: i0.VersionedTable(
       entityName: 'swaps',
       withoutRowId: false,
@@ -6458,9 +6460,9 @@ final class Schema14 extends i0.VersionedSchema {
         _column_205,
         _column_206,
         _column_207,
-        _column_235,
+        _column_237,
         _column_208,
-        _column_236,
+        _column_238,
       ],
       attachedDatabase: database,
     ),
@@ -6540,21 +6542,21 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape38 frozenUtxos = Shape38(
+  late final Shape39 frozenUtxos = Shape39(
     source: i0.VersionedTable(
       entityName: 'frozen_utxos',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
-      columns: [_column_161, _column_237, _column_238, _column_239],
+      columns: [_column_161, _column_239, _column_240, _column_241],
       attachedDatabase: database,
     ),
     alias: null,
   );
 }
 
-class Shape38 extends i0.VersionedTable {
-  Shape38({required super.source, required super.alias}) : super.aliased();
+class Shape39 extends i0.VersionedTable {
+  Shape39({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get walletId =>
       columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get txId =>
@@ -6565,7 +6567,7 @@ class Shape38 extends i0.VersionedTable {
       columnsByName['origin']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_237(String aliasedName) =>
+i1.GeneratedColumn<String> _column_239(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'tx_id',
       aliasedName,
@@ -6573,7 +6575,7 @@ i1.GeneratedColumn<String> _column_237(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_238(String aliasedName) =>
+i1.GeneratedColumn<int> _column_240(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'vout',
       aliasedName,
@@ -6581,7 +6583,7 @@ i1.GeneratedColumn<int> _column_238(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_239(String aliasedName) =>
+i1.GeneratedColumn<String> _column_241(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'origin',
       aliasedName,
