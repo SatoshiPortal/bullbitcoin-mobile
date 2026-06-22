@@ -1491,6 +1491,20 @@
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "recovered",
+            "getter_name": "recovered",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"recovered\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"recovered\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -1991,7 +2005,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"swaps\" (\"id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"direction\" TEXT NOT NULL, \"status\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"key_index\" INTEGER NOT NULL, \"creation_time\" INTEGER NOT NULL, \"completion_time\" INTEGER NULL, \"receive_wallet_id\" TEXT NULL, \"send_wallet_id\" TEXT NULL, \"invoice\" TEXT NULL, \"payment_address\" TEXT NULL, \"payment_amount\" INTEGER NULL, \"receive_address\" TEXT NULL, \"receive_txid\" TEXT NULL, \"send_txid\" TEXT NULL, \"preimage\" TEXT NULL, \"refund_address\" TEXT NULL, \"refund_txid\" TEXT NULL, \"boltz_fees\" INTEGER NULL, \"lockup_fees\" INTEGER NULL, \"claim_fees\" INTEGER NULL, \"refund_fees\" INTEGER NULL, \"server_network_fees\" INTEGER NULL, \"was_direct_payment\" INTEGER NOT NULL DEFAULT 0 CHECK (\"was_direct_payment\" IN (0, 1)), PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"swaps\" (\"id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"direction\" TEXT NOT NULL, \"status\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"key_index\" INTEGER NOT NULL, \"creation_time\" INTEGER NOT NULL, \"completion_time\" INTEGER NULL, \"receive_wallet_id\" TEXT NULL, \"send_wallet_id\" TEXT NULL, \"invoice\" TEXT NULL, \"payment_address\" TEXT NULL, \"payment_amount\" INTEGER NULL, \"receive_address\" TEXT NULL, \"receive_txid\" TEXT NULL, \"send_txid\" TEXT NULL, \"preimage\" TEXT NULL, \"refund_address\" TEXT NULL, \"refund_txid\" TEXT NULL, \"boltz_fees\" INTEGER NULL, \"lockup_fees\" INTEGER NULL, \"claim_fees\" INTEGER NULL, \"refund_fees\" INTEGER NULL, \"server_network_fees\" INTEGER NULL, \"was_direct_payment\" INTEGER NOT NULL DEFAULT 0 CHECK (\"was_direct_payment\" IN (0, 1)), \"recovered\" INTEGER NOT NULL DEFAULT 0 CHECK (\"recovered\" IN (0, 1)), PRIMARY KEY (\"id\"));"
         }
       ]
     },

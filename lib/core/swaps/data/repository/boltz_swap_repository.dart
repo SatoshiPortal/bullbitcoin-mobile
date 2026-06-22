@@ -792,6 +792,11 @@ class BoltzSwapRepository {
           model = SwapModel.lnReceive(
             id: obj.id,
             type: SwapType.lightningToLiquid.name,
+            recovered: true,
+            boltzFees: await _recoveredBoltzFee(
+              SwapType.lightningToLiquid,
+              obj.outAmount.toInt(),
+            ),
             status: status,
             isTestnet: _isTestnet,
             keyIndex: obj.keyIndex.toInt(),
@@ -809,6 +814,11 @@ class BoltzSwapRepository {
           model = SwapModel.lnReceive(
             id: obj.id,
             type: SwapType.lightningToBitcoin.name,
+            recovered: true,
+            boltzFees: await _recoveredBoltzFee(
+              SwapType.lightningToBitcoin,
+              obj.outAmount.toInt(),
+            ),
             status: status,
             isTestnet: _isTestnet,
             keyIndex: obj.keyIndex.toInt(),
@@ -828,6 +838,11 @@ class BoltzSwapRepository {
           model = SwapModel.lnSend(
             id: obj.id,
             type: SwapType.liquidToLightning.name,
+            recovered: true,
+            boltzFees: await _recoveredBoltzFee(
+              SwapType.liquidToLightning,
+              obj.outAmount.toInt(),
+            ),
             status: status,
             isTestnet: _isTestnet,
             keyIndex: obj.keyIndex.toInt(),
@@ -847,6 +862,11 @@ class BoltzSwapRepository {
           model = SwapModel.lnSend(
             id: obj.id,
             type: SwapType.bitcoinToLightning.name,
+            recovered: true,
+            boltzFees: await _recoveredBoltzFee(
+              SwapType.bitcoinToLightning,
+              obj.outAmount.toInt(),
+            ),
             status: status,
             isTestnet: _isTestnet,
             keyIndex: obj.keyIndex.toInt(),
@@ -870,6 +890,13 @@ class BoltzSwapRepository {
           type: restored.fromAsset == 'BTC'
               ? SwapType.bitcoinToLiquid.name
               : SwapType.liquidToBitcoin.name,
+          recovered: true,
+          boltzFees: await _recoveredBoltzFee(
+            restored.fromAsset == 'BTC'
+                ? SwapType.bitcoinToLiquid
+                : SwapType.liquidToBitcoin,
+            obj.outAmount.toInt(),
+          ),
           status: status,
           isTestnet: _isTestnet,
           keyIndex: obj.refundIndex.toInt(),
@@ -886,6 +913,21 @@ class BoltzSwapRepository {
     await reconcileSwaps([id]);
     log.info('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
     return model.toEntity();
+  }
+
+  /// Boltz's percentage service fee is stable, so for a recovered swap we
+  /// recompute it from the live fees (rate × amount) rather than guess. Miner /
+  /// network fees are NOT recomputed here — they're derived in the UI from the
+  /// actual on-chain sent/received amounts. Returns null if the rate is
+  /// unavailable (the swap is still rescued; the fee row is just hidden).
+  Future<int?> _recoveredBoltzFee(SwapType type, int amount) async {
+    try {
+      final percent = (await _boltz.getSwapFees(type)).boltzPercent;
+      if (percent == null) return null;
+      return (percent * amount / 100).round();
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<Swap?> getSwapByTxId(String txId) async {

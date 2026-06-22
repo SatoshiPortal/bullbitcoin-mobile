@@ -5992,6 +5992,7 @@ final class Schema13 extends i0.VersionedSchema {
         _column_235,
         _column_208,
         _column_236,
+        _column_237,
       ],
       attachedDatabase: database,
     ),
@@ -6125,6 +6126,8 @@ class Shape37 extends i0.VersionedTable {
       columnsByName['server_network_fees']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get wasDirectPayment =>
       columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recovered =>
+      columnsByName['recovered']! as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<int> _column_235(String aliasedName) =>
@@ -6143,6 +6146,15 @@ i1.GeneratedColumn<int> _column_236(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints:
           'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_237(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'recovered',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (recovered IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
 i0.MigrationStepWithVersion migrationSteps({

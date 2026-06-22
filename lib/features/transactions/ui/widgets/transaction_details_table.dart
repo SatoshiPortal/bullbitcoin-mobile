@@ -72,6 +72,14 @@ class TransactionDetailsTable extends StatelessWidget {
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
+    // A recovered (restore/rescue-reconstructed) swap: trust only the Boltz
+    // restore data + on-chain facts. The Boltz % rate is stable so the transfer
+    // fee is exact (recomputed at rescue); the rest of the on-chain cost is one
+    // derived line, sent − received − transfer. The counterpart wallet and the
+    // per-leg lockup/server fees are guesses and are hidden (see Swap.recovered).
+    final recovered = swap?.recovered == true;
+    final recoveredBoltzFee = swap?.fees?.boltzFee ?? 0;
+    final recoveredNetworkFee = amountSent - amountReceived - recoveredBoltzFee;
     return DetailsTable(
       items: [
         if (txId != null)
@@ -105,7 +113,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
-        if (counterpartWalletLabel.isNotEmpty)
+        if (counterpartWalletLabel.isNotEmpty && !recovered)
           DetailsTableItem(
             label: transaction?.isOutgoing == true
                 ? context.loc.transactionDetailLabelToWallet
@@ -793,7 +801,44 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               copyValue: swapCounterpartTxId,
             ),
-          if (swap.fees != null) ...[
+          if (recovered) ...[
+            DetailsTableItem(
+              label: context.loc.transactionLabelSendAmount,
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(amountSent).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(amountSent),
+                    ).toUpperCase(),
+            ),
+            if (amountReceived > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelReceiveAmount,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountReceived).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountReceived),
+                      ).toUpperCase(),
+              ),
+            if (recoveredBoltzFee > 0)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelTransferFee,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(recoveredBoltzFee).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(recoveredBoltzFee),
+                      ).toUpperCase(),
+              ),
+            if (amountReceived > 0 && recoveredNetworkFee > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelNetworkFees,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(recoveredNetworkFee).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(recoveredNetworkFee),
+                      ).toUpperCase(),
+              ),
+          ],
+          if (!recovered && swap.fees != null) ...[
             if (swap.isChainSwap) ...[
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
@@ -877,7 +922,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
             ],
           ],
-          if (swap.fees != null)
+          if (!recovered && swap.fees != null)
             DetailsTableItem(
               label: swap.type.isChain
                   ? context.loc.transactionDetailLabelTransferFees

@@ -3249,6 +3249,10 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
+  "transactionLabelNetworkFees": "Network fees",
+  "@transactionLabelNetworkFees": {
+    "description": "Combined on-chain network fees shown for a recovered swap, derived from the actual sent and received amounts"
+  },
   "transactionLabelPreimage": "Preimage",
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"

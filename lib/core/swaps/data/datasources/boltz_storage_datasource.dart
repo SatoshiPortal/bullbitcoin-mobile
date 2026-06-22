@@ -171,31 +171,54 @@ class BoltzStorageDatasource {
     }
   }
 
-  // SECURE STORAGE — SWAP MASTER KEY (keyed per network)
-  Future<void> storeSwapMasterKey(SwapMasterKeyModel swapMasterKey) async {
-    final key =
-        '${SecureStorageKeyPrefixConstants.swapMasterKey}${swapMasterKey.network}';
+  // SECURE STORAGE — SWAP MASTER KEY
+  //
+  // Keyed per network AND the default wallet's seed fingerprint, never by
+  // network alone: the fingerprint guarantees a different default wallet (or a
+  // stale key the iOS keychain kept after the app was deleted) can never be
+  // read for the current wallet — we'd only ever read the swap mnemonic that
+  // belongs to the current default seed.
+  String _swapMasterKeyStorageKey(BoltzNetwork network, String fingerprint) =>
+      '${SecureStorageKeyPrefixConstants.swapMasterKey}'
+      '${network.value}_$fingerprint';
+
+  Future<void> storeSwapMasterKey(
+    SwapMasterKeyModel swapMasterKey, {
+    required String walletFingerprint,
+  }) async {
+    final key = _swapMasterKeyStorageKey(
+      swapMasterKey.boltzNetwork,
+      walletFingerprint,
+    );
     await _secureSwapStorage.saveValue(
       key: key,
       value: jsonEncode(swapMasterKey.toJson()),
     );
   }
 
-  Future<bool> swapMasterKeyExists(BoltzNetwork network) async {
+  Future<bool> swapMasterKeyExists(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
     try {
-      final key =
-          '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
-      final value = await _secureSwapStorage.getValue(key);
+      final value = await _secureSwapStorage.getValue(
+        _swapMasterKeyStorageKey(network, walletFingerprint),
+      );
       return value != null;
     } catch (_) {
       return false;
     }
   }
 
-  Future<SwapMasterKeyModel> fetchSwapMasterKey(BoltzNetwork network) async {
-    final key =
-        '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
-    final jsonString = await _secureSwapStorage.getValue(key) as String;
+  Future<SwapMasterKeyModel> fetchSwapMasterKey(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
+    final jsonString =
+        await _secureSwapStorage.getValue(
+              _swapMasterKeyStorageKey(network, walletFingerprint),
+            )
+            as String;
     return SwapMasterKeyModel.fromJson(
       jsonDecode(jsonString) as Map<String, dynamic>,
     );

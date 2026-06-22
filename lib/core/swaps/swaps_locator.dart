@@ -49,10 +49,11 @@ class SwapsLocator {
     );
   }
 
-  /// The mnemonic every swap master key is derived from: the default bitcoin
-  /// wallet's seed for the active environment. Centralizing it here is what
-  /// guarantees swap creation and restore agree on one canonical seed.
-  static Future<String> _defaultSwapMnemonic(GetIt locator) async {
+  /// The current default bitcoin wallet (fingerprint + a lazy mnemonic reader)
+  /// every swap master key is derived from. Keying by the fingerprint is what
+  /// lets swap creation and restore always resolve the one canonical seed, even
+  /// across wallet changes or an iOS reinstall.
+  static Future<DefaultSwapWallet> _defaultSwapWallet(GetIt locator) async {
     final settings = await locator<SettingsRepository>().fetch();
     final wallets = await locator<WalletRepository>().getWallets(
       onlyDefaults: true,
@@ -64,13 +65,17 @@ class SwapsLocator {
         'No default bitcoin wallet to derive the swap master key',
       );
     }
-    final seed = await locator<SeedRepository>().get(
-      wallets.first.masterFingerprint,
+    final fingerprint = wallets.first.masterFingerprint;
+    return (
+      fingerprint: fingerprint,
+      mnemonic: () async {
+        final seed = await locator<SeedRepository>().get(fingerprint);
+        if (seed is! MnemonicSeed) {
+          throw StateError('Default wallet seed is not a mnemonic');
+        }
+        return seed.mnemonicWords.join(' ');
+      },
     );
-    if (seed is! MnemonicSeed) {
-      throw StateError('Default wallet seed is not a mnemonic');
-    }
-    return seed.mnemonicWords.join(' ');
   }
 
   static void registerRepositories(GetIt locator) {
@@ -78,7 +83,7 @@ class SwapsLocator {
       () => BoltzSwapRepository(
         boltz: BoltzDatasource(
           boltzStore: locator<BoltzStorageDatasource>(),
-          defaultSwapMnemonic: () => _defaultSwapMnemonic(locator),
+          defaultSwapWallet: () => _defaultSwapWallet(locator),
         ),
         isTestnet: false,
       ),

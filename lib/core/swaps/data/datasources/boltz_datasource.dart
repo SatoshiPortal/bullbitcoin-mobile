@@ -18,6 +18,12 @@ import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
+/// The current default wallet's fingerprint plus a lazy accessor for its
+/// mnemonic. The fingerprint keys the swap master key in storage; the mnemonic
+/// is read/derived only on a cache miss.
+typedef DefaultSwapWallet =
+    ({String fingerprint, Future<String> Function() mnemonic});
+
 class BoltzDatasource {
   final String _baseUrl;
   late String _httpsUrl;
@@ -26,10 +32,10 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
-  /// Resolves the mnemonic the swap master key is derived from. The swap master
-  /// key MUST always come from one canonical seed (the default wallet) — see
-  /// [_ensureSwapMasterKey].
-  final Future<String> Function() _defaultSwapMnemonic;
+  /// Resolves the current default wallet (fingerprint + lazy mnemonic) the swap
+  /// master key is derived from. The swap master key MUST always come from this
+  /// one canonical seed — see [_ensureSwapMasterKey].
+  final Future<DefaultSwapWallet> Function() _defaultSwapWallet;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -52,7 +58,7 @@ class BoltzDatasource {
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required this._boltzStore,
-    required this._defaultSwapMnemonic,
+    required this._defaultSwapWallet,
   }) : _baseUrl = url {
     _httpsUrl = 'https://$_baseUrl';
     _http = Dio(BaseOptions(baseUrl: _httpsUrl));
@@ -147,35 +153,37 @@ class BoltzDatasource {
   }
 
   // SWAP MASTER KEY
-  Future<SwapMasterKeyModel> createSwapMasterKey({
-    required String mnemonic,
-    required BoltzNetwork network,
-  }) async {
-    final model = await SwapMasterKeyModel.create(
-      mnemonic: mnemonic,
-      isTestnet: network == BoltzNetwork.testnet,
-    );
-    await _boltzStore.storeSwapMasterKey(model);
-    return model;
-  }
-
+  //
+  // The key is derived (BIP85) from the CURRENT default wallet's seed and cached
+  // in secure storage keyed by that wallet's fingerprint — never by network
+  // alone. Keying by fingerprint is what makes restore correct: a swap can be
+  // created from any wallet, but the key always resolves from the one default
+  // seed, and a different default wallet (or a stale key the iOS keychain kept
+  // after the app was deleted) can never be mistaken for the current wallet's.
   Future<SwapMasterKeyModel> ensureSwapMasterKey({required bool isTestnet}) =>
       _ensureSwapMasterKey(isTestnet);
 
-  // New swaps derive keys from a single persisted master key, derived on first
-  // use and persisted; existing swaps keep resolving from their own stored
-  // secrets independently. The master key is ALWAYS derived from the default
-  // wallet seed (via [_defaultSwapMnemonic]), never from the funding wallet: a
-  // swap can be created from any wallet, but restore on a fresh install only
-  // has the default seed, so creation and restore must agree on one canonical
-  // seed.
   Future<SwapMasterKeyModel> _ensureSwapMasterKey(bool isTestnet) async {
     final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    if (await _boltzStore.swapMasterKeyExists(network)) {
-      return _boltzStore.fetchSwapMasterKey(network);
+    final wallet = await _defaultSwapWallet();
+    if (await _boltzStore.swapMasterKeyExists(
+      network,
+      walletFingerprint: wallet.fingerprint,
+    )) {
+      return _boltzStore.fetchSwapMasterKey(
+        network,
+        walletFingerprint: wallet.fingerprint,
+      );
     }
-    final canonicalMnemonic = await _defaultSwapMnemonic();
-    return createSwapMasterKey(mnemonic: canonicalMnemonic, network: network);
+    final model = await SwapMasterKeyModel.create(
+      mnemonic: await wallet.mnemonic(),
+      isTestnet: isTestnet,
+    );
+    await _boltzStore.storeSwapMasterKey(
+      model,
+      walletFingerprint: wallet.fingerprint,
+    );
+    return model;
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
