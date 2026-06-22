@@ -21,6 +21,8 @@ abstract class SettingsRepository {
     required int torProxyPort,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
+    String? exchangeTestnetBasicAuthUsername,
+    String? exchangeTestnetBasicAuthPassword,
   });
 
   Future<SettingsEntity> fetch();
@@ -46,4 +48,6 @@ abstract class SettingsRepository {
   Future<void> setThemeMode(AppThemeMode themeMode);
 
   Future<void> setErrorReportingEnabled(bool enabled);
+
+  Future<void> setExchangeTestnetBasicAuth({String? username, String? password});
 }

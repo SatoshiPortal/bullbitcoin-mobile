@@ -1,5 +1,11 @@
 {
   "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
+  "exchangeTestnetBasicAuthTitle": "Testnet փոխանակման հավատարմագրեր",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth՝ testnet փոխանակման վեբ էջերի համար (մուտք և KYC):",
+  "exchangeTestnetBasicAuthUsernameLabel": "Օգտանուն",
+  "exchangeTestnetBasicAuthPasswordLabel": "Գաղտնաբառ",
+  "exchangeTestnetBasicAuthClearButton": "Մաքրել",
+  "exchangeTestnetBasicAuthSaveButton": "Պահպանել",
   "backupWarningLoseReasonLostPhone": "Կորցնեք ձեր հեռախոսը",
   "backupWarningLoseReasonDeletedApp": "Ջնջեք հավելվածը",
   "backupWarningLoseReasonCriticalIssue": "Տեղի ունենա հավելվածի կամ սարքի կրիտիկական խնդիր",

@@ -143,6 +143,8 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(9050) int torProxyPort,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
+    String? exchangeTestnetBasicAuthUsername,
+    String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

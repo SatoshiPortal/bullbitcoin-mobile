@@ -6493,6 +6493,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "بيانات اعتماد منصة تبادل testnet",
+  "exchangeTestnetBasicAuthDescription": "مصادقة HTTP الأساسية لصفحات ويب منصة تبادل testnet (تسجيل الدخول و KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "اسم المستخدم",
+  "exchangeTestnetBasicAuthPasswordLabel": "كلمة المرور",
+  "exchangeTestnetBasicAuthClearButton": "مسح",
+  "exchangeTestnetBasicAuthSaveButton": "حفظ",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

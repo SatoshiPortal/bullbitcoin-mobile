@@ -6920,6 +6920,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "หน่วยความจํา",
+  "exchangeTestnetBasicAuthTitle": "ข้อมูลรับรองการแลกเปลี่ยน testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth สำหรับหน้าเว็บการแลกเปลี่ยน testnet (เข้าสู่ระบบและ KYC)",
+  "exchangeTestnetBasicAuthUsernameLabel": "ชื่อผู้ใช้",
+  "exchangeTestnetBasicAuthPasswordLabel": "รหัสผ่าน",
+  "exchangeTestnetBasicAuthClearButton": "ล้าง",
+  "exchangeTestnetBasicAuthSaveButton": "บันทึก",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

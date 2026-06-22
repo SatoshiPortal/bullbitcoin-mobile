@@ -724,6 +724,30 @@
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
+  "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
+  "@exchangeTestnetBasicAuthTitle": {
+    "description": "Title for the testnet exchange basic auth credentials tile and dialog"
+  },
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth for the testnet exchange web pages (login and KYC).",
+  "@exchangeTestnetBasicAuthDescription": {
+    "description": "Explanation of what the testnet exchange basic auth credentials are used for"
+  },
+  "exchangeTestnetBasicAuthUsernameLabel": "Username",
+  "@exchangeTestnetBasicAuthUsernameLabel": {
+    "description": "Label for the username field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthPasswordLabel": "Password",
+  "@exchangeTestnetBasicAuthPasswordLabel": {
+    "description": "Label for the password field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthClearButton": "Clear",
+  "@exchangeTestnetBasicAuthClearButton": {
+    "description": "Button that clears the saved testnet exchange credentials"
+  },
+  "exchangeTestnetBasicAuthSaveButton": "Save",
+  "@exchangeTestnetBasicAuthSaveButton": {
+    "description": "Button that saves the entered testnet exchange credentials"
+  },
   "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
   "@currencySettingsDefaultFiatCurrencyLabel": {
     "description": "Label for the default fiat currency setting"

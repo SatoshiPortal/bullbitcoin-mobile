@@ -1,5 +1,11 @@
 {
   "backupWarningDescription": "Nếu không có bản sao lưu, bạn sẽ mất quyền truy cập vào bitcoin của mình nếu:",
+  "exchangeTestnetBasicAuthTitle": "Thông tin đăng nhập sàn testnet",
+  "exchangeTestnetBasicAuthDescription": "Xác thực HTTP basic cho các trang web của sàn testnet (đăng nhập và KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Tên người dùng",
+  "exchangeTestnetBasicAuthPasswordLabel": "Mật khẩu",
+  "exchangeTestnetBasicAuthClearButton": "Xóa",
+  "exchangeTestnetBasicAuthSaveButton": "Lưu",
   "backupWarningLoseReasonLostPhone": "Bạn làm mất điện thoại",
   "backupWarningLoseReasonDeletedApp": "Bạn xóa ứng dụng",
   "backupWarningLoseReasonCriticalIssue": "Xảy ra sự cố nghiêm trọng với ứng dụng hoặc thiết bị",

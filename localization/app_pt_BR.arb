@@ -6028,6 +6028,12 @@
     "description": "Label badge for custom server"
   },
   "appSettingsDevModeTitle": "Modo de desenvolvimento",
+  "exchangeTestnetBasicAuthTitle": "Credenciais da exchange testnet",
+  "exchangeTestnetBasicAuthDescription": "Autenticação básica HTTP para as páginas web da exchange testnet (login e KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Nome de usuário",
+  "exchangeTestnetBasicAuthPasswordLabel": "Senha",
+  "exchangeTestnetBasicAuthClearButton": "Limpar",
+  "exchangeTestnetBasicAuthSaveButton": "Salvar",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

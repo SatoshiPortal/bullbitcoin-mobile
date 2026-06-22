@@ -5820,7 +5820,7 @@ final class Schema13 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape35 settings = Shape35(
+  late final Shape37 settings = Shape37(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -5839,6 +5839,8 @@ final class Schema13 extends i0.VersionedSchema {
         _column_156,
         _column_157,
         _column_233,
+        _column_235,
+        _column_236,
       ],
       attachedDatabase: database,
     ),
@@ -5960,7 +5962,7 @@ final class Schema13 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape37 swaps = Shape37(
+  late final Shape38 swaps = Shape38(
     source: i0.VersionedTable(
       entityName: 'swaps',
       withoutRowId: false,
@@ -5989,9 +5991,9 @@ final class Schema13 extends i0.VersionedSchema {
         _column_205,
         _column_206,
         _column_207,
-        _column_235,
+        _column_237,
         _column_208,
-        _column_236,
+        _column_238,
       ],
       attachedDatabase: database,
     ),
@@ -6075,6 +6077,57 @@ final class Schema13 extends i0.VersionedSchema {
 
 class Shape37 extends i0.VersionedTable {
   Shape37({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get environment =>
+      columnsByName['environment']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bitcoinUnit =>
+      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get currency =>
+      columnsByName['currency']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get hideAmounts =>
+      columnsByName['hide_amounts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isSuperuser =>
+      columnsByName['is_superuser']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDevModeEnabled =>
+      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get useTorProxy =>
+      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get torProxyPort =>
+      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get themeMode =>
+      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isErrorReportingEnabled =>
+      columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthUsername =>
+      columnsByName['exchange_testnet_basic_auth_username']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthPassword =>
+      columnsByName['exchange_testnet_basic_auth_password']!
+          as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_235(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'exchange_testnet_basic_auth_username',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_236(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'exchange_testnet_basic_auth_password',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+
+class Shape38 extends i0.VersionedTable {
+  Shape38({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get id =>
       columnsByName['id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get type =>
@@ -6127,7 +6180,7 @@ class Shape37 extends i0.VersionedTable {
       columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<int> _column_235(String aliasedName) =>
+i1.GeneratedColumn<int> _column_237(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'refund_fees',
       aliasedName,
@@ -6135,7 +6188,7 @@ i1.GeneratedColumn<int> _column_235(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_236(String aliasedName) =>
+i1.GeneratedColumn<int> _column_238(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'was_direct_payment',
       aliasedName,
