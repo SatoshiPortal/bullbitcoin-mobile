@@ -922,9 +922,9 @@ class BoltzSwapRepository {
   /// unavailable (the swap is still rescued; the fee row is just hidden).
   Future<int?> _recoveredBoltzFee(SwapType type, int amount) async {
     try {
-      final percent = (await _boltz.getSwapFees(type)).boltzPercent;
-      if (percent == null) return null;
-      return (percent * amount / 100).round();
+      final fees = await _boltz.getSwapFees(type);
+      if (fees.boltzPercent == null) return null;
+      return fees.boltzFeeFromPercent(amount);
     } catch (_) {
       return null;
     }
