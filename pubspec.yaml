@@ -54,17 +54,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 485c5a845691db1f90e3d0d7be29b9eac1946506
+      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 485c5a845691db1f90e3d0d7be29b9eac1946506
+      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 485c5a845691db1f90e3d0d7be29b9eac1946506
+      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
       path: packages/bitbox-transport
   hex: ^0.2.0
   auto_size_text: ^3.0.0
@@ -118,7 +118,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 485c5a845691db1f90e3d0d7be29b9eac1946506
+      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
@@ -145,7 +145,7 @@ dependencies:
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
-  sentry_flutter: ^9.19.0
+  sentry_flutter: ^9.22.0
   keyboard_actions: ^4.2.1
 
 dependency_overrides:
@@ -188,7 +188,7 @@ flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).
   # Without an explicit --flavor (e.g. `flutter run`, IDE launches, integration
   # tests) Flutter builds this default, so existing workflows keep working.
-  # default-flavor: production
+  default-flavor: production
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
 

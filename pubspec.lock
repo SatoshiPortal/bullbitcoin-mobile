@@ -158,8 +158,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
-      resolved-ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
+      ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
+      resolved-ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -216,8 +216,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
-      resolved-ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
+      ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
+      resolved-ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -305,8 +305,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
-      resolved-ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
+      ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
+      resolved-ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1755,8 +1755,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
-      resolved-ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
+      ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
+      resolved-ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1772,8 +1772,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
-      resolved-ref: "485c5a845691db1f90e3d0d7be29b9eac1946506"
+      ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
+      resolved-ref: "4d8353efdafa8eb31adf26755149e65a5cada263"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1781,18 +1781,18 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: "1f78300740739ff4b4920802687879231554350eab73eb229778f463aabda440"
+      sha256: "3311f89e0c964c4df5f65670348c8a11744c94ae2b57032c947cfb26bfd03ef0"
       url: "https://pub.dev"
     source: hosted
-    version: "9.19.0"
+    version: "9.22.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: "168bbb120f7684dee6c0e100817f56ee1925bc2eb7fa55a71253337640c7e241"
+      sha256: efd3bebd7962438d0ecbe5c7b530de012e2e8efe14ef838b89195d7c2bb3f66c
       url: "https://pub.dev"
     source: hosted
-    version: "9.19.0"
+    version: "9.22.0"
   share_plus:
     dependency: "direct main"
     description:
