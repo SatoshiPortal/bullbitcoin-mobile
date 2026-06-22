@@ -36,10 +36,9 @@ class SecretStoreKeys {
 class FssSecretStoreAdapter implements SecretStorePort {
   FssSecretStoreAdapter(
     this._kv, {
-    int maxReadRetries = 5,
-    Duration initialRetryDelay = const Duration(milliseconds: 300),
-  })  : _maxReadRetries = maxReadRetries,
-        _initialRetryDelay = initialRetryDelay;
+    this._maxReadRetries = 5,
+    this._initialRetryDelay = const Duration(milliseconds: 300),
+  });
 
   final SecureKeyValueStorePort _kv;
   final int _maxReadRetries;

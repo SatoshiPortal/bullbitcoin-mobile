@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'mnemonic_length.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 
 /// BIP85 application, mirroring the SDK app-numbers used across the codebase.
 enum Bip85Application {
@@ -60,9 +60,9 @@ class Bip85Path {
 class Bip85Derivation {
   const Bip85Derivation({
     required this.path,
-    required List<String> words,
+    required this._words,
     this.length,
-  }) : _words = words;
+  });
 
   final Bip85Path path;
   final MnemonicLength? length;
@@ -82,7 +82,7 @@ class Bip85Derivation {
 /// A derived hex secret — the sealed display payload for `Bip85HexView`.
 @immutable
 class Bip85HexResult {
-  const Bip85HexResult({required this.path, required String hex}) : _hex = hex;
+  const Bip85HexResult({required this.path, required this._hex});
 
   final Bip85Path path;
   final String _hex;

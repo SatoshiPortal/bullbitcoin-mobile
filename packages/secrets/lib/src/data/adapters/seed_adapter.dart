@@ -15,9 +15,8 @@ import 'package:secrets/src/domain/value_objects/seed_info.dart';
 /// boundary for storing/indexing mnemonics. Foreign exceptions are converted
 /// ONCE via [SecretGuard]; `dart:core` `Error`s (programmer bugs) crash.
 class SeedAdapter implements SeedPort {
-  SeedAdapter({required SecretStorePort store, required SeedIndexPort index})
+  SeedAdapter({required SecretStorePort store, required this._index})
       : _store = store,
-        _index = index,
         _guard = SecretGuard(store);
 
   final SecretStorePort _store;

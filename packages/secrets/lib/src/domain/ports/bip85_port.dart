@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../secrets_failure.dart';
-import '../value_objects/ark_secret.dart';
-import '../value_objects/backup.dart';
-import '../value_objects/bip85_types.dart';
-import '../value_objects/mnemonic_length.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/ark_secret.dart';
+import 'package:secrets/src/domain/value_objects/backup.dart';
+import 'package:secrets/src/domain/value_objects/bip85_types.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 
 /// BIP85 child-secret derivation. Child mnemonics/hex are returned in SEALED
 /// display payloads or as a [BackupKey]/[ArkSecret] — the raw child words/bytes

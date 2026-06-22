@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../secrets_failure.dart';
-import '../value_objects/psbt.dart';
-import '../value_objects/signing_intent.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/psbt.dart';
+import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
 /// Signs PSBT/PSET. The seed is read internally; only the SIGNED transaction
 /// comes back. Both methods MUST validate [intent] against the decoded

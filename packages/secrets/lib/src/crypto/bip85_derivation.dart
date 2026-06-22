@@ -5,7 +5,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:convert/convert.dart' as conv;
 
-import '../domain/value_objects/mnemonic_length.dart' as vo;
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart' as vo;
 
 /// Pure-Dart BIP85 derivation. Ports the app's `RecoverbullBip85Utils` +
 /// `bip85_datasource` derivations onto the package. INTERNAL.

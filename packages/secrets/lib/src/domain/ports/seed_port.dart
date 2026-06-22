@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../secrets_failure.dart';
-import '../value_objects/mnemonic_length.dart';
-import '../value_objects/seed_info.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
+import 'package:secrets/src/domain/value_objects/seed_info.dart';
 
 /// The seed/wallet-key-material port (the package's only "repository"). The
 /// stored secret is always a mnemonic; this port imports/generates them and

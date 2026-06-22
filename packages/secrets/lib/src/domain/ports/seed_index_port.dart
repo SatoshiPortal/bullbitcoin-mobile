@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 
-import '../value_objects/seed_info.dart';
+import 'package:secrets/src/domain/value_objects/seed_info.dart';
 
 /// INJECTED port: the non-secret index of which seeds exist. `secrets` defines
 /// the interface; the APP implements it with a Drift `seed_index` table (Drift

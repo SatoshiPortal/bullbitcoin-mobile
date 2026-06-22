@@ -188,7 +188,11 @@ class SwapSignerAdapter implements SwapSignerPort {
         scriptHashlock: swap.swapScript.hashlock,
         actualAmountSat: swap.outAmount.toInt(),
         scriptLocktime: swap.swapScript.locktime,
-        expectedLocktime: intent.timeout,
+        // Bind the locktime only on the REFUND leg (submarine, ownRefund set) —
+        // that script's timeout IS our refund window. On the CLAIM leg (reverse)
+        // the locktime is Boltz's refund window, not ours, so leave it unbound
+        // (matches validateChainSwapCommitment's claim-leg rationale).
+        expectedLocktime: ownRefund != null ? intent.timeout : null,
       ).map((_) => CreatedSwap(
             id: swap.id,
             scriptAddress: swap.scriptAddress,
@@ -211,7 +215,11 @@ class SwapSignerAdapter implements SwapSignerPort {
         scriptHashlock: swap.swapScript.hashlock,
         actualAmountSat: swap.outAmount.toInt(),
         scriptLocktime: swap.swapScript.locktime,
-        expectedLocktime: intent.timeout,
+        // Bind the locktime only on the REFUND leg (submarine, ownRefund set) —
+        // that script's timeout IS our refund window. On the CLAIM leg (reverse)
+        // the locktime is Boltz's refund window, not ours, so leave it unbound
+        // (matches validateChainSwapCommitment's claim-leg rationale).
+        expectedLocktime: ownRefund != null ? intent.timeout : null,
       ).map((_) => CreatedSwap(
             id: swap.id,
             scriptAddress: swap.scriptAddress,

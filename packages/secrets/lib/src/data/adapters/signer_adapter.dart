@@ -21,6 +21,23 @@ class SignerAdapter implements SignerPort {
 
   SecretsFailure _err(String log) => SigningFailure(log);
 
+  /// How many script-pubkeys to pre-index per keychain on the throwaway signing
+  /// wallet, so `wallet.isMine(...)` can recognize owned inputs/change.
+  ///
+  /// This wallet is built fresh in-memory and is NEVER scanned or revealed, so
+  /// `isMine` answers purely from the lookahead-derived SPK cache. With the old
+  /// `lookahead: 0`, that cache was empty → `isMine` returned false for every
+  /// owned script → `IntentValidator` rejected every real send ("spends a
+  /// non-wallet input" / "output not owned"). The lookahead alone must therefore
+  /// cover the highest derivation index the PSBT references.
+  ///
+  /// `DerivationPath` components are not exposed by the bdk_dart bindings, so we
+  /// cannot reveal exactly to the PSBT's referenced indices; instead we pre-index
+  /// a depth that comfortably exceeds any realistic wallet (gap limit is ~20).
+  /// An owned script beyond this depth fails CLOSED (signing is refused, never
+  /// mis-signed). Verified on-device (host `flutter test` can't load the bdk FFI).
+  static const int _ownershipLookahead = 5000;
+
   /// `SignOptions` with `trustWitnessUtxo: false` — the opposite of the live
   /// path's `true`, closing the SegWit fee-inflation footgun.
   static bdk.SignOptions _safeSignOptions() => bdk.SignOptions(
@@ -57,7 +74,9 @@ class SignerAdapter implements SignerPort {
           changeDescriptor: internal,
           network: network,
           persister: bdk.Persister.newInMemory(),
-          lookahead: 0,
+          // NOT 0: this wallet is never scanned, so `isMine` relies entirely on
+          // the lookahead-derived SPK cache to recognize owned inputs/change.
+          lookahead: _ownershipLookahead,
         );
 
         final bdkPsbt = bdk.Psbt(psbtBase64: psbt.base64);

@@ -42,11 +42,9 @@ class Seed {
 class Mnemonic {
   Mnemonic({
     required List<String> words,
-    String? passphrase,
-    bip39.Language language = bip39.Language.english,
-  })  : _words = List.unmodifiable(words),
-        _passphrase = passphrase,
-        _language = language;
+    this._passphrase,
+    this._language = bip39.Language.english,
+  }) : _words = List.unmodifiable(words);
 
   final List<String> _words;
   final String? _passphrase;

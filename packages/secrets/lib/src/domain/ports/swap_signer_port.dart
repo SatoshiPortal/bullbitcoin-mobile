@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../secrets_failure.dart';
-import '../value_objects/created_swap.dart';
-import '../value_objects/signing_intent.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/created_swap.dart';
+import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
 /// Boltz swap CREATION (claim/refund stay in the `swaps` feature via the stored
 /// per-swap KeyPair). The master seed is read internally and passed to the
