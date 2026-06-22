@@ -27,6 +27,11 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/onchain_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/order_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/payjoin_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/swap_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_builder.dart';
 import 'package:get_it/get_it.dart';
 
 class TransactionsLocator {
@@ -104,6 +109,17 @@ class TransactionsLocator {
         exportTransactionsCsvUsecase: locator<ExportTransactionsCsvUsecase>(),
         saver: locator<TransactionExportSaver>(),
       ),
+    );
+    // Registry of section contributors. Adding support for a new mechanism
+    // (e.g. silent payments, another L2) means adding a contributor here —
+    // nothing else changes (Open/Closed).
+    locator.registerLazySingleton<TransactionDetailViewBuilder>(
+      () => const TransactionDetailViewBuilder([
+        OnchainSectionContributor(),
+        SwapSectionContributor(),
+        OrderSectionContributor(),
+        PayjoinSectionContributor(),
+      ]),
     );
     locator.registerFactory<TransactionDetailsCubit>(
       () => TransactionDetailsCubit(

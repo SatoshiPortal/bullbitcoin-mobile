@@ -3014,6 +3014,14 @@
   "@transactionSwapProgressInProgress": {
     "description": "Generic swap progress step: in progress"
   },
+  "transactionSwapProgressStepStatus": "In progress · Step {current} of {total}",
+  "@transactionSwapProgressStepStatus": {
+    "description": "Collapsed swap status row summary showing current step of total",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "transactionSwapStatusTransferStatus": "Transfer Status",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"

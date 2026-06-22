@@ -15,15 +15,18 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_builder.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_description.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_callout_card.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_status_label.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -39,31 +42,38 @@ class TransactionDetailsScreen extends StatelessWidget {
     final returnToExchange =
         GoRouterState.of(context).uri.queryParameters['returnToExchange'] ==
         'true';
-    final isLoading = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.isLoading,
-    );
-    final tx = context.select(
-      (TransactionDetailsCubit bloc) => bloc.state.transaction,
-    );
-    final wallet = context.select(
-      (TransactionDetailsCubit bloc) => bloc.state.wallet,
-    );
-    final isPayjoinCompleted = context.select(
-      (TransactionDetailsCubit bloc) =>
-          bloc.state.payjoin?.status == PayjoinStatus.completed,
-    );
-    final isBroadcastingPayjoinOriginalTx = context.select(
-      (TransactionDetailsCubit bloc) =>
-          bloc.state.isBroadcastingPayjoinOriginalTx,
-    );
 
-    final isOutgoing = tx?.isOutgoing;
-    final isIncoming = tx?.isIncoming;
-    final isOngoingSwap = tx?.isOngoingSwap;
-    final isOrderType = tx?.isOrder == true;
+    final state = context.watch<TransactionDetailsCubit>().state;
+    final isLoading = state.isLoading;
+    final tx = state.transaction;
+    final wallet = state.wallet;
+    final isPayjoinCompleted =
+        state.payjoin?.status == PayjoinStatus.completed;
+    final isBroadcastingPayjoinOriginalTx =
+        state.isBroadcastingPayjoinOriginalTx;
+
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
+    final isOutgoing = tx?.isOutgoing;
+    final isOngoingSwap = tx?.isOngoingSwap;
     final isChainSwap = swap?.isChainSwap ?? false;
+
+    final TransactionDetailView? view = (!isLoading && tx != null)
+        ? locator<TransactionDetailViewBuilder>().build(
+            tx,
+            TxPresentDeps(
+              loc: context.loc,
+              wallet: wallet,
+              counterpartWallet: state.counterpartWallet,
+              walletLabel: wallet?.displayLabel(context) ?? '',
+              counterpartWalletLabel:
+                  state.counterpartWallet?.displayLabel(context) ?? '',
+              swapCounterpartTxId: state.swapCounterpartTxId,
+              amountSent: state.getAmountSent(),
+              amountReceived: state.getAmountReceived(),
+            ),
+          )
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -103,36 +113,33 @@ class TransactionDetailsScreen extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                if (isLoading)
+                if (view == null)
                   const LoadingBoxContent(height: 72, width: 72)
                 else
                   TransactionDirectionBadge(
-                    isIncoming: isIncoming ?? false,
-                    isSwap: isChainSwap,
+                    isIncoming: view.header.isIncoming,
+                    isSwap: view.header.isTransfer,
                   ),
                 const Gap(24),
-                if (isLoading)
+                if (view == null)
                   const LoadingLineContent(width: 150)
                 else
-                  const TransactionDetailsStatusLabel(),
-                if (isOngoingSwap == true && swap != null) ...[
-                  const Gap(8),
-                  SwapProgressIndicator(swap: swap),
-                ],
-                if (isLoading)
+                  TransactionDetailsStatusLabel(header: view.header),
+                if (view == null)
                   const LoadingLineContent(
                     height: 24,
                     width: 200,
                     padding: EdgeInsets.zero,
                   )
                 else
-                  const TransactionDetailsAmount(),
+                  TransactionDetailsAmount(amount: view.header.amount),
                 const Gap(16),
-                if (isOngoingSwap == true && swap != null) ...[
-                  SwapStatusDescription(swap: swap),
-                  const Gap(16),
-                ],
-                if (isOrderType &&
+                if (view != null)
+                  for (final callout in view.callouts) ...[
+                    TransactionCalloutCard(callout: callout),
+                    const Gap(16),
+                  ],
+                if (tx?.isOrder == true &&
                     tx?.isBuyOrder == true &&
                     tx?.order != null &&
                     (tx!.order! as BuyOrder).bitcoinAddress != null &&
@@ -148,10 +155,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                if (isLoading)
+                if (view == null)
                   const LoadingBoxContent(height: 400)
                 else
-                  const TransactionDetailsTable(),
+                  TransactionDetailsTable(view: view),
                 if (tx?.order is FiatPaymentOrder &&
                     (tx!.order! as FiatPaymentOrder).payoutMethod ==
                         OrderPaymentMethod.sinpe &&
@@ -176,7 +183,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const SenderBroadcastPayjoinOriginalTxButton(),
                   const Gap(24),
                 ],
-                if (isLoading)
+                if (view == null)
                   const LoadingLineContent(height: 40)
                 else
                   BBButton.big(

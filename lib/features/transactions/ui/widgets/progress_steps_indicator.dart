@@ -1,20 +1,24 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
-class SwapProgressIndicator extends StatelessWidget {
-  const SwapProgressIndicator({required this.swap});
+/// Generic multi-step progress visualization. Driven purely by view-model
+/// data (step labels + current index + state) so it is decoupled from any
+/// specific protocol — a swap, or any future mechanism with steps, can render
+/// through it.
+class ProgressStepsIndicator extends StatelessWidget {
+  const ProgressStepsIndicator({
+    super.key,
+    required this.steps,
+    required this.currentStep,
+    this.isFailedOrExpired = false,
+  });
 
-  final Swap swap;
+  final List<String> steps;
+  final int currentStep;
+  final bool isFailedOrExpired;
 
   @override
   Widget build(BuildContext context) {
-    final steps = _getProgressSteps(context);
-    final currentStep = _getCurrentStep();
-    final isFailedOrExpired =
-        swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -29,7 +33,6 @@ class SwapProgressIndicator extends StatelessWidget {
 
                 return Stack(
                   children: [
-                    // Connector line background (gray line across entire width)
                     Positioned(
                       top: 20,
                       left: stepWidth / 2,
@@ -39,8 +42,6 @@ class SwapProgressIndicator extends StatelessWidget {
                         color: context.appColors.surfaceContainerHighest,
                       ),
                     ),
-
-                    // Active connector line (colored line up to current step)
                     if (!isFailedOrExpired && currentStep > 0)
                       Positioned(
                         top: 20,
@@ -51,17 +52,14 @@ class SwapProgressIndicator extends StatelessWidget {
                           color: context.appColors.primary,
                         ),
                       ),
-
-                    // Step indicators and labels
                     Row(
-                      mainAxisAlignment: .spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(steps.length, (index) {
                         final isCompleted =
                             index <= currentStep && !isFailedOrExpired;
                         final isCurrent =
                             index == currentStep && !isFailedOrExpired;
 
-                        // Determine colors based on state
                         final Color indicatorColor;
                         if (isFailedOrExpired && index == 0) {
                           indicatorColor = context.appColors.error;
@@ -72,7 +70,6 @@ class SwapProgressIndicator extends StatelessWidget {
                               context.appColors.surfaceContainerHighest;
                         }
 
-                        // Create indicator content
                         Widget? indicatorChild;
                         if (isFailedOrExpired && index == 0) {
                           indicatorChild = Icon(
@@ -91,7 +88,7 @@ class SwapProgressIndicator extends StatelessWidget {
                             '${index + 1}',
                             style: TextStyle(
                               color: context.appColors.onSurfaceVariant,
-                              fontWeight: .bold,
+                              fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
                           );
@@ -108,17 +105,14 @@ class SwapProgressIndicator extends StatelessWidget {
                                     height: 40,
                                     decoration: BoxDecoration(
                                       color: indicatorColor,
-                                      shape: .circle,
-                                      border:
-                                          isCurrent
-                                              ? Border.all(
-                                                color:
-                                                    context
-                                                        .appColors
-                                                        .secondary,
-                                                width: 2,
-                                              )
-                                              : null,
+                                      shape: BoxShape.circle,
+                                      border: isCurrent
+                                          ? Border.all(
+                                              color:
+                                                  context.appColors.secondary,
+                                              width: 2,
+                                            )
+                                          : null,
                                     ),
                                     child: Center(child: indicatorChild),
                                   ),
@@ -128,18 +122,13 @@ class SwapProgressIndicator extends StatelessWidget {
                               Text(
                                 steps[index],
                                 style: TextStyle(
-                                  color: _getStepLabelColor(
-                                    context,
-                                    index,
-                                    currentStep,
-                                  ),
+                                  color: _stepLabelColor(context, index),
                                   fontSize: 11,
-                                  fontWeight:
-                                      isCompleted
-                                          ? .w600
-                                          : .normal,
+                                  fontWeight: isCompleted
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
                                 ),
-                                textAlign: .center,
+                                textAlign: TextAlign.center,
                                 maxLines: 2,
                               ),
                             ],
@@ -157,72 +146,13 @@ class SwapProgressIndicator extends StatelessWidget {
     );
   }
 
-  List<String> _getProgressSteps(BuildContext context) {
-    if (swap is LnReceiveSwap) {
-      return [
-        context.loc.transactionSwapProgressInitiated,
-        context.loc.transactionSwapProgressPaymentMade,
-        context.loc.transactionSwapProgressFundsClaimed,
-      ];
-    } else if (swap is LnSendSwap) {
-      // For Bitcoin/Liquid to Lightning swaps
-      // pending -> paid -> completed
-      // Initiated: Transaction created but not confirmed
-      // Transaction Confirmed: Transaction confirmed, funds are secured (paid status)
-      // Payment Sent: Lightning payment sent, swap completed (completed status)
-      return [
-        context.loc.transactionSwapProgressInitiated,
-        context.loc.transactionSwapProgressBroadcasted,
-        context.loc.transactionSwapProgressInvoicePaid,
-      ];
-    } else if (swap is ChainSwap) {
-      // For Bitcoin to Liquid or Liquid to Bitcoin swaps
-      // pending -> paid -> claimable -> completed
-      return [
-        context.loc.transactionSwapProgressInitiated,
-        context.loc.transactionSwapProgressConfirmed,
-        context.loc.transactionSwapProgressClaim,
-        context.loc.transactionSwapProgressCompleted,
-      ];
-    }
-    return [
-      context.loc.transactionSwapProgressInitiated,
-      context.loc.transactionSwapProgressInProgress,
-      context.loc.transactionSwapProgressCompleted,
-    ];
-  }
-
-  int _getCurrentStep() {
-    if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
-      return -1; // Special case for failed/expired
-    }
-
-    return switch (swap.status) {
-      SwapStatus.pending => 0,
-      SwapStatus.paid => 1,
-      SwapStatus.claimable => swap is ChainSwap ? 2 : 1,
-      SwapStatus.refundable => swap is ChainSwap ? 2 : 1,
-      SwapStatus.canCoop => swap is ChainSwap ? 2 : 1,
-      SwapStatus.completed ||
-      SwapStatus.refunded => swap is ChainSwap ? 3 : 2,
-      SwapStatus.failed || SwapStatus.expired => 0,
-    };
-  }
-
-  Color _getStepLabelColor(BuildContext context, int index, int currentStep) {
-    final isFailedOrExpired =
-        swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
-
+  Color _stepLabelColor(BuildContext context, int index) {
     if (isFailedOrExpired) {
-      return index == 0
-          ? context.appColors.error
-          : context.appColors.outline;
+      return index == 0 ? context.appColors.error : context.appColors.outline;
     }
-
     if (index <= currentStep) {
       return context.appColors.primary;
     }
-
     return context.appColors.outline;
   }
 }

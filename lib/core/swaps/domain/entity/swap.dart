@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:decimal/decimal.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
@@ -41,23 +40,23 @@ enum SwapStatus {
   expired,
   failed;
 
-  String displayName(BuildContext context) {
+  String displayName(AppLocalizations loc) {
     switch (this) {
       case SwapStatus.pending:
-        return context.loc.coreSwapsStatusPending;
+        return loc.coreSwapsStatusPending;
       case SwapStatus.paid:
       case SwapStatus.claimable:
       case SwapStatus.refundable:
       case SwapStatus.canCoop:
-        return context.loc.coreSwapsStatusInProgress;
+        return loc.coreSwapsStatusInProgress;
       case SwapStatus.completed:
-        return context.loc.coreSwapsStatusCompleted;
+        return loc.coreSwapsStatusCompleted;
       case SwapStatus.refunded:
-        return context.loc.coreSwapsStatusRefunded;
+        return loc.coreSwapsStatusRefunded;
       case SwapStatus.expired:
-        return context.loc.coreSwapsStatusExpired;
+        return loc.coreSwapsStatusExpired;
       case SwapStatus.failed:
-        return context.loc.coreSwapsStatusFailed;
+        return loc.coreSwapsStatusFailed;
     }
   }
 
@@ -339,13 +338,13 @@ sealed class Swap with _$Swap {
   bool get isChainSwapExternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
 
-  String swapAction(BuildContext context) =>
+  String swapAction(AppLocalizations loc) =>
       status == SwapStatus.claimable
-          ? context.loc.coreSwapsActionClaim
+          ? loc.coreSwapsActionClaim
           : status == SwapStatus.canCoop
-          ? context.loc.coreSwapsActionClose
+          ? loc.coreSwapsActionClose
           : status == SwapStatus.refundable
-          ? context.loc.coreSwapsActionRefund
+          ? loc.coreSwapsActionRefund
           : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
@@ -454,88 +453,88 @@ class Invoice {
 }
 
 extension SwapStatusMessage on Swap {
-  String getDisplayMessage(BuildContext context) {
+  String getDisplayMessage(AppLocalizations loc) {
     if (isLnReceiveSwap) {
       switch (status) {
         case SwapStatus.pending:
-          return context.loc.coreSwapsLnReceivePending;
+          return loc.coreSwapsLnReceivePending;
         case SwapStatus.paid:
-          return context.loc.coreSwapsLnReceivePaid;
+          return loc.coreSwapsLnReceivePaid;
         case SwapStatus.claimable:
-          return context.loc.coreSwapsLnReceiveClaimable;
+          return loc.coreSwapsLnReceiveClaimable;
         case SwapStatus.refundable:
-          return context.loc.coreSwapsLnReceiveRefundable;
+          return loc.coreSwapsLnReceiveRefundable;
         case SwapStatus.canCoop:
-          return context.loc.coreSwapsLnReceiveCanCoop;
+          return loc.coreSwapsLnReceiveCanCoop;
         case SwapStatus.completed:
-          return context.loc.coreSwapsLnReceiveCompleted;
+          return loc.coreSwapsLnReceiveCompleted;
         case SwapStatus.refunded:
-          return context.loc.coreSwapsLnReceiveFailed;
+          return loc.coreSwapsLnReceiveFailed;
         case SwapStatus.expired:
-          return context.loc.coreSwapsLnReceiveExpired;
+          return loc.coreSwapsLnReceiveExpired;
         case SwapStatus.failed:
-          return context.loc.coreSwapsLnReceiveFailed;
+          return loc.coreSwapsLnReceiveFailed;
       }
     } else if (isLnSendSwap) {
       switch (status) {
         case SwapStatus.pending:
-          return context.loc.coreSwapsLnSendPending;
+          return loc.coreSwapsLnSendPending;
         case SwapStatus.paid:
-          return context.loc.coreSwapsLnSendPaid;
+          return loc.coreSwapsLnSendPaid;
         case SwapStatus.claimable:
-          return context.loc.coreSwapsLnSendClaimable;
+          return loc.coreSwapsLnSendClaimable;
         case SwapStatus.refundable:
-          return context.loc.coreSwapsLnSendRefundable;
+          return loc.coreSwapsLnSendRefundable;
         case SwapStatus.canCoop:
-          return context.loc.coreSwapsLnSendCanCoop;
+          return loc.coreSwapsLnSendCanCoop;
         case SwapStatus.completed:
           final swap = this;
           if (swap is LnSendSwap && swap.refundTxid != null) {
-            return context.loc.coreSwapsLnSendCompletedRefunded;
+            return loc.coreSwapsLnSendCompletedRefunded;
           } else {
-            return context.loc.coreSwapsLnSendCompletedSuccess;
+            return loc.coreSwapsLnSendCompletedSuccess;
           }
         case SwapStatus.refunded:
-          return context.loc.coreSwapsLnSendCompletedRefunded;
+          return loc.coreSwapsLnSendCompletedRefunded;
         case SwapStatus.expired:
-          return context.loc.coreSwapsLnSendExpired;
+          return loc.coreSwapsLnSendExpired;
         case SwapStatus.failed:
           final swap = this;
           if (swap is LnSendSwap && swap.sendTxid != null) {
-            return context.loc.coreSwapsLnSendFailedRefunding;
+            return loc.coreSwapsLnSendFailedRefunding;
           } else {
-            return context.loc.coreSwapsLnSendFailed;
+            return loc.coreSwapsLnSendFailed;
           }
       }
     } else if (isChainSwap) {
       switch (status) {
         case SwapStatus.pending:
-          return context.loc.coreSwapsChainPending;
+          return loc.coreSwapsChainPending;
         case SwapStatus.paid:
-          return context.loc.coreSwapsChainPaid;
+          return loc.coreSwapsChainPaid;
         case SwapStatus.claimable:
-          return context.loc.coreSwapsChainClaimable;
+          return loc.coreSwapsChainClaimable;
         case SwapStatus.refundable:
-          return context.loc.coreSwapsChainRefundable;
+          return loc.coreSwapsChainRefundable;
         case SwapStatus.canCoop:
-          return context.loc.coreSwapsChainCanCoop;
+          return loc.coreSwapsChainCanCoop;
         case SwapStatus.completed:
           final swap = this;
           if (swap is ChainSwap && swap.refundTxid != null) {
-            return context.loc.coreSwapsChainCompletedRefunded;
+            return loc.coreSwapsChainCompletedRefunded;
           } else {
-            return context.loc.coreSwapsChainCompletedSuccess;
+            return loc.coreSwapsChainCompletedSuccess;
           }
         case SwapStatus.refunded:
-          return context.loc.coreSwapsChainCompletedRefunded;
+          return loc.coreSwapsChainCompletedRefunded;
         case SwapStatus.expired:
-          return context.loc.coreSwapsChainExpired;
+          return loc.coreSwapsChainExpired;
         case SwapStatus.failed:
           final swap = this;
           if (swap is ChainSwap && swap.sendTxid != null) {
-            return context.loc.coreSwapsChainFailedRefunding;
+            return loc.coreSwapsChainFailedRefunding;
           } else {
-            return context.loc.coreSwapsChainFailed;
+            return loc.coreSwapsChainFailed;
           }
       }
     }
