@@ -78,6 +78,18 @@ void main() {
       expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
     });
 
+    test('unknown language is REJECTED on import (not silently English)',
+        () async {
+      // The import entry point must not misinterpret an unrecognized language
+      // as English (the storage-decode path stays forward-compatible; this
+      // user-facing edge is tightened).
+      final m = _make();
+      final res =
+          await m.repo.importMnemonic(words: zooWords, language: 'klingon');
+      expect(res, isA<Err>());
+      expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
+    });
+
     test('keychain locked → KeychainLockedFailure, never not-found', () async {
       final m = _make();
       m.kv.locked = true;
@@ -117,6 +129,14 @@ void main() {
       expect(res, isA<Ok>());
       final infos = _unwrap(await m.repo.listSeeds());
       expect(infos, isEmpty); // nothing stored
+    });
+
+    test('unknown language is rejected (does not misderive as English)',
+        () async {
+      final m = _make();
+      final res =
+          await m.repo.fingerprintOf(words: zooWords, language: 'klingon');
+      expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
     });
   });
 

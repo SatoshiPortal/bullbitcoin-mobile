@@ -26,10 +26,16 @@ class SeedAdapter implements SeedPort {
 
   String _key(Fingerprint fp) => SecretStoreKeys.seedKey(fp.hex);
 
-  static bip39.Language _lang(String name) => bip39.Language.values.firstWhere(
-        (l) => l.name == name,
-        orElse: () => bip39.Language.english,
-      );
+  /// Resolves a user-supplied language on the IMPORT entry points. Unlike the
+  /// storage-DECODE path (which stays forward-compatible and falls back to
+  /// English), import REJECTS an unknown language rather than silently
+  /// misinterpreting the words. Returns null when unrecognized.
+  static bip39.Language? _lang(String name) {
+    for (final l in bip39.Language.values) {
+      if (l.name == name) return l;
+    }
+    return null;
+  }
 
   SecretsFailure _err(String log) => SecretsUnexpectedFailure(log);
 
@@ -57,9 +63,16 @@ class SeedAdapter implements SeedPort {
     String language = 'english',
   }) =>
       _guard.run(
-        () => _persist(
-          Mnemonic(words: words, passphrase: passphrase, language: _lang(language)),
-        ),
+        () {
+          final lang = _lang(language);
+          if (lang == null) {
+            return Future.value(Err<Fingerprint, SecretsFailure>(
+                InvalidMnemonicFailure('unknown language: $language')));
+          }
+          return _persist(
+            Mnemonic(words: words, passphrase: passphrase, language: lang),
+          );
+        },
         onError: _err,
       );
 
@@ -104,10 +117,17 @@ class SeedAdapter implements SeedPort {
     String language = 'english',
   }) =>
       _guard.run(
-        () async => Ok(
-          Mnemonic(words: words, passphrase: passphrase, language: _lang(language))
-              .fingerprint,
-        ),
+        () async {
+          final lang = _lang(language);
+          if (lang == null) {
+            return Err<Fingerprint, SecretsFailure>(
+                InvalidMnemonicFailure('unknown language: $language'));
+          }
+          return Ok(
+            Mnemonic(words: words, passphrase: passphrase, language: lang)
+                .fingerprint,
+          );
+        },
         onError: _err,
       );
 }
