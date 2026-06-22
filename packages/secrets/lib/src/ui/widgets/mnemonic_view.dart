@@ -1,6 +1,4 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';

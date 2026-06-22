@@ -65,9 +65,23 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show DropdownMenuItem, FormFieldValidator, RefreshCallback;
+    show
+        CircularProgressIndicator,
+        DropdownMenuItem,
+        FormFieldValidator,
+        RefreshCallback,
+        Theme;
 export 'package:flutter/services.dart' show TextInputFormatter;
-export 'package:flutter/widgets.dart' show FocusNode;
+export 'package:flutter/widgets.dart'
+    show AsyncSnapshot, ConnectionState, FocusNode, FutureBuilder;
+// Diagnostics + test annotations for component `debugFillProperties` overrides.
+export 'package:flutter/foundation.dart'
+    show
+        DiagnosticPropertiesBuilder,
+        DiagnosticsProperty,
+        FlagProperty,
+        StringProperty,
+        visibleForTesting;
 
 export 'package:gap/gap.dart' show Gap;
 

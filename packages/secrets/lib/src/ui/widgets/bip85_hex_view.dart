@@ -1,6 +1,4 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 import 'package:secrets/src/ui/privacy_guard.dart';
 
