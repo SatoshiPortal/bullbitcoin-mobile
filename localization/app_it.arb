@@ -4787,5 +4787,7 @@
   "importWalletBitboxAndroidOnly": "BitBox è supportato solo su Android",
   "pinCodeSaveError": "Impossibile salvare il PIN. Riprova.",
   "pinCodeDeleteError": "Impossibile eliminare il PIN. Riprova.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
+  "priceChartLoadFailed": "I dati del grafico dei prezzi non sono stati caricati. Riprova."
 }

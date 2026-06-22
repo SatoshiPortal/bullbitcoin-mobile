@@ -299,6 +299,7 @@
   "pinCodeDeleteError": "Không thể xóa mã PIN của bạn. Vui lòng thử lại.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "appUnlockPinCheckError": "Không thể tải cài đặt bảo mật. Vui lòng khởi động lại ứng dụng.",
-  "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại."
+  "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại.",
+  "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
+  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại."
 }
-

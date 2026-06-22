@@ -14031,5 +14031,13 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "priceChartLoadFailed": "Price chart data could not be loaded. Please try again.",
+  "@priceChartLoadFailed": {
+    "description": "Error shown when price chart data fails to load"
   }
 }

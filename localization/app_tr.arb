@@ -12644,5 +12644,7 @@
   "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
   "pinCodeSaveError": "PIN kodunuz kaydedilemedi. Lütfen tekrar deneyin.",
   "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
+  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin."
 }

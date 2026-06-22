@@ -12644,5 +12644,7 @@
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
   "pinCodeSaveError": "ذخیره پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
   "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
+  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید."
 }

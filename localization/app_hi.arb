@@ -12930,5 +12930,7 @@
   "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है",
   "pinCodeSaveError": "आपका PIN सेव नहीं हो सका। कृपया पुनः प्रयास करें।",
   "pinCodeDeleteError": "आपका PIN हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
+  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।"
 }

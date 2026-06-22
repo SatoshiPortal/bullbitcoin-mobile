@@ -511,6 +511,7 @@
   "pinCodeDeleteError": "PIN-ის წაშლა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "appUnlockPinCheckError": "უსაფრთხოების პარამეტრების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, გადატვირთოთ აპლიკაცია.",
-  "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ."
+  "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ.",
+  "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა."
 }
-
