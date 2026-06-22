@@ -98,6 +98,47 @@ void main() {
     });
   });
 
+  group('BIP85 official spec vectors (authoritative cross-check, not frozen)', () {
+    // From the official BIP85 specification test vectors
+    // (github.com/bitcoin/bips/blob/master/bip-0085.mediawiki). Unlike the
+    // self-frozen vectors below, these catch a SYSTEMATICALLY-wrong BIP85
+    // derivation that re-deriving our own output could never detect.
+    const bip85MasterXprv =
+        'xprv9s21ZrQH143K2LBWUUQRFXhucrQqBpKdRRxNVq2zBqsx8HVqFk2uYo8kmbaLL'
+        'HRdqtQpUm98uKfu3vca1LqdGhUtyoFnCNkfmXRyPXLjbKb';
+
+    test('BIP39 app (m/83696968\'/39\'/0\'/12\'/0\') → the spec mnemonic', () {
+      // childMnemonicPath confirms the path layout: 39'/0'/12'/0'.
+      expect(
+        Bip85Crypto.childMnemonicPath(length: MnemonicLength.words12, index: 0),
+        "39'/0'/12'/0'",
+      );
+      final child = Bip85Crypto.deriveChildMnemonic(
+        xprvBase58: bip85MasterXprv,
+        length: MnemonicLength.words12,
+        index: 0,
+      );
+      expect(
+        child.words.join(' '),
+        'girl mad pet galaxy egg matter matrix prison refuse sense '
+        'ordinary nose',
+      );
+    });
+
+    test('HEX app (m/83696968\'/128169\'/64\'/0\') → the spec 64-byte hex', () {
+      final hexOut = Bip85Crypto.deriveHex(
+        xprvBase58: bip85MasterXprv,
+        numBytes: 64,
+        index: 0,
+      );
+      expect(
+        hexOut,
+        '492db4698cf3b73a5a24998aa3e9d7fa96275d85724a91e71aa2d645442f8785'
+        '55d078fd1f1f67e368976f04137b1f7a0d19232136ca50c44614af72b5582a5c',
+      );
+    });
+  });
+
   group('BIP85 recoverbull backup key (KAT)', () {
     test('m/1608\'/0\'/586053381 derives the frozen key', () {
       final key = Bip85Crypto.deriveBackupKeyHex(
