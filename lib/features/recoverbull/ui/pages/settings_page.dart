@@ -85,7 +85,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     final uri = Uri.tryParse(value);
     if (uri == null) return context.loc.recoverbullSettingsUrlInvalid;
-    if (uri.scheme != 'http') return context.loc.recoverbullSettingsUrlMustBeHttp;
+    if (uri.scheme != 'http') {
+      return context.loc.recoverbullSettingsUrlMustBeHttp;
+    }
     if (!uri.toString().endsWith('.onion')) {
       return context.loc.recoverbullSettingsUrlMustBeOnion;
     }
@@ -106,117 +108,116 @@ class _SettingsPageState extends State<SettingsPage> {
           color: context.appColors.onSurface,
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      const Gap(16),
-                      Row(
-                        mainAxisAlignment: .spaceBetween,
-                        children: [
-                          BBText(
-                            context.loc.recoverbullSettingsKeyServerUrl,
-                            style: context.font.titleMedium,
-                            color: context.appColors.onSurface,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    const Gap(16),
+                    Row(
+                      mainAxisAlignment: .spaceBetween,
+                      children: [
+                        BBText(
+                          context.loc.recoverbullSettingsKeyServerUrl,
+                          style: context.font.titleMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                        if (!_isEditing)
+                          TextButton.icon(
+                            onPressed: () {
+                              _urlController.text = _originalUrl;
+                              setState(() => _isEditing = true);
+                            },
+                            icon: const Icon(Icons.edit, size: 18),
+                            label: Text(context.loc.recoverbullSettingsEdit),
                           ),
-                          if (!_isEditing)
-                            TextButton.icon(
-                              onPressed: () {
-                                _urlController.text = _originalUrl;
-                                setState(() => _isEditing = true);
-                              },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: Text(context.loc.recoverbullSettingsEdit),
+                      ],
+                    ),
+                    const Gap(12),
+                    if (_isEditing) ...[
+                      TextFormField(
+                        controller: _urlController,
+                        validator: _validateUrl,
+                        maxLines: null,
+                        autofocus: true,
+                        style: context.font.bodyMedium,
+                        decoration: InputDecoration(
+                          hintText: context.loc.recoverbullSettingsUrlHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      ),
+                    ] else ...[
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: context.appColors.cardBackground,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: context.appColors.border),
+                        ),
+                        child: BBText(
+                          _originalUrl,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    if (_isEditing) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BBButton.big(
+                              label: context.loc.recoverbullSettingsCancel,
+                              onPressed: _cancelEdit,
+                              bgColor: context.appColors.cardBackground,
+                              textColor: context.appColors.onSurface,
                             ),
+                          ),
+                          const Gap(8),
+                          Expanded(
+                            child: BBButton.big(
+                              label: context.loc.recoverbullSettingsSave,
+                              onPressed: _saveUrl,
+                              bgColor: context.appColors.onSurface,
+                              textColor: context.appColors.surface,
+                              disabled: _isSaving,
+                            ),
+                          ),
                         ],
                       ),
-                      const Gap(12),
-                      if (_isEditing) ...[
-                        TextFormField(
-                          controller: _urlController,
-                          validator: _validateUrl,
-                          maxLines: null,
-                          autofocus: true,
-                          style: context.font.bodyMedium,
-                          decoration: InputDecoration(
-                            hintText: context.loc.recoverbullSettingsUrlHint,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.all(16),
-                          ),
-                        ),
-                      ] else ...[
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.appColors.cardBackground,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: context.appColors.border),
-                          ),
-                          child: BBText(
-                            _originalUrl,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
-                      if (_isEditing) ...[
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BBButton.big(
-                                label: context.loc.recoverbullSettingsCancel,
-                                onPressed: _cancelEdit,
-                                bgColor: context.appColors.cardBackground,
-                                textColor: context.appColors.onSurface,
-                              ),
-                            ),
-                            const Gap(8),
-                            Expanded(
-                              child: BBButton.big(
-                                label: context.loc.recoverbullSettingsSave,
-                                onPressed: _saveUrl,
-                                bgColor: context.appColors.onSurface,
-                                textColor: context.appColors.surface,
-                                disabled: _isSaving,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Gap(16),
-                      ],
-                      GestureDetector(
-                        onTap: _openRecoverBullWebsite,
-                        child: Row(
-                          mainAxisAlignment: .center,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 20,
-                              color: context.appColors.primary,
-                            ),
-                            const Gap(8),
-                            BBText(
-                              context.loc.recoverbullLearnMore,
-                              style: context.font.bodyMedium,
-                              color: context.appColors.primary,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(24),
+                      const Gap(16),
                     ],
-                  ),
+                    GestureDetector(
+                      onTap: _openRecoverBullWebsite,
+                      child: Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: context.appColors.primary,
+                          ),
+                          const Gap(8),
+                          BBText(
+                            context.loc.recoverbullLearnMore,
+                            style: context.font.bodyMedium,
+                            color: context.appColors.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(24),
+                  ],
                 ),
               ),
+            ),
     );
   }
 }

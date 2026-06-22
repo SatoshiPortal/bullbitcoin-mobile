@@ -80,121 +80,119 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
           color: context.appColors.onSurface,
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: .stretch,
-                  children: [
-                    const Gap(24),
-                    Icon(
-                      _isUsingDefaultServer
-                          ? Icons.verified_user
-                          : Icons.warning_amber,
-                      size: 64,
-                      color:
-                          _isUsingDefaultServer
-                              ? context.appColors.primary
-                              : context.appColors.tertiary,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  const Gap(24),
+                  Icon(
+                    _isUsingDefaultServer
+                        ? Icons.verified_user
+                        : Icons.warning_amber,
+                    size: 64,
+                    color: _isUsingDefaultServer
+                        ? context.appColors.primary
+                        : context.appColors.tertiary,
+                  ),
+                  const Gap(32),
+                  BBText(
+                    _isUsingDefaultServer
+                        ? context.loc.recoverbullServerUsingDefault
+                        : context.loc.recoverbullServerUsingCustom,
+                    style: context.font.headlineMedium,
+                    textAlign: .center,
+                  ),
+                  const Gap(16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.appColors.cardBackground,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: context.appColors.border,
+                        width: 1,
+                      ),
                     ),
-                    const Gap(32),
-                    BBText(
-                      _isUsingDefaultServer
-                          ? context.loc.recoverbullServerUsingDefault
-                          : context.loc.recoverbullServerUsingCustom,
-                      style: context.font.headlineMedium,
-                      textAlign: .center,
-                    ),
-                    const Gap(16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: context.appColors.cardBackground,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: context.appColors.border,
-                          width: 1,
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        BBText(
+                          context.loc.recoverbullServerUrlLabel,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          BBText(
-                            context.loc.recoverbullServerUrlLabel,
-                            style: context.font.labelSmall?.copyWith(
-                              color: context.appColors.textMuted,
-                            ),
+                        const Gap(8),
+                        BBText(
+                          _serverUrl ?? SettingsConstants.recoverbullUrl,
+                          style: context.font.bodyMedium?.copyWith(
+                            fontFamily: 'monospace',
                           ),
-                          const Gap(8),
-                          BBText(
-                            _serverUrl ?? SettingsConstants.recoverbullUrl,
-                            style: context.font.bodyMedium?.copyWith(
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const Gap(24),
-                    if (!_isUsingDefaultServer) ...[
-                      InfoCard(
-                        description: context.loc.recoverbullServerCustomWarning,
-                        tagColor: context.appColors.error,
-                        bgColor: context.appColors.errorContainer,
-                      ),
-                      const Gap(24),
-                    ],
-                    BBText(
-                      context.loc.recoverbullServerTorNotice,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                      textAlign: .center,
-                    ),
-                    const Spacer(),
-                    BBButton.big(
-                      label: context.loc.recoverbullContinue,
-                      onPressed: () async {
-                        await _allowPermissionUsecase.execute(true);
-                        if (!context.mounted) return;
-                        final state = context.read<RecoverBullBloc>().state;
-                        await context.pushNamed(
-                          RecoverBullRoute.recoverbullFlows.name,
-                          extra: RecoverBullFlowsExtra(
-                            flow: state.flow,
-                            vault: state.vault,
-                          ),
-                        );
-                      },
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
-                    ),
-                    const Gap(16),
-                    GestureDetector(
-                      onTap: _openRecoverBullWebsite,
-                      child: Row(
-                        mainAxisAlignment: .center,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 20,
-                            color: context.appColors.primary,
-                          ),
-                          const Gap(8),
-                          BBText(
-                            context.loc.recoverbullLearnMore,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.primary,
-                          ),
-                        ],
-                      ),
+                  ),
+                  const Gap(24),
+                  if (!_isUsingDefaultServer) ...[
+                    InfoCard(
+                      description: context.loc.recoverbullServerCustomWarning,
+                      tagColor: context.appColors.error,
+                      bgColor: context.appColors.errorContainer,
                     ),
                     const Gap(24),
                   ],
-                ),
+                  BBText(
+                    context.loc.recoverbullServerTorNotice,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                    textAlign: .center,
+                  ),
+                  const Spacer(),
+                  BBButton.big(
+                    label: context.loc.recoverbullContinue,
+                    onPressed: () async {
+                      await _allowPermissionUsecase.execute(true);
+                      if (!context.mounted) return;
+                      final state = context.read<RecoverBullBloc>().state;
+                      await context.pushNamed(
+                        RecoverBullRoute.recoverbullFlows.name,
+                        extra: RecoverBullFlowsExtra(
+                          flow: state.flow,
+                          vault: state.vault,
+                        ),
+                      );
+                    },
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
+                  ),
+                  const Gap(16),
+                  GestureDetector(
+                    onTap: _openRecoverBullWebsite,
+                    child: Row(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: context.appColors.primary,
+                        ),
+                        const Gap(8),
+                        BBText(
+                          context.loc.recoverbullLearnMore,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(24),
+                ],
               ),
+            ),
     );
   }
 }
