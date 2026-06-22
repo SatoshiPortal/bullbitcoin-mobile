@@ -782,7 +782,13 @@ class BoltzSwapRepository {
       isTestnet: _isTestnet,
     );
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
-    final status = restored.status.name;
+    // A refund-action swap with funds still locked on-chain is stored as
+    // refundable (not the terminal failed/expired/refunded the restore status
+    // maps to) so the watcher actually drives the refund. If the lockup turns
+    // out to be already gone the refund attempt resolves it terminally.
+    final status = restored.recoverable && restored.isRefundAction
+        ? SwapStatus.refundable.name
+        : restored.status.name;
     final id = restored.id;
     final isLiquid = _lnSwapIsLiquid(restored);
 

@@ -49,11 +49,16 @@ class RestoredSwap {
   ///
   /// Refund vs claim is a state property, not an asset one: the same chain-swap
   /// pair claims forward while the swap is live and refunds once it can no
-  /// longer complete. The restore endpoint never reports `refundable` (it maps
-  /// an on-chain-but-unclaimed lockup to `claimable` — see
-  /// `_restoreStatusToSwapStatus`), so a terminal failure is the refund signal.
+  /// longer complete. Failed, expired and refunded are all possible refund
+  /// cases — the last because `transaction.refunded` means boltz refunded its
+  /// OWN lockup, signalling us to refund ours. We let the user attempt the
+  /// refund to a wallet on the chain their lockup is on; if the lockup is
+  /// already gone the on-chain refund fails (no UTXO), which is how we learn it
+  /// was resolved.
   bool get isRefundAction =>
-      status == SwapStatus.failed || status == SwapStatus.expired;
+      status == SwapStatus.failed ||
+      status == SwapStatus.expired ||
+      status == SwapStatus.refunded;
 }
 
 /// A restored swap paired with whether it is already stored locally.
