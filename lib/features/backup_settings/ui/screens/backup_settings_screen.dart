@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -41,8 +42,9 @@ class _Screen extends StatelessWidget {
     return BlocListener<BackupSettingsCubit, BackupSettingsState>(
       listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
       listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.failure!.toTranslated(context))),
+        SnackBarUtils.showSnackBar(
+          context,
+          state.failure!.toTranslated(context),
         );
       },
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(

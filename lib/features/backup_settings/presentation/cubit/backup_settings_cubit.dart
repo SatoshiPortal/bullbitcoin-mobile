@@ -61,8 +61,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           failure: null,
         ),
       );
-    } catch (e, st) {
-      log.severe(message: 'checkBackupStatus failed', error: e, trace: st);
+    } catch (e) {
+      log.warning('checkBackupStatus failed', error: e);
       emit(
         state.copyWith(
           status: BackupSettingsStatus.error,
