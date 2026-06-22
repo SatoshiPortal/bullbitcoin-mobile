@@ -1812,8 +1812,12 @@ class SendCubit extends Cubit<SendState> {
         // Drop the previous wallet's utxos on a change so spendable-balance math
         // never mixes the new wallet's balance with the old wallet's frozen
         // coins in the window before loadUtxos() repopulates (it degrades to the
-        // full balance meanwhile — the safe fallback).
+        // full balance meanwhile — the safe fallback). Also clear any manual
+        // coin selection: those outpoints belong to the old wallet and would
+        // otherwise be fed as required inputs into the new wallet's PSBT build,
+        // which fails (outpoint not in wallet) or builds against wrong coins.
         utxos: walletChanged ? const [] : state.utxos,
+        selectedUtxos: walletChanged ? const [] : state.selectedUtxos,
       ),
     );
     setSelectedSwapLimits();

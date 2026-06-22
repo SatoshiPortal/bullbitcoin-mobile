@@ -51,10 +51,13 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
         : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
     // `isFrozen` (what the Coins UI shows/toggles) reflects user freezes only.
-    final frozenUtxos = await _frozenWalletUtxoDatasource.getFrozenOutpoints(
-      walletId: walletId,
-      origins: const {'user'},
-    );
+    // Materialise as a Set for O(1) membership per UTXO — Outpoint is a record,
+    // so it has structural equality/hashCode and keys the set directly.
+    final frozenOutpoints =
+        (await _frozenWalletUtxoDatasource.getFrozenOutpoints(
+          walletId: walletId,
+          origins: const {'user'},
+        )).toSet();
 
     final utxos = await Future.wait(
       utxoModels.map((model) async {
@@ -64,10 +67,10 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         );
         final txLabels = await _labelsFacade.fetchByReference(model.txId);
         // Check if the UTXO is frozen
-        final isFrozen = frozenUtxos.any(
-          (frozenUtxo) =>
-              frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
-        );
+        final isFrozen = frozenOutpoints.contains((
+          txId: model.txId,
+          vout: model.vout,
+        ));
         // Get the possible address labels for the UTXO
         List<Label> addressLabels;
         switch (model) {
