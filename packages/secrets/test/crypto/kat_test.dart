@@ -188,4 +188,30 @@ void main() {
       expect(hexStr, arkSecretForZooSeed);
     });
   });
+
+  group('templated BIP85 paths validate (Bip85HardenedPath guard)', () {
+    // The path producers wrap their string templates in Bip85HardenedPath, so a
+    // dropped quote becomes a thrown error instead of a wrong-key derivation.
+    // Assert the real templates pass validation (don't throw) and are shaped as
+    // expected — coverage the KAT key vectors don't otherwise give.
+    test('arkPath is the expected fully-hardened path', () {
+      expect(Bip85Crypto.arkPath(), "128169'/32'/11811'");
+    });
+
+    test('childMnemonicPath validates for both lengths', () {
+      expect(
+          Bip85Crypto.childMnemonicPath(
+              length: MnemonicLength.words12, index: 0),
+          "39'/0'/12'/0'");
+      expect(
+          Bip85Crypto.childMnemonicPath(
+              length: MnemonicLength.words24, index: 5),
+          "39'/0'/24'/5'");
+    });
+
+    test('generateRecoverbullPath is a valid hardened recoverbull path', () {
+      expect(Bip85Crypto.generateRecoverbullPath(),
+          matches(RegExp(r"^1608'/0'/\d+'$")));
+    });
+  });
 }
