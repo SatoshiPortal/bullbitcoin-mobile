@@ -73,6 +73,13 @@ Ports-and-adapters, enforced by `make seal-check`:
   on confidential outputs); per-output change-ownership is not provable on
   blinded outputs and is a documented residual. Liquid uses an ephemeral temp
   LWK db deleted after signing.
+- **Backup vault** is **not** AEAD. The pinned third-party `recoverbull` uses
+  AES-256-CBC + HMAC-SHA256 (encrypt-and-MAC, one key shared by cipher and MAC),
+  and the surrounding JSON envelope (`createdAt`/`id`/`salt`) is unauthenticated.
+  Each backup gets a fresh `Random.secure()` IV and a fresh per-backup BIP85
+  `BackupKey` (no IV/key reuse), and tamper/wrong-key is detected via a
+  constant-time MAC compare — so it is sound-but-not-AEAD. Hardening (HKDF
+  enc/MAC key separation, full-envelope MAC) is an upstream `recoverbull` concern.
 
 ## Storage
 
@@ -88,6 +95,3 @@ SecretsLocator.registerDatasources(locator);   // FssSecretStoreAdapter + Mnemon
 // app registers its Drift-backed SeedIndexPort here
 SecretsLocator.registerRepositories(locator);   // the ports (asserts SeedIndexPort)
 ```
-
-See `SECRETS_REFACTORING_SPEC.md`, `SECRETS_IMPLEMENTATION_AUDIT.md`, and
-`SECRETS_FILE_BY_FILE_AUDIT.md` at the repo root for the full design + audit.
