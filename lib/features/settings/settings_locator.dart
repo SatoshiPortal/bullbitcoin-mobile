@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
@@ -71,6 +72,12 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetExchangeTestnetBasicAuthUsecase>(
+      () => SetExchangeTestnetBasicAuthUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
@@ -86,6 +93,8 @@ class SettingsLocator {
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
+        setExchangeTestnetBasicAuthUsecase:
+            locator<SetExchangeTestnetBasicAuthUsecase>(),
       ),
     );
   }

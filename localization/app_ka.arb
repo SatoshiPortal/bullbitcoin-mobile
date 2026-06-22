@@ -1,5 +1,11 @@
 {
   "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
+  "exchangeTestnetBasicAuthTitle": "Testnet გაცვლის სერთიფიკატები",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth testnet გაცვლის ვებგვერდებისთვის (შესვლა და KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "მომხმარებლის სახელი",
+  "exchangeTestnetBasicAuthPasswordLabel": "პაროლი",
+  "exchangeTestnetBasicAuthClearButton": "გასუფთავება",
+  "exchangeTestnetBasicAuthSaveButton": "შენახვა",
   "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
   "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
   "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",

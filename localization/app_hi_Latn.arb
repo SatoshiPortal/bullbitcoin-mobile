@@ -720,6 +720,12 @@
     "description": "Error message displayed when logs fail to load"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
+  "exchangeTestnetBasicAuthDescription": "Testnet exchange web pages ke liye HTTP basic auth (login aur KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Username",
+  "exchangeTestnetBasicAuthPasswordLabel": "Password",
+  "exchangeTestnetBasicAuthClearButton": "Clear karein",
+  "exchangeTestnetBasicAuthSaveButton": "Save karein",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

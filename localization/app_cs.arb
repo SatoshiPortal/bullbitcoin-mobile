@@ -6872,6 +6872,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Režim Dev",
+  "exchangeTestnetBasicAuthTitle": "Přihlašovací údaje testnet burzy",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth pro webové stránky testnet burzy (přihlášení a KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Uživatelské jméno",
+  "exchangeTestnetBasicAuthPasswordLabel": "Heslo",
+  "exchangeTestnetBasicAuthClearButton": "Vymazat",
+  "exchangeTestnetBasicAuthSaveButton": "Uložit",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

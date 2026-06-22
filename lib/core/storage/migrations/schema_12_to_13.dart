@@ -14,6 +14,10 @@ import 'package:drift/drift.dart';
 ///   flow rather than created in-app. Fields not derivable from the Boltz
 ///   restore response + on-chain data are untrustworthy for these and hidden
 ///   in the UI.
+///
+/// Changes to settings table:
+/// - Adds 'exchange_testnet_basic_auth_username'/'...password' columns: in-app
+///   HTTP basic auth creds gating the testnet exchange web frontend
 class Schema12To13 {
   static Future<void> migrate(Migrator m, Schema13 schema13) async {
     try {
@@ -38,5 +42,22 @@ class Schema12To13 {
       "UPDATE swaps SET status = 'refunded' "
       "WHERE status = 'completed' AND refund_txid IS NOT NULL",
     );
+
+    try {
+      await m.addColumn(
+        schema13.settings,
+        schema13.settings.exchangeTestnetBasicAuthUsername,
+      );
+    } catch (e) {
+      if (!e.toString().contains('duplicate column')) rethrow;
+    }
+    try {
+      await m.addColumn(
+        schema13.settings,
+        schema13.settings.exchangeTestnetBasicAuthPassword,
+      );
+    } catch (e) {
+      if (!e.toString().contains('duplicate column')) rethrow;
+    }
   }
 }

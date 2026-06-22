@@ -6892,6 +6892,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Testnet borsa kimlik bilgileri",
+  "exchangeTestnetBasicAuthDescription": "Testnet borsa web sayfaları için HTTP basic auth (giriş ve KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Kullanıcı adı",
+  "exchangeTestnetBasicAuthPasswordLabel": "Parola",
+  "exchangeTestnetBasicAuthClearButton": "Temizle",
+  "exchangeTestnetBasicAuthSaveButton": "Kaydet",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

@@ -7028,6 +7028,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Mode",
+  "exchangeTestnetBasicAuthTitle": "اعتبارنامه‌های صرافی testnet",
+  "exchangeTestnetBasicAuthDescription": "احراز هویت پایه HTTP برای صفحات وب صرافی testnet (ورود و KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "نام کاربری",
+  "exchangeTestnetBasicAuthPasswordLabel": "گذرواژه",
+  "exchangeTestnetBasicAuthClearButton": "پاک کردن",
+  "exchangeTestnetBasicAuthSaveButton": "ذخیره",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

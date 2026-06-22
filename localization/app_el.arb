@@ -5760,6 +5760,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Διαπιστευτήρια ανταλλακτηρίου testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth για τις ιστοσελίδες του ανταλλακτηρίου testnet (σύνδεση και KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Όνομα χρήστη",
+  "exchangeTestnetBasicAuthPasswordLabel": "Κωδικός πρόσβασης",
+  "exchangeTestnetBasicAuthClearButton": "Εκκαθάριση",
+  "exchangeTestnetBasicAuthSaveButton": "Αποθήκευση",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

@@ -5346,6 +5346,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Режим за разработчици",
+  "exchangeTestnetBasicAuthTitle": "Идентификационни данни за testnet борсата",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth за уеб страниците на testnet борсата (вход и KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Потребителско име",
+  "exchangeTestnetBasicAuthPasswordLabel": "Парола",
+  "exchangeTestnetBasicAuthClearButton": "Изчисти",
+  "exchangeTestnetBasicAuthSaveButton": "Запази",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },

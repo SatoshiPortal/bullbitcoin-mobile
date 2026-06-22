@@ -274,8 +274,20 @@ if [[ "$verificationMode" == "github" && -z "$apkDir" ]]; then
     appHash=$(sha256sum "$workDir/official.apk" | awk '{print $1}')
 fi
 
-available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
-total_mem_gb=$(free -g | awk '/^Mem:/ {print $2}')
+# Memory probe is best-effort and platform-specific. `free` is Linux-only;
+# on macOS/BSD derive total from sysctl (no cheap "available" metric, so use
+# total as the proxy for the heap heuristic below). Unknown platforms skip the
+# guard rather than abort under `set -e`.
+if command -v free &> /dev/null; then
+    available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
+    total_mem_gb=$(free -g | awk '/^Mem:/ {print $2}')
+elif sysctl -n hw.memsize &> /dev/null; then
+    total_mem_gb=$(( $(sysctl -n hw.memsize) / 1073741824 ))
+    available_mem_gb=$total_mem_gb
+else
+    available_mem_gb=99
+    total_mem_gb=99
+fi
 echo "Memory: ${available_mem_gb}GB available / ${total_mem_gb}GB total"
 if [[ $available_mem_gb -lt 4 ]]; then
     echo -e "${YELLOW}Warning: Low memory. Build may fail.${NC}"

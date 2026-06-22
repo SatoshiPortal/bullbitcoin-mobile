@@ -13,6 +13,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
+      # The job builds the FRB Rust crates, the Flutter SDK toolchain, the
+      # Linux desktop app and runs integration tests on one runner; the stock
+      # ubuntu-24.04 image fills up and the runner dies with "No space left on
+      # device". Reclaim the unused pre-installed toolchains first.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
       # Caches below are restored before any toolchain step that uses
       # them, so the SDK download / pub resolve / crate fetch on a cold
       # runner only pays out on a cache miss. The pub cache also holds the
@@ -50,7 +64,7 @@ jobs:
 
       - name: Install FVM
         run: |
-          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.1.0
+          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.1.1
           echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
       - run: make fvm-check

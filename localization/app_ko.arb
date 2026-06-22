@@ -6920,6 +6920,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev 모드",
+  "exchangeTestnetBasicAuthTitle": "Testnet 거래소 자격 증명",
+  "exchangeTestnetBasicAuthDescription": "Testnet 거래소 웹 페이지(로그인 및 KYC)를 위한 HTTP 기본 인증.",
+  "exchangeTestnetBasicAuthUsernameLabel": "사용자 이름",
+  "exchangeTestnetBasicAuthPasswordLabel": "비밀번호",
+  "exchangeTestnetBasicAuthClearButton": "지우기",
+  "exchangeTestnetBasicAuthSaveButton": "저장",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
