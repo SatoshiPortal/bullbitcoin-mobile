@@ -68,7 +68,11 @@ void main() {
   group('MnemonicView (sealed)', () {
     testWidgets('renders the stored words and is excluded from semantics',
         (tester) async {
-      await tester.pumpWidget(_wrap(MnemonicView(seed: zooFp, reader: reader)));
+      await tester.pumpWidget(_wrap(MnemonicView(
+            seed: zooFp,
+            reader: reader,
+            unavailableMessage: 'unavailable',
+            noPhraseMessage: 'no phrase')));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsOneWidget); // word 12
       expect(find.byType(ExcludeSemantics), findsAtLeastNWidgets(1));
@@ -76,7 +80,11 @@ void main() {
 
     testWidgets('SEAL: debug diagnostics expose the fingerprint, never words',
         (tester) async {
-      final view = MnemonicView(seed: zooFp, reader: reader);
+      final view = MnemonicView(
+            seed: zooFp,
+            reader: reader,
+            unavailableMessage: 'unavailable',
+            noPhraseMessage: 'no phrase');
       final node = DiagnosticPropertiesBuilder();
       view.debugFillProperties(node);
       final dump = node.properties.map((p) => '${p.name}=${p.value}').join(',');
@@ -91,7 +99,11 @@ void main() {
         (tester) async {
       final failing = lockedReader();
       await tester
-          .pumpWidget(_wrap(MnemonicView(seed: zooFp, reader: failing)));
+          .pumpWidget(_wrap(MnemonicView(
+              seed: zooFp,
+              reader: failing,
+              unavailableMessage: 'unavailable',
+              noPhraseMessage: 'no phrase')));
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.byType(BullSeedWarningCard), findsOneWidget);
@@ -106,6 +118,7 @@ void main() {
         seed: zooFp,
         reader: lockedReader(),
         onResult: (_) => called = true,
+        unavailableMessage: 'unavailable',
       )));
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -148,6 +161,7 @@ void main() {
         seed: zooFp,
         reader: reader,
         onResult: (v) => outcome = v,
+        unavailableMessage: 'unavailable',
       )));
       await tester.pumpAndSettle();
       // Tap words in the correct (stored) order: zoo×11 then wrong.
@@ -177,13 +191,21 @@ void main() {
       final reader2 = MnemonicReader(store);
 
       await tester.pumpWidget(_wrap(
-          VerifyBackupView(seed: zooFp, reader: reader, onResult: (_) {})));
+          VerifyBackupView(
+              seed: zooFp,
+              reader: reader,
+              onResult: (_) {},
+              unavailableMessage: 'unavailable')));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsOneWidget); // zoo seed loaded
 
       // Swap to the second seed/reader (no key change).
       await tester.pumpWidget(_wrap(
-          VerifyBackupView(seed: fp2, reader: reader2, onResult: (_) {})));
+          VerifyBackupView(
+              seed: fp2,
+              reader: reader2,
+              onResult: (_) {},
+              unavailableMessage: 'unavailable')));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsNothing); // stale words gone
       expect(find.text('dilemma'), findsOneWidget); // new seed loaded
@@ -207,6 +229,7 @@ void main() {
         seed: fp,
         reader: MnemonicReader(store),
         onResult: (v) => outcome = v,
+        unavailableMessage: 'unavailable',
       )));
       await tester.pumpAndSettle();
       // Tap the 2nd word first (swap positions 0 and 1) → wrong order.

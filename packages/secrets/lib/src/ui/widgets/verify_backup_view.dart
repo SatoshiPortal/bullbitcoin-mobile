@@ -13,11 +13,18 @@ class VerifyBackupView extends StatefulWidget {
     super.key,
     required this.seed,
     required this.onResult,
+    required this.unavailableMessage,
     @visibleForTesting this.reader,
   });
 
   final Fingerprint seed;
   final ValueChanged<bool> onResult;
+
+  /// Caller-supplied (localized) copy shown when the seed can't be verified
+  /// right now — a locked keychain, a missing seed, or a bytes-only seed with
+  /// no words to verify. The package can't import the app's `AppLocalizations`,
+  /// so the consumer passes a localized string in.
+  final String unavailableMessage;
 
   @visibleForTesting
   final MnemonicReader? reader;
@@ -113,9 +120,7 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
   @override
   Widget build(BuildContext context) {
     if (_unavailable) {
-      return const BullSeedWarningCard(
-        message: 'This wallet cannot be verified right now.',
-      );
+      return BullSeedWarningCard(message: widget.unavailableMessage);
     }
     if (_loading || _shuffled.isEmpty) {
       return const Center(child: CircularProgressIndicator());

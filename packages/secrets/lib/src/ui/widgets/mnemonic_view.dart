@@ -12,12 +12,23 @@ class MnemonicView extends StatefulWidget {
   const MnemonicView({
     super.key,
     required this.seed,
+    required this.unavailableMessage,
+    required this.noPhraseMessage,
     this.showPassphrase = false,
     @visibleForTesting this.reader,
   });
 
   final Fingerprint seed;
   final bool showPassphrase;
+
+  /// Caller-supplied (localized) copy shown when the seed can't be read right
+  /// now — e.g. a locked keychain or missing seed. The package can't import the
+  /// app's `AppLocalizations`, so the consumer passes localized strings in.
+  final String unavailableMessage;
+
+  /// Caller-supplied (localized) copy shown for a bytes-only seed that has no
+  /// recovery phrase to display.
+  final String noPhraseMessage;
 
   /// Test seam only — production resolves the reader from the locator.
   @visibleForTesting
@@ -74,9 +85,7 @@ class _MnemonicViewState extends State<MnemonicView> {
         builder: (context, snap) {
           if (snap.hasError) {
             // A locked keychain / missing seed must surface, not spin forever.
-            return const BullSeedWarningCard(
-              message: 'Unable to load this wallet right now.',
-            );
+            return BullSeedWarningCard(message: widget.unavailableMessage);
           }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -84,9 +93,7 @@ class _MnemonicViewState extends State<MnemonicView> {
           final data = snap.data!;
           if (data.words.isEmpty) {
             // Bytes-only (non-mnemonic) seed — there is no phrase to show.
-            return const BullSeedWarningCard(
-              message: 'This wallet has no recovery phrase to display.',
-            );
+            return BullSeedWarningCard(message: widget.noPhraseMessage);
           }
           return SingleChildScrollView(
             child: Column(
