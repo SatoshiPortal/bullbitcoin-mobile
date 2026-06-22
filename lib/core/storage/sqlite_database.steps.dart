@@ -5993,9 +5993,8 @@ final class Schema13 extends i0.VersionedSchema {
         _column_207,
         _column_237,
         _column_208,
-        _column_236,
-        _column_237,
         _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6202,7 +6201,7 @@ i1.GeneratedColumn<int> _column_238(String aliasedName) =>
           'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<int> _column_237(String aliasedName) =>
+i1.GeneratedColumn<int> _column_239(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'recovered',
       aliasedName,
