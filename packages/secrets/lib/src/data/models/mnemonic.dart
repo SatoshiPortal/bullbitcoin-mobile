@@ -153,7 +153,7 @@ class Mnemonic {
     //    migrated by 005 into its own passphrase-fingerprinted SeedModel, read
     //    by case 2); attaching one here would derive a different fingerprint
     //    than this key → an unfindable seed. So we never guess a passphrase.
-    if (m['mnemonic'] is String && (m['mnemonic'] as String).isNotEmpty) {
+    if (m['mnemonic'] is String && (m['mnemonic'] as String).trim().isNotEmpty) {
       final words = (m['mnemonic'] as String).trim().split(RegExp(r'\s+'));
       return Mnemonic(words: words);
     }

@@ -209,5 +209,17 @@ void main() {
         throwsA(isA<FormatException>()),
       );
     });
+
+    test('whitespace-only OldSeed mnemonic → FormatException (no empty seed)',
+        () {
+      // `{"mnemonic":"   "}` passes a bare `.isNotEmpty` but decodes to a
+      // degenerate single-empty-word mnemonic; the `.trim().isNotEmpty` guard
+      // must reject it like any other unrecognized format.
+      final v = jsonEncode({'mnemonic': '   '});
+      expect(
+        () => Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v))),
+        throwsA(isA<FormatException>()),
+      );
+    });
   });
 }
