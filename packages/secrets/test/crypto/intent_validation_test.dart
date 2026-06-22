@@ -27,10 +27,25 @@ void main() {
     test('accepts recipient + owned change within fee cap', () {
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_recipient, _change], feeSat: 1000),
+        const TxFacts(
+          outputs: [_recipient, _change],
+          feeSat: 1000,
+          inputScriptPubKeys: ['my_change_spk'],
+        ),
         ownsScript: _ownsMyChange,
       );
       expect(_isOk(r), isTrue);
+    });
+
+    test('REJECTS (fail-closed) a send with zero known input scripts', () {
+      // An empty inputScriptPubKeys means the extractor vouched for NO input;
+      // the per-input ownership loop would vacuously pass, so we must refuse.
+      final r = IntentValidator.validate(
+        _send,
+        const TxFacts(outputs: [_recipient, _change], feeSat: 1000),
+        ownsScript: _ownsMyChange,
+      );
+      expect(_err(r), isA<SigningFailure>());
     });
 
     test('REJECTS fee above the cap (closes trustWitnessUtxo inflation)', () {
@@ -46,7 +61,11 @@ void main() {
         () {
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_recipient, _attacker], feeSat: 500),
+        const TxFacts(
+          outputs: [_recipient, _attacker],
+          feeSat: 500,
+          inputScriptPubKeys: ['my_change_spk'],
+        ),
         ownsScript: _ownsMyChange,
       );
       expect(_err(r), isA<SigningFailure>());
@@ -55,7 +74,11 @@ void main() {
     test('REJECTS change that the wallet does not own', () {
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_recipient, _change], feeSat: 500),
+        const TxFacts(
+          outputs: [_recipient, _change],
+          feeSat: 500,
+          inputScriptPubKeys: ['some_input'],
+        ),
         ownsScript: (_) => false, // owns nothing
       );
       expect(_err(r), isA<SigningFailure>());
@@ -66,7 +89,11 @@ void main() {
       // One recipient declared, but the tx pays it twice.
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_recipient, _recipient], feeSat: 500),
+        const TxFacts(
+          outputs: [_recipient, _recipient],
+          feeSat: 500,
+          inputScriptPubKeys: ['my_change_spk'],
+        ),
         ownsScript: _ownsMyChange,
       );
       expect(_err(r), isA<SigningFailure>());
@@ -76,7 +103,11 @@ void main() {
       // Tx contains only owned change — the recipient was dropped.
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_change], feeSat: 500),
+        const TxFacts(
+          outputs: [_change],
+          feeSat: 500,
+          inputScriptPubKeys: ['my_change_spk'],
+        ),
         ownsScript: _ownsMyChange,
       );
       expect(_err(r), isA<SigningFailure>());
@@ -494,5 +525,17 @@ void main() {
       expect(SignerAdapter.debugValidateLiquidFee(swap, 0),
           isA<SigningFailure>());
     });
+
+    test('REJECTS a fee far above the cap (out-of-range overpay)', () {
+      // The cap check feeding debugValidateLiquidFee: a fee well beyond the
+      // intent's maxFeeSat must be refused, not waved through.
+      expect(SignerAdapter.debugValidateLiquidFee(_send, 2100000000000000),
+          isA<SigningFailure>());
+    });
+    // NOTE: the negative/u64-wrap and absolute upper-bound (> 2.1e15) guards
+    // live INLINE in signLiquidPset/signBitcoinPsbt (on a BigInt / the raw
+    // BDK fee), BEFORE debugValidateLiquidFee is reached. They cannot be hit
+    // through the pure helper without a real native PSBT/PSET, so they are not
+    // unit-testable here (see signer_adapter_test.dart for what is reachable).
   });
 }

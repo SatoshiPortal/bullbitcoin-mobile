@@ -78,6 +78,16 @@ class IntentValidator {
       return Err(SigningFailure(
           'fee ${facts.feeSat} exceeds cap ${intent.maxFeeSat}'));
     }
+    // Fail CLOSED on zero known input scripts: a real send always has
+    // resolvable inputs, so an empty list means the extractor could not vouch
+    // for ANY input — the per-input ownership loop below would then vacuously
+    // pass. The adapter already refuses on a count mismatch; this is
+    // defense-in-depth so the pure validator never green-lights a send it
+    // cannot prove spends only owned coins.
+    if (facts.inputScriptPubKeys.isEmpty) {
+      return const Err(
+          SigningFailure('send has no resolvable input scripts to validate'));
+    }
     // Every input of a plain send must be a wallet-owned UTXO. This closes the
     // "extra/foreign input pulled in" vector (a send spends only your coins);
     // combined with the output check below, funds can only go to a declared
