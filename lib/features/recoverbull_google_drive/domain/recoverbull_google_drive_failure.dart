@@ -9,10 +9,20 @@ sealed class RecoverBullGoogleDriveFailure extends Failure {
   const RecoverBullGoogleDriveFailure([super.logMessage]);
 }
 
-/// Catch-all for Drive read/write/delete/export failures. [logMessage] is for
-/// logs ONLY and MUST never reach the UI — the presentation extension returns a
-/// fixed user-facing string.
-final class RecoverBullGoogleDriveUnexpectedFailure
+/// Fetching the vault list, or a vault's contents, from Drive failed.
+final class RecoverBullGoogleDriveFetchFailure
     extends RecoverBullGoogleDriveFailure {
-  const RecoverBullGoogleDriveUnexpectedFailure([super.logMessage]);
+  const RecoverBullGoogleDriveFetchFailure([super.logMessage]);
+}
+
+/// Deleting a vault from Drive failed.
+final class RecoverBullGoogleDriveDeleteFailure
+    extends RecoverBullGoogleDriveFailure {
+  const RecoverBullGoogleDriveDeleteFailure([super.logMessage]);
+}
+
+/// Exporting a vault out of Drive failed.
+final class RecoverBullGoogleDriveExportFailure
+    extends RecoverBullGoogleDriveFailure {
+  const RecoverBullGoogleDriveExportFailure([super.logMessage]);
 }

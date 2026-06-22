@@ -27,11 +27,14 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
   };
 
   String _cooldown(BuildContext context, Duration retryIn) {
-    final seconds = retryIn.inSeconds;
+    // Floor unknown/elapsed cooldowns (null mapped to zero, or a negative
+    // remaining duration) to 1s so the UI never shows "0 seconds" or a
+    // negative value.
+    final seconds = retryIn.inSeconds < 1 ? 1 : retryIn.inSeconds;
     if (seconds < 60) {
       return context.loc.durationSeconds(seconds.toString());
     }
-    final minutes = retryIn.inMinutes;
+    final minutes = seconds ~/ 60;
     return minutes == 1
         ? context.loc.durationMinute(minutes.toString())
         : context.loc.durationMinutes(minutes.toString());

@@ -130,8 +130,10 @@ class RecoverBullRepository {
     );
   }
 
-  /// Boolean health probe — kept throwing on purpose so the shared status
-  /// checker (which calls this directly) is unaffected by the Result migration.
+  /// Health probe: completes normally when the server is reachable, throws
+  /// otherwise. Kept throwing (not Result) on purpose so the shared status
+  /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
+  /// into the bool — is unaffected by the Result migration.
   Future<void> checkConnection() async {
     final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.checkConnection(externalProxy: externalProxy);

@@ -7,7 +7,11 @@ import 'package:flutter/widgets.dart';
 /// raw `logMessage`.
 extension RecoverBullGoogleDriveFailureL10n on RecoverBullGoogleDriveFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    RecoverBullGoogleDriveUnexpectedFailure() =>
+    RecoverBullGoogleDriveFetchFailure() =>
       context.loc.recoverbullGoogleDriveErrorFetchFailed,
+    RecoverBullGoogleDriveDeleteFailure() =>
+      context.loc.recoverbullGoogleDriveErrorDeleteFailed,
+    RecoverBullGoogleDriveExportFailure() =>
+      context.loc.recoverbullGoogleDriveErrorExportFailed,
   };
 }

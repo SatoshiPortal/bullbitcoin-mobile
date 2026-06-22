@@ -167,6 +167,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       default:
         if (state.vault == null) {
           emit(state.copyWith(failure: const VaultNotSetFailure()));
+          return;
         }
         emit(state.copyWith(vaultPassword: event.password));
 
@@ -188,6 +189,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case RecoverBullFlow.secureVault:
           if (state.vaultPassword == null) {
             emit(state.copyWith(failure: const PasswordNotSetFailure()));
+            return;
           }
 
           await _onVaultCreation(
@@ -276,6 +278,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       final isConnected = await _checkKeyServerConnectionUsecase.execute();
       if (!isConnected) {
         emit(state.copyWith(failure: const KeyServerConnectionFailure()));
+        return;
       }
 
       switch (event.provider) {
@@ -308,8 +311,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         vault: vault,
         vaultKey: vaultKey,
       );
-      if (keyStored case Err()) {
-        emit(state.copyWith(failure: const VaultCreationFailure()));
+      if (keyStored case Err(:final failure)) {
+        // Keep the typed key-server detail (rate-limit cooldown, invalid
+        // credentials) instead of collapsing it to the generic creation error.
+        emit(state.copyWith(failure: _storeKeyFailure(failure)));
         return;
       }
 
@@ -456,5 +461,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         ),
         KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
         _ => RecoverBullUnexpectedFailure(failure.logMessage),
+      };
+
+  // Maps a core failure surfaced while storing the vault key during creation.
+  // Mirrors [_fetchKeyFailure] for the shared key-server cases (so a 429
+  // cooldown or invalid credentials still reach the user) but falls back to the
+  // creation-specific error instead of the generic unexpected one.
+  RecoverBullFailure _storeKeyFailure(RecoverBullCoreFailure failure) =>
+      switch (failure) {
+        KeyServerInvalidCredentialsFailure() =>
+          const InvalidVaultCredentialsFailure(),
+        KeyServerRejectedFailure() => const InvalidVaultCredentialsFailure(),
+        KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
+          retryIn: retryIn ?? Duration.zero,
+        ),
+        KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
+        _ => const VaultCreationFailure(),
       };
 }

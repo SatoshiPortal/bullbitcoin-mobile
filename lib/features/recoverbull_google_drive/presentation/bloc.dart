@@ -47,9 +47,7 @@ class RecoverBullGoogleDriveBloc
         case Err(:final failure):
           emit(
             state.copyWith(
-              failure: RecoverBullGoogleDriveUnexpectedFailure(
-                failure.logMessage,
-              ),
+              failure: RecoverBullGoogleDriveFetchFailure(failure.logMessage),
             ),
           );
       }
@@ -70,9 +68,7 @@ class RecoverBullGoogleDriveBloc
         case Err(:final failure):
           emit(
             state.copyWith(
-              failure: RecoverBullGoogleDriveUnexpectedFailure(
-                failure.logMessage,
-              ),
+              failure: RecoverBullGoogleDriveFetchFailure(failure.logMessage),
             ),
           );
       }
@@ -97,9 +93,7 @@ class RecoverBullGoogleDriveBloc
         case Err(:final failure):
           emit(
             state.copyWith(
-              failure: RecoverBullGoogleDriveUnexpectedFailure(
-                failure.logMessage,
-              ),
+              failure: RecoverBullGoogleDriveDeleteFailure(failure.logMessage),
             ),
           );
       }
@@ -120,9 +114,7 @@ class RecoverBullGoogleDriveBloc
         case Err(:final failure):
           emit(
             state.copyWith(
-              failure: RecoverBullGoogleDriveUnexpectedFailure(
-                failure.logMessage,
-              ),
+              failure: RecoverBullGoogleDriveExportFailure(failure.logMessage),
             ),
           );
       }
