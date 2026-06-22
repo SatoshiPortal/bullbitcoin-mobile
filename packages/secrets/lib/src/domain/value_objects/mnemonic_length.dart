@@ -1,3 +1,6 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:meta/meta.dart';
+
 /// Supported mnemonic word counts. `generateMnemonic` defaults to [words12]
 /// (matches the app's current `MnemonicGenerator`).
 enum MnemonicLength {
@@ -13,4 +16,12 @@ enum MnemonicLength {
         _ => throw ArgumentError.value(
             count, 'count', 'Unsupported mnemonic length'),
       };
+
+  /// The matching `bip39_mnemonic` length. `@internal` so the public API never
+  /// leaks the third-party enum — callers use [MnemonicLength]; only the
+  /// package's adapters map across this single point.
+  @internal
+  bip39.MnemonicLength get asBip39 => this == MnemonicLength.words12
+      ? bip39.MnemonicLength.words12
+      : bip39.MnemonicLength.words24;
 }

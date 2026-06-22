@@ -17,6 +17,14 @@ class Bip85Crypto {
   static const int arkIndex = 11811;
   static const int arkLength = 32;
 
+  /// Validates a templated BIP85 path through the library's
+  /// [bip85.Bip85HardenedPath] (every component must be hardened). A missing
+  /// `'` in a string template would silently derive the WRONG key; this turns
+  /// that into a thrown error. Returns the path unchanged when valid, so the
+  /// derived output (and the KAT vectors) are untouched.
+  static String _validatedPath(String path) =>
+      bip85.Bip85HardenedPath(path).toString();
+
   /// Strips a LEADING `m/` and a LEADING `1608'/` app-number from a recoverbull
   /// path. `m/1608'/0'/586053381` and `1608'/0'/586053381` both → `0'/586053381`.
   /// Anchored (not global `replaceAll`) so a `1608` appearing as a later path
@@ -50,9 +58,7 @@ class Bip85Crypto {
     return bip85.Bip85Entropy.deriveMnemonic(
       xprvBase58: xprvBase58,
       language: language,
-      length: length == vo.MnemonicLength.words12
-          ? bip39.MnemonicLength.words12
-          : bip39.MnemonicLength.words24,
+      length: length.asBip39,
       index: index,
     );
   }
@@ -63,7 +69,7 @@ class Bip85Crypto {
     required vo.MnemonicLength length,
     required int index,
   }) =>
-      "39'/0'/${length.words}'/$index'";
+      _validatedPath("39'/0'/${length.words}'/$index'");
 
   /// Raw hex entropy of [numBytes] bytes at the hex application, given [index].
   static String deriveHex({
@@ -87,12 +93,12 @@ class Bip85Crypto {
     return Uint8List.fromList(conv.hex.decode(hexStr));
   }
 
-  static String arkPath() => "128169'/32'/$arkIndex'";
+  static String arkPath() => _validatedPath("128169'/32'/$arkIndex'");
 
   /// A fresh recoverbull backup-key path `1608'/0'/{randomIndex}'`
   /// (matches the app's `generateBackupKeyPath`).
   static String generateRecoverbullPath() {
     final index = Random.secure().nextInt((1 << 31) - 1);
-    return "${recoverbullApp.number}'/0'/$index'";
+    return _validatedPath("${recoverbullApp.number}'/0'/$index'");
   }
 }

@@ -82,9 +82,7 @@ class SeedAdapter implements SeedPort {
       _guard.run(() {
         final m = bip39.Mnemonic.generate(
           bip39.Language.english,
-          length: length == MnemonicLength.words12
-              ? bip39.MnemonicLength.words12
-              : bip39.MnemonicLength.words24,
+          length: length.asBip39,
         );
         return _persist(Mnemonic(words: m.words));
       }, onError: _err);
