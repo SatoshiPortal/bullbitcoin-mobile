@@ -226,6 +226,18 @@ class BoltzDatasource {
     boltzUrl: _httpsUrl,
   );
 
+  // Highest swap-key index boltz has on record for this wallet's xpub, or -1
+  // when it knows of none.
+  Future<int> restoreSwapIndex({
+    required SwapMasterKeyModel swapMasterKey,
+  }) async {
+    final highest = await boltz.restoreSwapIndex(
+      swapMasterKey: swapMasterKey.toBoltz(),
+      boltzUrl: _httpsUrl,
+    );
+    return highest.toInt();
+  }
+
   // REVERSE SWAPS
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,

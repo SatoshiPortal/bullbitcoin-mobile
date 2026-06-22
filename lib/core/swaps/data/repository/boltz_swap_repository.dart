@@ -471,13 +471,20 @@ class BoltzSwapRepository {
   // submarine swaps consume 1 index; chain swaps consume 2 (boltz derives the
   // refund key at `index` and the claim key at `index + 1`). Persisted per
   // network so indices stay sequential (boltz restore scans the xpub's children
-  // 0..gap). On first use it seeds from existing swaps so no index is reused.
+  // 0..gap).
   Future<int> _reserveSwapKeyIndex(int count) async {
     final network = _isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    // Fresh swap-master-key index space starts at 0 (boltz restore scans the
-    // xpub's children from 0). Old swaps used a different key space, so we do
-    // NOT seed from their keyIndex.
-    final current = await _boltz.storage.getSwapKeyIndex(network) ?? 0;
+    var current = await _boltz.storage.getSwapKeyIndex(network);
+    if (current == null) {
+      // First allocation on this device/network. A recovered seed may already
+      // have swaps registered with boltz at indices 0..N; seed past the highest
+      // so a new swap never re-derives an in-use key. boltz returns -1 when it
+      // knows of none, giving a fresh wallet index 0.
+      final highest = await _boltz.restoreSwapIndex(
+        swapMasterKey: await _boltz.ensureSwapMasterKey(isTestnet: _isTestnet),
+      );
+      current = highest + 1;
+    }
     await _boltz.storage.setSwapKeyIndex(network, current + count);
     log.info('SWAP_KEY: reserved index $current (count=$count) on $network');
     return current;
