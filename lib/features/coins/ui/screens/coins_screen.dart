@@ -431,7 +431,6 @@ class _UtxoList extends StatelessWidget {
             utxo: utxo,
             selecting: state.selecting,
             selected: state.selectedOutpoints.contains(key),
-            onTap: () => cubit.enterSelect(seedOutpoint: key),
             onLongPress: () => cubit.enterSelect(seedOutpoint: key),
             onToggle: () => cubit.toggle(key),
             onSwipeAction: () => _onSwipe(context, utxo.isFrozen, key),

@@ -26,7 +26,6 @@ class UtxoTile extends StatelessWidget {
     required this.utxo,
     required this.selecting,
     required this.selected,
-    required this.onTap,
     required this.onLongPress,
     required this.onToggle,
     required this.onSwipeAction,
@@ -37,11 +36,8 @@ class UtxoTile extends StatelessWidget {
   final bool selecting;
   final bool selected;
 
-  /// Tap when not selecting → enter selection seeded with this coin; tap while
-  /// selecting → toggle.
-  final VoidCallback onTap;
-
-  /// Long-press → enter selection.
+  /// Long-press → enter selection (seeded with this coin). A plain tap outside
+  /// selection mode does nothing; entry is long-press only (per the list hint).
   final VoidCallback onLongPress;
 
   /// Toggle this coin's checkbox (selection mode only).
@@ -144,7 +140,7 @@ class UtxoTile extends StatelessWidget {
     );
 
     final tappable = GestureDetector(
-      onTap: selecting ? onToggle : onTap,
+      onTap: selecting ? onToggle : null,
       onLongPress: selecting ? null : onLongPress,
       behavior: HitTestBehavior.opaque,
       child: tile,
