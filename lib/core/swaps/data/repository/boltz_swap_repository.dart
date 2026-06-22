@@ -786,7 +786,13 @@ class BoltzSwapRepository {
     // refundable (not the terminal failed/expired/refunded the restore status
     // maps to) so the watcher actually drives the refund. If the lockup turns
     // out to be already gone the refund attempt resolves it terminally.
-    final status = restored.recoverable && restored.isRefundAction
+    // Only submarine and chain swaps are user-refundable; a reverse swap is
+    // claimed, never refunded, and the watcher has no refundable action for it.
+    final isUserRefundable =
+        restored.kind == RestoredSwapKind.lightningSend ||
+        restored.kind == RestoredSwapKind.crossChain;
+    final status =
+        isUserRefundable && restored.recoverable && restored.isRefundAction
         ? SwapStatus.refundable.name
         : restored.status.name;
     final id = restored.id;
