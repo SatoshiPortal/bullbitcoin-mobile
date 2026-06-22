@@ -45,5 +45,32 @@ void main() {
     test('different hex compares unequal', () {
       expect(Fingerprint('abcdef01'), isNot(Fingerprint('abcdef02')));
     });
+
+    test('dedupes in a Set (load-bearing for seed_reconciler difference())',
+        () {
+      final set = {
+        Fingerprint('abcdef01'),
+        Fingerprint('abcdef01'),
+        Fingerprint('abcdef02'),
+      };
+      expect(set, hasLength(2));
+      expect(set.contains(Fingerprint('abcdef01')), isTrue);
+
+      final a = {Fingerprint('abcdef01'), Fingerprint('abcdef02')};
+      final b = {Fingerprint('abcdef01')};
+      expect(a.difference(b), {Fingerprint('abcdef02')});
+    });
+
+    test('is not equal to the raw hex String', () {
+      expect(Fingerprint('abcdef01'), isNot('abcdef01'));
+      // ignore: unrelated_type_equality_checks
+      expect(Fingerprint('abcdef01') == 'abcdef01', isFalse);
+    });
+  });
+
+  group('toString', () {
+    test('produces the documented Fingerprint(<hex>) format', () {
+      expect(Fingerprint('deadbeef').toString(), 'Fingerprint(deadbeef)');
+    });
   });
 }

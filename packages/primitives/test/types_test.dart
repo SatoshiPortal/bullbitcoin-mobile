@@ -92,5 +92,15 @@ void main() {
         expect(t.versionBytes, hasLength(4));
       }
     });
+
+    test('version bytes pin exact constants (no transposition)', () {
+      // These feed real base58 xpub re-encoding; a transposed byte must fail.
+      expect(XpubType.xpub.versionBytes, [0x04, 0x88, 0xB2, 0x1E]);
+      expect(XpubType.ypub.versionBytes, [0x04, 0x9D, 0x7C, 0xB2]);
+      expect(XpubType.zpub.versionBytes, [0x04, 0xB2, 0x47, 0x46]);
+      expect(XpubType.tpub.versionBytes, [0x04, 0x35, 0x87, 0xCF]);
+      expect(XpubType.upub.versionBytes, [0x04, 0x4A, 0x52, 0x62]);
+      expect(XpubType.vpub.versionBytes, [0x04, 0x5F, 0x1C, 0xF6]);
+    });
   });
 }
