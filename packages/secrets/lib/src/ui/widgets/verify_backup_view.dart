@@ -45,6 +45,28 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(VerifyBackupView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Re-fetch if the parent swapped in a different seed/reader without changing
+    // the key — otherwise the old seed's words would stay on screen (mirrors
+    // MnemonicView's stale-secret guard).
+    if (oldWidget.seed != widget.seed || oldWidget.reader != widget.reader) {
+      _load();
+    }
+  }
+
+  void _load() {
+    // Reset to the loading state so a swap never leaves stale words/picks.
+    _correct = const [];
+    _shuffled = const [];
+    _picked.clear();
+    _loading = true;
+    _unavailable = false;
+    _done = false;
     final reader = widget.reader ?? GetIt.instance<MnemonicReader>();
     reader.read(widget.seed).then((data) {
       if (!mounted) return;

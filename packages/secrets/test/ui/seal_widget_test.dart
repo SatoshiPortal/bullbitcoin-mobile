@@ -162,6 +162,33 @@ void main() {
       expect(outcome, isTrue);
     });
 
+    testWidgets('refetches when the seed is swapped without a key change',
+        (tester) async {
+      // A second, distinct seed to swap in. Same widget position (no key), so
+      // didUpdateWidget — not a fresh initState — must drive the re-read.
+      const distinct = [
+        'salt', 'option', 'burden', 'habit', 'silent', 'tone', //
+        'breeze', 'fade', 'idle', 'dilemma', 'subway', 'mix',
+      ];
+      final kv = FakeSecureKeyValueStore();
+      final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+      final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
+      final fp2 = _unwrap(await repo.importMnemonic(words: distinct));
+      final reader2 = MnemonicReader(store);
+
+      await tester.pumpWidget(_wrap(
+          VerifyBackupView(seed: zooFp, reader: reader, onResult: (_) {})));
+      await tester.pumpAndSettle();
+      expect(find.text('wrong'), findsOneWidget); // zoo seed loaded
+
+      // Swap to the second seed/reader (no key change).
+      await tester.pumpWidget(_wrap(
+          VerifyBackupView(seed: fp2, reader: reader2, onResult: (_) {})));
+      await tester.pumpAndSettle();
+      expect(find.text('wrong'), findsNothing); // stale words gone
+      expect(find.text('dilemma'), findsOneWidget); // new seed loaded
+    });
+
     testWidgets('reports FALSE on wrong order (distinct-word seed)',
         (tester) async {
       // A valid BIP85-derived 12-word phrase with all-DISTINCT words, so order
