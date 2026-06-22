@@ -12648,5 +12648,7 @@
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
   "pinCodeSaveError": "تعذر حفظ رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
   "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
+  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى."
 }

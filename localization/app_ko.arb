@@ -12644,5 +12644,7 @@
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
   "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
   "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요."
 }

@@ -299,6 +299,7 @@
   "pinCodeDeleteError": "Հնարավոր չէ ջնջել ձեր PIN-ը։ Խնդրում ենք կրկին փորձել։",
   "pinCodeNotSetError": "No PIN code has been set.",
   "appUnlockPinCheckError": "Անհնար է բեռնել անվտանգության կարգավորումները: Խնդրում ենք վերագործարկել հավելվածը:",
-  "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:"
+  "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:",
+  "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
+  "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:"
 }
-

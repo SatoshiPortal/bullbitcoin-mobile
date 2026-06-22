@@ -4779,5 +4779,7 @@
   "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
   "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
   "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen."
 }

@@ -319,6 +319,7 @@
   "pinCodeDeleteError": "Imeshindwa kufuta PIN yako. Tafadhali jaribu tena.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
-  "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena."
+  "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
+  "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena."
 }
-

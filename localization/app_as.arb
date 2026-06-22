@@ -176,7 +176,7 @@
   "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
+  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
   "translationWarningDescription": "এই এপ্পৰ অধিকাংশ অনুবাদ AI ব্যৱহাৰ কৰি তৈয়াৰ কৰা হৈছে আৰু ইয়াত ভুল থাকিব পাৰে। যদি আপুনি কোনো ভুল লক্ষ্য কৰে বা অনুবাদ উন্নত কৰাত সহায় কৰিব বিচাৰে, তেন্তে আমাৰ সমাজ অনুবাদ প্লেটফৰ্মৰ জৰিয়তে অৱদান দিব পাৰে।",
@@ -8550,7 +8550,6 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -9702,7 +9701,6 @@
   "@transactionStatusPayjoinCompleted": {
     "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -9767,5 +9765,7 @@
   "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত",
   "pinCodeSaveError": "Could not save your PIN. Please try again.",
   "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
+  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।"
 }

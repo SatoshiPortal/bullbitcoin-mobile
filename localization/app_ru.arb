@@ -4796,5 +4796,7 @@
   "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android",
   "pinCodeSaveError": "Не удалось сохранить PIN. Пожалуйста, попробуйте ещё раз.",
   "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
-  "pinCodeNotSetError": "No PIN code has been set."
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова."
 }
