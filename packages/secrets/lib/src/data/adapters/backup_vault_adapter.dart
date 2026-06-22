@@ -30,7 +30,7 @@ class BackupVaultAdapter implements BackupVaultPort {
   SecretsFailure _err(String log) => VaultFailure(log);
 
   @override
-  Future<Result<({EncryptedVault vault, BackupKey vaultKey}), SecretsFailure>>
+  Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
       encryptVault({required Fingerprint seed}) =>
           _guard.read(seed, (m) async {
             final xprv = Bip32Derivation.xprvFromSeed(
@@ -45,14 +45,14 @@ class BackupVaultAdapter implements BackupVaultPort {
             );
             return Ok((
               vault: EncryptedVault(backup.toJson()),
-              vaultKey: BackupKey(keyBytes),
+              vaultKey: VaultKey(keyBytes),
             ));
           }, onError: _err);
 
   @override
   Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
     required EncryptedVault vault,
-    required BackupKey vaultKey,
+    required VaultKey vaultKey,
   }) =>
       _guard.run(() async {
         final backup = rb.BullBackup.fromJson(vault.ciphertextJson);

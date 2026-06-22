@@ -19,8 +19,8 @@ non-secret info, operation results, or sealed display widgets.
 | `KeyDerivationPort` | `Xpub`, `BitcoinDescriptor`, `LiquidDescriptor` (watch-only) |
 | `SignerPort` | `SignedPsbt` — validates a `SigningIntent` BEFORE signing |
 | `SwapSignerPort` | `CreatedSwap` — asserts the lockup commits to your key |
-| `BackupVaultPort` | `EncryptedVault` + `BackupKey` / restored `Fingerprint`s |
-| `Bip85Port` | sealed `Bip85Derivation` / `Bip85HexResult`, `BackupKey`, `ArkSecret` |
+| `BackupVaultPort` | `EncryptedVault` + `VaultKey` / restored `Fingerprint`s |
+| `Bip85Port` | sealed `Bip85Derivation` / `Bip85HexResult`, `VaultKey`, `ArkSecret` |
 | Widgets | `MnemonicView`, `VerifyBackupView`, `Bip85MnemonicView`, `Bip85HexView` |
 
 ## Naming & layering (this package's convention)
@@ -79,7 +79,7 @@ Ports-and-adapters, enforced by `make seal-check`:
   AES-256-CBC + HMAC-SHA256 (encrypt-and-MAC, one key shared by cipher and MAC),
   and the surrounding JSON envelope (`createdAt`/`id`/`salt`) is unauthenticated.
   Each backup gets a fresh `Random.secure()` IV and a fresh per-backup BIP85
-  `BackupKey` (no IV/key reuse), and tamper/wrong-key is detected via a
+  `VaultKey` (no IV/key reuse), and tamper/wrong-key is detected via a
   constant-time MAC compare — so it is sound-but-not-AEAD. Hardening (HKDF
   enc/MAC key separation, full-envelope MAC) is an upstream `recoverbull` concern.
 

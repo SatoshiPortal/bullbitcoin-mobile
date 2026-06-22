@@ -24,8 +24,8 @@ void main() {
     test('LiquidDescriptor rejects empty', () {
       expect(() => LiquidDescriptor(''), throwsArgumentError);
     });
-    test('BackupKey accepts > 32 bytes', () {
-      expect(BackupKey(Uint8List(64)).bytes.length, 64);
+    test('VaultKey accepts > 32 bytes', () {
+      expect(VaultKey(Uint8List(64)).bytes.length, 64);
     });
     test('Psbt rejects non-base64', () {
       expect(() => Psbt('not base64!!!'), throwsArgumentError);
@@ -33,9 +33,9 @@ void main() {
     test('Psbt accepts valid base64', () {
       expect(Psbt('cHNidP8=').base64, 'cHNidP8=');
     });
-    test('BackupKey rejects < 32 bytes', () {
-      expect(() => BackupKey(Uint8List(16)), throwsArgumentError);
-      expect(BackupKey(Uint8List(32)).bytes.length, 32);
+    test('VaultKey rejects < 32 bytes', () {
+      expect(() => VaultKey(Uint8List(16)), throwsArgumentError);
+      expect(VaultKey(Uint8List(32)).bytes.length, 32);
     });
     test('ArkSecret requires exactly 32 bytes', () {
       expect(() => ArkSecret(Uint8List(16)), throwsArgumentError);
@@ -82,8 +82,8 @@ void main() {
       expect(r.hexForView, hex);
     });
 
-    test('BackupKey.toString omits the bytes', () {
-      final k = BackupKey(Uint8List.fromList(List.filled(32, 7)));
+    test('VaultKey.toString omits the bytes', () {
+      final k = VaultKey(Uint8List.fromList(List.filled(32, 7)));
       expect(k.toString(), isNot(contains('7, 7')));
     });
 

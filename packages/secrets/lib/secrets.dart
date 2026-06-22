@@ -38,7 +38,7 @@ export 'src/domain/value_objects/descriptors.dart'
 export 'src/domain/value_objects/psbt.dart' show Psbt, SignedPsbt;
 export 'src/domain/value_objects/bip85_types.dart'
     show Bip85Path, Bip85Application, Bip85Derivation, Bip85HexResult;
-export 'src/domain/value_objects/backup.dart' show BackupKey, EncryptedVault;
+export 'src/domain/value_objects/backup.dart' show VaultKey, EncryptedVault;
 export 'src/domain/value_objects/ark_secret.dart' show ArkSecret;
 export 'src/domain/value_objects/signing_intent.dart'
     show

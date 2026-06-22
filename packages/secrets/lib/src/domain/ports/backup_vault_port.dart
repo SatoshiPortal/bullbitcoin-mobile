@@ -9,12 +9,12 @@ import 'package:secrets/src/domain/value_objects/backup.dart';
 /// internally, stores the seed(s), and returns only their fingerprints.
 abstract interface class BackupVaultPort {
   @useResult
-  Future<Result<({EncryptedVault vault, BackupKey vaultKey}), SecretsFailure>>
+  Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
       encryptVault({required Fingerprint seed});
 
   @useResult
   Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
     required EncryptedVault vault,
-    required BackupKey vaultKey,
+    required VaultKey vaultKey,
   });
 }

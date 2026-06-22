@@ -69,7 +69,7 @@ void main() {
     final enc = _unwrap(await vaultPort.encryptVault(seed: zooFp));
     final res = await vaultPort.restoreVault(
       vault: enc.vault,
-      vaultKey: BackupKey(Uint8List.fromList(List.filled(32, 0))),
+      vaultKey: VaultKey(Uint8List.fromList(List.filled(32, 0))),
     );
     expect((res as Err).failure, isA<VaultFailure>());
   });

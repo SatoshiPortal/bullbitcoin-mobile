@@ -79,13 +79,13 @@ class Bip85Adapter implements Bip85Port {
       }, onError: _err);
 
   @override
-  Future<Result<BackupKey, SecretsFailure>> deriveRecoverbullKey({
+  Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({
     required Fingerprint masterSeed,
     required Bip85Path path,
   }) =>
       _guard.read(masterSeed, (m) async {
         final keyHex = Bip85Crypto.deriveBackupKeyHex(_xprv(m), path.path);
-        return Ok(BackupKey(Uint8List.fromList(conv.hex.decode(keyHex))));
+        return Ok(VaultKey(Uint8List.fromList(conv.hex.decode(keyHex))));
       }, onError: _err);
 
   @override

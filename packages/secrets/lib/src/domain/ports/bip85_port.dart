@@ -8,7 +8,7 @@ import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 
 /// BIP85 child-secret derivation. Child mnemonics/hex are returned in SEALED
-/// display payloads or as a [BackupKey]/[ArkSecret] — the raw child words/bytes
+/// display payloads or as a [VaultKey]/[ArkSecret] — the raw child words/bytes
 /// never escape as a plain getter.
 abstract interface class Bip85Port {
   @useResult
@@ -34,7 +34,7 @@ abstract interface class Bip85Port {
   });
 
   @useResult
-  Future<Result<BackupKey, SecretsFailure>> deriveRecoverbullKey({
+  Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({
     required Fingerprint masterSeed,
     required Bip85Path path,
   });
