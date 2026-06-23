@@ -1951,16 +1951,6 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
-          },
-          {
-            "name": "origin",
-            "getter_name": "origin",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": "const CustomExpression('\\'user\\'')",
-            "default_client_dart": null,
-            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -2115,7 +2105,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"frozen_utxos\" (\"wallet_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, \"origin\" TEXT NOT NULL DEFAULT 'user', PRIMARY KEY (\"wallet_id\", \"tx_id\", \"vout\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"frozen_utxos\" (\"wallet_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\", \"tx_id\", \"vout\"));"
         }
       ]
     }

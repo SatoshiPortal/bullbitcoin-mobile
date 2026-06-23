@@ -6548,7 +6548,7 @@ final class Schema14 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
-      columns: [_column_161, _column_239, _column_240, _column_241],
+      columns: [_column_161, _column_239, _column_240],
       attachedDatabase: database,
     ),
     alias: null,
@@ -6563,8 +6563,6 @@ class Shape39 extends i0.VersionedTable {
       columnsByName['tx_id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<int> get vout =>
       columnsByName['vout']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get origin =>
-      columnsByName['origin']! as i1.GeneratedColumn<String>;
 }
 
 i1.GeneratedColumn<String> _column_239(String aliasedName) =>
@@ -6582,15 +6580,6 @@ i1.GeneratedColumn<int> _column_240(String aliasedName) =>
       false,
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
-    );
-i1.GeneratedColumn<String> _column_241(String aliasedName) =>
-    i1.GeneratedColumn<String>(
-      'origin',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.string,
-      $customConstraints: 'NOT NULL DEFAULT \'user\'',
-      defaultValue: const i1.CustomExpression('\'user\''),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

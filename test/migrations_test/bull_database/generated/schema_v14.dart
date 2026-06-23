@@ -7719,17 +7719,8 @@ class FrozenUtxos extends Table with TableInfo<FrozenUtxos, FrozenUtxosData> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
-    'origin',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT \'user\'',
-    defaultValue: const CustomExpression('\'user\''),
-  );
   @override
-  List<GeneratedColumn> get $columns => [walletId, txId, vout, origin];
+  List<GeneratedColumn> get $columns => [walletId, txId, vout];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -7753,10 +7744,6 @@ class FrozenUtxos extends Table with TableInfo<FrozenUtxos, FrozenUtxosData> {
         DriftSqlType.int,
         data['${effectivePrefix}vout'],
       )!,
-      origin: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}origin'],
-      )!,
     );
   }
 
@@ -7777,12 +7764,10 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
   final String walletId;
   final String txId;
   final int vout;
-  final String origin;
   const FrozenUtxosData({
     required this.walletId,
     required this.txId,
     required this.vout,
-    required this.origin,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7790,7 +7775,6 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
     map['wallet_id'] = Variable<String>(walletId);
     map['tx_id'] = Variable<String>(txId);
     map['vout'] = Variable<int>(vout);
-    map['origin'] = Variable<String>(origin);
     return map;
   }
 
@@ -7799,7 +7783,6 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
       walletId: Value(walletId),
       txId: Value(txId),
       vout: Value(vout),
-      origin: Value(origin),
     );
   }
 
@@ -7812,7 +7795,6 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
       walletId: serializer.fromJson<String>(json['walletId']),
       txId: serializer.fromJson<String>(json['txId']),
       vout: serializer.fromJson<int>(json['vout']),
-      origin: serializer.fromJson<String>(json['origin']),
     );
   }
   @override
@@ -7822,27 +7804,20 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
       'walletId': serializer.toJson<String>(walletId),
       'txId': serializer.toJson<String>(txId),
       'vout': serializer.toJson<int>(vout),
-      'origin': serializer.toJson<String>(origin),
     };
   }
 
-  FrozenUtxosData copyWith({
-    String? walletId,
-    String? txId,
-    int? vout,
-    String? origin,
-  }) => FrozenUtxosData(
-    walletId: walletId ?? this.walletId,
-    txId: txId ?? this.txId,
-    vout: vout ?? this.vout,
-    origin: origin ?? this.origin,
-  );
+  FrozenUtxosData copyWith({String? walletId, String? txId, int? vout}) =>
+      FrozenUtxosData(
+        walletId: walletId ?? this.walletId,
+        txId: txId ?? this.txId,
+        vout: vout ?? this.vout,
+      );
   FrozenUtxosData copyWithCompanion(FrozenUtxosCompanion data) {
     return FrozenUtxosData(
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
       txId: data.txId.present ? data.txId.value : this.txId,
       vout: data.vout.present ? data.vout.value : this.vout,
-      origin: data.origin.present ? data.origin.value : this.origin,
     );
   }
 
@@ -7851,42 +7826,37 @@ class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
     return (StringBuffer('FrozenUtxosData(')
           ..write('walletId: $walletId, ')
           ..write('txId: $txId, ')
-          ..write('vout: $vout, ')
-          ..write('origin: $origin')
+          ..write('vout: $vout')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(walletId, txId, vout, origin);
+  int get hashCode => Object.hash(walletId, txId, vout);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is FrozenUtxosData &&
           other.walletId == this.walletId &&
           other.txId == this.txId &&
-          other.vout == this.vout &&
-          other.origin == this.origin);
+          other.vout == this.vout);
 }
 
 class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
   final Value<String> walletId;
   final Value<String> txId;
   final Value<int> vout;
-  final Value<String> origin;
   final Value<int> rowid;
   const FrozenUtxosCompanion({
     this.walletId = const Value.absent(),
     this.txId = const Value.absent(),
     this.vout = const Value.absent(),
-    this.origin = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FrozenUtxosCompanion.insert({
     required String walletId,
     required String txId,
     required int vout,
-    this.origin = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walletId = Value(walletId),
        txId = Value(txId),
@@ -7895,14 +7865,12 @@ class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
     Expression<String>? walletId,
     Expression<String>? txId,
     Expression<int>? vout,
-    Expression<String>? origin,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (walletId != null) 'wallet_id': walletId,
       if (txId != null) 'tx_id': txId,
       if (vout != null) 'vout': vout,
-      if (origin != null) 'origin': origin,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7911,14 +7879,12 @@ class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
     Value<String>? walletId,
     Value<String>? txId,
     Value<int>? vout,
-    Value<String>? origin,
     Value<int>? rowid,
   }) {
     return FrozenUtxosCompanion(
       walletId: walletId ?? this.walletId,
       txId: txId ?? this.txId,
       vout: vout ?? this.vout,
-      origin: origin ?? this.origin,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7935,9 +7901,6 @@ class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
     if (vout.present) {
       map['vout'] = Variable<int>(vout.value);
     }
-    if (origin.present) {
-      map['origin'] = Variable<String>(origin.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -7950,7 +7913,6 @@ class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
           ..write('walletId: $walletId, ')
           ..write('txId: $txId, ')
           ..write('vout: $vout, ')
-          ..write('origin: $origin, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

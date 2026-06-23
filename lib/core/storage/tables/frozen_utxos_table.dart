@@ -7,17 +7,19 @@ import 'package:drift/drift.dart';
 /// (`txBuilder.unspendable()` is ephemeral per-build), so the durable fact
 /// "this outpoint is frozen" lives here.
 ///
-/// [origin] records *who* froze the outpoint. This codebase only ever writes
-/// `'user'` today; it is forward-compat for the payjoin-unification TODO
-/// (rows with `origin = 'payjoin'`) and makes the safety contract explicit:
-/// an unfreeze only ever deletes `origin = 'user'` rows, so a user can never
-/// unfreeze a system/payjoin lock.
+/// `walletId` IS the wallet origin (`wallet.id => origin`). It records *which*
+/// wallet froze the coin — used for BIP329 export attribution and cleanup on
+/// wallet deletion. Exclusion itself is matched by outpoint (globally unique).
+///
+/// There is deliberately no freeze-source column: system/payjoin locks are
+/// derived live and never persisted here, so every stored row is a user freeze
+/// by construction — the "a user can't lift a system lock" contract holds
+/// structurally, not by a flag.
 @DataClassName('FrozenUtxoRow')
 class FrozenUtxos extends Table {
   TextColumn get walletId => text()();
   TextColumn get txId => text()();
   IntColumn get vout => integer()();
-  TextColumn get origin => text().withDefault(const Constant('user'))();
 
   @override
   Set<Column> get primaryKey => {walletId, txId, vout};

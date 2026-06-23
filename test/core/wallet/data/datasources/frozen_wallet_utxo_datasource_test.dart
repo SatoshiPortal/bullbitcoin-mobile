@@ -74,44 +74,6 @@ void main() {
       expect(await datasource.getFrozenOutpoints(walletId: 'wallet-2'), [b]);
     });
 
-    test('getFrozenOutpoints(origins: {user}) returns only user rows',
-        () async {
-      await datasource.freezeOutpoints(walletId: walletId, outpoints: const [a]);
-      await datasource.freezeOutpoints(
-        walletId: walletId,
-        outpoints: const [b],
-        origin: 'payjoin',
-      );
-
-      final all = await datasource.getFrozenOutpoints(walletId: walletId);
-      expect(all.toSet(), {a, b});
-
-      final user = await datasource.getFrozenOutpoints(
-        walletId: walletId,
-        origins: const {'user'},
-      );
-      expect(user, [a]);
-    });
-
-    test('unfreeze only touches origin = user, never system/payjoin locks',
-        () async {
-      await datasource.freezeOutpoints(walletId: walletId, outpoints: const [a]);
-      await datasource.freezeOutpoints(
-        walletId: walletId,
-        outpoints: const [b],
-        origin: 'payjoin',
-      );
-
-      // Attempt to unfreeze both — only the user lock must be removed.
-      await datasource.unfreezeOutpoints(
-        walletId: walletId,
-        outpoints: const [a, b],
-      );
-
-      final remaining = await datasource.getFrozenOutpoints(walletId: walletId);
-      expect(remaining, [b]);
-    });
-
     test('batch freeze writes all-or-nothing across many outpoints', () async {
       await datasource.freezeOutpoints(
         walletId: walletId,

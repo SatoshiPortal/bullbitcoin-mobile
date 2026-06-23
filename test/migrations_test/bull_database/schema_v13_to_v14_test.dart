@@ -44,7 +44,7 @@ void main() {
       expect(settings.single.environment, 'mainnet');
       expect(settings.single.currency, 'USD');
 
-      // The new FrozenUtxos table exists and is writable, defaulting origin.
+      // The new FrozenUtxos table exists and is writable.
       await migratedDb.into(migratedDb.frozenUtxos).insert(
             v14.FrozenUtxosCompanion.insert(
               walletId: 'w1',
@@ -55,7 +55,6 @@ void main() {
       final frozen = await migratedDb.select(migratedDb.frozenUtxos).get();
       expect(frozen, hasLength(1));
       expect(frozen.single.walletId, 'w1');
-      expect(frozen.single.origin, 'user');
 
       await migratedDb.close();
     });
