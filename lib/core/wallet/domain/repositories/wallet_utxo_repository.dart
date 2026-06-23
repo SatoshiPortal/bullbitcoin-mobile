@@ -6,13 +6,15 @@ abstract interface class WalletUtxoRepository {
     required String walletId,
   });
 
-  /// Freezes the given outpoints for a wallet (writes `origin = 'user'` rows).
+  /// Freezes the given outpoints, attributed to [walletId] (the wallet origin).
   Future<void> freezeUtxos({
     required String walletId,
     required List<Outpoint> outpoints,
   });
 
-  /// Unfreezes the given outpoints for a wallet.
+  /// Unfreezes the given outpoints. Matched by outpoint (like exclusion), so a
+  /// coin shown as frozen is always unfreezable regardless of which `walletId`
+  /// its row carries.
   Future<void> unfreezeUtxos({
     required String walletId,
     required List<Outpoint> outpoints,

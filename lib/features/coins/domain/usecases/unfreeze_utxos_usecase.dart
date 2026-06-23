@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 
-/// Unfreezes the given outpoints for a wallet. The core repository only ever
-/// deletes `origin = 'user'` rows, so a user can never unfreeze a system lock.
-/// Maps any failure to [CoinsError.unfreezeFailed].
+/// Unfreezes the given outpoints. Persisted freezes are always user freezes
+/// (system/payjoin locks are derived live, never stored), so unfreezing is safe
+/// by construction. Maps any failure to [CoinsError.unfreezeFailed].
 class UnfreezeUtxosUsecase {
   UnfreezeUtxosUsecase({required this._walletUtxoRepository});
 

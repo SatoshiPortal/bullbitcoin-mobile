@@ -84,6 +84,25 @@ void main() {
       expect(frozen.toSet(), {a, b, c});
     });
 
+    test('unfreeze is by outpoint — clears a row attributed to any walletId',
+        () async {
+      // A BIP329-imported freeze stored unattributed ('') or under a sibling
+      // origin must still be unfreezable from the owning wallet's view, else
+      // the coin shows frozen but can never be cleared.
+      await datasource.freezeOutpoints(walletId: '', outpoints: const [a]);
+      await datasource.freezeOutpoints(
+        walletId: 'wallet-other',
+        outpoints: const [b],
+      );
+
+      await datasource.unfreezeOutpoints(
+        walletId: walletId,
+        outpoints: const [a, b],
+      );
+
+      expect(await datasource.getAllFrozen(), isEmpty);
+    });
+
     test('getAllFrozen returns every row across wallets, tagged by walletId',
         () async {
       await datasource.freezeOutpoints(walletId: walletId, outpoints: const [a]);

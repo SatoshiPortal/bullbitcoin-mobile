@@ -6,8 +6,9 @@ import 'package:drift/drift.dart';
 /// drift table.
 ///
 /// Drift serializes writes and offers `batch()`, so no app-level lock is
-/// needed. The API speaks outpoints — the table only stores
-/// `walletId/txId/vout/origin`, the same vocabulary `buildPsbt`/payjoin use.
+/// needed. The API speaks outpoints — the table stores `walletId/txId/vout`,
+/// the same vocabulary `buildPsbt`/payjoin use. `walletId` IS the wallet
+/// origin; it attributes a freeze for export + cleanup, never for exclusion.
 class FrozenWalletUtxoDatasource {
   final SqliteDatabase _db;
 
@@ -36,7 +37,15 @@ class FrozenWalletUtxoDatasource {
     });
   }
 
-  /// Deletes the freeze rows for the given outpoints under [walletId].
+  /// Deletes the freeze rows for the given outpoints.
+  ///
+  /// Matched by outpoint only — symmetric with exclusion ([getAllFrozen]),
+  /// which is also by outpoint. [walletId] is intentionally NOT in the
+  /// predicate: a coin shown as frozen must always be unfreezable, even when
+  /// its row carries a different `walletId` than the unfreezing wallet's origin
+  /// (e.g. a BIP329 import stored unattributed as `walletId = ''`, or under a
+  /// sibling origin). An outpoint is globally unique, so this removes only that
+  /// coin's freeze.
   Future<void> unfreezeOutpoints({
     required String walletId,
     required List<Outpoint> outpoints,
@@ -47,9 +56,7 @@ class FrozenWalletUtxoDatasource {
         batch.deleteWhere(
           _db.frozenUtxos,
           (row) =>
-              row.walletId.equals(walletId) &
-              row.txId.equals(outpoint.txId) &
-              row.vout.equals(outpoint.vout),
+              row.txId.equals(outpoint.txId) & row.vout.equals(outpoint.vout),
         );
       }
     });
