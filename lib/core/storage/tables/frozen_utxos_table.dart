@@ -8,8 +8,9 @@ import 'package:drift/drift.dart';
 /// "this outpoint is frozen" lives here.
 ///
 /// `walletId` IS the wallet origin (`wallet.id => origin`). It records *which*
-/// wallet froze the coin — used for BIP329 export attribution and cleanup on
-/// wallet deletion. Exclusion itself is matched by outpoint (globally unique).
+/// wallet froze the coin, used for BIP329 export attribution. Exclusion is
+/// matched by outpoint (globally unique), not by walletId; a freeze left behind
+/// by a deleted wallet is inert (no live coin matches it).
 ///
 /// There is deliberately no freeze-source column: system/payjoin locks are
 /// derived live and never persisted here, so every stored row is a user freeze

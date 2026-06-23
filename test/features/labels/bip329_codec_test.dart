@@ -70,6 +70,32 @@ void main() {
       expect(record['spendable'], false);
       expect(record['origin'], isNull);
     });
+
+    test('origin is omitted when it would not round-trip (Liquid-testnet)', () {
+      // [fp/84h/1h/0h] can't disambiguate Liquid-testnet from Bitcoin-testnet,
+      // so emitting it would re-import as the wrong wallet. Emit none instead.
+      final jsonl = codec.encode(
+        const [],
+        frozen: const [
+          (walletId: 'elwpkh([0f36572d/84h/1h/0h])', txId: 'abcd', vout: 0),
+        ],
+      );
+      final record = lines(jsonl).single;
+      expect(record['spendable'], false);
+      expect(record['origin'], isNull);
+    });
+
+    test('a Bitcoin-mainnet origin round-trips exactly', () {
+      const mainnetId = 'wpkh([0f36572d/84h/0h/0h])';
+      final jsonl = codec.encode(
+        const [],
+        frozen: [(walletId: mainnetId, txId: txId, vout: 0)],
+      );
+      expect(lines(jsonl).single['origin'], '[0f36572d/84h/0h/0h]');
+      expect(codec.decode(jsonl).frozen, [
+        (walletId: mainnetId, txId: txId, vout: 0),
+      ]);
+    });
   });
 
   group('decode — freeze travels as a separate channel', () {
@@ -112,6 +138,18 @@ void main() {
       final decoded = codec.decode(jsonl);
       expect(decoded.frozen, isEmpty);
       expect(decoded.labels.single.label, 'rent');
+    });
+
+    test('malformed or impossible outpoints are dropped (no freeze)', () {
+      final jsonl = [
+        '{"type":"output","ref":"$txId:-1","label":"","spendable":false}',
+        '{"type":"output","ref":"$txId:x","label":"","spendable":false}',
+        '{"type":"output","ref":"no-colon","label":"","spendable":false}',
+      ].join('\n');
+
+      final decoded = codec.decode(jsonl);
+      expect(decoded.frozen, isEmpty);
+      expect(decoded.labels, isEmpty);
     });
   });
 }

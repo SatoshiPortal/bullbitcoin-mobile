@@ -90,7 +90,8 @@ class Bip329LabelsCodec {
         final parts = bip329Label.ref.split(':');
         if (parts.length == 2) {
           final vout = int.tryParse(parts[1]);
-          if (vout != null) {
+          // Drop malformed/impossible outpoints (non-numeric or negative vout).
+          if (vout != null && vout >= 0) {
             frozen.add((
               walletId: _walletIdFromBip329Origin(bip329Label.origin),
               txId: parts[0],
@@ -111,18 +112,28 @@ class Bip329LabelsCodec {
 }
 
 /// Extracts the BIP380 key origin (`[fingerprint/path]`) from an internal
-/// wallet origin like `wpkh([0f36572d/84h/1h/0h])`. Returns null when the
-/// wallet origin isn't a single-key descriptor we can round-trip (e.g.
-/// multisig) — export then omits `origin` and the freeze degrades to an
-/// unattributed (still by-outpoint) record.
+/// wallet origin like `wpkh([0f36572d/84h/1h/0h])`, but ONLY when it
+/// reconstructs the exact same wallet id on import.
+///
+/// The bare key origin can't disambiguate Liquid-testnet from Bitcoin-testnet
+/// (both are network path `1h`; only the `el*` descriptor prefix tells them
+/// apart, and BIP329 `origin` carries no prefix). Rather than emit an origin
+/// that silently re-imports as the wrong wallet, we emit none for any id that
+/// doesn't round-trip — multisig, Liquid-testnet, unusual paths — and the
+/// freeze imports unattributed (still applied by outpoint). Honest over wrong.
 String? _bip329OriginFromWalletId(String walletId) {
   final start = walletId.indexOf('[');
   final end = walletId.indexOf(']');
   if (start == -1 || end == -1 || start >= end) return null;
   final keyOrigin = walletId.substring(start, end + 1);
   try {
-    WalletMetadataService.decodeOrigin(origin: keyOrigin);
-    return keyOrigin;
+    final decoded = WalletMetadataService.decodeOrigin(origin: keyOrigin);
+    final roundTrip = WalletMetadataService.encodeOrigin(
+      fingerprint: decoded.fingerprint,
+      network: decoded.network,
+      scriptType: decoded.script,
+    );
+    return roundTrip == walletId ? keyOrigin : null;
   } catch (_) {
     return null;
   }

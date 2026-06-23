@@ -8,7 +8,7 @@ import 'package:drift/drift.dart';
 /// Drift serializes writes and offers `batch()`, so no app-level lock is
 /// needed. The API speaks outpoints — the table stores `walletId/txId/vout`,
 /// the same vocabulary `buildPsbt`/payjoin use. `walletId` IS the wallet
-/// origin; it attributes a freeze for export + cleanup, never for exclusion.
+/// origin; it attributes a freeze for BIP329 export, never for exclusion.
 class FrozenWalletUtxoDatasource {
   final SqliteDatabase _db;
 
