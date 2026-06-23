@@ -304,5 +304,13 @@
   "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
   "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:",
   "electrumServerUnreachable": "Սերվերը հասանելի չէ։ Ստուգեք հասցեն և կրկին փորձեք։",
-  "mempoolErrorInvalidUrl": "Անվավեր սերվերի URL: Մուտքագրեք վավեր տիրույթ կամ IP հասցե:"
+  "mempoolErrorInvalidUrl": "Անվավեր սերվերի URL: Մուտքագրեք վավեր տիրույթ կամ IP հասցե:",
+  "allSeedViewErrorFetch": "Չհաջողվեց բեռնել սերմերը։ Խնդրում ենք կրկին փորձել։",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Չհաջողվեց ջնջել սերմը։ Խնդրում ենք կրկին փորձել։",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

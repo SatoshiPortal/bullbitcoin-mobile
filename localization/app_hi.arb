@@ -4097,6 +4097,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "सीड लोड करने में विफल। कृपया पुनः प्रयास करें।",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "सीड हटाने में विफल। कृपया पुनः प्रयास करें।",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "आप {amount} हर {frequency} को {network} के माध्यम से खरीद रहे हैं, जब तक आपके खाते में धन हो।।",
   "@dcaBuyingMessage": {
     "description": "DCA status message",

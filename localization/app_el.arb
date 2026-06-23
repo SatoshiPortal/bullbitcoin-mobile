@@ -3426,6 +3426,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Αποτυχία φόρτωσης των seeds. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Αποτυχία διαγραφής του seed. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",

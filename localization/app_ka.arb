@@ -516,5 +516,13 @@
   "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
   "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
   "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან.",
-  "mempoolErrorInvalidUrl": "სერვერის არასწორი URL. შეიყვანეთ სწორი დომენი ან IP მისამართი."
+  "mempoolErrorInvalidUrl": "სერვერის არასწორი URL. შეიყვანეთ სწორი დომენი ან IP მისამართი.",
+  "allSeedViewErrorFetch": "სიდების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "სიდის წაშლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

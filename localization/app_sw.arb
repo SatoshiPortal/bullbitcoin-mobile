@@ -324,5 +324,13 @@
   "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
   "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
   "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena.",
-  "mempoolErrorInvalidUrl": "URL ya seva si sahihi. Weka kikoa au anwani ya IP sahihi."
+  "mempoolErrorInvalidUrl": "URL ya seva si sahihi. Weka kikoa au anwani ya IP sahihi.",
+  "allSeedViewErrorFetch": "Imeshindwa kupakia mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Imeshindwa kufuta mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

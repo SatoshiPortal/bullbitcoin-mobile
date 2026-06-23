@@ -4085,6 +4085,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Tohumlar yüklenemedi. Lütfen tekrar deneyin.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Tohum silinemedi. Lütfen tekrar deneyin.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",

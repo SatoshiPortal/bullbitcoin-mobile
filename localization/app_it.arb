@@ -4790,5 +4790,13 @@
   "pinCodeDeleteError": "Impossibile eliminare il PIN. Riprova.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
-  "priceChartLoadFailed": "I dati del grafico dei prezzi non sono stati caricati. Riprova."
+  "priceChartLoadFailed": "I dati del grafico dei prezzi non sono stati caricati. Riprova.",
+  "allSeedViewErrorFetch": "Impossibile caricare i seed. Riprova.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Impossibile eliminare il seed. Riprova.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }
