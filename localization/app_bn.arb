@@ -4614,7 +4614,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "বদল তৈরি করতে ব্যর্থ হয়েছে।",
+  "sendErrorSwapCreationFailed": "সোয়াপ তৈরি করা যায়নি। আবার চেষ্টা করুন।",
   "sendErrorInvoiceMustContainAmount": "চালানে একটি পরিমাণ থাকতে হবে",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10766,7 +10766,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "বিল্ড ব্যর্থ হয়েছে",
+  "sendErrorBuildFailed": "লেনদেন প্রস্তুত করা যায়নি। আবার চেষ্টা করুন।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

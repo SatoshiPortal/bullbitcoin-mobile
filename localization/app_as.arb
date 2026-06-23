@@ -4161,7 +4161,7 @@
   "@sendErrorArkExperimentalOnly": {
     "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
-  "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
+  "sendErrorSwapCreationFailed": "ছোৱাপ সৃষ্টি কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -4174,7 +4174,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "অসমৰ্থিত QR ক'ড ফৰ্মেট",
-  "sendErrorBuildFailed": "নিৰ্মাণ বিফল হৈছে",
+  "sendErrorBuildFailed": "লেনদেন প্ৰস্তুত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

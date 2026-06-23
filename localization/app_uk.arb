@@ -2220,7 +2220,7 @@
   "psbtFlowMoveBack": "Спробуйте перемістити пристрій назад трохи",
   "swapProgressCompleted": "Трансфер завершено",
   "keystoneStep2": "Натисніть сканування",
-  "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
+  "sendErrorSwapCreationFailed": "Не вдалося створити своп. Спробуйте ще раз.",
   "sendErrorHardwareWalletCannotSwap": "Апаратні гаманці не можна використовувати для обмінів.",
   "sendErrorInvoiceMustContainAmount": "Рахунок повинен містити суму",
   "arkNoBalanceData": "Немає даних балансу",
@@ -3762,7 +3762,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Побудова в'язниці",
+  "sendErrorBuildFailed": "Не вдалося підготувати транзакцію. Спробуйте ще раз.",
   "backupWalletInstructionLoseBackup": "Якщо ви втратите резервну копію 12 слів, ви не зможете відновити доступ до біткоїнів.",
   "sellSendPaymentInsufficientBalance": "Недостатній баланс у вибраному гаманці для завершення цього замовлення продажу.",
   "swapTransferPendingTitle": "Передача",

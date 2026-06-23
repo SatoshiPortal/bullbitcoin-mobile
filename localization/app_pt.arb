@@ -1542,7 +1542,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorSwapCreationFailed": "Não foi possível criar o swap. Tente novamente.",
   "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
   "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
@@ -3640,7 +3640,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Construa Falhado",
+  "sendErrorBuildFailed": "Não foi possível preparar a transação. Tente novamente.",
   "transactionDetailSwapProgress": "Progresso de balanço",
   "arkAboutDurationMinute": "{minutes} minuto",
   "@arkAboutDurationMinute": {

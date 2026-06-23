@@ -1515,7 +1515,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Swap konnte nicht erstellt werden.",
+  "sendErrorSwapCreationFailed": "Swap konnte nicht erstellt werden. Versuche es erneut.",
   "sendErrorHardwareWalletCannotSwap": "Hardware-Wallets können nicht für Swaps verwendet werden.",
   "sendErrorInvoiceMustContainAmount": "Die Rechnung muss einen Betrag enthalten.",
   "arkNoBalanceData": "Keine Bilanzdaten verfügbar",
@@ -3615,7 +3615,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
+  "sendErrorBuildFailed": "Transaktion konnte nicht vorbereitet werden. Versuche es erneut.",
   "transactionDetailSwapProgress": "Swap-Fortschritt",
   "arkAboutDurationMinute": "{minutes} Minute",
   "@arkAboutDurationMinute": {

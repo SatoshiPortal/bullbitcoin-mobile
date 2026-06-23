@@ -1545,7 +1545,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendErrorSwapCreationFailed": "无法创建兑换，请重试。",
   "sendErrorHardwareWalletCannotSwap": "硬件钱包不能用于兑换。",
   "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
   "arkNoBalanceData": "无结余数据",
@@ -3663,7 +3663,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "1. 建设失败者",
+  "sendErrorBuildFailed": "无法准备交易，请重试。",
   "transactionDetailSwapProgress": "差距",
   "arkAboutDurationMinute": "{minutes}分钟",
   "@arkAboutDurationMinute": {

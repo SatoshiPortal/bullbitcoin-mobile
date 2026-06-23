@@ -4722,7 +4722,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "스왑을 생성하는 실패.",
+  "sendErrorSwapCreationFailed": "스왑을 생성하지 못했습니다. 다시 시도하세요.",
   "sendErrorInvoiceMustContainAmount": "인보이스에는 금액이 포함되어야 합니다",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -11033,7 +11033,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "회사연혁",
+  "sendErrorBuildFailed": "거래를 준비하지 못했습니다. 다시 시도하세요.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

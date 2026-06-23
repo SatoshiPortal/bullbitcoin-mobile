@@ -1545,7 +1545,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
+  "sendErrorSwapCreationFailed": "Impossibile creare lo swap. Riprova.",
   "sendErrorHardwareWalletCannotSwap": "I portafogli hardware non possono essere utilizzati per gli swap.",
   "sendErrorInvoiceMustContainAmount": "La fattura deve contenere un importo",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
@@ -3664,7 +3664,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Costruisci falliti",
+  "sendErrorBuildFailed": "Impossibile preparare la transazione. Riprova.",
   "transactionDetailSwapProgress": "Progressi di Swap",
   "arkAboutDurationMinute": "{minutes} minuto",
   "@arkAboutDurationMinute": {

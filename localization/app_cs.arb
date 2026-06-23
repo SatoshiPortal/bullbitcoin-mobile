@@ -4779,7 +4779,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorSwapCreationFailed": "Swap se nepodařilo vytvořit. Zkuste to znovu.",
   "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10747,7 +10747,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Sestava Failed",
+  "sendErrorBuildFailed": "Transakci se nepodařilo připravit. Zkuste to znovu.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

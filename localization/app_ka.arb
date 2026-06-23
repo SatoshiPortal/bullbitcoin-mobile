@@ -519,11 +519,11 @@
   "sendErrorHardwareWalletCannotSwap": "აპარატურული საფულეები swap-ისთვის ვერ გამოიყენება.",
   "sendErrorInvalidAddressOrInvoice": "Bitcoin-ის გადახდის არასწორი მისამართი ან ინვოისი",
   "sendErrorInsufficientBalanceForPayment": "ამ გადახდის დასაფარად საკმარისი ბალანსი არ არის",
-  "sendErrorSwapCreationFailed": "swap-ის შექმნა ვერ მოხერხდა.",
+  "sendErrorSwapCreationFailed": "swap-ის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
   "sendErrorAmountBelowMinimum": "თანხა swap-ის მინიმალურ ლიმიტზე დაბალია: {minLimit} sats",
   "sendErrorAmountAboveMaximum": "თანხა swap-ის მაქსიმალურ ლიმიტზე მაღალია: {maxLimit} sats",
   "sendErrorAmountBelowSwapLimits": "თანხა swap-ის ლიმიტებზე დაბალია",
-  "sendErrorBuildFailed": "აგება ვერ მოხერხდა",
+  "sendErrorBuildFailed": "ტრანზაქციის მომზადება ვერ მოხერხდა. სცადეთ თავიდან.",
   "sendErrorConfirmationFailed": "დადასტურება ვერ მოხერხდა",
   "sendErrorBroadcastFailed": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ქსელის კავშირი და სცადეთ ხელახლა.",
   "sendInsufficientBalance": "არასაკმარისი ბალანსი"

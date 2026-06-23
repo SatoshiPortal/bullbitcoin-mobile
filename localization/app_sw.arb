@@ -327,11 +327,11 @@
   "sendErrorHardwareWalletCannotSwap": "Pochi za maunzi haziwezi kutumika kwa swap.",
   "sendErrorInvalidAddressOrInvoice": "Anwani ya malipo ya Bitcoin au ankara si sahihi",
   "sendErrorInsufficientBalanceForPayment": "Salio halitoshi kugharimia malipo haya",
-  "sendErrorSwapCreationFailed": "Imeshindwa kuunda swap.",
+  "sendErrorSwapCreationFailed": "Imeshindwa kuunda swap. Jaribu tena.",
   "sendErrorAmountBelowMinimum": "Kiasi kiko chini ya kikomo cha chini cha swap: {minLimit} sats",
   "sendErrorAmountAboveMaximum": "Kiasi kiko juu ya kikomo cha juu cha swap: {maxLimit} sats",
   "sendErrorAmountBelowSwapLimits": "Kiasi kiko chini ya vikomo vya swap",
-  "sendErrorBuildFailed": "Imeshindwa kuunda muamala",
+  "sendErrorBuildFailed": "Imeshindwa kuandaa muamala. Jaribu tena.",
   "sendErrorConfirmationFailed": "Uthibitisho umeshindwa",
   "sendErrorBroadcastFailed": "Imeshindwa kutangaza muamala. Angalia muunganisho wako wa mtandao na ujaribu tena.",
   "sendInsufficientBalance": "Salio halitoshi"

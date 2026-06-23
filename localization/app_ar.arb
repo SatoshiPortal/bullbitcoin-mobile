@@ -4464,7 +4464,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "فشل في إحداث تبادل.",
+  "sendErrorSwapCreationFailed": "تعذّر إنشاء المبادلة. حاول مرة أخرى.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -10334,7 +10334,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "البناء",
+  "sendErrorBuildFailed": "تعذّر تجهيز المعاملة. حاول مرة أخرى.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

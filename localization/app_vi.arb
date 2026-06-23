@@ -307,11 +307,11 @@
   "sendErrorHardwareWalletCannotSwap": "Không thể dùng ví phần cứng cho các giao dịch hoán đổi.",
   "sendErrorInvalidAddressOrInvoice": "Địa chỉ thanh toán Bitcoin hoặc hóa đơn không hợp lệ",
   "sendErrorInsufficientBalanceForPayment": "Số dư không đủ để thực hiện khoản thanh toán này",
-  "sendErrorSwapCreationFailed": "Không thể tạo giao dịch hoán đổi.",
+  "sendErrorSwapCreationFailed": "Không thể tạo giao dịch hoán đổi. Vui lòng thử lại.",
   "sendErrorAmountBelowMinimum": "Số tiền dưới hạn mức hoán đổi tối thiểu: {minLimit} sats",
   "sendErrorAmountAboveMaximum": "Số tiền vượt hạn mức hoán đổi tối đa: {maxLimit} sats",
   "sendErrorAmountBelowSwapLimits": "Số tiền thấp hơn hạn mức hoán đổi",
-  "sendErrorBuildFailed": "Tạo giao dịch thất bại",
+  "sendErrorBuildFailed": "Không thể chuẩn bị giao dịch. Vui lòng thử lại.",
   "sendErrorConfirmationFailed": "Xác nhận thất bại",
   "sendErrorBroadcastFailed": "Không thể phát giao dịch. Hãy kiểm tra kết nối mạng và thử lại.",
   "sendInsufficientBalance": "Số dư không đủ"

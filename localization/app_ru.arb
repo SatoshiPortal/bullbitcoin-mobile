@@ -1542,7 +1542,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorSwapCreationFailed": "Не удалось создать своп. Попробуйте снова.",
   "sendErrorHardwareWalletCannotSwap": "Аппаратные кошельки нельзя использовать для свапов.",
   "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
@@ -3662,7 +3662,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Строить не удалось",
+  "sendErrorBuildFailed": "Не удалось подготовить транзакцию. Попробуйте снова.",
   "transactionDetailSwapProgress": "Прогресс",
   "arkAboutDurationMinute": "{minutes}",
   "@arkAboutDurationMinute": {

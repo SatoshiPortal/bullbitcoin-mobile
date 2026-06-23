@@ -307,11 +307,11 @@
   "sendErrorHardwareWalletCannotSwap": "Սարքային դրամապանակները չեն կարող օգտագործվել swap-երի համար։",
   "sendErrorInvalidAddressOrInvoice": "Bitcoin-ի վճարման անվավեր հասցե կամ հաշիվ-ապրանքագիր",
   "sendErrorInsufficientBalanceForPayment": "Բավարար մնացորդ չկա այս վճարումը կատարելու համար",
-  "sendErrorSwapCreationFailed": "Չհաջողվեց ստեղծել swap։",
+  "sendErrorSwapCreationFailed": "Չհաջողվեց ստեղծել փոխանակումը։ Փորձեք նորից։",
   "sendErrorAmountBelowMinimum": "Գումարը swap-ի նվազագույն սահմանից ցածր է՝ {minLimit} sats",
   "sendErrorAmountAboveMaximum": "Գումարը swap-ի առավելագույն սահմանից բարձր է՝ {maxLimit} sats",
   "sendErrorAmountBelowSwapLimits": "Գումարը swap-ի սահմաններից ցածր է",
-  "sendErrorBuildFailed": "Կառուցումը ձախողվեց",
+  "sendErrorBuildFailed": "Չհաջողվեց նախապատրաստել գործարքը։ Փորձեք նորից։",
   "sendErrorConfirmationFailed": "Հաստատումը ձախողվեց",
   "sendErrorBroadcastFailed": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ձեր ցանցի կապը և կրկին փորձեք։",
   "sendInsufficientBalance": "Անբավարար մնացորդ"

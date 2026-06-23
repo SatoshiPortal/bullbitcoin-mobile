@@ -3961,7 +3961,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Απέτυχε να δημιουργήσει ανταλλαγή.",
+  "sendErrorSwapCreationFailed": "Δεν ήταν δυνατή η δημιουργία ανταλλαγής. Δοκιμάστε ξανά.",
   "sendErrorInvoiceMustContainAmount": "Το τιμολόγιο πρέπει να περιέχει ποσό",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -9070,7 +9070,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Δημιουργήστε το Failed",
+  "sendErrorBuildFailed": "Δεν ήταν δυνατή η προετοιμασία της συναλλαγής. Δοκιμάστε ξανά.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

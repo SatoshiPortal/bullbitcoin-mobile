@@ -5232,7 +5232,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "شکست برای ایجاد مبادله.",
+  "sendErrorSwapCreationFailed": "ایجاد مبادله ممکن نشد. دوباره تلاش کنید.",
   "sendErrorInvoiceMustContainAmount": "فاکتور باید حاوی مبلغ باشد",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10365,7 +10365,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "ساخت شکست خورده",
+  "sendErrorBuildFailed": "آماده‌سازی تراکنش ممکن نشد. دوباره تلاش کنید.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

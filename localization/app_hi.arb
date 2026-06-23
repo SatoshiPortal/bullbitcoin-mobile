@@ -4722,7 +4722,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
+  "sendErrorSwapCreationFailed": "स्वैप नहीं बन सका। फिर से प्रयास करें।",
   "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -11033,7 +11033,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "असफल",
+  "sendErrorBuildFailed": "लेन-देन तैयार नहीं हो सका। फिर से प्रयास करें।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },

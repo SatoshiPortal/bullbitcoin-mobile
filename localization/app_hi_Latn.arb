@@ -6352,7 +6352,7 @@
   "@sendErrorArkExperimentalOnly": {
     "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
-  "sendErrorSwapCreationFailed": "Swap banana fail ho gaya.",
+  "sendErrorSwapCreationFailed": "Swap nahi ban saka. Dobara koshish karein.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -6369,7 +6369,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Asamarthit QR code format",
-  "sendErrorBuildFailed": "Build Fail Ho Gayi",
+  "sendErrorBuildFailed": "Transaction taiyaar nahi ho saka. Dobara koshish karein.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
