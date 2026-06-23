@@ -321,5 +321,6 @@
   "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
   "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
   "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
-  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena."
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena."
 }

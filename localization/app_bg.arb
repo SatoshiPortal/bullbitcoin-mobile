@@ -9807,5 +9807,6 @@
   "pinCodeDeleteError": "Неуспешно изтриване на вашия ПИН. Моля, опитайте отново.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
-  "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново."
+  "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
+  "electrumServerUnreachable": "Сървърът е недостъпен. Проверете адреса и опитайте отново."
 }

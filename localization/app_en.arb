@@ -11513,43 +11513,27 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "This server already exists",
+  "electrumServerUnreachable": "Server is unreachable. Check the address and try again.",
+  "@electrumServerUnreachable": {
+    "description": "Error shown when a custom server cannot be reached"
+  },
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

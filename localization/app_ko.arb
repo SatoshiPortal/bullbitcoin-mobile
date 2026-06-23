@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
+  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -3546,14 +3547,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "로드 서버에 실패{reason}",
+  "electrumLoadFailedError": "로드 서버에 실패",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "인증:",
   "@ledgerVerifyAddressLabel": {
@@ -6591,14 +6587,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패{reason}",
+  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
@@ -7684,14 +7675,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "서버 우선순위{reason} 저장 실패",
+  "electrumSavePriorityFailedError": "서버 우선순위 저장 실패",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "즉시 결제",
   "@globalDefaultLiquidWalletLabel": {
@@ -9145,14 +9131,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "사용자 정의 서버 추가 실패{reason}",
+  "electrumAddFailedError": "사용자 정의 서버 추가 실패",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "송금 수수료",
   "@transactionDetailLabelTransferFees": {

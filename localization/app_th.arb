@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "เซิร์ฟเวอร์นี้พร้อมใช้งาน",
+  "electrumServerUnreachable": "ไม่สามารถเข้าถึงเซิร์ฟเวอร์ได้ ตรวจสอบที่อยู่แล้วลองอีกครั้ง",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -3546,14 +3547,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ {reason}",
+  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "ที่อยู่:",
   "@ledgerVerifyAddressLabel": {
@@ -6591,14 +6587,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "กลอง",
   "@receiveBoltzSwapFee": {
@@ -7680,14 +7671,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
   "@globalDefaultLiquidWalletLabel": {
@@ -9137,14 +9123,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "ค่าธรรมเนียม",
   "@transactionDetailLabelTransferFees": {

@@ -1447,6 +1447,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "این سرور در حال حاضر وجود دارد",
+  "electrumServerUnreachable": "سرور در دسترس نیست. آدرس را بررسی کرده و دوباره تلاش کنید.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -4222,14 +4223,9 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "exchangeAppSettingsEmailNotificationsLabel": "ایمیل اعلان",
   "@exchangeAppSettingsEmailNotificationsLabel": {
@@ -6759,14 +6755,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "هزینه تعویض",
   "@receiveBoltzSwapFee": {
@@ -7608,14 +7599,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "شکست برای ذخیره اولویت سرور{reason}",
+  "electrumSavePriorityFailedError": "شکست برای ذخیره اولویت سرور",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "پرداخت های فوری",
   "@globalDefaultLiquidWalletLabel": {
@@ -8848,14 +8834,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "هزینه های انتقال",
   "@transactionDetailLabelTransferFees": {

@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Bu sunucu zaten var",
+  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -3534,14 +3535,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu {reason}",
+  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Doğrulama Adresi:",
   "@ledgerVerifyAddressLabel": {
@@ -6563,14 +6559,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu {reason}",
+  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -7639,14 +7630,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu {reason}",
+  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Anında ödeme",
   "@globalDefaultLiquidWalletLabel": {
@@ -9066,14 +9052,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu {reason}",
+  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Transfer ücretleri",
   "@transactionDetailLabelTransferFees": {

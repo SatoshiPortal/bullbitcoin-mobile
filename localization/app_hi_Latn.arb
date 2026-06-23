@@ -10418,43 +10418,24 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Servers load karne mein fail{reason}",
+  "electrumLoadFailedError": "Servers load karne mein fail",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Server priority save karne mein fail{reason}",
+  "electrumSavePriorityFailedError": "Server priority save karne mein fail",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Custom server add karne mein fail{reason}",
+  "electrumAddFailedError": "Custom server add karne mein fail",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Custom server delete karne mein fail{reason}",
+  "electrumDeleteFailedError": "Custom server delete karne mein fail",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
+  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
