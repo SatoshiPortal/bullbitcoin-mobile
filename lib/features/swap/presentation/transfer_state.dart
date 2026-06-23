@@ -23,6 +23,12 @@ sealed class TransferState with _$TransferState {
     int? liquidAbsoluteFeesSat,
     @Default(false) bool isConfirming,
     ConfirmTransactionException? confirmTransactionException,
+    // Set when a freshly-built Bitcoin tx fails the relay-floor re-assert
+    // (an absolute custom fee that cleared the pre-build gate against a stale
+    // vsize but lands below the floor at the real, larger vsize). Mirrors
+    // SendState.buildTransactionException — surfaced on the confirm page and
+    // accompanied by a cleared signedPsbt so the below-relay tx can't broadcast.
+    BuildTransactionException? buildTransactionException,
     @Default('') String txId,
     @Default(false) bool sendToExternal,
     @Default('') String externalAddress,

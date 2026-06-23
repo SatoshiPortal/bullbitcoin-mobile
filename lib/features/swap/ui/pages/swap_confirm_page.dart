@@ -28,6 +28,9 @@ class SwapConfirmPage extends StatelessWidget {
     final confirmError = context.select(
       (TransferBloc bloc) => bloc.state.confirmTransactionException,
     );
+    final buildError = context.select(
+      (TransferBloc bloc) => bloc.state.buildTransactionException,
+    );
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
     );
@@ -174,7 +177,7 @@ class SwapConfirmPage extends StatelessWidget {
                       const Gap(24),
                       CommonConfirmSendErrorSection(
                         confirmError: confirmError,
-                        buildError: null,
+                        buildError: buildError,
                       ),
                     ],
                   ),

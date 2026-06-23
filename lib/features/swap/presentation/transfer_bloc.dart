@@ -37,6 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -909,7 +910,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final utxos = await _getWalletUtxosUsecase.execute(
         walletId: state.fromWallet!.id,
       );
+      // A wallet sync can change the available coins; any cached preview PSBT
+      // was built against the prior set, so drop it — otherwise a sync landing
+      // mid-flow could leave a stale PSBT staged for broadcast. Guarded so a
+      // no-op refresh doesn't needlessly re-shimmer. Mirrors SendCubit.loadUtxos.
+      final utxosChanged = !setEquals(
+        (state.utxos ?? const <WalletUtxo>[]).toSet(),
+        utxos.toSet(),
+      );
       emit(state.copyWith(utxos: utxos));
+      if (utxosChanged) _clearBitcoinFeePreviews(emit);
     } catch (e) {
       log.severe(
         message: 'Error loading UTXOs',
@@ -1141,6 +1151,25 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
   }
 
+  /// Belt-and-suspenders relay-floor re-assert, mirroring
+  /// `SendCubit.createTransaction`. The pre-build gate in
+  /// [_onCustomFeeFinalized] checks an absolute custom fee against the
+  /// *previous* `bitcoinTxSize`; if the real tx is larger, an absolute fee
+  /// that cleared that gate can land below the floor at the actual vsize.
+  /// Re-checking the freshly built fee against the freshly built vsize closes
+  /// the only below-relay-broadcast vector on the swap surface — don't rely on
+  /// BDK rejecting sub-minrelay itself.
+  bool _builtFeeClearsRelay({
+    required TransferState stateToUse,
+    required int builtFeeSat,
+    required int txSize,
+  }) {
+    return NetworkFee.absolute(builtFeeSat).aboveMinRelay(
+      txSize: txSize,
+      floorSatPerKwu: stateToUse.bitcoinNetworkFees?.minRelay.satPerKwu,
+    );
+  }
+
   Future<void> _rebuildTransactionWithState(
     Emitter<TransferState> emit,
     TransferState stateToUse,
@@ -1203,11 +1232,33 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               psbt: signedPsbtAndTxSize.signedPsbt,
             );
 
+        if (!_builtFeeClearsRelay(
+          stateToUse: stateToUse,
+          builtFeeSat: bitcoinAbsoluteFeesSat,
+          txSize: signedPsbtAndTxSize.txSize,
+        )) {
+          log.warning(
+            'Rebuild aborted — built fee $bitcoinAbsoluteFeesSat sats at '
+            '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+          );
+          emit(
+            stateToUse.copyWith(
+              signedPsbt: '',
+              buildTransactionException: BuildTransactionException(
+                'Built fee $bitcoinAbsoluteFeesSat sats at '
+                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+              ),
+            ),
+          );
+          return;
+        }
+
         emit(
           stateToUse.copyWith(
             signedPsbt: signedPsbtAndTxSize.signedPsbt,
             bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
             bitcoinTxSize: signedPsbtAndTxSize.txSize,
+            buildTransactionException: null,
           ),
         );
       } else if (stateToUse.swap != null && stateToUse.swap is ChainSwap) {
@@ -1253,6 +1304,27 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               psbt: signedPsbtAndTxSize.signedPsbt,
             );
 
+        if (!_builtFeeClearsRelay(
+          stateToUse: stateToUse,
+          builtFeeSat: bitcoinAbsoluteFeesSat,
+          txSize: signedPsbtAndTxSize.txSize,
+        )) {
+          log.warning(
+            'Rebuild aborted — built fee $bitcoinAbsoluteFeesSat sats at '
+            '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+          );
+          emit(
+            stateToUse.copyWith(
+              signedPsbt: '',
+              buildTransactionException: BuildTransactionException(
+                'Built fee $bitcoinAbsoluteFeesSat sats at '
+                '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+              ),
+            ),
+          );
+          return;
+        }
+
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
           swapId: swap.id,
           lockupFees: bitcoinAbsoluteFeesSat,
@@ -1264,6 +1336,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             signedPsbt: signedPsbtAndTxSize.signedPsbt,
             bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
             bitcoinTxSize: signedPsbtAndTxSize.txSize,
+            buildTransactionException: null,
           ),
         );
       }
