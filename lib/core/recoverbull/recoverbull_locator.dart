@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_al
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
@@ -62,11 +63,13 @@ class RecoverbullLocator {
 
   static Future<void> registerRepositories(GetIt locator) async {
     locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepository(),
+      () => GoogleDriveRepository(
+        datasource: locator<GoogleDriveAppDatasource>(),
+      ),
     );
 
     locator.registerLazySingleton<FileSystemRepository>(
-      () => FileSystemRepository(),
+      () => FileSystemRepository(datasource: locator<FileStorageDatasource>()),
     );
 
     locator.registerLazySingleton<TorConfigPort>(
@@ -109,7 +112,15 @@ class RecoverbullLocator {
     );
 
     locator.registerFactory<SaveFileToSystemUsecase>(
-      () => SaveFileToSystemUsecase(),
+      () => SaveFileToSystemUsecase(
+        fileSystemRepository: locator<FileSystemRepository>(),
+      ),
+    );
+
+    locator.registerFactory<PickVaultUsecase>(
+      () => PickVaultUsecase(
+        fileSystemRepository: locator<FileSystemRepository>(),
+      ),
     );
 
     locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
@@ -166,6 +177,7 @@ class RecoverbullLocator {
     locator.registerFactory<ExportDriveFileUsecase>(
       () => ExportDriveFileUsecase(
         driveRepository: locator<GoogleDriveRepository>(),
+        fileSystemRepository: locator<FileSystemRepository>(),
       ),
     );
     locator.registerFactory<UpdateLatestEncryptedVaultTestUsecase>(

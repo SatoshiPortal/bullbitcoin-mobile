@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -14,7 +16,11 @@ class RestoreVaultUsecase {
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
   }) : _createDefaultWallets = createDefaultWalletsUsecase;
 
-  Future<void> execute({required DecryptedVault decryptedVault}) async {
+  // Orchestrates the still-throwing wallet core repo; the local try/catch is
+  // the boundary, mapping any failure to a sanitized core failure.
+  Future<Result<Null, RecoverBullCoreFailure>> execute({
+    required DecryptedVault decryptedVault,
+  }) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
         words: decryptedVault.mnemonic,
@@ -34,9 +40,10 @@ class RestoreVaultUsecase {
       }
 
       log.fine('Vault restored');
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      rethrow;
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(message: 'restoreVault failed', error: e, trace: st);
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
     }
   }
 }
