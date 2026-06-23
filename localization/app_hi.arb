@@ -3546,14 +3546,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "सर्वर लोड करने में विफल {reason}",
+  "electrumLoadFailedError": "सर्वर लोड करने में विफल ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "सत्यापित करने के लिए पता:",
   "@ledgerVerifyAddressLabel": {
@@ -6591,14 +6586,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "कस्टम सर्वर {reason} को हटाने में विफल",
+  "electrumDeleteFailedError": "कस्टम सर्वर  को हटाने में विफल",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap शुल्क",
   "@receiveBoltzSwapFee": {
@@ -7684,14 +7674,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल {reason}",
+  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "तत्काल भुगतान",
   "@globalDefaultLiquidWalletLabel": {
@@ -9145,14 +9130,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "कस्टम सर्वर {reason} जोड़ने में विफल",
+  "electrumAddFailedError": "कस्टम सर्वर  जोड़ने में विफल",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "ट्रांसफर शुल्क",
   "@transactionDetailLabelTransferFees": {

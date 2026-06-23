@@ -2997,14 +2997,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές {reason}",
+  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Διεύθυνση επαλήθευσης:",
   "@ledgerVerifyAddressLabel": {
@@ -5498,12 +5493,7 @@
   },
   "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -6389,14 +6379,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή {reason}",
+  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
   "@globalDefaultLiquidWalletLabel": {
@@ -7586,14 +7571,9 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή {reason}",
+  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Τέλη μεταφοράς",
   "@transactionDetailLabelTransferFees": {

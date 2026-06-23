@@ -3432,14 +3432,9 @@
   "@seedsignerStep11": {
     "description": "SeedSigner instruction to return to app"
   },
-  "electrumLoadFailedError": "Falhados em servidores de carga{reason}",
+  "electrumLoadFailedError": "Falhados em servidores de carga",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "kruxStep5": "Digitalizar o código QR mostrado na carteira Bull",
   "@kruxStep5": {
@@ -5776,14 +5771,9 @@
   "@fundExchangeLabelPaymentDescription": {
     "description": "Label for payment description field"
   },
-  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado{reason}",
+  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "replaceByFeeFastestTitle": "Mais rápido",
   "@replaceByFeeFastestTitle": {
@@ -7596,14 +7586,9 @@
   "@buyProofOfAddress": {
     "description": "Type of document required"
   },
-  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor{reason}",
+  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "allSeedViewTitle": "Visualizador de sementes",
   "@allSeedViewTitle": {
@@ -9060,14 +9045,9 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "electrumAddFailedError": "Falhado em adicionar servidor personalizado{reason}",
+  "electrumAddFailedError": "Falhado em adicionar servidor personalizado",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "@jadeStep12": {

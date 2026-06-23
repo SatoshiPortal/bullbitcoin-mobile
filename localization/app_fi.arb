@@ -3574,7 +3574,7 @@
   "electrumDefaultServersInfo": "Yksityisyytesi suojaamiseksi oletuspalvelimia ei käytetä, kun omia palvelimia on määritetty.",
   "electrumCustomServers": "Omat palvelimet",
   "electrumDragToReorder": "(Pitkä painallus, raahaa ja muuta prioriteettia)",
-  "electrumLoadFailedError": "Palvelinten lataus epäonnistui{reason}",
+  "electrumLoadFailedError": "Palvelinten lataus epäonnistui",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -3582,7 +3582,7 @@
       }
     }
   },
-  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui{reason}",
+  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3590,7 +3590,7 @@
       }
     }
   },
-  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui{reason}",
+  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3598,7 +3598,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui{reason}",
+  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {

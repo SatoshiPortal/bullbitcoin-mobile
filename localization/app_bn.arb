@@ -3472,14 +3472,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "সার্ভারগুলো লোড করতে ব্যর্থ হয়েছে{reason}",
+  "electrumLoadFailedError": "সার্ভারগুলো লোড করতে ব্যর্থ হয়েছে",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "যাচাই করার ঠিকানা:",
   "@ledgerVerifyAddressLabel": {
@@ -6424,14 +6419,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে{reason}",
+  "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap ফি",
   "@receiveBoltzSwapFee": {
@@ -7496,14 +7486,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "সার্ভারের অগ্রাধিকার সংরক্ষণ করতে ব্যর্থ হয়েছে{reason}",
+  "electrumSavePriorityFailedError": "সার্ভারের অগ্রাধিকার সংরক্ষণ করতে ব্যর্থ হয়েছে",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "তাত্ক্ষণিক লেনদেন",
   "@globalDefaultLiquidWalletLabel": {
@@ -8914,14 +8899,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "কাস্টম সার্ভার যোগ করতে ব্যর্থ হয়েছে{reason}",
+  "electrumAddFailedError": "কাস্টম সার্ভার যোগ করতে ব্যর্থ হয়েছে",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "হস্তান্তর ফি",
   "@transactionDetailLabelTransferFees": {

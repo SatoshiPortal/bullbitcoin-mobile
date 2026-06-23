@@ -3626,7 +3626,7 @@
   "electrumDefaultServersInfo": "Pour protéger votre vie privée, les serveurs par défaut ne sont pas utilisés lorsque des serveurs personnalisés sont configurés.",
   "electrumCustomServers": "Serveurs personnalisés",
   "electrumDragToReorder": "(Appuyez longuement pour faire glisser et changer la priorité)",
-  "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
+  "electrumLoadFailedError": "Échec du chargement des serveurs",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -3634,7 +3634,7 @@
       }
     }
   },
-  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur{reason}",
+  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3642,7 +3642,7 @@
       }
     }
   },
-  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé{reason}",
+  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3650,7 +3650,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé{reason}",
+  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {

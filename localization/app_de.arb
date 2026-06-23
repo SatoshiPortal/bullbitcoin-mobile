@@ -1165,7 +1165,7 @@
   "broadcastSignedTxReviewTransaction": "Transaktion überprüfen",
   "walletArkExperimental": "Experimentell",
   "importQrDeviceKeystoneStep5": "Wählen Sie \"BULL\" aus der Liste der Wallets",
-  "electrumLoadFailedError": "Server konnte nicht geladen werden: {reason}.",
+  "electrumLoadFailedError": "Server konnte nicht geladen werden: .",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2116,7 +2116,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Liquid-Testnetzwerk",
-  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers: {reason}.",
+  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers: .",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2455,7 +2455,7 @@
   "importQrDeviceKruxInstructionsTitle": "Krux-Anleitung",
   "transactionOrderLabelOriginName": "Ursprungsname",
   "importQrDeviceKeystoneInstructionsTitle": "Keystone-Anleitung",
-  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität: {reason}.",
+  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität: .",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -2965,7 +2965,7 @@
   "buyStandardWithdrawal": "Standardauszahlung",
   "swapContinue": "Fortfahren",
   "arkSettleButton": "Einrichten",
-  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers: {reason}.",
+  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers: .",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {

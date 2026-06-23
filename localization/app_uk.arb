@@ -1987,7 +1987,7 @@
   "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
   "broadcastSignedTxReviewTransaction": "Огляд транзакцій",
   "importQrDeviceKeystoneStep5": "Виберіть \"BULL\" зі списку гаманців",
-  "electrumLoadFailedError": "Переміщені на серверах навантаження{reason}",
+  "electrumLoadFailedError": "Переміщені на серверах навантаження",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2671,7 +2671,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Видаліть користувальницький сервер{reason}",
+  "electrumDeleteFailedError": "Видаліть користувальницький сервер",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2917,7 +2917,7 @@
   "dcaBackToHomeButton": "Головна",
   "importQrDeviceKruxInstructionsTitle": "Krux Інструкції",
   "importQrDeviceKeystoneInstructionsTitle": "Інструкція Keystone",
-  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3289,7 +3289,7 @@
   "buyStandardWithdrawal": "Стандартний знімок",
   "swapContinue": "Продовжити",
   "arkSettleButton": "Смітт",
-  "electrumAddFailedError": "Заборонено додавати користувацький сервер{reason}",
+  "electrumAddFailedError": "Заборонено додавати користувацький сервер",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {

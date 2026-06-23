@@ -1188,7 +1188,7 @@
   "broadcastSignedTxReviewTransaction": "Revisione delle transazioni",
   "walletArkExperimental": "Sperimentale",
   "importQrDeviceKeystoneStep5": "Seleziona \"BULL\" dall'elenco dei portafogli",
-  "electrumLoadFailedError": "Non caricare server{reason}",
+  "electrumLoadFailedError": "Non caricare server",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2152,7 +2152,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Testato liquido",
-  "electrumDeleteFailedError": "Non è stato possibile eliminare server personalizzati{reason}",
+  "electrumDeleteFailedError": "Non è stato possibile eliminare server personalizzati",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2492,7 +2492,7 @@
   "importQrDeviceKruxInstructionsTitle": "Istruzioni Krux",
   "transactionOrderLabelOriginName": "Nome di origine",
   "importQrDeviceKeystoneInstructionsTitle": "Istruzioni Keystone",
-  "electrumSavePriorityFailedError": "Non riuscito a salvare la priorità del server{reason}",
+  "electrumSavePriorityFailedError": "Non riuscito a salvare la priorità del server",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3007,7 +3007,7 @@
   "buyStandardWithdrawal": "Ritiro standard",
   "swapContinue": "Continua",
   "arkSettleButton": "Settle",
-  "electrumAddFailedError": "Non è possibile aggiungere server personalizzati{reason}",
+  "electrumAddFailedError": "Non è possibile aggiungere server personalizzati",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {

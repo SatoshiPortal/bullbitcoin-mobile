@@ -3340,14 +3340,9 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "عنوان التحقق:",
   "@ledgerVerifyAddressLabel": {
@@ -6188,14 +6183,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -7199,14 +7189,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
@@ -8587,14 +8572,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "رسوم التحويل",
   "@transactionDetailLabelTransferFees": {

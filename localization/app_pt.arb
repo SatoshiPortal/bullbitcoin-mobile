@@ -1185,7 +1185,7 @@
   "broadcastSignedTxReviewTransaction": "Revisão",
   "walletArkExperimental": "Experimental",
   "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
-  "electrumLoadFailedError": "Falhados em servidores de carga{reason}",
+  "electrumLoadFailedError": "Falhados em servidores de carga",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2132,7 +2132,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Testnet líquido",
-  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado{reason}",
+  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2474,7 +2474,7 @@
   "importQrDeviceKruxInstructionsTitle": "Instruções de Krux",
   "transactionOrderLabelOriginName": "Nome de origem",
   "importQrDeviceKeystoneInstructionsTitle": "Instruções de Keystone",
-  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor{reason}",
+  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -2987,7 +2987,7 @@
   "buyStandardWithdrawal": "Retirada padrão",
   "swapContinue": "Continue",
   "arkSettleButton": "Settle",
-  "electrumAddFailedError": "Falhado em adicionar servidor personalizado{reason}",
+  "electrumAddFailedError": "Falhado em adicionar servidor personalizado",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {

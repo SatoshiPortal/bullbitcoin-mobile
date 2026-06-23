@@ -1185,7 +1185,7 @@
   "broadcastSignedTxReviewTransaction": "Обзорная сделка",
   "walletArkExperimental": "Экспериментальный",
   "importQrDeviceKeystoneStep5": "Выберите \"BULL\" из списка кошельков",
-  "electrumLoadFailedError": "Не удалось загрузить серверы {reason}",
+  "electrumLoadFailedError": "Не удалось загрузить серверы ",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2149,7 +2149,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Жидкий Тестет",
-  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер {reason}",
+  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер ",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2490,7 +2490,7 @@
   "importQrDeviceKruxInstructionsTitle": "Инструкции Krux",
   "transactionOrderLabelOriginName": "Название происхождения",
   "importQrDeviceKeystoneInstructionsTitle": "Инструкции по кистоне",
-  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3005,7 +3005,7 @@
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
   "arkSettleButton": "Настройка",
-  "electrumAddFailedError": "Не удалось добавить пользовательский сервер {reason}",
+  "electrumAddFailedError": "Не удалось добавить пользовательский сервер ",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
