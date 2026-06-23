@@ -96,7 +96,7 @@ class SeedRepository {
       await _source.delete(fingerprint);
       return const Ok(null);
     } catch (e, st) {
-      log.warning('Failed to delete seed', error: e, trace: st);
+      log.severe(message: 'Failed to delete seed', error: e, trace: st);
       return Err(SeedDeleteFailure(e.toString()));
     }
   }
@@ -123,7 +123,11 @@ class SeedRepository {
       // (toEntity() triggers expensive fingerprint computation)
       return Ok(await compute(convertToMnemonicSeedsInIsolate, models));
     } catch (e, st) {
-      log.warning('Failed to get all mnemonic seeds', error: e, trace: st);
+      log.severe(
+        message: 'Failed to get all mnemonic seeds',
+        error: e,
+        trace: st,
+      );
       return Err(SeedFetchFailure(e.toString()));
     }
   }
