@@ -40,10 +40,11 @@ class Bip329LabelsCodec {
           return bip329.OutputLabel(
             ref: label.reference,
             label: label.label,
-            // Frozen → not spendable. The BIP329 `origin` carries the wallet
-            // attribution: the freezing wallet's origin when frozen, else any
-            // origin the label already had.
-            spendable: !isFrozen,
+            // Only assert spendability when frozen (`false`); otherwise leave it
+            // absent (null) per BIP329 "omitted ⇒ don't alter". The `origin`
+            // carries the wallet attribution: the freezing wallet's origin when
+            // frozen, else any origin the label already had.
+            spendable: isFrozen ? false : null,
             origin: isFrozen
                 ? _bip329OriginFromWalletId(frozenWalletId)
                 : label.origin,
@@ -84,9 +85,10 @@ class Bip329LabelsCodec {
     final frozen = <({String? walletId, String txId, int vout})>[];
 
     for (final bip329Label in bip329Labels) {
-      if (bip329Label is bip329.OutputLabel && !bip329Label.spendable) {
-        // spendable: false → a freeze. Attribute it to the wallet via the
-        // record's origin (null/unparseable origin → unattributed but kept).
+      if (bip329Label is bip329.OutputLabel && bip329Label.spendable == false) {
+        // spendable: false → a freeze. An omitted/true spendable is not a
+        // freeze. Attribute it to the wallet via the record's origin
+        // (null/unparseable origin → unattributed but kept).
         final parts = bip329Label.ref.split(':');
         if (parts.length == 2) {
           final vout = int.tryParse(parts[1]);

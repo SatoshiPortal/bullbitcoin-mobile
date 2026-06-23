@@ -140,6 +140,18 @@ void main() {
       expect(decoded.labels.single.label, 'rent');
     });
 
+    test('output label without spendable imports as a label, not a freeze', () {
+      // BIP329 marks spendable optional; a third-party file (e.g. Sparrow) that
+      // labels an output without freezing it must import cleanly — under
+      // bip329_labels < 2.0.0 this threw and aborted the whole import.
+      final jsonl = '{"type":"output","ref":"$ref","label":"coffee"}';
+
+      final decoded = codec.decode(jsonl);
+      expect(decoded.frozen, isEmpty);
+      expect(decoded.labels.single.label, 'coffee');
+      expect(decoded.labels.single.type, LabelType.output);
+    });
+
     test('malformed or impossible outpoints are dropped (no freeze)', () {
       final jsonl = [
         '{"type":"output","ref":"$txId:-1","label":"","spendable":false}',
