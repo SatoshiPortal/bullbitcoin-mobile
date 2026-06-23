@@ -22,6 +22,10 @@ class VaultProviderSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: Text(context.loc.recoverbullSelectVaultProvider),
         actions: const [
           Padding(
