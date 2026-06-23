@@ -12,18 +12,19 @@ abstract interface class WalletUtxoRepository {
     required List<Outpoint> outpoints,
   });
 
-  /// Unfreezes the given outpoints. Only ever deletes `origin = 'user'` rows —
-  /// a user can never unfreeze a system/payjoin lock.
+  /// Unfreezes the given outpoints for a wallet.
   Future<void> unfreezeUtxos({
     required String walletId,
     required List<Outpoint> outpoints,
   });
 
-  /// Returns the frozen outpoints for a wallet. `origins == null` returns all
-  /// rows (the send-exclusion read); pass `{'user'}` for the user-frozen set
-  /// the Coins UI shows/toggles.
-  Future<List<Outpoint>> getFrozenOutpoints({
-    required String walletId,
-    Set<String>? origins,
-  });
+  /// Returns every frozen outpoint across all wallets.
+  ///
+  /// Freeze is matched by outpoint, not by wallet: an outpoint is globally
+  /// unique, so a coin is frozen iff any wallet froze it. `getWalletUtxos` and
+  /// the send path overlay this set onto BDK's real coins — a frozen row that
+  /// no wallet currently owns is inert (nothing to attach to). The stored
+  /// `walletId` (the wallet origin) is kept only for BIP329 export attribution
+  /// and wallet-deletion cleanup, never for exclusion.
+  Future<List<Outpoint>> getAllFrozenOutpoints();
 }

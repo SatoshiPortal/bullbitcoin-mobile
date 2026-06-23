@@ -50,14 +50,14 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     final utxoModels = metadata.isBitcoin
         ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
         : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
-    // `isFrozen` (what the Coins UI shows/toggles) reflects user freezes only.
-    // Materialise as a Set for O(1) membership per UTXO — Outpoint is a record,
-    // so it has structural equality/hashCode and keys the set directly.
-    final frozenOutpoints =
-        (await _frozenWalletUtxoDatasource.getFrozenOutpoints(
-          walletId: walletId,
-          origins: const {'user'},
-        )).toSet();
+    // `isFrozen` is matched by outpoint against the global frozen set (an
+    // outpoint is globally unique, so it belongs to one wallet anyway). Frozen
+    // rows for coins this wallet doesn't hold simply never match. Materialise
+    // as a Set for O(1) membership — Outpoint is a record, so it has structural
+    // equality/hashCode and keys the set directly.
+    final frozenOutpoints = (await _frozenWalletUtxoDatasource.getAllFrozen())
+        .map((row) => (txId: row.txId, vout: row.vout))
+        .toSet();
 
     final utxos = await Future.wait(
       utxoModels.map((model) async {
@@ -126,13 +126,8 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   }
 
   @override
-  Future<List<Outpoint>> getFrozenOutpoints({
-    required String walletId,
-    Set<String>? origins,
-  }) {
-    return _frozenWalletUtxoDatasource.getFrozenOutpoints(
-      walletId: walletId,
-      origins: origins,
-    );
+  Future<List<Outpoint>> getAllFrozenOutpoints() async {
+    final rows = await _frozenWalletUtxoDatasource.getAllFrozen();
+    return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
   }
 }

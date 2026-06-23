@@ -73,4 +73,18 @@ class FrozenWalletUtxoDatasource {
     final rows = await query.get();
     return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
   }
+
+  /// Returns every frozen row across all wallets, each tagged with the
+  /// `walletId` that froze it. `walletId` IS the wallet origin (`wallet.id =>
+  /// origin`, e.g. `wpkh([0f36572d/84h/1h/0h])`), so this is the global,
+  /// wallet-attributed freeze set the BIP329 export projects to `spendable`.
+  Future<List<({String walletId, String txId, int vout})>>
+  getAllFrozen() async {
+    final rows = await _db.select(_db.frozenUtxos).get();
+    return rows
+        .map(
+          (row) => (walletId: row.walletId, txId: row.txId, vout: row.vout),
+        )
+        .toList();
+  }
 }

@@ -84,9 +84,9 @@ class PrepareBitcoinSendUsecase {
   /// (§6.1) — this is the single seam the future payjoin-unification collapses
   /// to one read.
   Future<List<Outpoint>> _unspendableFor(String walletId) async {
-    final userFrozen = await _walletUtxoRepository.getFrozenOutpoints(
-      walletId: walletId,
-    );
+    // Freeze is matched by outpoint (globally unique), so the full frozen set
+    // is safe to pass: buildPsbt ignores any outpoint this wallet doesn't own.
+    final userFrozen = await _walletUtxoRepository.getAllFrozenOutpoints();
     final payjoinFrozen = await _payjoin.getUtxosFrozenByOngoingPayjoins();
     return {...userFrozen, ...payjoinFrozen}.toList();
   }

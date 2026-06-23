@@ -121,5 +121,20 @@ void main() {
       final frozen = await datasource.getFrozenOutpoints(walletId: walletId);
       expect(frozen.toSet(), {a, b, c});
     });
+
+    test('getAllFrozen returns every row across wallets, tagged by walletId',
+        () async {
+      await datasource.freezeOutpoints(walletId: walletId, outpoints: const [a]);
+      await datasource.freezeOutpoints(
+        walletId: 'wallet-2',
+        outpoints: const [b],
+      );
+
+      final all = await datasource.getAllFrozen();
+      expect(all.toSet(), {
+        (walletId: walletId, txId: a.txId, vout: a.vout),
+        (walletId: 'wallet-2', txId: b.txId, vout: b.vout),
+      });
+    });
   });
 }

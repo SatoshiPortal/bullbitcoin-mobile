@@ -105,7 +105,7 @@ Future<void> main({bool isInitialized = false}) async {
       );
     });
 
-    test('unfreeze only ever removes origin = user rows', () async {
+    test('unfreeze removes the freeze row', () async {
       await utxoRepository.freezeUtxos(
         walletId: walletId,
         outpoints: [outpoint],
@@ -115,9 +115,9 @@ Future<void> main({bool isInitialized = false}) async {
         outpoints: [outpoint],
       );
 
-      final remaining = await utxoRepository.getFrozenOutpoints(
-        walletId: walletId,
-      );
+      // Freeze is matched by outpoint across all wallets — the global set must
+      // no longer carry it after unfreeze.
+      final remaining = await utxoRepository.getAllFrozenOutpoints();
       expect(remaining, isNot(contains(outpoint)));
     });
   });

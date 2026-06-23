@@ -109,7 +109,7 @@ void main() {
   test('gate removed: unspendable is ALWAYS computed (both sources read)',
       () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => []);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -123,7 +123,7 @@ void main() {
     );
 
     // Both unspendable sources are consulted on every build — no gate.
-    verify(() => walletUtxo.getFrozenOutpoints(walletId: walletId)).called(1);
+    verify(() => walletUtxo.getAllFrozenOutpoints()).called(1);
     verify(() => payjoin.getUtxosFrozenByOngoingPayjoins()).called(1);
     expect(capturedUnspendable(), isEmpty);
   });
@@ -131,7 +131,7 @@ void main() {
   test('drain: unspendable still carries both sources (exclusion on drain too)',
       () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -166,7 +166,7 @@ void main() {
 
   test('NoSpendableUtxoException is rethrown unchanged (not wrapped)', () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => []);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -198,7 +198,7 @@ void main() {
   test('any other build failure is wrapped in PrepareBitcoinSendException',
       () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => []);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -231,7 +231,7 @@ void main() {
       () async {
     final shared = (txId: 'tx-shared', vout: 0);
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1), shared]);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -255,7 +255,7 @@ void main() {
 
   test('a selectedInput that is frozen is stripped before buildPsbt', () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-frozen', vout: 0)]);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
@@ -281,7 +281,7 @@ void main() {
   test('happy path (no frozen) builds identically with empty unspendable',
       () async {
     when(
-      () => walletUtxo.getFrozenOutpoints(walletId: any(named: 'walletId')),
+      () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => []);
     when(
       () => payjoin.getUtxosFrozenByOngoingPayjoins(),
