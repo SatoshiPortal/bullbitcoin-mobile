@@ -12783,5 +12783,13 @@
   "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
   "onboardingAdvancedOptionsDone": "Hotovo",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu"
+  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
+  "logsViewerFilterByDate": "Filtrovat podle data",
+  "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
+  "logsViewerClearFilter": "Vymazat filtr",
+  "logsViewerShareButton": "Sdílet",
+  "logsShareOptionShare": "Sdílet",
+  "logsShareOptionExport": "Exportovat",
+  "logsExportedMessage": "Záznamy byly úspěšně exportovány",
+  "logsExportFailedMessage": "Export záznamů se nezdařil"
 }

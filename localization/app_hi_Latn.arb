@@ -13138,5 +13138,13 @@
   "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
   "onboardingAdvancedOptionsDone": "Done",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
-  "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai"
+  "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
+  "logsViewerFilterByDate": "Taareekh ke anusaar filter karein",
+  "logsViewerShowingCount": "{total} mein se {shown} log dikhaaye ja rahe hain",
+  "logsViewerClearFilter": "Filter hatayein",
+  "logsViewerShareButton": "Share karein",
+  "logsShareOptionShare": "Share karein",
+  "logsShareOptionExport": "Export karein",
+  "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
+  "logsExportFailedMessage": "Logs export karne mein vifal"
 }

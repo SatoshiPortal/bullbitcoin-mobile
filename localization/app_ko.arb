@@ -12665,5 +12665,13 @@
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
-  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다"
+  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
+  "logsViewerFilterByDate": "날짜별 필터",
+  "logsViewerShowingCount": "{total}개 중 {shown}개 로그 표시",
+  "logsViewerClearFilter": "필터 지우기",
+  "logsViewerShareButton": "공유",
+  "logsShareOptionShare": "공유",
+  "logsShareOptionExport": "내보내기",
+  "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다"
 }

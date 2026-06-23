@@ -12783,5 +12783,13 @@
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "onboardingAdvancedOptionsDone": "Τέλος",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android"
+  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
+  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
+  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
+  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
+  "logsViewerShareButton": "Κοινοποίηση",
+  "logsShareOptionShare": "Κοινοποίηση",
+  "logsShareOptionExport": "Εξαγωγή",
+  "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
 }

@@ -288,5 +288,13 @@
   "fundExchangeErrorRcpPosinpe404": "Այս ֆինանսավորման տարբերակին մուտք գործելու համար ձեր հեռախոսահամարը պետք է գրանցված լինի SINPE ցանցում Costa Rica-ում։",
   "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։",
   "sendErrorUnsupportedQrCodeFormat": "Չաջակցվող QR կոդ ձևաչափ",
-  "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում"
+  "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում",
+  "logsViewerFilterByDate": "Զտել ըստ ամսաթվի",
+  "logsViewerShowingCount": "Ցուցադրվում է {shown} {total}-ից",
+  "logsViewerClearFilter": "Մաքրել զտիչը",
+  "logsViewerShareButton": "Կիսվել",
+  "logsShareOptionShare": "Կիսվել",
+  "logsShareOptionExport": "Արտահանել",
+  "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց"
 }

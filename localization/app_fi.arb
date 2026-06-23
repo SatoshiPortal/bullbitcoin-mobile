@@ -4794,5 +4794,13 @@
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "onboardingAdvancedOptionsDone": "Valmis",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa"
+  "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
+  "logsViewerFilterByDate": "Suodata päivämäärän mukaan",
+  "logsViewerShowingCount": "Näytetään {shown} / {total} lokia",
+  "logsViewerClearFilter": "Tyhjennä suodatin",
+  "logsViewerShareButton": "Jaa",
+  "logsShareOptionShare": "Jaa",
+  "logsShareOptionExport": "Vie",
+  "logsExportedMessage": "Lokit viety onnistuneesti",
+  "logsExportFailedMessage": "Lokien vienti epäonnistui"
 }

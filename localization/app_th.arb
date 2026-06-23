@@ -12665,5 +12665,13 @@
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น"
+  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
+  "logsViewerFilterByDate": "กรองตามวันที่",
+  "logsViewerShowingCount": "กำลังแสดง {shown} จาก {total} รายการบันทึก",
+  "logsViewerClearFilter": "ล้างตัวกรอง",
+  "logsViewerShareButton": "แชร์",
+  "logsShareOptionShare": "แชร์",
+  "logsShareOptionExport": "ส่งออก",
+  "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ"
 }

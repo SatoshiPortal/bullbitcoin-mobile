@@ -500,5 +500,13 @@
   "fundExchangeErrorRcpPo404": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
   "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
   "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.",
-  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა"
+  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა",
+  "logsViewerFilterByDate": "თარიღის მიხედვით გაფილტრვა",
+  "logsViewerShowingCount": "ნაჩვენებია {shown} {total}-დან",
+  "logsViewerClearFilter": "ფილტრის გასუფთავება",
+  "logsViewerShareButton": "გაზიარება",
+  "logsShareOptionShare": "გაზიარება",
+  "logsShareOptionExport": "ექსპორტი",
+  "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
 }

@@ -4811,5 +4811,13 @@
   "onboardingAdvancedOptionsFooter": "Вы можете изменить эти настройки позже в настройках приложения",
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Обратитесь в поддержку по адресу app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android"
+  "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android",
+  "logsViewerFilterByDate": "Фильтр по дате",
+  "logsViewerShowingCount": "Показано {shown} из {total} записей",
+  "logsViewerClearFilter": "Очистить фильтр",
+  "logsViewerShareButton": "Поделиться",
+  "logsShareOptionShare": "Поделиться",
+  "logsShareOptionExport": "Экспорт",
+  "logsExportedMessage": "Журналы успешно экспортированы",
+  "logsExportFailedMessage": "Не удалось экспортировать журналы"
 }

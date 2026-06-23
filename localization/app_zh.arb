@@ -4684,5 +4684,13 @@
   "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
   "onboardingAdvancedOptionsDone": "完成",
   "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
-  "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android"
+  "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android",
+  "logsViewerFilterByDate": "按日期筛选",
+  "logsViewerShowingCount": "显示 {shown} 条（共 {total} 条）日志",
+  "logsViewerClearFilter": "清除筛选",
+  "logsViewerShareButton": "分享",
+  "logsShareOptionShare": "分享",
+  "logsShareOptionExport": "导出",
+  "logsExportedMessage": "日志导出成功",
+  "logsExportFailedMessage": "日志导出失败"
 }

@@ -12953,5 +12953,13 @@
   "onboardingAdvancedOptionsFooter": "আপনি পরে App Settings এ এই সেটিংস পরিবর্তন করতে পারেন",
   "onboardingAdvancedOptionsDone": "সম্পন্ন",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support এ সাপোর্টের সাথে যোগাযোগ করুন",
-  "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত"
+  "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত",
+  "logsViewerFilterByDate": "তারিখ অনুযায়ী ফিল্টার করুন",
+  "logsViewerShowingCount": "{total} টি লগের মধ্যে {shown} টি দেখানো হচ্ছে",
+  "logsViewerClearFilter": "ফিল্টার সাফ করুন",
+  "logsViewerShareButton": "শেয়ার করুন",
+  "logsShareOptionShare": "শেয়ার করুন",
+  "logsShareOptionExport": "এক্সপোর্ট করুন",
+  "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে"
 }
