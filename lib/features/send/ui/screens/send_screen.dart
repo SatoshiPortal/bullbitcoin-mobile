@@ -456,9 +456,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 );
                               },
                               error: balanceError != null
-                                  ? context
-                                        .loc
-                                        .sendErrorInsufficientBalanceForPayment
+                                  ? balanceError.toTranslated(context)
                                   : (!walletHasBalance &&
                                         amountConfirmedClicked)
                                   ? context.loc.sendInsufficientBalance
@@ -732,7 +730,7 @@ class _SendError extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorBuildFailed,
+          buildError.toTranslated(context),
           style: context.font.bodyLarge,
           color: context.appColors.error,
           maxLines: 5,
@@ -746,7 +744,7 @@ class _SendError extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              context.loc.sendErrorConfirmationFailed,
+              confirmError.toTranslated(context),
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,

@@ -80,7 +80,15 @@ final class SendSwapLimitsFailure extends SendFailure {
     this.maxLimit,
     this.suggestInstantPayments = false,
     String? logMessage,
-  }) : super(logMessage);
+  })  :
+        // Exactly one limit is set per construction; the l10n switch matches
+        // `minLimit` before `maxLimit`, so carrying both would make the
+        // above-max message unreachable. Assert the invariant the switch relies on.
+        assert(
+          (minLimit == null) != (maxLimit == null),
+          'SendSwapLimitsFailure must carry exactly one of minLimit/maxLimit',
+        ),
+        super(logMessage);
 }
 
 // --- Build / confirm --------------------------------------------------------
