@@ -53,14 +53,16 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                           ),
                           BullDetailsTableItem(
                             label: context.loc.swapRescueStatusLabel,
-                            displayValue: swap.recoverable
+                            displayValue:
+                                swap.recoverable && !restorable.existsLocally
                                 ? context.loc.coreSwapsStatusPending
-                                : swap.status.displayName(context),
+                                : context.loc.coreSwapsStatusCompleted,
                           ),
-                          BullDetailsTableItem(
-                            label: context.loc.swapRescueAmountLabel,
-                            displayValue: FormatAmount.sats(swap.amountSat),
-                          ),
+                          if (swap.amountSat > 0)
+                            BullDetailsTableItem(
+                              label: context.loc.swapRescueAmountLabel,
+                              displayValue: FormatAmount.sats(swap.amountSat),
+                            ),
                           BullDetailsTableItem(
                             label: context.loc.swapRescueRouteLabel,
                             displayValue: '${swap.fromAsset} → ${swap.toAsset}',

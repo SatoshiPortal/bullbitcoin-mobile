@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -134,24 +133,15 @@ class _SwapRow extends StatelessWidget {
     }
   }
 
-  // Recoverable swaps read as "Pending" (funds locked, not yet claimed/refunded);
-  // everything else shows its real, terminal status.
-  String _statusLabel(BuildContext context) =>
-      restorable.swap.recoverable
-      ? context.loc.coreSwapsStatusPending
-      : restorable.swap.status.displayName(context);
+  bool get _isRescuable =>
+      restorable.swap.recoverable && !restorable.existsLocally;
 
-  Color _statusColor(BuildContext context) {
-    if (restorable.swap.recoverable) return context.bull.warning;
-    switch (restorable.swap.status) {
-      case SwapStatus.completed:
-        return context.bull.success;
-      case SwapStatus.failed:
-        return context.bull.error;
-      default:
-        return context.bull.textMuted;
-    }
-  }
+  String _statusLabel(BuildContext context) => _isRescuable
+      ? context.loc.coreSwapsStatusPending
+      : context.loc.coreSwapsStatusCompleted;
+
+  Color _statusColor(BuildContext context) =>
+      _isRescuable ? context.bull.warning : context.bull.success;
 
   String _formatDate(DateTime d) {
     final l = d.toLocal();
@@ -187,8 +177,10 @@ class _SwapRow extends StatelessWidget {
                 ),
                 const Gap(2),
                 BullText(
-                  '${FormatAmount.sats(restorable.swap.amountSat)} · '
-                  '${_formatDate(restorable.swap.createdAt)}',
+                  restorable.swap.amountSat > 0
+                      ? '${FormatAmount.sats(restorable.swap.amountSat)} · '
+                            '${_formatDate(restorable.swap.createdAt)}'
+                      : _formatDate(restorable.swap.createdAt),
                   style: context.font.labelSmall,
                   color: context.bull.textMuted,
                 ),

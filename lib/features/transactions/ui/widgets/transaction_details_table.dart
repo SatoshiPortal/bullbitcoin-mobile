@@ -802,14 +802,15 @@ class TransactionDetailsTable extends StatelessWidget {
               copyValue: swapCounterpartTxId,
             ),
           if (recovered) ...[
-            DetailsTableItem(
-              label: context.loc.transactionLabelSendAmount,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(amountSent).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSent),
-                    ).toUpperCase(),
-            ),
+            if (amountSent > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelSendAmount,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountSent).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountSent),
+                      ).toUpperCase(),
+              ),
             if (amountReceived > 0)
               DetailsTableItem(
                 label: context.loc.transactionLabelReceiveAmount,

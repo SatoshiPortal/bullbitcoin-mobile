@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
@@ -467,26 +466,23 @@ class BoltzSwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  // Single global swap-derivation index under the swap master key. Reverse and
-  // submarine swaps consume 1 index; chain swaps consume 2 (boltz derives the
-  // refund key at `index` and the claim key at `index + 1`). Persisted per
-  // network so indices stay sequential (boltz restore scans the xpub's children
-  // 0..gap).
+  // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
+  // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final network = _isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    var current = await _boltz.storage.getSwapKeyIndex(network);
-    if (current == null) {
-      // First allocation on this device/network. A recovered seed may already
-      // have swaps registered with boltz at indices 0..N; seed past the highest
-      // so a new swap never re-derives an in-use key. boltz returns -1 when it
-      // knows of none, giving a fresh wallet index 0.
-      final highest = await _boltz.restoreSwapIndex(
-        swapMasterKey: await _boltz.ensureSwapMasterKey(isTestnet: _isTestnet),
-      );
+    final masterKey = await _boltz.ensureSwapMasterKey(isTestnet: _isTestnet);
+    final fingerprint = masterKey.fingerprint;
+    final stored = await _boltz.storage.getSwapKeyIndex(fingerprint);
+    final int current;
+    if (stored == null) {
+      // Seed past boltz's highest known index (-1 when none) so a new swap
+      // can't re-derive an in-use key on a recovered seed.
+      final highest = await _boltz.restoreSwapIndex(swapMasterKey: masterKey);
       current = highest + 1;
+    } else {
+      current = stored;
     }
-    await _boltz.storage.setSwapKeyIndex(network, current + count);
-    log.info('SWAP_KEY: reserved index $current (count=$count) on $network');
+    await _boltz.storage.setSwapKeyIndex(fingerprint, current + count);
+    log.info('SWAP_KEY: reserved index $current (count=$count) fp=$fingerprint');
     return current;
   }
 
@@ -904,6 +900,7 @@ class BoltzSwapRepository {
         );
         final obj = swaps.firstWhere((s) => s.id == id);
         await _boltz.storage.storeChainSwap(obj);
+        final lockupTxid = await _boltz.chainSwapUserLockupTxid(obj);
         model = SwapModel.chain(
           id: obj.id,
           type: restored.fromAsset == 'BTC'
@@ -922,6 +919,7 @@ class BoltzSwapRepository {
           creationTime: creationTime,
           sendWalletId: sendWalletId,
           receiveWalletId: receiveWalletId,
+          sendTxid: lockupTxid,
           paymentAddress: obj.scriptAddress,
           paymentAmount: obj.outAmount.toInt(),
         );

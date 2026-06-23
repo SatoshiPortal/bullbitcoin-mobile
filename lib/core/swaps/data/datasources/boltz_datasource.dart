@@ -238,6 +238,14 @@ class BoltzDatasource {
     return highest.toInt();
   }
 
+  Future<String?> chainSwapUserLockupTxid(ChainSwap swap) async {
+    try {
+      return await swap.getUserLockup();
+    } catch (_) {
+      return null;
+    }
+  }
+
   // REVERSE SWAPS
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,

@@ -224,12 +224,12 @@ class BoltzStorageDatasource {
     );
   }
 
-  // Global, per-network swap derivation index (under the swap master key).
-  // null when never set, so callers can initialise it.
-  Future<int?> getSwapKeyIndex(BoltzNetwork network) async {
+  // Keyed by wallet fingerprint, not network: the swap key material is
+  // network-independent, so a per-network counter would reuse child keys.
+  Future<int?> getSwapKeyIndex(String walletFingerprint) async {
     try {
       final key =
-          '${SecureStorageKeyPrefixConstants.swapKeyIndex}${network.value}';
+          '${SecureStorageKeyPrefixConstants.swapKeyIndex}$walletFingerprint';
       final value = await _secureSwapStorage.getValue(key);
       if (value == null) return null;
       return int.tryParse(value as String);
@@ -238,9 +238,9 @@ class BoltzStorageDatasource {
     }
   }
 
-  Future<void> setSwapKeyIndex(BoltzNetwork network, int index) async {
+  Future<void> setSwapKeyIndex(String walletFingerprint, int index) async {
     final key =
-        '${SecureStorageKeyPrefixConstants.swapKeyIndex}${network.value}';
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}$walletFingerprint';
     await _secureSwapStorage.saveValue(key: key, value: index.toString());
   }
 

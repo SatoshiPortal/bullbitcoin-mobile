@@ -62,12 +62,17 @@ class RescueSwapUsecase {
           receiveWalletId = null;
         case RestoredSwapKind.crossChain:
           if (restored.isRefundAction) {
+            // A refund has no claim/receive side; don't associate a
+            // destination-chain wallet.
             sendWalletId = selectedWalletId;
-            receiveWalletId = defaultIdForAsset(restored.toAsset);
+            receiveWalletId = null;
           } else {
             receiveWalletId = selectedWalletId;
             sendWalletId =
-                defaultIdForAsset(restored.fromAsset) ?? selectedWalletId;
+                defaultIdForAsset(restored.fromAsset) ??
+                (throw RescueSwapException(
+                  'no default ${restored.fromAsset} wallet to receive a refund',
+                ));
           }
       }
 
