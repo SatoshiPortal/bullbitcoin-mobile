@@ -173,6 +173,7 @@
     "description": "Unit suffix for satoshi amounts"
   },
   "electrumServerAlreadyExists": "Este servidor já existe",
+  "electrumServerUnreachable": "Servidor inacessível. Verifique o endereço e tente novamente.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

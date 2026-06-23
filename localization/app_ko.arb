@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
+  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

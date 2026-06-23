@@ -219,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "यह सर्वर पहले से ही मौजूद है",
+  "electrumServerUnreachable": "सर्वर तक नहीं पहुँचा जा सका। पता जाँचें और पुनः प्रयास करें।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

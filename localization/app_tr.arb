@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Bu sunucu zaten var",
+  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

@@ -265,7 +265,7 @@ class ElectrumSettingsBloc
         emit(
           state.copyWith(
             isDeletingCustomServer: false,
-            electrumServersError: ElectrumServerDeleteFailure(
+            electrumServersError: ElectrumServersDeleteFailure(
               failure.logMessage,
             ),
           ),
@@ -372,12 +372,14 @@ class ElectrumSettingsBloc
   ElectrumServersFailure _toAddFailure(core.ElectrumFailure failure) =>
       switch (failure) {
         core.ElectrumServerAlreadyExistsFailure() =>
-          ElectrumServerAlreadyExistsFailure(failure.logMessage),
+          ElectrumServersAlreadyExistsFailure(failure.logMessage),
+        core.ElectrumServerUnreachableFailure() =>
+          ElectrumServersUnreachableFailure(failure.logMessage),
         core.ElectrumUnexpectedFailure() =>
           ElectrumServersUnexpectedFailure(failure.logMessage),
-        // Unreachable + any other add-flow failure share the "failed to add"
-        // message; the precise core variant is preserved in logs.
-        _ => ElectrumServerAddFailure(failure.logMessage),
+        // Any other add-flow failure shares the "failed to add" message; the
+        // precise core variant is preserved in logs.
+        _ => ElectrumServersAddFailure(failure.logMessage),
       };
 
   // Lift a core failure into the advanced-options feature failure.
@@ -398,8 +400,9 @@ class ElectrumSettingsBloc
             value.toString(),
             failure.logMessage,
           ),
-        core.ElectrumSaveFailure() || core.ElectrumLoadFailure() =>
+        core.ElectrumSaveFailure() =>
           AdvancedOptionsSaveFailure(failure.logMessage),
+        // Load failure (fetch before save) + anything else → generic message.
         _ => AdvancedOptionsUnexpectedFailure(failure.logMessage),
       };
 }

@@ -18,7 +18,9 @@ import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -118,6 +120,35 @@ void main() {
 
       expect(result, isA<Err>());
       expect((result as Err).failure, isA<ElectrumLoadFailure>());
+    });
+
+    test('returns Unreachable failure when the socket check is offline',
+        () async {
+      when(() => serverRepo.fetchByUrl(any())).thenAnswer((_) async => Ok(null));
+      when(() => appSettingsRepo.fetch()).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          useTorProxy: false,
+          torProxyPort: 9050,
+        ),
+      );
+      when(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          useTorProxy: any(named: 'useTorProxy'),
+          torProxyPort: any(named: 'torProxyPort'),
+        ),
+      ).thenAnswer((_) async => ElectrumServerStatus.offline);
+
+      final result = await usecase.execute(request());
+
+      expect(result, isA<Err>());
+      expect(
+        (result as Err).failure,
+        isA<ElectrumServerUnreachableFailure>(),
+      );
     });
   });
 

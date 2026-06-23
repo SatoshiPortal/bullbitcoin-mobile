@@ -10,10 +10,12 @@ extension ElectrumServersFailureL10n on ElectrumServersFailure {
     ElectrumServersLoadFailure() => context.loc.electrumLoadFailedError,
     ElectrumServersSavePriorityFailure() =>
       context.loc.electrumSavePriorityFailedError,
-    ElectrumServerAddFailure() => context.loc.electrumAddFailedError,
-    ElectrumServerDeleteFailure() => context.loc.electrumDeleteFailedError,
-    ElectrumServerAlreadyExistsFailure() =>
+    ElectrumServersAddFailure() => context.loc.electrumAddFailedError,
+    ElectrumServersDeleteFailure() => context.loc.electrumDeleteFailedError,
+    ElectrumServersAlreadyExistsFailure() =>
       context.loc.electrumServerAlreadyExists,
+    ElectrumServersUnreachableFailure() =>
+      context.loc.electrumServerUnreachable,
     ElectrumServersUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

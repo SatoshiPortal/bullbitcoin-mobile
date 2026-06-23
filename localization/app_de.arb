@@ -85,6 +85,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "Wenn aktiviert, werden Auto-Swaps mit Gebühren über der festgelegten Grenze immer gesperrt",
   "electrumServerAlreadyExists": "Dieser Server existiert bereits",
+  "electrumServerUnreachable": "Server ist nicht erreichbar. Überprüfen Sie die Adresse und versuchen Sie es erneut.",
   "sellPaymentMethod": "Zahlungsmethode",
   "transactionNoteHint": "Hinweis",
   "transactionLabelPreimage": "Preimage",

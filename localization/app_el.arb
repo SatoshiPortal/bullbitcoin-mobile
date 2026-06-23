@@ -185,6 +185,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Αυτός ο server υπάρχει ήδη",
+  "electrumServerUnreachable": "Ο διακομιστής δεν είναι προσβάσιμος. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

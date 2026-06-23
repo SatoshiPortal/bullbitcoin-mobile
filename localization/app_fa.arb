@@ -1447,6 +1447,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "این سرور در حال حاضر وجود دارد",
+  "electrumServerUnreachable": "سرور در دسترس نیست. آدرس را بررسی کرده و دوباره تلاش کنید.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

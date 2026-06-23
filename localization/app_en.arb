@@ -11530,6 +11530,10 @@
     "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "This server already exists",
+  "electrumServerUnreachable": "Server is unreachable. Check the address and try again.",
+  "@electrumServerUnreachable": {
+    "description": "Error shown when a custom server cannot be reached"
+  },
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

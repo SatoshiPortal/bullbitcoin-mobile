@@ -3673,6 +3673,7 @@
     }
   },
   "electrumServerAlreadyExists": "Este servidor ya existe",
+  "electrumServerUnreachable": "El servidor no está disponible. Comprueba la dirección e inténtalo de nuevo.",
   "electrumPrivacyNoticeTitle": "Aviso de privacidad",
   "electrumPrivacyNoticeContent1": "Aviso de privacidad: El uso de su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones.",
   "electrumPrivacyNoticeContent2": "Sin embargo, si visualiza transacciones a través de mempool haciendo clic en su ID de transacción o en la página de Detalles del destinatario, esta información será conocida por BullBitcoin.",

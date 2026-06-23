@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "เซิร์ฟเวอร์นี้พร้อมใช้งาน",
+  "electrumServerUnreachable": "ไม่สามารถเข้าถึงเซิร์ฟเวอร์ได้ ตรวจสอบที่อยู่แล้วลองอีกครั้ง",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

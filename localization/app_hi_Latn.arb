@@ -10435,6 +10435,7 @@
     "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
+  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

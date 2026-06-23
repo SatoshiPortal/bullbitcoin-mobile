@@ -218,6 +218,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "هذا الخادم موجود بالفعل",
+  "electrumServerUnreachable": "تعذّر الوصول إلى الخادم. تحقّق من العنوان وحاول مرة أخرى.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

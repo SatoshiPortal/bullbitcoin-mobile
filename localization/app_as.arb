@@ -8236,6 +8236,7 @@
     "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "এই চাৰ্ভাৰ ইতিমধ্যে আছে",
+  "electrumServerUnreachable": "ছাৰ্ভাৰটো নাগাল পোৱা নগ’ল। ঠিকনাটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

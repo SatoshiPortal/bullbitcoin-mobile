@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "При включении автопередачи с тарифами выше установленного лимита всегда будут заблокированы",
   "electrumServerAlreadyExists": "Этот сервер уже существует",
+  "electrumServerUnreachable": "Сервер недоступен. Проверьте адрес и попробуйте снова.",
   "sellPaymentMethod": "Способ оплаты",
   "transactionLabelPreimage": "Преимущество",
   "coreSwapsChainCanCoop": "Перенос будет завершен мгновенно.",

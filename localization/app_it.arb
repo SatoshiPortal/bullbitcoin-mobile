@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "Quando abilitato, i trasferimenti automatici con tasse superiori al limite impostato saranno sempre bloccati",
   "electrumServerAlreadyExists": "Questo server esiste già",
+  "electrumServerUnreachable": "Server non raggiungibile. Controlla l'indirizzo e riprova.",
   "sellPaymentMethod": "Metodo di pagamento",
   "transactionNoteHint": "Nota",
   "transactionLabelPreimage": "Preimaging",

@@ -235,6 +235,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "এই সার্ভারটি আগে থেকেই বিদ্যমান",
+  "electrumServerUnreachable": "সার্ভারে পৌঁছানো যাচ্ছে না। ঠিকানা যাচাই করে আবার চেষ্টা করুন।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

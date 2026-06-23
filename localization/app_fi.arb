@@ -3607,6 +3607,7 @@
     }
   },
   "electrumServerAlreadyExists": "Tämä palvelin on jo olemassa",
+  "electrumServerUnreachable": "Palvelimeen ei saada yhteyttä. Tarkista osoite ja yritä uudelleen.",
   "electrumPrivacyNoticeTitle": "Tietosuoja-ilmoitus",
   "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
   "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet transaktioita mempoolin kautta napsauttamalla transaktio-ID tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",

@@ -523,6 +523,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Tento server již existuje",
+  "electrumServerUnreachable": "Server je nedostupný. Zkontrolujte adresu a zkuste to znovu.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },

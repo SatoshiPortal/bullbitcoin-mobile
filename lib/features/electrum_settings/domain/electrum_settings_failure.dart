@@ -16,16 +16,20 @@ final class ElectrumServersSavePriorityFailure extends ElectrumServersFailure {
   const ElectrumServersSavePriorityFailure([super.logMessage]);
 }
 
-final class ElectrumServerAddFailure extends ElectrumServersFailure {
-  const ElectrumServerAddFailure([super.logMessage]);
+final class ElectrumServersAddFailure extends ElectrumServersFailure {
+  const ElectrumServersAddFailure([super.logMessage]);
 }
 
-final class ElectrumServerDeleteFailure extends ElectrumServersFailure {
-  const ElectrumServerDeleteFailure([super.logMessage]);
+final class ElectrumServersDeleteFailure extends ElectrumServersFailure {
+  const ElectrumServersDeleteFailure([super.logMessage]);
 }
 
-final class ElectrumServerAlreadyExistsFailure extends ElectrumServersFailure {
-  const ElectrumServerAlreadyExistsFailure([super.logMessage]);
+final class ElectrumServersAlreadyExistsFailure extends ElectrumServersFailure {
+  const ElectrumServersAlreadyExistsFailure([super.logMessage]);
+}
+
+final class ElectrumServersUnreachableFailure extends ElectrumServersFailure {
+  const ElectrumServersUnreachableFailure([super.logMessage]);
 }
 
 final class ElectrumServersUnexpectedFailure extends ElectrumServersFailure {

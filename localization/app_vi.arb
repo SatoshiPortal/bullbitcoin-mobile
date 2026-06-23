@@ -301,5 +301,6 @@
   "appUnlockPinCheckError": "Không thể tải cài đặt bảo mật. Vui lòng khởi động lại ứng dụng.",
   "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại.",
   "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
-  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại."
+  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
+  "electrumServerUnreachable": "Không thể kết nối máy chủ. Kiểm tra địa chỉ và thử lại."
 }

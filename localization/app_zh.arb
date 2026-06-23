@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "electrumServerAlreadyExists": "这个服务器已经存在",
+  "electrumServerUnreachable": "无法连接服务器。请检查地址后重试。",
   "sellPaymentMethod": "支付方法",
   "transactionNoteHint": "说明",
   "transactionLabelPreimage": "预 估",
