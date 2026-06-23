@@ -13120,5 +13120,7 @@
   "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
-  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein."
+  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein.",
+  "sendErrorInvoiceExpired": "Yah invoice expire ho gaya hai. Recipient se naya invoice maangein.",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets swaps ke liye istemaal nahi ki ja sakti."
 }

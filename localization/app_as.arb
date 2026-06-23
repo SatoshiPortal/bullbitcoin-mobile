@@ -9767,5 +9767,7 @@
   "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
-  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।"
+  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
+  "sendErrorInvoiceExpired": "এই ইনভইচখনৰ ম্যাদ উকলিল। প্ৰাপকৰ পৰা এখন নতুন ইনভইচ বিচাৰক।",
+  "sendErrorHardwareWalletCannotSwap": "swap-ৰ বাবে হাৰ্ডৱেৰ ৱালেট ব্যৱহাৰ কৰিব নোৱাৰি।"
 }

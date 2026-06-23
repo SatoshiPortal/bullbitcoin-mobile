@@ -4798,5 +4798,6 @@
   "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
-  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова."
+  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова.",
+  "sendErrorInvoiceExpired": "Срок действия этого счёта истёк. Попросите получателя выставить новый счёт."
 }

@@ -4671,5 +4671,6 @@
   "pinCodeDeleteError": "无法删除您的PIN码，请重试。",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
-  "priceChartLoadFailed": "价格图表数据无法加载。请重试。"
+  "priceChartLoadFailed": "价格图表数据无法加载。请重试。",
+  "sendErrorInvoiceExpired": "此发票已过期。请向收款方索要新的发票。"
 }

@@ -4781,5 +4781,6 @@
   "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
-  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen."
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
+  "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku."
 }

@@ -321,5 +321,18 @@
   "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
   "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
   "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
-  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena."
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "sendErrorInvoiceExpired": "Ankara hii imepitwa na muda. Mwombe mpokeaji ankara mpya.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Fikiria kuweka fedha kwenye Malipo ya Papo kwa Papo ili kufanya malipo madogo.",
+  "sendErrorHardwareWalletCannotSwap": "Pochi za maunzi haziwezi kutumika kwa swap.",
+  "sendErrorInvalidAddressOrInvoice": "Anwani ya malipo ya Bitcoin au ankara si sahihi",
+  "sendErrorInsufficientBalanceForPayment": "Salio halitoshi kugharimia malipo haya",
+  "sendErrorSwapCreationFailed": "Imeshindwa kuunda swap.",
+  "sendErrorAmountBelowMinimum": "Kiasi kiko chini ya kikomo cha chini cha swap: {minLimit} sats",
+  "sendErrorAmountAboveMaximum": "Kiasi kiko juu ya kikomo cha juu cha swap: {maxLimit} sats",
+  "sendErrorAmountBelowSwapLimits": "Kiasi kiko chini ya vikomo vya swap",
+  "sendErrorBuildFailed": "Imeshindwa kuunda muamala",
+  "sendErrorConfirmationFailed": "Uthibitisho umeshindwa",
+  "sendErrorBroadcastFailed": "Imeshindwa kutangaza muamala. Angalia muunganisho wako wa mtandao na ujaribu tena.",
+  "sendInsufficientBalance": "Salio halitoshi"
 }

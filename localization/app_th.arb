@@ -12646,5 +12646,7 @@
   "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
-  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง"
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
+  "sendErrorInvoiceExpired": "ใบแจ้งหนี้นี้หมดอายุแล้ว โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "ลองเติมเงินใน Instant Payments เพื่อชำระเงินจำนวนเล็กน้อย"
 }

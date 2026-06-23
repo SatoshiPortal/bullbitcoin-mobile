@@ -12646,5 +12646,7 @@
   "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요."
+  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 받는 분께 새 인보이스를 요청하세요.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "더 작은 금액을 결제하려면 즉시 결제 충전을 고려하세요."
 }

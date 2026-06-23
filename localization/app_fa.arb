@@ -12646,5 +12646,7 @@
   "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
-  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید."
+  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید.",
+  "sendErrorInvoiceExpired": "این فاکتور منقضی شده است. از گیرنده یک فاکتور جدید بخواهید.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "برای انجام پرداخت‌های کوچک‌تر، تأمین مالی پرداخت‌های فوری را در نظر بگیرید."
 }

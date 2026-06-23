@@ -4795,5 +4795,6 @@
   "pinCodeDeleteError": "No se pudo eliminar tu PIN. Por favor, inténtalo de nuevo.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Tipo de cambio no disponible. Por favor, inténtelo de nuevo más tarde.",
-  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo."
+  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo.",
+  "sendErrorInvoiceExpired": "Esta factura ha caducado. Pídele al destinatario una factura nueva."
 }

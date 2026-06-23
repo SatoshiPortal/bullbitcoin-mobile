@@ -301,5 +301,18 @@
   "appUnlockPinCheckError": "Không thể tải cài đặt bảo mật. Vui lòng khởi động lại ứng dụng.",
   "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại.",
   "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
-  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại."
+  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
+  "sendErrorInvoiceExpired": "Hóa đơn này đã hết hạn. Hãy yêu cầu người nhận gửi hóa đơn mới.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Cân nhắc nạp tiền cho Thanh toán Tức thì để thực hiện các khoản thanh toán nhỏ hơn.",
+  "sendErrorHardwareWalletCannotSwap": "Không thể dùng ví phần cứng cho các giao dịch hoán đổi.",
+  "sendErrorInvalidAddressOrInvoice": "Địa chỉ thanh toán Bitcoin hoặc hóa đơn không hợp lệ",
+  "sendErrorInsufficientBalanceForPayment": "Số dư không đủ để thực hiện khoản thanh toán này",
+  "sendErrorSwapCreationFailed": "Không thể tạo giao dịch hoán đổi.",
+  "sendErrorAmountBelowMinimum": "Số tiền dưới hạn mức hoán đổi tối thiểu: {minLimit} sats",
+  "sendErrorAmountAboveMaximum": "Số tiền vượt hạn mức hoán đổi tối đa: {maxLimit} sats",
+  "sendErrorAmountBelowSwapLimits": "Số tiền thấp hơn hạn mức hoán đổi",
+  "sendErrorBuildFailed": "Tạo giao dịch thất bại",
+  "sendErrorConfirmationFailed": "Xác nhận thất bại",
+  "sendErrorBroadcastFailed": "Không thể phát giao dịch. Hãy kiểm tra kết nối mạng và thử lại.",
+  "sendInsufficientBalance": "Số dư không đủ"
 }

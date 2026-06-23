@@ -12646,5 +12646,7 @@
   "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
-  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin."
+  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
+  "sendErrorInvoiceExpired": "Bu faturanın süresi doldu. Alıcıdan yeni bir fatura isteyin.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Daha küçük ödemeler yapmak için Anında Ödemeler'i fonlamayı düşünün."
 }

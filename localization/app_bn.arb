@@ -12934,5 +12934,6 @@
   "pinCodeDeleteError": "আপনার পিন মুছে ফেলা যায়নি। আবার চেষ্টা করুন।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
-  "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।"
+  "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "sendErrorInvoiceExpired": "এই ইনভয়েসের মেয়াদ শেষ হয়ে গেছে। প্রাপকের কাছে একটি নতুন ইনভয়েস চান।"
 }
