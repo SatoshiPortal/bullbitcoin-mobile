@@ -228,14 +228,23 @@ class BdkWalletDatasource {
     // TODO: MOVE THIS TO THE TRANSACTION REPOSITORY, the repository should check the unspendable and spendable inputs
     // and build the transaction accordingly or return an error
     if (unspendableOutPoints != null && unspendableOutPoints.isNotEmpty) {
-      // Check if there are unspents that are not in unspendableOutpoints so a transaction can be built
+      // Check if there are unspents that are not in the unspendable set so a
+      // transaction can be built. Compare by (txId, vout) value, NOT by
+      // bdk.OutPoint identity: OutPoint/Txid are opaque Rust handles with no
+      // `==` override, so a freshly-built OutPoint never equals listUnspent's.
+      // Set.contains on the objects would always miss, leaving the all-frozen
+      // case undetected (BDK would then fail with "insufficient funds" instead
+      // of NoSpendableUtxoException).
       final unspents = bdkWallet.listUnspent();
-      final unspendableOutPointsSet = unspendableOutPoints.toSet();
-      final unspendableUtxos = unspents.where((utxo) {
-        return unspendableOutPointsSet.contains(utxo.outpoint);
+      final unspendableKeys = unspendable!
+          .map((o) => '${o.txId}:${o.vout}')
+          .toSet();
+      final spendableUtxos = unspents.where((utxo) {
+        final key = '${utxo.outpoint.txid}:${utxo.outpoint.vout}';
+        return !unspendableKeys.contains(key);
       }).toList();
 
-      if (unspendableUtxos.length == unspents.length) {
+      if (spendableUtxos.isEmpty) {
         throw NoSpendableUtxoException('All unspents are unspendable');
       }
 

@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -65,6 +66,21 @@ Future<void> main({bool isInitialized = false}) async {
       // a SECOND handle on the SAME file — a fresh connection only sees
       // committed-to-disk rows, which is exactly what "survives a restart"
       // means.
+      // This test deliberately opens a second SqliteDatabase on the same file
+      // to simulate a restart, on top of the locator's existing singleton.
+      // Drift's "multiple databases" warning targets instances SHARING a
+      // QueryExecutor (a real race) — not our case: `before` and `after` use
+      // separate NativeDatabase executors and never overlap. Silence the
+      // debug-only false positive for the duration of this test only, so the
+      // warning still guards genuine misuse in the rest of the run.
+      final previousWarnFlag =
+          driftRuntimeOptions.dontWarnAboutMultipleDatabases;
+      driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+      addTearDown(
+        () => driftRuntimeOptions.dontWarnAboutMultipleDatabases =
+            previousWarnFlag,
+      );
+
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
       final dbFile = File('${dir.path}/restart.sqlite');
