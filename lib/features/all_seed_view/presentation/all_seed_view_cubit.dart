@@ -48,14 +48,14 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     } on NoWalletsFoundException {
       // intentionally empty — all seeds treated as "old"
     } catch (e, st) {
-      log.warning('fetchAllSeeds: wallets fetch failed', error: e, trace: st);
-      emit(
-        state.copyWith(
-          loading: false,
-          failure: AllSeedViewUnexpectedFailure(e.toString()),
-        ),
+      // The seeds were fetched successfully; only the wallet lookup failed.
+      // Degrade gracefully: treat every seed as "old" and still display them,
+      // rather than discarding a good fetch and showing "No seeds found".
+      log.severe(
+        message: 'fetchAllSeeds: wallets fetch failed, treating all seeds as old',
+        error: e,
+        trace: st,
       );
-      return;
     }
 
     final processed = _processAndSeparateSeedsUsecase.execute(
@@ -88,6 +88,7 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
             oldWallets: state.oldWallets
                 .where((s) => s.masterFingerprint != fingerprint)
                 .toList(),
+            failure: null,
           ),
         );
       case Err(:final failure):

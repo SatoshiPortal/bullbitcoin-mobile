@@ -11,7 +11,3 @@ final class AllSeedViewFetchFailure extends AllSeedViewFailure {
 final class AllSeedViewDeleteFailure extends AllSeedViewFailure {
   const AllSeedViewDeleteFailure([super.logMessage]);
 }
-
-final class AllSeedViewUnexpectedFailure extends AllSeedViewFailure {
-  const AllSeedViewUnexpectedFailure([super.logMessage]);
-}

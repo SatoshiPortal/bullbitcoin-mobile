@@ -6,6 +6,5 @@ extension AllSeedViewFailureL10n on AllSeedViewFailure {
   String toTranslated(BuildContext context) => switch (this) {
         AllSeedViewFetchFailure() => context.loc.allSeedViewErrorFetch,
         AllSeedViewDeleteFailure() => context.loc.allSeedViewErrorDelete,
-        AllSeedViewUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
       };
 }
