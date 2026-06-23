@@ -9644,6 +9644,7 @@
   "recipientsPayoutMethod": "Метод на плащане",
   "recipientsFilterByJurisdiction": "Филтър по юрисдикция:",
   "recipientsListEmpty": "Не са намерени получатели.",
+  "recipientsListLoadError": "Получателите не можаха да се заредят. Издърпайте надолу, за да опитате отново.",
   "recipientsContinue": "Продължи",
   "recipientsJurisdictionAll": "Всички юрисдикции",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",

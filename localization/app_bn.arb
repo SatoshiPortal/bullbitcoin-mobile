@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "প্রাপকদের লোড করা যায়নি। আবার চেষ্টা করতে নিচে টানুন।",
   "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
   "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
   "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",

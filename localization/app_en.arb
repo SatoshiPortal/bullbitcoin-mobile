@@ -13387,6 +13387,10 @@
   "@recipientsListEmpty": {
     "description": "Empty state message when no recipients match the current filters."
   },
+  "recipientsListLoadError": "Could not load recipients. Pull down to retry.",
+  "@recipientsListLoadError": {
+    "description": "Shown when loading the recipients list fails. Prompts the user to pull to refresh."
+  },
   "recipientsContinue": "Continue",
   "@recipientsContinue": {
     "description": "Continue button label used on recipient forms and the recipients list."

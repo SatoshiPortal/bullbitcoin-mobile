@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Không thể tải danh sách người nhận. Kéo xuống để thử lại.",
   "backupWarningDescription": "Nếu không có bản sao lưu, bạn sẽ mất quyền truy cập vào bitcoin của mình nếu:",
   "exchangeTestnetBasicAuthTitle": "Thông tin đăng nhập sàn testnet",
   "exchangeTestnetBasicAuthDescription": "Xác thực HTTP basic cho các trang web của sàn testnet (đăng nhập và KYC).",

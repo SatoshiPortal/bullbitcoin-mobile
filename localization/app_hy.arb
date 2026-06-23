@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Չհաջողվեց բեռնել ստացողներին։ Քաշեք ներքև՝ կրկին փորձելու համար։",
   "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
   "exchangeTestnetBasicAuthTitle": "Testnet փոխանակման հավատարմագրեր",
   "exchangeTestnetBasicAuthDescription": "HTTP basic auth՝ testnet փոխանակման վեբ էջերի համար (մուտք և KYC):",

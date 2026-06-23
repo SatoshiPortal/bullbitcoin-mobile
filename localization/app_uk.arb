@@ -4649,6 +4649,7 @@
   "recipientsPayoutMethod": "Спосіб виплати",
   "recipientsFilterByJurisdiction": "Фільтр за юрисдикцією:",
   "recipientsListEmpty": "Одержувачів не знайдено.",
+  "recipientsListLoadError": "Не вдалося завантажити отримувачів. Потягніть вниз, щоб повторити.",
   "recipientsContinue": "Продовжити",
   "recipientsJurisdictionAll": "Усі юрисдикції",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",

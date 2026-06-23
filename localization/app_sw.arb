@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",
   "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
   "exchangeTestnetBasicAuthTitle": "Kitambulisho cha testnet exchange",
   "exchangeTestnetBasicAuthDescription": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za testnet exchange (kuingia na KYC).",

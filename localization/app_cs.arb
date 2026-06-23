@@ -12633,6 +12633,7 @@
   "recipientsPayoutMethod": "Způsob platby",
   "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
   "recipientsListEmpty": "Nenalezeni žádní příjemci.",
+  "recipientsListLoadError": "Příjemce se nepodařilo načíst. Zatažením dolů to zkuste znovu.",
   "recipientsContinue": "Pokračovat",
   "recipientsJurisdictionAll": "Všechny jurisdikce",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",

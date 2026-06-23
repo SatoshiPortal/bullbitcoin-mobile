@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "მიმღებების ჩატვირთვა ვერ მოხერხდა. ხელახლა საცდელად ჩამოწიეთ ქვემოთ.",
   "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
   "exchangeTestnetBasicAuthTitle": "Testnet გაცვლის სერთიფიკატები",
   "exchangeTestnetBasicAuthDescription": "HTTP basic auth testnet გაცვლის ვებგვერდებისთვის (შესვლა და KYC).",
