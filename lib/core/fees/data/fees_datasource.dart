@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
@@ -81,8 +83,18 @@ class FeesDatasource {
   Future<MempoolFeesModel?> _getFees(Dio http, String path) async {
     try {
       final resp = await http.get<dynamic>(path);
-      final data = resp.data;
-      if (resp.statusCode == 200 && data is Map<String, dynamic>) {
+      if (resp.statusCode != 200) return null;
+      var data = resp.data;
+      // Dio only auto-decodes when the server sends a JSON content-type. A
+      // working-but-misconfigured self-hosted mempool returning the body as
+      // text/plain would otherwise silently drop precise → recommended,
+      // losing the sub-1 sat/vByte rates this whole path exists for. Decode
+      // a string body before the Map check; a non-JSON string throws and is
+      // caught below (→ fallback).
+      if (data is String && data.isNotEmpty) {
+        data = jsonDecode(data);
+      }
+      if (data is Map<String, dynamic>) {
         return MempoolFeesModel.fromJson(data);
       }
       return null;

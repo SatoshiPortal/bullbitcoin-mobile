@@ -65,6 +65,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       selected: state.newFeeRate!,
                       txSize: widget.tx.vsize,
                       onChanged: cubit.onChangeFee,
+                      onInvalid: cubit.markCustomFeeBelowFloor,
                       focusNode: _feeNode,
                       minRelay: state.minRelay,
                     ),

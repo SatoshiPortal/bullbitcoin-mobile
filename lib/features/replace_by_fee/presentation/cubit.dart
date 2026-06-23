@@ -70,6 +70,14 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
         return;
       }
 
+      // The custom field currently shows a below-floor/empty rate. newFeeRate
+      // still holds the last valid value, so without this guard Broadcast
+      // would fire the stale rate the user no longer sees.
+      if (state.customFeeBelowFloor) {
+        emit(state.copyWith(error: FeeRateTooLowError()));
+        return;
+      }
+
       final psbt = await bumpFeeUsecase.execute(
         walletId: originalTransaction.walletId,
         txid: originalTransaction.txId,
@@ -92,5 +100,14 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     }
   }
 
-  void onChangeFee(FeeEntity fee) => emit(state.copyWith(newFeeRate: fee));
+  /// A valid (above-floor) selection — from a custom keystroke or the Fastest
+  /// tile. Clears any prior below-floor flag.
+  void onChangeFee(FeeEntity fee) =>
+      emit(state.copyWith(newFeeRate: fee, customFeeBelowFloor: false));
+
+  /// The custom field went below the relay floor or was emptied. Keep
+  /// [newFeeRate] (the last valid value / init sentinel) but flag the field so
+  /// [broadcast] refuses the stale rate.
+  void markCustomFeeBelowFloor() =>
+      emit(state.copyWith(customFeeBelowFloor: true));
 }

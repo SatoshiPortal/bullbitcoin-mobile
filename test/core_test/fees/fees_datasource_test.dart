@@ -168,6 +168,51 @@ void main() {
       verify(() => dio.get<dynamic>(_recommended)).called(1);
     });
 
+    test('parses a precise 200 whose body arrived as a JSON string', () async {
+      // A working-but-misconfigured self-hosted mempool can return the body as
+      // text/plain, so Dio leaves it undecoded as a String. We must still
+      // parse it (jsonDecode) and keep the sub-1 precision, not silently
+      // fall back to the rounded recommended endpoint.
+      when(() => dio.get<dynamic>(_precise)).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: _precise),
+          statusCode: 200,
+          data:
+              '{"fastestFee":1.203,"halfHourFee":0.92,"hourFee":0.65,'
+              '"economyFee":0.2,"minimumFee":0.1}',
+        ),
+      );
+
+      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+
+      expect(fees.fastestFee, 1.203);
+      expect(fees.hourFee, 0.65);
+      verifyNever(() => dio.get<dynamic>(_recommended));
+    });
+
+    test('falls back when a precise 200 string body is not JSON', () async {
+      when(() => dio.get<dynamic>(_precise)).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: _precise),
+          statusCode: 200,
+          data: '<html>maintenance</html>',
+        ),
+      );
+      when(() => dio.get<dynamic>(_recommended)).thenAnswer(
+        (_) async => _ok(_recommended, {
+          'fastestFee': 3,
+          'halfHourFee': 2,
+          'hourFee': 1,
+          'economyFee': 1,
+          'minimumFee': 1,
+        }),
+      );
+
+      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      expect(fees.fastestFee, 3.0);
+      verify(() => dio.get<dynamic>(_recommended)).called(1);
+    });
+
     test('throws MempoolFeesException when both endpoints fail', () async {
       when(
         () => dio.get<dynamic>(_precise),

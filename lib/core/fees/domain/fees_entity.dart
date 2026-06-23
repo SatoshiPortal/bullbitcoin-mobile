@@ -57,7 +57,10 @@ sealed class NetworkFee with _$NetworkFee {
   }) {
     assert(vsize > 0, 'vsize must be positive');
     // sat/kwu = (absoluteSats / vsize) * 250
-    //        = (absoluteSats * 250) / vsize, rounded half-up via integer math.
+    //        = (absoluteSats * 250) / vsize, rounded to nearest via integer
+    // math. The `vsize ~/ 2` bias term truncates on odd vsize, so an exact
+    // half rounds down there; the resulting bias is under 1 sat/kwu
+    // (< 0.004 sat/vByte), well inside the ±1 sat tolerance noted above.
     return RelativeFee((absoluteSats * 250 + vsize ~/ 2) ~/ vsize);
   }
 

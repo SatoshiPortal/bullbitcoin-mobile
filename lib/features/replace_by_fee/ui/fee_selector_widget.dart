@@ -14,6 +14,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
     required this.selected,
     required this.txSize,
     required this.onChanged,
+    required this.onInvalid,
     required this.focusNode,
     this.minRelay,
   });
@@ -22,6 +23,10 @@ class BumpFeeSelectorWidget extends StatelessWidget {
   final FeeEntity selected;
   final int txSize;
   final void Function(FeeEntity fee) onChanged;
+
+  /// Called when the custom bump field goes below the relay floor or is
+  /// emptied — see [CustomFeeListItem.onInvalid].
+  final VoidCallback onInvalid;
   final FocusNode focusNode;
 
   /// Live relay floor for the custom bump field (null → static 0.1).
@@ -59,6 +64,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               allowAbsoluteToggle: false,
               commitOnChange: true,
               focusNode: focusNode,
+              onInvalid: onInvalid,
               onCommit: (fee) async {
                 // Safe cast: allowAbsoluteToggle is false so the widget
                 // only ever produces a RelativeFee here.

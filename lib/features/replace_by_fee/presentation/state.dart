@@ -11,6 +11,13 @@ sealed class ReplaceByFeeState with _$ReplaceByFeeState {
     @Default(null) ReplaceByFeeError? error,
     @Default(null) FeeEntity? fastestFeeRate,
     @Default(null) FeeEntity? newFeeRate,
+
+    /// True while the custom bump field holds a below-floor or empty/invalid
+    /// rate. [newFeeRate] still pins the last valid value (it doubles as the
+    /// "init complete" sentinel — nulling it would collapse the screen), so
+    /// this flag is what blocks [broadcast] from firing the stale rate while
+    /// the field shows a rejected value.
+    @Default(false) bool customFeeBelowFloor,
     @Default(null) String? txid,
 
     /// Live relay floor (mempool `minimumFee`, clamped to 0.1) so the custom
