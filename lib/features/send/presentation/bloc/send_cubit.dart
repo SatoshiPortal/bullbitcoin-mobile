@@ -1478,6 +1478,13 @@ class SendCubit extends Cubit<SendState>
     if (state.chainSwap != null) return state.chainSwap!.paymentAmount;
     final input = state.inputAmountSat;
     if (input > 0) return input;
+    // A BIP21 URI with an embedded amount sets confirmedAmountSat but leaves
+    // state.amount (→ inputAmountSat) empty. createTransaction builds from
+    // confirmedAmountSat, so the preview must use the same source — otherwise
+    // previews are skipped (modal shimmers forever) and the cache stays empty
+    // for that payment class.
+    final confirmed = state.confirmedAmountSat;
+    if (confirmed != null && confirmed > 0) return confirmed;
     return null;
   }
 
@@ -1669,6 +1676,36 @@ class SendCubit extends Cubit<SendState>
           'realFee=$builtFee sats '
           '(impliedRate=${txPreparation.txSize > 0 ? (builtFee / txPreparation.txSize).toStringAsFixed(4) : "n/a"} sat/vB)',
         );
+
+        // Belt-and-suspenders relay-floor re-assert. The commit gate in
+        // finalizeArmedCustomFee checks an ABSOLUTE custom fee against the
+        // *previous* build's bitcoinTxSize (or the 140 fallback); if the real
+        // tx is larger, an absolute fee that cleared the gate can land below
+        // the relay floor at the actual vsize. Re-check the freshly built fee
+        // against the freshly built vsize so no below-relay tx ever reaches
+        // broadcast, regardless of selection type or BDK's coin-selection
+        // vsize variance. Don't rely on BDK rejecting sub-minrelay itself.
+        final clearsRelay = NetworkFee.absolute(builtFee).aboveMinRelay(
+          txSize: txPreparation.txSize,
+          floorSatPerKwu: state.bitcoinFeesList?.minRelay.satPerKwu,
+        );
+        if (!clearsRelay) {
+          log.warning(
+            '[create-tx] ABORT — built fee $builtFee sats at '
+            '${txPreparation.txSize} vbytes is below the relay floor '
+            '(${state.bitcoinFeesList?.minRelay.satPerVbyte ?? NetworkFeeRelayPolicy.minRelaySatPerVbyte} sat/vB)',
+          );
+          emit(
+            state.copyWith(
+              buildTransactionException: BuildTransactionException(
+                'Built fee $builtFee sats at ${txPreparation.txSize} vbytes '
+                'is below the relay floor',
+              ),
+              buildingTransaction: false,
+            ),
+          );
+          return;
+        }
 
         if (state.chainSwap != null) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]

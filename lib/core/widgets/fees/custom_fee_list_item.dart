@@ -52,6 +52,7 @@ class CustomFeeListItem extends StatefulWidget {
     this.minRelay,
     this.onArm,
     this.onDisarm,
+    this.onInvalid,
     this.onPreview,
     this.previewFeeSat,
     this.previewLoading = false,
@@ -118,6 +119,15 @@ class CustomFeeListItem extends StatefulWidget {
   /// stale pre-clear value can't be committed when the sheet is dismissed.
   /// Ignored in RBF mode (nothing is armed there).
   final VoidCallback? onDisarm;
+
+  /// RBF mode only ([commitOnChange] = true). Called on every keystroke that
+  /// produces a below-floor or empty/invalid value — i.e. exactly when
+  /// [onCommit] is *suppressed*. Lets the RBF parent mark its selection
+  /// invalid so the displayed (rejected) rate and the broadcast rate can't
+  /// diverge: without this, [onCommit] silently keeps the last valid value
+  /// while the field shows a below-floor rate and a red banner, and Broadcast
+  /// would send the stale higher rate. Ignored in modal mode (use [onDisarm]).
+  final VoidCallback? onInvalid;
 
   /// When false, hide the absolute/relative toggle. Input is treated as
   /// relative (sat/vByte) only. RBF passes false — its fee API is
@@ -282,6 +292,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
           floorSatPerKwu:
               (widget.minRelay ?? widget.feePresets?.minRelay)?.satPerKwu,
         )) {
+          // Below floor — don't commit, and tell the parent its selection is
+          // now invalid so Broadcast can't fire the last valid (stale) rate.
+          widget.onInvalid?.call();
           return;
         }
         widget.onCommit(fee);
@@ -303,7 +316,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
       _previewDebounce?.cancel();
       // Empty/invalid input — disarm so dismissal rolls back to the prior
       // selection instead of committing the last valid armed value.
-      if (!widget.commitOnChange) widget.onDisarm?.call();
+      if (!widget.commitOnChange) {
+        widget.onDisarm?.call();
+      } else {
+        // RBF mode — invalidate the parent's selection so an emptied field
+        // can't broadcast the last valid (stale) rate.
+        widget.onInvalid?.call();
+      }
     }
   }
 
@@ -478,7 +497,11 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   if (_isAbsolute)
                     FilteringTextInputFormatter.digitsOnly
                   else
-                    AmountInputFormatter(BitcoinUnit.btc.code),
+                    // Cap the sat/vByte rate at 2 decimals so the typed value
+                    // matches what _formatForInput renders back (also 2dp) and
+                    // what the sat/kwu store can represent — no typed-vs-stored
+                    // -vs-shown drift in the sub-1 regime this targets.
+                    AmountInputFormatter(BitcoinUnit.btc.code, maxDecimals: 2),
                 ],
                 onChanged: _onValueChanged,
                 style: TextStyle(color: context.appColors.onSurface),

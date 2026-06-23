@@ -92,4 +92,28 @@ void main() {
       );
     });
   });
+
+  group('NetworkFee.aboveMinRelay — stale-vsize divergence (createTx re-assert)', () {
+    // The send commit gate (finalizeArmedCustomFee) checks an ABSOLUTE custom
+    // fee against the PREVIOUS build's bitcoinTxSize (or a 140 fallback). If
+    // the real tx is larger, an absolute fee that cleared the gate at the
+    // stale/small vsize lands BELOW the relay floor at the actual vsize.
+    // createTransaction now re-asserts the floor against the freshly built
+    // fee/vsize before broadcast — these cases pin that exact divergence.
+    test('14 sat clears the floor at the stale 140 vsize but fails at 250', () {
+      const fee = AbsoluteFee(14);
+      // The gate saw 0.1 sat/vB (14/140) and let it through…
+      expect(fee.aboveMinRelay(txSize: 140), isTrue);
+      // …but the real tx weighed 250 vbytes → 0.056 sat/vB, below the floor.
+      expect(fee.aboveMinRelay(txSize: 250), isFalse);
+    });
+
+    test('a fee that clears the floor at both vsizes is unaffected', () {
+      // 25 sat @ 250 vsize = 0.1 sat/vB exactly — still relayable at the real
+      // size, so the re-assert is a no-op for honest fees.
+      const fee = AbsoluteFee(25);
+      expect(fee.aboveMinRelay(txSize: 140), isTrue);
+      expect(fee.aboveMinRelay(txSize: 250), isTrue);
+    });
+  });
 }

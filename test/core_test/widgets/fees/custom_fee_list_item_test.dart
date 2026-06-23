@@ -29,6 +29,7 @@ void main() {
     RelativeFee? minRelay,
     void Function(NetworkFee fee)? onArm,
     VoidCallback? onDisarm,
+    VoidCallback? onInvalid,
     void Function(NetworkFee fee)? onPreview,
     Future<void> Function(NetworkFee fee)? onCommit,
   }) async {
@@ -51,6 +52,7 @@ void main() {
             unselectedIconColor: Colors.grey,
             onArm: onArm,
             onDisarm: onDisarm,
+            onInvalid: onInvalid,
             onPreview: onPreview,
             onCommit: onCommit ?? (_) async {},
             minRelay: minRelay,
@@ -188,10 +190,12 @@ void main() {
       'PSBT no node would relay)',
       (tester) async {
         NetworkFee? committed;
+        bool invalidated = false;
         await pumpTile(
           tester,
           commitOnChange: true,
           onCommit: (fee) async => committed = fee,
+          onInvalid: () => invalidated = true,
         );
         // 0.05 sat/vByte < NetworkFeeRelayPolicy.minRelaySatPerVbyte.
         // The build-time banner ("Fee Rate Too Low") shows the user why
@@ -200,6 +204,51 @@ void main() {
         await tester.enterText(find.byType(TextFormField), '0.05');
         await tester.pump();
         expect(committed, isNull);
+        // …and the parent is told its selection is now invalid, so Broadcast
+        // can't fire the last valid (stale) rate.
+        expect(invalidated, isTrue);
+      },
+    );
+
+    testWidgets(
+      'RBF mode lowers a valid rate below floor → onInvalid fires, no commit',
+      (tester) async {
+        final committed = <NetworkFee>[];
+        var invalidCount = 0;
+        await pumpTile(
+          tester,
+          commitOnChange: true,
+          onCommit: (fee) async => committed.add(fee),
+          onInvalid: () => invalidCount++,
+        );
+        // First a valid above-floor rate commits…
+        await tester.enterText(find.byType(TextFormField), '2');
+        await tester.pump();
+        expect(committed, hasLength(1));
+        expect((committed.single as RelativeFee).satPerVbyte, closeTo(2, 0.003));
+        // …then lowering it below the floor must invalidate, not re-commit.
+        await tester.enterText(find.byType(TextFormField), '0.05');
+        await tester.pump();
+        expect(committed, hasLength(1), reason: 'stale rate not re-committed');
+        expect(invalidCount, 1);
+      },
+    );
+
+    testWidgets(
+      'RBF mode emptying the field fires onInvalid',
+      (tester) async {
+        var invalidCount = 0;
+        await pumpTile(
+          tester,
+          commitOnChange: true,
+          onCommit: (_) async {},
+          onInvalid: () => invalidCount++,
+        );
+        await tester.enterText(find.byType(TextFormField), '2');
+        await tester.pump();
+        await tester.enterText(find.byType(TextFormField), '');
+        await tester.pump();
+        expect(invalidCount, 1);
       },
     );
 
@@ -244,6 +293,26 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400));
 
         expect(previewCount, 0);
+      },
+    );
+
+    testWidgets(
+      'the sat/vByte rate field caps input at 2 decimals',
+      (tester) async {
+        // The field used to allow 8 decimals (BTC-derived): a user could type
+        // "0.12345678", the model snapped it to the nearest sat/kwu, and the
+        // prefill re-rendered it as "0.12" — typed ≠ stored ≠ shown. The
+        // 2-decimal cap keeps the field consistent with _formatForInput.
+        NetworkFee? armed;
+        await pumpTile(tester, onArm: (fee) => armed = fee);
+
+        await tester.enterText(find.byType(TextFormField), '0.12345678');
+        await tester.pump();
+
+        final field = tester.widget<TextFormField>(find.byType(TextFormField));
+        expect(field.controller!.text, '0.12');
+        // What was armed matches what's shown — no hidden extra precision.
+        expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
       },
     );
   });
