@@ -18,12 +18,24 @@ class GetActiveMempoolServerUsecase {
       isLiquid: isLiquid,
     );
 
-    // custom server is given priority over default
-    final customServer = await _serverRepository.fetchCustomServer(network);
+    // This use-case feeds the (throw-based) fees pipeline, not the failure
+    // pipeline — so unwrap the repo Results here, surfacing the logged reason.
+    final customServer = (await _serverRepository.fetchCustomServer(network))
+        .fold(
+          (server) => server,
+          (failure) => throw Exception(
+            failure.logMessage ?? 'Failed to fetch custom mempool server',
+          ),
+        );
     if (customServer != null) {
       return customServer;
     }
 
-    return _serverRepository.fetchDefaultServer(network);
+    return (await _serverRepository.fetchDefaultServer(network)).fold(
+      (server) => server,
+      (failure) => throw Exception(
+        failure.logMessage ?? 'Failed to fetch default mempool server',
+      ),
+    );
   }
 }

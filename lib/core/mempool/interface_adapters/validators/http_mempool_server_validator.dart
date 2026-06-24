@@ -1,15 +1,16 @@
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_server_exception.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:dio/dio.dart';
 
 class HttpMempoolServerValidator implements MempoolServerValidatorPort {
   static const _timeout = Duration(seconds: 5);
 
   @override
-  Future<bool> validateServer({
+  Future<Result<void, MempoolFailure>> validateServer({
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
@@ -37,79 +38,60 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       final response = await dio.get(path);
 
       if (response.statusCode != 200) {
-        log.warning(
-          'Validation failed: Invalid status code ${response.statusCode}',
+        log.severe(
+          message: 'Validation failed: Invalid status code ${response.statusCode}',
+          error: 'status ${response.statusCode}',
+          trace: StackTrace.current,
         );
-        return false;
+        return const Err(MempoolValidationNotMempoolServerFailure());
       }
 
       // response will be a number
       if (response.data == null) {
         log.warning('Validation failed: Response data is null');
-        return false;
+        return const Err(MempoolValidationInvalidResponseFailure());
       }
 
       // verify it's a valid number (block height should be > 0)
-      final blockHeight = response.data is int
-          ? response.data as int
-          : int.tryParse(response.data.toString());
+      final data = response.data;
+      final blockHeight =
+          data is int ? data : int.tryParse(data.toString());
 
       if (blockHeight == null || blockHeight <= 0) {
         log.warning('Validation failed: Invalid block height response');
-        return false;
+        return const Err(MempoolValidationInvalidResponseFailure());
       }
 
       log.fine('Mempool server validation successful: $fullUrl');
-      return true;
-    } on DioException catch (e) {
-      log.warning('Validation failed with DioException: ${e.message}');
-      final errorType = _getValidationErrorType(e, url);
-      throw MempoolServerValidationException(errorType, e);
-    } catch (e) {
-      log.warning('Validation failed with exception: $e');
-      throw MempoolServerValidationException(
-        MempoolValidationErrorType.unexpected,
-        e,
-      );
+      return const Ok(null);
+    } on DioException catch (e, st) {
+      log.severe(message: 'Validation failed with DioException', error: e, trace: st);
+      return Err(_dioFailure(e, url));
+    } catch (e, st) {
+      log.severe(message: 'Validation failed with unexpected exception', error: e, trace: st);
+      return Err(MempoolUnexpectedFailure(e.toString()));
     }
   }
 
-  MempoolValidationErrorType _getValidationErrorType(
-    DioException e,
-    String url,
-  ) {
-    if (e.type == DioExceptionType.connectionTimeout ||
-        e.type == DioExceptionType.sendTimeout ||
-        e.type == DioExceptionType.receiveTimeout) {
-      return MempoolValidationErrorType.connectionTimeout;
-    }
-
-    if (e.type == DioExceptionType.connectionError) {
-      if (e.message?.contains('Failed host lookup') ?? false) {
-        if (url.contains('.onion')) {
-          return MempoolValidationErrorType.torNotRunning;
-        }
-        return MempoolValidationErrorType.hostNotFound;
-      }
-      return MempoolValidationErrorType.connectionError;
-    }
-
-    if (e.response != null) {
-      final statusCode = e.response!.statusCode;
-      if (statusCode == 404) {
-        return MempoolValidationErrorType.notMempoolServer;
-      }
-      if (statusCode == 502 || statusCode == 503) {
-        return MempoolValidationErrorType.serverUnavailable;
-      }
-      if (statusCode == 500) {
-        return MempoolValidationErrorType.serverError;
-      }
-      if (statusCode != null && statusCode >= 400 && statusCode < 500) {
-        return MempoolValidationErrorType.notMempoolServer;
-      }
-    }
-
-    return MempoolValidationErrorType.connectionError;
-  }
+  MempoolFailure _dioFailure(DioException e, String url) => switch (e.type) {
+    DioExceptionType.connectionTimeout ||
+    DioExceptionType.sendTimeout ||
+    DioExceptionType.receiveTimeout =>
+      MempoolValidationTimeoutFailure(e.toString()),
+    DioExceptionType.connectionError =>
+      switch (e.message?.contains('Failed host lookup')) {
+        true when url.contains('.onion') =>
+          MempoolValidationTorNotRunningFailure(e.toString()),
+        true => MempoolValidationHostNotFoundFailure(e.toString()),
+        _ => MempoolValidationConnectionErrorFailure(e.toString()),
+      },
+    _ => switch (e.response?.statusCode) {
+      404 => MempoolValidationNotMempoolServerFailure(e.toString()),
+      500 => MempoolValidationServerErrorFailure(e.toString()),
+      502 || 503 => MempoolValidationServerUnavailableFailure(e.toString()),
+      final int s when s >= 400 && s < 500 =>
+        MempoolValidationNotMempoolServerFailure(e.toString()),
+      _ => MempoolValidationConnectionErrorFailure(e.toString()),
+    },
+  };
 }
