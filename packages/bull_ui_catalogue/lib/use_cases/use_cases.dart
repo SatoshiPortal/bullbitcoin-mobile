@@ -109,6 +109,18 @@ m.Widget bullToolButtonUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullSyncButton)
+m.Widget bullSyncButtonUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    BullSyncButton(
+      label: context.knobs.string(label: 'label', initialValue: 'Sync'),
+      syncing: context.knobs.boolean(label: 'syncing', initialValue: true),
+      onPressed: () {},
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullViewerActionButton)
 m.Widget bullViewerActionButtonUseCase(m.BuildContext context) {
   return _frame(

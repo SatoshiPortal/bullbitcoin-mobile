@@ -28,6 +28,7 @@ class WalletUtxoMapper {
           txLabels: txLabels,
           addressLabels: addressLabels,
           isFrozen: isFrozen,
+          confirmations: model.confirmations,
         );
       case LiquidWalletUtxoModel _:
         return WalletUtxo.liquid(
@@ -42,6 +43,7 @@ class WalletUtxoMapper {
           txLabels: txLabels,
           addressLabels: addressLabels,
           isFrozen: isFrozen,
+          confirmations: model.confirmations,
         );
     }
   }
@@ -57,6 +59,7 @@ class WalletUtxoMapper {
           address: entity.address,
           isExternalKeyChain:
               entity.addressKeyChain == WalletAddressKeyChain.external,
+          confirmations: entity.confirmations,
         );
       case LiquidWalletUtxo _:
         return WalletUtxoModel.liquid(

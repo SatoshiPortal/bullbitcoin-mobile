@@ -44,6 +44,7 @@ graph TB
     SELL[Sell]
     PAY[Pay]
     BUY[Buy]
+    COINS[Coins / UTXOs]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -60,6 +61,9 @@ graph TB
     BTC_PRICE --> SETTINGS
     BUY --> EXCHANGE
     BUY --> RECEIVE
+    COINS --> UTXO_MGMT
+    COINS --> LABELS
+    COINS --> WALLETS
     DCA --> RECEIVE
     EXCHANGE --> SETTINGS
     FEES --> NETWORK
@@ -101,7 +105,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,PAYJOIN,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY featureStyle
+    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,PAYJOIN,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS featureStyle
 ```
 
 ## About Package Dependency Diagrams

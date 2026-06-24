@@ -91,7 +91,7 @@ class BullButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(BullRadius.xs);
+    final radius = BorderRadius.circular(BullRadius.xxs);
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)
@@ -102,7 +102,7 @@ class BullButton extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: textStyle ?? Theme.of(context).textTheme.headlineMedium,
+        style: textStyle ?? Theme.of(context).textTheme.headlineLarge,
         color: textColor,
       ),
     );
