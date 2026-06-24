@@ -98,7 +98,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 14;
+  static const int currentSchemaVersion = 13;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -154,7 +154,6 @@ class SqliteDatabase extends _$SqliteDatabase {
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
         from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
-        from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

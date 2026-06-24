@@ -13,9 +13,9 @@ void main() {
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  group('v12 to v13: swaps refund columns and status backfill', () {
-    test('completed swap with refund txid is backfilled to refunded',
-        () async {
+  group('v12 to v13: swaps refund columns, status backfill, and frozen_utxos',
+      () {
+    test('completed swap with refund txid is backfilled to refunded', () async {
       final schema = await verifier.schemaAt(12);
 
       final oldDb = v12.DatabaseAtV12(schema.newConnection());
@@ -68,6 +68,48 @@ void main() {
 
       final completed = swaps.singleWhere((s) => s.id == 'normalswap12');
       expect(completed.status, 'completed');
+
+      await migratedDb.close();
+    });
+
+    test('migration is additive — existing data intact, frozen_utxos writable',
+        () async {
+      final schema = await verifier.schemaAt(12);
+
+      final oldDb = v12.DatabaseAtV12(schema.newConnection());
+      await oldDb.into(oldDb.settings).insert(
+            v12.SettingsCompanion.insert(
+              environment: 'mainnet',
+              bitcoinUnit: 'btc',
+              language: 'en',
+              currency: 'USD',
+              hideAmounts: 0,
+              isSuperuser: 0,
+            ),
+          );
+      await oldDb.close();
+
+      final db = SqliteDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 13);
+      await db.close();
+
+      final migratedDb = v13.DatabaseAtV13(schema.newConnection());
+
+      final settings = await migratedDb.select(migratedDb.settings).get();
+      expect(settings, hasLength(1));
+      expect(settings.single.environment, 'mainnet');
+      expect(settings.single.currency, 'USD');
+
+      await migratedDb.into(migratedDb.frozenUtxos).insert(
+            v13.FrozenUtxosCompanion.insert(
+              walletId: 'w1',
+              txId: 'tx1',
+              vout: 0,
+            ),
+          );
+      final frozen = await migratedDb.select(migratedDb.frozenUtxos).get();
+      expect(frozen, hasLength(1));
+      expect(frozen.single.walletId, 'w1');
 
       await migratedDb.close();
     });

@@ -5750,474 +5750,6 @@ final class Schema13 extends i0.VersionedSchema {
     bip85Derivations,
     recoverbull,
     prices,
-  ];
-  late final Shape0 transactions = Shape0(
-    source: i0.VersionedTable(
-      entityName: 'transactions',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(txid)'],
-      columns: [
-        _column_114,
-        _column_115,
-        _column_116,
-        _column_117,
-        _column_118,
-        _column_119,
-        _column_120,
-        _column_121,
-        _column_122,
-        _column_123,
-        _column_124,
-        _column_125,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape21 walletMetadatas = Shape21(
-    source: i0.VersionedTable(
-      entityName: 'wallet_metadatas',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(id)'],
-      columns: [
-        _column_126,
-        _column_127,
-        _column_128,
-        _column_129,
-        _column_130,
-        _column_131,
-        _column_132,
-        _column_133,
-        _column_134,
-        _column_135,
-        _column_136,
-        _column_137,
-        _column_138,
-        _column_139,
-        _column_140,
-        _column_141,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape34 labels = Shape34(
-    source: i0.VersionedTable(
-      entityName: 'labels',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['UNIQUE(label, reference)'],
-      columns: [
-        _column_147,
-        _column_142,
-        _column_232,
-        _column_144,
-        _column_145,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape37 settings = Shape37(
-    source: i0.VersionedTable(
-      entityName: 'settings',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: [],
-      columns: [
-        _column_147,
-        _column_148,
-        _column_149,
-        _column_150,
-        _column_151,
-        _column_152,
-        _column_153,
-        _column_154,
-        _column_155,
-        _column_156,
-        _column_157,
-        _column_233,
-        _column_235,
-        _column_236,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape24 payjoinSenders = Shape24(
-    source: i0.VersionedTable(
-      entityName: 'payjoin_senders',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(uri)'],
-      columns: [
-        _column_158,
-        _column_159,
-        _column_160,
-        _column_161,
-        _column_162,
-        _column_163,
-        _column_164,
-        _column_165,
-        _column_166,
-        _column_167,
-        _column_168,
-        _column_169,
-        _column_170,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape25 payjoinReceivers = Shape25(
-    source: i0.VersionedTable(
-      entityName: 'payjoin_receivers',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(id)'],
-      columns: [
-        _column_126,
-        _column_171,
-        _column_159,
-        _column_172,
-        _column_161,
-        _column_173,
-        _column_174,
-        _column_165,
-        _column_166,
-        _column_175,
-        _column_176,
-        _column_177,
-        _column_167,
-        _column_168,
-        _column_169,
-        _column_170,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape26 electrumServers = Shape26(
-    source: i0.VersionedTable(
-      entityName: 'electrum_servers',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(url)'],
-      columns: [
-        _column_178,
-        _column_159,
-        _column_179,
-        _column_180,
-        _column_181,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape27 electrumSettings = Shape27(
-    source: i0.VersionedTable(
-      entityName: 'electrum_settings',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(network)'],
-      columns: [
-        _column_182,
-        _column_183,
-        _column_184,
-        _column_185,
-        _column_186,
-        _column_187,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape36 mempoolServers = Shape36(
-    source: i0.VersionedTable(
-      entityName: 'mempool_servers',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(url, is_testnet, is_liquid)'],
-      columns: [
-        _column_178,
-        _column_159,
-        _column_179,
-        _column_181,
-        _column_234,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape29 mempoolSettings = Shape29(
-    source: i0.VersionedTable(
-      entityName: 'mempool_settings',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(network)'],
-      columns: [_column_182, _column_188],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape38 swaps = Shape38(
-    source: i0.VersionedTable(
-      entityName: 'swaps',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(id)'],
-      columns: [
-        _column_126,
-        _column_144,
-        _column_189,
-        _column_190,
-        _column_159,
-        _column_191,
-        _column_192,
-        _column_193,
-        _column_194,
-        _column_195,
-        _column_196,
-        _column_197,
-        _column_198,
-        _column_199,
-        _column_200,
-        _column_201,
-        _column_202,
-        _column_203,
-        _column_204,
-        _column_205,
-        _column_206,
-        _column_207,
-        _column_237,
-        _column_208,
-        _column_238,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape31 autoSwap = Shape31(
-    source: i0.VersionedTable(
-      entityName: 'auto_swap',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: [],
-      columns: [
-        _column_147,
-        _column_209,
-        _column_210,
-        _column_211,
-        _column_212,
-        _column_213,
-        _column_214,
-        _column_215,
-        _column_216,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape14 bip85Derivations = Shape14(
-    source: i0.VersionedTable(
-      entityName: 'bip85_derivations',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: ['PRIMARY KEY(path)'],
-      columns: [
-        _column_217,
-        _column_218,
-        _column_219,
-        _column_190,
-        _column_220,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape32 recoverbull = Shape32(
-    source: i0.VersionedTable(
-      entityName: 'recoverbull',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: [],
-      columns: [_column_147, _column_178, _column_221],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-  late final Shape33 prices = Shape33(
-    source: i0.VersionedTable(
-      entityName: 'prices',
-      withoutRowId: false,
-      isStrict: false,
-      tableConstraints: [
-        'UNIQUE(from_currency, to_currency, interval, created_at)',
-      ],
-      columns: [
-        _column_147,
-        _column_222,
-        _column_223,
-        _column_224,
-        _column_225,
-        _column_226,
-        _column_227,
-        _column_228,
-        _column_229,
-        _column_230,
-        _column_231,
-      ],
-      attachedDatabase: database,
-    ),
-    alias: null,
-  );
-}
-
-class Shape37 extends i0.VersionedTable {
-  Shape37({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<int> get id =>
-      columnsByName['id']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get environment =>
-      columnsByName['environment']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get bitcoinUnit =>
-      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get language =>
-      columnsByName['language']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get currency =>
-      columnsByName['currency']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get hideAmounts =>
-      columnsByName['hide_amounts']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isSuperuser =>
-      columnsByName['is_superuser']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get isDevModeEnabled =>
-      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get useTorProxy =>
-      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get torProxyPort =>
-      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get themeMode =>
-      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isErrorReportingEnabled =>
-      columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthUsername =>
-      columnsByName['exchange_testnet_basic_auth_username']!
-          as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthPassword =>
-      columnsByName['exchange_testnet_basic_auth_password']!
-          as i1.GeneratedColumn<String>;
-}
-
-i1.GeneratedColumn<String> _column_235(String aliasedName) =>
-    i1.GeneratedColumn<String>(
-      'exchange_testnet_basic_auth_username',
-      aliasedName,
-      true,
-      type: i1.DriftSqlType.string,
-      $customConstraints: 'NULL',
-    );
-i1.GeneratedColumn<String> _column_236(String aliasedName) =>
-    i1.GeneratedColumn<String>(
-      'exchange_testnet_basic_auth_password',
-      aliasedName,
-      true,
-      type: i1.DriftSqlType.string,
-      $customConstraints: 'NULL',
-    );
-
-class Shape38 extends i0.VersionedTable {
-  Shape38({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<String> get id =>
-      columnsByName['id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get type =>
-      columnsByName['type']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get direction =>
-      columnsByName['direction']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get status =>
-      columnsByName['status']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get isTestnet =>
-      columnsByName['is_testnet']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get keyIndex =>
-      columnsByName['key_index']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get creationTime =>
-      columnsByName['creation_time']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get completionTime =>
-      columnsByName['completion_time']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get receiveWalletId =>
-      columnsByName['receive_wallet_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get sendWalletId =>
-      columnsByName['send_wallet_id']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get invoice =>
-      columnsByName['invoice']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get paymentAddress =>
-      columnsByName['payment_address']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get paymentAmount =>
-      columnsByName['payment_amount']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get receiveAddress =>
-      columnsByName['receive_address']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get receiveTxid =>
-      columnsByName['receive_txid']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get sendTxid =>
-      columnsByName['send_txid']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get preimage =>
-      columnsByName['preimage']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get refundAddress =>
-      columnsByName['refund_address']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get refundTxid =>
-      columnsByName['refund_txid']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get boltzFees =>
-      columnsByName['boltz_fees']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get lockupFees =>
-      columnsByName['lockup_fees']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get claimFees =>
-      columnsByName['claim_fees']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get refundFees =>
-      columnsByName['refund_fees']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get serverNetworkFees =>
-      columnsByName['server_network_fees']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get wasDirectPayment =>
-      columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
-}
-
-i1.GeneratedColumn<int> _column_237(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'refund_fees',
-      aliasedName,
-      true,
-      type: i1.DriftSqlType.int,
-      $customConstraints: 'NULL',
-    );
-i1.GeneratedColumn<int> _column_238(String aliasedName) =>
-    i1.GeneratedColumn<int>(
-      'was_direct_payment',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.int,
-      $customConstraints:
-          'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
-      defaultValue: const i1.CustomExpression('0'),
-    );
-
-final class Schema14 extends i0.VersionedSchema {
-  Schema14({required super.database}) : super(version: 14);
-  @override
-  late final List<i1.DatabaseSchemaEntity> entities = [
-    transactions,
-    walletMetadatas,
-    labels,
-    settings,
-    payjoinSenders,
-    payjoinReceivers,
-    electrumServers,
-    electrumSettings,
-    mempoolServers,
-    mempoolSettings,
-    swaps,
-    autoSwap,
-    bip85Derivations,
-    recoverbull,
-    prices,
     frozenUtxos,
   ];
   late final Shape0 transactions = Shape0(
@@ -6555,6 +6087,130 @@ final class Schema14 extends i0.VersionedSchema {
   );
 }
 
+class Shape37 extends i0.VersionedTable {
+  Shape37({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get environment =>
+      columnsByName['environment']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bitcoinUnit =>
+      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get currency =>
+      columnsByName['currency']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get hideAmounts =>
+      columnsByName['hide_amounts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isSuperuser =>
+      columnsByName['is_superuser']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDevModeEnabled =>
+      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get useTorProxy =>
+      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get torProxyPort =>
+      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get themeMode =>
+      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isErrorReportingEnabled =>
+      columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthUsername =>
+      columnsByName['exchange_testnet_basic_auth_username']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get exchangeTestnetBasicAuthPassword =>
+      columnsByName['exchange_testnet_basic_auth_password']!
+          as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_235(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'exchange_testnet_basic_auth_username',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_236(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'exchange_testnet_basic_auth_password',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+
+class Shape38 extends i0.VersionedTable {
+  Shape38({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get type =>
+      columnsByName['type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get direction =>
+      columnsByName['direction']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get status =>
+      columnsByName['status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isTestnet =>
+      columnsByName['is_testnet']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get keyIndex =>
+      columnsByName['key_index']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get creationTime =>
+      columnsByName['creation_time']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get completionTime =>
+      columnsByName['completion_time']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get receiveWalletId =>
+      columnsByName['receive_wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sendWalletId =>
+      columnsByName['send_wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get invoice =>
+      columnsByName['invoice']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get paymentAddress =>
+      columnsByName['payment_address']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get paymentAmount =>
+      columnsByName['payment_amount']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get receiveAddress =>
+      columnsByName['receive_address']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get receiveTxid =>
+      columnsByName['receive_txid']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sendTxid =>
+      columnsByName['send_txid']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get preimage =>
+      columnsByName['preimage']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get refundAddress =>
+      columnsByName['refund_address']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get refundTxid =>
+      columnsByName['refund_txid']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get boltzFees =>
+      columnsByName['boltz_fees']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get lockupFees =>
+      columnsByName['lockup_fees']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get claimFees =>
+      columnsByName['claim_fees']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get refundFees =>
+      columnsByName['refund_fees']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get serverNetworkFees =>
+      columnsByName['server_network_fees']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get wasDirectPayment =>
+      columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_237(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'refund_fees',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_238(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'was_direct_payment',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
 class Shape39 extends i0.VersionedTable {
   Shape39({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get walletId =>
@@ -6594,7 +6250,6 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
-  required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -6658,11 +6313,6 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from12To13(migrator, schema);
         return 13;
-      case 13:
-        final schema = Schema14(database: database);
-        final migrator = i1.Migrator(database, schema);
-        await from13To14(migrator, schema);
-        return 14;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -6682,7 +6332,6 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
-  required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -6697,6 +6346,5 @@ i1.OnUpgrade stepByStep({
     from10To11: from10To11,
     from11To12: from11To12,
     from12To13: from12To13,
-    from13To14: from13To14,
   ),
 );

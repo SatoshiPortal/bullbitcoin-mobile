@@ -7690,6 +7690,235 @@ class PricesCompanion extends UpdateCompanion<PricesData> {
   }
 }
 
+class FrozenUtxos extends Table with TableInfo<FrozenUtxos, FrozenUtxosData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  FrozenUtxos(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> txId = GeneratedColumn<String>(
+    'tx_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vout = GeneratedColumn<int>(
+    'vout',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [walletId, txId, vout];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'frozen_utxos';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId, txId, vout};
+  @override
+  FrozenUtxosData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FrozenUtxosData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      txId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tx_id'],
+      )!,
+      vout: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vout'],
+      )!,
+    );
+  }
+
+  @override
+  FrozenUtxos createAlias(String alias) {
+    return FrozenUtxos(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id, tx_id, vout)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
+  final String walletId;
+  final String txId;
+  final int vout;
+  const FrozenUtxosData({
+    required this.walletId,
+    required this.txId,
+    required this.vout,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['tx_id'] = Variable<String>(txId);
+    map['vout'] = Variable<int>(vout);
+    return map;
+  }
+
+  FrozenUtxosCompanion toCompanion(bool nullToAbsent) {
+    return FrozenUtxosCompanion(
+      walletId: Value(walletId),
+      txId: Value(txId),
+      vout: Value(vout),
+    );
+  }
+
+  factory FrozenUtxosData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FrozenUtxosData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      txId: serializer.fromJson<String>(json['txId']),
+      vout: serializer.fromJson<int>(json['vout']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'txId': serializer.toJson<String>(txId),
+      'vout': serializer.toJson<int>(vout),
+    };
+  }
+
+  FrozenUtxosData copyWith({String? walletId, String? txId, int? vout}) =>
+      FrozenUtxosData(
+        walletId: walletId ?? this.walletId,
+        txId: txId ?? this.txId,
+        vout: vout ?? this.vout,
+      );
+  FrozenUtxosData copyWithCompanion(FrozenUtxosCompanion data) {
+    return FrozenUtxosData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      txId: data.txId.present ? data.txId.value : this.txId,
+      vout: data.vout.present ? data.vout.value : this.vout,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrozenUtxosData(')
+          ..write('walletId: $walletId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(walletId, txId, vout);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FrozenUtxosData &&
+          other.walletId == this.walletId &&
+          other.txId == this.txId &&
+          other.vout == this.vout);
+}
+
+class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
+  final Value<String> walletId;
+  final Value<String> txId;
+  final Value<int> vout;
+  final Value<int> rowid;
+  const FrozenUtxosCompanion({
+    this.walletId = const Value.absent(),
+    this.txId = const Value.absent(),
+    this.vout = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FrozenUtxosCompanion.insert({
+    required String walletId,
+    required String txId,
+    required int vout,
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       txId = Value(txId),
+       vout = Value(vout);
+  static Insertable<FrozenUtxosData> custom({
+    Expression<String>? walletId,
+    Expression<String>? txId,
+    Expression<int>? vout,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (txId != null) 'tx_id': txId,
+      if (vout != null) 'vout': vout,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FrozenUtxosCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? txId,
+    Value<int>? vout,
+    Value<int>? rowid,
+  }) {
+    return FrozenUtxosCompanion(
+      walletId: walletId ?? this.walletId,
+      txId: txId ?? this.txId,
+      vout: vout ?? this.vout,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (txId.present) {
+      map['tx_id'] = Variable<String>(txId.value);
+    }
+    if (vout.present) {
+      map['vout'] = Variable<int>(vout.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrozenUtxosCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV13 extends GeneratedDatabase {
   DatabaseAtV13(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -7707,6 +7936,7 @@ class DatabaseAtV13 extends GeneratedDatabase {
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
   late final Prices prices = Prices(this);
+  late final FrozenUtxos frozenUtxos = FrozenUtxos(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7727,6 +7957,7 @@ class DatabaseAtV13 extends GeneratedDatabase {
     bip85Derivations,
     recoverbull,
     prices,
+    frozenUtxos,
   ];
   @override
   int get schemaVersion => 13;

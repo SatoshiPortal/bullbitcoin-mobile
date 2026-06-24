@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 12 to 13
@@ -14,6 +15,9 @@ import 'package:drift/drift.dart';
 /// Changes to settings table:
 /// - Adds 'exchange_testnet_basic_auth_username'/'...password' columns: in-app
 ///   HTTP basic auth creds gating the testnet exchange web frontend
+///
+/// Additive: creates the `frozen_utxos` table backing user freeze persistence
+/// (issue #760). Idempotent: if the table already exists the create is swallowed.
 class Schema12To13 {
   static Future<void> migrate(Migrator m, Schema13 schema13) async {
     try {
@@ -48,6 +52,16 @@ class Schema12To13 {
       );
     } catch (e) {
       if (!e.toString().contains('duplicate column')) rethrow;
+    }
+
+    try {
+      await m.createTable(schema13.frozenUtxos);
+    } catch (e) {
+      if (!e.toString().contains('already exists')) rethrow;
+      log.warning(
+        'Schema12To13: frozen_utxos already exists — skipping create',
+        error: e,
+      );
     }
   }
 }
