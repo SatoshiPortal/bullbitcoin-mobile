@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 
 /// The symmetric key that encrypts/decrypts an [EncryptedVault].
 ///
@@ -11,8 +12,8 @@ import 'package:meta/meta.dart';
 class VaultKey {
   factory VaultKey(Uint8List bytes) {
     if (bytes.length < 32) {
-      throw ArgumentError.value(
-          bytes.length, 'bytes.length', 'VaultKey must be >= 32 bytes');
+      throw InvalidVaultKeyError(
+          'VaultKey must be >= 32 bytes', 'bytes.length');
     }
     return VaultKey._(Uint8List.fromList(bytes));
   }
@@ -34,8 +35,7 @@ class VaultKey {
 class EncryptedVault {
   factory EncryptedVault(String ciphertextJson) {
     if (ciphertextJson.isEmpty) {
-      throw ArgumentError.value(
-          ciphertextJson, 'ciphertextJson', 'must not be empty');
+      throw InvalidEncryptedVaultError('must not be empty', 'ciphertextJson');
     }
     return EncryptedVault._(ciphertextJson);
   }

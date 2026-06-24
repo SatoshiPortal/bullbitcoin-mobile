@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/backup_vault_adapter.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
-import 'package:secrets/src/data/adapters/seed_adapter.dart';
-import 'package:secrets/src/domain/ports/seed_index_port.dart';
+import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
+import 'package:secrets/src/domain/ports/secret_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/backup.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 import '../data/fake_secure_key_value_store.dart';
 
@@ -18,16 +18,16 @@ const zooWords = [
   'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'wrong',
 ];
 
-class _FakeSeedIndex implements SeedIndexPort {
-  final Map<String, SeedInfo> _m = {};
+class _FakeSeedIndex implements SecretIndexPort {
+  final Map<String, SecretInfo> _m = {};
   @override
-  Future<List<SeedInfo>> all() async => _m.values.toList();
+  Future<List<SecretInfo>> all() async => _m.values.toList();
   @override
-  Future<SeedInfo?> get(Fingerprint fp) async => _m[fp.hex];
+  Future<SecretInfo?> get(Fingerprint fp) async => _m[fp.hex];
   @override
   Future<void> remove(Fingerprint fp) async => _m.remove(fp.hex);
   @override
-  Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
+  Future<void> upsert(SecretInfo info) async => _m[info.fingerprint.hex] = info;
 }
 
 T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
@@ -37,14 +37,14 @@ T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
 
 void main() {
   late FssSecretStoreAdapter store;
-  late SeedAdapter repo;
+  late SecretLifecycleAdapter repo;
   late BackupVaultAdapter vaultPort;
   late Fingerprint zooFp;
 
   setUp(() async {
     final kv = FakeSecureKeyValueStore();
     store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
-    repo = SeedAdapter(store: store, index: _FakeSeedIndex());
+    repo = SecretLifecycleAdapter(store: store, index: _FakeSeedIndex());
     zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
     vaultPort = BackupVaultAdapter(store: store, repository: repo);
   });
@@ -97,8 +97,8 @@ void main() {
     expect(_unwrap(await repo.exists(zooFp)), isFalse);
   });
 
-  test('encrypt of a missing seed → SeedNotFoundFailure', () async {
+  test('encrypt of a missing seed → SecretNotFoundFailure', () async {
     final res = await vaultPort.encryptVault(seed: Fingerprint('00000000'));
-    expect((res as Err).failure, isA<SeedNotFoundFailure>());
+    expect((res as Err).failure, isA<SecretNotFoundFailure>());
   });
 }

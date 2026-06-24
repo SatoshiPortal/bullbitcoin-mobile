@@ -1,3 +1,4 @@
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 // MIGRATION SAFETY — the highest-stakes test in the package.
 //
 // Proves that a seed written by the EXISTING app (and by pre-0.4 builds) is read
@@ -198,19 +199,19 @@ void main() {
       final v = jsonEncode({'bytes': [1, 2, 3], 'runtimeType': 'bytes'});
       expect(
         () => Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
 
-    test('unrecognized JSON → FormatException (catchable, not an Error)', () {
+    test('unrecognized JSON → MalformedSecretException (catchable, not an Error)', () {
       final v = jsonEncode({'something': 'else'});
       expect(
         () => Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
 
-    test('whitespace-only OldSeed mnemonic → FormatException (no empty seed)',
+    test('whitespace-only OldSeed mnemonic → MalformedSecretException (no empty seed)',
         () {
       // `{"mnemonic":"   "}` passes a bare `.isNotEmpty` but decodes to a
       // degenerate single-empty-word mnemonic; the `.trim().isNotEmpty` guard
@@ -218,7 +219,7 @@ void main() {
       final v = jsonEncode({'mnemonic': '   '});
       expect(
         () => Mnemonic.fromStorageBytes(Uint8List.fromList(utf8.encode(v))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
   });

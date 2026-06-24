@@ -112,7 +112,7 @@ void main() {
         onError: SecretsUnexpectedFailure.new,
       );
       final failure = (res as Err<void, SecretsFailure>).failure;
-      expect(failure, isNot(isA<SeedNotFoundFailure>()));
+      expect(failure, isNot(isA<SecretNotFoundFailure>()));
       expect(failure, isA<SecretsUnexpectedFailure>());
     });
   });

@@ -5,10 +5,13 @@ import 'package:primitives/primitives.dart';
 /// `Result.Err`. Self-contained (the codebase has no shared `CoreFailure`): each
 /// variant extends the bare [Failure] base directly.
 ///
-/// Named `*Failure`, never `*Error` — `Error` is reserved for `dart:core`
-/// programmer bugs that crash to Sentry. These are *values*, returned never
-/// thrown across the public API. Translation happens app-side (the package
-/// stays pure / l10n-free); see SECRETS_API_CONTRACTS §14.
+/// Named `*Failure`, never `*Error`: these model *recoverable* outcomes as
+/// returned *values* (never thrown across the public API). The package DOES
+/// define a typed thrown `*Error` family (`SecretsError` in `secrets_error.dart`)
+/// for precondition/programmer bugs — invalid value-object construction that
+/// crashes to Sentry — which is a distinct axis from these RETURNED `*Failure`s.
+/// Translation happens app-side (the package stays pure / l10n-free); see
+/// SECRETS_API_CONTRACTS §14.
 ///
 /// `logMessage` is for logs/Sentry ONLY. The package NEVER puts secret-bearing
 /// text in it: at the `SecretGuard` boundary a foreign exception contributes
@@ -20,10 +23,10 @@ sealed class SecretsFailure extends Failure {
   const SecretsFailure([super.logMessage]);
 }
 
-/// The seed for [fingerprint] is not in storage. **Distinct from
+/// The secret for [fingerprint] is not in storage. **Distinct from
 /// [KeychainLockedFailure]** — never collapse the two (see that class).
-final class SeedNotFoundFailure extends SecretsFailure {
-  const SeedNotFoundFailure(this.fingerprint, [super.logMessage]);
+final class SecretNotFoundFailure extends SecretsFailure {
+  const SecretNotFoundFailure(this.fingerprint, [super.logMessage]);
   final Fingerprint fingerprint;
 }
 
@@ -40,15 +43,15 @@ final class InvalidMnemonicFailure extends SecretsFailure {
   const InvalidMnemonicFailure([super.logMessage]);
 }
 
-/// Importing a seed whose [fingerprint] already exists (collision-safe handle).
-final class DuplicateSeedFailure extends SecretsFailure {
-  const DuplicateSeedFailure(this.fingerprint, [super.logMessage]);
+/// Importing a secret whose [fingerprint] already exists (collision-safe handle).
+final class DuplicateSecretFailure extends SecretsFailure {
+  const DuplicateSecretFailure(this.fingerprint, [super.logMessage]);
   final Fingerprint fingerprint;
 }
 
 /// A mnemonic-only action was attempted on a bytes-only seed.
-final class NotAMnemonicSeedFailure extends SecretsFailure {
-  const NotAMnemonicSeedFailure([super.logMessage]);
+final class NotAMnemonicFailure extends SecretsFailure {
+  const NotAMnemonicFailure([super.logMessage]);
 }
 
 /// Key derivation (BIP32/descriptor/BIP85) failed.

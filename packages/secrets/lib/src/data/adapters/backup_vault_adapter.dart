@@ -8,24 +8,25 @@ import 'package:secrets/src/crypto/bip85_derivation.dart';
 import 'package:secrets/src/data/adapters/secret_guard.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
 import 'package:secrets/src/domain/ports/backup_vault_port.dart';
+import 'package:secrets/src/domain/ports/secret_lifecycle_port.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
-import 'package:secrets/src/domain/ports/seed_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/backup.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_language.dart';
 
 /// Wraps the `recoverbull` package directly (NOT the app-layer JSON wrappers).
 /// The vault plaintext is the mnemonic's storage representation, encrypted with
-/// a fresh BIP85-derived backup key; restore re-imports through [SeedPort] so
-/// the mnemonic never escapes.
+/// a fresh BIP85-derived backup key; restore re-imports through
+/// [SecretLifecyclePort] so the mnemonic never escapes.
 class BackupVaultAdapter implements BackupVaultPort {
   BackupVaultAdapter({
     required SecretStorePort store,
-    required SeedPort repository,
+    required SecretLifecyclePort repository,
   })  : _guard = SecretGuard(store),
         _repo = repository;
 
   final SecretGuard _guard;
-  final SeedPort _repo;
+  final SecretLifecyclePort _repo;
 
   SecretsFailure _err(String log) => VaultFailure(log);
 
@@ -65,13 +66,14 @@ class BackupVaultAdapter implements BackupVaultPort {
         final imported = await _repo.importMnemonic(
           words: mnemonic.words,
           passphrase: mnemonic.passphrase,
-          language: mnemonic.language.name,
+          language: MnemonicLanguage.fromName(mnemonic.language.name) ??
+              MnemonicLanguage.english,
         );
 
         return switch (imported) {
           Ok(:final value) => Ok([value]),
           // A duplicate on restore is benign — the seed is already present.
-          Err(failure: DuplicateSeedFailure(:final fingerprint)) =>
+          Err(failure: DuplicateSecretFailure(:final fingerprint)) =>
             Ok([fingerprint]),
           Err(:final failure) => Err(failure),
         };

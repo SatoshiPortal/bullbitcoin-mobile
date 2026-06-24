@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 
 /// The ARK secret derived from BIP85 hex (index 11811, len 32). SECRET — the
 /// raw [bytes] are marked `@internal` so only the in-package consumer that
@@ -9,8 +10,7 @@ import 'package:meta/meta.dart';
 class ArkSecret {
   ArkSecret(Uint8List bytes) : _bytes = Uint8List.fromList(bytes) {
     if (_bytes.length != 32) {
-      throw ArgumentError.value(
-          _bytes.length, 'bytes.length', 'ArkSecret must be 32 bytes');
+      throw InvalidArkSecretError('ArkSecret must be 32 bytes', 'bytes.length');
     }
   }
 

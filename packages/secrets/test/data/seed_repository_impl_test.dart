@@ -2,10 +2,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
-import 'package:secrets/src/data/adapters/seed_adapter.dart';
-import 'package:secrets/src/domain/ports/seed_index_port.dart';
+import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
+import 'package:secrets/src/domain/ports/secret_index_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 import 'fake_secure_key_value_store.dart';
 
@@ -24,23 +24,23 @@ SecretsFailure _unwrapErr<T>(Result<T, SecretsFailure> r) => switch (r) {
       Err(:final failure) => failure,
     };
 
-class _FakeSeedIndex implements SeedIndexPort {
-  final Map<String, SeedInfo> _m = {};
+class _FakeSeedIndex implements SecretIndexPort {
+  final Map<String, SecretInfo> _m = {};
   @override
-  Future<List<SeedInfo>> all() async => _m.values.toList();
+  Future<List<SecretInfo>> all() async => _m.values.toList();
   @override
-  Future<SeedInfo?> get(Fingerprint fp) async => _m[fp.hex];
+  Future<SecretInfo?> get(Fingerprint fp) async => _m[fp.hex];
   @override
   Future<void> remove(Fingerprint fp) async => _m.remove(fp.hex);
   @override
-  Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
+  Future<void> upsert(SecretInfo info) async => _m[info.fingerprint.hex] = info;
 }
 
-({SeedAdapter repo, FakeSecureKeyValueStore kv, _FakeSeedIndex index})
+({SecretLifecycleAdapter repo, FakeSecureKeyValueStore kv, _FakeSeedIndex index})
     _make() {
   final kv = FakeSecureKeyValueStore();
   final index = _FakeSeedIndex();
-  final repo = SeedAdapter(
+  final repo = SecretLifecycleAdapter(
     store: FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero),
     index: index,
   );
@@ -66,7 +66,7 @@ void main() {
       await m.repo.importMnemonic(words: zooWords);
       final res = await m.repo.importMnemonic(words: zooWords);
       expect(res, isA<Err<Fingerprint, SecretsFailure>>());
-      expect(_unwrapErr(res), isA<DuplicateSeedFailure>());
+      expect(_unwrapErr(res), isA<DuplicateSecretFailure>());
     });
 
     test('invalid mnemonic → InvalidMnemonicFailure (not a crash)', () async {
@@ -74,18 +74,6 @@ void main() {
       final res = await m.repo.importMnemonic(
         words: List.filled(12, 'zoo'), // bad checksum
       );
-      expect(res, isA<Err>());
-      expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
-    });
-
-    test('unknown language is REJECTED on import (not silently English)',
-        () async {
-      // The import entry point must not misinterpret an unrecognized language
-      // as English (the storage-decode path stays forward-compatible; this
-      // user-facing edge is tightened).
-      final m = _make();
-      final res =
-          await m.repo.importMnemonic(words: zooWords, language: 'klingon');
       expect(res, isA<Err>());
       expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
     });
@@ -129,14 +117,6 @@ void main() {
       expect(res, isA<Ok>());
       final infos = _unwrap(await m.repo.listSeeds());
       expect(infos, isEmpty); // nothing stored
-    });
-
-    test('unknown language is rejected (does not misderive as English)',
-        () async {
-      final m = _make();
-      final res =
-          await m.repo.fingerprintOf(words: zooWords, language: 'klingon');
-      expect(_unwrapErr(res), isA<InvalidMnemonicFailure>());
     });
   });
 

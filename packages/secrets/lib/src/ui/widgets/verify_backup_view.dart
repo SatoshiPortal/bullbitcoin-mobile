@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:get_it/get_it.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/secrets_api.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';
 import 'package:secrets/src/ui/privacy_guard.dart';
 
@@ -57,8 +57,8 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
   void didUpdateWidget(VerifyBackupView oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Re-fetch if the parent swapped in a different seed/reader without changing
-    // the key — otherwise the old seed's words would stay on screen (mirrors
-    // MnemonicView's stale-secret guard).
+    // the key — otherwise the old seed's words would stay on screen (same
+    // stale-secret guard SecretRevealer uses).
     if (oldWidget.seed != widget.seed || oldWidget.reader != widget.reader) {
       _load();
     }
@@ -72,7 +72,7 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
     _loading = true;
     _unavailable = false;
     _done = false;
-    final reader = widget.reader ?? GetIt.instance<MnemonicReader>();
+    final reader = widget.reader ?? Secrets.mnemonicReader;
     reader.read(widget.seed).then((data) {
       if (!mounted) return;
       setState(() {

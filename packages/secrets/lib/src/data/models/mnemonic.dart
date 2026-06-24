@@ -5,7 +5,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/bip32_derivation.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 /// A derived BIP39 SEED — the 64-byte PBKDF2 output. Distinct from a
 /// [Mnemonic]: a [Seed] is raw bytes (hex-representable) from which the words
@@ -78,8 +79,9 @@ class Mnemonic {
   String get fingerprintHex => Bip32Derivation.fingerprintHex(toSeed().bytes);
   Fingerprint get fingerprint => Fingerprint(fingerprintHex);
 
-  SeedInfo toInfo({DateTime? createdAt}) => SeedInfo(
+  SecretInfo toInfo({DateTime? createdAt}) => SecretInfo(
         fingerprint: fingerprint,
+        kind: SecretKind.mnemonic,
         wordCount: wordCount,
         hasPassphrase: hasPassphrase,
         language: _language.name,
@@ -107,19 +109,19 @@ class Mnemonic {
   ///   3. the pre-0.4 OldSeed          `{"mnemonic":"word word …","mnemonicFingerprint":…,"passphrases":[…]}`
   /// The master fingerprint (the storage key) is derivation-identical across all
   /// three (BIP39→BIP32), so a seed stored under the old format is found and read
-  /// unchanged. Malformed/unsupported input surfaces as a `FormatException` (a
-  /// catchable Exception) — never a `dart:core` Error that escapes the guard.
+  /// unchanged. Malformed/unsupported input surfaces as a `MalformedSecretException`
+  /// (a catchable Exception) — never a `dart:core` Error that escapes the guard.
   static Mnemonic fromStorageBytes(Uint8List bytes) {
     try {
       final decoded = jsonDecode(utf8.decode(bytes));
       if (decoded is! Map<String, dynamic>) {
-        throw const FormatException('stored secret is not a JSON object');
+        throw const MalformedSecretException('stored secret is not a JSON object');
       }
       return _fromMap(decoded);
-    } on FormatException {
+    } on MalformedSecretException {
       rethrow;
     } catch (e) {
-      throw FormatException('Malformed stored secret: $e');
+      throw MalformedSecretException('Malformed stored secret: $e');
     }
   }
 
@@ -133,7 +135,7 @@ class Mnemonic {
     if (m['kind'] == 'mnemonic') {
       final words = (m['words'] as List).cast<String>();
       if (words.isEmpty) {
-        throw const FormatException('stored mnemonic has no words');
+        throw const MalformedSecretException('stored mnemonic has no words');
       }
       return Mnemonic(
         words: words,
@@ -145,7 +147,7 @@ class Mnemonic {
     if (m['runtimeType'] == 'mnemonic' || m.containsKey('mnemonicWords')) {
       final words = (m['mnemonicWords'] as List).cast<String>();
       if (words.isEmpty) {
-        throw const FormatException('stored mnemonic has no words');
+        throw const MalformedSecretException('stored mnemonic has no words');
       }
       return Mnemonic(
         words: words,
@@ -167,9 +169,9 @@ class Mnemonic {
     // (zero callers) and this package stores only mnemonics — reject it
     // explicitly and SAFELY (surfaced, never silently treated as a valid seed).
     if (m['runtimeType'] == 'bytes' || m.containsKey('bytes')) {
-      throw const FormatException('bytes-only seeds are not supported');
+      throw const MalformedSecretException('bytes-only seeds are not supported');
     }
-    throw const FormatException('unrecognized stored-secret format');
+    throw const MalformedSecretException('unrecognized stored-secret format');
   }
 
   @override

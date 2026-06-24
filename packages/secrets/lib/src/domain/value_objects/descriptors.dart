@@ -1,12 +1,13 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 
 /// A public extended key (xpub/ypub/zpub/…). NON-secret.
 @immutable
 class Xpub {
   factory Xpub({required String value, required XpubType type}) {
     if (value.isEmpty) {
-      throw ArgumentError.value(value, 'value', 'Xpub must not be empty');
+      throw InvalidXpubError('Xpub must not be empty', 'value');
     }
     return Xpub._(value, type);
   }
@@ -34,7 +35,7 @@ class BitcoinDescriptor {
     required String internal,
   }) {
     if (external.isEmpty || internal.isEmpty) {
-      throw ArgumentError('BitcoinDescriptor parts must not be empty');
+      throw InvalidDescriptorError('BitcoinDescriptor parts must not be empty');
     }
     return BitcoinDescriptor._(external, internal);
   }
@@ -66,8 +67,7 @@ class BitcoinDescriptor {
 class LiquidDescriptor {
   factory LiquidDescriptor(String ctDescriptor) {
     if (ctDescriptor.isEmpty) {
-      throw ArgumentError.value(
-          ctDescriptor, 'ctDescriptor', 'must not be empty');
+      throw InvalidDescriptorError('must not be empty', 'ctDescriptor');
     }
     return LiquidDescriptor._(ctDescriptor);
   }

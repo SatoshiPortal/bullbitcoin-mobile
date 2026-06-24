@@ -24,8 +24,10 @@ it is called out as **CONFIRM** with the exact check to run.
   is never misread as "missing" by the startup wallet check.
 - **Three package-contract revisions are prerequisites** (sections A/B/C). They are not
   optional polish — the backup and swap slices cannot adopt correctly without them.
-- **`KeyDerivationPort` is connective tissue.** Wallet creation, descriptors, xpubs, and
-  the migration-005 read-back all depend on it; adopt it early so the rest can build on it.
+- **Derivation is connective tissue.** Wallet creation, descriptors, xpubs, and
+  the migration-005 read-back all depend on the handle's derivation methods
+  (`secret.xpub(...)` / `secret.bitcoinDescriptor(...)` / `secret.liquidDescriptor(...)`);
+  adopt them early so the rest can build on them.
 
 ### Verification provenance
 - **BIP78 sender checklist** — re-verified directly from the spec
@@ -50,7 +52,7 @@ it is called out as **CONFIRM** with the exact check to run.
 
 ## Package-contract prerequisites (do these in `packages/secrets` first)
 
-### A. BackupVaultPort — read legacy backups, keep `path` (CRITICAL: recovery-breaker)
+### A. Backup vault — read legacy backups, keep `path` (CRITICAL: recovery-breaker)
 
 Two real breaks vs the app's existing backups:
 1. The app encrypts a `DecryptedVault` envelope where `mnemonic` is a **List<String>**;
@@ -64,24 +66,25 @@ Two real breaks vs the app's existing backups:
 - Add a 4th branch to `Mnemonic._fromMap` (`mnemonic.dart`, before the final throw):
   recognize `m['mnemonic'] is List` → bare mnemonic (no passphrase; key is BIP85-derived
   from the bare seed). Disjoint from the existing `mnemonic is String` (OldSeed) branch.
-- `BackupVaultPort.encryptVault` gains `String? derivationPath` (+ optional
+- `Secret.encryptVault` gains `String? derivationPath` (+ optional
   `Map<String,Object?> metadata`); the adapter writes `path` into the BullBackup JSON and
   wraps the envelope (`{...metadata, "mnemonic": m.words}`) so the **forward format stays
   the legacy envelope** (downgrade-safe; old readers and the recovery web tool keep
   working).
-- `restoreVault` returns a new `RestoredVault { List<Fingerprint> fingerprints;
+- `Secrets.restoreVault` returns a new `RestoredVault { List<Fingerprint> fingerprints;
   Map<String,Object?> metadata }` (envelope minus `mnemonic`) so the app re-applies
   test-flags/timestamps and recreates wallets. The package never parses those.
 - Add `EncryptedVault.derivationPath` getter (parse `path`; typed failure if absent and
   offline derivation is requested).
-- **Files:** `mnemonic.dart` (branch 4), `domain/ports/backup_vault_port.dart`,
+- **Files:** `mnemonic.dart` (branch 4), the internal backup vault port + the
+  `Secret.encryptVault` / `Secrets.restoreVault` facade signatures,
   `domain/value_objects/backup.dart` (`RestoredVault`, `derivationPath`),
   `data/adapters/backup_vault_adapter.dart`.
 - **Tests:** legacy-envelope restore (use the real `integration_test/recoverbull_test.dart`
   fixtures), new-format round-trip + `path` present, downgrade (old `DecryptedVault.fromJson`
   still parses new output), tampered ciphertext (HMAC), wrong key, empty-words, `path`-absent.
 
-### B. SwapSignerPort / SwapIntent — make the contract constructible (and fix the amount gate)
+### B. Swap creation / SwapIntent — make the contract constructible (and fix the amount gate)
 
 `SwapIntent` currently requires `claimPubkey/refundPubkey/preimageHash/timeout/amountSat`
 up front — but the preimage and per-swap keys are generated **inside** the SDK during
@@ -97,8 +100,8 @@ gate I added (`intent.amountSat == swap.outAmount`) is **only correct for revers
 **Fix (decisive):** replace `SwapIntent` with typed, caller-knowable requests —
 `ReverseSwapRequest { requestedReceiveSat, outAddress?, description?, referralId? }`,
 `SubmarineSwapRequest { invoice, invoiceAmountSat, maxLockupSat, referralId? }`,
-`ChainSwapRequest { sendAmountSat, minReceiveSat, direction, referralId? }`. The port
-methods take the request; the **adapter builds the expected commitment internally** from
+`ChainSwapRequest { sendAmountSat, minReceiveSat, direction, referralId? }`. The handle's
+`create*` methods take the request; the **adapter builds the expected commitment internally** from
 the SDK-returned swap (own pubkey(s), `hashlock == preimage.sha256`, locktime), with **no
 caller-supplied secret/pubkey/preimage**. The validator's amount rule becomes per-type as
 above. Restore the dropped `referralId` (revenue) + reverse-only `description`.
@@ -108,9 +111,9 @@ Claim/refund of existing swaps stays in the app (per-swap `KeyPair`).
   not, the chain net-receive floor stays a UI/caller concern (document it); the
   lockup/send exact check still holds.
 - **Files:** `signing_intent.dart` (replace `SwapIntent`), `created_swap.dart` (+fields),
-  `swap_signer_port.dart` (new signatures), `intent_validation.dart` (per-type amount +
-  internal-build), `swap_signer_adapter.dart` (forward referralId/description, read own
-  keys/preimage from the swap).
+  the handle's `create*` signatures + the internal swap signer port, `intent_validation.dart`
+  (per-type amount + internal-build), `swap_signer_adapter.dart` (forward
+  referralId/description, read own keys/preimage from the swap).
 - **Tests:** per-type amount pass/fail, own-key mismatch, hashlock≠preimage.sha256,
   submarine refund-locktime mandatory, chain leg routing, referralId forwarded to all 6
   create calls + description only to the 2 reverse.
@@ -141,46 +144,56 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 
 ### Phase 0 — wiring (no behavior change)
 - Add `secrets:` to the app's `dependencies:` (today it's only a `workspace:` member).
-- **New** Drift `seed_index` table (`fingerprint` PK, `wordCount`, `hasPassphrase`,
-  `language` default english, `createdAt?`) + `DriftSeedIndex implements SeedIndexPort`.
-  Bump schema **v13 → v14** (`stepByStep` `from13To14` = `createTable`), regenerate
-  `drift_schema_v14.json` + `Schema14`.
-- Register `SeedIndexPort` → `DriftSeedIndex` **before** `SecretsLocator.registerRepositories`
-  (the locator throws if the index isn't registered).
-- Wire `SecretsLocator.init(...)` into `AppLocator.setup` inside the existing seed phase.
-- Outcome: ports resolvable; nothing calls them yet → identical behavior.
+- **New** Drift `secret_index` table (`fingerprint` PK, `wordCount`, `hasPassphrase`,
+  `language` default english, `createdAt?`) + `DriftSecretIndex implements SecretIndexPort`
+  (returns `SecretInfo`). Bump schema **v13 → v14** (`stepByStep` `from13To14` = `createTable`),
+  regenerate `drift_schema_v14.json` + `Schema14`.
+- Single wiring call: `Secrets.init(index: DriftSecretIndex())` inside `AppLocator.setup`'s
+  existing seed phase. `init` **requires** `index` (the only injected dependency); the
+  optional `store` is left to default to the keychain-backed adapter. This one call replaces
+  the old datasource/repository registration entirely — there is no locator and no
+  per-port resolution.
+- Outcome: `Secrets`/the `Secret` handle are usable; nothing calls them yet → identical behavior.
 
-### Phase 1 — KeyDerivation + seed read/index/reconcile (foundation)
-- Route xpub/descriptor/fingerprint derivation through `KeyDerivationPort`
-  (`accountXpub`, `bitcoinDescriptor` returns external+internal together, `liquidDescriptor`,
-  `masterFingerprint`). It is a **verbatim port** of `lib/core/utils/bip32_derivation.dart`
-  / `descriptor_derivation.dart` (same purpose/coinType, lowercase 8-hex fingerprint) →
-  byte-identical output. Rewire `wallet_metadata_service.deriveFromSeed`.
+### Phase 1 — derivation + seed read/index/reconcile (foundation)
+- Route xpub/descriptor/fingerprint derivation through the `Secret` handle:
+  `(await Secrets.fetch(fp)).xpub({scriptType, network, account})`,
+  `secret.bitcoinDescriptor({scriptType, network})` (returns external+internal together),
+  `secret.liquidDescriptor({network})`. The fingerprint is the handle itself — the old
+  homeless `masterFingerprint` accessor is dropped (`secret.fingerprint`). The internal
+  derivation is a **verbatim port** of `lib/core/utils/bip32_derivation.dart` /
+  `descriptor_derivation.dart` (same purpose/coinType, lowercase 8-hex fingerprint) →
+  byte-identical output. The app maps its own boolean `Network` enum onto the package's
+  chain-typed `BitcoinNetwork`/`LiquidNetwork` at the call boundary. Rewire
+  `wallet_metadata_service.deriveFromSeed`.
   - **CONFIRM/ADD:** `deriveFromSeed` also stores an `xpubFingerprint` (account-key fp); add
-    `KeyDerivationPort.accountXpubFingerprint` or derive it app-side from the returned `Xpub`.
-- Implement `ReconcileSeedsUsecase` wrapping `reconcileSeeds(index, store)`:
-  - `orphanSeedFingerprints` → **self-heal** (`index.upsert(SeedInfo)`); this backfills the
-    empty index for all existing users on first launch.
-  - `danglingIndexFingerprints` → **telemetry, never remove** (on iOS this is usually a
+    a handle accessor for it or derive it app-side from the returned `Xpub`.
+- Implement `ReconcileSeedsUsecase` wrapping the package's startup reconcile (index vs store):
+  - orphan fingerprints (in store, not in index) → **self-heal** (`index.upsert(SecretInfo)`);
+    this backfills the empty index for all existing users on first launch.
+  - dangling index fingerprints → **telemetry, never remove** (on iOS this is usually a
     locked keychain — removing would orphan funds).
-  - `malformedKeys` → **telemetry only**, never log the value.
+  - malformed keys → **telemetry only**, never log the value.
 - **Startup ordering:** run `ReconcileSeedsUsecase` in `AppStartupBloc` **after** migrations
   and **before** `CheckForExistingDefaultWalletsUsecase`, inside the existing try that
-  catches `KeychainLockedException` (locked keychain → abort reconcile, mutate nothing,
+  catches the locked-keychain condition (locked keychain → abort reconcile, mutate nothing,
   retry on resume). Reads bypass the index, so an unindexed seed is never read as missing.
-- Re-point migration 005's seed **writes** to `SeedPort.importMnemonic` (tolerate
-  `DuplicateSeedFailure` on re-run); key/format parity preserved.
-- `DeleteSeedUsecase` → `SeedPort.delete` (removes the index row too).
-- Logout/reset → `SecretStorePort.purge()` (seed-scoped: `seed_*` only; PIN/swap/exchange
-  keys survive) **then** clear the `seed_index` table. Singletons are stateless re secrets —
-  no `locator.reset()` needed.
+- Re-point migration 005's seed **writes** to `Secrets.importMnemonic` (tolerate
+  `DuplicateSecretFailure` on re-run); key/format parity preserved.
+- `DeleteSeedUsecase` → `secret.delete()` (removes the index row too).
+- Logout/reset → seed-scoped store purge (`seed_*` only; PIN/swap/exchange keys survive)
+  **then** clear the `secret_index` table. Singletons are stateless re secrets — no reset
+  of the facade graph needed (use `Secrets.reset()` only for test isolation).
 
 ### Phase 2 — signing (non-payjoin sends) [needs §C]
 - Thread `SendIntent` data: add a small `SendRecipient {address, amountSat}` entity; the
   sign usecases (`sign_bitcoin_tx`, `sign_liquid_tx`) gain `recipients` + `maxFeeSat`; the
-  **repository** builds the `SendIntent` (it already has `metadata` → `isTestnet/scriptType`
+  **repository** builds the `SendIntent` (it already has `metadata` → network/scriptType
   and can do address→scriptPubKey via a new `AddressScriptConversions.bitcoinScriptPubkeyFromAddress`,
-  identical to what `buildPsbt` does) and calls `SignerPort.signBitcoinPsbt/signLiquidPset`.
+  identical to what `buildPsbt` does), fetches the handle, and calls
+  `secret.signBitcoin({psbt, intent, scriptType, network})` /
+  `secret.signLiquid({pset, intent, network})` (mapping its `Network` enum to
+  `BitcoinNetwork`/`LiquidNetwork` at the boundary).
 - `maxFeeSat` policy: compute from the **unsigned** PSBT/PSET fee the user is shown, then
   `cap = expectedFee + max(ceil(expectedFee/100), 50)` (~1% + 50-sat floor). Tight enough to
   catch fee-inflation, loose enough for rounding. (Liquid is fee-cap-only — confidential
@@ -190,7 +203,7 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 - `trustWitnessUtxo:false`: **no PSBT-construction change** — app PSBTs already carry
   `non_witness_utxo` (TxBuilder default; full scan uses `fetchPrevTxouts:true`), so they
   sign fine. Add a regression test asserting a `buildPsbt` output round-trips through
-  `SignerAdapter`.
+  `secret.signBitcoin`.
 - Update call sites that hold the recipient/amount: `send_cubit`, `sell_bloc`, `pay_bloc`.
   (`transfer_bloc`/swaps and payjoin are separate phases.)
 - Cleanup: the private-signing path (`bdk_wallet_datasource.signPsbt` `trustWitnessUtxo:true`,
@@ -198,10 +211,12 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
   (keep until `bumpFee` is migrated too).
 
 ### Phase 3 — swaps (creation) [needs §B]
-- Replace the 6 `boltz.*Swap.new*` call blocks in `boltz_datasource.dart` with
-  `SwapSignerPort` create calls (seed read internally). Build the typed `SwapRequest` at the
-  create usecases (`create_receive_swap`, `create_send_swap`, `create_chain_swap*`,
-  `auto_swap_execution`) — they already hold amount/invoice/direction.
+- Replace the 6 `boltz.*Swap.new*` call blocks in `boltz_datasource.dart` with the handle's
+  `secret.createBtcReverse/createBtcSubmarine/createLbtcReverse/createLbtcSubmarine/createChainSwap`
+  calls (seed read internally; map the app `Network` to `BitcoinNetwork`/`LiquidNetwork`, and
+  `createChainSwap` to `NetworkEnv`). Build the typed `SwapRequest` at the create usecases
+  (`create_receive_swap`, `create_send_swap`, `create_chain_swap*`, `auto_swap_execution`) —
+  they already hold amount/invoice/direction.
 - Keep app-side: index allocation (`_next*KeyIndex` + `_withCreationLock`), `SwapModel`
   assembly (fees, `paymentAmount = outAmount` — correct for submarine/chain), and **all**
   claim/refund/broadcast/coop-close/preimage/migration code (operates on the stored
@@ -221,39 +236,44 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 - At the sender sign site (`payjoin_repository_impl._processPayjoinProposal`), build
   `PayjoinIntent` from the snapshot, **re-attach the sender's original `non_witness_utxo`**
   onto the proposal inputs by outpoint (BIP78 re-import — required for `trustWitnessUtxo:false`
-  to finalize), call `SignerPort.signBitcoinPsbt`; on `Err` →
-  `tryBroadcastOriginalTransaction` (the BIP78 fallback; also fixes the empty `catch` TODO).
+  to finalize), fetch the handle and call `secret.signBitcoin({psbt, intent: payjoinIntent, …})`;
+  on `Err` → `tryBroadcastOriginalTransaction` (the BIP78 fallback; also fixes the empty
+  `catch` TODO).
 - Receiver leg (`processPsbt`) is a separate concern (no receiver intent in the package) —
   it migrates as a `SendIntent`-style task or stays; **not deferred silently — tracked here.**
 
 ### Phase 5 — BIP85 + Ark
-- **BIP85:** add `Bip85Port.deriveStoredPath({masterSeed, Bip85Path})` returning a sealed
-  `Bip85HexResult` (derives any persisted hardened path; the SQLite path/alias/status
-  metadata stays app-side). The `bip85_entropy` cubit lists rows from SQLite and derives
-  each via the port (no raw entropy in cubit state). `Bip85DerivationWidget` renders
-  `Bip85HexView` and **drops the clipboard copy + reveal toggle** (industry best practice;
-  the sealed view is non-selectable under PrivacyGuard). No package-enum expansion needed
-  (derivation is by path string).
+- **BIP85:** the handle exposes `secret.bip85RecoverbullKey({path})` (+ `bip85ChildMnemonic`,
+  `bip85Bip39Child`, `bip85Hex`) for deriving any persisted hardened path; the SQLite
+  path/alias/status metadata stays app-side. The `bip85_entropy` cubit lists rows from SQLite,
+  fetches the handle, and derives each via the handle method (no raw entropy in cubit state).
+  `Bip85DerivationWidget` renders `Bip85HexView` and **drops the clipboard copy + reveal
+  toggle** (industry best practice; the sealed view is non-selectable under PrivacyGuard).
+  No package-enum expansion needed (derivation is by path string).
 - **Ark:** `ArkSecret.bytes` is `@internal`, but `bull_sdk` `ArkWallet.init` needs the raw
-  32 bytes — so **move construction into the package** via a new `ArkSignerPort.initWallet
-  ({masterSeed, ArkConfig}) → ArkWalletHandle` (reads `ArkSecret.bytes` in-package, returns
-  a non-secret handle exposing addresses/balance/send/settle). Delete `FetchArkSecretUsecase`
-  and the `secretHex`/`_secretKey` fields on `ArkWalletEntity`. (CONFIRM: grep
-  `features/ark_setup/**` for any `secretHex` display → re-host as a sealed view or remove.)
+  32 bytes — so **keep construction in the package**: `secret.bip85Ark()` already returns the
+  sealed `ArkSecret` in-package, and a future `initWallet`-style handle op (reads
+  `ArkSecret.bytes` internally, returns a non-secret Ark handle exposing
+  addresses/balance/send/settle) keeps the bytes from ever crossing the barrel. Delete
+  `FetchArkSecretUsecase` and the `secretHex`/`_secretKey` fields on `ArkWalletEntity`.
+  (CONFIRM: grep `features/ark_setup/**` for any `secretHex` display → re-host as a sealed
+  view or remove.)
 
 ### Phase 6 — seed-display/verify/import UI
-- Swap to sealed widgets: `show_mnemonic_screen` → `MnemonicView`; `verify_mnemonic_screen`
+- Swap to sealed widgets: `show_mnemonic_screen` → `SecretRevealer`; `verify_mnemonic_screen`
   → `VerifyBackupView` (UX change: single-bool full compare instead of incremental
   prefix-tap — a deliberate improvement that stops leaking prefix length; wire
   `onResult(true)` → `CompletePhysicalBackupVerificationUsecase`); `all_seed_view` →
-  `MnemonicView` per fingerprint; onboarding recovery display → `MnemonicView`. Re-host
-  warning banners/instructions as siblings. Drop raw words from bloc/cubit state.
+  `SecretRevealer` per fetched `Secret`; onboarding recovery display → `SecretRevealer`. Pass
+  only the `Secret` handle + a `SecretRevealerStrings` of localized labels; the widget renders
+  the words/passphrase/hex itself. Re-host warning banners/instructions as siblings. Drop raw
+  words from bloc/cubit state.
 - `PrivacyScreen` mixin becomes redundant on migrated screens (PrivacyGuard is better:
   ref-counted + app-switcher cover). `MnemonicWidget` stays for **input** (typing a phrase
   is non-secret user input, not a stored secret).
 - Import balance-scan (`_scanAllScriptTypes`): **no port needed** — it runs pre-import on
   user-typed words (non-secret input). Just clear the words from cubit state after import
-  and route any post-import phrase display to `MnemonicView`.
+  and route any post-import phrase display to `SecretRevealer`.
 
 ### Phase 7 — delete dead code + tighten the seal
 - Delete: `seed_datasource`, `seed_repository`, `seed_model`, `Seed` entity,
@@ -272,13 +292,13 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 | # | Risk | Mitigation | Phase |
 |---|---|---|---|
 | 1 | **Legacy backups unrestorable** (envelope `mnemonic` List + dropped `path`) | §A: read both formats, keep envelope + `path`; test with real fixtures | A |
-| 2 | **First-launch reconcile mis-orders** → existing wallet looks missing | Reads bypass index; reconcile before check-existing; locked-keychain aborts safely | 1 |
+| 2 | **First-launch reconcile mis-orders** → existing wallet looks missing | Reads bypass index (`fetch` is index-only, raw reads are per-op); reconcile before check-existing; locked-keychain aborts safely | 1 |
 | 3 | **Swap intent unconstructible / wrong amount gate** | §B: typed requests, package builds commitment, per-type amount | B/3 |
 | 4 | **Payjoin proposal won't finalize** (`trustWitnessUtxo:false` + stripped UTXO) | §C + re-attach sender `non_witness_utxo` (BIP78-confirmed); branch gates by intent | C/4 |
-| 5 | **Wallet-creation read-back** needs raw seed bytes (005 + wallet repos) | Route through `KeyDerivationPort`/`SignerPort`; sequence KeyDerivation first | 1 |
+| 5 | **Wallet-creation read-back** needs raw seed bytes (005 + wallet repos) | Route through the handle's derivation/signing methods (`secret.xpub`/`bitcoinDescriptor`/`signBitcoin`); sequence derivation first | 1 |
 | 6 | **maxFeeSat too tight** rejects legit sends (esp. Liquid) | expected-fee + ~1% + 50-sat floor, from the unsigned PSBT | 2 |
 | 7 | **Verify-backup UX change** (single-bool vs incremental) surprises users | Intentional security win; re-host instructions; QA the flow | 6 |
-| 8 | **Ark seal-lint** if bytes read in app | `ArkSignerPort` keeps bytes in-package | 5 |
+| 8 | **Ark seal-lint** if bytes read in app | a package-side Ark init op keeps bytes in-package (handle-sourced) | 5 |
 | 9 | **Drift migrations** (v14 seed_index, v15 payjoin) | idempotent `addColumn`/`createTable` + schema-export tests | 0/4 |
 
 ---
@@ -286,7 +306,7 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 ## Open CONFIRM items (run before/with implementation)
 1. boltz dart SDK exposes `ChainSwap.claim_details.amount`? (gates chain net-receive floor)
 2. `payjoin_flutter` fork exposes the builder's `maxadditionalfeecontribution`? (else use the formula)
-3. `KeyDerivationPort` needs an `accountXpubFingerprint` accessor for `deriveFromSeed`'s second fp?
+3. The `Secret` handle needs an `accountXpubFingerprint` accessor for `deriveFromSeed`'s second fp (or derive it app-side from the returned `Xpub`)?
 4. Any `secretHex` display in `features/ark_setup/**`?
 5. Re-fetch and re-confirm the Boltz "don't-trust-verify" amount rules + BDK SignOptions text
    when the web session resets (BIP78 already personally re-verified).

@@ -1,3 +1,4 @@
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -9,28 +10,28 @@ void main() {
   group('Mnemonic.fromStorageBytes — malformed input is an Exception', () {
     // The boundary _guard catches `on Exception`, NOT dart:core Error. A
     // malformed/legacy/forward-version blob must therefore surface as a
-    // FormatException (Exception), never a StateError/TypeError/ArgumentError.
-    test('non-JSON bytes → FormatException (not an Error)', () {
+    // MalformedSecretException (Exception), never a StateError/TypeError/ArgumentError.
+    test('non-JSON bytes → MalformedSecretException (not an Error)', () {
       expect(
         () => Mnemonic.fromStorageBytes(
             Uint8List.fromList(utf8.encode('not json'))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
 
-    test('JSON that is not an object → FormatException', () {
+    test('JSON that is not an object → MalformedSecretException', () {
       expect(
         () => Mnemonic.fromStorageBytes(
             Uint8List.fromList(utf8.encode('[1,2,3]'))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
 
-    test('unknown kind → FormatException', () {
+    test('unknown kind → MalformedSecretException', () {
       expect(
         () => Mnemonic.fromStorageBytes(
             Uint8List.fromList(utf8.encode('{"kind":"alien"}'))),
-        throwsA(isA<FormatException>()),
+        throwsA(isA<MalformedSecretException>()),
       );
     });
 
@@ -48,22 +49,22 @@ void main() {
       expect(secret.words, ['zoo', 'zoo', 'wrong']);
     });
 
-    test('empty word list → FormatException (native format)', () {
+    test('empty word list → MalformedSecretException (native format)', () {
       final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
         'kind': 'mnemonic',
         'words': <String>[],
       })));
       expect(() => Mnemonic.fromStorageBytes(bytes),
-          throwsA(isA<FormatException>()));
+          throwsA(isA<MalformedSecretException>()));
     });
 
-    test('empty word list → FormatException (app SeedModel format)', () {
+    test('empty word list → MalformedSecretException (app SeedModel format)', () {
       final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
         'runtimeType': 'mnemonic',
         'mnemonicWords': <String>[],
       })));
       expect(() => Mnemonic.fromStorageBytes(bytes),
-          throwsA(isA<FormatException>()));
+          throwsA(isA<MalformedSecretException>()));
     });
   });
 

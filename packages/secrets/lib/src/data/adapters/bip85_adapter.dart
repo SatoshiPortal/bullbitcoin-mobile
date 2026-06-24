@@ -53,7 +53,7 @@ class Bip85Adapter implements Bip85Port {
     required MnemonicLength length,
   }) {
     if (app != Bip85Application.bip39) {
-      return Future.value(const Err(NotAMnemonicSeedFailure(
+      return Future.value(const Err(NotAMnemonicFailure(
           'deriveBip39Child requires the bip39 application')));
     }
     return deriveChildMnemonic(

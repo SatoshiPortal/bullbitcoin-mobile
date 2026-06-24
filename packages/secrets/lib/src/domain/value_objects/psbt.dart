@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 
 bool _isBase64(String s) {
   if (s.isEmpty) return false;
@@ -19,7 +20,7 @@ bool _isBase64(String s) {
 class Psbt {
   factory Psbt(String base64Value) {
     if (!_isBase64(base64Value)) {
-      throw ArgumentError.value(base64Value, 'base64', 'invalid base64 PSBT');
+      throw InvalidPsbtError('invalid base64 PSBT', 'base64');
     }
     return Psbt._(base64Value);
   }
@@ -42,8 +43,7 @@ class Psbt {
 class SignedPsbt {
   factory SignedPsbt(String base64Value) {
     if (!_isBase64(base64Value)) {
-      throw ArgumentError.value(
-          base64Value, 'base64', 'invalid base64 signed PSBT');
+      throw InvalidPsbtError('invalid base64 signed PSBT', 'base64');
     }
     return SignedPsbt._(base64Value);
   }

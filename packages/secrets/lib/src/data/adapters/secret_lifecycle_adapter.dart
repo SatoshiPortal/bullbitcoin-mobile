@@ -4,37 +4,27 @@ import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/secret_guard.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
+import 'package:secrets/src/domain/ports/secret_index_port.dart';
+import 'package:secrets/src/domain/ports/secret_lifecycle_port.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
-import 'package:secrets/src/domain/ports/seed_index_port.dart';
-import 'package:secrets/src/domain/ports/seed_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_language.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
-/// The seed-lifecycle adapter — the single public-edge conversion-to-Result
+/// The secret-lifecycle adapter — the single public-edge conversion-to-Result
 /// boundary for storing/indexing mnemonics. Foreign exceptions are converted
 /// ONCE via [SecretGuard]; `dart:core` `Error`s (programmer bugs) crash.
-class SeedAdapter implements SeedPort {
-  SeedAdapter({required SecretStorePort store, required this._index})
+class SecretLifecycleAdapter implements SecretLifecyclePort {
+  SecretLifecycleAdapter({required SecretStorePort store, required this._index})
       : _store = store,
         _guard = SecretGuard(store);
 
   final SecretStorePort _store;
-  final SeedIndexPort _index;
+  final SecretIndexPort _index;
   final SecretGuard _guard;
 
   String _key(Fingerprint fp) => SecretStoreKeys.seedKey(fp.hex);
-
-  /// Resolves a user-supplied language on the IMPORT entry points. Unlike the
-  /// storage-DECODE path (which stays forward-compatible and falls back to
-  /// English), import REJECTS an unknown language rather than silently
-  /// misinterpreting the words. Returns null when unrecognized.
-  static bip39.Language? _lang(String name) {
-    for (final l in bip39.Language.values) {
-      if (l.name == name) return l;
-    }
-    return null;
-  }
 
   SecretsFailure _err(String log) => SecretsUnexpectedFailure(log);
 
@@ -43,13 +33,13 @@ class SeedAdapter implements SeedPort {
   Future<Result<Fingerprint, SecretsFailure>> _persist(Mnemonic m) async {
     final fp = m.fingerprint; // may throw MnemonicException → caught by _guard
     if (await _store.exists(_key(fp))) {
-      return Err(DuplicateSeedFailure(fp));
+      return Err(DuplicateSecretFailure(fp));
     }
     try {
       await _store.store(_key(fp), m.toStorageBytes());
     } on SecretAlreadyExistsException {
       // A concurrent import won the race between exists() and store().
-      return Err(DuplicateSeedFailure(fp));
+      return Err(DuplicateSecretFailure(fp));
     }
     await _index.upsert(m.toInfo(createdAt: DateTime.now()));
     return Ok(fp);
@@ -59,19 +49,16 @@ class SeedAdapter implements SeedPort {
   Future<Result<Fingerprint, SecretsFailure>> importMnemonic({
     required List<String> words,
     String? passphrase,
-    String language = 'english',
+    MnemonicLanguage language = MnemonicLanguage.english,
   }) =>
       _guard.run(
-        () {
-          final lang = _lang(language);
-          if (lang == null) {
-            return Future.value(Err<Fingerprint, SecretsFailure>(
-                InvalidMnemonicFailure('unknown language: $language')));
-          }
-          return _persist(
-            Mnemonic(words: words, passphrase: passphrase, language: lang),
-          );
-        },
+        () => _persist(
+          Mnemonic(
+            words: words,
+            passphrase: passphrase,
+            language: language.asBip39,
+          ),
+        ),
         onError: _err,
       );
 
@@ -100,31 +87,27 @@ class SeedAdapter implements SeedPort {
       _guard.run(() async => Ok(await _store.exists(_key(fp))), onError: _err);
 
   @override
-  Future<Result<List<SeedInfo>, SecretsFailure>> listSeeds() =>
+  Future<Result<List<SecretInfo>, SecretsFailure>> listSeeds() =>
       _guard.run(() async => Ok(await _index.all()), onError: _err);
 
   @override
-  Future<Result<SeedInfo?, SecretsFailure>> getInfo(Fingerprint fp) =>
+  Future<Result<SecretInfo?, SecretsFailure>> getInfo(Fingerprint fp) =>
       _guard.run(() async => Ok(await _index.get(fp)), onError: _err);
 
   @override
   Future<Result<Fingerprint, SecretsFailure>> fingerprintOf({
     required List<String> words,
     String? passphrase,
-    String language = 'english',
+    MnemonicLanguage language = MnemonicLanguage.english,
   }) =>
       _guard.run(
-        () async {
-          final lang = _lang(language);
-          if (lang == null) {
-            return Err<Fingerprint, SecretsFailure>(
-                InvalidMnemonicFailure('unknown language: $language'));
-          }
-          return Ok(
-            Mnemonic(words: words, passphrase: passphrase, language: lang)
-                .fingerprint,
-          );
-        },
+        () async => Ok(
+          Mnemonic(
+            words: words,
+            passphrase: passphrase,
+            language: language.asBip39,
+          ).fingerprint,
+        ),
         onError: _err,
       );
 }

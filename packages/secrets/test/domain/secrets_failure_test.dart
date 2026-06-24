@@ -6,11 +6,11 @@ void main() {
   group('SecretsFailure family', () {
     test('every variant is a SecretsFailure and a Failure', () {
       final variants = <SecretsFailure>[
-        SeedNotFoundFailure(Fingerprint('deadbeef')),
+        SecretNotFoundFailure(Fingerprint('deadbeef')),
         const KeychainLockedFailure(),
         const InvalidMnemonicFailure(),
-        DuplicateSeedFailure(Fingerprint('deadbeef')),
-        const NotAMnemonicSeedFailure(),
+        DuplicateSecretFailure(Fingerprint('deadbeef')),
+        const NotAMnemonicFailure(),
         const DerivationFailure(),
         const SigningFailure(),
         const VaultFailure(),
@@ -22,20 +22,20 @@ void main() {
       }
     });
 
-    test('DuplicateSeedFailure carries its fingerprint', () {
-      final f = DuplicateSeedFailure(Fingerprint('0a1b2c3d'));
+    test('DuplicateSecretFailure carries its fingerprint', () {
+      final f = DuplicateSecretFailure(Fingerprint('0a1b2c3d'));
       expect(f.fingerprint.hex, '0a1b2c3d');
     });
 
     test('locked and not-found are DISTINCT types (never collapsed)', () {
       const SecretsFailure locked = KeychainLockedFailure();
-      final SecretsFailure notFound = SeedNotFoundFailure(Fingerprint('deadbeef'));
-      expect(locked, isNot(isA<SeedNotFoundFailure>()));
+      final SecretsFailure notFound = SecretNotFoundFailure(Fingerprint('deadbeef'));
+      expect(locked, isNot(isA<SecretNotFoundFailure>()));
       expect(notFound, isNot(isA<KeychainLockedFailure>()));
       // The fund-critical guard is an unmissable flat switch.
       String classify(SecretsFailure f) => switch (f) {
             KeychainLockedFailure() => 'retry-after-unlock',
-            SeedNotFoundFailure() => 'maybe-recover',
+            SecretNotFoundFailure() => 'maybe-recover',
             _ => 'other',
           };
       expect(classify(locked), 'retry-after-unlock');
@@ -43,7 +43,7 @@ void main() {
     });
 
     test('failures carry a fingerprint where relevant', () {
-      final f = SeedNotFoundFailure(Fingerprint('0a1b2c3d'));
+      final f = SecretNotFoundFailure(Fingerprint('0a1b2c3d'));
       expect(f.fingerprint.hex, '0a1b2c3d');
     });
   });

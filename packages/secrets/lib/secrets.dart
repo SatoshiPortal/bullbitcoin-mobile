@@ -1,37 +1,51 @@
 /// `secrets` — the sole owner of user secrets for the Bull wallet.
 ///
-/// This barrel is the ENTIRE public surface. It intentionally never exports
-/// `src/crypto/*`, the `SecretStorePort`/`SecureKeyValueStorePort` ports, the
-/// `Mnemonic`/`Mnemonic` models, `MnemonicReader`, or any `*Impl` —
-/// raw secret material has no path out of the package. Callers get non-secret
-/// info, operation results, or sealed display widgets.
+/// Consumed as a library: `import 'package:secrets/secrets.dart';`, call
+/// [Secrets.init] once with the app's [SecretIndexPort], then create/operate via
+/// [Secrets] statics and the sealed [Secret] handle. This barrel is the ENTIRE
+/// public surface — it never exports `src/crypto/*`, the capability adapters/ports
+/// (now internal), the `Mnemonic`/`Seed` models, `MnemonicReader`, or any `*Impl`.
+/// Raw secret material has no path out: callers get non-secret info, operation
+/// results, or sealed display widgets.
 library;
 
-// ── Contracts (interfaces only; impls stay internal) ──────────────────────
-export 'src/domain/ports/seed_port.dart' show SeedPort;
-export 'src/domain/ports/key_derivation_port.dart' show KeyDerivationPort;
-export 'src/domain/ports/signer_port.dart' show SignerPort;
-export 'src/domain/ports/swap_signer_port.dart' show SwapSignerPort;
-export 'src/domain/ports/backup_vault_port.dart' show BackupVaultPort;
-export 'src/domain/ports/bip85_port.dart' show Bip85Port;
-export 'src/domain/ports/seed_index_port.dart' show SeedIndexPort; // app implements this
+// ── Public API: statics + the sealed Secret handle hierarchy ───────────────
+export 'src/secrets_api.dart' show Secrets, Secret, MnemonicSecret, SeedSecret;
 
-// ── Failures (all public-by-design; sealed, secret-free) ──────────────────
+// ── The one injected contract (the APP implements this; everything else internal)
+export 'src/domain/ports/secret_index_port.dart' show SecretIndexPort;
+
+// ── Failures (returned in Result.Err; sealed, secret-free) ─────────────────
 export 'src/domain/secrets_failure.dart'
     show
         SecretsFailure,
-        SeedNotFoundFailure,
+        SecretNotFoundFailure,
         KeychainLockedFailure,
         InvalidMnemonicFailure,
-        DuplicateSeedFailure,
-        NotAMnemonicSeedFailure,
+        DuplicateSecretFailure,
+        NotAMnemonicFailure,
         DerivationFailure,
         SigningFailure,
         VaultFailure,
         SecretsUnexpectedFailure;
 
+// ── Errors (THROWN precondition/programmer bugs — invalid value-object input) ─
+export 'src/domain/secrets_error.dart'
+    show
+        SecretsError,
+        InvalidXpubError,
+        InvalidDescriptorError,
+        InvalidPsbtError,
+        InvalidBip85PathError,
+        UnknownBip85ApplicationError,
+        InvalidVaultKeyError,
+        InvalidEncryptedVaultError,
+        InvalidArkSecretError,
+        UnsupportedMnemonicLengthError;
+
 // ── Value objects (non-secret, or secret-bearing with redacted toString) ──
-export 'src/domain/value_objects/seed_info.dart' show SeedInfo;
+export 'src/domain/value_objects/secret_info.dart' show SecretInfo, SecretKind;
+export 'src/domain/value_objects/mnemonic_language.dart' show MnemonicLanguage;
 export 'src/domain/value_objects/mnemonic_length.dart' show MnemonicLength;
 export 'src/domain/value_objects/descriptors.dart'
     show Xpub, BitcoinDescriptor, LiquidDescriptor;
@@ -51,11 +65,22 @@ export 'src/domain/value_objects/signing_intent.dart'
         ChainDirection;
 export 'src/domain/value_objects/created_swap.dart' show CreatedSwap;
 
-// ── Sealed widgets (the ONLY Flutter exports) ─────────────────────────────
-export 'src/ui/widgets/mnemonic_view.dart' show MnemonicView;
+// ── Sealed display widgets (the ONLY Flutter exports) ─────────────────────
+export 'src/ui/widgets/secret_revealer.dart'
+    show SecretRevealer, SecretRevealerStrings;
 export 'src/ui/widgets/verify_backup_view.dart' show VerifyBackupView;
 export 'src/ui/widgets/bip85_mnemonic_view.dart' show Bip85MnemonicView;
 export 'src/ui/widgets/bip85_hex_view.dart' show Bip85HexView;
 
-// ── DI ────────────────────────────────────────────────────────────────────
-export 'locator.dart' show SecretsLocator;
+// ── Re-exported primitives used in the public signatures (single import) ──
+export 'package:primitives/primitives.dart'
+    show
+        Fingerprint,
+        BitcoinNetwork,
+        LiquidNetwork,
+        NetworkEnv,
+        ScriptType,
+        XpubType,
+        Result,
+        Ok,
+        Err;

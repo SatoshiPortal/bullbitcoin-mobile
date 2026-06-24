@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import 'package:secrets/src/domain/secrets_error.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 
 /// BIP85 application, mirroring the SDK app-numbers used across the codebase.
@@ -14,8 +15,8 @@ enum Bip85Application {
   static Bip85Application fromNumber(int number) =>
       Bip85Application.values.firstWhere(
         (a) => a.number == number,
-        orElse: () => throw ArgumentError.value(
-            number, 'number', 'Unknown BIP85 application number'),
+        orElse: () => throw UnknownBip85ApplicationError(
+            'Unknown BIP85 application number', 'number'),
       );
 }
 
@@ -25,7 +26,7 @@ class Bip85Path {
   factory Bip85Path(String path) {
     final normalized = path.startsWith('m/') ? path.substring(2) : path;
     if (normalized.isEmpty || !normalized.contains('/')) {
-      throw ArgumentError.value(path, 'path', 'invalid BIP85 path');
+      throw InvalidBip85PathError('invalid BIP85 path', 'path');
     }
     return Bip85Path._(normalized);
   }

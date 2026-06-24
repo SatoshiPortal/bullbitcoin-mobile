@@ -7,8 +7,8 @@ import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/seed_reconciler.dart';
-import 'package:secrets/src/domain/ports/seed_index_port.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/domain/ports/secret_index_port.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 import 'fake_secure_key_value_store.dart';
 
@@ -16,16 +16,16 @@ FssSecretStoreAdapter _store(FakeSecureKeyValueStore kv) =>
     // zero retry delay so tests don't sleep
     FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
 
-class _FakeSeedIndex implements SeedIndexPort {
-  final Map<String, SeedInfo> _m = {};
+class _FakeSeedIndex implements SecretIndexPort {
+  final Map<String, SecretInfo> _m = {};
   @override
-  Future<List<SeedInfo>> all() async => _m.values.toList();
+  Future<List<SecretInfo>> all() async => _m.values.toList();
   @override
-  Future<SeedInfo?> get(Fingerprint fp) async => _m[fp.hex];
+  Future<SecretInfo?> get(Fingerprint fp) async => _m[fp.hex];
   @override
   Future<void> remove(Fingerprint fp) async => _m.remove(fp.hex);
   @override
-  Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
+  Future<void> upsert(SecretInfo info) async => _m[info.fingerprint.hex] = info;
 }
 
 void main() {
@@ -158,8 +158,9 @@ void main() {
       final store = _store(kv);
       final index = _FakeSeedIndex();
       await store.store(SecretStoreKeys.seedKey('deadbeef'), Uint8List(1));
-      await index.upsert(SeedInfo(
+      await index.upsert(SecretInfo(
         fingerprint: Fingerprint('deadbeef'),
+        kind: SecretKind.mnemonic,
         wordCount: 12,
         hasPassphrase: false,
         language: 'english',
@@ -184,8 +185,9 @@ void main() {
       final kv = FakeSecureKeyValueStore();
       final store = _store(kv);
       final index = _FakeSeedIndex();
-      await index.upsert(SeedInfo(
+      await index.upsert(SecretInfo(
         fingerprint: Fingerprint('cafebabe'),
+        kind: SecretKind.mnemonic,
         wordCount: 12,
         hasPassphrase: false,
         language: 'english',

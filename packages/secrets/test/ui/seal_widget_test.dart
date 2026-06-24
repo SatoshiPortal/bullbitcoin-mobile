@@ -2,19 +2,9 @@ import 'package:bull_ui/bull_ui.dart' show BullSeedWarningCard;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
-import 'package:secrets/src/data/adapters/seed_adapter.dart';
-import 'package:secrets/src/domain/ports/seed_index_port.dart';
-import 'package:secrets/src/domain/secrets_failure.dart';
-import 'package:secrets/src/domain/value_objects/bip85_types.dart';
-import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';
-import 'package:secrets/src/ui/widgets/bip85_hex_view.dart';
-import 'package:secrets/src/ui/widgets/bip85_mnemonic_view.dart';
-import 'package:secrets/src/ui/widgets/mnemonic_view.dart';
-import 'package:secrets/src/ui/widgets/verify_backup_view.dart';
 
 import '../data/fake_secure_key_value_store.dart';
 import 'test_theme.dart';
@@ -24,16 +14,17 @@ const zooWords = [
   'zoo', 'zoo', 'zoo', 'zoo', 'zoo', 'wrong',
 ];
 
-class _FakeSeedIndex implements SeedIndexPort {
-  final Map<String, SeedInfo> _m = {};
+/// In-memory [SecretIndexPort] backed by a fingerprint-keyed map.
+class _FakeIndex implements SecretIndexPort {
+  final Map<String, SecretInfo> _m = {};
   @override
-  Future<List<SeedInfo>> all() async => _m.values.toList();
+  Future<List<SecretInfo>> all() async => _m.values.toList();
   @override
-  Future<SeedInfo?> get(Fingerprint fp) async => _m[fp.hex];
+  Future<SecretInfo?> get(Fingerprint fp) async => _m[fp.hex];
   @override
   Future<void> remove(Fingerprint fp) async => _m.remove(fp.hex);
   @override
-  Future<void> upsert(SeedInfo info) async => _m[info.fingerprint.hex] = info;
+  Future<void> upsert(SecretInfo info) async => _m[info.fingerprint.hex] = info;
 }
 
 T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
@@ -41,22 +32,29 @@ T _unwrap<T>(Result<T, SecretsFailure> r) => switch (r) {
       Err(:final failure) => throw StateError('expected Ok, got $failure'),
     };
 
+const _strings = SecretRevealerStrings(
+  unavailableMessage: 'unavailable',
+  noPhraseMessage: 'no phrase',
+);
+
 Widget _wrap(Widget child) => MaterialApp(
       theme: ThemeData(extensions: const [secretsTestBullTheme]),
       home: Scaffold(body: child),
     );
 
 void main() {
-  late MnemonicReader reader;
-  late Fingerprint zooFp;
+  late MnemonicSecret zooSecret;
 
   setUp(() async {
-    final kv = FakeSecureKeyValueStore();
-    final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
-    final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
-    zooFp = _unwrap(await repo.importMnemonic(words: zooWords));
-    reader = MnemonicReader(store);
+    Secrets.init(
+      index: _FakeIndex(),
+      store: FssSecretStoreAdapter(FakeSecureKeyValueStore(),
+          initialRetryDelay: Duration.zero),
+    );
+    zooSecret = _unwrap(await Secrets.importMnemonic(zooWords));
   });
+
+  tearDown(Secrets.reset);
 
   // A reader over a locked keychain — its read() throws, exercising the
   // widgets' error path.
@@ -65,14 +63,11 @@ void main() {
             initialRetryDelay: Duration.zero),
       );
 
-  group('MnemonicView (sealed)', () {
+  group('SecretRevealer (sealed)', () {
     testWidgets('renders the stored words and is excluded from semantics',
         (tester) async {
-      await tester.pumpWidget(_wrap(MnemonicView(
-            seed: zooFp,
-            reader: reader,
-            unavailableMessage: 'unavailable',
-            noPhraseMessage: 'no phrase')));
+      await tester.pumpWidget(
+          _wrap(SecretRevealer(secret: zooSecret, strings: _strings)));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsOneWidget); // word 12
       expect(find.byType(ExcludeSemantics), findsAtLeastNWidgets(1));
@@ -80,30 +75,28 @@ void main() {
 
     testWidgets('SEAL: debug diagnostics expose the fingerprint, never words',
         (tester) async {
-      final view = MnemonicView(
-            seed: zooFp,
-            reader: reader,
-            unavailableMessage: 'unavailable',
-            noPhraseMessage: 'no phrase');
+      final view = SecretRevealer(secret: zooSecret, strings: _strings);
       final node = DiagnosticPropertiesBuilder();
       view.debugFillProperties(node);
       final dump = node.properties.map((p) => '${p.name}=${p.value}').join(',');
-      expect(dump, contains(zooFp.hex));
+      expect(dump, contains(zooSecret.fingerprint.hex));
       expect(dump, isNot(contains('zoo')));
       expect(dump, isNot(contains('wrong')));
     });
   });
 
-  group('MnemonicView error path (no infinite spinner)', () {
+  group('SecretRevealer error path (no infinite spinner)', () {
     testWidgets('shows a warning instead of spinning when the read fails',
         (tester) async {
-      final failing = lockedReader();
-      await tester
-          .pumpWidget(_wrap(MnemonicView(
-              seed: zooFp,
-              reader: failing,
-              unavailableMessage: 'unavailable',
-              noPhraseMessage: 'no phrase')));
+      // Re-init over a locked keychain so the in-package reader's read() throws.
+      Secrets.reset();
+      Secrets.init(
+        index: _FakeIndex(),
+        store: FssSecretStoreAdapter(FakeSecureKeyValueStore()..locked = true,
+            initialRetryDelay: Duration.zero),
+      );
+      await tester.pumpWidget(
+          _wrap(SecretRevealer(secret: zooSecret, strings: _strings)));
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.byType(BullSeedWarningCard), findsOneWidget);
@@ -115,7 +108,7 @@ void main() {
         (tester) async {
       var called = false;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: zooFp,
+        seed: zooSecret.fingerprint,
         reader: lockedReader(),
         onResult: (_) => called = true,
         unavailableMessage: 'unavailable',
@@ -158,8 +151,7 @@ void main() {
         (tester) async {
       bool? outcome;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: zooFp,
-        reader: reader,
+        seed: zooSecret.fingerprint,
         onResult: (v) => outcome = v,
         unavailableMessage: 'unavailable',
       )));
@@ -178,34 +170,29 @@ void main() {
 
     testWidgets('refetches when the seed is swapped without a key change',
         (tester) async {
-      // A second, distinct seed to swap in. Same widget position (no key), so
-      // didUpdateWidget — not a fresh initState — must drive the re-read.
+      // A second, distinct seed in the SAME facade store. Same widget position
+      // (no key), so didUpdateWidget — not a fresh initState — must drive the
+      // re-read.
       const distinct = [
         'salt', 'option', 'burden', 'habit', 'silent', 'tone', //
         'breeze', 'fade', 'idle', 'dilemma', 'subway', 'mix',
       ];
-      final kv = FakeSecureKeyValueStore();
-      final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
-      final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
-      final fp2 = _unwrap(await repo.importMnemonic(words: distinct));
-      final reader2 = MnemonicReader(store);
+      final second = _unwrap(await Secrets.importMnemonic(distinct));
 
-      await tester.pumpWidget(_wrap(
-          VerifyBackupView(
-              seed: zooFp,
-              reader: reader,
-              onResult: (_) {},
-              unavailableMessage: 'unavailable')));
+      await tester.pumpWidget(_wrap(VerifyBackupView(
+        seed: zooSecret.fingerprint,
+        onResult: (_) {},
+        unavailableMessage: 'unavailable',
+      )));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsOneWidget); // zoo seed loaded
 
-      // Swap to the second seed/reader (no key change).
-      await tester.pumpWidget(_wrap(
-          VerifyBackupView(
-              seed: fp2,
-              reader: reader2,
-              onResult: (_) {},
-              unavailableMessage: 'unavailable')));
+      // Swap to the second seed (no key change).
+      await tester.pumpWidget(_wrap(VerifyBackupView(
+        seed: second.fingerprint,
+        onResult: (_) {},
+        unavailableMessage: 'unavailable',
+      )));
       await tester.pumpAndSettle();
       expect(find.text('wrong'), findsNothing); // stale words gone
       expect(find.text('dilemma'), findsOneWidget); // new seed loaded
@@ -219,15 +206,11 @@ void main() {
         'salt', 'option', 'burden', 'habit', 'silent', 'tone', //
         'breeze', 'fade', 'idle', 'dilemma', 'subway', 'mix',
       ];
-      final kv = FakeSecureKeyValueStore();
-      final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
-      final repo = SeedAdapter(store: store, index: _FakeSeedIndex());
-      final fp = _unwrap(await repo.importMnemonic(words: distinct));
+      final secret = _unwrap(await Secrets.importMnemonic(distinct));
 
       bool? outcome;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: fp,
-        reader: MnemonicReader(store),
+        seed: secret.fingerprint,
         onResult: (v) => outcome = v,
         unavailableMessage: 'unavailable',
       )));

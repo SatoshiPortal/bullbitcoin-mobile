@@ -8,7 +8,7 @@ import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 import 'package:secrets/src/domain/value_objects/descriptors.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 import 'package:secrets/src/domain/value_objects/psbt.dart';
-import 'package:secrets/src/domain/value_objects/seed_info.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 void main() {
   group('validation (throws ArgumentError on bad input — programmer bug)', () {
@@ -101,15 +101,17 @@ void main() {
     });
   });
 
-  group('SeedInfo is non-secret metadata', () {
-    test('carries fingerprint, wordCount, passphrase flag, language', () {
-      final info = SeedInfo(
+  group('SecretInfo is non-secret metadata', () {
+    test('carries fingerprint, kind, wordCount, passphrase flag, language', () {
+      final info = SecretInfo(
         fingerprint: Fingerprint('deadbeef'),
+        kind: SecretKind.mnemonic,
         wordCount: 12,
         hasPassphrase: true,
         language: 'english',
       );
       expect(info.fingerprint.hex, 'deadbeef');
+      expect(info.kind, SecretKind.mnemonic);
       expect(info.wordCount, 12);
       expect(info.hasPassphrase, isTrue);
       expect(info.language, 'english');

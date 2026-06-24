@@ -30,15 +30,12 @@ $hits"
 #    and `src/data/datasources/*`). To make a file public: add an explicit
 #    `show` export AND its path here, in the same review.
 barrel=packages/secrets/lib/secrets.dart
-public_exports='src/domain/ports/seed_port.dart
-src/domain/ports/key_derivation_port.dart
-src/domain/ports/signer_port.dart
-src/domain/ports/swap_signer_port.dart
-src/domain/ports/backup_vault_port.dart
-src/domain/ports/bip85_port.dart
-src/domain/ports/seed_index_port.dart
+public_exports='src/secrets_api.dart
+src/domain/ports/secret_index_port.dart
 src/domain/secrets_failure.dart
-src/domain/value_objects/seed_info.dart
+src/domain/secrets_error.dart
+src/domain/value_objects/secret_info.dart
+src/domain/value_objects/mnemonic_language.dart
 src/domain/value_objects/mnemonic_length.dart
 src/domain/value_objects/descriptors.dart
 src/domain/value_objects/psbt.dart
@@ -47,7 +44,7 @@ src/domain/value_objects/backup.dart
 src/domain/value_objects/ark_secret.dart
 src/domain/value_objects/signing_intent.dart
 src/domain/value_objects/created_swap.dart
-src/ui/widgets/mnemonic_view.dart
+src/ui/widgets/secret_revealer.dart
 src/ui/widgets/verify_backup_view.dart
 src/ui/widgets/bip85_mnemonic_view.dart
 src/ui/widgets/bip85_hex_view.dart'

@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart'
     show SecretStoreKeys;
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
@@ -57,11 +58,17 @@ class SecretGuard {
       return const Err(KeychainLockedFailure());
     } on SecretNotFoundException catch (e) {
       return Err(seed != null
-          ? SeedNotFoundFailure(seed)
+          ? SecretNotFoundFailure(seed)
           : onError(e.runtimeType.toString()));
     } on bip39.MnemonicException catch (e) {
       // Record only the exception CLASS (e.g. MnemonicInvalidChecksumException);
       // `e.toString()` would echo the rejected mnemonic words.
+      return Err(InvalidMnemonicFailure(e.runtimeType.toString()));
+    } on MalformedSecretException catch (e) {
+      // A malformed/unsupported stored blob means the stored secret isn't a
+      // valid mnemonic — surface it as [InvalidMnemonicFailure] (a meaningful
+      // typed failure), uniformly across every operation, NOT the per-adapter
+      // catch-all. Only the exception CLASS is recorded, never its message.
       return Err(InvalidMnemonicFailure(e.runtimeType.toString()));
     } on Exception catch (e) {
       return Err(onError(e.runtimeType.toString()));
