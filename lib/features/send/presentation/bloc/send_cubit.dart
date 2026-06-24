@@ -43,6 +43,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -171,8 +172,8 @@ class SendCubit extends Cubit<SendState> {
       await getCurrencies();
       await getExchangeRate();
       await loadFees();
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+    } catch (e, st) {
+      log.warning('Failed to load wallets, rates and fees', error: e, trace: st);
     }
   }
 
@@ -198,12 +199,12 @@ class SendCubit extends Cubit<SendState> {
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
+    clearAllExceptions();
+    final sanitizedText = text.trim().replaceAll(
+      RegExp(r'^["\"]+|["\"]+$'),
+      '',
+    );
     try {
-      clearAllExceptions();
-      final sanitizedText = text.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
@@ -213,14 +214,17 @@ class SendCubit extends Cubit<SendState> {
           paymentRequest: paymentRequest,
         ),
       );
-    } catch (e) {
+    } catch (_) {
+      // Parse failures are expected as the user types; the raw reason is already
+      // logged by DetectBitcoinStringUsecase, the UI only sees the sanitized
+      // failure.
       emit(
         state.copyWith(
           copiedRawPaymentRequest: text,
           paymentRequest: null,
-          // Don't show exception if text field is clear
+          // Don't show error if text field is clear
           invalidBitcoinStringException: text.isNotEmpty
-              ? InvalidBitcoinStringException()
+              ? const SendInvalidPaymentRequestGenericFailure()
               : null,
         ),
       );
@@ -238,8 +242,8 @@ class SendCubit extends Cubit<SendState> {
             loadingBestWallet: false,
             invalidBitcoinStringException:
                 state.scannedRawPaymentRequest.isNotEmpty
-                ? UnsupportedQrFormatException()
-                : InvalidBitcoinStringException(),
+                ? const SendUnsupportedQrFormatFailure()
+                : const SendInvalidPaymentRequestGenericFailure(),
           ),
         );
         return;
@@ -254,7 +258,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: ExpiredInvoiceException(),
+              swapCreationException: const SendExpiredInvoiceFailure(),
             ),
           );
           return;
@@ -263,7 +267,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException(
+              swapCreationException: const SendAmountlessInvoiceFailure(
                 'Invoice has no amount',
               ),
             ),
@@ -275,11 +279,7 @@ class SendCubit extends Cubit<SendState> {
             data: invoice.magicBip21!,
           );
           emit(
-            state.copyWith(
-              // copiedRawPaymentRequest: invoice.toString(),
-              paymentRequest: updatedRequest,
-              invoiceHasMrh: true,
-            ),
+            state.copyWith(paymentRequest: updatedRequest, invoiceHasMrh: true),
           );
         }
       }
@@ -322,7 +322,8 @@ class SendCubit extends Cubit<SendState> {
         if (!await hasBalance()) {
           emit(
             state.copyWith(
-              insufficientBalanceException: InsufficientBalanceException(),
+              insufficientBalanceException:
+                  const SendInsufficientBalanceFailure(),
               creatingSwap: false,
               loadingBestWallet: false,
             ),
@@ -354,7 +355,8 @@ class SendCubit extends Cubit<SendState> {
         if (!await hasBalance()) {
           emit(
             state.copyWith(
-              insufficientBalanceException: InsufficientBalanceException(),
+              insufficientBalanceException:
+                  const SendInsufficientBalanceFailure(),
               creatingSwap: false,
               loadingBestWallet: false,
             ),
@@ -372,10 +374,11 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 creatingSwap: false,
-                swapLimitsException: SwapLimitsException(
-                  'Amount is below swap limits of $swapMinimum sats.',
+                swapLimitsException: SendSwapLimitsFailure(
                   minLimit: swapMinimum,
                   suggestInstantPayments: true,
+                  logMessage:
+                      'Amount is below swap limits of $swapMinimum sats.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -385,9 +388,10 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 creatingSwap: false,
-                swapLimitsException: SwapLimitsException(
-                  'Amount is below swap limit of $swapMinimum sats.',
+                swapLimitsException: SendSwapLimitsFailure(
                   minLimit: swapMinimum,
+                  logMessage:
+                      'Amount is below swap limit of $swapMinimum sats.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -399,9 +403,9 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               creatingSwap: false,
-              swapLimitsException: SwapLimitsException(
-                'Amount is above swap limits',
+              swapLimitsException: SendSwapLimitsFailure(
                 maxLimit: state.selectedSwapLimits?.max,
+                logMessage: 'Amount is above swap limits',
               ),
               loadingBestWallet: false,
             ),
@@ -436,8 +440,8 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               creatingSwap: false,
-              swapCreationException: SwapCreationException(
-                'Something went wrong. Please try again.',
+              swapCreationException: SendSwapCreationGenericFailure(
+                e.toString(),
               ),
               loadingBestWallet: false,
             ),
@@ -474,12 +478,14 @@ class SendCubit extends Cubit<SendState> {
 
           // If successful, proceed to amount step
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
-        } catch (e) {
+        } catch (e, st) {
           // If LNURL validation fails, set error and stay on address step
+          log.warning('LNURL validation failed', error: e, trace: st);
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              invalidBitcoinStringException: InvalidBitcoinStringException(),
+              invalidBitcoinStringException:
+                  const SendInvalidPaymentRequestGenericFailure(),
             ),
           );
           return;
@@ -488,21 +494,27 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         return;
       }
-    } catch (e) {
+    } catch (e, st) {
       if (e is NotEnoughFundsException) {
+        log.warning('Not enough funds for payment', error: e, trace: st);
         emit(
           state.copyWith(
             loadingBestWallet: false,
-            insufficientBalanceException: InsufficientBalanceException(),
+            insufficientBalanceException:
+                const SendInsufficientBalanceFailure(),
             creatingSwap: false,
           ),
         );
       } else {
+        log.severe(message: 'Failed to confirm address', error: e, trace: st);
         emit(
           state.copyWith(
-            invalidBitcoinStringException: InvalidBitcoinStringException(
-              e.toString(),
-            ),
+            // Type name only — never persist the raw reason for an
+            // input-derived failure ([[no-secret-logging]]).
+            invalidBitcoinStringException:
+                SendInvalidPaymentRequestGenericFailure(
+                  e.runtimeType.toString(),
+                ),
             loadingBestWallet: false,
             creatingSwap: false,
           ),
@@ -550,9 +562,10 @@ class SendCubit extends Cubit<SendState> {
         if (state.swapAmountBelowLimit) {
           emit(
             state.copyWith(
-              swapLimitsException: SwapLimitsException(
-                'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+              swapLimitsException: SendSwapLimitsFailure(
                 minLimit: state.selectedSwapLimits!.min,
+                logMessage:
+                    'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
               ),
               amountConfirmedClicked: false,
             ),
@@ -562,9 +575,10 @@ class SendCubit extends Cubit<SendState> {
         if (state.swapAmountAboveLimit) {
           emit(
             state.copyWith(
-              swapLimitsException: SwapLimitsException(
-                'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+              swapLimitsException: SendSwapLimitsFailure(
                 maxLimit: state.selectedSwapLimits!.max,
+                logMessage:
+                    'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
               ),
               amountConfirmedClicked: false,
             ),
@@ -579,7 +593,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               creatingSwap: false,
-              swapCreationException: SwapCreationException(
+              swapCreationException: const SendSwapCreationGenericFailure(
                 'Swap fees not loaded',
               ),
               loadingBestWallet: false,
@@ -619,11 +633,12 @@ class SendCubit extends Cubit<SendState> {
             creatingSwap: false,
           ),
         );
-      } catch (e) {
+      } catch (e, st) {
+        log.severe(message: 'Failed to create chain swap', error: e, trace: st);
         emit(
           state.copyWith(
             creatingSwap: false,
-            swapCreationException: SwapCreationException(e.toString()),
+            swapCreationException: SendSwapCreationGenericFailure(e.toString()),
             loadingBestWallet: false,
           ),
         );
@@ -852,8 +867,8 @@ class SendCubit extends Cubit<SendState> {
       if (!isMax) {
         await updateBestWallet();
       }
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+    } catch (e, st) {
+      log.warning('Failed to change amount', error: e, trace: st);
     }
   }
 
@@ -920,7 +935,9 @@ class SendCubit extends Cubit<SendState> {
 
     if (state.blocksSwapDueToBitcoinHardwareWallet) {
       emit(
-        state.copyWith(swapCreationException: HardwareWalletSwapException()),
+        state.copyWith(
+          swapCreationException: const SendHardwareWalletSwapFailure(),
+        ),
       );
       return;
     }
@@ -948,10 +965,10 @@ class SendCubit extends Cubit<SendState> {
             : state.selectedSwapLimits!.min;
         emit(
           state.copyWith(
-            swapLimitsException: SwapLimitsException(
-              'Amount below minimum swap limit: $minLimit sats',
+            swapLimitsException: SendSwapLimitsFailure(
               minLimit: minLimit,
               suggestInstantPayments: !isLiquidToLightning,
+              logMessage: 'Amount below minimum swap limit: $minLimit sats',
             ),
             amountConfirmedClicked: false,
           ),
@@ -961,9 +978,10 @@ class SendCubit extends Cubit<SendState> {
       if (state.swapAmountAboveLimit) {
         emit(
           state.copyWith(
-            swapLimitsException: SwapLimitsException(
-              'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+            swapLimitsException: SendSwapLimitsFailure(
               maxLimit: state.selectedSwapLimits!.max,
+              logMessage:
+                  'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
             ),
             amountConfirmedClicked: false,
           ),
@@ -973,7 +991,7 @@ class SendCubit extends Cubit<SendState> {
       if (!await hasBalance()) {
         emit(
           state.copyWith(
-            insufficientBalanceException: InsufficientBalanceException(
+            insufficientBalanceException: const SendInsufficientBalanceFailure(
               'Not enough funds to cover amount and fees',
             ),
             amountConfirmedClicked: false,
@@ -1002,11 +1020,16 @@ class SendCubit extends Cubit<SendState> {
         _watchSendSwap(swap.id);
         await createTransaction();
         // updateSwapLockupFees();
-      } catch (e) {
+      } catch (e, st) {
+        log.severe(
+          message: 'Failed to create lightning swap',
+          error: e,
+          trace: st,
+        );
         emit(
           state.copyWith(
             creatingSwap: false,
-            swapCreationException: SwapCreationException(e.toString()),
+            swapCreationException: SendSwapCreationGenericFailure(e.toString()),
             amountConfirmedClicked: false,
             step: SendStep.amount,
           ),
@@ -1033,7 +1056,7 @@ class SendCubit extends Cubit<SendState> {
     if (!await hasBalance()) {
       emit(
         state.copyWith(
-          insufficientBalanceException: InsufficientBalanceException(
+          insufficientBalanceException: const SendInsufficientBalanceFailure(
             'Not enough funds to cover amount and fees',
           ),
           amountConfirmedClicked: false,
@@ -1062,8 +1085,8 @@ class SendCubit extends Cubit<SendState> {
         walletId: state.selectedWallet!.id,
       );
       emit(state.copyWith(utxos: utxos));
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+    } catch (e, st) {
+      log.warning('Failed to load utxos', error: e, trace: st);
     }
   }
 
@@ -1096,8 +1119,8 @@ class SendCubit extends Cubit<SendState> {
           selectedFeeOption: FeeSelection.fastest,
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+    } catch (e, st) {
+      log.warning('Failed to load fees', error: e, trace: st);
     }
   }
 
@@ -1130,6 +1153,16 @@ class SendCubit extends Cubit<SendState> {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
         await loadFees();
         if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
+          // loadFees failed (it logs the raw reason). Surface a sanitized
+          // build failure instead of silently returning — otherwise the user
+          // taps continue/confirm and nothing happens, with no feedback.
+          emit(
+            state.copyWith(
+              buildTransactionException: const SendBuildTransactionFailure(
+                'createTransaction aborted: network fees unavailable',
+              ),
+            ),
+          );
           return;
         }
       }
@@ -1332,29 +1365,14 @@ class SendCubit extends Cubit<SendState> {
           );
         }
       }
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      if (e is PrepareBitcoinSendException) {
-        emit(
-          state.copyWith(
-            buildTransactionException: BuildTransactionException(e.message),
-            buildingTransaction: false,
-          ),
-        );
-        return;
-      }
-      if (e is PrepareLiquidSendException) {
-        emit(
-          state.copyWith(
-            buildTransactionException: BuildTransactionException(e.message),
-            buildingTransaction: false,
-          ),
-        );
-        return;
-      }
+    } catch (e, st) {
+      // PrepareBitcoin/LiquidSendException and NoSpendableUtxoException all land
+      // here; the UI shows the same generic build-failed message, so the raw
+      // reason is logged only.
+      log.severe(message: 'Failed to build transaction', error: e, trace: st);
       emit(
         state.copyWith(
-          buildTransactionException: BuildTransactionException(e.toString()),
+          buildTransactionException: SendBuildTransactionFailure(e.toString()),
           buildingTransaction: false,
         ),
       );
@@ -1433,11 +1451,12 @@ class SendCubit extends Cubit<SendState> {
           }
         }
       }
-    } catch (e) {
+    } catch (e, st) {
+      log.severe(message: 'Failed to sign transaction', error: e, trace: st);
       emit(
         state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(
-            e.toString(),
+          confirmTransactionException: SendConfirmTransactionFailure(
+            logMessage: e.toString(),
           ),
           signingTransaction: false,
         ),
@@ -1512,28 +1531,37 @@ class SendCubit extends Cubit<SendState> {
               return null;
             }),
       );
-    } on GetWalletException catch (e) {
-      emit(
-        state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(e.message),
-          broadcastingTransaction: false,
-        ),
+    } on GetWalletException catch (e, st) {
+      log.severe(
+        message: 'Failed to get wallet after broadcast',
+        error: e,
+        trace: st,
       );
-    } on BroadcastTransactionException catch (_) {
       emit(
         state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(
-            'BroadcastTransactionException',
-            isBroadcastFailure: true,
+          confirmTransactionException: SendConfirmTransactionFailure(
+            logMessage: e.message,
           ),
           broadcastingTransaction: false,
         ),
       );
-    } catch (e) {
+    } on BroadcastTransactionException catch (e, st) {
+      log.severe(message: 'Failed to broadcast transaction', error: e, trace: st);
       emit(
         state.copyWith(
-          confirmTransactionException: ConfirmTransactionException(
-            e.toString(),
+          confirmTransactionException: const SendConfirmTransactionFailure(
+            isBroadcastFailure: true,
+            logMessage: 'BroadcastTransactionException',
+          ),
+          broadcastingTransaction: false,
+        ),
+      );
+    } catch (e, st) {
+      log.severe(message: 'Failed to broadcast transaction', error: e, trace: st);
+      emit(
+        state.copyWith(
+          confirmTransactionException: SendConfirmTransactionFailure(
+            logMessage: e.toString(),
           ),
           broadcastingTransaction: false,
         ),
@@ -1754,9 +1782,9 @@ class SendCubit extends Cubit<SendState> {
       if (swapLimits.min > maxAmount) {
         emit(
           state.copyWith(
-            swapLimitsException: SwapLimitsException(
-              'Balance too low for minimum swap amount',
+            swapLimitsException: SendSwapLimitsFailure(
               minLimit: swapLimits.min,
+              logMessage: 'Balance too low for minimum swap amount',
             ),
           ),
         );
@@ -1765,18 +1793,23 @@ class SendCubit extends Cubit<SendState> {
       if (swapLimits.max < maxAmount) {
         emit(
           state.copyWith(
-            swapLimitsException: SwapLimitsException(
-              'Amount exceeds maximum swap amount',
+            swapLimitsException: SendSwapLimitsFailure(
               maxLimit: swapLimits.max,
+              logMessage: 'Amount exceeds maximum swap amount',
             ),
           ),
         );
         return;
       }
-    } catch (e) {
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to build dummy max-swap txs',
+        error: e,
+        trace: st,
+      );
       emit(
         state.copyWith(
-          buildTransactionException: BuildTransactionException(e.toString()),
+          buildTransactionException: SendBuildTransactionFailure(e.toString()),
         ),
       );
     }

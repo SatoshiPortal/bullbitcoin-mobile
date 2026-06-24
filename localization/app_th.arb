@@ -4718,7 +4718,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
+  "sendErrorSwapCreationFailed": "ไม่สามารถสร้างสว็อปได้ ลองอีกครั้ง",
   "sendErrorInvoiceMustContainAmount": "ใบแจ้งหนี้ต้องมีจำนวนเงิน",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -11006,7 +11006,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "สร้าง",
+  "sendErrorBuildFailed": "ไม่สามารถเตรียมธุรกรรมได้ ลองอีกครั้ง",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12627,5 +12627,7 @@
   "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
-  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง"
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
+  "sendErrorInvoiceExpired": "ใบแจ้งหนี้นี้หมดอายุแล้ว โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "ลองเติมเงินใน Instant Payments เพื่อชำระเงินจำนวนเล็กน้อย"
 }

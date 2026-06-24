@@ -1546,7 +1546,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendErrorSwapCreationFailed": "无法创建兑换，请重试。",
   "sendErrorHardwareWalletCannotSwap": "硬件钱包不能用于兑换。",
   "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
   "arkNoBalanceData": "无结余数据",
@@ -3664,7 +3664,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "1. 建设失败者",
+  "sendErrorBuildFailed": "无法准备交易，请重试。",
   "transactionDetailSwapProgress": "差距",
   "arkAboutDurationMinute": "{minutes}分钟",
   "@arkAboutDurationMinute": {
@@ -4672,5 +4672,6 @@
   "pinCodeDeleteError": "无法删除您的PIN码，请重试。",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
-  "priceChartLoadFailed": "价格图表数据无法加载。请重试。"
+  "priceChartLoadFailed": "价格图表数据无法加载。请重试。",
+  "sendErrorInvoiceExpired": "此发票已过期。请向收款方索要新的发票。"
 }

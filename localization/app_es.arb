@@ -2172,13 +2172,13 @@
   "sendEnterAbsoluteFee": "Ingrese la comisión absoluta en sats",
   "sendEnterRelativeFee": "Ingrese la comisión relativa en sats/vB",
   "sendErrorArkExperimentalOnly": "Las solicitudes de pago ARK solo están disponibles desde la función experimental Ark.",
-  "sendErrorSwapCreationFailed": "Error al crear el intercambio.",
+  "sendErrorSwapCreationFailed": "No se pudo crear el intercambio. Inténtalo de nuevo.",
   "sendErrorHardwareWalletCannotSwap": "Las billeteras hardware no pueden usarse para intercambios.",
   "sendErrorInvoiceMustContainAmount": "La factura debe contener un monto",
   "sendErrorInsufficientBalanceForPayment": "Saldo insuficiente para cubrir este pago",
   "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
   "sendErrorUnsupportedQrCodeFormat": "Formato de código QR no compatible",
-  "sendErrorBuildFailed": "Error de construcción",
+  "sendErrorBuildFailed": "No se pudo preparar la transacción. Inténtalo de nuevo.",
   "sendErrorConfirmationFailed": "Error de confirmación",
   "sendErrorInsufficientBalanceForSwap": "Saldo insuficiente para pagar este intercambio a través de Liquid y fuera de los límites de intercambio para pagar a través de Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "La cantidad está por debajo de los límites de intercambio",
@@ -4796,5 +4796,6 @@
   "pinCodeDeleteError": "No se pudo eliminar tu PIN. Por favor, inténtalo de nuevo.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Tipo de cambio no disponible. Por favor, inténtelo de nuevo más tarde.",
-  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo."
+  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo.",
+  "sendErrorInvoiceExpired": "Esta factura ha caducado. Pídele al destinatario una factura nueva."
 }

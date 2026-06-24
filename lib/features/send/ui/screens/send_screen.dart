@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
@@ -238,7 +239,7 @@ class AddressErrorSection extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorInsufficientBalanceForPayment,
+          balanceError.toTranslated(context),
           style: context.font.bodyMedium,
           color: context.appColors.error,
           textAlign: .center,
@@ -248,11 +249,7 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (swapError != null) {
       return BBText(
-        swapError is AmountlessInvoiceException
-            ? context.loc.sendErrorInvoiceMustContainAmount
-            : swapError is ExpiredInvoiceException
-            ? context.loc.sendErrorInvoiceExpired
-            : swapError.message,
+        swapError.toTranslated(context),
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -261,9 +258,7 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (invalidAddress != null) {
       return BBText(
-        invalidAddress is UnsupportedQrFormatException
-            ? context.loc.sendErrorUnsupportedQrCodeFormat
-            : context.loc.sendErrorInvalidAddressOrInvoice,
+        invalidAddress.toTranslated(context),
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -461,23 +456,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 );
                               },
                               error: balanceError != null
-                                  ? context
-                                        .loc
-                                        .sendErrorInsufficientBalanceForPayment
+                                  ? balanceError.toTranslated(context)
                                   : (!walletHasBalance &&
                                         amountConfirmedClicked)
                                   ? context.loc.sendInsufficientBalance
                                   : swapLimitsError != null
-                                  ? _getSwapLimitsErrorMessage(
-                                      context,
-                                      swapLimitsError,
-                                    )
-                                  : swapCreationError != null
-                                  ? _swapCreationErrorMessage(
-                                      context,
-                                      swapCreationError,
-                                    )
-                                  : null,
+                                  ? swapLimitsError.toTranslated(context)
+                                  : swapCreationError?.toTranslated(context),
                               focusNode: _amountFocusNode,
                               readOnly: _isMax,
                               isMax: _isMax,
@@ -745,7 +730,7 @@ class _SendError extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorBuildFailed,
+          buildError.toTranslated(context),
           style: context.font.bodyLarge,
           color: context.appColors.error,
           maxLines: 5,
@@ -759,7 +744,7 @@ class _SendError extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              context.loc.sendErrorConfirmationFailed,
+              confirmError.toTranslated(context),
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
@@ -1961,28 +1946,3 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-String _swapCreationErrorMessage(
-  BuildContext context,
-  SwapCreationException error,
-) {
-  if (error is HardwareWalletSwapException) {
-    return context.loc.sendErrorHardwareWalletCannotSwap;
-  }
-  if (error is AmountlessInvoiceException) {
-    return context.loc.sendErrorInvoiceMustContainAmount;
-  }
-  return error.message;
-}
-
-String _getSwapLimitsErrorMessage(
-  BuildContext context,
-  SwapLimitsException error,
-) {
-  if (error.isBelowMinimum) {
-    return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
-  }
-  if (error.isAboveMaximum) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
-  }
-  return context.loc.sendErrorAmountBelowSwapLimits;
-}

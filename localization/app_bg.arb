@@ -3788,7 +3788,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Не успях да създам размяна",
+  "sendErrorSwapCreationFailed": "Размяната не може да бъде създадена. Опитайте отново.",
   "sendErrorInvoiceMustContainAmount": "Фактурата трябва да съдържа сума",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -8398,7 +8398,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Изграждането се провали",
+  "sendErrorBuildFailed": "Транзакцията не може да бъде подготвена. Опитайте отново.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -9808,5 +9808,7 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
   "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
+  "sendErrorInvoiceExpired": "Тази фактура е изтекла. Поискайте нова фактура от получателя.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Обмислете захранване на Незабавни плащания, за да правите по-малки плащания.",
   "electrumServerUnreachable": "Сървърът е недостъпен. Проверете адреса и опитайте отново."
 }

@@ -4718,7 +4718,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "스왑을 생성하는 실패.",
+  "sendErrorSwapCreationFailed": "스왑을 생성하지 못했습니다. 다시 시도하세요.",
   "sendErrorInvoiceMustContainAmount": "인보이스에는 금액이 포함되어야 합니다",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -11014,7 +11014,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "회사연혁",
+  "sendErrorBuildFailed": "거래를 준비하지 못했습니다. 다시 시도하세요.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12627,5 +12627,7 @@
   "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요."
+  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 받는 분께 새 인보이스를 요청하세요.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "더 작은 금액을 결제하려면 즉시 결제 충전을 고려하세요."
 }

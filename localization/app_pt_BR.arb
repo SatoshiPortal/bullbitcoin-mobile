@@ -4098,7 +4098,7 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorSwapCreationFailed": "Não foi possível criar o swap. Tente novamente.",
   "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10889,7 +10889,7 @@
   "@passportStep5": {
     "description": "Passport troubleshooting tip 1"
   },
-  "sendErrorBuildFailed": "Construa Falhado",
+  "sendErrorBuildFailed": "Não foi possível preparar a transação. Tente novamente.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12741,5 +12741,7 @@
   "pinCodeDeleteError": "Não foi possível excluir seu PIN. Por favor, tente novamente.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
-  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente."
+  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente.",
+  "sendErrorInvoiceExpired": "Esta fatura expirou. Peça uma nova fatura ao destinatário.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar Pagamentos Instantâneos para fazer pagamentos menores."
 }

@@ -514,5 +514,18 @@
   "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ.",
   "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
   "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
+  "sendErrorInvoiceExpired": "ამ ინვოისს ვადა გაუვიდა. სთხოვეთ მიმღებს ახალი ინვოისი.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "მცირე გადახდების განსახორციელებლად განიხილეთ მყისიერი გადახდების დაფინანსება.",
+  "sendErrorHardwareWalletCannotSwap": "აპარატურული საფულეები swap-ისთვის ვერ გამოიყენება.",
+  "sendErrorInvalidAddressOrInvoice": "Bitcoin-ის გადახდის არასწორი მისამართი ან ინვოისი",
+  "sendErrorInsufficientBalanceForPayment": "ამ გადახდის დასაფარად საკმარისი ბალანსი არ არის",
+  "sendErrorSwapCreationFailed": "swap-ის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
+  "sendErrorAmountBelowMinimum": "თანხა swap-ის მინიმალურ ლიმიტზე დაბალია: {minLimit} sats",
+  "sendErrorAmountAboveMaximum": "თანხა swap-ის მაქსიმალურ ლიმიტზე მაღალია: {maxLimit} sats",
+  "sendErrorAmountBelowSwapLimits": "თანხა swap-ის ლიმიტებზე დაბალია",
+  "sendErrorBuildFailed": "ტრანზაქციის მომზადება ვერ მოხერხდა. სცადეთ თავიდან.",
+  "sendErrorConfirmationFailed": "დადასტურება ვერ მოხერხდა",
+  "sendErrorBroadcastFailed": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ქსელის კავშირი და სცადეთ ხელახლა.",
+  "sendInsufficientBalance": "არასაკმარისი ბალანსი",
   "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან."
 }

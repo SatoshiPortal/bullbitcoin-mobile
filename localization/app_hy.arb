@@ -302,5 +302,18 @@
   "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:",
   "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
   "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:",
+  "sendErrorInvoiceExpired": "Այս հաշիվ-ապրանքագիրը ժամկետանց է։ Խնդրեք ստացողից նոր հաշիվ-ապրանքագիր։",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Փոքր վճարումներ կատարելու համար դիտարկեք Ակնթարթային վճարումների համալրումը։",
+  "sendErrorHardwareWalletCannotSwap": "Սարքային դրամապանակները չեն կարող օգտագործվել swap-երի համար։",
+  "sendErrorInvalidAddressOrInvoice": "Bitcoin-ի վճարման անվավեր հասցե կամ հաշիվ-ապրանքագիր",
+  "sendErrorInsufficientBalanceForPayment": "Բավարար մնացորդ չկա այս վճարումը կատարելու համար",
+  "sendErrorSwapCreationFailed": "Չհաջողվեց ստեղծել փոխանակումը։ Փորձեք նորից։",
+  "sendErrorAmountBelowMinimum": "Գումարը swap-ի նվազագույն սահմանից ցածր է՝ {minLimit} sats",
+  "sendErrorAmountAboveMaximum": "Գումարը swap-ի առավելագույն սահմանից բարձր է՝ {maxLimit} sats",
+  "sendErrorAmountBelowSwapLimits": "Գումարը swap-ի սահմաններից ցածր է",
+  "sendErrorBuildFailed": "Չհաջողվեց նախապատրաստել գործարքը։ Փորձեք նորից։",
+  "sendErrorConfirmationFailed": "Հաստատումը ձախողվեց",
+  "sendErrorBroadcastFailed": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ձեր ցանցի կապը և կրկին փորձեք։",
+  "sendInsufficientBalance": "Անբավարար մնացորդ",
   "electrumServerUnreachable": "Սերվերը հասանելի չէ։ Ստուգեք հասցեն և կրկին փորձեք։"
 }

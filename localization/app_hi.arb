@@ -4718,7 +4718,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
+  "sendErrorSwapCreationFailed": "स्वैप नहीं बन सका। फिर से प्रयास करें।",
   "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -11014,7 +11014,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "असफल",
+  "sendErrorBuildFailed": "लेन-देन तैयार नहीं हो सका। फिर से प्रयास करें।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12913,5 +12913,6 @@
   "pinCodeDeleteError": "आपका PIN हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
-  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।"
+  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "sendErrorInvoiceExpired": "यह इनवॉइस समाप्त हो गया है। प्राप्तकर्ता से नया इनवॉइस माँगें।"
 }

@@ -2121,13 +2121,13 @@
   "sendEnterAbsoluteFee": "Anna absoluuttinen kulu satoshissa",
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
-  "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui. Yritä uudelleen.",
   "sendErrorHardwareWalletCannotSwap": "Laitelompakoita ei voi käyttää vaihtoihin.",
   "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
   "sendErrorUnsupportedQrCodeFormat": "Ei-tuettu QR-koodimuoto",
-  "sendErrorBuildFailed": "Rakentaminen epäonnistui",
+  "sendErrorBuildFailed": "Tapahtuman valmistelu epäonnistui. Yritä uudelleen.",
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",
   "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
@@ -4782,5 +4782,6 @@
   "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
-  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen."
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
+  "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku."
 }

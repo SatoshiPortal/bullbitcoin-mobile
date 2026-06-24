@@ -4775,7 +4775,7 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorSwapCreationFailed": "Swap se nepodařilo vytvořit. Zkuste to znovu.",
   "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10728,7 +10728,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Sestava Failed",
+  "sendErrorBuildFailed": "Transakci se nepodařilo připravit. Zkuste to znovu.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12745,5 +12745,7 @@
   "pinCodeDeleteError": "PIN nelze smazat. Zkuste to prosím znovu.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
-  "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu."
+  "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
+  "sendErrorInvoiceExpired": "Platnost této faktury vypršela. Požádejte příjemce o novou fakturu.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Zvažte financování Okamžitých plateb pro menší platby."
 }

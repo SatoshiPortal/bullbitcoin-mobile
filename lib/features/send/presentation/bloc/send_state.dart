@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -7,6 +6,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -98,7 +98,6 @@ abstract class SendState with _$SendState {
     String? txId,
     PayjoinSender? payjoinSender,
     WalletTransaction? walletTransaction,
-    Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
@@ -107,12 +106,12 @@ abstract class SendState with _$SendState {
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
-    SwapCreationException? swapCreationException,
-    InsufficientBalanceException? insufficientBalanceException,
-    InvalidBitcoinStringException? invalidBitcoinStringException,
-    SwapLimitsException? swapLimitsException,
-    BuildTransactionException? buildTransactionException,
-    ConfirmTransactionException? confirmTransactionException,
+    SendSwapCreationFailure? swapCreationException,
+    SendInsufficientBalanceFailure? insufficientBalanceException,
+    SendInvalidPaymentRequestFailure? invalidBitcoinStringException,
+    SendSwapLimitsFailure? swapLimitsException,
+    SendBuildTransactionFailure? buildTransactionException,
+    SendConfirmTransactionFailure? confirmTransactionException,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,
@@ -461,71 +460,4 @@ extension SendStateFeePercent on SendState {
   }
 
   bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
-}
-
-class SwapCreationException extends BullException {
-  SwapCreationException(super.message);
-}
-
-class AmountlessInvoiceException extends SwapCreationException {
-  AmountlessInvoiceException(super.message);
-}
-
-class HardwareWalletSwapException extends SwapCreationException {
-  HardwareWalletSwapException()
-    : super('Hardware wallets cannot be used for swaps');
-}
-
-class ExpiredInvoiceException extends SwapCreationException {
-  ExpiredInvoiceException() : super('Expired invoice');
-}
-
-class InsufficientBalanceException extends BullException {
-  InsufficientBalanceException([
-    super.message = 'Not enough balance to cover this payment',
-  ]);
-}
-
-class InvalidBitcoinStringException extends BullException {
-  InvalidBitcoinStringException([
-    super.message = 'Invalid Bitcoin Payment Address or Invoice',
-  ]);
-}
-
-class UnsupportedQrFormatException extends InvalidBitcoinStringException {}
-
-/// Exception for swap limit violations.
-/// Stored in SendState with min/max limit values for localized error messages.
-/// UI displays context-specific messages using sendErrorAmountBelowMinimum,
-/// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
-class SwapLimitsException extends BullException {
-  SwapLimitsException(
-    super.message, {
-    this.minLimit,
-    this.maxLimit,
-    this.suggestInstantPayments = false,
-  });
-
-  final int? minLimit;
-  final int? maxLimit;
-  final bool suggestInstantPayments;
-
-  bool get isBelowMinimum => minLimit != null;
-  bool get isAboveMaximum => maxLimit != null;
-}
-
-/// Exception for transaction build failures.
-/// Stored in SendState and displayed by UI using sendErrorBuildFailed.
-/// The message parameter is for debugging/logging only.
-class BuildTransactionException extends BullException {
-  BuildTransactionException(super.message);
-}
-
-/// Exception for transaction confirmation failures.
-/// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
-/// The message parameter is for debugging/logging only.
-class ConfirmTransactionException extends BullException {
-  ConfirmTransactionException(super.message, {this.isBroadcastFailure = false});
-
-  final bool isBroadcastFailure;
 }

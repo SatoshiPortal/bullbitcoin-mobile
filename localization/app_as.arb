@@ -4161,7 +4161,7 @@
   "@sendErrorArkExperimentalOnly": {
     "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
-  "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
+  "sendErrorSwapCreationFailed": "ছোৱাপ সৃষ্টি কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -4174,7 +4174,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "অসমৰ্থিত QR ক'ড ফৰ্মেট",
-  "sendErrorBuildFailed": "নিৰ্মাণ বিফল হৈছে",
+  "sendErrorBuildFailed": "লেনদেন প্ৰস্তুত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -9748,5 +9748,7 @@
   "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
-  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।"
+  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
+  "sendErrorInvoiceExpired": "এই ইনভইচখনৰ ম্যাদ উকলিল। প্ৰাপকৰ পৰা এখন নতুন ইনভইচ বিচাৰক।",
+  "sendErrorHardwareWalletCannotSwap": "swap-ৰ বাবে হাৰ্ডৱেৰ ৱালেট ব্যৱহাৰ কৰিব নোৱাৰি।"
 }
