@@ -3,33 +3,39 @@ import 'package:test/test.dart';
 
 void main() {
   group('Network', () {
-    test('fromEnvironment maps the four combinations', () {
-      expect(
-        Network.fromEnvironment(isTestnet: false, isLiquid: false),
-        Network.bitcoinMainnet,
-      );
-      expect(
-        Network.fromEnvironment(isTestnet: true, isLiquid: false),
-        Network.bitcoinTestnet,
-      );
-      expect(
-        Network.fromEnvironment(isTestnet: false, isLiquid: true),
-        Network.liquidMainnet,
-      );
-      expect(
-        Network.fromEnvironment(isTestnet: true, isLiquid: true),
-        Network.liquidTestnet,
-      );
+    test('chain is the type; env is orthogonal', () {
+      expect(BitcoinNetwork.signet.env, NetworkEnv.signet);
+      expect(LiquidNetwork.regtest.env, NetworkEnv.regtest);
+      // Liquid has no signet — there is simply no such value.
+      expect(LiquidNetwork.values.map((n) => n.env),
+          isNot(contains(NetworkEnv.signet)));
+      expect(BitcoinNetwork.values.map((n) => n.env), contains(NetworkEnv.signet));
     });
 
-    test('coin types match BIP44 registry', () {
-      expect(Network.bitcoinMainnet.coinType, 0);
-      expect(Network.liquidMainnet.coinType, 1776);
+    test('isMainnet only for mainnet (testnet/signet/regtest are not)', () {
+      expect(BitcoinNetwork.mainnet.isMainnet, isTrue);
+      expect(BitcoinNetwork.testnet.isMainnet, isFalse);
+      expect(BitcoinNetwork.signet.isMainnet, isFalse);
+      expect(BitcoinNetwork.regtest.isMainnet, isFalse);
+      expect(LiquidNetwork.mainnet.isMainnet, isTrue);
     });
 
-    test('fromName parses known, throws ArgumentError on unknown', () {
-      expect(Network.fromName('liquidTestnet'), Network.liquidTestnet);
-      expect(() => Network.fromName('garbage'), throwsArgumentError);
+    test('coin types match SLIP-44 (testnet/signet/regtest all = 1)', () {
+      expect(BitcoinNetwork.mainnet.coinType, 0);
+      expect(BitcoinNetwork.testnet.coinType, 1);
+      expect(BitcoinNetwork.signet.coinType, 1);
+      expect(BitcoinNetwork.regtest.coinType, 1);
+      expect(LiquidNetwork.mainnet.coinType, 1776);
+      expect(LiquidNetwork.testnet.coinType, 1);
+    });
+
+    test('fromName / tryFromName per chain', () {
+      expect(BitcoinNetwork.fromName('signet'), BitcoinNetwork.signet);
+      expect(() => BitcoinNetwork.fromName('garbage'), throwsArgumentError);
+      expect(BitcoinNetwork.tryFromName('mainnet'), BitcoinNetwork.mainnet);
+      expect(BitcoinNetwork.tryFromName('garbage'), isNull);
+      expect(LiquidNetwork.fromName('regtest'), LiquidNetwork.regtest);
+      expect(LiquidNetwork.tryFromName('signet'), isNull); // Liquid has none
     });
   });
 
@@ -67,24 +73,23 @@ void main() {
     });
   });
 
-  group('Network.tryFromName', () {
-    test('parses known, returns null for unknown', () {
-      expect(Network.tryFromName('bitcoinMainnet'), Network.bitcoinMainnet);
-      expect(Network.tryFromName('garbage'), isNull);
-    });
-  });
-
   group('getXpubType', () {
     test('mainnet', () {
-      expect(ScriptType.bip84.getXpubType(Network.bitcoinMainnet), XpubType.zpub);
-      expect(ScriptType.bip49.getXpubType(Network.bitcoinMainnet), XpubType.ypub);
-      expect(ScriptType.bip44.getXpubType(Network.bitcoinMainnet), XpubType.xpub);
+      expect(ScriptType.bip84.getXpubType(BitcoinNetwork.mainnet), XpubType.zpub);
+      expect(ScriptType.bip49.getXpubType(BitcoinNetwork.mainnet), XpubType.ypub);
+      expect(ScriptType.bip44.getXpubType(BitcoinNetwork.mainnet), XpubType.xpub);
     });
 
-    test('testnet', () {
-      expect(ScriptType.bip84.getXpubType(Network.bitcoinTestnet), XpubType.vpub);
-      expect(ScriptType.bip49.getXpubType(Network.bitcoinTestnet), XpubType.upub);
-      expect(ScriptType.bip44.getXpubType(Network.bitcoinTestnet), XpubType.tpub);
+    test('non-mainnet (testnet/signet/regtest) → testnet version bytes', () {
+      for (final n in [
+        BitcoinNetwork.testnet,
+        BitcoinNetwork.signet,
+        BitcoinNetwork.regtest,
+      ]) {
+        expect(ScriptType.bip84.getXpubType(n), XpubType.vpub);
+        expect(ScriptType.bip49.getXpubType(n), XpubType.upub);
+        expect(ScriptType.bip44.getXpubType(n), XpubType.tpub);
+      }
     });
 
     test('version bytes are 4 bytes', () {

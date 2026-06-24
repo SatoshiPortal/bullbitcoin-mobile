@@ -23,7 +23,7 @@ class Bip85Adapter implements Bip85Port {
   SecretsFailure _err(String log) => DerivationFailure(log);
 
   String _xprv(Mnemonic m) =>
-      Bip32Derivation.xprvFromSeed(m.toSeed().bytes, Network.bitcoinMainnet);
+      Bip32Derivation.xprvFromSeed(m.toSeed().bytes, BitcoinNetwork.mainnet);
 
   @override
   Future<Result<Bip85Derivation, SecretsFailure>> deriveChildMnemonic({

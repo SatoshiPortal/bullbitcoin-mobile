@@ -19,7 +19,7 @@ class Bip32Derivation {
   static bip32.Bip32Keys accountXpub({
     required Uint8List seedBytes,
     required ScriptType scriptType,
-    required Network network,
+    required BitcoinNetwork network,
     int account = 0,
   }) {
     final root = bip32.Bip32Keys.fromSeed(seedBytes);
@@ -27,9 +27,11 @@ class Bip32Derivation {
     return root.derivePath(path).neutered;
   }
 
-  /// Root xprv (base58). Bitcoin testnet uses the tprv version bytes.
-  static String xprvFromSeed(Uint8List seedBytes, Network network) {
-    final nw = network == Network.bitcoinTestnet
+  /// Root xprv (base58). Every non-mainnet env (testnet/signet/regtest) uses the
+  /// tprv version bytes — keyed on [BitcoinNetwork.isMainnet], not a single
+  /// `== testnet` check (which would mis-handle signet/regtest).
+  static String xprvFromSeed(Uint8List seedBytes, BitcoinNetwork network) {
+    final nw = !network.isMainnet
         ? bip32.NetworkType(
             // testnet WIF prefix (0xEF); only `toBase58()`/xprv is used here so
             // this field is latent, but keep it correct for any future export.

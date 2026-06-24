@@ -28,7 +28,7 @@ class KeyDerivationAdapter implements KeyDerivationPort {
   }) =>
       _guard.read(seed, (m) async {
         final network =
-            Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
+            isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet;
         final acct = Bip32Derivation.accountXpub(
           seedBytes: m.toSeed().bytes,
           scriptType: scriptType,
@@ -50,7 +50,7 @@ class KeyDerivationAdapter implements KeyDerivationPort {
   }) =>
       _guard.read(seed, (m) async {
         final network =
-            isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet;
+            isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet;
         final xprv = Bip32Derivation.xprvFromSeed(m.toSeed().bytes, network);
         final external = DescriptorDerivation.publicBitcoinDescriptorFromXprv(
           xprv,

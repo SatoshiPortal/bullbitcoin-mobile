@@ -34,7 +34,7 @@ class BackupVaultAdapter implements BackupVaultPort {
       encryptVault({required Fingerprint seed}) =>
           _guard.read(seed, (m) async {
             final xprv = Bip32Derivation.xprvFromSeed(
-                m.toSeed().bytes, Network.bitcoinMainnet);
+                m.toSeed().bytes, BitcoinNetwork.mainnet);
             final path = Bip85Crypto.generateRecoverbullPath();
             final keyHex = Bip85Crypto.deriveBackupKeyHex(xprv, path);
             final keyBytes = Uint8List.fromList(conv.hex.decode(keyHex));

@@ -33,7 +33,7 @@ String _zooXprv() {
   final seed = Uint8List.fromList(
     bip39.Mnemonic.fromWords(words: zooWrongWords).seed,
   );
-  return Bip32Derivation.xprvFromSeed(seed, Network.bitcoinMainnet);
+  return Bip32Derivation.xprvFromSeed(seed, BitcoinNetwork.mainnet);
 }
 
 void main() {
@@ -91,7 +91,7 @@ void main() {
       );
       expect(Bip32Derivation.fingerprintHex(seed), '3442193e');
       expect(
-        Bip32Derivation.xprvFromSeed(seed, Network.bitcoinMainnet),
+        Bip32Derivation.xprvFromSeed(seed, BitcoinNetwork.mainnet),
         'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKm'
         'PGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
       );
