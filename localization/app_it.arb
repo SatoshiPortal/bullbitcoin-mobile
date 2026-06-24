@@ -4384,11 +4384,12 @@
   "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
   "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
   "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
+  "mempoolErrorInvalidUrl": "URL del server non valido. Inserisci un dominio o un indirizzo IP valido.",
   "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
-  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
-  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
-  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
+  "mempoolErrorSaveServerFailed": "Impossibile salvare il server",
+  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool",
+  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato",
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni",
   "settingsErrorReportingTitle": "Segnalazione errori",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

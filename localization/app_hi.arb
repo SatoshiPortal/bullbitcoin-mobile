@@ -12620,46 +12620,23 @@
   "mempoolErrorServerUnavailable": "सर्वर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
   "mempoolErrorServerError": "सर्वर में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
   "mempoolErrorInvalidResponse": "सर्वर ने अमान्य प्रतिक्रिया दी।",
+  "mempoolErrorInvalidUrl": "अमान्य सर्वर URL। एक मान्य डोमेन या IP पता दर्ज करें।",
   "mempoolErrorUnexpected": "एक अप्रत्याशित त्रुटि हुई",
-  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल: {error}",
+  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल: {error}",
+  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल: {error}",
+  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
-  "mempoolErrorUpdateSettingsFailed": "सेटिंग्स अपडेट करने में विफल: {error}",
+  "mempoolErrorUpdateSettingsFailed": "सेटिंग्स अपडेट करने में विफल",
   "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when updating mempool settings fails"
   },
   "exchangeStatisticsBuySellRatioDesc": "खरीदने बनाम बेचने से कुल वॉल्यूम का प्रतिशत",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin खरीदने में खर्च की गई कुल राशि",

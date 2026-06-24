@@ -12312,8 +12312,9 @@
   "mempoolErrorServerUnavailable": "সার্ভার অনুপলব্ধ। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "mempoolErrorServerError": "সার্ভারে ত্রুটি ঘটেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "mempoolErrorInvalidResponse": "সার্ভার একটি অবৈধ প্রতিক্রিয়া দিয়েছে।",
+  "mempoolErrorInvalidUrl": "অবৈধ সার্ভার URL। একটি বৈধ ডোমেইন বা IP ঠিকানা লিখুন।",
   "mempoolErrorUnexpected": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
-  "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {
       "error": {
@@ -12321,7 +12322,7 @@
       }
     }
   },
-  "mempoolErrorLoadFailed": "Mempool সার্ভার ডেটা লোড ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorLoadFailed": "Mempool সার্ভার ডেটা লোড ব্যর্থ হয়েছে",
   "@mempoolErrorLoadFailed": {
     "placeholders": {
       "error": {
@@ -12329,7 +12330,7 @@
       }
     }
   },
-  "mempoolErrorDeleteFailed": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorDeleteFailed": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@mempoolErrorDeleteFailed": {
     "placeholders": {
       "error": {
@@ -12337,7 +12338,7 @@
       }
     }
   },
-  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে",
   "@mempoolErrorUpdateSettingsFailed": {
     "placeholders": {
       "error": {

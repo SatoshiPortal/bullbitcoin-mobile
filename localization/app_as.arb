@@ -359,8 +359,9 @@
   "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
   "mempoolErrorServerError": "চাৰ্ভাৰত ভুল হৈছে। পিছত পুনৰ চেষ্টা কৰক।",
   "mempoolErrorInvalidResponse": "চাৰ্ভাৰে অবৈধ সঁহাৰি দিছে।",
+  "mempoolErrorInvalidUrl": "অমান্য চাৰ্ভাৰ URL। এটা বৈধ ডমেইন বা IP ঠিকনা দিয়ক।",
   "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
-  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {
       "error": {
@@ -368,7 +369,7 @@
       }
     }
   },
-  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorLoadFailed": {
     "placeholders": {
       "error": {
@@ -376,7 +377,7 @@
       }
     }
   },
-  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে",
   "@mempoolErrorDeleteFailed": {
     "placeholders": {
       "error": {
@@ -384,7 +385,7 @@
       }
     }
   },
-  "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorUpdateSettingsFailed": {
     "placeholders": {
       "error": {

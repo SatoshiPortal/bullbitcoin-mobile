@@ -302,5 +302,6 @@
   "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:",
   "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
   "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:",
-  "electrumServerUnreachable": "Սերվերը հասանելի չէ։ Ստուգեք հասցեն և կրկին փորձեք։"
+  "electrumServerUnreachable": "Սերվերը հասանելի չէ։ Ստուգեք հասցեն և կրկին փորձեք։",
+  "mempoolErrorInvalidUrl": "Անվավեր սերվերի URL: Մուտքագրեք վավեր տիրույթ կամ IP հասցե:"
 }

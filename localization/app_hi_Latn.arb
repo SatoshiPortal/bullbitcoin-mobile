@@ -640,6 +640,7 @@
     "description": "Error when mempool server returns 500 error"
   },
   "mempoolErrorInvalidResponse": "Server ne galat response diya.",
+  "mempoolErrorInvalidUrl": "Amanya server URL. Ek manya domain ya IP pata darj karein.",
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
@@ -647,45 +648,21 @@
   "@mempoolErrorUnexpected": {
     "description": "Generic unexpected error message"
   },
-  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya: {error}",
+  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya: {error}",
+  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya: {error}",
+  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
-  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya",
   "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when updating mempool settings fails"
   },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {

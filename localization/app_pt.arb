@@ -4439,11 +4439,12 @@
   "mempoolErrorServerUnavailable": "Servidor indisponível. Tente novamente mais tarde.",
   "mempoolErrorServerError": "O servidor encontrou um erro. Tente novamente mais tarde.",
   "mempoolErrorInvalidResponse": "O servidor retornou uma resposta inválida.",
+  "mempoolErrorInvalidUrl": "URL do servidor inválido. Insira um domínio ou endereço IP válido.",
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
-  "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor: {error}",
-  "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool: {error}",
-  "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
+  "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor",
+  "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool",
+  "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado",
+  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações",
   "settingsErrorReportingTitle": "Relatório de erros",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

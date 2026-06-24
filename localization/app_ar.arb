@@ -12631,5 +12631,6 @@
   "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
-  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى."
+  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
+  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا."
 }

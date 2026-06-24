@@ -514,5 +514,6 @@
   "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ.",
   "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
   "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
-  "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან."
+  "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან.",
+  "mempoolErrorInvalidUrl": "სერვერის არასწორი URL. შეიყვანეთ სწორი დომენი ან IP მისამართი."
 }

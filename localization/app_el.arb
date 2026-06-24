@@ -12745,5 +12745,6 @@
   "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
-  "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά."
+  "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
+  "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP."
 }

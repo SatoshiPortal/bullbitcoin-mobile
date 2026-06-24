@@ -4381,11 +4381,12 @@
   "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
   "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
   "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
+  "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
   "mempoolErrorUnexpected": "Сталася неочікувана помилка",
-  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер: {error}",
-  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
-  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
+  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
+  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
+  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
+  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
