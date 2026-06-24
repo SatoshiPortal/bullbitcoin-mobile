@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 
@@ -25,7 +26,9 @@ class CreateArkSecretUsecase {
       throw ArkRequiresDevModeError();
     }
 
-    final derivations = await _bip85Repository.fetchAll();
+    final fetchResult = await _bip85Repository.fetchAll();
+    if (fetchResult is Err) throw (fetchResult as Err).failure;
+    final derivations = (fetchResult as Ok).value as List<Bip85DerivationEntity>;
 
     Bip85DerivationEntity? existingArkDerivation;
 
@@ -41,7 +44,10 @@ class CreateArkSecretUsecase {
     // If a revoked derivation exists, reactivate it
     if (existingArkDerivation != null) {
       if (existingArkDerivation.status == Bip85Status.revoked) {
-        await _bip85Repository.activate(existingArkDerivation);
+        switch (await _bip85Repository.activate(existingArkDerivation)) {
+          case Ok():
+          case Err():
+        }
         final xprvBase58 = Bip32Derivation.getXprvFromSeed(
           defaultSeed.bytes,
           Network.bitcoinMainnet,
@@ -63,12 +69,17 @@ class CreateArkSecretUsecase {
       Network.bitcoinMainnet,
     );
 
-    final derivation = await _bip85Repository.deriveHex(
+    final deriveResult = await _bip85Repository.deriveHex(
       xprvBase58: xprvBase58,
       length: Ark.bip85Length,
       index: Ark.bip85Index,
     );
 
-    return derivation;
+    switch (deriveResult) {
+      case Ok(:final value):
+        return value;
+      case Err(:final failure):
+        throw failure;
+    }
   }
 }
