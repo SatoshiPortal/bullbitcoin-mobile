@@ -11,7 +11,7 @@ sealed class MempoolSettingsState with _$MempoolSettingsState {
     @Default(false) bool isSavingServer,
     @Default(false) bool isDeletingServer,
     @Default(false) bool isUpdatingSettings,
-    MempoolSettingsFailure? failure,
+    MempoolFailure? failure,
   }) = _MempoolSettingsState;
   const MempoolSettingsState._();
 

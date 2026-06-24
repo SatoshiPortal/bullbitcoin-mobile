@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_c
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/server_list_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
+import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

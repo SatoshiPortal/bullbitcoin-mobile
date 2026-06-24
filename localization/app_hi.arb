@@ -12633,10 +12633,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "mempoolErrorUpdateSettingsFailed": "सेटिंग्स अपडेट करने में विफल",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails"
-  },
   "exchangeStatisticsBuySellRatioDesc": "खरीदने बनाम बेचने से कुल वॉल्यूम का प्रतिशत",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin खरीदने में खर्च की गई कुल राशि",
   "exchangeStatisticsSellVolumeDesc": "Bitcoin बेचने से प्राप्त कुल राशि",

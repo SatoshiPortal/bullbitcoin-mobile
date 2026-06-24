@@ -4388,7 +4388,6 @@
   "mempoolErrorSaveServerFailed": "保存服务器失败",
   "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败",
   "mempoolErrorDeleteFailed": "删除自定义服务器失败",
-  "mempoolErrorUpdateSettingsFailed": "更新设置失败",
   "settingsErrorReportingTitle": "错误报告",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

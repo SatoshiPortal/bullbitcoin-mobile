@@ -12337,14 +12337,6 @@
       }
     }
   },
-  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeStatisticsBuySellRatioDesc": "ক্রয় বনাম বিক্রয় থেকে মোট ভলিউমের শতাংশ",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin কেনায় মোট ব্যয়িত পরিমাণ",
   "exchangeStatisticsSellVolumeDesc": "Bitcoin বিক্রয় থেকে মোট প্রাপ্ত পরিমাণ",

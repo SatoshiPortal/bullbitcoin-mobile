@@ -32,9 +32,12 @@ class FeesDatasource {
     String baseUrl;
     if (settings.useForFeeEstimation) {
       // Use custom or default mempool server from settings
-      final server = await _getActiveMempoolServerUsecase.execute(
+      final server = (await _getActiveMempoolServerUsecase.execute(
         isTestnet: isTestnet,
         isLiquid: false,
+      )).fold(
+        (s) => s,
+        (_) => throw Exception('Failed to fetch active mempool server'),
       );
       baseUrl = server.fullUrl;
     } else {

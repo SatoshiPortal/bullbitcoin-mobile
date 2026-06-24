@@ -672,10 +672,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "mempoolErrorUpdateSettingsFailed": "Failed to update settings",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails"
-  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"

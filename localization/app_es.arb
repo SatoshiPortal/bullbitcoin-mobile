@@ -4384,7 +4384,6 @@
   "mempoolErrorSaveServerFailed": "Error al guardar el servidor",
   "mempoolErrorLoadFailed": "Error al cargar los datos del servidor mempool",
   "mempoolErrorDeleteFailed": "Error al eliminar el servidor personalizado",
-  "mempoolErrorUpdateSettingsFailed": "Error al actualizar la configuración",
   "autoswapActiveCardTitle": "Autoswap está activo",
   "autoswapWarningExplanationBold": "automáticamente",
   "deleteLogsTitle": "Eliminar registros",

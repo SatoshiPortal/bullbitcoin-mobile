@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 class GetActiveMempoolServerUsecase {
   final MempoolServerRepository _serverRepository;
@@ -9,7 +12,8 @@ class GetActiveMempoolServerUsecase {
     required this._serverRepository,
   });
 
-  Future<MempoolServer> execute({
+  @useResult
+  Future<Result<MempoolServer, MempoolFailure>> execute({
     required bool isTestnet,
     required bool isLiquid,
   }) async {
@@ -18,21 +22,14 @@ class GetActiveMempoolServerUsecase {
       isLiquid: isLiquid,
     );
 
-    // This use-case feeds the (throw-based) fees pipeline, not the failure
-    // pipeline — so unwrap the repo Results here. Generic messages are used so
-    // that raw DB internals (logMessage) never reach the fees error handler.
-    final customServer = (await _serverRepository.fetchCustomServer(network))
-        .fold(
-          (server) => server,
-          (_) => throw Exception('Failed to fetch custom mempool server'),
-        );
-    if (customServer != null) {
-      return customServer;
+    final customResult = await _serverRepository.fetchCustomServer(network);
+    if (customResult case Ok(:final value) when value != null) {
+      return Ok(value);
+    }
+    if (customResult case Err(:final failure)) {
+      return Err(failure);
     }
 
-    return (await _serverRepository.fetchDefaultServer(network)).fold(
-      (server) => server,
-      (_) => throw Exception('Failed to fetch default mempool server'),
-    );
+    return _serverRepository.fetchDefaultServer(network);
   }
 }

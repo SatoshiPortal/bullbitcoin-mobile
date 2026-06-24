@@ -4385,7 +4385,6 @@
   "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
   "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
   "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
-  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

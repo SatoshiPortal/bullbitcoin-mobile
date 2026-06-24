@@ -4708,7 +4708,6 @@
   "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
   "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
   "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden",
-  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden",
   "receivePayjoinNoUtxos": "Empfangen Sie zuerst Geld, um dies zu aktivieren.\nUTXOs sind erforderlich, um Payjoin zu nutzen.",
   "payViewReceipt": "Beleg anzeigen",
   "paySinpeReceipt": "SINPE-Beleg",

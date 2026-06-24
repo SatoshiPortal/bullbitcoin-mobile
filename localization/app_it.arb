@@ -4388,7 +4388,6 @@
   "mempoolErrorSaveServerFailed": "Impossibile salvare il server",
   "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool",
   "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato",
-  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni",
   "settingsErrorReportingTitle": "Segnalazione errori",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

@@ -4443,7 +4443,6 @@
   "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor",
   "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool",
   "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado",
-  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações",
   "settingsErrorReportingTitle": "Relatório de erros",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

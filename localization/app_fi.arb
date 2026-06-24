@@ -4370,7 +4370,6 @@
   "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui",
   "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui",
   "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui",
-  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui",
   "deleteLogsTitle": "Poista lokit",
   "logsDeletedMessage": "Lokit poistettu",
   "sendSelfTransfer": "Siirto itselle",

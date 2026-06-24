@@ -8,12 +8,11 @@ import 'package:bb_mobile/core/mempool/application/usecases/delete_custom_mempoo
 import 'package:bb_mobile/core/mempool/application/usecases/load_mempool_server_data_usecase.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/set_custom_mempool_server_usecase.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/update_mempool_settings_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart' as core;
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/mempool_settings/domain/mempool_settings_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -80,11 +79,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
           ),
         );
       case Err(:final failure):
-        emit(
-          state.copyWith(
-            failure: _lift(failure, MempoolSettingsLoadFailure.new),
-          ),
-        );
+        emit(state.copyWith(failure: failure));
     }
   }
 
@@ -103,12 +98,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
         emit(state.copyWith(isSavingServer: false));
         return true;
       case Err(:final failure):
-        emit(
-          state.copyWith(
-            isSavingServer: false,
-            failure: _lift(failure, MempoolSettingsSaveServerFailure.new),
-          ),
-        );
+        emit(state.copyWith(isSavingServer: false, failure: failure));
         return false;
     }
   }
@@ -121,12 +111,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       case Ok():
         emit(state.copyWith(customServer: null, isDeletingServer: false));
       case Err(:final failure):
-        emit(
-          state.copyWith(
-            isDeletingServer: false,
-            failure: _lift(failure, MempoolSettingsDeleteServerFailure.new),
-          ),
-        );
+        emit(state.copyWith(isDeletingServer: false, failure: failure));
     }
   }
 
@@ -150,12 +135,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
           state.copyWith(settings: updatedSettings, isUpdatingSettings: false),
         );
       case Err(:final failure):
-        emit(
-          state.copyWith(
-            isUpdatingSettings: false,
-            failure: _lift(failure, MempoolSettingsUpdateFailure.new),
-          ),
-        );
+        emit(state.copyWith(isUpdatingSettings: false, failure: failure));
     }
   }
 
@@ -198,39 +178,4 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   void clearError() {
     emit(state.copyWith(failure: null));
   }
-
-  // Lift a core failure into the feature failure. The shared variants
-  // (url / sameAsDefault / validation / unexpected) map the same regardless of
-  // operation; [fallback] is the operation-specific generic message.
-  MempoolSettingsFailure _lift(
-    core.MempoolFailure failure,
-    MempoolSettingsFailure Function(String? logMessage) fallback,
-  ) => switch (failure) {
-    core.MempoolInvalidUrlFailure() =>
-      MempoolSettingsInvalidUrlFailure(failure.logMessage),
-    core.MempoolServerSameAsDefaultFailure() =>
-      MempoolSettingsSameAsDefaultFailure(failure.logMessage),
-    core.MempoolValidationTimeoutFailure() =>
-      MempoolSettingsValidationTimeoutFailure(failure.logMessage),
-    core.MempoolValidationHostNotFoundFailure() =>
-      MempoolSettingsValidationHostNotFoundFailure(failure.logMessage),
-    core.MempoolValidationTorNotRunningFailure() =>
-      MempoolSettingsValidationTorNotRunningFailure(failure.logMessage),
-    core.MempoolValidationConnectionErrorFailure() =>
-      MempoolSettingsValidationConnectionErrorFailure(failure.logMessage),
-    core.MempoolValidationNotMempoolServerFailure() =>
-      MempoolSettingsValidationNotMempoolServerFailure(failure.logMessage),
-    core.MempoolValidationServerUnavailableFailure() =>
-      MempoolSettingsValidationServerUnavailableFailure(failure.logMessage),
-    core.MempoolValidationServerErrorFailure() =>
-      MempoolSettingsValidationServerErrorFailure(failure.logMessage),
-    core.MempoolValidationInvalidResponseFailure() =>
-      MempoolSettingsValidationInvalidResponseFailure(failure.logMessage),
-    core.MempoolUnexpectedFailure() =>
-      MempoolSettingsUnexpectedFailure(failure.logMessage),
-    // Storage variants fall through to the operation-specific message.
-    core.MempoolLoadFailure() => fallback(failure.logMessage),
-    core.MempoolSaveFailure() => fallback(failure.logMessage),
-    core.MempoolDeleteFailure() => fallback(failure.logMessage),
-  };
 }

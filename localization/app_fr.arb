@@ -4367,7 +4367,6 @@
   "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur",
   "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool",
   "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé",
-  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres",
   "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningExplanationBold": "automatiquement",
   "deleteLogsTitle": "Supprimer les journaux",

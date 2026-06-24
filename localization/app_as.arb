@@ -384,14 +384,6 @@
       }
     }
   },
-  "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Transfer ছেটিংছ",
   "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
   "bitcoinSettingsImportWalletTitle": "Wallet আমদানি কৰক",
