@@ -7340,6 +7340,15 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
+  "sendErrorInsufficientBalanceFrozenHint": "Not enough spendable balance — {amount} is frozen. Unfreeze coins in Manage coins to use it.",
+  "@sendErrorInsufficientBalanceFrozenHint": {
+    "description": "Shown instead of the plain insufficient-balance error when the wallet has frozen coins that could cover the payment, pointing the user to unfreeze them (#2337)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"

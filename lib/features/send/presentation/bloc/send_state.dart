@@ -321,6 +321,13 @@ abstract class SendState with _$SendState {
       .where((u) => u.isFrozen)
       .fold(0, (sum, u) => sum + u.amountSat.toInt());
 
+  /// Frozen balance ([frozenBalanceSat]) formatted in the active [bitcoinUnit],
+  /// for the "you have frozen coins" hint shown when a payment can't be covered
+  /// by the spendable balance alone (#2337).
+  String get formattedFrozenBalance => bitcoinUnit == BitcoinUnit.sats
+      ? FormatAmount.sats(frozenBalanceSat)
+      : FormatAmount.btc(ConvertAmount.satsToBtc(frozenBalanceSat));
+
   /// Spendable balance (sats) — the wallet balance minus the amount locked in
   /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
   /// must validate against this, not the raw wallet balance. Falls back to the
