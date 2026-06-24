@@ -19,13 +19,12 @@ class GetActiveMempoolServerUsecase {
     );
 
     // This use-case feeds the (throw-based) fees pipeline, not the failure
-    // pipeline — so unwrap the repo Results here, surfacing the logged reason.
+    // pipeline — so unwrap the repo Results here. Generic messages are used so
+    // that raw DB internals (logMessage) never reach the fees error handler.
     final customServer = (await _serverRepository.fetchCustomServer(network))
         .fold(
           (server) => server,
-          (failure) => throw Exception(
-            failure.logMessage ?? 'Failed to fetch custom mempool server',
-          ),
+          (_) => throw Exception('Failed to fetch custom mempool server'),
         );
     if (customServer != null) {
       return customServer;
@@ -33,9 +32,7 @@ class GetActiveMempoolServerUsecase {
 
     return (await _serverRepository.fetchDefaultServer(network)).fold(
       (server) => server,
-      (failure) => throw Exception(
-        failure.logMessage ?? 'Failed to fetch default mempool server',
-      ),
+      (_) => throw Exception('Failed to fetch default mempool server'),
     );
   }
 }

@@ -4705,7 +4705,6 @@
   "mempoolErrorServerError": "Beim Server ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
   "mempoolErrorInvalidResponse": "Der Server hat eine ungültige Antwort zurückgegeben.",
   "mempoolErrorInvalidUrl": "Ungültige Server-URL. Geben Sie eine gültige Domain oder IP-Adresse ein.",
-  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
   "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
   "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
   "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden",

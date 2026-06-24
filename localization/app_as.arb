@@ -360,7 +360,6 @@
   "mempoolErrorServerError": "চাৰ্ভাৰত ভুল হৈছে। পিছত পুনৰ চেষ্টা কৰক।",
   "mempoolErrorInvalidResponse": "চাৰ্ভাৰে অবৈধ সঁহাৰি দিছে।",
   "mempoolErrorInvalidUrl": "অমান্য চাৰ্ভাৰ URL। এটা বৈধ ডমেইন বা IP ঠিকনা দিয়ক।",
-  "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
   "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {

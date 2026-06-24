@@ -25,9 +25,7 @@ class FeesDatasource {
     final settings = (await _mempoolSettingsRepository.fetchByNetwork(network))
         .fold(
           (value) => value,
-          (failure) => throw Exception(
-            failure.logMessage ?? 'Failed to fetch mempool settings',
-          ),
+          (_) => throw Exception('Failed to fetch mempool settings'),
         );
 
     // Determine which mempool server to use

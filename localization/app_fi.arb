@@ -4367,7 +4367,6 @@
   "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
   "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
   "mempoolErrorInvalidUrl": "Virheellinen palvelimen URL-osoite. Anna kelvollinen verkkotunnus tai IP-osoite.",
-  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
   "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui",
   "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui",
   "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui",

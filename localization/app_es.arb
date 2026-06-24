@@ -4381,7 +4381,6 @@
   "mempoolErrorServerError": "El servidor encontró un error. Por favor, intenta más tarde.",
   "mempoolErrorInvalidResponse": "El servidor devolvió una respuesta inválida.",
   "mempoolErrorInvalidUrl": "URL del servidor no válida. Introduce un dominio o dirección IP válidos.",
-  "mempoolErrorUnexpected": "Ocurrió un error inesperado",
   "mempoolErrorSaveServerFailed": "Error al guardar el servidor",
   "mempoolErrorLoadFailed": "Error al cargar los datos del servidor mempool",
   "mempoolErrorDeleteFailed": "Error al eliminar el servidor personalizado",

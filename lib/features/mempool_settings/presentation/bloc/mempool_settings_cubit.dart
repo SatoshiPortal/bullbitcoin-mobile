@@ -228,6 +228,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       MempoolSettingsValidationInvalidResponseFailure(failure.logMessage),
     core.MempoolUnexpectedFailure() =>
       MempoolSettingsUnexpectedFailure(failure.logMessage),
-    _ => fallback(failure.logMessage),
+    // Storage variants fall through to the operation-specific message.
+    core.MempoolLoadFailure() => fallback(failure.logMessage),
+    core.MempoolSaveFailure() => fallback(failure.logMessage),
+    core.MempoolDeleteFailure() => fallback(failure.logMessage),
   };
 }

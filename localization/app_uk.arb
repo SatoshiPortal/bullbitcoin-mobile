@@ -4382,7 +4382,6 @@
   "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
   "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
   "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
-  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
   "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
   "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
   "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",

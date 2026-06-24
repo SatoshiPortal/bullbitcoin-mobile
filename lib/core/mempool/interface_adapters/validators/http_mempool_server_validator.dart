@@ -37,10 +37,11 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
 
       final response = await dio.get(path);
 
-      if (response.statusCode != 200) {
+      final statusCode = response.statusCode;
+      if (statusCode == null || statusCode < 200 || statusCode >= 300) {
         log.severe(
-          message: 'Validation failed: Invalid status code ${response.statusCode}',
-          error: 'status ${response.statusCode}',
+          message: 'Validation failed: Invalid status code $statusCode',
+          error: 'status $statusCode',
           trace: StackTrace.current,
         );
         return const Err(MempoolValidationNotMempoolServerFailure());

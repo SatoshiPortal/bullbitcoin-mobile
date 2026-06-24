@@ -12621,7 +12621,6 @@
   "mempoolErrorServerError": "सर्वर में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
   "mempoolErrorInvalidResponse": "सर्वर ने अमान्य प्रतिक्रिया दी।",
   "mempoolErrorInvalidUrl": "अमान्य सर्वर URL। एक मान्य डोमेन या IP पता दर्ज करें।",
-  "mempoolErrorUnexpected": "एक अप्रत्याशित त्रुटि हुई",
   "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

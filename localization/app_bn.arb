@@ -12313,7 +12313,6 @@
   "mempoolErrorServerError": "সার্ভারে ত্রুটি ঘটেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "mempoolErrorInvalidResponse": "সার্ভার একটি অবৈধ প্রতিক্রিয়া দিয়েছে।",
   "mempoolErrorInvalidUrl": "অবৈধ সার্ভার URL। একটি বৈধ ডোমেইন বা IP ঠিকানা লিখুন।",
-  "mempoolErrorUnexpected": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
   "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {

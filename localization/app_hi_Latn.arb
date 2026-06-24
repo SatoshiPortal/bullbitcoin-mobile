@@ -644,10 +644,6 @@
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
-  "mempoolErrorUnexpected": "Ek unexpected error aayi",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
-  },
   "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

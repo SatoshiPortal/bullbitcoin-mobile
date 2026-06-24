@@ -660,10 +660,6 @@
   "@mempoolErrorInvalidUrl": {
     "description": "Error when the custom mempool server URL is malformed"
   },
-  "mempoolErrorUnexpected": "An unexpected error occurred",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
-  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

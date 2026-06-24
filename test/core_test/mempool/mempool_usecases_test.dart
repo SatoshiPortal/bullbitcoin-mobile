@@ -6,9 +6,9 @@ import 'package:bb_mobile/core/mempool/application/usecases/delete_custom_mempoo
 import 'package:bb_mobile/core/mempool/application/usecases/load_mempool_server_data_usecase.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/set_custom_mempool_server_usecase.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/update_mempool_settings_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
