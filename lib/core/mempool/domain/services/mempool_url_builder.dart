@@ -50,9 +50,7 @@ class MempoolUrlBuilder {
     );
     return switch (result) {
       Ok(:final value) => value,
-      Err(:final failure) => throw Exception(
-        failure.logMessage ?? 'Failed to fetch active mempool server',
-      ),
+      Err() => throw Exception('Failed to fetch active mempool server'),
     };
   }
 }
