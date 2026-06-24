@@ -5052,5 +5052,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Фільтр за датою",
+  "logsViewerShowingCount": "Показано {shown} з {total} записів",
+  "logsViewerClearFilter": "Очистити фільтр",
+  "logsViewerShareButton": "Поділитися",
+  "logsShareOptionShare": "Поділитися",
+  "logsShareOptionExport": "Експорт",
+  "logsExportedMessage": "Журнали успішно експортовано",
+  "logsExportFailedMessage": "Не вдалося експортувати журнали"
 }

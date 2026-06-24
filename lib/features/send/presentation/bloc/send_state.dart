@@ -197,6 +197,11 @@ abstract class SendState with _$SendState {
     return amountSat;
   }
 
+  int get effectiveAmountSat {
+    final embedded = paymentRequest?.amountSat ?? 0;
+    return embedded > 0 ? embedded : inputAmountSat;
+  }
+
   double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
   double get inputAmountFiat {
@@ -345,17 +350,17 @@ abstract class SendState with _$SendState {
       isLightning && selectedWallet!.network.isBitcoin;
 
   bool get swapAmountBelowLimit {
-    if (isLightning && inputAmountSat != 0) {
+    final amount = effectiveAmountSat;
+    if (isLightning && amount != 0) {
       if (selectedSwapLimits == null) return false;
       // Allow 100 sats minimum for Liquid to Lightning swaps
       final isLiquidToLightning =
           selectedWallet != null && selectedWallet!.isLiquid;
       final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
-      return inputAmountSat < minLimit;
+      return amount < minLimit;
     }
-    if (requireChainSwap && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat < selectedSwapLimits!.min;
+    if (requireChainSwap && amount != 0) {
+      return selectedSwapLimits != null && amount < selectedSwapLimits!.min;
     }
     return false;
   }
@@ -367,13 +372,12 @@ abstract class SendState with _$SendState {
   }
 
   bool get swapAmountAboveLimit {
+    final amount = effectiveAmountSat;
     if (isLightning) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
     }
-    if (requireChainSwap && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+    if (requireChainSwap && amount != 0) {
+      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
     }
     return false;
   }

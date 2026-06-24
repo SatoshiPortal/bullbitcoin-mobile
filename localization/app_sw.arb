@@ -561,5 +561,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Chuja kwa Tarehe",
+  "logsViewerShowingCount": "Inaonyesha {shown} kati ya {total} kumbukumbu",
+  "logsViewerClearFilter": "Futa kichujio",
+  "logsViewerShareButton": "Shiriki",
+  "logsShareOptionShare": "Shiriki",
+  "logsShareOptionExport": "Hamisha",
+  "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu"
 }

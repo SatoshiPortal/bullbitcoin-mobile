@@ -13053,5 +13053,13 @@
   "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
   "walletCoinsEntryFrozen": "{amount} জমাকৃত",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "logsViewerFilterByDate": "তারিখ অনুযায়ী ফিল্টার করুন",
+  "logsViewerShowingCount": "{total} টি লগের মধ্যে {shown} টি দেখানো হচ্ছে",
+  "logsViewerClearFilter": "ফিল্টার সাফ করুন",
+  "logsViewerShareButton": "শেয়ার করুন",
+  "logsShareOptionShare": "শেয়ার করুন",
+  "logsShareOptionExport": "এক্সপোর্ট করুন",
+  "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে"
 }

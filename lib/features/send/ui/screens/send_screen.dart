@@ -228,6 +228,9 @@ class AddressErrorSection extends StatelessWidget {
     final balanceError = context.select(
       (SendCubit cubit) => cubit.state.insufficientBalanceException,
     );
+    final swapLimitsError = context.select(
+      (SendCubit cubit) => cubit.state.swapLimitsException,
+    );
     final swapError = context.select(
       (SendCubit cubit) => cubit.state.swapCreationException,
     );
@@ -244,6 +247,15 @@ class AddressErrorSection extends StatelessWidget {
           textAlign: .center,
           maxLines: 2,
         ),
+      );
+    }
+    if (swapLimitsError != null) {
+      return BBText(
+        _getSwapLimitsErrorMessage(context, swapLimitsError),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: .center,
+        maxLines: 2,
       );
     }
     if (swapError != null) {

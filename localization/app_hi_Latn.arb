@@ -13391,5 +13391,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Taareekh ke anusaar filter karein",
+  "logsViewerShowingCount": "{total} mein se {shown} log dikhaaye ja rahe hain",
+  "logsViewerClearFilter": "Filter hatayein",
+  "logsViewerShareButton": "Share karein",
+  "logsShareOptionShare": "Share karein",
+  "logsShareOptionExport": "Export karein",
+  "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
+  "logsExportFailedMessage": "Logs export karne mein vifal"
 }

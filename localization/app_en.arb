@@ -13904,6 +13904,46 @@
   "@logsViewerCancelButton": {
     "description": "Button to cancel deleting logs"
   },
+  "logsViewerFilterByDate": "Filter by Date",
+  "@logsViewerFilterByDate": {
+    "description": "Button label to filter logs by date range"
+  },
+  "logsViewerShowingCount": "Showing {shown} of {total} logs",
+  "@logsViewerShowingCount": {
+    "description": "Counter showing filtered vs total log entries",
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logsViewerClearFilter": "Clear filter",
+  "@logsViewerClearFilter": {
+    "description": "Tooltip for the button that clears the date filter"
+  },
+  "logsViewerShareButton": "Share",
+  "@logsViewerShareButton": {
+    "description": "Button to open the share/export options for logs"
+  },
+  "logsShareOptionShare": "Share",
+  "@logsShareOptionShare": {
+    "description": "Option in the bottom sheet to share logs as text"
+  },
+  "logsShareOptionExport": "Export",
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "logsExportedMessage": "Logs exported successfully",
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "logsExportFailedMessage": "Failed to export logs",
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
+  },
   "mempoolCustomServerSsl": "SSL",
   "@mempoolCustomServerSsl": {
     "description": "Badge shown when a custom mempool server uses SSL"

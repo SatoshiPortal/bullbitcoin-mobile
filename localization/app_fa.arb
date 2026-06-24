@@ -12918,5 +12918,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "فیلتر بر اساس تاریخ",
+  "logsViewerShowingCount": "نمایش {shown} از {total} گزارش",
+  "logsViewerClearFilter": "پاک کردن فیلتر",
+  "logsViewerShareButton": "اشتراک‌گذاری",
+  "logsShareOptionShare": "اشتراک‌گذاری",
+  "logsShareOptionExport": "صدور",
+  "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود"
 }

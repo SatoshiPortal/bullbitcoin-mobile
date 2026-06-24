@@ -12883,5 +12883,13 @@
   "walletCoinsEntryUtxoCount": "{count, plural, one{1 UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
   "walletCoinsEntryFrozen": "{amount} zmrazeno",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "logsViewerFilterByDate": "Filtrovat podle data",
+  "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
+  "logsViewerClearFilter": "Vymazat filtr",
+  "logsViewerShareButton": "Sdílet",
+  "logsShareOptionShare": "Sdílet",
+  "logsShareOptionExport": "Exportovat",
+  "logsExportedMessage": "Záznamy byly úspěšně exportovány",
+  "logsExportFailedMessage": "Export záznamů se nezdařil"
 }

@@ -5055,5 +5055,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Filtra per data",
+  "logsViewerShowingCount": "Visualizzazione di {shown} su {total} registri",
+  "logsViewerClearFilter": "Cancella filtro",
+  "logsViewerShareButton": "Condividi",
+  "logsShareOptionShare": "Condividi",
+  "logsShareOptionExport": "Esporta",
+  "logsExportedMessage": "Registri esportati con successo",
+  "logsExportFailedMessage": "Esportazione dei registri non riuscita"
 }

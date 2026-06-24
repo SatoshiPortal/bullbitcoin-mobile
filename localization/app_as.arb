@@ -9888,5 +9888,13 @@
   "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
   "walletCoinsEntryFrozen": "{amount} জমা কৰা",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "logsViewerFilterByDate": "তাৰিখ অনুযায়ী ফিল্টাৰ কৰক",
+  "logsViewerShowingCount": "{total} টা লগৰ ভিতৰত {shown} টা দেখুওৱা হৈছে",
+  "logsViewerClearFilter": "ফিল্টাৰ মচক",
+  "logsViewerShareButton": "শ্বেয়াৰ কৰক",
+  "logsShareOptionShare": "শ্বেয়াৰ কৰক",
+  "logsShareOptionExport": "ৰপ্তানি কৰক",
+  "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
+  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে"
 }

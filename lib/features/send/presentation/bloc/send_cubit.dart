@@ -365,6 +365,7 @@ class SendCubit extends Cubit<SendState> {
             ? SwapType.liquidToLightning
             : SwapType.bitcoinToLightning;
         await loadSwapLimits();
+        setSelectedSwapLimits();
 
         if (state.swapAmountBelowLimit) {
           final swapMinimum = state.swapMinimum;

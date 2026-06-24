@@ -5061,5 +5061,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Filtrar por fecha",
+  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
+  "logsViewerClearFilter": "Borrar filtro",
+  "logsViewerShareButton": "Compartir",
+  "logsShareOptionShare": "Compartir",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registros exportados correctamente",
+  "logsExportFailedMessage": "Error al exportar los registros"
 }

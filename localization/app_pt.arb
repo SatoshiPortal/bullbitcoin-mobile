@@ -5110,5 +5110,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Filtrar por data",
+  "logsViewerShowingCount": "A mostrar {shown} de {total} registos",
+  "logsViewerClearFilter": "Limpar filtro",
+  "logsViewerShareButton": "Partilhar",
+  "logsShareOptionShare": "Partilhar",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registos exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registos"
 }

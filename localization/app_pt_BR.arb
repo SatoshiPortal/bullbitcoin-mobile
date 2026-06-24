@@ -13032,5 +13032,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Filtrar por data",
+  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
+  "logsViewerClearFilter": "Limpar filtro",
+  "logsViewerShareButton": "Compartilhar",
+  "logsShareOptionShare": "Compartilhar",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registros exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registros"
 }

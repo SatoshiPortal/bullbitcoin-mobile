@@ -5047,5 +5047,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Suodata päivämäärän mukaan",
+  "logsViewerShowingCount": "Näytetään {shown} / {total} lokia",
+  "logsViewerClearFilter": "Tyhjennä suodatin",
+  "logsViewerShareButton": "Jaa",
+  "logsShareOptionShare": "Jaa",
+  "logsShareOptionExport": "Vie",
+  "logsExportedMessage": "Lokit viety onnistuneesti",
+  "logsExportFailedMessage": "Lokien vienti epäonnistui"
 }

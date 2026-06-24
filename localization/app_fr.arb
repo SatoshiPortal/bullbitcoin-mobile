@@ -5044,5 +5044,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Filtrer par date",
+  "logsViewerShowingCount": "Affichage de {shown} sur {total} journaux",
+  "logsViewerClearFilter": "Effacer le filtre",
+  "logsViewerShareButton": "Partager",
+  "logsShareOptionShare": "Partager",
+  "logsShareOptionExport": "Exporter",
+  "logsExportedMessage": "Journaux exportés avec succès",
+  "logsExportFailedMessage": "Échec de l'exportation des journaux"
 }

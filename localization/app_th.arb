@@ -12918,5 +12918,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "กรองตามวันที่",
+  "logsViewerShowingCount": "กำลังแสดง {shown} จาก {total} รายการบันทึก",
+  "logsViewerClearFilter": "ล้างตัวกรอง",
+  "logsViewerShareButton": "แชร์",
+  "logsShareOptionShare": "แชร์",
+  "logsShareOptionExport": "ส่งออก",
+  "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ"
 }

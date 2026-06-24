@@ -9894,5 +9894,13 @@
   "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
   "walletCoinsEntryFrozen": "{amount} замразени",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
+  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "logsViewerFilterByDate": "Филтриране по дата",
+  "logsViewerShowingCount": "Показване на {shown} от {total} журнала",
+  "logsViewerClearFilter": "Изчисти филтъра",
+  "logsViewerShareButton": "Споделяне",
+  "logsShareOptionShare": "Споделяне",
+  "logsShareOptionExport": "Експортиране",
+  "logsExportedMessage": "Журналите са експортирани успешно",
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите"
 }

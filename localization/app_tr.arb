@@ -12918,5 +12918,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Tarihe Göre Filtrele",
+  "logsViewerShowingCount": "{total} kayıttan {shown} tanesi gösteriliyor",
+  "logsViewerClearFilter": "Filtreyi Temizle",
+  "logsViewerShareButton": "Paylaş",
+  "logsShareOptionShare": "Paylaş",
+  "logsShareOptionExport": "Dışa Aktar",
+  "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı"
 }

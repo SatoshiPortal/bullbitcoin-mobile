@@ -13036,5 +13036,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
+  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
+  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
+  "logsViewerShareButton": "Κοινοποίηση",
+  "logsShareOptionShare": "Κοινοποίηση",
+  "logsShareOptionExport": "Εξαγωγή",
+  "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
 }

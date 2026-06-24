@@ -4937,5 +4937,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "按日期筛选",
+  "logsViewerShowingCount": "显示 {shown} 条（共 {total} 条）日志",
+  "logsViewerClearFilter": "清除筛选",
+  "logsViewerShareButton": "分享",
+  "logsShareOptionShare": "分享",
+  "logsShareOptionExport": "导出",
+  "logsExportedMessage": "日志导出成功",
+  "logsExportFailedMessage": "日志导出失败"
 }

@@ -13204,5 +13204,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "तारीख के अनुसार फ़िल्टर करें",
+  "logsViewerShowingCount": "{total} में से {shown} लॉग दिखाए जा रहे हैं",
+  "logsViewerClearFilter": "फ़िल्टर हटाएं",
+  "logsViewerShareButton": "शेयर करें",
+  "logsShareOptionShare": "शेयर करें",
+  "logsShareOptionExport": "निर्यात करें",
+  "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल"
 }

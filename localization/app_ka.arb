@@ -753,5 +753,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "logsViewerFilterByDate": "თარიღის მიხედვით გაფილტრვა",
+  "logsViewerShowingCount": "ნაჩვენებია {shown} {total}-დან",
+  "logsViewerClearFilter": "ფილტრის გასუფთავება",
+  "logsViewerShareButton": "გაზიარება",
+  "logsShareOptionShare": "გაზიარება",
+  "logsShareOptionExport": "ექსპორტი",
+  "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
 }
