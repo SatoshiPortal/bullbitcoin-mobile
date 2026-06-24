@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -27,6 +27,9 @@ class SwapConfirmPage extends StatelessWidget {
 
     final confirmError = context.select(
       (TransferBloc bloc) => bloc.state.confirmTransactionException,
+    );
+    final buildError = context.select(
+      (TransferBloc bloc) => bloc.state.buildTransactionException,
     );
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
@@ -109,24 +112,46 @@ class SwapConfirmPage extends StatelessWidget {
                               absoluteFees: absoluteFeesFormatted,
                               selectedFeeOptionTitle: selectedFeeOptionTitle,
                               onFeePriorityTap: () {
+                                final bloc = context.read<TransferBloc>();
                                 BlurredBottomSheet.show(
                                   context: context,
-                                  child: BlocProvider.value(
-                                    value: context.read<TransferBloc>(),
-                                    child: const SwapFeeOptionsModal(),
+                                  child: FeeOptionsModal(
+                                    viewState: bloc,
+                                    actions: bloc,
+                                    defaultAbsoluteCustomFee: true,
+                                    customFeeColors: FeeModalCustomFeeColors(
+                                      tile: context.appColors.onSecondary,
+                                      shadow: context.appColors.secondary,
+                                      unselectedIcon:
+                                          context.appColors.surface,
+                                    ),
                                   ),
                                 ).then((selected) {
-                                  if (selected != null && context.mounted) {
+                                  if (!context.mounted) return;
+                                  final bloc = context.read<TransferBloc>();
+                                  if (selected != null) {
+                                    // Preset picked — commit it. The
+                                    // event handler clears any in-flight
+                                    // arm from custom typing.
                                     try {
                                       final fee = FeeSelectionName.fromString(
                                         selected,
                                       );
-                                      context.read<TransferBloc>().add(
+                                      bloc.add(
                                         TransferEvent.feeOptionSelected(fee),
                                       );
                                     } catch (e) {
                                       // Ignore invalid fee selection
                                     }
+                                  } else {
+                                    // User dismissed the modal (tap
+                                    // outside, back, swipe). Finalize the
+                                    // typed custom rate if any. Replaces
+                                    // the old "Confirm Custom Fee" button.
+                                    bloc.add(
+                                      const TransferEvent
+                                          .customFeeFinalized(),
+                                    );
                                   }
                                 });
                               },
@@ -152,7 +177,7 @@ class SwapConfirmPage extends StatelessWidget {
                       const Gap(24),
                       CommonConfirmSendErrorSection(
                         confirmError: confirmError,
-                        buildError: null,
+                        buildError: buildError,
                       ),
                     ],
                   ),

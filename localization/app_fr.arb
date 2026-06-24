@@ -288,7 +288,7 @@
   "sendConfirmCustomFee": "Confirmer les frais personnalisés",
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "sendEstimatedDelivery10to30Minutes": "10-30 minutes",
-  "sendEstimatedDeliveryFewHours": "quelques heures",
+  "sendEstimatedDeliveryHours": "heures",
   "sendEstimatedDeliveryHoursToDays": "heures à jours",
   "sendEstimatedDelivery": "Livraison estimée ~ ",
   "sendAddress": "Adresse : ",

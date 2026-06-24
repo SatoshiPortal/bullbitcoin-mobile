@@ -3644,7 +3644,7 @@
   "recoverbullGoogleDriveCancelButton": "Cancelar",
   "backupWalletSuccessDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "rbfBroadcast": "Transmissão",
-  "sendEstimatedDeliveryFewHours": "poucas horas",
+  "sendEstimatedDeliveryHours": "horas",
   "dcaConfirmFrequencyMonthly": "Todos os meses",
   "importWatchOnlyScriptType": "Tipo de script",
   "electrumCustomServers": "Servidores personalizados",

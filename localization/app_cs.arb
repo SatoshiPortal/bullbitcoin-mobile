@@ -10731,8 +10731,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "hodiny",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "hodiny",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "Každý měsíc",

@@ -11,6 +11,14 @@ class FormatAmount {
     return currencyFormatter.format(satsAmount);
   }
 
+  /// Format a fractional satoshi count for preview display (rate × vsize
+  /// products etc.). Shows up to 2 decimals, drops trailing zeros, and
+  /// kills IEEE 754 noise like `78.96000000000001` → `78.96`. The actual
+  /// broadcast fee is always an integer sat — this is a preview format.
+  static String satsApprox(num satsAmount) {
+    return NumberFormat('#,##0.##').format(satsAmount);
+  }
+
   static String btc(double btcAmount) {
     const maxDecimals = 8;
     if (btcAmount >= 0.1 || btcAmount == 0.0) {

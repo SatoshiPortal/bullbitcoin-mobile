@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
@@ -86,10 +86,9 @@ Future<void> main({bool isInitialized = false}) async {
       final dbFile = File('${dir.path}/restart.sqlite');
 
       final before = SqliteDatabase(NativeDatabase(dbFile));
-      await FrozenWalletUtxoDatasource(db: before).freezeOutpoints(
-        walletId: walletId,
-        outpoints: [outpoint],
-      );
+      await FrozenWalletUtxoDatasource(
+        db: before,
+      ).freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
       await before.close();
 
       final after = SqliteDatabase(NativeDatabase(dbFile));
@@ -229,7 +228,7 @@ Future<void> main({bool isInitialized = false}) async {
             walletId: wallet.id,
             address: receive.address,
             drain: true,
-            networkFee: const NetworkFee.relative(2),
+            networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
           throwsA(isA<NoSpendableUtxoException>()),
         );

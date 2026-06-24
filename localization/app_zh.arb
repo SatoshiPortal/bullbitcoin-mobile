@@ -3667,7 +3667,7 @@
   "recoverbullGoogleDriveCancelButton": "Cancel",
   "backupWalletSuccessDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "rbfBroadcast": "广播",
-  "sendEstimatedDeliveryFewHours": "小时数",
+  "sendEstimatedDeliveryHours": "小时",
   "dcaConfirmFrequencyMonthly": "每个月",
   "importWatchOnlyScriptType": "文字类型",
   "electrumCustomServers": "海关服务器",

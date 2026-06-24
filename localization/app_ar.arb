@@ -10314,8 +10314,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "ساعات قليلة",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "ساعات",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "كل شهر",

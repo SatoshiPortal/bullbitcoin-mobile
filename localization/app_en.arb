@@ -1364,6 +1364,14 @@
   "@sendConfirmCustomFee": {
     "description": "Button label for confirming a custom fee"
   },
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
+  "@sendSubSatVbyteWarning": {
+    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
+  },
+  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
+  "@sendBelowMinFeeRateError": {
+    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
+  },
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
@@ -1372,9 +1380,9 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryFewHours": "few hours",
-  "@sendEstimatedDeliveryFewHours": {
-    "description": "Estimated delivery time of a few hours"
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
   },
   "sendEstimatedDeliveryHoursToDays": "hours to days",
   "@sendEstimatedDeliveryHoursToDays": {

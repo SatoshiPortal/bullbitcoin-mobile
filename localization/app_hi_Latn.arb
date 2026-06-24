@@ -1353,8 +1353,8 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryFewHours": "kuch ghante",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "ghante",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "sendEstimatedDeliveryHoursToDays": "ghanton se dinontak",

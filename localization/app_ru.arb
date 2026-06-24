@@ -3666,7 +3666,7 @@
   "recoverbullGoogleDriveCancelButton": "Отмена",
   "backupWalletSuccessDescription": "Теперь давайте проверим вашу резервную копию, чтобы убедиться, что все было сделано правильно.",
   "rbfBroadcast": "Broadcast",
-  "sendEstimatedDeliveryFewHours": "несколько часов",
+  "sendEstimatedDeliveryHours": "часы",
   "dcaConfirmFrequencyMonthly": "Каждый месяц",
   "importWatchOnlyScriptType": "Тип сценария",
   "electrumCustomServers": "Пользовательские серверы",

@@ -33,8 +33,8 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
-import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -347,6 +347,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appColors.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -429,191 +430,215 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     );
                     return IgnorePointer(
                       ignoring: state.amountConfirmedClicked,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            ColoredBox(
-                              color: context.appColors.onSecondary,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0,
-                                ),
-                                child: DropdownButtonFormField<Wallet>(
-                                  alignment: Alignment.centerLeft,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  icon: Icon(
-                                    Icons.keyboard_arrow_down,
-                                    color: context.appColors.secondary,
-                                  ),
-                                  iconSize: 24,
-                                  initialValue: selectedWallet,
-                                  items: wallets.map((w) {
-                                    return DropdownMenuItem(
-                                      value: w,
-                                      child: Text(
-                                        w.displayLabel(context),
-                                        style: context.font.headlineSmall,
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      context
-                                          .read<SendCubit>()
-                                          .updateSelectedWallet(value);
-                                    }
-                                  },
-                                ),
+                      child: Column(
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
                               ),
-                            ),
-                            const Gap(10),
-                            PriceInput(
-                              currency: inputCurrency,
-                              amountEquivalent:
-                                  state.formattedAmountInputEquivalent,
-                              availableCurrencies: availableInputCurrencies,
-                              amountController: _amountController,
-                              onCurrencyChanged: (currencyCode) {
-                                _setIsMax(false);
-                                context.read<SendCubit>().onCurrencyChanged(
-                                  currencyCode,
-                                );
-                              },
-                              error: balanceError != null
-                                  ? (state.frozenBalanceSat > 0
-                                        ? context.loc
-                                              .sendErrorInsufficientBalanceFrozenHint(
-                                                state.formattedFrozenBalance,
-                                              )
-                                        : context
-                                              .loc
-                                              .sendErrorInsufficientBalanceForPayment)
-                                  : (!walletHasBalance &&
-                                        amountConfirmedClicked)
-                                  ? context.loc.sendInsufficientBalance
-                                  : swapLimitsError != null
-                                  ? _getSwapLimitsErrorMessage(
-                                      context,
-                                      swapLimitsError,
-                                    )
-                                  : swapCreationError != null
-                                  ? _swapCreationErrorMessage(
-                                      context,
-                                      swapCreationError,
-                                    )
-                                  : null,
-                              focusNode: _amountFocusNode,
-                              readOnly: _isMax,
-                              isMax: _isMax,
-                            ),
-                            if (swapLimitsError?.suggestInstantPayments == true)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 6),
-                                child: BBText(
-                                  context
-                                      .loc
-                                      .sendErrorAmountBelowSwapLimitsBitcoin,
-                                  style: context.font.bodySmall,
-                                  color: context.appColors.error,
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            Gap(Device.screen.height * 0.02),
-                            BorderedTappableTile(
-                              onTap: () async {
-                                final cubit = context.read<SendCubit>();
-                                final saved = await LabelEntryBottomSheet.label(
-                                  context,
-                                  title: context.loc.transactionNoteAddTitle,
-                                  initialValue: state.label.isEmpty
-                                      ? null
-                                      : state.label,
-                                  hint: context.loc.transactionNoteHint,
-                                  suggestionsFuture: cubit
-                                      .fetchDistinctLabels(),
-                                );
-                                if (saved == null || !context.mounted) return;
-                                cubit.noteChanged(saved);
-                              },
-                              child: Row(
+                              child: Column(
+                                crossAxisAlignment: .stretch,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        BBText(
-                                          '${context.loc.receiveNote} (optional)',
-                                          style: context.font.bodyLarge,
+                                  ColoredBox(
+                                    color: context.appColors.onSecondary,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0,
+                                      ),
+                                      child: DropdownButtonFormField<Wallet>(
+                                        alignment: Alignment.centerLeft,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.zero,
+                                        ),
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down,
                                           color: context.appColors.secondary,
                                         ),
-                                        const Gap(4),
-                                        BBText(
-                                          state.label.isEmpty
-                                              ? context.loc.receiveEnterHere
-                                              : state.label,
-                                          style: context.font.bodyMedium,
-                                          maxLines: 4,
-                                          overflow: TextOverflow.ellipsis,
+                                        iconSize: 24,
+                                        initialValue: selectedWallet,
+                                        items: wallets.map((w) {
+                                          return DropdownMenuItem(
+                                            value: w,
+                                            child: Text(
+                                              w.displayLabel(context),
+                                              style: context.font.headlineSmall,
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            context
+                                                .read<SendCubit>()
+                                                .updateSelectedWallet(value);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const Gap(10),
+                                  PriceInput(
+                                    currency: inputCurrency,
+                                    amountEquivalent:
+                                        state.formattedAmountInputEquivalent,
+                                    availableCurrencies:
+                                        availableInputCurrencies,
+                                    amountController: _amountController,
+                                    onCurrencyChanged: (currencyCode) {
+                                      _setIsMax(false);
+                                      context
+                                          .read<SendCubit>()
+                                          .onCurrencyChanged(currencyCode);
+                                    },
+                                    error: balanceError != null
+                                        ? (state.frozenBalanceSat > 0
+                                              ? context.loc
+                                                    .sendErrorInsufficientBalanceFrozenHint(
+                                                      state
+                                                          .formattedFrozenBalance,
+                                                    )
+                                              : context
+                                                    .loc
+                                                    .sendErrorInsufficientBalanceForPayment)
+                                        : (!walletHasBalance &&
+                                              amountConfirmedClicked)
+                                        ? context.loc.sendInsufficientBalance
+                                        : swapLimitsError != null
+                                        ? _getSwapLimitsErrorMessage(
+                                            context,
+                                            swapLimitsError,
+                                          )
+                                        : swapCreationError != null
+                                        ? _swapCreationErrorMessage(
+                                            context,
+                                            swapCreationError,
+                                          )
+                                        : null,
+                                    focusNode: _amountFocusNode,
+                                    readOnly: _isMax,
+                                    isMax: _isMax,
+                                  ),
+                                  if (swapLimitsError?.suggestInstantPayments ==
+                                      true)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 6),
+                                      child: BBText(
+                                        context
+                                            .loc
+                                            .sendErrorAmountBelowSwapLimitsBitcoin,
+                                        style: context.font.bodySmall,
+                                        color: context.appColors.error,
+                                        maxLines: 3,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  Gap(Device.screen.height * 0.02),
+                                  BorderedTappableTile(
+                                    onTap: () async {
+                                      final cubit = context.read<SendCubit>();
+                                      final saved =
+                                          await LabelEntryBottomSheet.label(
+                                            context,
+                                            title: context
+                                                .loc
+                                                .transactionNoteAddTitle,
+                                            initialValue: state.label.isEmpty
+                                                ? null
+                                                : state.label,
+                                            hint:
+                                                context.loc.transactionNoteHint,
+                                            suggestionsFuture: cubit
+                                                .fetchDistinctLabels(),
+                                          );
+                                      if (saved == null || !context.mounted) {
+                                        return;
+                                      }
+                                      cubit.noteChanged(saved);
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              BBText(
+                                                '${context.loc.receiveNote} (optional)',
+                                                style: context.font.bodyLarge,
+                                                color:
+                                                    context.appColors.secondary,
+                                              ),
+                                              const Gap(4),
+                                              BBText(
+                                                state.label.isEmpty
+                                                    ? context
+                                                          .loc
+                                                          .receiveEnterHere
+                                                    : state.label,
+                                                style: context.font.bodyMedium,
+                                                maxLines: 4,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: context.appColors.secondary,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                    color: context.appColors.secondary,
+                                  const Gap(48),
+                                  Divider(
+                                    height: 1,
+                                    color: context.appColors.secondaryFixedDim,
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    child: BalanceRow(
+                                      balance: state.formattedWalletBalance(),
+                                      currencyCode: '',
+                                      isMax: _isMax,
+                                      onMaxToggled: !isLightning && !isChainSwap
+                                          ? (value) {
+                                              _setIsMax(value);
+                                              context
+                                                  .read<SendCubit>()
+                                                  .amountChanged(isMax: value);
+                                              if (!value) {
+                                                _amountFocusNode.requestFocus();
+                                              }
+                                            }
+                                          : null,
+                                      walletLabel: selectedWallet.label,
+                                    ),
+                                  ),
+                                  if (buildError != null) ...[
+                                    const Gap(16),
+                                    const _SendError(),
+                                  ],
                                 ],
                               ),
                             ),
-                            const Gap(48),
-                            Divider(
-                              height: 1,
-                              color: context.appColors.secondaryFixedDim,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              16,
+                              8,
+                              16,
+                              math.max(16, Device.screen.height * 0.04),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: BalanceRow(
-                                balance: state.formattedWalletBalance(),
-                                currencyCode: '',
-                                isMax: _isMax,
-                                onMaxToggled: !isLightning && !isChainSwap
-                                    ? (value) {
-                                        _setIsMax(value);
-                                        context.read<SendCubit>().amountChanged(
-                                          isMax: value,
-                                        );
-                                        if (!value) {
-                                          _amountFocusNode.requestFocus();
-                                        }
-                                      }
-                                    : null,
-                                walletLabel: selectedWallet.label,
-                              ),
+                            child: SendAmountConfirmButton(
+                              amountController: _amountController,
                             ),
-                            if (buildError != null) ...[
-                              const Gap(16),
-                              const _SendError(),
-                            ],
-
-                            const Spacer(),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                bottom: Device.screen.height * 0.04,
-                              ),
-                              child: SendAmountConfirmButton(
-                                amountController: _amountController,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -981,14 +1006,32 @@ class _OnchainTransactionReview extends StatelessWidget {
                   final sendCubit = context.read<SendCubit>();
                   final selected = await BlurredBottomSheet.show<String>(
                     context: context,
-                    child: BlocProvider.value(
-                      value: sendCubit,
-                      child: const FeeOptionsModal(),
+                    child: FeeOptionsModal(
+                      viewState: sendCubit,
+                      actions: sendCubit,
+                      defaultAbsoluteCustomFee: false,
+                      customFeeColors: FeeModalCustomFeeColors(
+                        tile: context.appColors.surface,
+                        shadow: context.appColors.border,
+                        unselectedIcon: context.appColors.textMuted,
+                      ),
                     ),
                   );
                   if (selected != null) {
+                    // User tapped a preset tile inside the modal —
+                    // commit it. feeOptionSelected clears any arm
+                    // state the user may have left from typing.
                     final fee = FeeSelectionName.fromString(selected);
-                    await context.read<SendCubit>().feeOptionSelected(fee);
+                    await sendCubit.feeOptionSelected(fee);
+                  } else {
+                    // User dismissed the modal (tap outside, back,
+                    // swipe). If they had typed a custom rate, the
+                    // cubit is armed — finalize it: commit if valid,
+                    // roll back if below the 0.1 sat/vB floor. This
+                    // is the replacement for the old explicit
+                    // "Confirm Custom Fee" button — typing IS the
+                    // selection, dismissing IS the apply.
+                    await sendCubit.finalizeArmedCustomFee();
                   }
                 },
         ),

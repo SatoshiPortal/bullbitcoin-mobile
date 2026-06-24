@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -85,8 +86,40 @@ abstract class SendState with _$SendState {
     FeeOptions? liquidFeesList,
     NetworkFee? customFee,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    // Arm/disarm snapshot — internal to the custom-fee modal flow. When the
+    // user enters a value in the custom-fee field we eagerly commit
+    // `selectedFeeOption: custom` + typed `customFee` so the preset tiles
+    // visually deselect, without triggering a `createTransaction` rebuild.
+    // `armPriorSelection != null` iff the modal currently holds the arm;
+    // `disarmCustomFee` rolls back if the user closes the modal without
+    // `customFeesChanged` (which clears the arm). UI must not read these
+    // directly — they exist only to gate the rollback.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Built on modal open (presets) and on debounced custom-rate typing.
+    // Cached PSBTs are REUSED at commit so the broadcast tx has the
+    // EXACT vsize/fee the modal showed — BDK's TxBuilder.finish() picks
+    // UTXOs via a randomized BnB→SRD algorithm (113/154/195 vbyte
+    // variance for identical inputs in our logs), so rebuilding at
+    // commit would diverge from the preview.
+    //
+    // Cleared on any input-shape change (wallet, recipient, amount,
+    // UTXO selection, replaceByFee, or a new armCustomFee/preview
+    // request). The principle: NEVER display a fee derived from
+    // rate × vsize math — only what BDK produces from a real PSBT.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
     int? bitcoinTxSize,
     int? liquidAbsoluteFees,
+    // Real Bitcoin absolute fee, read from the built PSBT (not a prediction).
+    // BDK overshoots a rate-based fee by 1–3 sat at sub-1 sat/vByte rates due
+    // to ceil rounding and sub-dust change absorption (documented BDK
+    // behaviour, see bdk_wallet TxBuilder docs and rust-bitcoin
+    // FeeRate::mul_by_weight which uses div_ceil). At normal rates the
+    // overshoot is invisible; at the sub-1 sat/vByte rates allowed by #2133
+    // it's significant (e.g. 14 → 16, 28 → 30). Set whenever a PSBT exists.
+    int? bitcoinAbsoluteFeesSat,
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
@@ -300,7 +333,10 @@ abstract class SendState with _$SendState {
   }
 
   String get formattedAbsoluteFees {
-    if (absoluteFees == null) return '0';
+    // `…` not `0` when no PSBT has been built yet — we never compute a
+    // fee ourselves from `rate × vsize`. Send screen will render this
+    // string verbatim; the brief `…` is honest about "not yet known".
+    if (absoluteFees == null) return '…';
     if (bitcoinUnit == BitcoinUnit.sats) {
       return FormatAmount.sats(absoluteFees!);
     } else {
@@ -455,11 +491,19 @@ abstract class SendState with _$SendState {
       ? liquidFeesList
       : bitcoinFeesList;
 
+  /// Absolute fee the user will (or did) pay, in sats. **Real PSBT fee
+  /// only** when `bitcoinAbsoluteFeesSat` is populated (`psbt.fee()` =
+  /// Σ inputs − Σ outputs). Returns null otherwise; UI must render a
+  /// shimmer / loading placeholder, **never** fall back to local
+  /// `rate × vsize` arithmetic.
+  ///
+  /// The Liquid branch uses `liquidAbsoluteFees` — same contract,
+  /// populated by the LWK build.
   int? get absoluteFees => selectedWallet == null
       ? null
       : selectedWallet!.isLiquid
       ? liquidAbsoluteFees
-      : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+      : bitcoinAbsoluteFeesSat;
 
   int? get totalSwapFees {
     if (lightningSwap == null) return null;

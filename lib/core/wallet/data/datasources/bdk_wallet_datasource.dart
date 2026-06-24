@@ -205,14 +205,18 @@ class BdkWalletDatasource {
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
     if (!replaceByFee) txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
 
-    if (networkFee.isAbsolute) {
-      txBuilder = txBuilder.feeAbsolute(
-        feeAmount: bdk.Amount.fromSat(satoshi: networkFee.value.toInt()),
-      );
-    } else {
-      txBuilder = txBuilder.feeRate(
-        feeRate: bdk.FeeRate.fromSatPerVb(satVb: networkFee.value.round()),
-      );
+    switch (networkFee) {
+      case AbsoluteFee(:final sats):
+        txBuilder = txBuilder.feeAbsolute(
+          feeAmount: bdk.Amount.fromSat(satoshi: sats),
+        );
+      case RelativeFee(:final satPerKwu):
+        // sat/kwu is BDK's native u64 unit, so this is a zero-rounding
+        // pass-through. Using fromSatPerVb would force an int sat/vByte
+        // and silently drop fractional rates (the bug fixed in #2133).
+        txBuilder = txBuilder.feeRate(
+          feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: satPerKwu),
+        );
     }
 
     // Make sure utxos that are unspendable are not used
@@ -654,13 +658,16 @@ class BdkWalletDatasource {
 
   Future<String> createUnsignedReplaceByFeePsbt({
     required String txid,
-    required double feeRate,
+    required RelativeFee feeRate,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
+    // BumpFeeTxBuilder is rate-only by BDK design (BIP-125 requires a
+    // higher rate, not absolute, to replace). We hit it with sat/kwu so
+    // sub-1 sat/vByte bumps survive without precision loss.
     final tx = bdk.BumpFeeTxBuilder(
       txid: bdk.Txid.fromString(hex: txid),
-      feeRate: bdk.FeeRate.fromSatPerVb(satVb: feeRate.round()),
+      feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: feeRate.satPerKwu),
     );
     final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
