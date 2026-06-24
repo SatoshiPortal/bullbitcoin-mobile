@@ -71,6 +71,6 @@ if ! keyring_ok; then
   echo "  killall -9 gnome-keyring-daemon dbus-daemon" >&2
   echo "  rm -f /tmp/dbus-session.sock" >&2
   echo "  rm -rf ~/.local/share/keyrings" >&2
-  echo "  .devcontainer/init-keyring.sh" >&2
+  echo "  .devcontainer/linux/init-keyring.sh" >&2
   exit 1
 fi

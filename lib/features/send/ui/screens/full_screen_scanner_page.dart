@@ -36,8 +36,8 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
     } catch (e) {
       data = (qr, null);
       widget.onScannedPaymentRequest(data);
+      if (mounted) context.pop();
     }
-    setState(() {});
   }
 
   @override

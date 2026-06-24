@@ -1,5 +1,11 @@
 {
   "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
+  "exchangeTestnetBasicAuthTitle": "Testnet փոխանակման հավատարմագրեր",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth՝ testnet փոխանակման վեբ էջերի համար (մուտք և KYC):",
+  "exchangeTestnetBasicAuthUsernameLabel": "Օգտանուն",
+  "exchangeTestnetBasicAuthPasswordLabel": "Գաղտնաբառ",
+  "exchangeTestnetBasicAuthClearButton": "Մաքրել",
+  "exchangeTestnetBasicAuthSaveButton": "Պահպանել",
   "backupWarningLoseReasonLostPhone": "Կորցնեք ձեր հեռախոսը",
   "backupWarningLoseReasonDeletedApp": "Ջնջեք հավելվածը",
   "backupWarningLoseReasonCriticalIssue": "Տեղի ունենա հավելվածի կամ սարքի կրիտիկական խնդիր",
@@ -266,7 +272,7 @@
   "onboardingAdvancedOptionsDone": "Պատրաստ է",
   "appStartupContactSupportMessage": "Կապվեք աջակցության հետ app.bullbitcoin.com/support հասցեով",
   "importWalletBitboxAndroidOnly": "BitBox-ը աջակցվում է միայն Android-ում",
-    "fundExchangeErrorTitleOrdPo404": "Վճարման տարբերակը հասանելի չէ",
+  "fundExchangeErrorTitleOrdPo404": "Վճարման տարբերակը հասանելի չէ",
   "fundExchangeErrorTitleRcpPo404": "Վճարման տարբերակը հասանելի չէ",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE-ն հասանելի չէ",
   "fundExchangeErrorTitleOrdKyc400": "KYC-ի պահանջները բացակայում են",
@@ -277,8 +283,271 @@
   "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը SEPA ստացողի համար հետևյալ IBAN-ով՝ {iban}",
   "fundExchangeErrorTitleRcp400": "Անվավեր հարցում",
   "fundExchangeErrorRcp400": "Անվավեր հարցում",
-"fundExchangeErrorOrdPo404": "Վճարման տարբերակ հասանելի չէ",
+  "fundExchangeErrorOrdPo404": "Վճարման տարբերակ հասանելի չէ",
   "fundExchangeErrorRcpPo404": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",
   "fundExchangeErrorRcpPosinpe404": "Այս ֆինանսավորման տարբերակին մուտք գործելու համար ձեր հեռախոսահամարը պետք է գրանցված լինի SINPE ցանցում Costa Rica-ում։",
-  "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։"
+  "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։",
+  "sendErrorUnsupportedQrCodeFormat": "Չաջակցվող QR կոդ ձևաչափ",
+  "fundExchangeMethodInstantSepa": "Անմիջական և սովորական SEPA փոխանցում",
+  "walletButtonCoins": "Կառավարել մետաղադրամները",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Մետաղադրամներ",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 մետաղադրամ} other{{count} մետաղադրամ}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Սառեցված",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Հասանելի",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Սառեցված չկա",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Դասավորել և զտել",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{total}-ից {visible}-ը ցուցադրված է",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 չծախսված ելք} other{{count} չծախսված ելք}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Համաժամացնել",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Մաքրել բոլորը",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Գումար՝ բարձրից ցածր",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Գումար՝ ցածրից բարձր",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Ամսաթիվ՝ նորագույն",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Ամսաթիվ՝ հնագույն",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Բանալիների շղթա",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Բոլորը",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Ստանալ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Մանր",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Սառեցման կարգավիճակ",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Բոլորը",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Սառեցված",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Ապասառեցված",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Պիտակներ",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Վերակայել",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Կիրառել",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 ընտրված} other{{count} ընտրված}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Ընտրել բոլորը",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Սառեցնել",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Ապասառեցնել",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Հետարկել",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Սառեցնե՞լ 1 մետաղադրամ} other{Սառեցնե՞լ {count} մետաղադրամ}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Սառեցված մետաղադրամները մնում են ձեր դրամապանակում, սակայն բացառվում են ծախսելուց, մինչև դրանք ապասառեցնեք։",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Այս մետաղադրամները սառեցնելը ձեզ կթողնի առանց հասանելի մնացորդի։",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 մետաղադրամ սառեցվեց · բացառված է ծախսելուց} other{{count} մետաղադրամ սառեցվեց · բացառված է ծախսելուց}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 մետաղադրամ ապասառեցվեց} other{{count} մետաղադրամ ապասառեցվեց}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 հաստ.} other{{count} հաստ.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Սպասման մեջ",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Դեռ մետաղադրամներ չկան",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Մետաղադրամները կհայտնվեն այստեղ, երբ բիթքոին ստանաք։",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Համապատասխան մետաղադրամ չկա",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Մաքրել զտիչները",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Կրկնել",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Սահեցրեք մետաղադրամը՝ սառեցնելու համար · երկար սեղմեք՝ ընտրելու համար",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Չհաջողվեց բեռնել ձեր մետաղադրամները։ Քաշեք՝ թարմացնելու և կրկին փորձելու համար։",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Չհաջողվեց սառեցնել ընտրված մետաղադրամները։ Խնդրում ենք կրկին փորձել։",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Չհաջողվեց ապասառեցնել ընտրված մետաղադրամները։ Խնդրում ենք կրկին փորձել։",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Ինչ-որ բան սխալ գնաց։ Խնդրում ենք կրկին փորձել։",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} սառեցված",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Զտել ըստ ամսաթվի",
+  "logsViewerShowingCount": "Ցուցադրվում է {shown} {total}-ից",
+  "logsViewerClearFilter": "Մաքրել զտիչը",
+  "logsViewerShareButton": "Կիսվել",
+  "logsShareOptionShare": "Կիսվել",
+  "logsShareOptionExport": "Արտահանել",
+  "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց"
 }

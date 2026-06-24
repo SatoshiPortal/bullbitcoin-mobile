@@ -1,0 +1,35 @@
+name: bull_ui_catalogue
+description: >-
+  Dev-only catalogue for the bull_ui design system. NOT shipped in
+  the production app — the app must never depend on this package. Built for web
+  and published to GitHub Pages by CI. Zero reproducible-build impact (like
+  melos tooling, it is never compiled into the APK).
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.2"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Workspace-resolved (same mechanism the root app uses for bull_ui).
+  bull_ui:
+  # Widgetbook v3 (stable). NOTE: v3 trips a Navigator assertion on Flutter
+  # 3.44.1 inside its default app-builder MaterialApp — worked around in
+  # main.dart with a Navigator-less `appBuilder`. v4 is the long-term fix but
+  # is a full authoring-model rewrite (deferred).
+  widgetbook: ^3.24.0
+  widgetbook_annotation: ^3.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.0
+  widgetbook_generator: ^3.24.0
+
+flutter:
+  uses-material-design: true

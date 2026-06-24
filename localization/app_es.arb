@@ -180,6 +180,12 @@
   "logSettingsLogsTitle": "Registros",
   "logSettingsErrorLoadingMessage": "Error al cargar bitácoras. ",
   "appSettingsDevModeTitle": "Modo de desarrollo",
+  "exchangeTestnetBasicAuthTitle": "Credenciales del exchange de testnet",
+  "exchangeTestnetBasicAuthDescription": "Autenticación básica HTTP para las páginas web del exchange de testnet (inicio de sesión y KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Nombre de usuario",
+  "exchangeTestnetBasicAuthPasswordLabel": "Contraseña",
+  "exchangeTestnetBasicAuthClearButton": "Borrar",
+  "exchangeTestnetBasicAuthSaveButton": "Guardar",
   "currencySettingsDefaultFiatCurrencyLabel": "Moneda fiat predeterminada",
   "exchangeSettingsAccountInformationTitle": "Información de la cuenta",
   "exchangeSettingsSecuritySettingsTitle": "Configuración de seguridad",
@@ -858,9 +864,9 @@
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Opción más lenta, pero se puede hacer a través de banca en línea (3-4 días hábiles)",
   "fundExchangeMethodCanadaPost": "Efectivo o débito en persona en Canada Post",
   "fundExchangeMethodCanadaPostSubtitle": "Mejor para quienes prefieren pagar en persona",
-  "fundExchangeMethodInstantSepa": "SEPA instantánea",
+  "fundExchangeMethodInstantSepa": "SEPA instantánea y estándar",
   "fundExchangeMethodInstantSepaSubtitle": "Más rápida - Solo para transacciones menores a €30,000",
-  "fundExchangeMethodRegularSepa": "SEPA regular",
+  "fundExchangeMethodRegularSepa": "SEPA estándar",
   "fundExchangeMethodRegularSepaSubtitle": "Solo usar para transacciones mayores a €30,000",
   "fundExchangeMethodSpeiTransfer": "Transferencia SPEI",
   "fundExchangeMethodSpeiTransferSubtitle": "Transfiere fondos usando tu CLABE",
@@ -2169,6 +2175,7 @@
   "sendErrorInvoiceMustContainAmount": "La factura debe contener un monto",
   "sendErrorInsufficientBalanceForPayment": "Saldo insuficiente para cubrir este pago",
   "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
+  "sendErrorUnsupportedQrCodeFormat": "Formato de código QR no compatible",
   "sendErrorBuildFailed": "Error de construcción",
   "sendErrorConfirmationFailed": "Error de confirmación",
   "sendErrorInsufficientBalanceForSwap": "Saldo insuficiente para pagar este intercambio a través de Liquid y fuera de los límites de intercambio para pagar a través de Bitcoin.",
@@ -4801,5 +4808,266 @@
   "onboardingAdvancedOptionsFooter": "Puedes cambiar estos ajustes más tarde en los ajustes de la aplicación",
   "onboardingAdvancedOptionsDone": "Listo",
   "appStartupContactSupportMessage": "Contacta con soporte en app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox solo es compatible con Android"
+  "importWalletBitboxAndroidOnly": "BitBox solo es compatible con Android",
+  "walletButtonCoins": "Gestionar monedas",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Monedas",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 moneda} other{{count} monedas}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Congeladas",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Disponible",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Nada congelado",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Ordenar y filtrar",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} de {total} mostradas",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 salida no gastada} other{{count} salidas no gastadas}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Sincronizar",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Borrar todo",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Importe: de mayor a menor",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Importe: de menor a mayor",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Fecha: más recientes",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Fecha: más antiguas",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Llavero",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Todas",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Recibir",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Cambio",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Estado de congelación",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Todas",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Congeladas",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Descongeladas",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Etiquetas",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Restablecer",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Aplicar",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 seleccionada} other{{count} seleccionadas}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Seleccionar todo",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Congelar",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Descongelar",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Deshacer",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{¿Congelar 1 moneda?} other{¿Congelar {count} monedas?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Las monedas congeladas permanecen en tu cartera pero se excluyen de los gastos hasta que las descongeles.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Congelar estas monedas te dejará sin saldo disponible.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 moneda congelada · excluida de los gastos} other{{count} monedas congeladas · excluidas de los gastos}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 moneda descongelada} other{{count} monedas descongeladas}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 conf.} other{{count} conf.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Pendiente",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Aún no hay monedas",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Las monedas aparecerán aquí cuando recibas bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Ninguna moneda coincide",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Borrar filtros",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Reintentar",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Desliza una moneda para congelar · mantén pulsado para seleccionar",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "No se pudieron cargar tus monedas. Desliza hacia abajo para actualizar e inténtalo de nuevo.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "No se pudieron congelar las monedas seleccionadas. Inténtalo de nuevo.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "No se pudieron descongelar las monedas seleccionadas. Inténtalo de nuevo.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Algo salió mal. Inténtalo de nuevo.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} congelado",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Filtrar por fecha",
+  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
+  "logsViewerClearFilter": "Borrar filtro",
+  "logsViewerShareButton": "Compartir",
+  "logsShareOptionShare": "Compartir",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registros exportados correctamente",
+  "logsExportFailedMessage": "Error al exportar los registros"
 }

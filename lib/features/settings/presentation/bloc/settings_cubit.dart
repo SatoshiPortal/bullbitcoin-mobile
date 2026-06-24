@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
@@ -34,6 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._getOldSeedsUsecase,
     required this._revokeArkUsecase,
     required this._setErrorReportingUsecase,
+    required this._setExchangeTestnetBasicAuthUsecase,
   }) : super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -48,6 +50,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
+  final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -164,6 +167,29 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
+  }
+
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    final settings = state.storedSettings;
+    final trimmedUsername = username?.trim();
+    final trimmedPassword = password?.trim();
+    final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
+    final pass = (trimmedPassword?.isEmpty ?? true) ? null : trimmedPassword;
+    await _setExchangeTestnetBasicAuthUsecase.execute(
+      username: user,
+      password: pass,
+    );
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(
+          exchangeTestnetBasicAuthUsername: user,
+          exchangeTestnetBasicAuthPassword: pass,
+        ),
       ),
     );
   }

@@ -14,6 +14,8 @@ class SettingsModel {
   final int torProxyPort;
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
+  final String? exchangeTestnetBasicAuthUsername;
+  final String? exchangeTestnetBasicAuthPassword;
 
   const SettingsModel({
     required this.id,
@@ -28,6 +30,8 @@ class SettingsModel {
     required this.torProxyPort,
     required this.themeMode,
     required this.isErrorReportingEnabled,
+    this.exchangeTestnetBasicAuthUsername,
+    this.exchangeTestnetBasicAuthPassword,
   });
 
   SettingsRow toSqlite() {
@@ -44,6 +48,8 @@ class SettingsModel {
       torProxyPort: torProxyPort,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
+      exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
+      exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
     );
   }
 
@@ -61,6 +67,8 @@ class SettingsModel {
       torProxyPort: row.torProxyPort,
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
+      exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
+      exchangeTestnetBasicAuthPassword: row.exchangeTestnetBasicAuthPassword,
     );
   }
 }

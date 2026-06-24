@@ -228,6 +228,15 @@ class AddressErrorSection extends StatelessWidget {
     final balanceError = context.select(
       (SendCubit cubit) => cubit.state.insufficientBalanceException,
     );
+    final frozenBalanceSat = context.select(
+      (SendCubit cubit) => cubit.state.frozenBalanceSat,
+    );
+    final formattedFrozenBalance = context.select(
+      (SendCubit cubit) => cubit.state.formattedFrozenBalance,
+    );
+    final swapLimitsError = context.select(
+      (SendCubit cubit) => cubit.state.swapLimitsException,
+    );
     final swapError = context.select(
       (SendCubit cubit) => cubit.state.swapCreationException,
     );
@@ -238,12 +247,27 @@ class AddressErrorSection extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorInsufficientBalanceForPayment,
+          // #2337: when the shortfall is only because coins are frozen, point
+          // the user at Manage coins instead of a dead-end "not enough balance".
+          frozenBalanceSat > 0
+              ? context.loc.sendErrorInsufficientBalanceFrozenHint(
+                  formattedFrozenBalance,
+                )
+              : context.loc.sendErrorInsufficientBalanceForPayment,
           style: context.font.bodyMedium,
           color: context.appColors.error,
           textAlign: .center,
           maxLines: 2,
         ),
+      );
+    }
+    if (swapLimitsError != null) {
+      return BBText(
+        _getSwapLimitsErrorMessage(context, swapLimitsError),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: .center,
+        maxLines: 2,
       );
     }
     if (swapError != null) {
@@ -261,7 +285,9 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (invalidAddress != null) {
       return BBText(
-        context.loc.sendErrorInvalidAddressOrInvoice,
+        invalidAddress is UnsupportedQrFormatException
+            ? context.loc.sendErrorUnsupportedQrCodeFormat
+            : context.loc.sendErrorInvalidAddressOrInvoice,
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -467,9 +493,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           .onCurrencyChanged(currencyCode);
                                     },
                                     error: balanceError != null
-                                        ? context
-                                              .loc
-                                              .sendErrorInsufficientBalanceForPayment
+                                        ? (state.frozenBalanceSat > 0
+                                              ? context.loc
+                                                    .sendErrorInsufficientBalanceFrozenHint(
+                                                      state
+                                                          .formattedFrozenBalance,
+                                                    )
+                                              : context
+                                                    .loc
+                                                    .sendErrorInsufficientBalanceForPayment)
                                         : (!walletHasBalance &&
                                               amountConfirmedClicked)
                                         ? context.loc.sendInsufficientBalance

@@ -19,6 +19,9 @@ class AppColors {
   final Color onTertiary;
   final Color tertiaryContainer;
 
+  // Asset colors (same in both themes)
+  final Color bitcoinOrange;
+
   // Surface colors
   final Color background;
   final Color surface;
@@ -74,6 +77,7 @@ class AppColors {
     required this.tertiary,
     required this.onTertiary,
     required this.tertiaryContainer,
+    required this.bitcoinOrange,
     required this.background,
     required this.surface,
     required this.surfaceContainer,
@@ -117,6 +121,7 @@ class AppColors {
     tertiary: Color(0xFFFFCC00),
     onTertiary: Color(0xFFFF9500),
     tertiaryContainer: Color(0xFFFFF4E6),
+    bitcoinOrange: Color(0xFFF7931A),
     background: Color(0xFFF5F5F5),
     surface: Color(0xFFFFFFFF),
     surfaceContainer: Color(0xFFF5F5F5),
@@ -160,6 +165,7 @@ class AppColors {
     tertiary: Color(0xFFFFCC00),
     onTertiary: Color(0xFFFF9F0A),
     tertiaryContainer: Color(0xFF3D2D00),
+    bitcoinOrange: Color(0xFFF7931A),
     background: Color(0xFF000000),
     surface: Color(0xFF1C1C1E),
     surfaceContainer: Color(0xFF2C2C2E),

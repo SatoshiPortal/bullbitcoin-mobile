@@ -230,6 +230,11 @@ abstract class SendState with _$SendState {
     return amountSat;
   }
 
+  int get effectiveAmountSat {
+    final embedded = paymentRequest?.amountSat ?? 0;
+    return embedded > 0 ? embedded : inputAmountSat;
+  }
+
   double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
   double get inputAmountFiat {
@@ -339,12 +344,38 @@ abstract class SendState with _$SendState {
     }
   }
 
+  /// Amount (sats) locked in user-frozen coins ([WalletUtxo.isFrozen], which is
+  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded, and zero in
+  /// practice for Liquid because freeze isn't surfaced there (the Coins entry is
+  /// Bitcoin-only) — not because the network is intrinsically exempt.
+  ///
+  /// Note: this intentionally excludes payjoin-derived locks, which the spend
+  /// path also treats as unspendable. So with an active payjoin the real drain
+  /// may produce slightly less than [spendableBalanceSat] reports — it never
+  /// over-spends (the build re-excludes both sets), only fails closed.
+  int get frozenBalanceSat => utxos
+      .where((u) => u.isFrozen)
+      .fold(0, (sum, u) => sum + u.amountSat.toInt());
+
+  /// Frozen balance ([frozenBalanceSat]) formatted in the active [bitcoinUnit],
+  /// for the "you have frozen coins" hint shown when a payment can't be covered
+  /// by the spendable balance alone (#2337).
+  String get formattedFrozenBalance => bitcoinUnit == BitcoinUnit.sats
+      ? FormatAmount.sats(frozenBalanceSat)
+      : FormatAmount.btc(ConvertAmount.satsToBtc(frozenBalanceSat));
+
+  /// Spendable balance (sats) — the wallet balance minus the amount locked in
+  /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
+  /// must validate against this, not the raw wallet balance. Falls back to the
+  /// full balance before [utxos] have loaded so it never under-reports.
+  int get spendableBalanceSat =>
+      (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
       ? false
-      : (inputAmountSat > 0 &&
-            inputAmountSat <= selectedWallet!.balanceSat.toInt());
+      : (inputAmountSat > 0 && inputAmountSat <= spendableBalanceSat);
 
   String sendTypeName() {
     switch (sendType) {
@@ -362,17 +393,17 @@ abstract class SendState with _$SendState {
       isLightning && selectedWallet!.network.isBitcoin;
 
   bool get swapAmountBelowLimit {
-    if (isLightning && inputAmountSat != 0) {
+    final amount = effectiveAmountSat;
+    if (isLightning && amount != 0) {
       if (selectedSwapLimits == null) return false;
       // Allow 100 sats minimum for Liquid to Lightning swaps
       final isLiquidToLightning =
           selectedWallet != null && selectedWallet!.isLiquid;
       final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
-      return inputAmountSat < minLimit;
+      return amount < minLimit;
     }
-    if (requireChainSwap && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat < selectedSwapLimits!.min;
+    if (requireChainSwap && amount != 0) {
+      return selectedSwapLimits != null && amount < selectedSwapLimits!.min;
     }
     return false;
   }
@@ -384,13 +415,12 @@ abstract class SendState with _$SendState {
   }
 
   bool get swapAmountAboveLimit {
+    final amount = effectiveAmountSat;
     if (isLightning) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
     }
-    if (requireChainSwap && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+    if (requireChainSwap && amount != 0) {
+      return selectedSwapLimits != null && amount > selectedSwapLimits!.max;
     }
     return false;
   }
@@ -516,7 +546,8 @@ class AmountlessInvoiceException extends SwapCreationException {
 }
 
 class HardwareWalletSwapException extends SwapCreationException {
-  HardwareWalletSwapException() : super('Hardware wallets cannot be used for swaps');
+  HardwareWalletSwapException()
+    : super('Hardware wallets cannot be used for swaps');
 }
 
 class ExpiredInvoiceException extends SwapCreationException {
@@ -534,6 +565,8 @@ class InvalidBitcoinStringException extends BullException {
     super.message = 'Invalid Bitcoin Payment Address or Invoice',
   ]);
 }
+
+class UnsupportedQrFormatException extends InvalidBitcoinStringException {}
 
 /// Exception for swap limit violations.
 /// Stored in SendState with min/max limit values for localized error messages.

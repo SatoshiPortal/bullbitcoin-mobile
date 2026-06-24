@@ -36,6 +36,8 @@ class SettingsRepository implements domain.SettingsRepository {
     required int torProxyPort,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
+    String? exchangeTestnetBasicAuthUsername,
+    String? exchangeTestnetBasicAuthPassword,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -51,6 +53,8 @@ class SettingsRepository implements domain.SettingsRepository {
         torProxyPort: torProxyPort,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
+        exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
+        exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
       ),
     );
   }
@@ -71,6 +75,8 @@ class SettingsRepository implements domain.SettingsRepository {
       torProxyPort: s.torProxyPort,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
+      exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
+      exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
     );
   }
 
@@ -123,6 +129,17 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _settingsDatasource.setThemeMode(themeMode);
+  }
+
+  @override
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    await _settingsDatasource.setExchangeTestnetBasicAuth(
+      username: username,
+      password: password,
+    );
   }
 
   @override
