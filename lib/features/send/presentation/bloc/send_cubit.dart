@@ -1519,7 +1519,8 @@ class SendCubit extends Cubit<SendState> {
           broadcastingTransaction: false,
         ),
       );
-    } on BroadcastTransactionException catch (_) {
+    } on BroadcastTransactionException catch (e) {
+      log.warning('Failed to broadcast transaction: ${e.message}');
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(
@@ -1529,7 +1530,12 @@ class SendCubit extends Cubit<SendState> {
           broadcastingTransaction: false,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      log.warning(
+        'Unexpected broadcast transaction error',
+        error: e,
+        trace: st,
+      );
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(

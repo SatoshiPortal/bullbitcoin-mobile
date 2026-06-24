@@ -102,6 +102,7 @@ class BitBoxDeviceDatasource {
     final deviceModels = devices.map((device) {
       return BitBoxDeviceModel.fromBitBoxDevice(
         deviceName: device.name ?? 'BitBox02 Nova',
+        // BLE uses the platform device id as the transport queue key.
         serialNumber: device.deviceId,
         product: 'BitBox02 Nova',
         connectionType: BitBoxConnectionType.ble,
@@ -302,7 +303,7 @@ class BitBoxDeviceDatasource {
 
       return pairingCode ?? '';
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
@@ -318,7 +319,7 @@ class BitBoxDeviceDatasource {
 
       return await getMasterFingerprint(device);
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
@@ -338,7 +339,7 @@ class BitBoxDeviceDatasource {
       );
       return xpub;
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
@@ -346,7 +347,7 @@ class BitBoxDeviceDatasource {
     try {
       return await bitbox.getRootFingerprint(serialNumber: device.serialNumber);
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
@@ -365,7 +366,7 @@ class BitBoxDeviceDatasource {
       );
       return signedPsbt;
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
@@ -389,14 +390,11 @@ class BitBoxDeviceDatasource {
       );
       return verifiedAddress == address;
     } catch (e) {
-      throw await _mapOperationError(e, device);
+      throw _mapOperationError(e);
     }
   }
 
-  Future<BitBoxError> _mapOperationError(
-    Object error,
-    BitBoxDeviceModel device,
-  ) async {
+  BitBoxError _mapOperationError(Object error) {
     if (error is BitBoxError) return error;
 
     return BitBoxError.operationFailed(message: error.toString());
