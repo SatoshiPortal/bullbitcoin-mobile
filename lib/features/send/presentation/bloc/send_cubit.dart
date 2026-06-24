@@ -1153,6 +1153,16 @@ class SendCubit extends Cubit<SendState> {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
         await loadFees();
         if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
+          // loadFees failed (it logs the raw reason). Surface a sanitized
+          // build failure instead of silently returning — otherwise the user
+          // taps continue/confirm and nothing happens, with no feedback.
+          emit(
+            state.copyWith(
+              buildTransactionException: const SendBuildTransactionFailure(
+                'createTransaction aborted: network fees unavailable',
+              ),
+            ),
+          );
           return;
         }
       }

@@ -11,8 +11,15 @@ import 'package:bb_mobile/core/failures/failure.dart';
 /// here.
 ///
 /// The two nested sealed sub-families ([SendInvalidPaymentRequestFailure],
-/// [SendSwapCreationFailure]) mirror the legacy exception sub-hierarchies so the
-/// send state can keep one typed slot per UI zone.
+/// [SendSwapCreationFailure]) mirror the legacy exception sub-hierarchies.
+///
+/// The send state keeps several typed slots (not a single `SendFailure?`)
+/// because failures must coexist and clear independently: a build failure is
+/// shown in a different screen position than an address/amount failure, so both
+/// can be live at once; and the flow clears them in isolation (e.g. `backClicked`
+/// drops only the build failure, selecting a wallet drops only the balance
+/// failure). A single slot would conflate these lifecycles. The sealed root
+/// still guarantees exhaustiveness across every slot.
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
 }
