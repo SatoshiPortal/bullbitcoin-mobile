@@ -314,5 +314,6 @@
   "sendErrorBuildFailed": "Չհաջողվեց նախապատրաստել գործարքը։ Փորձեք նորից։",
   "sendErrorConfirmationFailed": "Հաստատումը ձախողվեց",
   "sendErrorBroadcastFailed": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ձեր ցանցի կապը և կրկին փորձեք։",
-  "sendInsufficientBalance": "Անբավարար մնացորդ"
+  "sendInsufficientBalance": "Անբավարար մնացորդ",
+  "electrumServerUnreachable": "Սերվերը հասանելի չէ։ Ստուգեք հասցեն և կրկին փորձեք։"
 }

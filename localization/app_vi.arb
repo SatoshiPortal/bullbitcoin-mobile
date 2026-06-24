@@ -314,5 +314,6 @@
   "sendErrorBuildFailed": "Không thể chuẩn bị giao dịch. Vui lòng thử lại.",
   "sendErrorConfirmationFailed": "Xác nhận thất bại",
   "sendErrorBroadcastFailed": "Không thể phát giao dịch. Hãy kiểm tra kết nối mạng và thử lại.",
-  "sendInsufficientBalance": "Số dư không đủ"
+  "sendInsufficientBalance": "Số dư không đủ",
+  "electrumServerUnreachable": "Không thể kết nối máy chủ. Kiểm tra địa chỉ và thử lại."
 }

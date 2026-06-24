@@ -526,5 +526,6 @@
   "sendErrorBuildFailed": "ტრანზაქციის მომზადება ვერ მოხერხდა. სცადეთ თავიდან.",
   "sendErrorConfirmationFailed": "დადასტურება ვერ მოხერხდა",
   "sendErrorBroadcastFailed": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ქსელის კავშირი და სცადეთ ხელახლა.",
-  "sendInsufficientBalance": "არასაკმარისი ბალანსი"
+  "sendInsufficientBalance": "არასაკმარისი ბალანსი",
+  "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან."
 }

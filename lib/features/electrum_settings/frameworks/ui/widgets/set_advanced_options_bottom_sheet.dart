@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,27 +79,6 @@ class _SetAdvancedOptionsBottomSheetState
     }
   }
 
-  String _getErrorMessage(
-    BuildContext context,
-    AdvancedOptionsException error,
-  ) {
-    return switch (error) {
-      InvalidStopGapException(value: final v) =>
-        context.loc.electrumInvalidStopGapError(v),
-      InvalidTimeoutException(value: final v) =>
-        context.loc.electrumInvalidTimeoutError(v),
-      InvalidRetryException(value: final v) =>
-        context.loc.electrumInvalidRetryError(v),
-      SaveFailedException(reason: final r) =>
-        r != null
-            ? '${context.loc.electrumSaveFailedError}: $r'
-            : context.loc.electrumSaveFailedError,
-      UnknownException(reason: final r) =>
-        r != null
-            ? '${context.loc.electrumUnknownError}: $r'
-            : context.loc.electrumUnknownError,
-    };
-  }
 
   int _getRecommendedTimeoutSeconds({
     required int stopGap,
@@ -432,10 +410,7 @@ class _SetAdvancedOptionsBottomSheetState
                         children: [
                           if (state.advancedOptionsError != null) ...[
                             Text(
-                              _getErrorMessage(
-                                context,
-                                state.advancedOptionsError!,
-                              ),
+                              state.advancedOptionsError!.toTranslated(context),
                               style: TextStyle(
                                 color: context.appColors.error,
                                 fontSize: 14,

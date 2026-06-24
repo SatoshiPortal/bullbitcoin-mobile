@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_re
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -81,10 +82,10 @@ void main() {
   }) {
     when(
       () => serverRepo.fetchActiveServers(network: any(named: 'network')),
-    ).thenAnswer((_) async => servers);
+    ).thenAnswer((_) async => Ok(servers));
     when(
       () => settingsRepo.fetchByNetwork(any()),
-    ).thenAnswer((_) async => settings ?? _settings());
+    ).thenAnswer((_) async => Ok(settings ?? _settings()));
     when(
       () => appSettingsRepo.fetch(),
     ).thenAnswer((_) async => appSettings ?? _appSettings());
@@ -290,18 +291,18 @@ void main() {
       when(
         () => serverRepo.fetchActiveServers(network: any(named: 'network')),
       ).thenAnswer(
-        (_) async => [
+        (_) async => Ok([
           ElectrumServer.existing(
             url: 'ssl://liquid.example:50002',
             network: _liquidNetwork,
             isCustom: false,
             priority: 0,
           ),
-        ],
+        ]),
       );
       when(
         () => settingsRepo.fetchByNetwork(any()),
-      ).thenAnswer((_) async => _settings());
+      ).thenAnswer((_) async => Ok(_settings()));
       when(
         () => appSettingsRepo.fetch(),
       ).thenAnswer(

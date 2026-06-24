@@ -334,5 +334,6 @@
   "sendErrorBuildFailed": "Imeshindwa kuandaa muamala. Jaribu tena.",
   "sendErrorConfirmationFailed": "Uthibitisho umeshindwa",
   "sendErrorBroadcastFailed": "Imeshindwa kutangaza muamala. Angalia muunganisho wako wa mtandao na ujaribu tena.",
-  "sendInsufficientBalance": "Salio halitoshi"
+  "sendInsufficientBalance": "Salio halitoshi",
+  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena."
 }

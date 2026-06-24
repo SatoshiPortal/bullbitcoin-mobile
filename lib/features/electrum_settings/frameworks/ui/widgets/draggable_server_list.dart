@@ -5,32 +5,12 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_c
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/server_list_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
-
-  String _getErrorMessage(
-    BuildContext context,
-    ElectrumServersException error,
-  ) {
-    return switch (error) {
-      LoadFailedException(reason: final r) => context.loc
-          .electrumLoadFailedError(r != null ? ': $r' : ''),
-      SavePriorityFailedException(reason: final r) => context.loc
-          .electrumSavePriorityFailedError(r != null ? ': $r' : ''),
-      AddFailedException(reason: final r) => context.loc.electrumAddFailedError(
-        r != null ? ': $r' : '',
-      ),
-      DeleteFailedException(reason: final r) => context.loc
-          .electrumDeleteFailedError(r != null ? ': $r' : ''),
-      ElectrumServerAlreadyExistsException() =>
-        context.loc.electrumServerAlreadyExists,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +110,7 @@ class DraggableServerList extends StatelessWidget {
         const Gap(16),
         if (electrumServersError != null) ...[
           InfoCard(
-            description: _getErrorMessage(context, electrumServersError),
+            description: electrumServersError.toTranslated(context),
             tagColor: context.appColors.error,
             bgColor: context.appColors.errorContainer,
           ),

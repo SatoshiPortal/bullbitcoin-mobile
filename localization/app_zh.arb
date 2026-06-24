@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "electrumServerAlreadyExists": "这个服务器已经存在",
+  "electrumServerUnreachable": "无法连接服务器。请检查地址后重试。",
   "sellPaymentMethod": "支付方法",
   "transactionNoteHint": "说明",
   "transactionLabelPreimage": "预 估",
@@ -1188,7 +1189,7 @@
   "broadcastSignedTxReviewTransaction": "审查交易",
   "walletArkExperimental": "试验",
   "importQrDeviceKeystoneStep5": "从钱包列表中选择 \"BULL\"",
-  "electrumLoadFailedError": "未能装载服务器{reason}",
+  "electrumLoadFailedError": "未能装载服务器",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2152,7 +2153,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "流动测试",
-  "electrumDeleteFailedError": "未能删除海关服务器{reason}",
+  "electrumDeleteFailedError": "未能删除海关服务器",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2493,7 +2494,7 @@
   "importQrDeviceKruxInstructionsTitle": "Krux号指令",
   "transactionOrderLabelOriginName": "出生地名称",
   "importQrDeviceKeystoneInstructionsTitle": "主要指示",
-  "electrumSavePriorityFailedError": "未能节省服务器优先事项{reason}",
+  "electrumSavePriorityFailedError": "未能节省服务器优先事项",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3008,7 +3009,7 @@
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "arkSettleButton": "定居者",
-  "electrumAddFailedError": "未能增加海关服务器{reason}",
+  "electrumAddFailedError": "未能增加海关服务器",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {

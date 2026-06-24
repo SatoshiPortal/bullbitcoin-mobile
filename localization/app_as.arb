@@ -8219,43 +8219,24 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "এই চাৰ্ভাৰ ইতিমধ্যে আছে",
+  "electrumServerUnreachable": "ছাৰ্ভাৰটো নাগাল পোৱা নগ’ল। ঠিকনাটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
