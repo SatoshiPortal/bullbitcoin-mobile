@@ -54,17 +54,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
+      ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
+      ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
+      ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/bitbox-transport
   hex: ^0.2.0
   auto_size_text: ^3.0.0
@@ -118,7 +118,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 4d8353efdafa8eb31adf26755149e65a5cada263
+      ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
@@ -153,19 +153,6 @@ dependency_overrides:
     git:
       url: https://github.com/i5hi/bdk-dart
       ref: 6ddecbb360fb894068bdfd79ab0c10abf49b9fca
-  # ws-resilience until merged into bull_sdk main. Overrides (not plain dep
-  # refs) because satoshifier pins bull_sdk@main and pub treats different git
-  # refs as conflicting packages; overrides bypass that.
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: ws-resilience
-      path: packages/bull_sdk
-  boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: ws-resilience
-      path: packages/boltz-stream
   # bip329_labels 2.0.0 (spendable optional, spec-faithful) until published to
   # pub.dev. HTTPS url so CI resolves it without SSH deploy keys.
   bip329_labels:
