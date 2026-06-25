@@ -9793,10 +9793,6 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
   "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
   "onboardingAdvancedOptionsDone": "Готово",
-<<<<<<< feat/bitbox02-nova-ble
-  "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support"
-}
-=======
   "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android",
   "walletButtonCoins": "Управление на монети",
@@ -9908,4 +9904,3 @@
   "logsExportedMessage": "Журналите са експортирани успешно",
   "logsExportFailedMessage": "Неуспешно експортиране на журналите"
 }
->>>>>>> develop
