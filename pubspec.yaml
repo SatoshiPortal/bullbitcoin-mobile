@@ -167,6 +167,22 @@ dependency_overrides:
       url: https://github.com/SatoshiPortal/bull_sdk
       ref: ws-resilience
       path: packages/boltz-stream
+  # oubliette integration (Phase 1): force its sibling plugins to the local path.
+  # oubliette declares them as hosted ^1.0.0 (unpublished); pub won't mix a hosted
+  # constraint with a path source, so the root overrides the source here — the
+  # same trick used for bull_sdk above. Switch to git-pinned before publish.
+  keychain:
+    path: ../dart-oubliette/keychain
+  keystore:
+    path: ../dart-oubliette/keystore
+  secret_service:
+    path: ../dart-oubliette/secret_service
+  # CONFLICT: oubliette needs pointycastle ^4.0.0 (Argon2id); ledger_bitcoin pins
+  # ^3.7.4 (<4) — disjoint, so version-solving fails. Forced to 4.x here to unblock
+  # the secrets package (its tests never touch Ledger). ⚠️ FOLLOW-UP before the app
+  # ships: confirm ledger_bitcoin works on pointycastle 4.x, OR relax oubliette's
+  # constraint to >=3.7.4 <5 if its Argon2id usage is 3.x-compatible, OR bump ledger.
+  pointycastle: ^4.0.0
 
 dev_dependencies:
   build_runner: ^2.10.4
