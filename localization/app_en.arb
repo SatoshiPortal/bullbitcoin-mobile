@@ -724,6 +724,30 @@
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
+  "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
+  "@exchangeTestnetBasicAuthTitle": {
+    "description": "Title for the testnet exchange basic auth credentials tile and dialog"
+  },
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth for the testnet exchange web pages (login and KYC).",
+  "@exchangeTestnetBasicAuthDescription": {
+    "description": "Explanation of what the testnet exchange basic auth credentials are used for"
+  },
+  "exchangeTestnetBasicAuthUsernameLabel": "Username",
+  "@exchangeTestnetBasicAuthUsernameLabel": {
+    "description": "Label for the username field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthPasswordLabel": "Password",
+  "@exchangeTestnetBasicAuthPasswordLabel": {
+    "description": "Label for the password field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthClearButton": "Clear",
+  "@exchangeTestnetBasicAuthClearButton": {
+    "description": "Button that clears the saved testnet exchange credentials"
+  },
+  "exchangeTestnetBasicAuthSaveButton": "Save",
+  "@exchangeTestnetBasicAuthSaveButton": {
+    "description": "Button that saves the entered testnet exchange credentials"
+  },
   "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
   "@currencySettingsDefaultFiatCurrencyLabel": {
     "description": "Label for the default fiat currency setting"
@@ -1340,6 +1364,14 @@
   "@sendConfirmCustomFee": {
     "description": "Button label for confirming a custom fee"
   },
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
+  "@sendSubSatVbyteWarning": {
+    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
+  },
+  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
+  "@sendBelowMinFeeRateError": {
+    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
+  },
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
@@ -1348,9 +1380,9 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryFewHours": "few hours",
-  "@sendEstimatedDeliveryFewHours": {
-    "description": "Estimated delivery time of a few hours"
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
   },
   "sendEstimatedDeliveryHoursToDays": "hours to days",
   "@sendEstimatedDeliveryHoursToDays": {
@@ -7363,6 +7395,15 @@
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInsufficientBalanceFrozenHint": "Not enough spendable balance — {amount} is frozen. Unfreeze coins in Manage coins to use it.",
+  "@sendErrorInsufficientBalanceFrozenHint": {
+    "description": "Shown instead of the plain insufficient-balance error when the wallet has frozen coins that could cover the payment, pointing the user to unfreeze them (#2337)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
   "@sendErrorInvalidAddressOrInvoice": {
@@ -13936,6 +13977,46 @@
   "@logsViewerCancelButton": {
     "description": "Button to cancel deleting logs"
   },
+  "logsViewerFilterByDate": "Filter by Date",
+  "@logsViewerFilterByDate": {
+    "description": "Button label to filter logs by date range"
+  },
+  "logsViewerShowingCount": "Showing {shown} of {total} logs",
+  "@logsViewerShowingCount": {
+    "description": "Counter showing filtered vs total log entries",
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logsViewerClearFilter": "Clear filter",
+  "@logsViewerClearFilter": {
+    "description": "Tooltip for the button that clears the date filter"
+  },
+  "logsViewerShareButton": "Share",
+  "@logsViewerShareButton": {
+    "description": "Button to open the share/export options for logs"
+  },
+  "logsShareOptionShare": "Share",
+  "@logsShareOptionShare": {
+    "description": "Option in the bottom sheet to share logs as text"
+  },
+  "logsShareOptionExport": "Export",
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "logsExportedMessage": "Logs exported successfully",
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "logsExportFailedMessage": "Failed to export logs",
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
+  },
   "mempoolCustomServerSsl": "SSL",
   "@mempoolCustomServerSsl": {
     "description": "Badge shown when a custom mempool server uses SSL"
@@ -14055,5 +14136,258 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "walletButtonCoins": "Manage coins",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} frozen",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsTitle": "Coins",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 coin} other{{count} coins}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Frozen",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Spendable",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "None frozen",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Sort & Filter",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} of {total} shown",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 unspent output} other{{count} unspent outputs}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Sync",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Clear all",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Amount: High to Low",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Amount: Low to High",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Date: Newest",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Date: Oldest",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Keychain",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "All",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Frozen status",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "All",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Frozen",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Unfrozen",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Labels",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Reset",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Apply",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Select all",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Freeze",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Unfreeze",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Undo",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Freeze 1 coin?} other{Freeze {count} coins?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Frozen coins stay in your wallet but are excluded from spending until you unfreeze them.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Freezing these coins will leave you with no spendable balance.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 coin frozen · excluded from spending} other{{count} coins frozen · excluded from spending}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen} other{{count} coins unfrozen}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Pending",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "No coins yet",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Coins will appear here once you receive bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "No coins match",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Clear filters",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Retry",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Swipe a coin to freeze · long-press to select",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Couldn't load your coins. Pull to refresh to try again.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Couldn't freeze the selected coins. Please try again.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Couldn't unfreeze the selected coins. Please try again.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Something went wrong. Please try again.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
   }
 }

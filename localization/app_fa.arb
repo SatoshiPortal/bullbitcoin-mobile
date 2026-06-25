@@ -7028,6 +7028,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Mode",
+  "exchangeTestnetBasicAuthTitle": "اعتبارنامه‌های صرافی testnet",
+  "exchangeTestnetBasicAuthDescription": "احراز هویت پایه HTTP برای صفحات وب صرافی testnet (ورود و KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "نام کاربری",
+  "exchangeTestnetBasicAuthPasswordLabel": "گذرواژه",
+  "exchangeTestnetBasicAuthClearButton": "پاک کردن",
+  "exchangeTestnetBasicAuthSaveButton": "ذخیره",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -10339,8 +10345,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "چند ساعت",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "ساعت",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "هر ماه",
@@ -12658,5 +12664,267 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "onboardingAdvancedOptionsDone": "انجام شد",
-  "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید"
+  "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
+  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
+  "walletButtonCoins": "مدیریت سکه‌ها",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "سکه‌ها",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{۱ سکه} other{{count} سکه}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "مسدودشده",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "قابل خرج",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "هیچ‌کدام مسدود نشده",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "مرتب‌سازی و فیلتر",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} از {total} نمایش داده شد",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{۱ خروجی خرج‌نشده} other{{count} خروجی خرج‌نشده}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "همگام‌سازی",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "پاک کردن همه",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "مبلغ: زیاد به کم",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "مبلغ: کم به زیاد",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "تاریخ: جدیدترین",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "تاریخ: قدیمی‌ترین",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "زنجیره کلید",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "همه",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "دریافت",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "باقی‌مانده",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "وضعیت مسدودی",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "همه",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "مسدودشده",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "مسدودنشده",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "برچسب‌ها",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "بازنشانی",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "اعمال",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{۱ انتخاب‌شده} other{{count} انتخاب‌شده}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "انتخاب همه",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "مسدود کردن",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "رفع مسدودی",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "واگرد",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{۱ سکه مسدود شود؟} other{{count} سکه مسدود شوند؟}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "سکه‌های مسدودشده در کیف پول شما باقی می‌مانند اما تا زمانی که آنها را رفع مسدودی کنید از خرج کردن مستثنا هستند.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "مسدود کردن این سکه‌ها شما را بدون موجودی قابل خرج باقی می‌گذارد.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{۱ سکه مسدود شد · از خرج کردن مستثنا} other{{count} سکه مسدود شدند · از خرج کردن مستثنا}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{۱ سکه رفع مسدودی شد} other{{count} سکه رفع مسدودی شدند}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{۱ تأیید} other{{count} تأیید}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "در انتظار",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "هنوز سکه‌ای نیست",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "سکه‌ها پس از دریافت بیت‌کوین اینجا ظاهر می‌شوند.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "هیچ سکه‌ای مطابقت ندارد",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "پاک کردن فیلترها",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "تلاش مجدد",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "برای مسدود کردن سکه را بکشید · برای انتخاب فشار طولانی دهید",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "بارگیری سکه‌های شما ممکن نشد. برای تلاش مجدد به‌پایین بکشید تا تازه‌سازی شود.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "مسدود کردن سکه‌های انتخاب‌شده ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "رفع مسدودی سکه‌های انتخاب‌شده ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} مسدود شده",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "فیلتر بر اساس تاریخ",
+  "logsViewerShowingCount": "نمایش {shown} از {total} گزارش",
+  "logsViewerClearFilter": "پاک کردن فیلتر",
+  "logsViewerShareButton": "اشتراک‌گذاری",
+  "logsShareOptionShare": "اشتراک‌گذاری",
+  "logsShareOptionExport": "صدور",
+  "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود"
 }

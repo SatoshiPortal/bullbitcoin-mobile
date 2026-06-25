@@ -23,6 +23,12 @@ sealed class TransferState with _$TransferState {
     int? liquidAbsoluteFeesSat,
     @Default(false) bool isConfirming,
     ConfirmTransactionException? confirmTransactionException,
+    // Set when a freshly-built Bitcoin tx fails the relay-floor re-assert
+    // (an absolute custom fee that cleared the pre-build gate against a stale
+    // vsize but lands below the floor at the real, larger vsize). Mirrors
+    // SendState.buildTransactionException — surfaced on the confirm page and
+    // accompanied by a cleared signedPsbt so the below-relay tx can't broadcast.
+    BuildTransactionException? buildTransactionException,
     @Default('') String txId,
     @Default(false) bool sendToExternal,
     @Default('') String externalAddress,
@@ -34,6 +40,17 @@ sealed class TransferState with _$TransferState {
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     NetworkFee? customFee,
+    // Arm/disarm snapshot — set by TransferCustomFeeArmed, cleared by
+    // TransferCustomFeeChanged / TransferFeeOptionSelected /
+    // TransferCustomFeeDisarmed. Internal to the custom-fee modal flow;
+    // gates the rollback. UI must not read these directly.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Mirrors SendState.feePreviewCache exactly — see that doc for the
+    // BDK-coin-selection rationale. Cleared on any input-shape change.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
     List<WalletUtxo>? utxos,
     int? bitcoinTxSize,
     double? exchangeRate,

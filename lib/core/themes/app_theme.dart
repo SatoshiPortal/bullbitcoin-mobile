@@ -23,6 +23,7 @@ BullTheme _bullThemeFrom(AppColors colors) {
     tertiary: colors.tertiary,
     onTertiary: colors.onTertiary,
     tertiaryContainer: colors.tertiaryContainer,
+    bitcoinOrange: colors.bitcoinOrange,
     background: colors.background,
     surface: colors.surface,
     surfaceContainer: colors.surfaceContainer,

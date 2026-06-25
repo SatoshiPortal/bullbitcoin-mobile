@@ -70,5 +70,38 @@ void main() {
 
       expect(fired, 0);
     });
+
+    testWidgets('action panel is only painted while the row is open', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSwipeAction(
+            actionLabel: 'Freeze',
+            actionIcon: BullIcons.acUnit,
+            actionColor: const Color(0xFF0063F7),
+            onAction: () {},
+            child: const SizedBox(height: 60, child: Text('row')),
+          ),
+        ),
+      );
+
+      // Closed: nothing to reveal, so the panel (and its label) is not painted —
+      // it can't bleed through a translucent row above it.
+      expect(find.text('Freeze'), findsNothing);
+
+      // Partially open: the panel appears.
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('row')),
+      );
+      await gesture.moveBy(const Offset(-40, 0));
+      await tester.pump();
+      expect(find.text('Freeze'), findsOneWidget);
+
+      // Released below the commit threshold → snaps back closed → panel gone.
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(find.text('Freeze'), findsNothing);
+    });
   });
 }

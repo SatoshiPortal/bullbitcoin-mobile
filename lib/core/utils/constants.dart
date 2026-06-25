@@ -86,6 +86,13 @@ class ApiServiceConstants {
   static const publicMempoolUrlPath = 'mempool.space'; // note: not used
   static const testnetMempoolUrlPath = 'mempool.space/testnet';
 
+  // Mempool fee endpoints. The precise endpoint returns sub-1 sat/vByte
+  // rates as decimals (rounded to 0.001 by mempool); the recommended one
+  // returns rounded integers and is only used as a fallback for older
+  // self-hosted servers that don't expose the precise route.
+  static const mempoolPreciseFeesPath = '/api/v1/fees/precise';
+  static const mempoolRecommendedFeesPath = '/api/v1/fees/recommended';
+
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
   static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
@@ -126,10 +133,6 @@ class ApiServiceConstants {
   // Error reports
   static const String sentryDsn =
       'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
-
-  // Exchange basic auth
-  static const String basicAuthUsername = 'bbadmin';
-  static const String basicAuthPassword = 'We are staging 05!';
 }
 
 class LocatorInstanceNameConstants {

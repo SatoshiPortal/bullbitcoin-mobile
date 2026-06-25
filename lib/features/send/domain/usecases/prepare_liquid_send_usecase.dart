@@ -13,7 +13,7 @@ class PrepareLiquidSendUsecase {
   Future<String> execute({
     required String walletId,
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
   }) async {
@@ -26,7 +26,7 @@ class PrepareLiquidSendUsecase {
         walletId: walletId,
         address: address,
         amountSat: drain ? null : amountSat,
-        networkFee: networkFee,
+        feeRate: feeRate,
         drain: drain,
       );
       return psbt;
