@@ -6347,6 +6347,35 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
+  "nfcNotAvailable": "NFC is not supported on this device",
+  "@nfcNotAvailable": {
+    "description": "Error message shown when NFC is not available on the current device"
+  },
+  "nfcDisabled": "NFC is disabled. Enable it in settings.",
+  "@nfcDisabled": {
+    "description": "Error message shown when NFC is disabled on the current device"
+  },
+  "nfcInvalidData": "No supported NFC data was found",
+  "@nfcInvalidData": {
+    "description": "Error message shown when an NFC tag is read but no supported payload can be parsed"
+  },
+  "nfcConnectionLost": "NFC connection lost. Hold your device near the NFC tag and try again.",
+  "@nfcConnectionLost": {
+    "description": "Error message shown when an NFC tag connection is lost before the read or write completes"
+  },
+  "nfcWriteFailed": "NFC transfer failed. Please try again.",
+  "@nfcWriteFailed": {
+    "description": "Error message shown when an NFC write to a hardware wallet fails"
+  },
+  "nfcError": "NFC error: {error}",
+  "@nfcError": {
+    "description": "Error message shown when an NFC operation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "shareLogsLabel": "Share logs",
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
@@ -8984,6 +9013,19 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
+  "psbtFlowSignViaNfc": "Sign via NFC",
+  "@psbtFlowSignViaNfc": {
+    "description": "Button to send a PSBT to a hardware signer over NFC"
+  },
+  "psbtFlowSignViaNfcSheetTitle": "Tap your {deviceName} to send the PSBT via NFC",
+  "@psbtFlowSignViaNfcSheetTitle": {
+    "description": "NFC write sheet title for sending a PSBT to a hardware signer",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
   "psbtFlowError": "Error: {error}",
   "@psbtFlowError": {
     "description": "Error message in psbt flow",
@@ -9029,9 +9071,157 @@
   "@psbtFlowSpecterTitle": {
     "description": "Title for Specter device signing instructions"
   },
-  "psbtFlowColdcardTitle": "Coldcard Q Instructions",
-  "@psbtFlowColdcardTitle": {
-    "description": "Title for Coldcard Q device signing instructions"
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "@psbtFlowColdcardQInstructionsTitle": {
+    "description": "Title for Coldcard Q PSBT signing instructions"
+  },
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "@psbtFlowColdcardMk4InstructionsTitle": {
+    "description": "Title for Coldcard Mk4 PSBT signing instructions"
+  },
+  "psbtFlowColdcardQStep1": "Login to your Coldcard Q device",
+  "@psbtFlowColdcardQStep1": {
+    "description": "Coldcard Q PSBT signing instruction step 1"
+  },
+  "psbtFlowColdcardQStep2": "Add a passphrase if you have one (optional)",
+  "@psbtFlowColdcardQStep2": {
+    "description": "Coldcard Q PSBT signing instruction step 2"
+  },
+  "psbtFlowColdcardQStep3": "Choose your preferred signing method:",
+  "@psbtFlowColdcardQStep3": {
+    "description": "Coldcard Q PSBT signing instruction step 3"
+  },
+  "psbtFlowColdcardQStep4": "For QR code:",
+  "@psbtFlowColdcardQStep4": {
+    "description": "Coldcard Q PSBT signing instruction step 4"
+  },
+  "psbtFlowColdcardQStep5": "   - Select \"Scan any QR code\" on your Coldcard Q",
+  "@psbtFlowColdcardQStep5": {
+    "description": "Coldcard Q PSBT signing instruction step 5"
+  },
+  "psbtFlowColdcardQStep6": "   - Scan the QR code shown in the Bull wallet",
+  "@psbtFlowColdcardQStep6": {
+    "description": "Coldcard Q PSBT signing instruction step 6"
+  },
+  "psbtFlowColdcardQStep7": "   - If you have trouble scanning:",
+  "@psbtFlowColdcardQStep7": {
+    "description": "Coldcard Q PSBT signing instruction step 7"
+  },
+  "psbtFlowColdcardQStep8": "     - Increase screen brightness on your device",
+  "@psbtFlowColdcardQStep8": {
+    "description": "Coldcard Q PSBT signing instruction step 8"
+  },
+  "psbtFlowColdcardQStep9": "     - Move the red laser up and down over QR code",
+  "@psbtFlowColdcardQStep9": {
+    "description": "Coldcard Q PSBT signing instruction step 9"
+  },
+  "psbtFlowColdcardQStep10": "     - Try moving your device back a little bit",
+  "@psbtFlowColdcardQStep10": {
+    "description": "Coldcard Q PSBT signing instruction step 10"
+  },
+  "psbtFlowColdcardQStep11": "For NFC:",
+  "@psbtFlowColdcardQStep11": {
+    "description": "Coldcard Q PSBT signing instruction step 11"
+  },
+  "psbtFlowColdcardQStep12": "   - Select \"Ready to Sign\" on your Coldcard Q, then tap the NFC button",
+  "@psbtFlowColdcardQStep12": {
+    "description": "Coldcard Q PSBT signing instruction step 12"
+  },
+  "psbtFlowColdcardQStep13": "   - Tap your phone to the Coldcard Q",
+  "@psbtFlowColdcardQStep13": {
+    "description": "Coldcard Q PSBT signing instruction step 13"
+  },
+  "psbtFlowColdcardQStep14": "   - Wait for the PSBT to transfer",
+  "@psbtFlowColdcardQStep14": {
+    "description": "Coldcard Q PSBT signing instruction step 14"
+  },
+  "psbtFlowColdcardQStep15": "Once the transaction is imported in your Coldcard Q, review the destination address and amount.",
+  "@psbtFlowColdcardQStep15": {
+    "description": "Coldcard Q PSBT signing instruction step 15"
+  },
+  "psbtFlowColdcardQStep16": "Click the buttons to sign the transaction on your Coldcard Q.",
+  "@psbtFlowColdcardQStep16": {
+    "description": "Coldcard Q PSBT signing instruction step 16"
+  },
+  "psbtFlowColdcardQStep17": "The Coldcard Q will then show a signed transaction QR code or prepare NFC transfer.",
+  "@psbtFlowColdcardQStep17": {
+    "description": "Coldcard Q PSBT signing instruction step 17"
+  },
+  "psbtFlowColdcardQStep18": "If you signed with QR, click \"I'm done\" in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardQStep18": {
+    "description": "Coldcard Q PSBT signing instruction step 18"
+  },
+  "psbtFlowColdcardQStep19": "The Bull Bitcoin wallet will ask you to scan the signed transaction QR code or use NFC to receive it.",
+  "@psbtFlowColdcardQStep19": {
+    "description": "Coldcard Q PSBT signing instruction step 19"
+  },
+  "psbtFlowColdcardQStep20": "   - For QR: scan the QR code on the Coldcard Q",
+  "@psbtFlowColdcardQStep20": {
+    "description": "Coldcard Q PSBT signing instruction step 20"
+  },
+  "psbtFlowColdcardQStep21": "   - For NFC: tap your phone to the Coldcard Q",
+  "@psbtFlowColdcardQStep21": {
+    "description": "Coldcard Q PSBT signing instruction step 21"
+  },
+  "psbtFlowColdcardQStep22": "The signed transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardQStep22": {
+    "description": "Coldcard Q PSBT signing instruction step 22"
+  },
+  "psbtFlowColdcardQStep23": "It's now ready to broadcast. As soon as you click broadcast, the transaction will be published on the Bitcoin network.",
+  "@psbtFlowColdcardQStep23": {
+    "description": "Coldcard Q PSBT signing instruction step 23"
+  },
+  "psbtFlowColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "@psbtFlowColdcardMk4Step1": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 1"
+  },
+  "psbtFlowColdcardMk4Step2": "Add a passphrase if you have one (optional)",
+  "@psbtFlowColdcardMk4Step2": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 2"
+  },
+  "psbtFlowColdcardMk4Step3": "Select \"Ready to Sign\" on your Coldcard Mk4, then tap the number 3 button",
+  "@psbtFlowColdcardMk4Step3": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 3"
+  },
+  "psbtFlowColdcardMk4Step4": "Tap your phone to the Coldcard Mk4",
+  "@psbtFlowColdcardMk4Step4": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 4"
+  },
+  "psbtFlowColdcardMk4Step5": "Wait for the PSBT to transfer",
+  "@psbtFlowColdcardMk4Step5": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 5"
+  },
+  "psbtFlowColdcardMk4Step6": "Once the transaction is imported in your Coldcard Mk4, review the destination address and amount.",
+  "@psbtFlowColdcardMk4Step6": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 6"
+  },
+  "psbtFlowColdcardMk4Step7": "Click the buttons to sign the transaction on your Coldcard Mk4.",
+  "@psbtFlowColdcardMk4Step7": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 7"
+  },
+  "psbtFlowColdcardMk4Step8": "The Coldcard Mk4 will then prepare the signed transaction for NFC transfer.",
+  "@psbtFlowColdcardMk4Step8": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 8"
+  },
+  "psbtFlowColdcardMk4Step9": "In the Bull Bitcoin wallet, tap NFC on the broadcast screen.",
+  "@psbtFlowColdcardMk4Step9": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 9"
+  },
+  "psbtFlowColdcardMk4Step10": "Tap your phone to the Coldcard Mk4 to receive the signed transaction.",
+  "@psbtFlowColdcardMk4Step10": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 10"
+  },
+  "psbtFlowColdcardMk4Step11": "The signed transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardMk4Step11": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 11"
+  },
+  "psbtFlowColdcardMk4Step12": "Review the transaction details in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardMk4Step12": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 12"
+  },
+  "psbtFlowColdcardMk4Step13": "It's now ready to broadcast. As soon as you click broadcast, the transaction will be published on the Bitcoin network.",
+  "@psbtFlowColdcardMk4Step13": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 13"
   },
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
   "@psbtFlowJadeTitle": {
@@ -9492,70 +9682,6 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "coldcardInstructionsTitle": "Coldcard Q Instructions",
-  "@coldcardInstructionsTitle": {
-    "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "coldcardStep1": "Login to your Coldcard Q device",
-  "@coldcardStep1": {
-    "description": "Coldcard instruction step 1"
-  },
-  "coldcardStep2": "Add a passphrase if you have one (optional)",
-  "@coldcardStep2": {
-    "description": "Coldcard instruction step 2"
-  },
-  "coldcardStep3": "Select \"Scan any QR code\" option",
-  "@coldcardStep3": {
-    "description": "Coldcard instruction step 3"
-  },
-  "coldcardStep4": "Scan the QR code shown in the Bull wallet",
-  "@coldcardStep4": {
-    "description": "Coldcard instruction step 4"
-  },
-  "coldcardStep5": "If you have trouble scanning:",
-  "@coldcardStep5": {
-    "description": "Coldcard troubleshooting header"
-  },
-  "coldcardStep6": "   - Increase screen brightness on your device",
-  "@coldcardStep6": {
-    "description": "Coldcard troubleshooting tip 1"
-  },
-  "coldcardStep7": "   - Move the red laser up and down over QR code",
-  "@coldcardStep7": {
-    "description": "Coldcard troubleshooting tip 2"
-  },
-  "coldcardStep8": "   - Try moving your device back a little bit",
-  "@coldcardStep8": {
-    "description": "Coldcard troubleshooting tip 3"
-  },
-  "coldcardStep9": "Once the transaction is imported in your Coldcard, review the destination address and the amount.",
-  "@coldcardStep9": {
-    "description": "Coldcard instruction for reviewing transaction"
-  },
-  "coldcardStep10": "Click the buttons to sign the transaction on your Coldcard.",
-  "@coldcardStep10": {
-    "description": "Coldcard instruction for signing"
-  },
-  "coldcardStep11": "The Coldcard Q will then show you its own QR code.",
-  "@coldcardStep11": {
-    "description": "Coldcard instruction about signed PSBT QR"
-  },
-  "coldcardStep12": "Click \"I'm done\" in the Bull Bitcoin wallet.",
-  "@coldcardStep12": {
-    "description": "Coldcard instruction to return to app"
-  },
-  "coldcardStep13": "The Bull Bitcoin wallet will ask you to scan the QR code on the Coldcard. Scan it.",
-  "@coldcardStep13": {
-    "description": "Coldcard instruction for scanning signed PSBT"
-  },
-  "coldcardStep14": "The transaction will be imported in the Bull Bitcoin wallet.",
-  "@coldcardStep14": {
-    "description": "Coldcard instruction about import completion"
-  },
-  "coldcardStep15": "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
-  "@coldcardStep15": {
-    "description": "Coldcard final instruction about broadcasting"
-  },
   "jadeInstructionsTitle": "Blockstream Jade PSBT Instructions",
   "@jadeInstructionsTitle": {
     "description": "Title for Jade signing instructions modal"
@@ -9647,6 +9773,10 @@
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "@importWalletColdcardMk4": {
+    "description": "Button label for Coldcard Mk4 hardware wallet"
   },
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
@@ -10050,6 +10180,14 @@
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
   },
+  "broadcastSignedTxNfcButton": "NFC",
+  "@broadcastSignedTxNfcButton": {
+    "description": "Button to receive a signed transaction over NFC"
+  },
+  "broadcastSignedTxColdcardNfcSheetTitle": "Tap your Coldcard to receive the signed transaction via NFC",
+  "@broadcastSignedTxColdcardNfcSheetTitle": {
+    "description": "NFC read sheet title for receiving a signed transaction from Coldcard"
+  },
   "broadcastSignedTxDoneButton": "Done",
   "@broadcastSignedTxDoneButton": {
     "description": "Button to finish after successful broadcast"
@@ -10428,10 +10566,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "importColdcardTitle": "Connect Coldcard Q",
-  "@importColdcardTitle": {
-    "description": "AppBar title for Coldcard Q import"
-  },
   "importColdcardScanPrompt": "Scan the QR code from your Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
@@ -10456,13 +10590,36 @@
   "@importColdcardError": {
     "description": "Error message"
   },
-  "importColdcardInvalidQR": "Invalid Coldcard QR code",
-  "@importColdcardInvalidQR": {
-    "description": "Error for invalid QR format"
+  "importColdcardInvalidWalletData": "Invalid Coldcard wallet data",
+  "@importColdcardInvalidWalletData": {
+    "description": "Error for invalid Coldcard wallet import data"
   },
-  "importColdcardDescription": "Import the wallet descriptor QR code from your Coldcard Q",
-  "@importColdcardDescription": {
-    "description": "ImportColdcardQ: Main instruction text on import page"
+  "importColdcardConnectTitle": "Connect {deviceName}",
+  "@importColdcardConnectTitle": {
+    "description": "AppBar title for Coldcard import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importColdcardConnectDescription": "Import the wallet descriptor from your {deviceName}",
+  "@importColdcardConnectDescription": {
+    "description": "Main instruction text on Coldcard import page",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importColdcardScanNfcSheetTitle": "Tap your {deviceName} to import wallet descriptor via NFC",
+  "@importColdcardScanNfcSheetTitle": {
+    "description": "NFC scan sheet title for Coldcard wallet import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
   },
   "importColdcardButtonOpenCamera": "Open the camera",
   "@importColdcardButtonOpenCamera": {
@@ -10476,49 +10633,113 @@
   "@importColdcardButtonPurchase": {
     "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
-  "importColdcardInstructionsTitle": "Coldcard Q Instructions",
-  "@importColdcardInstructionsTitle": {
-    "description": "ImportColdcardQ: Title of instructions bottom sheet"
+  "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "@importColdcardQInstructionsTitle": {
+    "description": "Title for Coldcard Q import instructions"
   },
-  "importColdcardInstructionsStep1": "Log in to your Coldcard Q device",
-  "@importColdcardInstructionsStep1": {
-    "description": "ImportColdcardQ: First instruction step"
+  "importColdcardQStep1": "Login to your Coldcard Q device",
+  "@importColdcardQStep1": {
+    "description": "Coldcard Q import instruction step 1"
   },
-  "importColdcardInstructionsStep2": "Enter a passphrase if applicable",
-  "@importColdcardInstructionsStep2": {
-    "description": "ImportColdcardQ: Second instruction step"
+  "importColdcardQStep2": "Add a passphrase if you have one (optional)",
+  "@importColdcardQStep2": {
+    "description": "Coldcard Q import instruction step 2"
   },
-  "importColdcardInstructionsStep3": "Navigate to \"Advanced/Tools\"",
-  "@importColdcardInstructionsStep3": {
-    "description": "ImportColdcardQ: Third instruction step"
+  "importColdcardQStep3": "Select the advanced/settings menu",
+  "@importColdcardQStep3": {
+    "description": "Coldcard Q import instruction step 3"
   },
-  "importColdcardInstructionsStep4": "Verify that your firmware is updated to version 1.3.4Q",
-  "@importColdcardInstructionsStep4": {
-    "description": "ImportColdcardQ: Fourth instruction step"
+  "importColdcardQStep4": "Click \"export wallet\"",
+  "@importColdcardQStep4": {
+    "description": "Coldcard Q import instruction step 4"
   },
-  "importColdcardInstructionsStep5": "Select \"Export Wallet\"",
-  "@importColdcardInstructionsStep5": {
-    "description": "ImportColdcardQ: Fifth instruction step"
+  "importColdcardQStep5": "Select \"descriptor\" as export type",
+  "@importColdcardQStep5": {
+    "description": "Coldcard Q import instruction step 5"
   },
-  "importColdcardInstructionsStep6": "Choose \"Bull Bitcoin\" as the export option",
-  "@importColdcardInstructionsStep6": {
-    "description": "ImportColdcardQ: Sixth instruction step"
+  "importColdcardQStep6": "Press \"Enter\" on first screen",
+  "@importColdcardQStep6": {
+    "description": "Coldcard Q import instruction step 6"
   },
-  "importColdcardInstructionsStep7": "On your mobile device, tap \"open camera\"",
-  "@importColdcardInstructionsStep7": {
-    "description": "ImportColdcardQ: Seventh instruction step"
+  "importColdcardQStep7": "Press \"Enter\" on second screen",
+  "@importColdcardQStep7": {
+    "description": "Coldcard Q import instruction step 7"
   },
-  "importColdcardInstructionsStep8": "Scan the QR code displayed on your Coldcard Q",
-  "@importColdcardInstructionsStep8": {
-    "description": "ImportColdcardQ: Eighth instruction step"
+  "importColdcardQStep8": "Select your address type (use Segwit if unsure)",
+  "@importColdcardQStep8": {
+    "description": "Coldcard Q import instruction step 8"
   },
-  "importColdcardInstructionsStep9": "Enter a 'Label' for your Coldcard Q wallet and tap \"Import\"",
-  "@importColdcardInstructionsStep9": {
-    "description": "ImportColdcardQ: Ninth instruction step"
+  "importColdcardQStep9": "For QR, click the QR code button on the device. It will show you a QR code on the device",
+  "@importColdcardQStep9": {
+    "description": "Coldcard Q import instruction step 9"
   },
-  "importColdcardInstructionsStep10": "Setup complete",
-  "@importColdcardInstructionsStep10": {
-    "description": "ImportColdcardQ: Final instruction step"
+  "importColdcardQStep10": "For NFC, click the NFC button on the device",
+  "@importColdcardQStep10": {
+    "description": "Coldcard Q import instruction step 10"
+  },
+  "importColdcardQStep11": "Click the \"Open the camera\" / \"Scan NFC\" button",
+  "@importColdcardQStep11": {
+    "description": "Coldcard Q import instruction step 11"
+  },
+  "importColdcardQStep12": "Scan the QR code you see on your device or put the phone NFC on top of the Coldcard NFC",
+  "@importColdcardQStep12": {
+    "description": "Coldcard Q import instruction step 12"
+  },
+  "importColdcardQStep13": "That's it!",
+  "@importColdcardQStep13": {
+    "description": "Coldcard Q import instruction step 13"
+  },
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "@importColdcardMk4InstructionsTitle": {
+    "description": "Title for Coldcard Mk4 import instructions"
+  },
+  "importColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "@importColdcardMk4Step1": {
+    "description": "Coldcard Mk4 import instruction step 1"
+  },
+  "importColdcardMk4Step2": "Add a passphrase if you have one (optional)",
+  "@importColdcardMk4Step2": {
+    "description": "Coldcard Mk4 import instruction step 2"
+  },
+  "importColdcardMk4Step3": "Select the advanced/settings menu",
+  "@importColdcardMk4Step3": {
+    "description": "Coldcard Mk4 import instruction step 3"
+  },
+  "importColdcardMk4Step4": "Click \"export wallet\"",
+  "@importColdcardMk4Step4": {
+    "description": "Coldcard Mk4 import instruction step 4"
+  },
+  "importColdcardMk4Step5": "Select \"descriptor\" as export type",
+  "@importColdcardMk4Step5": {
+    "description": "Coldcard Mk4 import instruction step 5"
+  },
+  "importColdcardMk4Step6": "Press \"Enter\" on first screen",
+  "@importColdcardMk4Step6": {
+    "description": "Coldcard Mk4 import instruction step 6"
+  },
+  "importColdcardMk4Step7": "Press \"Enter\" on second screen",
+  "@importColdcardMk4Step7": {
+    "description": "Coldcard Mk4 import instruction step 7"
+  },
+  "importColdcardMk4Step8": "Select your address type (use Segwit if unsure)",
+  "@importColdcardMk4Step8": {
+    "description": "Coldcard Mk4 import instruction step 8"
+  },
+  "importColdcardMk4Step9": "Click the number 3 to start the Coldcard NFC",
+  "@importColdcardMk4Step9": {
+    "description": "Coldcard Mk4 import instruction step 9"
+  },
+  "importColdcardMk4Step10": "Click \"Scan NFC\" button",
+  "@importColdcardMk4Step10": {
+    "description": "Coldcard Mk4 import instruction step 10"
+  },
+  "importColdcardMk4Step11": "Put the phone NFC on top of the Coldcard NFC",
+  "@importColdcardMk4Step11": {
+    "description": "Coldcard Mk4 import instruction step 11"
+  },
+  "importColdcardMk4Step12": "That's it!",
+  "@importColdcardMk4Step12": {
+    "description": "Coldcard Mk4 import instruction step 12"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {

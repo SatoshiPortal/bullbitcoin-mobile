@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -91,13 +92,26 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   const Gap(32),
                   BBButton.small(
+                    label: context.loc.broadcastSignedTxNfcButton,
+                    onPressed: () => NfcBottomSheet.showReadNfc(
+                      context: context,
+                      title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
+                      onDataReceived: (payload) => cubit.onQrScanned(payload),
+                    ),
+                    bgColor: context.appColors.surface,
+                    textColor: context.appColors.text,
+                    iconData: Icons.nfc,
+                    outlined: true,
+                  ),
+                  const Gap(32),
+                  BBButton.small(
                     label: context.loc.broadcastSignedTxPushTxButton,
                     onPressed: () => context.pushNamed(
                       BroadcastSignedTxRoute.broadcastScanNfc.name,
                     ),
                     bgColor: context.appColors.surface,
                     textColor: context.appColors.text,
-                    iconData: Icons.nfc,
+                    iconData: Icons.contactless_outlined,
                     outlined: true,
                   ),
                 ],

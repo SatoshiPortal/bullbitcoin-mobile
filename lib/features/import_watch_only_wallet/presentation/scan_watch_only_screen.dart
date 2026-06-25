@@ -58,34 +58,22 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   if (selectedDescriptor == null) return;
                   signerData = selectedDescriptor;
                 }
-                final watchOnly = await Satoshifier.parse(signerData);
+                final watchOnly = await WatchOnlyWalletEntity.parse(
+                  signerData,
+                  signerDevice: widget.signerDevice,
+                );
 
-                if (watchOnly is WatchOnlyDescriptor) {
-                  final watchOnlyDescriptor = WatchOnlyWalletEntity.descriptor(
-                    watchOnlyDescriptor: watchOnly,
-                    signerDevice: widget.signerDevice,
-                  );
-
-                  if (!context.mounted) return;
-                  context.replaceNamed(
-                    ImportWatchOnlyWalletRoutes.import.name,
-                    extra: watchOnlyDescriptor,
-                  );
-                }
-
-                if (watchOnly is WatchOnlyXpub) {
-                  final watchOnlyXpub = WatchOnlyWalletEntity.xpub(
-                    watchOnlyXpub: watchOnly,
-                  );
-
-                  if (!context.mounted) return;
-                  context.replaceNamed(
-                    ImportWatchOnlyWalletRoutes.import.name,
-                    extra: watchOnlyXpub,
-                  );
-                }
+                if (!context.mounted) return;
+                context.replaceNamed(
+                  ImportWatchOnlyWalletRoutes.import.name,
+                  extra: watchOnly,
+                );
               } catch (e, st) {
-                log.warning('Failed to parse scanned watch-only', error: e, trace: st);
+                log.warning(
+                  'Failed to parse scanned watch-only',
+                  error: e,
+                  trace: st,
+                );
                 _handled = false;
               }
             },
