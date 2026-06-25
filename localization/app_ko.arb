@@ -12647,6 +12647,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

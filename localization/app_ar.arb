@@ -12651,6 +12651,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

@@ -4804,6 +4804,10 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
+  "importMnemonicEmptyLabelError": "Для импорта мнемоники необходима метка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "allSeedViewErrorDelete": "Не удалось удалить сид-фразу. Пожалуйста, попробуйте снова.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"

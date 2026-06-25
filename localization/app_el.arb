@@ -12765,6 +12765,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "Οι ετικέτες συστήματος δεν μπορούν να διαγραφούν.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

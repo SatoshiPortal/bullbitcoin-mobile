@@ -12761,6 +12761,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

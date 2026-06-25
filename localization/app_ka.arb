@@ -453,6 +453,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "importMnemonicEmptyLabelError": "მნემონიკის შემოსატანად ჩანაწერი აუცილებელია",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"

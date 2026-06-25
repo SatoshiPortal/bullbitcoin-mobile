@@ -12647,6 +12647,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorUnsupportedType": "This type {type} is not supported",
   "@labelErrorUnsupportedType": {
     "description": "Error message when label type is not supported",

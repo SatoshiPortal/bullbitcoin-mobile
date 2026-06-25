@@ -12647,6 +12647,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

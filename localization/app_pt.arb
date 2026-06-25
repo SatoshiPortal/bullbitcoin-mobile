@@ -4850,6 +4850,10 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
+  "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemónico",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "allSeedViewErrorDelete": "Falha ao excluir a seed. Por favor, tente novamente.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"

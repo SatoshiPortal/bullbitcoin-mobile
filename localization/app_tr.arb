@@ -12647,6 +12647,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "labelErrorSystemCannotDelete": "Sistem etiketleri silinemez.",
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"

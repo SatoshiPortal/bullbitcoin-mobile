@@ -4677,6 +4677,10 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
+  "importMnemonicEmptyLabelError": "导入助记词需要标签",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "allSeedViewErrorDelete": "删除种子失败。请重试。",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"

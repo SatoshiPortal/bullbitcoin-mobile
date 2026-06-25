@@ -4784,6 +4784,10 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
+  "importMnemonicEmptyLabelError": "Une étiquette est requise pour importer un mnémonique",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "allSeedViewErrorDelete": "Échec de la suppression de la mnémonique. Veuillez réessayer.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
