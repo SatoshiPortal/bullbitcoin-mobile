@@ -23,7 +23,14 @@ class VaultProviderSelectionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => context.pop(),
+          onPressed: () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+            } else {
+              context.pop();
+            }
+          },
           icon: const Icon(Icons.arrow_back),
         ),
         title: Text(context.loc.recoverbullSelectVaultProvider),
