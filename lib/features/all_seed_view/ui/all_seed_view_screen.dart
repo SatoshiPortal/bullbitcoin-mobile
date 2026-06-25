@@ -6,7 +6,10 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
+import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +24,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
       if (cubit.state.loading &&
           cubit.state.existingWallets.isEmpty &&
           cubit.state.oldWallets.isEmpty &&
-          cubit.state.error == null) {
+          cubit.state.failure == null) {
         cubit.fetchAllSeeds();
       }
     });
@@ -31,7 +34,15 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
           disableScreenPrivacy();
         }
       },
-      child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
+      child: BlocListener<AllSeedViewCubit, AllSeedViewState>(
+        listenWhen: (p, c) => p.failure != c.failure,
+        listener: (context, state) {
+          if (state.failure case final failure?
+              when failure is! AllSeedViewFetchFailure) {
+            SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+          }
+        },
+        child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
@@ -68,10 +79,10 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                     ),
                   );
                 }
-                if (state.error != null) {
+                if (state.failure is AllSeedViewFetchFailure) {
                   return Center(
                     child: BBText(
-                      state.error!,
+                      state.failure!.toTranslated(context),
                       style: context.font.bodyLarge,
                       color: context.appColors.error,
                     ),
@@ -156,6 +167,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             ),
           );
         },
+        ),
       ),
     );
   }

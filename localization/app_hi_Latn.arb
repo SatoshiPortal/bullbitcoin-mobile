@@ -11358,6 +11358,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Seeds load karne mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Seed hatane mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button label"

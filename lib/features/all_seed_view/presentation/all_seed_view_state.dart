@@ -7,7 +7,7 @@ abstract class AllSeedViewState with _$AllSeedViewState {
     @Default(<MnemonicSeed>[]) List<MnemonicSeed> oldWallets,
     @Default(true) bool loading,
     @Default(false) bool seedsVisible,
-    String? error,
+    AllSeedViewFailure? failure,
   }) = _AllSeedViewState;
   const AllSeedViewState._();
 

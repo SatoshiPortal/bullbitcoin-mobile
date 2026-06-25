@@ -9810,5 +9810,13 @@
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
   "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
   "electrumServerUnreachable": "Сървърът е недостъпен. Проверете адреса и опитайте отново.",
-  "mempoolErrorInvalidUrl": "Невалиден URL адрес на сървъра. Въведете валиден домейн или IP адрес."
+  "mempoolErrorInvalidUrl": "Невалиден URL адрес на сървъра. Въведете валиден домейн или IP адрес.",
+  "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Неуспешно изтриване на семето. Моля, опитайте отново.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

@@ -4768,5 +4768,13 @@
   "pinCodeDeleteError": "PIN konnte nicht gelöscht werden. Bitte versuche es erneut.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
-  "priceChartLoadFailed": "Preisdiagrammdaten konnten nicht geladen werden. Bitte versuche es erneut."
+  "priceChartLoadFailed": "Preisdiagrammdaten konnten nicht geladen werden. Bitte versuche es erneut.",
+  "allSeedViewErrorFetch": "Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Seed konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

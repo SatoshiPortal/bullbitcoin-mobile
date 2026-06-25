@@ -4782,5 +4782,13 @@
   "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
-  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen."
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
+  "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Siemenen poistaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }

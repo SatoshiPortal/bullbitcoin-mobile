@@ -3993,6 +3993,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Falha ao carregar as seeds. Por favor, tente novamente.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Falha ao excluir a seed. Por favor, tente novamente.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "buyInputTitle": "Comprar Bitcoin",
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"

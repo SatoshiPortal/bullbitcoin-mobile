@@ -903,6 +903,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "بارگذاری سیدها ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "حذف سید ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "لغو",
   "@cancel": {
     "description": "Generic cancel button label"

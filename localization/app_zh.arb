@@ -4672,5 +4672,13 @@
   "pinCodeDeleteError": "无法删除您的PIN码，请重试。",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
-  "priceChartLoadFailed": "价格图表数据无法加载。请重试。"
+  "priceChartLoadFailed": "价格图表数据无法加载。请重试。",
+  "allSeedViewErrorFetch": "加载种子失败。请重试。",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "删除种子失败。请重试。",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  }
 }
