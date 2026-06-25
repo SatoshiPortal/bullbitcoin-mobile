@@ -105,7 +105,9 @@ jobs:
               const events = num(row.events_version), total = num(row.events_total);
               const dev = num(row.devices_version), a = num(row.devices_android), ios = num(row.devices_ios);
               const fp = row.fingerprint, fpShort = row.fingerprint_short || (fp || '').slice(0, 8);
-              const devMsg = (row.dev_message || '').trim();
+              // Neutralize any HTML-comment opener so crash content can never forge
+              // the fingerprint marker that drives dedup (zero-width break, invisible).
+              const devMsg = (row.dev_message || '').trim().replace(/<!--/g, '<​!--');
               const variants = num(row.dev_message_variant_count);
               const frames = parseJSON(row.frames) || [];
               const realFrames = frames.filter(f => f && f.function);
@@ -157,8 +159,11 @@ jobs:
             const byFp = new Map();
             for (const it of existing) {
               if (it.pull_request) continue;
-              const m = (it.body || '').match(/<!-- crash-cache-fp: ([0-9a-f]{64}) -->/);
-              if (m) byFp.set(m[1], it);
+              // Take the LAST marker. Our real marker is always the final line of the
+              // body, so a spoofed one injected via dev_message (rendered earlier)
+              // cannot hijack the index.
+              const all = [...(it.body || '').matchAll(/<!-- crash-cache-fp: ([0-9a-f]{64}) -->/g)];
+              if (all.length) byFp.set(all[all.length - 1][1], it);
             }
             console.log(`Found ${byFp.size} existing crash issues.`);
 
@@ -190,7 +195,10 @@ jobs:
               } else {
                 const fm = (it.body || '').match(/first synced (\d{4}-\d{2}-\d{2})/);
                 const body = buildBody(row, fm ? fm[1] : today);
-                if (stripFooter(body) !== stripFooter(it.body)) {
+                // Normalize line endings + trailing whitespace so a server-side
+                // round-trip can't trigger a no-op bump; also bump on title drift.
+                const k = s => stripFooter(s).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trim();
+                if (k(body) !== k(it.body) || title !== it.title) {
                   console.log(`BUMP    ${row.fingerprint_short}  #${it.number}`);
                   if (!dry) await github.rest.issues.update({ owner, repo, issue_number: it.number, title, body });
                   stats.bumped++;
