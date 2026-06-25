@@ -1214,14 +1214,14 @@ class BoltzDatasource {
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
 
-  Future<(int, bool, String?)> decodeInvoice(String invoice) async {
+  Future<(int, bool, String?, String?)> decodeInvoice(String invoice) async {
     try {
       final decoded = await DecodedInvoice.fromString(
         s: invoice,
         boltzUrl: _httpsUrl,
       );
       final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
-      return (sats, decoded.isExpired, decoded.bip21);
+      return (sats, decoded.isExpired, decoded.bip21, decoded.description);
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;

@@ -776,8 +776,16 @@ class BoltzSwapRepository {
   }
 
   Future<Invoice> decodeInvoice({required String invoice}) async {
-    final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
-    return Invoice(sats: sats, isExpired: expired, magicBip21: bip21);
+    final (sats, expired, bip21, description) =
+        await _boltz.decodeInvoice(invoice);
+    return Invoice(
+      sats: sats,
+      isExpired: expired,
+      magicBip21: bip21,
+      description: (description != null && description.trim().isNotEmpty)
+          ? description.trim()
+          : null,
+    );
   }
 
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
