@@ -1204,10 +1204,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Bir hata, işlemin yerini almaya çalışırken meydana geldi",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Bitcoin’i başka bir platformda göndermek istiyorlar",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6891,10 +6887,6 @@
   "arkSendConfirm": "Onay Onay Onay Onaylandı",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Orijinal işlem onaylandı",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@rbfErrorFeeTooLow": {

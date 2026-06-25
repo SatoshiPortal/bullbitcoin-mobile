@@ -1055,10 +1055,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Ένα λάθος συνέβη ενώ επιχειρεί να αντικαταστήσει τη συναλλαγή",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Ζητούν να στείλουν Bitcoin σε άλλη πλατφόρμα",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -5759,10 +5755,6 @@
   "arkSendConfirm": "Επιβεβαίωση",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Η αρχική συναλλαγή έχει επιβεβαιωθεί",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@rbfErrorFeeTooLow": {

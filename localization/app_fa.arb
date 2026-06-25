@@ -2273,10 +2273,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "یک خطا در هنگام تلاش برای جایگزینی معامله رخ داد",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "آنها می خواهند بیت کوین را در پلتفرم دیگری ارسال کنند",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -7014,10 +7010,6 @@
   "sendAbsoluteFees": "هزینه های مطلق",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "معامله اصلی تایید شده است",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
   "@rbfErrorFeeTooLow": {

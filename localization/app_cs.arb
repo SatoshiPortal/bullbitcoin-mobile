@@ -1467,10 +1467,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Chyba došlo při pokusu o nahrazení transakce",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Zeptají se, aby poslal Bitcoin na jinou platformu",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6867,10 +6863,6 @@
   "sendAbsoluteFees": "Absolutní poplatky",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Původní transakce byla potvrzena",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Musíte zvýšit poplatek minimálně 1 sat/vbyte ve srovnání s původní transakcí",
   "@rbfErrorFeeTooLow": {

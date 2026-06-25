@@ -1165,10 +1165,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Възникна грешка при опита за замяна на транзакцията.",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Те искат да изпратите Bitcoin на друга платформа",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -5372,10 +5368,6 @@
   "sendAbsoluteFees": "Фиксирани такси",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Оригиналната транзакция е потвърдена.",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Трябва да увеличите таксата с поне 1 сат/байт спрямо оригиналната транзакция.",
   "@rbfErrorFeeTooLow": {

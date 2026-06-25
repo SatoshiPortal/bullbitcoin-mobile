@@ -5197,14 +5197,6 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "replaceByFeeErrorTransactionConfirmed": "Original transaction already confirm ho chuki hai",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "Transaction replace karne ki koshish mein error aaya",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minute",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"

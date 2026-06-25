@@ -6191,14 +6191,6 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "replaceByFeeErrorTransactionConfirmed": "The original transaction has been confirmed",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"

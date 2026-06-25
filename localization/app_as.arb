@@ -3033,14 +3033,6 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "replaceByFeeErrorTransactionConfirmed": "মূল লেনদেন নিশ্চিত হৈছে",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "লেনদেন প্ৰতিস্থাপন কৰিবলৈ চেষ্টা কৰোঁতে এটা ত্ৰুটি ঘটিছে",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "replaceByFeeFastestDescription": "আনুমানিক সময় ~ ১০ মিনিট",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"

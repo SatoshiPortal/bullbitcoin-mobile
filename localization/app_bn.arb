@@ -1199,10 +1199,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "ট্রান্স্যাকশনটি ফি দ্বারা প্রতিস্থাপন করার চেষ্টা করার সময় একটি ত্রুটি ঘটেছে",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "তারা অন্য প্ল্যাটফর্মে বিটকয়েন পাঠাতে বলছে",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6740,10 +6736,6 @@
   "arkSendConfirm": "নিশ্চিত করুন",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "মূল ট্রান্স্যাকশনটি নিশ্চিত হয়েছে",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "মূল ট্রান্স্যাকশনটির তুলনায় ফি রেট অন্তত 1 sat/vbyte বেশি করতে হবে",
   "@rbfErrorFeeTooLow": {
