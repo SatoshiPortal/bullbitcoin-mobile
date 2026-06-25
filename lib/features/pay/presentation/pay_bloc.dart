@@ -20,9 +20,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -210,7 +210,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: event.wallet.id,
           address: dummyAddressForFeeCalculation.address,
           amountSat: requiredAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,
@@ -408,7 +409,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: wallet.id,
           address: payPaymentState.payOrder.liquidAddress!,
           amountSat: payinAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         final signedPset = await _signLiquidTxUsecase.execute(
           pset: pset,
@@ -634,7 +636,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: wallet.id,
           address: dummyAddressForFeeCalculation.address,
           amountSat: payinAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,

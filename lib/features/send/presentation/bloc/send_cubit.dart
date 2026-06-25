@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
@@ -31,12 +32,16 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -44,9 +49,11 @@ import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_us
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SendCubit extends Cubit<SendState> {
+class SendCubit extends Cubit<SendState>
+    implements FeeModalActions, FeeModalViewState {
   SendCubit({
     this._wallet,
     required this._labelsFacade,
@@ -73,11 +80,14 @@ class SendCubit extends Cubit<SendState> {
     required this._broadcastBitcoinTxUsecase,
     required this._broadcastLiquidTxUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculateLiquidPsetSizeUsecase,
     required this._createChainSwapToExternalUsecase,
     required this._watchWalletTransactionByTxIdUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._updateSendSwapLockupFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
+    required this._previewBitcoinFeeUsecase,
+    required this._previewBitcoinFeePresetsUsecase,
   }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -100,6 +110,7 @@ class SendCubit extends Cubit<SendState> {
   final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
+  final CalculateLiquidPsetSizeUsecase _calculateLiquidPsetSizeUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
   final SignBitcoinTxUsecase _signBitcoinTxUsecase;
   final SignLiquidTxUsecase _signLiquidTxUsecase;
@@ -122,10 +133,20 @@ class SendCubit extends Cubit<SendState> {
   _calculateBitcoinAbsoluteFeesUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
+  final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
+  final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
+
+  /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
+  /// captures it before its `await` and re-checks before writing results
+  /// back; if any input-shape change cleared the cache mid-flight the
+  /// token moved on and the stale build is discarded instead of
+  /// re-populating an emptied cache (which could otherwise stage a PSBT
+  /// built for the previous tx shape for broadcast).
+  int _bitcoinPreviewEpoch = 0;
 
   @override
   Future<void> close() async {
@@ -135,6 +156,38 @@ class SendCubit extends Cubit<SendState> {
       _txSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
+  }
+
+  /// LWK and the RBF builder are rate-only at the SDK boundary. When the user
+  /// picked an absolute custom fee, we need a tx vsize to convert the absolute
+  /// amount back to a rate. We get vsize by building a placeholder PSET at
+  /// Liquid's minrelayfee — vsize is essentially independent of the fee rate,
+  /// so the placeholder is accurate to within a single vbyte.
+  Future<RelativeFee> _resolveLiquidFeeRate({
+    required NetworkFee fee,
+    required String walletId,
+    required String address,
+    required int? amountSat,
+    required bool drain,
+  }) async {
+    if (fee is RelativeFee) return fee;
+    if (fee is! AbsoluteFee) {
+      throw StateError('Unexpected NetworkFee variant: $fee');
+    }
+    final placeholderPset = await _prepareLiquidSendUsecase.execute(
+      walletId: walletId,
+      address: address,
+      amountSat: amountSat,
+      feeRate: const RelativeFee(25),
+      drain: drain,
+    );
+    final vsize = await _calculateLiquidPsetSizeUsecase.execute(
+      pset: placeholderPset,
+    );
+    return NetworkFee.relativeFromAbsoluteAndVsize(
+      absoluteSats: fee.sats,
+      vsize: vsize,
+    );
   }
 
   void clearAllExceptions() {
@@ -186,6 +239,9 @@ class SendCubit extends Cubit<SendState> {
       RegExp(r'^["\"]+|["\"]+$'),
       '',
     );
+    final recipientChanged =
+        state.paymentRequest != paymentRequest ||
+        state.scannedRawPaymentRequest != scannedRawPaymentRequest;
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
@@ -193,6 +249,11 @@ class SendCubit extends Cubit<SendState> {
         paymentRequest: paymentRequest,
       ),
     );
+    // Recipient is part of the cache fingerprint — a different address
+    // means a different output script in the PSBT. Skip the clear when
+    // nothing actually changed so the modal doesn't re-shimmer on a
+    // no-op scan.
+    if (recipientChanged) clearBitcoinFeePreviews();
     await continueOnAddressConfirmed();
   }
 
@@ -207,13 +268,18 @@ class SendCubit extends Cubit<SendState> {
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
+      final recipientChanged = state.paymentRequest != paymentRequest;
       emit(
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: paymentRequest,
         ),
       );
+      // Same invalidation reason as onScannedPaymentRequest — recipient
+      // changed. Skip when paste/typing resolves to the same paymentRequest.
+      if (recipientChanged) clearBitcoinFeePreviews();
     } catch (e) {
+      final recipientCleared = state.paymentRequest != null;
       emit(
         state.copyWith(
           copiedRawPaymentRequest: text,
@@ -224,6 +290,7 @@ class SendCubit extends Cubit<SendState> {
               : null,
         ),
       );
+      if (recipientCleared) clearBitcoinFeePreviews();
     }
   }
 
@@ -365,6 +432,7 @@ class SendCubit extends Cubit<SendState> {
             ? SwapType.liquidToLightning
             : SwapType.bitcoinToLightning;
         await loadSwapLimits();
+        setSelectedSwapLimits();
 
         if (state.swapAmountBelowLimit) {
           final swapMinimum = state.swapMinimum;
@@ -732,8 +800,12 @@ class SendCubit extends Cubit<SendState> {
         state.paymentRequest == null) {
       return false;
     }
-    final wallet = state.selectedWallet!;
     final paymentRequest = state.paymentRequest!;
+    // D7: frozen coins are never spendable, so every balance check compares
+    // against the spendable balance (wallet balance − frozen total), not the
+    // raw wallet balance. Degrades to the full balance on Liquid / before
+    // utxos load (nothing frozen there).
+    final spendableSat = state.spendableBalanceSat;
     switch (paymentRequest) {
       case Bolt11PaymentRequest _:
         // final swapLimits = state.swapLimits!.;
@@ -744,17 +816,17 @@ class SendCubit extends Cubit<SendState> {
         final feeEstimate =
             state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return wallet.balanceSat.toInt() > totalPayable;
+        return spendableSat > totalPayable;
 
       case LnAddressPaymentRequest _:
         final invoiceAmount = state.inputAmountSat;
         final feeEstimate =
             state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return wallet.balanceSat.toInt() > totalPayable;
+        return spendableSat > totalPayable;
 
       default:
-        return wallet.balanceSat.toInt() >=
+        return spendableSat >=
             (state.inputAmountSat + (state.absoluteFees ?? 0));
     }
   }
@@ -798,14 +870,15 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(inputAmountCurrencyCode: bitcoinUnit.code));
         }
 
-        final totalBalanceSat = state.selectedWallet?.balanceSat ?? BigInt.zero;
+        // D7: Max drains only spendable coins (frozen are excluded at build),
+        // so the Max amount must reflect spendable balance, not the raw
+        // wallet balance — otherwise Max overshoots by the frozen total.
+        final spendableSat = state.spendableBalanceSat;
         if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-          validatedAmount = totalBalanceSat.toString();
+          validatedAmount = spendableSat.toString();
         } else {
-          final totalBalanceBtc = ConvertAmount.satsToBtc(
-            totalBalanceSat.toInt(),
-          );
-          validatedAmount = totalBalanceBtc.toStringAsFixed(8);
+          final spendableBtc = ConvertAmount.satsToBtc(spendableSat);
+          validatedAmount = spendableBtc.toStringAsFixed(8);
         }
       } else {
         if (amount.isEmpty) {
@@ -847,7 +920,16 @@ class SendCubit extends Cubit<SendState> {
         }
       }
 
+      final amountChanged =
+          state.amount != validatedAmount || state.sendMax != isMax;
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
+      // Amount is part of the cache fingerprint — any change invalidates
+      // every previously-built preview PSBT. Without this clear, the user
+      // can open the fee modal at amount A, change the amount to B
+      // without re-opening the modal, and `createTransaction` reads back
+      // a stale cached PSBT for A. Skip the clear when the validator
+      // bounced the input (validatedAmount == state.amount).
+      if (amountChanged) clearBitcoinFeePreviews();
       // Don't update wallet when MAX is clicked to avoid changing network and triggering chain swaps
       if (!isMax) {
         await updateBestWallet();
@@ -990,6 +1072,15 @@ class SendCubit extends Cubit<SendState> {
           lnAddress: state.paymentRequestAddress,
           amountSat: state.confirmedAmountSat,
         );
+        try {
+          final decodedInvoice = await _decodeInvoiceUsecase.execute(
+            invoice: swap.invoice,
+          );
+          final memo = decodedInvoice.description?.trim() ?? '';
+          if (memo.isNotEmpty && state.label.isEmpty) {
+            emit(state.copyWith(label: memo));
+          }
+        } catch (_) {}
         emit(state.copyWith(creatingSwap: false));
         await Future.delayed(const Duration(seconds: 1));
         emit(
@@ -1061,7 +1152,14 @@ class SendCubit extends Cubit<SendState> {
       final utxos = await _getWalletUtxosUsecase.execute(
         walletId: state.selectedWallet!.id,
       );
+      // A wallet sync can change the available coins. Any cached preview
+      // PSBT was built against the prior UTXO set, so drop it — otherwise
+      // a sync landing mid-flow could leave a stale PSBT staged for
+      // broadcast. Guarded so a no-op refresh doesn't needlessly
+      // re-shimmer an open modal.
+      final utxosChanged = !setEquals(state.utxos.toSet(), utxos.toSet());
       emit(state.copyWith(utxos: utxos));
+      if (utxosChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -1075,12 +1173,19 @@ class SendCubit extends Cubit<SendState> {
       selectedUtxos.add(utxo);
     }
     emit(state.copyWith(selectedUtxos: selectedUtxos));
+    // UTXO set is part of the cache fingerprint — different inputs
+    // produce a different PSBT, even at the same rate.
+    clearBitcoinFeePreviews();
     await createTransaction();
     // updateSwapLockupFees();
   }
 
   Future<void> replaceByFeeChanged(bool replaceByFee) async {
+    if (state.replaceByFee == replaceByFee) return;
     emit(state.copyWith(replaceByFee: replaceByFee));
+    // RBF flag changes the sequence numbers in the PSBT — flipping it
+    // makes the cached PSBT semantically wrong even if vsize matches.
+    clearBitcoinFeePreviews();
     await createTransaction();
   }
 
@@ -1089,31 +1194,316 @@ class SendCubit extends Cubit<SendState> {
     try {
       final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
       final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
+      final ratesChanged =
+          state.bitcoinFeesList != bitcoinFees ||
+          state.liquidFeesList != liquidFees;
+      // Default to Fastest only on the first successful load. Once a
+      // selection exists, a fee refresh must preserve it — silently
+      // resetting to Fastest would clobber a committed tier (or custom).
+      final isFirstLoad = state.bitcoinFeesList == null;
       emit(
         state.copyWith(
           bitcoinFeesList: bitcoinFees,
           liquidFeesList: liquidFees,
-          selectedFeeOption: FeeSelection.fastest,
+          selectedFeeOption: isFirstLoad
+              ? FeeSelection.fastest
+              : state.selectedFeeOption,
         ),
       );
+      // Mempool rates changed — preset PSBTs were built at the old
+      // rates and are now stale. Custom slot is keyed by the typed rate
+      // so it's unaffected, but `clearBitcoinFeePreviews` is whole-batch
+      // by design and the next modal open will rebuild it. Skip the
+      // clear when the API returned identical rates (which freezed
+      // equality on FeeOptions makes cheap to check).
+      if (ratesChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
   }
 
   Future<void> feeOptionSelected(FeeSelection feeSelection) async {
-    emit(state.copyWith(selectedFeeOption: feeSelection));
+    // Clears any in-flight custom-fee arm — picking a preset is itself a
+    // commit, no rollback needed.
+    emit(
+      state.copyWith(
+        selectedFeeOption: feeSelection,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
     await createTransaction();
     // updateSwapLockupFees();
   }
 
   Future<void> customFeesChanged(NetworkFee fee) async {
+    // Real commit — discard the arm snapshot (no rollback path needed
+    // anymore) and trigger the PSBT rebuild.
     emit(
-      state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
+      state.copyWith(
+        customFee: fee,
+        selectedFeeOption: FeeSelection.custom,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
     );
 
     await createTransaction();
     // updateSwapLockupFees();
+  }
+
+  /// Called when the user enters a value in the custom-fee modal. Eagerly
+  /// commits `selectedFeeOption: custom` + the typed [fee] so the preset
+  /// tiles visually deselect, without triggering a `createTransaction`
+  /// rebuild (the rebuild happens once on submit via [customFeesChanged]).
+  ///
+  /// On the first call, snapshots the prior selection so [disarmCustomFee]
+  /// can roll back if the user closes the modal without submitting. Later
+  /// calls only update `customFee` — the snapshot stays pinned to the
+  /// pre-arm state.
+  @override
+  void armCustomFee(NetworkFee fee) {
+    // The typed rate just changed — the cached custom-slot PSBT is for
+    // the old rate and would broadcast the wrong fee. Clear it; the
+    // next debounced previewBitcoinCustomFee will rebuild.
+    //
+    // Bump the epoch too: a previewBitcoinCustomFee for the PRIOR rate may
+    // still be in flight (it captured the old epoch before its await). If
+    // it lands after this clear it must be discarded — otherwise a slower
+    // stale build could overwrite the slot for the new rate and stage the
+    // wrong (or below-floor) PSBT for broadcast.
+    _bitcoinPreviewEpoch++;
+    final cleared = state.feePreviewCache.withSlot(
+      FeeSelection.custom,
+      const BitcoinFeePreviewSlot(),
+    );
+    if (state.armPriorSelection == null) {
+      emit(
+        state.copyWith(
+          armPriorSelection: state.selectedFeeOption,
+          armPriorCustomFee: state.customFee,
+          selectedFeeOption: FeeSelection.custom,
+          customFee: fee,
+          bitcoinAbsoluteFeesSat: null,
+          feePreviewCache: cleared,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          customFee: fee,
+          bitcoinAbsoluteFeesSat: null,
+          feePreviewCache: cleared,
+        ),
+      );
+    }
+  }
+
+  /// Rolls back `selectedFeeOption` and `customFee` to the values snapshotted
+  /// by [armCustomFee], if the arm is still active. No-op once cleared
+  /// (the user picked a preset, which fires [feeOptionSelected]).
+  @override
+  void disarmCustomFee() {
+    if (state.armPriorSelection == null) return;
+    emit(
+      state.copyWith(
+        selectedFeeOption: state.armPriorSelection!,
+        customFee: state.armPriorCustomFee,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
+  }
+
+  /// Called by the fee modal's parent when the user dismisses the modal
+  /// without picking a preset. Replaces the old explicit "Confirm Custom
+  /// Fee" button — typing IS the selection, dismissing IS the apply.
+  ///
+  /// If the cubit is armed AND the typed value is at or above the 0.1
+  /// sat/vB floor → commit via [customFeesChanged] (which also triggers
+  /// `createTransaction`). If below the floor → roll back via
+  /// [disarmCustomFee]. If not armed (user never typed) → no-op.
+  @override
+  Future<void> finalizeArmedCustomFee() async {
+    if (state.armPriorSelection == null) return;
+    final fee = state.customFee;
+    final txSize = state.bitcoinTxSize ?? 140;
+    if (fee != null &&
+        fee.aboveMinRelay(
+          txSize: txSize,
+          floorSatPerKwu: state.bitcoinFeesList?.minRelay.satPerKwu,
+        )) {
+      await customFeesChanged(fee);
+    } else {
+      disarmCustomFee();
+    }
+  }
+
+  /// Builds an unsigned PSBT at the typed custom fee rate and reads its
+  /// real `psbt.fee()`. No signing, no swap-state updates — pure "what
+  /// would BDK pay for this rate against the current wallet/recipient/
+  /// amount/UTXOs". Result lands in `state.feePreviewCache.custom`; the
+  /// UI shimmers while `feePreviewCache.customLoading` is true.
+  ///
+  /// Debounced from the widget (~350 ms after the user pauses typing).
+  /// If the user keeps typing or dismisses the modal, the result is
+  /// silently discarded — `mounted`-style state checks aren't needed
+  /// because every subsequent armCustomFee/preview kicks the loading
+  /// flag and the latest emit wins.
+  Future<void> previewBitcoinCustomFee(NetworkFee fee) async {
+    if (state.selectedWallet == null) return;
+    if (state.selectedWallet!.isLiquid) return; // Liquid path handled elsewhere
+    final address = _previewBitcoinAddress();
+    final amount = _previewBitcoinAmountSat();
+    if (address == null || amount == null) {
+      log.info(
+        '[fee-preview] skip — address=$address amount=$amount '
+        'wallet=${state.selectedWallet?.id}',
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        feePreviewCache: state.feePreviewCache.copyWith(customLoading: true),
+      ),
+    );
+    final epoch = _bitcoinPreviewEpoch;
+    log.info(
+      '[fee-preview] start customRate=${fee is RelativeFee ? fee.satPerVbyte : fee.value} '
+      'amount=$amount drain=${state.sendMax} '
+      'selectedInputs=${state.selectedUtxos.length} rbf=${state.replaceByFee}',
+    );
+    final slot = await _previewBitcoinFeeUsecase.execute(
+      walletId: state.selectedWallet!.id,
+      address: address,
+      networkFee: fee,
+      amountSat: amount,
+      replaceByFee: state.replaceByFee,
+      selectedInputs: state.selectedUtxos,
+      drain: state.sendMax,
+    );
+    // An input-shape change cleared the cache while we were building —
+    // discard this now-stale result instead of repopulating an emptied
+    // slot (which could stage a PSBT for the prior shape at commit).
+    if (epoch != _bitcoinPreviewEpoch) {
+      log.info('[fee-preview] discarded — inputs changed mid-build');
+      return;
+    }
+    if (slot.isCacheReady) {
+      log.info(
+        '[fee-preview] done rate=${fee is RelativeFee ? fee.satPerVbyte : fee.value} '
+        '→ vsize=${slot.txSize} realFee=${slot.feeSat} sats — cached for commit',
+      );
+    } else {
+      // Use case already logged the underlying error; emit shows shimmer
+      // gone + no preview value so the UI doesn't pretend a fee exists.
+      log.info(
+        '[fee-preview] done rate=${fee is RelativeFee ? fee.satPerVbyte : fee.value} '
+        '→ no PSBT (build failed)',
+      );
+    }
+    emit(
+      state.copyWith(
+        feePreviewCache: state.feePreviewCache
+            .withSlot(FeeSelection.custom, slot)
+            .copyWith(customLoading: false),
+      ),
+    );
+  }
+
+  /// Fires three prepare-only builds in parallel (Fastest / Economic /
+  /// Slow) via [PreviewBitcoinFeePresetsUsecase], which dedupes by rate
+  /// — same-rate presets share one PSBT so a quiet mempool can't make
+  /// Slow look more expensive than Economic at the same 1 sat/vB.
+  Future<void> loadBitcoinFeePresetPreviews() async {
+    if (state.selectedWallet == null) return;
+    if (state.selectedWallet!.isLiquid) return;
+    final presets = state.bitcoinFeesList;
+    if (presets == null) return;
+    final address = _previewBitcoinAddress();
+    final amount = _previewBitcoinAmountSat();
+    if (address == null || amount == null) return;
+    emit(
+      state.copyWith(
+        feePreviewCache: state.feePreviewCache.copyWith(presetsLoading: true),
+      ),
+    );
+    final epoch = _bitcoinPreviewEpoch;
+    log.info(
+      '[fee-presets] start amount=$amount drain=${state.sendMax} '
+      'selectedInputs=${state.selectedUtxos.length} rbf=${state.replaceByFee}',
+    );
+    final slots = await _previewBitcoinFeePresetsUsecase.execute(
+      presets: presets,
+      walletId: state.selectedWallet!.id,
+      address: address,
+      amountSat: amount,
+      replaceByFee: state.replaceByFee,
+      selectedInputs: state.selectedUtxos,
+      drain: state.sendMax,
+    );
+    // Discard if an input-shape change emptied the cache mid-build (see
+    // previewBitcoinCustomFee).
+    if (epoch != _bitcoinPreviewEpoch) {
+      log.info('[fee-presets] discarded — inputs changed mid-build');
+      return;
+    }
+    log.info(
+      '[fee-presets] done '
+      'fastest=${slots[FeeSelection.fastest]?.feeSat} '
+      'economic=${slots[FeeSelection.economic]?.feeSat} '
+      'slow=${slots[FeeSelection.slow]?.feeSat}',
+    );
+    emit(
+      state.copyWith(
+        feePreviewCache: state.feePreviewCache.copyWith(
+          fastest: slots[FeeSelection.fastest] ?? const BitcoinFeePreviewSlot(),
+          economic:
+              slots[FeeSelection.economic] ?? const BitcoinFeePreviewSlot(),
+          slow: slots[FeeSelection.slow] ?? const BitcoinFeePreviewSlot(),
+          presetsLoading: false,
+        ),
+      ),
+    );
+  }
+
+  /// Clear all preview state — call when underlying inputs change
+  /// (wallet, recipient, amount, UTXO selection) so we don't display
+  /// stale fees for a different tx shape.
+  void clearBitcoinFeePreviews() {
+    _bitcoinPreviewEpoch++;
+    emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
+  }
+
+  /// Recipient address for preview builds. Mirrors what
+  /// createTransaction picks but skips swap-creation logic — previews
+  /// can use any plausible address for the wallet's network since
+  /// vsize doesn't depend on the address bytes once the script type
+  /// matches.
+  String? _previewBitcoinAddress() {
+    if (state.lightningSwap != null) return state.lightningSwap!.paymentAddress;
+    if (state.chainSwap != null) return state.chainSwap!.paymentAddress;
+    final pr = state.paymentRequest;
+    if (pr is Bip21PaymentRequest) return pr.address;
+    if (state.paymentRequestAddress.isNotEmpty) {
+      return state.paymentRequestAddress;
+    }
+    return null;
+  }
+
+  int? _previewBitcoinAmountSat() {
+    if (state.lightningSwap != null) return state.lightningSwap!.paymentAmount;
+    if (state.chainSwap != null) return state.chainSwap!.paymentAmount;
+    final input = state.inputAmountSat;
+    if (input > 0) return input;
+    // A BIP21 URI with an embedded amount sets confirmedAmountSat but leaves
+    // state.amount (→ inputAmountSat) empty. createTransaction builds from
+    // confirmedAmountSat, so the preview must use the same source — otherwise
+    // previews are skipped (modal shimmers forever) and the cache stays empty
+    // for that payment class.
+    final confirmed = state.confirmedAmountSat;
+    if (confirmed != null && confirmed > 0) return confirmed;
+    return null;
   }
 
   // [CHAIN SWAP LIFECYCLE — Step 3: build the funding tx]
@@ -1134,8 +1524,14 @@ class SendCubit extends Cubit<SendState> {
         }
       }
       clearAllExceptions();
+      // Clear the previous build's absolute fee before loadUtxos so the UI
+      // doesn't briefly pair a stale Bitcoin fee with newly-changed inputs
+      // (rate / amount / utxo selection). The getter falls back to the
+      // rate × txSize prediction until the rebuild emits a fresh value.
+      emit(
+        state.copyWith(buildingTransaction: true, bitcoinAbsoluteFeesSat: null),
+      );
       await loadUtxos();
-      emit(state.copyWith(buildingTransaction: true));
       final address = state.lightningSwap != null
           ? state.lightningSwap!.paymentAddress
           : (state.chainSwap != null)
@@ -1151,13 +1547,21 @@ class SendCubit extends Cubit<SendState> {
           : state.confirmedAmountSat;
       // Fees can be selectedFee as it defaults to Fastest
       if (state.selectedWallet!.network.isLiquid) {
+        // ignore: avoid_bool_literals_in_conditional_expressions
+        final drain = state.lightningSwap != null ? false : state.sendMax;
+        final liquidFeeRate = await _resolveLiquidFeeRate(
+          fee: state.selectedFee!,
+          walletId: state.selectedWallet!.id,
+          address: address,
+          amountSat: amount,
+          drain: drain,
+        );
         final pset = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
-          networkFee: state.selectedFee!,
+          feeRate: liquidFeeRate,
           amountSat: amount,
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          drain: state.lightningSwap != null ? false : state.sendMax,
+          drain: drain,
         );
         if (state.chainSwap != null) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
@@ -1233,16 +1637,93 @@ class SendCubit extends Cubit<SendState> {
           );
         }
       } else {
-        final txPreparation = await _prepareBitcoinSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
-          address: address,
-          networkFee: state.selectedFee!,
-          amountSat: amount,
-          replaceByFee: state.replaceByFee,
-          selectedInputs: state.selectedUtxos,
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          drain: state.lightningSwap != null ? false : state.sendMax,
+        // ignore: avoid_bool_literals_in_conditional_expressions
+        final drain = state.lightningSwap != null ? false : state.sendMax;
+        final selectedFee = state.selectedFee!;
+        // CRITICAL: if a preview PSBT exists for the current selection,
+        // REUSE it instead of calling _prepareBitcoinSendUsecase again.
+        // BDK's TxBuilder.finish() picks UTXOs non-deterministically
+        // (logs show 113/154/195 vbyte variance for identical inputs),
+        // so rebuilding here would broadcast a different fee than the
+        // preview displayed. Caches are cleared on any input-shape
+        // change (armCustomFee, clearBitcoinFeePreviews).
+        //
+        // Chain swap is fine to cache: the preview was built with
+        // state.chainSwap!.paymentAddress / paymentAmount (see
+        // _previewBitcoinAddress / _previewBitcoinAmountSat), which is
+        // exactly what `address` and `amount` resolve to above. The
+        // verification step below runs on `txPreparation.unsignedPsbt`
+        // whether it came from cache or a fresh build.
+        final cachedSlot = state.feePreviewCache.slotFor(
+          state.selectedFeeOption,
         );
+        final canUseCache = cachedSlot.isCacheReady;
+        log.info(
+          '[create-tx] build address=$address amount=$amount '
+          'rate=${selectedFee is RelativeFee ? selectedFee.satPerVbyte : selectedFee.value} '
+          'drain=$drain selectedInputs=${state.selectedUtxos.length} '
+          'rbf=${state.replaceByFee} '
+          'lightningSwap=${state.lightningSwap != null} '
+          'chainSwap=${state.chainSwap != null} '
+          'cacheHit=$canUseCache',
+        );
+        final txPreparation = canUseCache
+            ? (
+                unsignedPsbt: cachedSlot.unsignedPsbt!,
+                txSize: cachedSlot.txSize!,
+                // The cached PSBT was built for the same address, so the
+                // to-self determination is invariant — preserve it rather
+                // than dropping it to false (which would flip the "to self"
+                // badge and mis-gate payjoin on a self-send).
+                isToSelf: state.isToSelf ?? false,
+              )
+            : await _prepareBitcoinSendUsecase.execute(
+                walletId: state.selectedWallet!.id,
+                address: address,
+                networkFee: selectedFee,
+                amountSat: amount,
+                replaceByFee: state.replaceByFee,
+                selectedInputs: state.selectedUtxos,
+                drain: drain,
+              );
+        final builtFee = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: txPreparation.unsignedPsbt,
+        );
+        log.info(
+          '[create-tx] built vsize=${txPreparation.txSize} '
+          'realFee=$builtFee sats '
+          '(impliedRate=${txPreparation.txSize > 0 ? (builtFee / txPreparation.txSize).toStringAsFixed(4) : "n/a"} sat/vB)',
+        );
+
+        // Belt-and-suspenders relay-floor re-assert. The commit gate in
+        // finalizeArmedCustomFee checks an ABSOLUTE custom fee against the
+        // *previous* build's bitcoinTxSize (or the 140 fallback); if the real
+        // tx is larger, an absolute fee that cleared the gate can land below
+        // the relay floor at the actual vsize. Re-check the freshly built fee
+        // against the freshly built vsize so no below-relay tx ever reaches
+        // broadcast, regardless of selection type or BDK's coin-selection
+        // vsize variance. Don't rely on BDK rejecting sub-minrelay itself.
+        final clearsRelay = NetworkFee.absolute(builtFee).aboveMinRelay(
+          txSize: txPreparation.txSize,
+          floorSatPerKwu: state.bitcoinFeesList?.minRelay.satPerKwu,
+        );
+        if (!clearsRelay) {
+          log.warning(
+            '[create-tx] ABORT — built fee $builtFee sats at '
+            '${txPreparation.txSize} vbytes is below the relay floor '
+            '(${state.bitcoinFeesList?.minRelay.satPerVbyte ?? NetworkFeeRelayPolicy.minRelaySatPerVbyte} sat/vB)',
+          );
+          emit(
+            state.copyWith(
+              buildTransactionException: BuildTransactionException(
+                'Built fee $builtFee sats at ${txPreparation.txSize} vbytes '
+                'is below the relay floor',
+              ),
+              buildingTransaction: false,
+            ),
+          );
+          return;
+        }
 
         if (state.chainSwap != null) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
@@ -1255,10 +1736,17 @@ class SendCubit extends Cubit<SendState> {
         }
 
         if (state.selectedWallet!.signsRemotely) {
+          // psbt.fee() reads input/output deltas — works on unsigned PSBTs
+          // since BDK finalizes coin selection at build time.
+          final bitcoinAbsoluteFeesSat =
+              await _calculateBitcoinAbsoluteFeesUsecase.execute(
+                psbt: txPreparation.unsignedPsbt,
+              );
           emit(
             state.copyWith(
               unsignedPsbt: txPreparation.unsignedPsbt,
               bitcoinTxSize: txPreparation.txSize,
+              bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
               isToSelf: txPreparation.isToSelf,
               buildingTransaction: false,
             ),
@@ -1282,6 +1770,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 chainSwap: updatedSwap as ChainSwap,
                 buildingTransaction: false,
@@ -1297,6 +1786,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 lightningSwap: updatedSwap as LnSendSwap,
                 buildingTransaction: false,
@@ -1308,6 +1798,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 buildingTransaction: false,
               ),
@@ -1407,11 +1898,11 @@ class SendCubit extends Cubit<SendState> {
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
+          final bitcoinAbsoluteFeesSat =
+              await _calculateBitcoinAbsoluteFeesUsecase.execute(
+                psbt: signedPsbtAndTxSize.signedPsbt,
+              );
           if (state.chainSwap != null) {
-            final bitcoinAbsoluteFeesSat =
-                await _calculateBitcoinAbsoluteFeesUsecase.execute(
-                  psbt: signedPsbtAndTxSize.signedPsbt,
-                );
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
               lockupFees: bitcoinAbsoluteFeesSat,
@@ -1419,6 +1910,7 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 chainSwap: updatedSwap as ChainSwap,
                 signingTransaction: false,
               ),
@@ -1427,6 +1919,7 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 signingTransaction: false,
               ),
             );
@@ -1519,7 +2012,8 @@ class SendCubit extends Cubit<SendState> {
           broadcastingTransaction: false,
         ),
       );
-    } on BroadcastTransactionException catch (_) {
+    } on BroadcastTransactionException catch (e) {
+      log.warning('Failed to broadcast transaction: ${e.message}');
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(
@@ -1529,7 +2023,12 @@ class SendCubit extends Cubit<SendState> {
           broadcastingTransaction: false,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      log.warning(
+        'Unexpected broadcast transaction error',
+        error: e,
+        trace: st,
+      );
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(
@@ -1718,10 +2217,17 @@ class SendCubit extends Cubit<SendState> {
         // P2TR dummy matching Boltz's L-BTC P2TR lockup script.
         const String dummySwapAddress =
             "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
+        final liquidFeeRate = await _resolveLiquidFeeRate(
+          fee: networkFee,
+          walletId: state.selectedWallet!.id,
+          address: dummySwapAddress,
+          amountSat: null,
+          drain: true,
+        );
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: dummySwapAddress,
-          networkFee: networkFee,
+          feeRate: liquidFeeRate,
           drain: true,
         );
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
@@ -1741,9 +2247,21 @@ class SendCubit extends Cubit<SendState> {
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
         );
-        emit(state.copyWith(bitcoinTxSize: dummyDrainTxInfo.txSize));
+        // Surface the real drain fee, mirroring the Liquid branch above
+        // (line 1759). The user is asking "what's my max" — the drain
+        // dummy's fee is exactly what they'd pay.
+        emit(
+          state.copyWith(
+            bitcoinTxSize: dummyDrainTxInfo.txSize,
+            bitcoinAbsoluteFeesSat: absoluteFees,
+          ),
+        );
       }
-      final balance = state.selectedWallet!.balanceSat.toInt();
+      // D7: base MAX on the spendable balance — the funding drain excludes
+      // frozen coins, so committing `fullBalance - fee` would overstate the
+      // swap amount by the frozen total and trip the Step 3b verify. Equals the
+      // full balance on Liquid (freeze isn't surfaced there).
+      final balance = state.spendableBalanceSat;
       final maxAmount = balance - absoluteFees;
       if (state.bitcoinUnit == BitcoinUnit.sats) {
         emit(state.copyWith(amount: maxAmount.toString()));
@@ -1794,14 +2312,34 @@ class SendCubit extends Cubit<SendState> {
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
   Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
+    final walletChanged = state.selectedWallet?.id != wallet.id;
     emit(
       state.copyWith(
         selectedWallet: wallet,
         isWalletManuallySelected: manual,
         insufficientBalanceException: null,
+        // Drop the previous wallet's utxos on a change so spendable-balance math
+        // never mixes the new wallet's balance with the old wallet's frozen
+        // coins in the window before loadUtxos() repopulates (it degrades to the
+        // full balance meanwhile — the safe fallback). Also clear any manual
+        // coin selection: those outpoints belong to the old wallet and would
+        // otherwise be fed as required inputs into the new wallet's PSBT build,
+        // which fails (outpoint not in wallet) or builds against wrong coins.
+        utxos: walletChanged ? const [] : state.utxos,
+        selectedUtxos: walletChanged ? const [] : state.selectedUtxos,
       ),
     );
+    // Wallet swap invalidates every cached preview: the PSBT was built
+    // from a different wallet's UTXOs and descriptor. Clear after the
+    // emit so the loading flags don't race with the wallet swap. Skip
+    // when the "swap" picks the same wallet — common via updateBestWallet.
+    if (walletChanged) clearBitcoinFeePreviews();
     setSelectedSwapLimits();
+    // Load utxos up front so the spendable balance (which excludes frozen
+    // coins, D7) is known during amount entry — not only after the first sync.
+    // Guarded on an actual wallet change so the per-keystroke auto-pick
+    // (updateBestWallet) doesn't re-read utxos on every keypress.
+    if (walletChanged) await loadUtxos();
     await _selectedWalletSyncingSubscription?.cancel();
     _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
         .execute(walletId: wallet.id)
@@ -1810,4 +2348,39 @@ class SendCubit extends Cubit<SendState> {
           await loadUtxos();
         });
   }
+
+  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // SendCubit is the driving adapter for the Bitcoin-send path; the
+  // shared modal in lib/core/widgets/fees/ depends on these ports.
+  // Method bodies just delegate to the existing internal API so the
+  // port surface stays a stable contract while the cubit's own
+  // naming can evolve.
+
+  static FeeModalSnapshot _modalSnapshotFromState(SendState s) =>
+      FeeModalSnapshot(
+        feePresets: s.bitcoinFeesList,
+        customFee: s.customFee,
+        selectedFeeOption: s.selectedFeeOption,
+        feePreviewCache: s.feePreviewCache,
+        exchangeRate: s.exchangeRate,
+        fiatCurrencyCode: s.fiatCurrencyCode,
+        txSize: s.bitcoinTxSize ?? 140,
+      );
+
+  @override
+  FeeModalSnapshot get snapshot => _modalSnapshotFromState(state);
+
+  @override
+  Stream<FeeModalSnapshot> get snapshots => stream.map(_modalSnapshotFromState);
+
+  @override
+  void requestPresetPreviews() => unawaited(loadBitcoinFeePresetPreviews());
+
+  @override
+  void requestCustomFeePreview(NetworkFee fee) =>
+      unawaited(previewBitcoinCustomFee(fee));
+
+  @override
+  void selectFeeOption(FeeSelection selection) =>
+      unawaited(feeOptionSelected(selection));
 }

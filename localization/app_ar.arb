@@ -12641,5 +12641,302 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
   "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
-  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا."
+  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا.",
+  "labelErrorUnexpected": "خطأ غير متوقع: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "هذا النوع {type} غير مدعم",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "(لابل) لم يعثر عليه.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ساعات",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
+  "walletButtonCoins": "إدارة العملات",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "العملات",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, zero{لا توجد عملات} one{عملة واحدة} two{عملتان} few{{count} عملات} many{{count} عملة} other{{count} عملة}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "مجمّدة",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "قابلة للإنفاق",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "لا شيء مجمّد",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "الترتيب والتصفية",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "يتم عرض {visible} من {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, zero{لا مخرجات غير منفقة} one{مخرج غير منفق واحد} two{مخرجان غير منفقَين} few{{count} مخرجات غير منفقة} many{{count} مخرجًا غير منفق} other{{count} مخرج غير منفق}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "مزامنة",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "مسح الكل",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "المبلغ: من الأعلى إلى الأدنى",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "المبلغ: من الأدنى إلى الأعلى",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "التاريخ: الأحدث",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "التاريخ: الأقدم",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "سلسلة المفاتيح",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "الكل",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "الاستلام",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "الفكة",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "حالة التجميد",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "الكل",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "مجمّدة",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "غير مجمّدة",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "التسميات",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "إعادة تعيين",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "تطبيق",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, zero{لم يتم التحديد} one{تم تحديد عنصر واحد} two{تم تحديد عنصرين} few{تم تحديد {count} عناصر} many{تم تحديد {count} عنصرًا} other{تم تحديد {count} عنصر}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "تحديد الكل",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "تجميد",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "إلغاء التجميد",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "تراجع",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, zero{تجميد العملات؟} one{تجميد عملة واحدة؟} two{تجميد عملتين؟} few{تجميد {count} عملات؟} many{تجميد {count} عملة؟} other{تجميد {count} عملة؟}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "تبقى العملات المجمّدة في محفظتك لكنها مستبعدة من الإنفاق حتى تلغي تجميدها.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "سيؤدي تجميد هذه العملات إلى ترك رصيد قابل للإنفاق صفر.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, zero{لا عملات مجمّدة} one{تم تجميد عملة واحدة · مستبعدة من الإنفاق} two{تم تجميد عملتين · مستبعدتان من الإنفاق} few{تم تجميد {count} عملات · مستبعدة من الإنفاق} many{تم تجميد {count} عملة · مستبعدة من الإنفاق} other{تم تجميد {count} عملة · مستبعدة من الإنفاق}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, zero{لا عملات} one{تم إلغاء تجميد عملة واحدة} two{تم إلغاء تجميد عملتين} few{تم إلغاء تجميد {count} عملات} many{تم إلغاء تجميد {count} عملة} other{تم إلغاء تجميد {count} عملة}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, zero{لا تأكيدات} one{تأكيد واحد} two{تأكيدان} few{{count} تأكيدات} many{{count} تأكيدًا} other{{count} تأكيد}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "قيد الانتظار",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "لا توجد عملات بعد",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "ستظهر العملات هنا بمجرد استلامك للبيتكوين.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "لا توجد عملات مطابقة",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "مسح عوامل التصفية",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "إعادة المحاولة",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "اسحب عملة للتجميد · اضغط مطولًا للتحديد",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "تعذّر تحميل عملاتك. اسحب للأسفل للتحديث والمحاولة مرة أخرى.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "تعذّر تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "تعذّر إلغاء تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "حدث خطأ ما. يُرجى المحاولة مرة أخرى.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, zero{لا توجد UTXO} one{UTXO واحد} two{UTXO اثنان} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} مجمّد",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "تصفية حسب التاريخ",
+  "logsViewerShowingCount": "عرض {shown} من {total} سجل",
+  "logsViewerClearFilter": "مسح التصفية",
+  "logsViewerShareButton": "مشاركة",
+  "logsShareOptionShare": "مشاركة",
+  "logsShareOptionExport": "تصدير",
+  "logsExportedMessage": "تم تصدير السجلات بنجاح",
+  "logsExportFailedMessage": "فشل تصدير السجلات"
 }

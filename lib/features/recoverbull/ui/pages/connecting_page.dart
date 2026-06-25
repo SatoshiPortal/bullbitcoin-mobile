@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
+import 'package:go_router/go_router.dart';
 
 class ConnectingPage extends StatelessWidget {
   const ConnectingPage({super.key});
@@ -42,6 +43,13 @@ class ConnectingPage extends StatelessWidget {
         }
       },
       child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.arrow_back),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocBuilder<RecoverBullBloc, RecoverBullState>(

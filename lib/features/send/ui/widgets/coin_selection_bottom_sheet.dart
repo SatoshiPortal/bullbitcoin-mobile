@@ -26,7 +26,13 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     final fiatCurrency = context.select(
       (SendCubit send) => send.state.fiatCurrencyCode,
     );
-    final utxos = context.select((SendCubit send) => send.state.utxos);
+    // D7: frozen coins are never selectable for spending. Hide them so the
+    // sheet only ever offers spendable outputs (isFrozen is already populated
+    // by getWalletUtxos — no extra fetch needed here).
+    final utxos = context
+        .select((SendCubit send) => send.state.utxos)
+        .where((u) => !u.isFrozen)
+        .toList();
     final selectedUtxos = context.select(
       (SendCubit send) => send.state.selectedUtxos,
     );

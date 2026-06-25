@@ -1,63 +1,36 @@
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class BumpFeeSelectorWidget extends StatefulWidget {
+class BumpFeeSelectorWidget extends StatelessWidget {
   const BumpFeeSelectorWidget({
     super.key,
     required this.fastestFeeRate,
     required this.selected,
     required this.txSize,
     required this.onChanged,
+    required this.onInvalid,
     required this.focusNode,
+    this.minRelay,
   });
 
   final FeeEntity fastestFeeRate;
   final FeeEntity selected;
   final int txSize;
   final void Function(FeeEntity fee) onChanged;
+
+  /// Called when the custom bump field goes below the relay floor or is
+  /// emptied — see [CustomFeeListItem.onInvalid].
+  final VoidCallback onInvalid;
   final FocusNode focusNode;
 
-  @override
-  State<BumpFeeSelectorWidget> createState() => _FeeSelectorWidgetState();
-}
-
-class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
-  final _controller = TextEditingController();
-
-  double _customFeeRate = 0;
-  String get _customFeeRateString => _customFeeRate.toStringAsFixed(1);
-
-  @override
-  void initState() {
-    super.initState();
-    _customFeeRate = widget.selected.feeRate;
-    _controller.text = _customFeeRateString;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onCustomChanged(String text) {
-    final parsed = num.tryParse(text);
-    if (parsed != null) {
-      _customFeeRate = parsed.toDouble();
-      widget.onChanged(
-        FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
-      );
-    } else {
-      _customFeeRate = 0;
-      _controller.text = '';
-    }
-    setState(() {});
-  }
+  /// Live relay floor for the custom bump field (null → static 0.1).
+  final RelativeFee? minRelay;
 
   @override
   Widget build(BuildContext context) {
@@ -67,19 +40,62 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
           crossAxisAlignment: .stretch,
           children: [
             const Gap(16),
-            _buildFastestSection(widget.selected.type == FeeType.fastest),
+            _FastestTile(
+              fastestFeeRate: fastestFeeRate,
+              isSelected: selected.type == FeeType.fastest,
+              onTap: () => onChanged(fastestFeeRate),
+            ),
             const Gap(16),
-            _buildCustomFeeSection(widget.selected.type == FeeType.custom),
+            CustomFeeListItem(
+              // Seed from the current selection's rate even when not custom,
+              // so tapping the custom tile pre-fills the input with the
+              // last-known rate (matches the pre-refactor RBF behaviour).
+              initialFee: selected.feeRate,
+              isCommittedAsCustom: selected.type == FeeType.custom,
+              feePresets: null,
+              minRelay: minRelay,
+              txSize: txSize,
+              exchangeRate: 0.0,
+              fiatCurrencyCode: '',
+              defaultAbsolute: false,
+              tileColor: context.appColors.onSecondary,
+              tileShadowColor: context.appColors.secondary,
+              unselectedIconColor: context.appColors.surface,
+              allowAbsoluteToggle: false,
+              commitOnChange: true,
+              focusNode: focusNode,
+              onInvalid: onInvalid,
+              onCommit: (fee) async {
+                // Safe cast: allowAbsoluteToggle is false so the widget
+                // only ever produces a RelativeFee here.
+                onChanged(
+                  FeeEntity(type: FeeType.custom, feeRate: fee as RelativeFee),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildFastestSection(bool isSelected) {
+class _FastestTile extends StatelessWidget {
+  const _FastestTile({
+    required this.fastestFeeRate,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final FeeEntity fastestFeeRate;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       radius: 2,
-      onTap: () => widget.onChanged(widget.fastestFeeRate),
+      onTap: onTap,
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
@@ -108,7 +124,7 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                     const Gap(2),
                     BBText(
                       context.loc.replaceByFeeFeeRateDisplay(
-                        widget.fastestFeeRate.feeRate.toStringAsFixed(1),
+                        fastestFeeRate.feeRate.satPerVbyte.toStringAsFixed(1),
                       ),
                       style: context.font.labelMedium,
                     ),
@@ -120,58 +136,6 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 color: isSelected
                     ? context.appColors.primary
                     : context.appColors.surface,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCustomFeeSection(bool isSelected) {
-    return InkWell(
-      radius: 2,
-      onTap: () => widget.onChanged(
-        FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
-      ),
-      child: Material(
-        elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
-        clipBehavior: .hardEdge,
-        color: context.appColors.onSecondary,
-        shadowColor: context.appColors.secondary,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                crossAxisAlignment: .start,
-                children: [
-                  BBText(
-                    context.loc.replaceByFeeCustomFeeTitle,
-                    style: context.font.headlineLarge,
-                  ),
-                  Icon(
-                    Icons.radio_button_checked_outlined,
-                    color: isSelected
-                        ? context.appColors.primary
-                        : context.appColors.surface,
-                  ),
-                ],
-              ),
-              const Gap(8),
-              BBInputText(
-                controller: _controller,
-                focusNode: widget.focusNode,
-                value: _controller.text,
-                onChanged: _onCustomChanged,
-                onlyNumbers: true,
-                rightIcon: Text(
-                  context.loc.replaceByFeeSatsVbUnit,
-                  style: context.font.bodySmall,
-                ),
               ),
             ],
           ),

@@ -125,11 +125,12 @@ packages:
   bip329_labels:
     dependency: "direct main"
     description:
-      name: bip329_labels
-      sha256: "5dd31d5dcee6a2476f6a7df2fb4226569a231a19551d465204cd9e7c445e09e1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
+      path: "."
+      ref: "0ca8bbfcf6d11e2bd04016aa0e4d49e01280e2b3"
+      resolved-ref: "0ca8bbfcf6d11e2bd04016aa0e4d49e01280e2b3"
+      url: "https://github.com/ethicnology/dart-bip329-labels.git"
+    source: git
+    version: "2.0.0"
   bip32_keys:
     dependency: "direct main"
     description:
@@ -158,8 +159,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: "refs/pull/4/head"
+      resolved-ref: "3d54c4a9312e4f0b205d9b7ff2ffd90809984c7f"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -615,7 +616,7 @@ packages:
     source: hosted
     version: "2.0.13"
   fake_async:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: fake_async
       sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
@@ -2120,7 +2121,7 @@ packages:
     source: hosted
     version: "1.4.0"
   universal_ble:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: universal_ble
       sha256: "8325ca9f5cce2fba2b4efef74a4fcfe7144f303b409d6fc6ed16197b00a1a241"

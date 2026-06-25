@@ -81,6 +81,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullSyncButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullSyncButtonUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullTabMenuVerticalButton',
         useCases: [
           _widgetbook.WidgetbookUseCase(

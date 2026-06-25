@@ -161,6 +161,8 @@ This is fields-first on purpose: our domain, value, and error types are defined 
 
 The codebase is migrating toward a real UI Kit. The skeleton already lives in [`lib/core/widgets/`](lib/core/widgets/) (`buttons/`, `cards/`, `inputs/`, `lists/`, `dropdown/`, `bottom_sheet/`, `text/`, `selectors/`, …) and theme tokens in [`lib/core/themes/`](lib/core/themes/). Today the same widgets get re-implemented per feature (`_SaveButton`, `_ConfirmButton`, `_BottomButtons` …) — stop adding to that pile.
 
+The go-forward home for the kit is the **`bull_ui` design-system package** (`packages/bull_ui`; see ARCHITECTURE.md "Design-system package"). Provenance: **`BB*` = legacy `lib/core/widgets`, `Bull*` = `bull_ui`**. A feature whose UI is built on the kit imports only `package:bull_ui/bull_ui.dart` for widgets — never `package:flutter/material.dart`/`cupertino.dart`/`widgets.dart` (the `coins` feature is the first to enforce this). Migration of `core/widgets` into `bull_ui` is incremental (one scoped PR at a time), so both still exist; prefer a `Bull*` widget when one exists, otherwise follow the workflow below against `lib/core/widgets/`.
+
 Workflow when you need a widget:
 
 1. **Search `lib/core/widgets/` first.** If something close exists, use it.

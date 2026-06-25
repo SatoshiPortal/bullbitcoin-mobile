@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
@@ -25,18 +26,33 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
   Future<void> init() async {
     final fees = await getNetworkFeesUsecase.execute(isLiquid: false);
+    // Mempool fees are already RelativeFee (sat/kwu) by construction;
+    // the AbsoluteFee branch is unreachable today but kept for exhaustiveness.
+    final fastestRate = switch (fees.fastest) {
+      final RelativeFee r => r,
+      AbsoluteFee(:final sats) => NetworkFee.relativeFromAbsoluteAndVsize(
+        absoluteSats: sats,
+        vsize: originalTransaction.vsize,
+      ),
+    };
     final fastestFeeRate = FeeEntity(
       type: FeeType.fastest,
-      feeRate: fees.fastest.value.toDouble(),
+      feeRate: fastestRate,
     );
+    // BIP-125 requires a higher *rate* than the original to replace, with at
+    // least one extra sat/vByte. Build the recommendation in sat/vByte then
+    // narrow to RelativeFee in a single rounding step.
+    final originalSatPerVbyte =
+        originalTransaction.feeSat / originalTransaction.vsize;
     final recommendedBumpRate = FeeEntity(
       type: FeeType.custom,
-      feeRate: (originalTransaction.feeSat / originalTransaction.vsize) + 1,
+      feeRate: NetworkFee.relativeFromSatPerVbyte(originalSatPerVbyte + 1),
     );
     emit(
       state.copyWith(
         fastestFeeRate: fastestFeeRate,
         newFeeRate: recommendedBumpRate,
+        minRelay: fees.minRelay,
       ),
     );
   }
@@ -51,6 +67,14 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
       if (state.newFeeRate == null) {
         emit(state.copyWith(error: NoFeeRateSelectedError()));
+        return;
+      }
+
+      // The custom field currently shows a below-floor/empty rate. newFeeRate
+      // still holds the last valid value, so without this guard Broadcast
+      // would fire the stale rate the user no longer sees.
+      if (state.customFeeBelowFloor) {
+        emit(state.copyWith(error: FeeRateTooLowError()));
         return;
       }
 
@@ -76,5 +100,14 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     }
   }
 
-  void onChangeFee(FeeEntity fee) => emit(state.copyWith(newFeeRate: fee));
+  /// A valid (above-floor) selection — from a custom keystroke or the Fastest
+  /// tile. Clears any prior below-floor flag.
+  void onChangeFee(FeeEntity fee) =>
+      emit(state.copyWith(newFeeRate: fee, customFeeBelowFloor: false));
+
+  /// The custom field went below the relay floor or was emptied. Keep
+  /// [newFeeRate] (the last valid value / init sentinel) but flag the field so
+  /// [broadcast] refuses the stale rate.
+  void markCustomFeeBelowFloor() =>
+      emit(state.copyWith(customFeeBelowFloor: true));
 }
