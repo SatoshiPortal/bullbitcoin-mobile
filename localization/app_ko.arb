@@ -1208,10 +1208,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "오류가 발생했습니다",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "그들은 다른 플랫폼에 Bitcoin을 보낼 것을 요청",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6919,10 +6915,6 @@
   "arkSendConfirm": "제품정보",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "원래 거래가 확인되었습니다",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@rbfErrorFeeTooLow": {

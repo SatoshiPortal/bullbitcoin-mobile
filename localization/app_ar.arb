@@ -1150,10 +1150,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "وقع خطأ أثناء محاولة استبدال الصفقة",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "يطلبون إرسال (بيتكوين) على منصة أخرى",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6492,10 +6488,6 @@
   "arkSendConfirm": "Confirm",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "تم تأكيد الصفقة الأصلية",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@rbfErrorFeeTooLow": {

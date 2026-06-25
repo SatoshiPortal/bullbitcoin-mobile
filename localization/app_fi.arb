@@ -1724,8 +1724,6 @@
   "replaceByFeeCustomFeeTitle": "Mukautettu kulutaso",
   "replaceByFeeErrorFeeRateTooLow": "Sinun on nostettava kulutasoa vähintään 1 sat/vbyte verrattuna alkuperäiseen transaktioon",
   "replaceByFeeErrorNoFeeRateSelected": "Valitse kulutaso",
-  "replaceByFeeErrorTransactionConfirmed": "Alkuperäinen transaktio on vahvistettu",
-  "replaceByFeeErrorGeneric": "Tapahtui virhe yritettäessä korvata transaktiota",
   "replaceByFeeFastestDescription": "Arvioitu toimitusaika ~ 10 minuuttia",
   "replaceByFeeFastestTitle": "Nopein",
   "replaceByFeeFeeRateDisplay": "Kulutaso: {feeRate} sat/vbyte",

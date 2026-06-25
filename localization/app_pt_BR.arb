@@ -1293,10 +1293,6 @@
   "@testBackupDefaultWallets": {
     "description": "Label shown when testing the default wallets"
   },
-  "replaceByFeeErrorGeneric": "Um erro ocorreu ao tentar substituir a transação",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "sendChange": "Variação",
   "@sendChange": {
     "description": "Label for change output in a transaction"
@@ -6166,10 +6162,6 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "A transação original foi confirmada",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "dcaNetworkLiquid": "Rede líquida",
   "@dcaNetworkLiquid": {

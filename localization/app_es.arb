@@ -1775,8 +1775,6 @@
   "replaceByFeeCustomFeeTitle": "Tarifa personalizada",
   "replaceByFeeErrorFeeRateTooLow": "Necesita aumentar la tasa de tarifa en al menos 1 sat/vbyte en comparación con la transacción original",
   "replaceByFeeErrorNoFeeRateSelected": "Por favor seleccione una tasa de tarifa",
-  "replaceByFeeErrorTransactionConfirmed": "La transacción original ha sido confirmada",
-  "replaceByFeeErrorGeneric": "Ocurrió un error al intentar reemplazar la transacción",
   "replaceByFeeFastestDescription": "Entrega estimada ~ 10 minutos",
   "replaceByFeeFastestTitle": "Más rápido",
   "replaceByFeeFeeRateDisplay": "Tasa de tarifa: {feeRate} sat/vbyte",

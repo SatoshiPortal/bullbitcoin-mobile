@@ -1208,10 +1208,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "लेन-देन को बदलने की कोशिश करते समय कोई त्रुटि हुई",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "वे किसी अन्य प्लेटफॉर्म पर Bitcoin भेजने के लिए कह रहे हैं",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -6919,10 +6915,6 @@
   "arkSendConfirm": "पुष्टि",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "मूल लेनदेन की पुष्टि की गई है",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@rbfErrorFeeTooLow": {

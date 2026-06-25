@@ -1772,8 +1772,6 @@
   "replaceByFeeCustomFeeTitle": "Frais personnalisés",
   "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
   "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
-  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
-  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
   "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
   "replaceByFeeFastestTitle": "Le plus rapide",
   "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
