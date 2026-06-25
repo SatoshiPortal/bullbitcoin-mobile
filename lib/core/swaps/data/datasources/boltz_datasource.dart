@@ -18,12 +18,6 @@ import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-/// The current default wallet's fingerprint plus a lazy accessor for its
-/// mnemonic. The fingerprint keys the swap master key in storage; the mnemonic
-/// is read/derived only on a cache miss.
-typedef DefaultSwapWallet =
-    ({String fingerprint, Future<String> Function() mnemonic});
-
 class BoltzDatasource {
   final String _baseUrl;
   late String _httpsUrl;
@@ -32,10 +26,10 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
-  /// Resolves the current default wallet (fingerprint + lazy mnemonic) the swap
-  /// master key is derived from. The swap master key MUST always come from this
-  /// one canonical seed — see [_ensureSwapMasterKey].
-  final Future<DefaultSwapWallet> Function() _defaultSwapWallet;
+  /// Default-wallet fingerprint the swap master key is keyed under, set once at
+  /// app startup by [initSwapMasterKey]. Public (non-secret) id only; the key
+  /// material itself lives in secure storage and is read on demand.
+  String? _swapMasterKeyWalletFingerprint;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -58,7 +52,6 @@ class BoltzDatasource {
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required this._boltzStore,
-    required this._defaultSwapWallet,
   }) : _baseUrl = url {
     _httpsUrl = 'https://$_baseUrl';
     _http = Dio(BaseOptions(baseUrl: _httpsUrl));
@@ -154,36 +147,49 @@ class BoltzDatasource {
 
   // SWAP MASTER KEY
   //
-  // The key is derived (BIP85) from the CURRENT default wallet's seed and cached
-  // in secure storage keyed by that wallet's fingerprint — never by network
-  // alone. Keying by fingerprint is what makes restore correct: a swap can be
-  // created from any wallet, but the key always resolves from the one default
-  // seed, and a different default wallet (or a stale key the iOS keychain kept
-  // after the app was deleted) can never be mistaken for the current wallet's.
-  Future<SwapMasterKeyModel> ensureSwapMasterKey({required bool isTestnet}) =>
-      _ensureSwapMasterKey(isTestnet);
-
-  Future<SwapMasterKeyModel> _ensureSwapMasterKey(bool isTestnet) async {
+  // Derived (BIP85) once at app startup from the default wallet's seed and
+  // persisted in secure storage keyed by that wallet's fingerprint — never by
+  // network alone. Keying by fingerprint is what makes restore correct and
+  // stops a different default wallet (or a stale key the iOS keychain kept
+  // after the app was deleted) from ever being read for the current wallet.
+  // [initSwapMasterKey] is the only place that derives; every swap operation
+  // READS via [getSwapMasterKey].
+  Future<void> initSwapMasterKey({
+    required String mnemonic,
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    _swapMasterKeyWalletFingerprint = walletFingerprint;
     final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    final wallet = await _defaultSwapWallet();
     if (await _boltzStore.swapMasterKeyExists(
       network,
-      walletFingerprint: wallet.fingerprint,
+      walletFingerprint: walletFingerprint,
     )) {
-      return _boltzStore.fetchSwapMasterKey(
-        network,
-        walletFingerprint: wallet.fingerprint,
-      );
+      return;
     }
     final model = await SwapMasterKeyModel.create(
-      mnemonic: await wallet.mnemonic(),
+      mnemonic: mnemonic,
       isTestnet: isTestnet,
     );
     await _boltzStore.storeSwapMasterKey(
       model,
-      walletFingerprint: wallet.fingerprint,
+      walletFingerprint: walletFingerprint,
     );
-    return model;
+  }
+
+  Future<SwapMasterKeyModel> getSwapMasterKey({required bool isTestnet}) async {
+    final walletFingerprint = _swapMasterKeyWalletFingerprint;
+    if (walletFingerprint == null) {
+      throw StateError(
+        'Swap master key not initialized — it must be derived at app startup '
+        'before any swap operation',
+      );
+    }
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    return _boltzStore.fetchSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
@@ -262,7 +268,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newReverse(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -338,7 +344,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newReverse(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -457,7 +463,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newSubmarine(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -515,7 +521,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -673,7 +679,7 @@ class BoltzDatasource {
       }
       final chainFees = _chainFeesAndLimits!;
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.btcToLbtc,
@@ -734,7 +740,7 @@ class BoltzDatasource {
       final chainFees = _chainFeesAndLimits!;
 
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await _ensureSwapMasterKey(isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.lbtcToBtc,

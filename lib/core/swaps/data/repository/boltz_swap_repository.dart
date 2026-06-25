@@ -466,10 +466,23 @@ class BoltzSwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
+  /// Derives (first launch) and persists the swap master key from the default
+  /// wallet's seed. Called once when wallets become ready (app startup / after
+  /// onboarding), so swap creation and restore can READ the key from storage
+  /// and never derive it lazily. Idempotent.
+  Future<void> ensureSwapMasterKey({
+    required String mnemonic,
+    required String walletFingerprint,
+  }) => _boltz.initSwapMasterKey(
+    mnemonic: mnemonic,
+    walletFingerprint: walletFingerprint,
+    isTestnet: _isTestnet,
+  );
+
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+    final swapMasterKey = await _boltz.getSwapMasterKey(
       isTestnet: _isTestnet,
     );
     // The index counter is keyed by the swap master key's OWN fingerprint —
@@ -705,7 +718,7 @@ class BoltzSwapRepository {
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+    final swapMasterKey = await _boltz.getSwapMasterKey(
       isTestnet: isTestnet,
     );
     log.info(
@@ -790,7 +803,7 @@ class BoltzSwapRepository {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) async {
-    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+    final swapMasterKey = await _boltz.getSwapMasterKey(
       isTestnet: _isTestnet,
     );
     final creationTime = restored.createdAt.millisecondsSinceEpoch;

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -16,6 +15,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -49,42 +49,10 @@ class SwapsLocator {
     );
   }
 
-  /// The current default bitcoin wallet (fingerprint + a lazy mnemonic reader)
-  /// every swap master key is derived from. Keying by the fingerprint is what
-  /// lets swap creation and restore always resolve the one canonical seed, even
-  /// across wallet changes or an iOS reinstall.
-  static Future<DefaultSwapWallet> _defaultSwapWallet(GetIt locator) async {
-    final settings = await locator<SettingsRepository>().fetch();
-    final wallets = await locator<WalletRepository>().getWallets(
-      onlyDefaults: true,
-      onlyBitcoin: true,
-      environment: settings.environment,
-    );
-    if (wallets.isEmpty) {
-      throw StateError(
-        'No default bitcoin wallet to derive the swap master key',
-      );
-    }
-    final fingerprint = wallets.first.masterFingerprint;
-    return (
-      fingerprint: fingerprint,
-      mnemonic: () async {
-        final seed = await locator<SeedRepository>().get(fingerprint);
-        if (seed is! MnemonicSeed) {
-          throw StateError('Default wallet seed is not a mnemonic');
-        }
-        return seed.mnemonicWords.join(' ');
-      },
-    );
-  }
-
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BoltzSwapRepository>(
       () => BoltzSwapRepository(
-        boltz: BoltzDatasource(
-          boltzStore: locator<BoltzStorageDatasource>(),
-          defaultSwapWallet: () => _defaultSwapWallet(locator),
-        ),
+        boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
         isTestnet: false,
       ),
       instanceName:
@@ -116,6 +84,18 @@ class SwapsLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<EnsureSwapMasterKeyUsecase>(
+      () => EnsureSwapMasterKeyUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+
     locator.registerFactory<DecodeInvoiceUsecase>(
       () => DecodeInvoiceUsecase(
         boltzSwapRepository: locator<BoltzSwapRepository>(

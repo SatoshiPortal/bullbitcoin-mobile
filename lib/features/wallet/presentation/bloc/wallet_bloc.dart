@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
@@ -58,6 +59,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._checkArkWalletSetupUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
+    required this._ensureSwapMasterKeyUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -97,6 +99,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
+  final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -146,6 +149,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
 
       add(const RefreshArkWalletBalance());
+
+      // Derive + persist the swap master key from the default wallet seed now
+      // that wallets are ready, so swaps read it from storage and never derive
+      // it lazily. Best-effort: a failure here must not break wallet loading.
+      try {
+        await _ensureSwapMasterKeyUsecase.execute();
+      } catch (e, st) {
+        log.severe(
+          message: 'Failed to ensure swap master key',
+          error: e,
+          trace: st,
+        );
+      }
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
