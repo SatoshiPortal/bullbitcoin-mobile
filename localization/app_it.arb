@@ -3206,6 +3206,7 @@
     }
   },
   "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "bip85NoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
   "pinStatusSettingUpDescription": "Impostazione del codice PIN",
   "enterYourPinTitle": "Inserisci il tuo {pinOrPassword}",
   "@enterYourPinTitle": {

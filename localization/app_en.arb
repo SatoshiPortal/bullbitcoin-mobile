@@ -4757,6 +4757,10 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
+  "bip85NoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@bip85NoDefaultWalletError": {
+    "description": "Error shown when BIP85 derivation fails because no default wallet is configured"
+  },
   "connectingToKeyServer": "Connecting to Key Server over Tor.\nThis can take upto a minute.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"

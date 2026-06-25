@@ -9704,6 +9704,7 @@
     }
   },
   "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "bip85NoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

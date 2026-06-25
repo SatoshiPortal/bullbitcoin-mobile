@@ -21,6 +21,7 @@
   "broadcastSignedTxErrorInvalidTransaction": "Hii haionekani kuwa muamala halali uliosainiwa. Hakikisha umebandika PSBT kamili au muamala mzima.",
   "broadcastSignedTxErrorInvalidPushTx": "Hatukuweza kusoma muamala kutoka kwa lebo hii. Tafadhali jaribu kuchanganua tena.",
   "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "bip85NoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"

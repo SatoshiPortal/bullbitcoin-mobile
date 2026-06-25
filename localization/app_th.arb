@@ -9696,6 +9696,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "bip85NoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

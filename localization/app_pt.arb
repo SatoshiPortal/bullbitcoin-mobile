@@ -3184,6 +3184,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "bip85NoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente.",
   "pinStatusSettingUpDescription": "Configurando seu código PIN",
   "enterYourPinTitle": "Digite seu {pinOrPassword}",
   "@enterYourPinTitle": {

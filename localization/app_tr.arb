@@ -9625,6 +9625,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "bip85NoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

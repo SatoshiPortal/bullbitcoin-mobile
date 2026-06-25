@@ -9087,6 +9087,7 @@
     }
   },
   "oopsSomethingWentWrong": "! شيء ما حدث",
+  "bip85NoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

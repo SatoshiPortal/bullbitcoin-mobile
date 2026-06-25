@@ -1217,6 +1217,7 @@
     }
   },
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
   "dcaSetRecurringBuyTitle": "Määritä toistuva osto",

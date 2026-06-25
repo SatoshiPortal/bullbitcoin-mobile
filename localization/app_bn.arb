@@ -9457,6 +9457,7 @@
     }
   },
   "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "bip85NoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

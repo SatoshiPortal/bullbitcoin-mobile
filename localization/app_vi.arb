@@ -21,6 +21,7 @@
   "broadcastSignedTxErrorInvalidTransaction": "Đây có vẻ không phải là giao dịch đã ký hợp lệ. Hãy đảm bảo bạn đã dán đầy đủ PSBT hoặc giao dịch.",
   "broadcastSignedTxErrorInvalidPushTx": "Chúng tôi không thể đọc giao dịch từ thẻ này. Vui lòng quét lại.",
   "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "bip85NoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại.",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Ứng dụng không thể khởi động",
   "@appInitErrorTitle": {

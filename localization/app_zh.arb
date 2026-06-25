@@ -3207,6 +3207,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! 某些错误",
+  "bip85NoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
   "pinStatusSettingUpDescription": "1. 制定您的《个人资料》",
   "enterYourPinTitle": "{pinOrPassword}",
   "@enterYourPinTitle": {

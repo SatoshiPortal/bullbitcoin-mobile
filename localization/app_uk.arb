@@ -3452,6 +3452,7 @@
     }
   },
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "bip85NoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
   "pinStatusSettingUpDescription": "Налаштування коду PIN",
   "swapFromLabel": "З",
   "importQrDeviceKeystoneStep4": "Натисніть \"Connect Software Wallet\"",

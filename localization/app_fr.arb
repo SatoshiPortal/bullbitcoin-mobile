@@ -1255,6 +1255,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "bip85NoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "connectingToKeyServer": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
   "anErrorOccurred": "Une erreur s'est produite",
   "dcaSetRecurringBuyTitle": "Configurer un achat récurrent",
