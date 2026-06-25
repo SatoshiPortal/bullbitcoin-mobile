@@ -4385,11 +4385,10 @@
   "mempoolErrorServerUnavailable": "服务器暂时不可用。请稍后重试。",
   "mempoolErrorServerError": "服务器遇到错误。请稍后重试或尝试其他服务器。",
   "mempoolErrorInvalidResponse": "服务器返回了意外的响应。",
-  "mempoolErrorUnexpected": "发生了意外错误",
-  "mempoolErrorSaveServerFailed": "保存服务器失败：{error}",
-  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败：{error}",
-  "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
-  "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
+  "mempoolErrorInvalidUrl": "服务器 URL 无效。请输入有效的域名或 IP 地址。",
+  "mempoolErrorSaveServerFailed": "保存服务器失败",
+  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败",
+  "mempoolErrorDeleteFailed": "删除自定义服务器失败",
   "settingsErrorReportingTitle": "错误报告",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

@@ -12628,5 +12628,6 @@
   "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
-  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید."
+  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید.",
+  "mempoolErrorInvalidUrl": "آدرس سرور نامعتبر است. یک دامنه یا آدرس IP معتبر وارد کنید."
 }

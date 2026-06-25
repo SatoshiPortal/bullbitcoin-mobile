@@ -12628,5 +12628,6 @@
   "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
-  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง"
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
+  "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง"
 }

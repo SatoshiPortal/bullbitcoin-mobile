@@ -12628,5 +12628,6 @@
   "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
-  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin."
+  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
+  "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin."
 }

@@ -303,5 +303,6 @@
   "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại.",
   "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
   "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
-  "electrumServerUnreachable": "Không thể kết nối máy chủ. Kiểm tra địa chỉ và thử lại."
+  "electrumServerUnreachable": "Không thể kết nối máy chủ. Kiểm tra địa chỉ và thử lại.",
+  "mempoolErrorInvalidUrl": "URL máy chủ không hợp lệ. Nhập tên miền hoặc địa chỉ IP hợp lệ."
 }

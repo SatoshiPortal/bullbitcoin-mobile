@@ -323,5 +323,6 @@
   "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
   "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
   "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
-  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena."
+  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena.",
+  "mempoolErrorInvalidUrl": "URL ya seva si sahihi. Weka kikoa au anwani ya IP sahihi."
 }

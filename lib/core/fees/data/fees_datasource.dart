@@ -22,15 +22,22 @@ class FeesDatasource {
       isTestnet: isTestnet,
       isLiquid: false,
     );
-    final settings = await _mempoolSettingsRepository.fetchByNetwork(network);
+    final settings = (await _mempoolSettingsRepository.fetchByNetwork(network))
+        .fold(
+          (value) => value,
+          (_) => throw Exception('Failed to fetch mempool settings'),
+        );
 
     // Determine which mempool server to use
     String baseUrl;
     if (settings.useForFeeEstimation) {
       // Use custom or default mempool server from settings
-      final server = await _getActiveMempoolServerUsecase.execute(
+      final server = (await _getActiveMempoolServerUsecase.execute(
         isTestnet: isTestnet,
         isLiquid: false,
+      )).fold(
+        (s) => s,
+        (_) => throw Exception('Failed to fetch active mempool server'),
       );
       baseUrl = server.fullUrl;
     } else {
