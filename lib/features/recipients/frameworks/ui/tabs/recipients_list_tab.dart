@@ -98,14 +98,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           style: context.font.bodyMedium,
         ),
         const Gap(8.0),
-        BlocSelector<RecipientsBloc, RecipientsState, ({String? selected, Set<String> available})>(
-          selector: (state) => (
-            selected: state.jurisdictionFilter,
-            available: state.availableJurisdictions,
-          ),
-          builder: (context, data) {
-            final selected = data.selected ??
-                (data.available.length == 1 ? data.available.first : null);
+        BlocSelector<RecipientsBloc, RecipientsState, String?>(
+          selector: (state) => state.jurisdictionFilter,
+          builder: (context, selected) {
             return JurisdictionsDropdown(
               selectedJurisdiction: selected,
               includeAllOption: true,

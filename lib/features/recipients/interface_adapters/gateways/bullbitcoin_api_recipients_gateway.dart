@@ -3,8 +3,8 @@ import 'package:bb_mobile/features/recipients/application/ports/recipients_gatew
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_model.dart';
 import 'package:dio/dio.dart';

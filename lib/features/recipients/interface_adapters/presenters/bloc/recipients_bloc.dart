@@ -69,6 +69,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsStarted event,
     Emitter<RecipientsState> emit,
   ) async {
+    final jurisdictions = state.availableJurisdictions;
+    if (jurisdictions.length == 1) {
+      emit(state.copyWith(jurisdictionFilter: jurisdictions.first));
+    }
     await _loadFirstPage(emit, clearList: true);
 
     String preferredJurisdictionCode = 'CA'; // Default to Canada
@@ -181,9 +185,9 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsSearchChanged event,
     Emitter<RecipientsState> emit,
   ) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    // Commit the query only once typing settles (restartable cancels the
-    // superseded keystrokes), so the loaded list and state.searchQuery agree.
+    if (event.query.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 600));
+    }
     emit(state.copyWith(searchQuery: event.query));
     await _loadFirstPage(emit, clearList: true);
   }
