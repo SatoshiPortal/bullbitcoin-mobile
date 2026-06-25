@@ -11,6 +11,7 @@ sealed class RecipientsState with _$RecipientsState {
     required RecipientFilterCriteria allowedRecipientFilters,
     List<RecipientViewModel>? recipients,
     int? totalRecipients,
+    @Default(0) int loadedPages,
     @Default(false) bool isSearchingCadBillers,
     Exception? failedToSearchCadBillers,
     List<CadBillerViewModel>? cadBillers,
@@ -33,7 +34,7 @@ sealed class RecipientsState with _$RecipientsState {
     if (recipients == null || totalRecipients == null) {
       return false;
     }
-    return recipients!.length < totalRecipients!;
+    return loadedPages * RecipientsBloc.pageSize < totalRecipients!;
   }
 
   Set<RecipientType> get selectableRecipientTypes =>
@@ -70,8 +71,6 @@ sealed class RecipientsState with _$RecipientsState {
   }
 
   List<RecipientViewModel>? get selectableRecipients {
-    // Type/ownership/search/jurisdiction filtering is done server-side; here we
-    // only drop duplicate ids so the count stays aligned with totalRecipients.
     if (recipients == null) return null;
     final seen = <String>{};
     return recipients!.where((recipient) => seen.add(recipient.id)).toList();

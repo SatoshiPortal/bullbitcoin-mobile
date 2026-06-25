@@ -123,7 +123,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.info('Loading more recipients');
       final result = await _getRecipientsUsecase.execute(
         GetRecipientsParams(
-          page: (state.recipients!.length ~/ pageSize) + 1,
+          page: state.loadedPages + 1,
           pageSize: pageSize,
           recipientTypes: _effectiveTypes(state),
           isOwner: state.allowedRecipientFilters.isOwner,
@@ -139,6 +139,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       emit(
         state.copyWith(
           totalRecipients: result.totalRecipients,
+          loadedPages: state.loadedPages + 1,
           recipients: [
             ...state.recipients!,
             ..._toViewModels(result.recipients),
@@ -213,6 +214,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       emit(
         state.copyWith(
           totalRecipients: result.totalRecipients,
+          loadedPages: 1,
           recipients: _toViewModels(result.recipients),
         ),
       );
