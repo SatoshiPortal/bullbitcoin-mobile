@@ -224,12 +224,14 @@ class BoltzStorageDatasource {
     );
   }
 
-  // Keyed by wallet fingerprint, not network: the swap key material is
-  // network-independent, so a per-network counter would reuse child keys.
-  Future<int?> getSwapKeyIndex(String walletFingerprint) async {
+  // Keyed by the swap master key's fingerprint, not the network: the swap key
+  // material is network-independent, so a per-network counter would reuse child
+  // keys. (This is the swap master key's own fingerprint, distinct from the
+  // wallet fingerprint that keys the master key blob.)
+  Future<int?> getSwapKeyIndex(String swapMasterKeyFingerprint) async {
     try {
       final key =
-          '${SecureStorageKeyPrefixConstants.swapKeyIndex}$walletFingerprint';
+          '${SecureStorageKeyPrefixConstants.swapKeyIndex}$swapMasterKeyFingerprint';
       final value = await _secureSwapStorage.getValue(key);
       if (value == null) return null;
       return int.tryParse(value as String);
@@ -238,9 +240,12 @@ class BoltzStorageDatasource {
     }
   }
 
-  Future<void> setSwapKeyIndex(String walletFingerprint, int index) async {
+  Future<void> setSwapKeyIndex(
+    String swapMasterKeyFingerprint,
+    int index,
+  ) async {
     final key =
-        '${SecureStorageKeyPrefixConstants.swapKeyIndex}$walletFingerprint';
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}$swapMasterKeyFingerprint';
     await _secureSwapStorage.saveValue(key: key, value: index.toString());
   }
 

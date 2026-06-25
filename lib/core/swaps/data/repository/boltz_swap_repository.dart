@@ -469,20 +469,34 @@ class BoltzSwapRepository {
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final masterKey = await _boltz.ensureSwapMasterKey(isTestnet: _isTestnet);
-    final fingerprint = masterKey.fingerprint;
-    final stored = await _boltz.storage.getSwapKeyIndex(fingerprint);
+    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+      isTestnet: _isTestnet,
+    );
+    // The index counter is keyed by the swap master key's OWN fingerprint —
+    // NOT the default wallet's fingerprint (which keys the master key blob).
+    // Both are 1:1 with the seed, so they stay consistent.
+    final stored = await _boltz.storage.getSwapKeyIndex(
+      swapMasterKey.fingerprint,
+    );
     final int current;
     if (stored == null) {
       // Seed past boltz's highest known index (-1 when none) so a new swap
       // can't re-derive an in-use key on a recovered seed.
-      final highest = await _boltz.restoreSwapIndex(swapMasterKey: masterKey);
+      final highest = await _boltz.restoreSwapIndex(
+        swapMasterKey: swapMasterKey,
+      );
       current = highest + 1;
     } else {
       current = stored;
     }
-    await _boltz.storage.setSwapKeyIndex(fingerprint, current + count);
-    log.info('SWAP_KEY: reserved index $current (count=$count) fp=$fingerprint');
+    await _boltz.storage.setSwapKeyIndex(
+      swapMasterKey.fingerprint,
+      current + count,
+    );
+    log.info(
+      'SWAP_KEY: reserved index $current (count=$count) '
+      'fp=${swapMasterKey.fingerprint}',
+    );
     return current;
   }
 
@@ -691,7 +705,9 @@ class BoltzSwapRepository {
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.ensureSwapMasterKey(isTestnet: isTestnet);
+    final swapMasterKey = await _boltz.ensureSwapMasterKey(
+      isTestnet: isTestnet,
+    );
     log.info(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
@@ -802,7 +818,11 @@ class BoltzSwapRepository {
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere((s) => s.id == id);
+          final obj = swaps.firstWhere(
+            (s) => s.id == id,
+            orElse: () =>
+                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnReceive(
             id: obj.id,
@@ -824,7 +844,11 @@ class BoltzSwapRepository {
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere((s) => s.id == id);
+          final obj = swaps.firstWhere(
+            (s) => s.id == id,
+            orElse: () =>
+                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnReceive(
             id: obj.id,
@@ -848,7 +872,11 @@ class BoltzSwapRepository {
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere((s) => s.id == id);
+          final obj = swaps.firstWhere(
+            (s) => s.id == id,
+            orElse: () =>
+                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnSend(
             id: obj.id,
@@ -872,7 +900,11 @@ class BoltzSwapRepository {
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere((s) => s.id == id);
+          final obj = swaps.firstWhere(
+            (s) => s.id == id,
+            orElse: () =>
+                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnSend(
             id: obj.id,
@@ -898,7 +930,11 @@ class BoltzSwapRepository {
           btcElectrumUrl: btcElectrumUrl,
           lbtcElectrumUrl: lbtcElectrumUrl,
         );
-        final obj = swaps.firstWhere((s) => s.id == id);
+        final obj = swaps.firstWhere(
+          (s) => s.id == id,
+          orElse: () =>
+              throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+        );
         await _boltz.storage.storeChainSwap(obj);
         final lockupTxid = await _boltz.chainSwapUserLockupTxid(obj);
         model = SwapModel.chain(
