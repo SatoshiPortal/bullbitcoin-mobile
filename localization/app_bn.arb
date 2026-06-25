@@ -12270,6 +12270,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "recoverbullVaultRecovery": "ভল্ট পুনরুদ্ধার",
   "@recoverbullVaultRecovery": {
     "description": "Screen title for vault recovery process"
