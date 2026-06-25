@@ -16,13 +16,19 @@ class PayjoinSectionContributor extends TransactionSectionContributor {
   @override
   bool appliesTo(Transaction tx) => tx.isPayjoin;
 
+  bool _isCompleted(Transaction tx) {
+    final payjoin = tx.payjoin!;
+    return payjoin.isCompleted ||
+        (payjoin.status == PayjoinStatus.proposed &&
+            tx.walletTransaction != null);
+  }
+
   @override
   TxHeaderView? header(Transaction tx, TxPresentDeps deps) {
-    final payjoin = tx.payjoin!;
     return TxHeaderView(
       isIncoming: tx.isIncoming,
       isTransfer: false,
-      statusLabel: payjoin.isCompleted
+      statusLabel: _isCompleted(tx)
           ? deps.loc.transactionStatusPayjoinCompleted
           : deps.loc.transactionStatusPayjoinRequested,
       amount: TxAmountView(sats: tx.amountSat),
@@ -57,8 +63,7 @@ class PayjoinSectionContributor extends TransactionSectionContributor {
       TxDetailRow(
         label: loc.transactionDetailLabelPayjoinStatus,
         value: TxText(
-          payjoin.isCompleted ||
-                  (payjoin.status == PayjoinStatus.proposed && hasWalletTx)
+          _isCompleted(tx)
               ? loc.transactionDetailLabelPayjoinCompleted
               : payjoin.isExpired
               ? loc.transactionDetailLabelPayjoinExpired

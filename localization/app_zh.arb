@@ -3055,7 +3055,6 @@
   "ledgerWalletTypeNestedSegwit": "Nest子(BIP49)",
   "fundExchangeJurisdictionMexico": "🇲🇽 墨西哥",
   "sellInteracEmail": "Interac Email",
-  "coreSwapsActionClose": "近距离",
   "kruxStep6": "如果你遇到麻烦,就会:",
   "autoswapMaximumFeeError": "最高限额为{threshold}%",
   "@autoswapMaximumFeeError": {
@@ -3860,7 +3859,6 @@
   "feePriorityLabel": "妇女优先",
   "coreScreensToLabel": "致",
   "backupSettingsTestBackup": "退约",
-  "coreSwapsActionRefund": "退款",
   "payInsufficientBalance": "当前钱包的余额不足以支付这笔订单",
   "viewLogsLabel": "观点记录",
   "sendSwapTimeEstimate": "估计时间:{time}",
@@ -3877,7 +3875,6 @@
   "ledgerScanningTitle": "装置扫描",
   "payInstitutionCode": "机构法",
   "recoverbullFetchVaultKey": "Fetch Vault 关键",
-  "coreSwapsActionClaim": "索赔",
   "bitboxActionUnlockDeviceSuccessSubtext": "你们的BitBox装置现在没有锁定,准备使用.",
   "payShareInvoice": "份额",
   "walletDetailsSignerDeviceLabel": "信号装置",

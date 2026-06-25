@@ -320,12 +320,6 @@ sealed class Swap with _$Swap {
     ChainSwap(:final sendWalletId) => sendWalletId,
   };
 
-  bool get swapInProgress =>
-      status == SwapStatus.paid ||
-      status == SwapStatus.canCoop ||
-      status == SwapStatus.claimable ||
-      status == SwapStatus.refundable;
-
   bool get swapRefunded =>
       status == SwapStatus.refunded ||
       (status == SwapStatus.completed &&
@@ -337,15 +331,6 @@ sealed class Swap with _$Swap {
 
   bool get isChainSwapExternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
-
-  String swapAction(AppLocalizations loc) =>
-      status == SwapStatus.claimable
-          ? loc.coreSwapsActionClaim
-          : status == SwapStatus.canCoop
-          ? loc.coreSwapsActionClose
-          : status == SwapStatus.refundable
-          ? loc.coreSwapsActionRefund
-          : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
 

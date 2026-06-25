@@ -8938,10 +8938,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "نزدیک",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "اگر در اسکن مشکل دارید:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -10816,10 +10812,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "Refund",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -10856,10 +10848,6 @@
   "recoverbullFetchVaultKey": "Fetch Vault کلید کلیدی",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "مطالبات",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "دستگاه BitBox شما در حال حاضر باز شده و آماده استفاده است.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

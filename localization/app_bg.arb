@@ -70,18 +70,6 @@
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
   },
-  "coreSwapsActionClaim": "Вземи",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
-  },
-  "coreSwapsActionClose": "Затвори",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
-  "coreSwapsActionRefund": "Възстановяване",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "coreSwapsLnReceivePending": "Обмена все още не е инициализиран.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"

@@ -3012,7 +3012,6 @@
   "ledgerWalletTypeNestedSegwit": "Eingebettetes SegWit (BIP49)",
   "fundExchangeJurisdictionMexico": "🇲🇽 Mexiko",
   "sellInteracEmail": "Interac-E-Mail",
-  "coreSwapsActionClose": "Schließen",
   "kruxStep6": "Wenn Sie Probleme beim Scannen haben:",
   "autoswapMaximumFeeError": "Maximale Gebührenschwelle {threshold}%.",
   "@autoswapMaximumFeeError": {
@@ -3810,7 +3809,6 @@
   "feePriorityLabel": "Gebührenpriorität",
   "coreScreensToLabel": "An",
   "backupSettingsTestBackup": "Backup testen",
-  "coreSwapsActionRefund": "Rückerstattung",
   "payInsufficientBalance": "Das Guthaben in der ausgewählten Wallet reicht nicht aus, um diesen Zahlungsauftrag auszuführen",
   "viewLogsLabel": "Protokolle anzeigen",
   "sendSwapTimeEstimate": "Geschätzte Zeit: {time}",
@@ -3827,7 +3825,6 @@
   "ledgerScanningTitle": "Geräte werden gescannt",
   "payInstitutionCode": "Institutionscode",
   "recoverbullFetchVaultKey": "Tresor-Schlüssel abrufen",
-  "coreSwapsActionClaim": "Beanspruchen",
   "bitboxActionUnlockDeviceSuccessSubtext": "Ihr BitBox-Gerät ist jetzt freigeschaltet und gebrauchsfertig.",
   "payShareInvoice": "Rechnung teilen",
   "walletDetailsSignerDeviceLabel": "Signiergerät",

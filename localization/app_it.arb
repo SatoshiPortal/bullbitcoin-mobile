@@ -3054,7 +3054,6 @@
   "ledgerWalletTypeNestedSegwit": "Segwit Nested (BIP49)",
   "fundExchangeJurisdictionMexico": "🇲🇽 Messico",
   "sellInteracEmail": "Email Interac",
-  "coreSwapsActionClose": "Chiudi",
   "kruxStep6": "Se hai problemi di scansione:",
   "autoswapMaximumFeeError": "La soglia massima della tassa è {threshold}%",
   "@autoswapMaximumFeeError": {
@@ -3861,7 +3860,6 @@
   "feePriorityLabel": "Priorità",
   "coreScreensToLabel": "A",
   "backupSettingsTestBackup": "Test di backup",
-  "coreSwapsActionRefund": "Rimborso",
   "payInsufficientBalance": "Bilancio insufficiente nel portafoglio selezionato per completare questo ordine di pagamento.",
   "viewLogsLabel": "Visualizza i log",
   "sendSwapTimeEstimate": "Tempo stimato: {time}",
@@ -3878,7 +3876,6 @@
   "ledgerScanningTitle": "Scansione per dispositivi",
   "payInstitutionCode": "Codice delle istituzioni",
   "recoverbullFetchVaultKey": "Vai alla scheda chiave",
-  "coreSwapsActionClaim": "Ricorso",
   "bitboxActionUnlockDeviceSuccessSubtext": "Il dispositivo BitBox è ora sbloccato e pronto all'uso.",
   "payShareInvoice": "Fatturato",
   "walletDetailsSignerDeviceLabel": "Dispositivo di segnale",

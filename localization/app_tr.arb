@@ -9168,10 +9168,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "Close",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "Bir sorun taramanız varsa:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -11453,10 +11449,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "Refund",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -11497,10 +11489,6 @@
   "recoverbullFetchVaultKey": "Fetch Vault Anahtar Anahtar Anahtar Anahtar",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "Talep Davası",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "BitBox cihazınız şimdi açılıyor ve kullanıma hazır.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

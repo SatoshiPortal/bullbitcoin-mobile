@@ -8685,10 +8685,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "اقترب",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "إذا كان لديك مشكلة في المسح",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -10826,10 +10822,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "المبالغ المردودة",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -10870,10 +10862,6 @@
   "recoverbullFetchVaultKey": "خزائن المفتاح",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "المطالبة",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "جهازك (بيتبوكس) مفتوح الآن ومستعد لاستخدامه.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

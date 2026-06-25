@@ -53,10 +53,6 @@ class OrderSectionContributor extends TransactionSectionContributor {
           value: TxText(order.payinStatus.value),
         ),
         TxDetailRow(
-          label: loc.transactionDetailLabelOrderStatus,
-          value: TxText(order.orderStatus.value),
-        ),
-        TxDetailRow(
           label: loc.transactionDetailLabelPayoutStatus,
           value: TxText(order.payoutStatus.value),
         ),

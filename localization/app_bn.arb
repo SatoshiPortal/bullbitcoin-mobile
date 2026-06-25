@@ -9016,10 +9016,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "বন্ধ করুন",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "স্ক্যান করতে সমস্যা হলে:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -11253,10 +11249,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "ফেরত",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -11297,10 +11289,6 @@
   "recoverbullFetchVaultKey": "ভল্ট কী সংগ্রহ",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "দাবি করুন",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "আপনার BitBox ডিভাইসটি এখন আনলক হয়েছে এবং ব্যবহার করতে প্রস্তুত।",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

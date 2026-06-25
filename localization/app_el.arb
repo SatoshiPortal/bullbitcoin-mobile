@@ -7676,10 +7676,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "Κλείστε κοντά",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "Αν έχετε πρόβλημα σάρωση:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -9525,10 +9521,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "Refund",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -9565,10 +9557,6 @@
   "payInstitutionCode": "Κώδικας",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "coreSwapsActionClaim": "Αξιώσεις",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα απελευθερωμένη και έτοιμη να χρησιμοποιήσει.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

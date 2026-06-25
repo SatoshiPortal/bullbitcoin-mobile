@@ -33,10 +33,10 @@ class SwapSectionContributor extends TransactionSectionContributor {
       label = swap.isChainSwap
           ? loc.transactionStatusTransferInProgress
           : loc.transactionStatusPaymentInProgress;
-    } else if (swap.swapCompleted && swap.isChainSwap) {
-      label = loc.transactionStatusTransferCompleted;
     } else if (swap.swapRefunded) {
       label = loc.transactionStatusPaymentRefunded;
+    } else if (swap.swapCompleted && swap.isChainSwap) {
+      label = loc.transactionStatusTransferCompleted;
     } else if (swap.status == SwapStatus.failed) {
       tone = TxStatusTone.error;
       label = swap.isChainSwap

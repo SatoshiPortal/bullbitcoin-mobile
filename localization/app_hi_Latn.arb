@@ -70,18 +70,6 @@
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
   },
-  "coreSwapsActionClaim": "Claim Karo",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
-  },
-  "coreSwapsActionClose": "Band Karo",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
-  "coreSwapsActionRefund": "Refund Karo",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "coreSwapsLnReceivePending": "Swap abhi shuru nahi hua.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"

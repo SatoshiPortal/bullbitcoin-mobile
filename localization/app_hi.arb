@@ -9247,10 +9247,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "बंद करें",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "यदि आपको कोई परेशानी स्कैनिंग है:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -11545,10 +11541,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "वापसी",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष नहीं है।",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -11589,10 +11581,6 @@
   "recoverbullFetchVaultKey": "Fetch Vault कुंजी",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "दावा करें",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "आपका बिटबॉक्स डिवाइस अब अनलॉक और उपयोग करने के लिए तैयार है।।",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

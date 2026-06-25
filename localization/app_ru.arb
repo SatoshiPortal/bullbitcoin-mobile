@@ -3052,7 +3052,6 @@
   "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
   "fundExchangeJurisdictionMexico": "🇲🇽 Мексика",
   "sellInteracEmail": "Interac Email",
-  "coreSwapsActionClose": "Закрыть",
   "kruxStep6": "Если у вас есть проблемы с сканированием:",
   "autoswapMaximumFeeError": "Максимальный порог платы {threshold}%",
   "@autoswapMaximumFeeError": {
@@ -3859,7 +3858,6 @@
   "feePriorityLabel": "Очередность",
   "coreScreensToLabel": "В",
   "backupSettingsTestBackup": "Проверка",
-  "coreSwapsActionRefund": "Возмещение",
   "payInsufficientBalance": "Недостаточный баланс в выбранном кошельке для выполнения этого платежного поручения.",
   "viewLogsLabel": "Просмотр журналов",
   "sendSwapTimeEstimate": "Расчетное время: {time}",
@@ -3876,7 +3874,6 @@
   "ledgerScanningTitle": "Сканирование устройств",
   "payInstitutionCode": "Код учреждения",
   "recoverbullFetchVaultKey": "Принесите хранилище Ключ",
-  "coreSwapsActionClaim": "Claim",
   "bitboxActionUnlockDeviceSuccessSubtext": "Ваше устройство BitBox теперь разблокировано и готово к использованию.",
   "payShareInvoice": "Счет-фактура",
   "walletDetailsSignerDeviceLabel": "Устройство",

@@ -49,14 +49,6 @@
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
   },
-  "coreSwapsActionClose": "Zavřít",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
-  "coreSwapsActionRefund": "Refundovat",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu.",
   "@coreSwapsLnReceivePaid": {
     "description": "Status message for paid Lightning receive swap"
@@ -11290,10 +11282,6 @@
   "recoverbullFetchVaultKey": "Čeština Čeština",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "Čeština",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "Zařízení BitBox je nyní odemčeno a připraven k použití.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
