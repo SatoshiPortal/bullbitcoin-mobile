@@ -67,18 +67,6 @@
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
   },
-  "coreSwapsActionClaim": "Claim",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
-  },
-  "coreSwapsActionClose": "Close",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
-  "coreSwapsActionRefund": "Refund",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "coreSwapsLnReceivePending": "Swap is not yet initialized.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
@@ -3021,6 +3009,14 @@
   "transactionSwapProgressInProgress": "In Progress",
   "@transactionSwapProgressInProgress": {
     "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapProgressStepStatus": "In progress · Step {current} of {total}",
+  "@transactionSwapProgressStepStatus": {
+    "description": "Collapsed swap status row summary showing current step of total",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
   },
   "transactionSwapStatusTransferStatus": "Transfer Status",
   "@transactionSwapStatusTransferStatus": {

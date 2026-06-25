@@ -8196,10 +8196,6 @@
   "@arkSendConfirmTitle": {
     "description": "Title for the ark send confirmation page"
   },
-  "coreSwapsActionClose": "Fechar",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "testBackupErrorLoadMnemonic": "Carga mnemônica: {error}",
   "@testBackupErrorLoadMnemonic": {
     "description": "Error when loading mnemonic fails",
@@ -9589,10 +9585,6 @@
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
   },
-  "coreSwapsActionRefund": "Reembolso",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "arkServerUrl": "URL do servidor",
   "@arkServerUrl": {
     "description": "Label for server URL field"
@@ -9612,10 +9604,6 @@
   "notLoggedInMessage": "Faça login na sua conta Bull Bitcoin para acessar as configurações de troca.",
   "@notLoggedInMessage": {
     "description": "Message prompting user to log in for exchange features"
-  },
-  "coreSwapsActionClaim": "Reivindicação",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "swapInfoDescription": "Transferir Bitcoin perfeitamente entre suas carteiras. Apenas mantenha fundos na Carteira de Pagamento Instantânea para gastos diários.",
   "@swapInfoDescription": {

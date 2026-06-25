@@ -9247,10 +9247,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "뚱 베어",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "문제가 있는 경우:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -11545,10 +11541,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "구매하기",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -11589,10 +11581,6 @@
   "recoverbullFetchVaultKey": "Fetch 볼트 이름 *",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "계정 만들기",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "BitBox 장치는 이제 잠금 해제하고 사용할 준비가되어 있습니다.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {

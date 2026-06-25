@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
@@ -14,12 +13,12 @@ enum WalletTransactionStatus {
   pending,
   confirmed;
 
-  String displayName(BuildContext context) {
+  String displayName(AppLocalizations loc) {
     switch (this) {
       case WalletTransactionStatus.pending:
-        return context.loc.coreWalletTransactionStatusPending;
+        return loc.coreWalletTransactionStatusPending;
       case WalletTransactionStatus.confirmed:
-        return context.loc.coreWalletTransactionStatusConfirmed;
+        return loc.coreWalletTransactionStatusConfirmed;
     }
   }
 }

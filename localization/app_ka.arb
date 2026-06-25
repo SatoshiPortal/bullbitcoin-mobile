@@ -98,10 +98,6 @@
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
   },
-  "coreSwapsActionClaim": "გამოთხოვა",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
-  },
   "coreWalletTransactionStatusConfirmed": "დადასტურებულია",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"

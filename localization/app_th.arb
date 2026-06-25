@@ -9239,10 +9239,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "ปิด",
-  "@coreSwapsActionClose": {
-    "description": "Action label for closing a swap cooperatively"
-  },
   "kruxStep6": "หากคุณมีปัญหา:",
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
@@ -11537,10 +11533,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "coreSwapsActionRefund": "การคืนเงิน",
-  "@coreSwapsActionRefund": {
-    "description": "Action label for refunding a swap"
-  },
   "payInsufficientBalance": "ยอดคงเหลือไม่เพียงพอในกระเป๋าเงินที่เลือก.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
@@ -11581,10 +11573,6 @@
   "recoverbullFetchVaultKey": "ข้อควรระวัง คีย์",
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
-  },
-  "coreSwapsActionClaim": "การเรียกร้อง",
-  "@coreSwapsActionClaim": {
-    "description": "Action label for claiming a swap"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "อุปกรณ์ BitBox ได้ปลดล็อคและพร้อมที่จะใช้งาน.",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
