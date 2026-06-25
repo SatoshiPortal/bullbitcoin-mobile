@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_model_builder.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/contributors/transaction_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_callout_card.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';

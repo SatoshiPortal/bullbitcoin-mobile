@@ -2,16 +2,10 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/swap_progress.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/contributors/transaction_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/utils/tx_format.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 
-/// Boltz swaps — covers all subtypes (LN↔BTC/Liquid reverse & submarine, and
-/// BTC↔Liquid chain swaps). Owns the whole presentation for a swap so there is
-/// a single, authoritative status. Intermediary protocol detail (swap id,
-/// counterpart tx id, preimage) is folded behind the transaction-id row's
-/// expand toggle rather than shown by default.
 class SwapSectionContributor extends TransactionSectionContributor {
   const SwapSectionContributor();
 
@@ -74,7 +68,7 @@ class SwapSectionContributor extends TransactionSectionContributor {
   TxProgressView? progress(Transaction tx, TxPresentDeps deps) {
     final swap = tx.swap!;
     final loc = deps.loc;
-    final p = swapProgressOf(swap, loc);
+    final p = _swapProgressOf(swap, loc);
 
     final String summary;
     if (swap.swapRefunded) {
@@ -354,4 +348,82 @@ class SwapSectionContributor extends TransactionSectionContributor {
     }
     return '';
   }
+}
+
+class _SwapProgress {
+  const _SwapProgress({
+    required this.steps,
+    required this.currentStep,
+    required this.state,
+  });
+
+  final List<String> steps;
+
+  /// 0-based index of the current step, or -1 when failed/expired.
+  final int currentStep;
+  final TxProgressState state;
+
+  int get totalSteps => steps.length;
+}
+
+_SwapProgress _swapProgressOf(Swap swap, AppLocalizations loc) {
+  return _SwapProgress(
+    steps: _steps(swap, loc),
+    currentStep: _currentStep(swap),
+    state: _state(swap),
+  );
+}
+
+TxProgressState _state(Swap swap) {
+  if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
+    return TxProgressState.failed;
+  }
+  if (swap.status == SwapStatus.completed ||
+      swap.status == SwapStatus.refunded) {
+    return TxProgressState.completed;
+  }
+  return TxProgressState.inProgress;
+}
+
+List<String> _steps(Swap swap, AppLocalizations loc) {
+  if (swap is LnReceiveSwap) {
+    return [
+      loc.transactionSwapProgressInitiated,
+      loc.transactionSwapProgressPaymentMade,
+      loc.transactionSwapProgressFundsClaimed,
+    ];
+  } else if (swap is LnSendSwap) {
+    return [
+      loc.transactionSwapProgressInitiated,
+      loc.transactionSwapProgressBroadcasted,
+      loc.transactionSwapProgressInvoicePaid,
+    ];
+  } else if (swap is ChainSwap) {
+    return [
+      loc.transactionSwapProgressInitiated,
+      loc.transactionSwapProgressConfirmed,
+      loc.transactionSwapProgressClaim,
+      loc.transactionSwapProgressCompleted,
+    ];
+  }
+  return [
+    loc.transactionSwapProgressInitiated,
+    loc.transactionSwapProgressInProgress,
+    loc.transactionSwapProgressCompleted,
+  ];
+}
+
+int _currentStep(Swap swap) {
+  if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
+    return -1;
+  }
+  return switch (swap.status) {
+    SwapStatus.pending => 0,
+    SwapStatus.paid => 1,
+    SwapStatus.claimable => swap is ChainSwap ? 2 : 1,
+    SwapStatus.refundable => swap is ChainSwap ? 2 : 1,
+    SwapStatus.canCoop => swap is ChainSwap ? 2 : 1,
+    SwapStatus.completed || SwapStatus.refunded => swap is ChainSwap ? 3 : 2,
+    SwapStatus.failed || SwapStatus.expired => 0,
+  };
 }

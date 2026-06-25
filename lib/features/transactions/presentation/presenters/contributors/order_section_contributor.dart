@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/contributors/transaction_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/utils/tx_format.dart';
 
 /// Exchange orders (buy, sell, fiat payment, funding, withdraw, reward, refund,
