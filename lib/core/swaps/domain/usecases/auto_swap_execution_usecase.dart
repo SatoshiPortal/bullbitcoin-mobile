@@ -134,7 +134,8 @@ class AutoSwapExecutionUsecase {
       walletId: defaultLiquidWallet.id,
       address: swap.paymentAddress,
       amountSat: swap.paymentAmount,
-      networkFee: const NetworkFee.relative(0.1),
+      // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+      feeRate: const RelativeFee(25),
     );
 
     log.fine('Getting absolute fees from PSET...');

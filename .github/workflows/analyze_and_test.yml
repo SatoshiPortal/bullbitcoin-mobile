@@ -72,13 +72,15 @@ jobs:
       - run: make build-runner
       - run: make translations
 
-      - name: Create .env file
-        run: |
-          echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
-          echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
-
       - name: Linter shouldn't raise errors, warnings or infos
         run: make analyze
+
+      - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
+        run: |
+          if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then
+            echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"
+            exit 1
+          fi
 
       - name: dart fix should have nothing to suggest
         run: |
@@ -106,7 +108,14 @@ jobs:
       # stopped unexpectedly / Unable to start the app on the device").
       # xvfb-run gives it a virtual X server. dbus-run-session + an
       # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
+      # Tests read the mnemonics via Platform.environment, so the secrets are
+      # exported as real env vars (not a .env file, which nothing loads). When a
+      # secret is unset (e.g. on forks) the var is empty and the funded-testnet
+      # groups skip themselves — "use the mnemonic if available".
       - name: Integration tests (Linux desktop)
+        env:
+          TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
+          TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets

@@ -52,4 +52,13 @@ if ! grep -q "Nothing to fix!" "$fixOut"; then
   exit 1
 fi
 
+# bull_ui import boundary: feature UI built on the design system must import
+# only `package:bull_ui/bull_ui.dart` for widgets — never Flutter UI directly.
+# (Until a first-party analyzer rule lands, this grep is the enforcement.)
+if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui" >/dev/null 2>&1; then
+  echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not package:flutter/{material,cupertino,widgets}.dart:"
+  grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui"
+  exit 1
+fi
+
 echo "End pre-commit hook"

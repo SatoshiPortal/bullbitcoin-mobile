@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/fees/data/fees_repository.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -140,12 +140,15 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
 
 class FakeFeesRepository implements FeesRepository {
   /// 0.5 sat/vb relative estimate: with a 1000 vb tx this gives 500 sats.
+  /// Rates are stored in sat/kwu (1 sat/vB = 250 sat/kwu): 0.5→125, 0.3→75,
+  /// 0.1→25.
   @override
   Future<FeeOptions> getNetworkFees({required Network network}) async =>
       const FeeOptions(
-        fastest: NetworkFee.relative(0.5),
-        economic: NetworkFee.relative(0.3),
-        slow: NetworkFee.relative(0.1),
+        fastest: NetworkFee.relativeSatPerKwu(125),
+        economic: NetworkFee.relativeSatPerKwu(75),
+        slow: NetworkFee.relativeSatPerKwu(25),
+        minRelay: RelativeFee(25),
       );
 
   @override
