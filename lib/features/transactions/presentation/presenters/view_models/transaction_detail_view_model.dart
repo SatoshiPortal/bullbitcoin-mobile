@@ -2,12 +2,12 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 /// Protocol-agnostic, UI-facing description of a transaction details screen.
 ///
-/// Built by [TransactionDetailViewBuilder] from one or more
+/// Built by [TransactionDetailViewModelBuilder] from one or more
 /// [TransactionSectionContributor]s and rendered by the transaction details
 /// widgets. The widgets depend only on this view model, never on the concrete
 /// domain entities (Swap, Order, Payjoin, WalletTransaction).
-class TransactionDetailView {
-  const TransactionDetailView({
+class TransactionDetailViewModel {
+  const TransactionDetailViewModel({
     required this.header,
     this.progress,
     this.rows = const [],

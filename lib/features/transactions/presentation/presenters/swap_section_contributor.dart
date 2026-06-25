@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/swap_progress.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/tx_format.dart';
+import 'package:bb_mobile/features/transactions/utils/tx_format.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 
 /// Boltz swaps — covers all subtypes (LN↔BTC/Liquid reverse & submarine, and

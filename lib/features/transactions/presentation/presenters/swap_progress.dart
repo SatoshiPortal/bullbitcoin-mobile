@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 
 /// Step-by-step progress of a swap, derived once and shared by the status row

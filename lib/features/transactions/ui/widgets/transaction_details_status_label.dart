@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:flutter/material.dart';
 
 class TransactionDetailsStatusLabel extends StatelessWidget {

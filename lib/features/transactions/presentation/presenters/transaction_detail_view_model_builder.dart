@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
 
-/// Assembles a [TransactionDetailView] by running every registered
+/// Assembles a [TransactionDetailViewModel] by running every registered
 /// [TransactionSectionContributor] that applies to the transaction.
 ///
 /// Rows and callouts from all applicable contributors are concatenated in
@@ -11,12 +11,12 @@ import 'package:bb_mobile/features/transactions/presentation/presenters/transact
 /// applicable contributor, which guarantees one authoritative status — a
 /// chain swap's on-chain lockup can no longer render a second, contradicting
 /// status.
-class TransactionDetailViewBuilder {
-  const TransactionDetailViewBuilder(this._contributors);
+class TransactionDetailViewModelBuilder {
+  const TransactionDetailViewModelBuilder(this._contributors);
 
   final List<TransactionSectionContributor> _contributors;
 
-  TransactionDetailView build(Transaction tx, TxPresentDeps deps) {
+  TransactionDetailViewModel build(Transaction tx, TxPresentDeps deps) {
     final applicable = _contributors.where((c) => c.appliesTo(tx)).toList()
       ..sort((a, b) => a.priority.compareTo(b.priority));
 
@@ -35,7 +35,7 @@ class TransactionDetailViewBuilder {
       if (p != null) progress = p;
     }
 
-    return TransactionDetailView(
+    return TransactionDetailViewModel(
       header: header ?? _fallbackHeader(tx, deps),
       progress: progress,
       rows: rows,

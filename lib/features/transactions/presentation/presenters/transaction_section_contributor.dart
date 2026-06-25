@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 
 /// Inputs a contributor needs that are not carried by the [Transaction]

@@ -15,8 +15,8 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_builder.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_model_builder.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_callout_card.dart';
@@ -58,8 +58,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOngoingSwap = tx?.isOngoingSwap;
     final isChainSwap = swap?.isChainSwap ?? false;
 
-    final TransactionDetailView? view = (!isLoading && tx != null)
-        ? locator<TransactionDetailViewBuilder>().build(
+    final TransactionDetailViewModel? view = (!isLoading && tx != null)
+        ? locator<TransactionDetailViewModelBuilder>().build(
             tx,
             TxPresentDeps(
               loc: context.loc,

@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/tx_format.dart';
+import 'package:bb_mobile/features/transactions/utils/tx_format.dart';
 
 /// Payjoin. Composes on top of [OnchainSectionContributor] once the payjoin is
 /// broadcasted (it is then also a wallet transaction); while still ongoing it

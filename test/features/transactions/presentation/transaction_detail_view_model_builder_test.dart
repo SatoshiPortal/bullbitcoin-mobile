@@ -5,18 +5,18 @@ import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/onchain_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/order_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/payjoin_section_contributor.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/swap_section_contributor.dart';
-import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_builder.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_detail_view_model_builder.dart';
 import 'package:bb_mobile/features/transactions/presentation/presenters/transaction_section_contributor.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _builder = TransactionDetailViewBuilder([
+const _builder = TransactionDetailViewModelBuilder([
   OnchainSectionContributor(),
   SwapSectionContributor(),
   OrderSectionContributor(),

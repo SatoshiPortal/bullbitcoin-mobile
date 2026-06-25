@@ -5,19 +5,19 @@ import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/transactions/presentation/models/transaction_detail_view.dart';
+import 'package:bb_mobile/features/transactions/presentation/presenters/view_models/transaction_detail_view_model.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/progress_steps_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Dumb renderer: maps a [TransactionDetailView] onto the shared
+/// Dumb renderer: maps a [TransactionDetailViewModel] onto the shared
 /// [DetailsTable]/[DetailsTableItem] widgets. It knows nothing about swaps,
 /// orders, payjoins or any future mechanism — only about the view model.
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key, required this.view});
 
-  final TransactionDetailView view;
+  final TransactionDetailViewModel view;
 
   @override
   Widget build(BuildContext context) {
