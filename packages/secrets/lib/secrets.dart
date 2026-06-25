@@ -10,7 +10,18 @@
 library;
 
 // ── Public API: statics + the sealed Secret handle hierarchy ───────────────
-export 'src/secrets_api.dart' show Secrets, Secret, MnemonicSecret, SeedSecret;
+export 'src/secrets_api.dart'
+    show
+        Secrets,
+        Secret,
+        MnemonicSecret,
+        SeedSecret,
+        SecretsStorageMode,
+        SecretsBackendOutcome,
+        SecretsInitResult;
+
+// ── Storage-backend selection result (the app persists/telemeters this) ────
+export 'src/data/migration/secret_migrator.dart' show MigrationReport;
 
 // ── The one injected contract (the APP implements this; everything else internal)
 export 'src/domain/ports/secret_index_port.dart' show SecretIndexPort;

@@ -46,7 +46,7 @@ void main() {
   late MnemonicSecret zooSecret;
 
   setUp(() async {
-    Secrets.init(
+    await Secrets.init(
       index: _FakeIndex(),
       store: FssSecretStoreAdapter(FakeSecureKeyValueStore(),
           initialRetryDelay: Duration.zero),
@@ -90,7 +90,7 @@ void main() {
         (tester) async {
       // Re-init over a locked keychain so the in-package reader's read() throws.
       Secrets.reset();
-      Secrets.init(
+      await Secrets.init(
         index: _FakeIndex(),
         store: FssSecretStoreAdapter(FakeSecureKeyValueStore()..locked = true,
             initialRetryDelay: Duration.zero),

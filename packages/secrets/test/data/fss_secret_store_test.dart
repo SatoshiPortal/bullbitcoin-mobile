@@ -30,17 +30,25 @@ class _FakeSeedIndex implements SecretIndexPort {
 
 void main() {
   group('FssSecretStoreAdapter round-trip', () {
-    test('store then useAndForget returns the bytes', () async {
+    test('store then useAndForget exposes the bytes, then zeroes the buffer',
+        () async {
       final kv = FakeSecureKeyValueStore();
       final store = _store(kv);
       final bytes = Uint8List.fromList([1, 2, 3, 4]);
 
       await store.store(SecretStoreKeys.seedKey('deadbeef'), bytes);
-      final got = await store.useAndForget(
+      // Copy inside the callback: the live buffer is the caller's only during
+      // `use`; §5.5 zeroes it in a `finally` the instant the callback returns.
+      late final Uint8List leaked;
+      final copy = await store.useAndForget(
         SecretStoreKeys.seedKey('deadbeef'),
-        (b) async => b,
+        (b) async {
+          leaked = b;
+          return Uint8List.fromList(b);
+        },
       );
-      expect(got, bytes);
+      expect(copy, [1, 2, 3, 4]); // the callback saw the cleartext
+      expect(leaked, [0, 0, 0, 0]); // …but the live buffer was wiped after use
     });
 
     test('values are stored base64-encoded, never in the clear', () async {

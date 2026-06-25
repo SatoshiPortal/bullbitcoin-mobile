@@ -69,6 +69,16 @@ final class VaultFailure extends SecretsFailure {
   const VaultFailure([super.logMessage]);
 }
 
+/// The hardware key backing this secret was permanently invalidated by the OS
+/// (Android Keystore key deleted after a biometric/lock-screen change; an
+/// iOS/macOS key lost after a device restore without key material). The
+/// ciphertext exists but is unreadable forever. NOT a transient lock
+/// ([KeychainLockedFailure]) and NOT a missing import ([SecretNotFoundFailure]).
+/// Recovery: purge, then have the user re-enter the secret from their backup.
+final class KeyInvalidatedFailure extends SecretsFailure {
+  const KeyInvalidatedFailure([super.logMessage]);
+}
+
 /// Catch-all for an unexpected foreign exception at the boundary.
 final class SecretsUnexpectedFailure extends SecretsFailure {
   const SecretsUnexpectedFailure([super.logMessage]);

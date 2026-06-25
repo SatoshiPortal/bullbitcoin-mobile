@@ -38,8 +38,8 @@ void main() {
     'about',
   ];
 
-  setUp(() {
-    Secrets.init(
+  setUp(() async {
+    await Secrets.init(
       index: _FakeIndex(),
       store: FssSecretStoreAdapter(FakeSecureKeyValueStore()),
     );

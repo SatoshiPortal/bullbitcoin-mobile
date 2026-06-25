@@ -2,6 +2,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart'
     show SecretStoreKeys;
+import 'package:secrets/src/data/datasources/hardware_key_invalidated_exception.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
@@ -70,6 +71,11 @@ class SecretGuard {
       // typed failure), uniformly across every operation, NOT the per-adapter
       // catch-all. Only the exception CLASS is recorded, never its message.
       return Err(InvalidMnemonicFailure(e.runtimeType.toString()));
+    } on HardwareKeyInvalidatedException {
+      // The hardware key is permanently gone (not a transient lock, not a
+      // missing import). Surface the dedicated failure so the UI can prompt a
+      // re-entry-from-backup rather than mis-report "invalid mnemonic".
+      return const Err(KeyInvalidatedFailure());
     } on Exception catch (e) {
       return Err(onError(e.runtimeType.toString()));
     }

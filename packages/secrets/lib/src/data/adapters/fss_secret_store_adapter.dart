@@ -94,7 +94,20 @@ class FssSecretStoreAdapter implements SecretStorePort {
       }
 
       if (value != null) {
-        return use(_decode(value));
+        // Zero the decoded plaintext after `use`, matching oubliette's
+        // base-class hygiene. The `await` is mandatory — without it the
+        // `finally` would zero the buffer before the async callback runs and
+        // hand `use` all-zero bytes. (The underlying base64 String from the
+        // channel is immutable and unzeroable — the string-vs-bytes limit
+        // oubliette exists to fix; zeroing the decoded Uint8List is the best FSS
+        // can do. Relies on `use`/`Mnemonic.fromStorageBytes` not retaining a
+        // view past return — the same invariant oubliette already depends on.)
+        final bytes = _decode(value);
+        try {
+          return await use(bytes);
+        } finally {
+          bytes.fillRange(0, bytes.length, 0);
+        }
       }
       if (!isLast) {
         await Future<void>.delayed(delay);
