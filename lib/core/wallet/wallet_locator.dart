@@ -52,7 +52,7 @@ class WalletLocator {
     );
 
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
-      () => FrozenWalletUtxoDatasource(),
+      () => FrozenWalletUtxoDatasource(db: locator<SqliteDatabase>()),
     );
   }
 

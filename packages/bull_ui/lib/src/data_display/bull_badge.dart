@@ -14,7 +14,7 @@ class BullBadge extends StatelessWidget {
     this.icon,
     this.iconSize = 11,
     this.uppercase = false,
-    this.radius = BullRadius.xs,
+    this.radius = BullRadius.xxs,
   });
 
   /// Badge text.
@@ -41,7 +41,7 @@ class BullBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(radius),
@@ -59,7 +59,12 @@ class BullBadge extends StatelessWidget {
                 (uppercase
                         ? Theme.of(context).textTheme.labelSmall
                         : Theme.of(context).textTheme.labelLarge)
-                    ?.copyWith(fontWeight: FontWeight.w600, color: foreground),
+                    ?.copyWith(
+                      fontSize: uppercase ? 10.5 : 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: uppercase ? 0.2 : null,
+                      color: foreground,
+                    ),
           ),
         ],
       ),

@@ -64,6 +64,7 @@ class BullToolButton extends StatelessWidget {
                   Text(
                     label,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontSize: 11.5,
                       fontWeight: FontWeight.w600,
                       color: fg,
                     ),

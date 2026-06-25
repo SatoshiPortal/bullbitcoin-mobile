@@ -378,21 +378,20 @@ class LwkWalletDatasource {
 
   Future<String> buildPset({
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      if (networkFee.isAbsolute) {
-        throw Exception('Absolute fee is not supported for liquid yet!');
-      }
-      log.info(networkFee.value.toDouble().toString());
+      // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
+      // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
+      // arithmetic promoted to double — no precision loss at the SDK boundary.
       final pset = await lwkWallet.buildLbtcTx(
         sats: BigInt.from(amountSat ?? 0),
         outAddress: address,
-        feeRate: networkFee.value.toDouble() * 1000,
+        feeRate: feeRate.satPerKvbyte,
         drain: drain,
       );
       final decoded = await lwkWallet.decodeTx(pset: pset);

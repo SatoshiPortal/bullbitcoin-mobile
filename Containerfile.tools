@@ -1,11 +1,19 @@
-FROM --platform=linux/amd64 debian:trixie
+# Base pinned by digest for reproducibility (the `trixie` tag is rolling).
+# Refresh: docker buildx imagetools inspect debian:trixie --format '{{.Manifest.Digest}}'
+FROM --platform=linux/amd64 debian:trixie@sha256:fe7312b5f05bf5f43fad76bcd8945642e4e47a68aefd1b73f447615899d0fac1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
 ENV USER=$USERNAME
-ARG FVM_VERSION="4.1.0"
-ARG FLUTTER_VERSION="3.44.1"
+# IMPORTANT: these ARG defaults are the single source of truth ONLY for the dev
+# container, which builds this file passing just USERNAME. `make container-tools`
+# overrides FLUTTER_VERSION (from .fvmrc) and the ANDROID_* args (from
+# android/gradle.properties); the FVM CI install pins FVM separately. Keep these
+# defaults in sync with .fvmrc / android/gradle.properties so the dev container
+# and the reproducible release build never diverge on toolchain versions.
+ARG FVM_VERSION="4.1.1"
+ARG FLUTTER_VERSION="3.44.2"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)
@@ -110,6 +118,13 @@ RUN rustup component add clippy rustfmt
 ENV RUSTUP_TOOLCHAIN=${RUST_VERSION}
 ENV RUSTUP_AUTO_INSTALL=0
 
+# Use the system git binary for cargo's git dependency fetches instead of the
+# built-in libgit2. libgit2's TLS backend intermittently fails on some git
+# hosts with `SSL error: unknown error; class=Ssl (16)`; the system git (built
+# against OpenSSL, with proper CA certs) handles these reliably. cargokit pulls
+# bull_sdk's Rust git deps (bbqr-rust, ark-wallet-dart) this way.
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
 # Add Android Rust targets
 RUN rustup target add aarch64-linux-android
 RUN rustup target add armv7-linux-androideabi
@@ -135,8 +150,14 @@ RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
 RUN rm /tmp/fvm-install.sh
 ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
-# Install Flutter via FVM
-RUN fvm install ${FLUTTER_VERSION}
+# Install Flutter via FVM.
+# Run the Flutter tool in non-interactive "bot" mode for the whole build: its
+# bot_detector treats the `CI` env var as CI, so it skips the analytics prompt,
+# animated spinners and any stdin waits that can hang a non-TTY `podman build`.
+# GitHub Actions sets this automatically; a local/container build does not.
+ENV CI=true
+ENV FVM_USE_GIT_CACHE=false
+RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 

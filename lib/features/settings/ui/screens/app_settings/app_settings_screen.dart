@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_tile.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,9 @@ class AppSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+    final isDevModeEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
     );
     final currentLanguage = context.select(
       (SettingsCubit cubit) =>
@@ -82,6 +86,7 @@ class AppSettingsScreen extends StatelessWidget {
                     title: context.loc.appSettingsDevModeTitle,
                     trailing: const DevModeSwitch(),
                   ),
+                if (isDevModeEnabled) const ExchangeTestnetBasicAuthTile(),
                 SettingsEntryItem(
                   icon: Icons.bug_report,
                   title: context.loc.settingsErrorReportingTitle,

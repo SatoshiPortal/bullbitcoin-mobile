@@ -5760,6 +5760,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Διαπιστευτήρια ανταλλακτηρίου testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth για τις ιστοσελίδες του ανταλλακτηρίου testnet (σύνδεση και KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Όνομα χρήστη",
+  "exchangeTestnetBasicAuthPasswordLabel": "Κωδικός πρόσβασης",
+  "exchangeTestnetBasicAuthClearButton": "Εκκαθάριση",
+  "exchangeTestnetBasicAuthSaveButton": "Αποθήκευση",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -9044,8 +9050,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "λίγες ώρες",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "ώρες",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "Κάθε μήνα",
@@ -12777,5 +12783,266 @@
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "onboardingAdvancedOptionsDone": "Τέλος",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android"
+  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
+  "walletButtonCoins": "Διαχείριση νομισμάτων",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Νομίσματα",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 νόμισμα} other{{count} νομίσματα}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Παγωμένα",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Διαθέσιμα",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Κανένα παγωμένο",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Ταξινόμηση & Φίλτρο",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} από {total} εμφανίζονται",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 μη ξοδεμένη έξοδος} other{{count} μη ξοδεμένες έξοδοι}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Συγχρονισμός",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Εκκαθάριση όλων",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Ποσό: Υψηλό προς Χαμηλό",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Ποσό: Χαμηλό προς Υψηλό",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Ημερομηνία: Νεότερα",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Ημερομηνία: Παλαιότερα",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Μπρελόκ κλειδιών",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Όλα",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Λήψη",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Ρέστα",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Κατάσταση παγώματος",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Όλα",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Παγωμένα",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Μη παγωμένα",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Ετικέτες",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Επαναφορά",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Εφαρμογή",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 επιλεγμένο} other{{count} επιλεγμένα}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Επιλογή όλων",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Πάγωμα",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Ξεπάγωμα",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Αναίρεση",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Πάγωμα 1 νομίσματος;} other{Πάγωμα {count} νομισμάτων;}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Τα παγωμένα νομίσματα παραμένουν στο πορτοφόλι σας αλλά εξαιρούνται από τις δαπάνες μέχρι να τα ξεπαγώσετε.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Το πάγωμα αυτών των νομισμάτων θα σας αφήσει χωρίς διαθέσιμο υπόλοιπο.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 νόμισμα παγωμένο · εξαιρείται από τις δαπάνες} other{{count} νομίσματα παγωμένα · εξαιρούνται από τις δαπάνες}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 νόμισμα ξεπαγωμένο} other{{count} νομίσματα ξεπαγωμένα}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 επιβ.} other{{count} επιβ.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Σε εκκρεμότητα",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Δεν υπάρχουν νομίσματα ακόμη",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Τα νομίσματα θα εμφανιστούν εδώ μόλις λάβετε bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Κανένα νόμισμα δεν ταιριάζει",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Εκκαθάριση φίλτρων",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Επανάληψη",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Σύρετε ένα νόμισμα για πάγωμα · παρατεταμένο πάτημα για επιλογή",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των νομισμάτων σας. Τραβήξτε για ανανέωση για να δοκιμάσετε ξανά.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Δεν ήταν δυνατό το πάγωμα των επιλεγμένων νομισμάτων. Δοκιμάστε ξανά.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Δεν ήταν δυνατό το ξεπάγωμα των επιλεγμένων νομισμάτων. Δοκιμάστε ξανά.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Κάτι πήγε στραβά. Δοκιμάστε ξανά.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} παγωμένα",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
+  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
+  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
+  "logsViewerShareButton": "Κοινοποίηση",
+  "logsShareOptionShare": "Κοινοποίηση",
+  "logsShareOptionExport": "Εξαγωγή",
+  "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
 }

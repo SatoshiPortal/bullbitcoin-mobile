@@ -5,7 +5,11 @@ abstract final class BullRadius {
   /// No rounding.
   static const double zero = 0;
 
-  /// Extra-small — buttons, cards, small chips, inputs.
+  /// Hairline — buttons, cards, badges, checkbox (the design's 2px
+  /// `--r-button`/`--r-card`).
+  static const double xxs = 2;
+
+  /// Extra-small — sheets segments, small chips, inputs.
   static const double xs = 4;
 
   /// Small.

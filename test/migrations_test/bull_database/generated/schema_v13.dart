@@ -1810,6 +1810,24 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
         defaultValue: const CustomExpression('0'),
       );
+  late final GeneratedColumn<String> exchangeTestnetBasicAuthUsername =
+      GeneratedColumn<String>(
+        'exchange_testnet_basic_auth_username',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> exchangeTestnetBasicAuthPassword =
+      GeneratedColumn<String>(
+        'exchange_testnet_basic_auth_password',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1824,6 +1842,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     torProxyPort,
     themeMode,
     isErrorReportingEnabled,
+    exchangeTestnetBasicAuthUsername,
+    exchangeTestnetBasicAuthPassword,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1884,6 +1904,14 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.int,
         data['${effectivePrefix}is_error_reporting_enabled'],
       )!,
+      exchangeTestnetBasicAuthUsername: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exchange_testnet_basic_auth_username'],
+      ),
+      exchangeTestnetBasicAuthPassword: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exchange_testnet_basic_auth_password'],
+      ),
     );
   }
 
@@ -1909,6 +1937,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int torProxyPort;
   final String themeMode;
   final int isErrorReportingEnabled;
+  final String? exchangeTestnetBasicAuthUsername;
+  final String? exchangeTestnetBasicAuthPassword;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1922,6 +1952,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.torProxyPort,
     required this.themeMode,
     required this.isErrorReportingEnabled,
+    this.exchangeTestnetBasicAuthUsername,
+    this.exchangeTestnetBasicAuthPassword,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1938,6 +1970,16 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
     map['theme_mode'] = Variable<String>(themeMode);
     map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
+    if (!nullToAbsent || exchangeTestnetBasicAuthUsername != null) {
+      map['exchange_testnet_basic_auth_username'] = Variable<String>(
+        exchangeTestnetBasicAuthUsername,
+      );
+    }
+    if (!nullToAbsent || exchangeTestnetBasicAuthPassword != null) {
+      map['exchange_testnet_basic_auth_password'] = Variable<String>(
+        exchangeTestnetBasicAuthPassword,
+      );
+    }
     return map;
   }
 
@@ -1955,6 +1997,14 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       torProxyPort: Value(torProxyPort),
       themeMode: Value(themeMode),
       isErrorReportingEnabled: Value(isErrorReportingEnabled),
+      exchangeTestnetBasicAuthUsername:
+          exchangeTestnetBasicAuthUsername == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeTestnetBasicAuthUsername),
+      exchangeTestnetBasicAuthPassword:
+          exchangeTestnetBasicAuthPassword == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeTestnetBasicAuthPassword),
     );
   }
 
@@ -1978,6 +2028,12 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isErrorReportingEnabled: serializer.fromJson<int>(
         json['isErrorReportingEnabled'],
       ),
+      exchangeTestnetBasicAuthUsername: serializer.fromJson<String?>(
+        json['exchangeTestnetBasicAuthUsername'],
+      ),
+      exchangeTestnetBasicAuthPassword: serializer.fromJson<String?>(
+        json['exchangeTestnetBasicAuthPassword'],
+      ),
     );
   }
   @override
@@ -1998,6 +2054,12 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'isErrorReportingEnabled': serializer.toJson<int>(
         isErrorReportingEnabled,
       ),
+      'exchangeTestnetBasicAuthUsername': serializer.toJson<String?>(
+        exchangeTestnetBasicAuthUsername,
+      ),
+      'exchangeTestnetBasicAuthPassword': serializer.toJson<String?>(
+        exchangeTestnetBasicAuthPassword,
+      ),
     };
   }
 
@@ -2014,6 +2076,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? torProxyPort,
     String? themeMode,
     int? isErrorReportingEnabled,
+    Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
+    Value<String?> exchangeTestnetBasicAuthPassword = const Value.absent(),
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -2028,6 +2092,12 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     themeMode: themeMode ?? this.themeMode,
     isErrorReportingEnabled:
         isErrorReportingEnabled ?? this.isErrorReportingEnabled,
+    exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername.present
+        ? exchangeTestnetBasicAuthUsername.value
+        : this.exchangeTestnetBasicAuthUsername,
+    exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword.present
+        ? exchangeTestnetBasicAuthPassword.value
+        : this.exchangeTestnetBasicAuthPassword,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2059,6 +2129,14 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       isErrorReportingEnabled: data.isErrorReportingEnabled.present
           ? data.isErrorReportingEnabled.value
           : this.isErrorReportingEnabled,
+      exchangeTestnetBasicAuthUsername:
+          data.exchangeTestnetBasicAuthUsername.present
+          ? data.exchangeTestnetBasicAuthUsername.value
+          : this.exchangeTestnetBasicAuthUsername,
+      exchangeTestnetBasicAuthPassword:
+          data.exchangeTestnetBasicAuthPassword.present
+          ? data.exchangeTestnetBasicAuthPassword.value
+          : this.exchangeTestnetBasicAuthPassword,
     );
   }
 
@@ -2076,7 +2154,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
           ..write('themeMode: $themeMode, ')
-          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
+          ..write(
+            'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
+          )
+          ..write(
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
+          )
           ..write(')'))
         .toString();
   }
@@ -2095,6 +2179,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     torProxyPort,
     themeMode,
     isErrorReportingEnabled,
+    exchangeTestnetBasicAuthUsername,
+    exchangeTestnetBasicAuthPassword,
   );
   @override
   bool operator ==(Object other) =>
@@ -2111,7 +2197,11 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort &&
           other.themeMode == this.themeMode &&
-          other.isErrorReportingEnabled == this.isErrorReportingEnabled);
+          other.isErrorReportingEnabled == this.isErrorReportingEnabled &&
+          other.exchangeTestnetBasicAuthUsername ==
+              this.exchangeTestnetBasicAuthUsername &&
+          other.exchangeTestnetBasicAuthPassword ==
+              this.exchangeTestnetBasicAuthPassword);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2127,6 +2217,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> torProxyPort;
   final Value<String> themeMode;
   final Value<int> isErrorReportingEnabled;
+  final Value<String?> exchangeTestnetBasicAuthUsername;
+  final Value<String?> exchangeTestnetBasicAuthPassword;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2140,6 +2232,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
+    this.exchangeTestnetBasicAuthUsername = const Value.absent(),
+    this.exchangeTestnetBasicAuthPassword = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2154,6 +2248,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
+    this.exchangeTestnetBasicAuthUsername = const Value.absent(),
+    this.exchangeTestnetBasicAuthPassword = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2173,6 +2269,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? torProxyPort,
     Expression<String>? themeMode,
     Expression<int>? isErrorReportingEnabled,
+    Expression<String>? exchangeTestnetBasicAuthUsername,
+    Expression<String>? exchangeTestnetBasicAuthPassword,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2188,6 +2286,12 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (themeMode != null) 'theme_mode': themeMode,
       if (isErrorReportingEnabled != null)
         'is_error_reporting_enabled': isErrorReportingEnabled,
+      if (exchangeTestnetBasicAuthUsername != null)
+        'exchange_testnet_basic_auth_username':
+            exchangeTestnetBasicAuthUsername,
+      if (exchangeTestnetBasicAuthPassword != null)
+        'exchange_testnet_basic_auth_password':
+            exchangeTestnetBasicAuthPassword,
     });
   }
 
@@ -2204,6 +2308,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? torProxyPort,
     Value<String>? themeMode,
     Value<int>? isErrorReportingEnabled,
+    Value<String?>? exchangeTestnetBasicAuthUsername,
+    Value<String?>? exchangeTestnetBasicAuthPassword,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2219,6 +2325,12 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       themeMode: themeMode ?? this.themeMode,
       isErrorReportingEnabled:
           isErrorReportingEnabled ?? this.isErrorReportingEnabled,
+      exchangeTestnetBasicAuthUsername:
+          exchangeTestnetBasicAuthUsername ??
+          this.exchangeTestnetBasicAuthUsername,
+      exchangeTestnetBasicAuthPassword:
+          exchangeTestnetBasicAuthPassword ??
+          this.exchangeTestnetBasicAuthPassword,
     );
   }
 
@@ -2263,6 +2375,16 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
         isErrorReportingEnabled.value,
       );
     }
+    if (exchangeTestnetBasicAuthUsername.present) {
+      map['exchange_testnet_basic_auth_username'] = Variable<String>(
+        exchangeTestnetBasicAuthUsername.value,
+      );
+    }
+    if (exchangeTestnetBasicAuthPassword.present) {
+      map['exchange_testnet_basic_auth_password'] = Variable<String>(
+        exchangeTestnetBasicAuthPassword.value,
+      );
+    }
     return map;
   }
 
@@ -2280,7 +2402,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
           ..write('themeMode: $themeMode, ')
-          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
+          ..write(
+            'exchangeTestnetBasicAuthUsername: $exchangeTestnetBasicAuthUsername, ',
+          )
+          ..write(
+            'exchangeTestnetBasicAuthPassword: $exchangeTestnetBasicAuthPassword',
+          )
           ..write(')'))
         .toString();
   }

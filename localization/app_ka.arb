@@ -1,5 +1,11 @@
 {
   "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
+  "exchangeTestnetBasicAuthTitle": "Testnet გაცვლის სერთიფიკატები",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth testnet გაცვლის ვებგვერდებისთვის (შესვლა და KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "მომხმარებლის სახელი",
+  "exchangeTestnetBasicAuthPasswordLabel": "პაროლი",
+  "exchangeTestnetBasicAuthClearButton": "გასუფთავება",
+  "exchangeTestnetBasicAuthSaveButton": "შენახვა",
   "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
   "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
   "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",
@@ -494,5 +500,266 @@
   "fundExchangeErrorRcpPo404": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
   "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
   "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.",
-  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა"
+  "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა",
+  "walletButtonCoins": "მონეტების მართვა",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "მონეტები",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 მონეტა} other{{count} მონეტა}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "გაყინული",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "დახარჯვადი",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "გაყინული არ არის",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "დახარისხება და ფილტრი",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "ნაჩვენებია {visible} / {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 დაუხარჯავი გამოსავალი} other{{count} დაუხარჯავი გამოსავალი}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "სინქრონიზაცია",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "ყველას გასუფთავება",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "თანხა: მაღლიდან დაბლა",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "თანხა: დაბლიდან მაღლა",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "თარიღი: უახლესი",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "თარიღი: უძველესი",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "გასაღებების ჯაჭვი",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "ყველა",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "მიღება",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "ხურდა",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "გაყინვის სტატუსი",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "ყველა",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "გაყინული",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "გაუყინავი",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "ლეიბლები",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "გადატვირთვა",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "გამოყენება",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 არჩეული} other{{count} არჩეული}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "ყველას მონიშვნა",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "გაყინვა",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "გაყინვის გაუქმება",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "მოქმედების გაუქმება",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{გაიყინოს 1 მონეტა?} other{გაიყინოს {count} მონეტა?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "გაყინული მონეტები რჩება თქვენს საფულეში, მაგრამ გამორიცხულია დახარჯვისგან მათ გაყინვის გაუქმებამდე.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "ამ მონეტების გაყინვის შემდეგ დახარჯვადი ბალანსი არ დაგრჩებათ.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 მონეტა გაიყინა · გამორიცხულია დახარჯვისგან} other{{count} მონეტა გაიყინა · გამორიცხულია დახარჯვისგან}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 მონეტის გაყინვა გაუქმდა} other{{count} მონეტის გაყინვა გაუქმდა}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 დადასტურება} other{{count} დადასტურება}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "მოლოდინში",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "მონეტები ჯერ არ არის",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "მონეტები აქ გამოჩნდება, როცა ბიტკოინს მიიღებთ.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "მონეტები ვერ მოიძებნა",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "ფილტრების გასუფთავება",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "ხელახლა ცდა",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "გადაასრიალეთ მონეტა გასაყინად · დააჭირეთ ხანგრძლივად მოსანიშნად",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "თქვენი მონეტების ჩატვირთვა ვერ მოხერხდა. ჩამოწიეთ განახლებისთვის და სცადეთ ხელახლა.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "არჩეული მონეტების გაყინვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "არჩეული მონეტების გაყინვის გაუქმება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "რაღაც შეცდომა მოხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} გაყინული",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "თარიღის მიხედვით გაფილტრვა",
+  "logsViewerShowingCount": "ნაჩვენებია {shown} {total}-დან",
+  "logsViewerClearFilter": "ფილტრის გასუფთავება",
+  "logsViewerShareButton": "გაზიარება",
+  "logsShareOptionShare": "გაზიარება",
+  "logsShareOptionExport": "ექსპორტი",
+  "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
 }

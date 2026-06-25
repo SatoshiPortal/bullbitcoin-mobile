@@ -28,6 +28,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebViewController _controller = WebViewController();
   late final WebviewCookieManager _cookieManager = WebviewCookieManager();
   late final String _bbAuthUrl;
+  String? _basicAuthUsername;
+  String? _basicAuthPassword;
   bool _isGeneratingApiKey = false;
   bool _isClosing = false;
 
@@ -35,12 +37,16 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   void initState() {
     super.initState();
 
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
+    final settingsState = context.read<SettingsCubit>().state;
+    final isTestnet = settingsState.environment == Environment.testnet;
     _bbAuthUrl =
         isTestnet
             ? ApiServiceConstants.bbAuthTestUrl
             : ApiServiceConstants.bbAuthUrl;
+    if (isTestnet) {
+      _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
+      _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
+    }
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -178,11 +184,14 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
+            final username = _basicAuthUsername;
+            final password = _basicAuthPassword;
+            if (username == null || password == null) {
+              request.onCancel();
+              return;
+            }
             request.onProceed(
-              WebViewCredential(
-                user: ApiServiceConstants.basicAuthUsername,
-                password: ApiServiceConstants.basicAuthPassword,
-              ),
+              WebViewCredential(user: username, password: password),
             );
           },
         ),
