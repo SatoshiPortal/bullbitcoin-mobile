@@ -12651,7 +12651,7 @@
       }
     }
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },

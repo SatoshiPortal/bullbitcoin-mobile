@@ -12578,7 +12578,7 @@
       }
     }
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "मेमोनिक आयात करने के लिए एक लेबल आवश्यक है",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },

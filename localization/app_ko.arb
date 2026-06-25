@@ -12647,7 +12647,7 @@
       }
     }
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },

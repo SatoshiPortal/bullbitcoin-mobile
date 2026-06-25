@@ -4795,7 +4795,7 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "È richiesta un'etichetta per importare una mnemonica",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },

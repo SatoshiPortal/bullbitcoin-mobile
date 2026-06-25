@@ -8755,6 +8755,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "Mnemonic import karne ke liye ek label aavashyak hai",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "importWatchOnlyTitle": "Watch-only import karo",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"

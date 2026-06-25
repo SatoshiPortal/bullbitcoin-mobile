@@ -24,7 +24,7 @@ class CheckDuplicateMnemonicUsecase {
       }
       return const Ok(null);
     } catch (e, st) {
-      log.warning('Duplicate mnemonic check failed', error: e, trace: st);
+      log.severe(message: 'Duplicate mnemonic check failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
     }
   }

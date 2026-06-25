@@ -4677,7 +4677,7 @@
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "导入助记词需要标签",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },

@@ -12765,7 +12765,7 @@
       }
     }
   },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
