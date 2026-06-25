@@ -1,0 +1,215 @@
+name: Crash-cache → Issues
+
+# Manually-triggered sync of the latest reported app version's crashes from
+# crash-cache (via a read-only Metabase question) into GitHub issues.
+#
+#   - new fingerprint            → create an issue (label `crash`)
+#   - existing & open            → rewrite body in place (bump counts/last-seen)
+#   - existing & closed          → skip (a closed crash stays closed)
+#
+# Dedup key is the in-app-frame fingerprint, embedded as a hidden
+# `<!-- crash-cache-fp: <sha256> -->` marker. We find matches by listing
+# `crash`-labelled issues (state=all) and matching the marker in memory — no
+# Search API (unreliable for long hex tokens + index lag).
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print planned actions without creating/editing issues"
+        type: boolean
+        default: true
+
+# Only the issues API + the built-in token. No PAT.
+permissions:
+  issues: write
+  contents: read
+
+# One sync at a time.
+concurrency:
+  group: crash-cache-issues
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      METABASE_URL: ${{ secrets.METABASE_URL }}
+      METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+      METABASE_CARD_ID: "74" # the "Latest Issues" question
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - name: Fetch crash rows from Metabase
+        run: |
+          set -euo pipefail
+          if [ -z "${METABASE_URL}" ] || [ -z "${METABASE_API_KEY}" ]; then
+            echo "::error::METABASE_URL and METABASE_API_KEY secrets are required."
+            exit 1
+          fi
+          # POST /api/card/:id/query/json returns the question's rows as a JSON array.
+          code=$(curl -sS -o metabase.json -w '%{http_code}' \
+            -X POST "${METABASE_URL%/}/api/card/${METABASE_CARD_ID}/query/json" \
+            -H "x-api-key: ${METABASE_API_KEY}" \
+            -H "Content-Type: application/json")
+          if [ "$code" != "200" ]; then
+            echo "::error::Metabase returned HTTP $code"
+            head -c 2000 metabase.json || true
+            exit 1
+          fi
+          echo "Fetched $(wc -c < metabase.json) bytes."
+
+      - name: Sync issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { owner, repo } = context.repo;
+            const dry = String(process.env.DRY_RUN) === 'true';
+            const REPO_URL = `https://github.com/${owner}/${repo}`;
+            const CC_URL = 'https://github.com/ethicnology/crash-cache';
+            const today = new Date().toISOString().slice(0, 10);
+
+            // ---- helpers ---------------------------------------------------
+            const norm = r => Object.fromEntries(
+              Object.entries(r).map(([k, v]) => [k.toLowerCase().replace(/\s+/g, '_'), v]));
+            const num = v => {
+              if (v == null) return 0;
+              const n = parseInt(String(v).replace(/[^0-9-]/g, ''), 10); // strips Metabase "1,147"
+              return Number.isNaN(n) ? 0 : n;
+            };
+            const parseJSON = v => {
+              if (v == null) return null;
+              if (typeof v !== 'string') return v;
+              try { return JSON.parse(v); } catch { return null; }
+            };
+            const marker = fp => `<!-- crash-cache-fp: ${fp} -->`;
+            // Compare bodies ignoring the volatile "synced" footer line.
+            const stripFooter = b => (b || '').replace(/<sub>Tracked by[\s\S]*?<\/sub>\s*/, '');
+
+            function renderTrace(frames) {
+              const lines = [];
+              let i = 0;
+              for (const f of [...frames].reverse()) {   // stored oldest-first → show crash site first
+                if (!f || !f.function) { lines.push('   <asynchronous suspension>'); continue; }
+                const path = f.abs_path || f.filename || '';
+                lines.push(`#${i} ${f.function}`);
+                lines.push(`   ${f.lineno != null ? `${path}:${f.lineno}` : path}`);
+                i++;
+              }
+              return lines.join('\n');
+            }
+
+            function buildBody(row, firstSynced) {
+              const v = row.version, ref = `v${v}`;
+              const events = num(row.events_version), total = num(row.events_total);
+              const dev = num(row.devices_version), a = num(row.devices_android), ios = num(row.devices_ios);
+              const fp = row.fingerprint, fpShort = row.fingerprint_short || (fp || '').slice(0, 8);
+              // Neutralize any HTML-comment opener so crash content can never forge
+              // the fingerprint marker that drives dedup (zero-width break, invisible).
+              const devMsg = (row.dev_message || '').trim().replace(/<!--/g, '<​!--');
+              const variants = num(row.dev_message_variant_count);
+              const frames = parseJSON(row.frames) || [];
+              const realFrames = frames.filter(f => f && f.function);
+              const parts = [];
+
+              if (devMsg) {
+                if (devMsg.includes('\n') || devMsg.length > 100) {
+                  parts.push('**What happened**\n```text\n' + devMsg + '\n```');
+                } else {
+                  parts.push('> [!CAUTION]\n> ' + devMsg);
+                }
+                if (variants > 0) parts.push(`_+ ${variants} variant${variants > 1 ? 's' : ''}_`);
+              }
+
+              const plat = (a + ios > 0) ? ` (${a} Android · ${ios} iOS)` : '';
+              parts.push('`' + v + '` · **' + events + '** events (' + total + ' all-time) · **' + dev +
+                '** devices' + plat + ' · first seen ' + (row.first_seen || '—') + ' · last seen ' + (row.last_seen || '—'));
+
+              const cp = row.crash_repo_path || '', cl = num(row.crash_line), fn = row.crash_fn || '';
+              if (fn) {
+                const base = cp.split('/').pop();
+                const link = cp.startsWith('lib/')
+                  ? `[${base}:${cl}](${REPO_URL}/blob/${ref}/${cp}#L${cl})`
+                  : '`' + cp + ':' + cl + '`';
+                parts.push('**Crash site** · `' + fn + '` → ' + link);
+              }
+
+              if (realFrames.length > 1) {
+                parts.push('<details><summary>Full stack trace (' + realFrames.length + ' frames)</summary>\n\n```\n' +
+                  renderTrace(frames) + '\n```\n</details>');
+              }
+
+              parts.push('---\n<sub>Tracked by [crash-cache](' + CC_URL + ') · fp `' + fpShort +
+                '` · first synced ' + firstSynced + ' · last synced ' + today +
+                ' · latest reported version only.</sub>\n' + marker(fp));
+
+              return parts.join('\n\n');
+            }
+
+            // ---- load rows -------------------------------------------------
+            const rows = JSON.parse(fs.readFileSync('metabase.json', 'utf8')).map(norm)
+              .filter(r => r.fingerprint);
+            console.log(`Loaded ${rows.length} crash rows.`);
+
+            // ---- index existing crash issues by fingerprint ---------------
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, labels: 'crash', state: 'all', per_page: 100,
+            });
+            const byFp = new Map();
+            for (const it of existing) {
+              if (it.pull_request) continue;
+              // Take the LAST marker. Our real marker is always the final line of the
+              // body, so a spoofed one injected via dev_message (rendered earlier)
+              // cannot hijack the index.
+              const all = [...(it.body || '').matchAll(/<!-- crash-cache-fp: ([0-9a-f]{64}) -->/g)];
+              if (all.length) byFp.set(all[all.length - 1][1], it);
+            }
+            console.log(`Found ${byFp.size} existing crash issues.`);
+
+            // ---- ensure the `crash` label exists --------------------------
+            async function ensureLabel() {
+              try { await github.rest.issues.getLabel({ owner, repo, name: 'crash' }); }
+              catch (e) {
+                if (e.status !== 404) throw e;
+                await github.rest.issues.createLabel({ owner, repo, name: 'crash', color: 'B60205', description: 'Synced from crash-cache' });
+              }
+            }
+            if (!dry) await ensureLabel();
+
+            // ---- reconcile -------------------------------------------------
+            const stats = { created: 0, bumped: 0, unchanged: 0, skipped_closed: 0 };
+            for (const row of rows) {
+              const fp = row.fingerprint;
+              const title = String(row.title || `[${row.version}] ${row.exception_type || 'Error'}`).slice(0, 256);
+              const it = byFp.get(fp);
+
+              if (!it) {
+                const body = buildBody(row, today);
+                console.log(`CREATE  ${row.fingerprint_short}  ${title}`);
+                if (!dry) await github.rest.issues.create({ owner, repo, title, body, labels: ['crash'] });
+                stats.created++;
+              } else if (it.state === 'closed') {
+                console.log(`SKIP    ${row.fingerprint_short}  #${it.number} (closed)`);
+                stats.skipped_closed++;
+              } else {
+                const fm = (it.body || '').match(/first synced (\d{4}-\d{2}-\d{2})/);
+                const body = buildBody(row, fm ? fm[1] : today);
+                // Normalize line endings + trailing whitespace so a server-side
+                // round-trip can't trigger a no-op bump; also bump on title drift.
+                const k = s => stripFooter(s).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trim();
+                if (k(body) !== k(it.body) || title !== it.title) {
+                  console.log(`BUMP    ${row.fingerprint_short}  #${it.number}`);
+                  if (!dry) await github.rest.issues.update({ owner, repo, issue_number: it.number, title, body });
+                  stats.bumped++;
+                } else {
+                  console.log(`OK      ${row.fingerprint_short}  #${it.number} (unchanged)`);
+                  stats.unchanged++;
+                }
+              }
+            }
+
+            const summary = `crash-cache sync ${dry ? '(DRY RUN) ' : ''}— ` +
+              `created ${stats.created}, bumped ${stats.bumped}, unchanged ${stats.unchanged}, skipped(closed) ${stats.skipped_closed}, total ${rows.length}`;
+            console.log(summary);
+            await core.summary.addRaw(summary).write();
