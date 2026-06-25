@@ -16,8 +16,10 @@ enum SignerDeviceEntity {
   seedsigner,
   specter;
 
-  String get displayName =>
-      StringFormatting.camelCaseToTitleCase(name, separator: ' ');
+  String get displayName => switch (this) {
+    SignerDeviceEntity.bitbox02 => 'BitBox02',
+    _ => StringFormatting.camelCaseToTitleCase(name, separator: ' '),
+  };
 
   bool get isLedger => name.startsWith('ledger');
 

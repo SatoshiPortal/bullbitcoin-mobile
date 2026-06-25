@@ -1,9 +1,8 @@
-import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -107,18 +106,15 @@ class ImportWalletPage extends StatelessWidget {
               if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: 'BitBox',
-                  onTap: () => Platform.isAndroid
-                      ? context.pushNamed(
-                          BitBoxRoute.importBitBox.name,
-                          extra: const BitBoxRouteParams(
-                            requestedDeviceType: SignerDeviceEntity.bitbox02,
-                          ),
-                        )
-                      : SnackBarUtils.showSnackBar(
-                          context,
-                          context.loc.importWalletBitboxAndroidOnly,
-                        ),
+                  title: Platform.isAndroid
+                      ? context.loc.importWalletBitBox
+                      : context.loc.importWalletBitBoxNova,
+                  onTap: () => context.pushNamed(
+                    BitBoxRoute.importBitBox.name,
+                    extra: const BitBoxRouteParams(
+                      requestedDeviceType: SignerDeviceEntity.bitbox02,
+                    ),
+                  ),
                 ),
               ],
             ],

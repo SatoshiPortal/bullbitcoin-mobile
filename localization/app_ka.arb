@@ -483,7 +483,6 @@
   "onboardingAdvancedOptionsFooter": "ამ პარამეტრების შეცვლა მოგვიანებით შეგიძლიათ აპლიკაციის პარამეტრებში",
   "onboardingAdvancedOptionsDone": "მზადაა",
   "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე",
   "sendErrorUnsupportedQrCodeFormat": "QR კოდის ფორმატი მხარდაჭერილი არ არის",
   "fundExchangeErrorTitleOrdPo404": "გადახდის ვარიანტი მიუწვდომელია",
   "fundExchangeErrorTitleRcpPo404": "გადახდის ვარიანტი ხელმისაწვდომი არ არის",

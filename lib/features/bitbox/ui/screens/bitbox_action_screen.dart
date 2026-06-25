@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
@@ -30,6 +32,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+bool get _usesBluetoothTransport => !Platform.isAndroid;
 
 class BitBoxRouteParams {
   final String? psbt;
@@ -77,20 +81,6 @@ class _BitBoxActionView extends StatefulWidget {
 
 class _BitBoxActionViewState extends State<_BitBoxActionView> {
   ScriptType _selectedScriptType = ScriptType.bip84;
-
-  @override
-  void dispose() {
-    try {
-      final cubit = context.read<BitBoxOperationCubit>();
-      cubit.disconnectIfConnected().catchError((e) {});
-      cubit.close().catchError((e) {
-        // Ignore errors during disposal
-      });
-    } catch (e) {
-      // Ignore errors if context is no longer valid
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +178,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     IconData icon;
     switch (state.status) {
       case BitBoxOperationStatus.initial:
-        icon = Icons.usb;
+        icon = _usesBluetoothTransport ? Icons.bluetooth : Icons.usb;
       case BitBoxOperationStatus.scanning:
         icon = Icons.search;
       case BitBoxOperationStatus.connecting:
@@ -266,8 +256,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       } else if (widget.action == const BitBoxAction.signTransaction()) {
         await _executeSignTransaction(context, cubit);
       }
-    } catch (e) {
-      log.warning('BitBox operation failed', error: e);
+    } catch (e, stackTrace) {
+      log.warning('BitBox operation failed', error: e, trace: stackTrace);
     }
   }
 
@@ -372,15 +362,19 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
         cubit.showAddressVerification(address);
 
-        return await locator<VerifyAddressBitBoxUsecase>().execute(
+        final verified = await locator<VerifyAddressBitBoxUsecase>().execute(
           device: device,
           address: address,
           derivationPath: derivationPath,
           scriptType: scriptType,
         );
+        if (!verified) {
+          throw const BitBoxError.invalidResponse();
+        }
+        return verified;
       });
-    } catch (e) {
-      log.warning('BitBox verify address failed');
+    } catch (e, stackTrace) {
+      log.warning('BitBox verify address failed', error: e, trace: stackTrace);
     }
   }
 
@@ -411,29 +405,32 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           scriptType: scriptType,
         );
       });
-    } catch (e) {
-      log.warning('BitBox sign transaction failed');
+    } catch (e, stackTrace) {
+      log.warning(
+        'BitBox sign transaction failed',
+        error: e,
+        trace: stackTrace,
+      );
     }
   }
 
   Future<void> _ensureDeviceReady(BitBoxOperationCubit cubit) async {
+    final device = cubit.state.connectedDevice!;
+    final repository = locator<BitBoxDeviceRepository>();
+
     try {
-      await locator<BitBoxDeviceRepository>().getMasterFingerprint(
-        cubit.state.connectedDevice!,
-      );
-    } catch (e) {
+      await repository.getMasterFingerprint(device);
+    } catch (_) {
       cubit.showWaitingForPassword();
 
       final pairingCode = await locator<UnlockBitBoxDeviceUsecase>().execute(
-        cubit.state.connectedDevice!,
+        device,
       );
 
       if (pairingCode.isNotEmpty) {
         cubit.showPairingCode(pairingCode);
 
-        await locator<PairBitBoxDeviceUsecase>().execute(
-          cubit.state.connectedDevice!,
-        );
+        await locator<PairBitBoxDeviceUsecase>().execute(device);
       }
     }
     cubit.showProcessing();
@@ -456,11 +453,11 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           scriptType: _selectedScriptType,
         );
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
       log.severe(
         message: 'BitBox import with pairing failed',
         error: e,
-        trace: StackTrace.current,
+        trace: stackTrace,
       );
     }
   }
@@ -591,15 +588,29 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   }
 
   void _showInstructions(BuildContext context) {
+    final subtitle = _usesBluetoothTransport
+        ? context.loc.bitboxScreenTroubleshootingBluetoothSubtitle
+        : context.loc.bitboxScreenTroubleshootingSubtitle;
+    final instructions = _usesBluetoothTransport
+        ? [
+            context.loc.bitboxScreenTroubleshootingStep1,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep1,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep2,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep3,
+          ]
+        : [
+            context.loc.bitboxScreenTroubleshootingStep1,
+            context.loc.bitboxScreenTroubleshootingStep2,
+            context.loc.bitboxScreenTroubleshootingStep3,
+          ];
+
     InstructionsBottomSheet.show(
       context,
-      title: context.loc.bitboxScreenTroubleshootingTitle,
-      subtitle: context.loc.bitboxScreenTroubleshootingSubtitle,
-      instructions: [
-        context.loc.bitboxScreenTroubleshootingStep1,
-        context.loc.bitboxScreenTroubleshootingStep2,
-        context.loc.bitboxScreenTroubleshootingStep3,
-      ],
+      title: _usesBluetoothTransport
+          ? context.loc.bitboxScreenTroubleshootingBluetoothTitle
+          : context.loc.bitboxScreenTroubleshootingTitle,
+      subtitle: subtitle,
+      instructions: instructions,
     );
   }
 
@@ -682,9 +693,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   String _getSubTextForState(BuildContext context, BitBoxOperationState state) {
     switch (state.status) {
       case BitBoxOperationStatus.initial:
-        return context.loc.bitboxScreenConnectSubtext;
+        return _usesBluetoothTransport
+            ? context.loc.bitboxScreenConnectSubtextBluetooth
+            : context.loc.bitboxScreenConnectSubtext;
       case BitBoxOperationStatus.scanning:
-        return context.loc.bitboxScreenScanningSubtext;
+        return _usesBluetoothTransport
+            ? context.loc.bitboxScreenScanningSubtextBluetooth
+            : context.loc.bitboxScreenScanningSubtext;
       case BitBoxOperationStatus.connecting:
         return context.loc.bitboxScreenConnectingSubtext;
       case BitBoxOperationStatus.processing:
@@ -698,8 +713,30 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       case BitBoxOperationStatus.success:
         return widget.action.toSuccessSubText(context);
       case BitBoxOperationStatus.error:
-        return state.error?.toTranslated(context) ??
-            context.loc.bitboxScreenUnknownError;
+        return _getErrorTextForState(context, state);
     }
+  }
+
+  String _getErrorTextForState(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
+    if (_usesBluetoothTransport) {
+      switch (state.error) {
+        case PermissionDeniedBitBoxError():
+          return context.loc.bitboxErrorBluetoothPermissionDenied;
+        case BluetoothUnavailableBitBoxError():
+          return context.loc.bitboxErrorBluetoothUnavailable;
+        case NoDevicesFoundBitBoxError():
+          return context.loc.bitboxErrorNoBleDevicesFound;
+        case MultipleDevicesFoundBitBoxError():
+          return context.loc.bitboxErrorMultipleBleDevicesFound;
+        default:
+          break;
+      }
+    }
+
+    return state.error?.toTranslated(context) ??
+        context.loc.bitboxScreenUnknownError;
   }
 }

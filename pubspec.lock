@@ -159,8 +159,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: main
-      resolved-ref: "6b8f54fcd7b7b7d02ef32cbcaf56943625970555"
+      ref: "refs/pull/4/head"
+      resolved-ref: "3d54c4a9312e4f0b205d9b7ff2ffd90809984c7f"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -2121,7 +2121,7 @@ packages:
     source: hosted
     version: "1.4.0"
   universal_ble:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: universal_ble
       sha256: "8325ca9f5cce2fba2b4efef74a4fcfe7144f303b409d6fc6ed16197b00a1a241"
