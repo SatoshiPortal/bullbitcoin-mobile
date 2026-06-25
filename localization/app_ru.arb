@@ -3204,6 +3204,7 @@
     }
   },
   "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "bip85NoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "pinStatusSettingUpDescription": "Настройка PIN-кода",
   "enterYourPinTitle": "Введите {pinOrPassword}",
   "@enterYourPinTitle": {

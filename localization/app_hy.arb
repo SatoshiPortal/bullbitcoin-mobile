@@ -21,6 +21,7 @@
   "broadcastSignedTxErrorInvalidTransaction": "Սա վավեր ստորագրված գործարքի տեսք չունի։ Համոզվեք, որ փակցրել եք ամբողջ PSBT-ն կամ գործարքը։",
   "broadcastSignedTxErrorInvalidPushTx": "Չկարողացանք գործարք կարդալ այս պիտակից։ Խնդրում ենք կրկին փորձել սկանավորել։",
   "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "bip85NoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
   "@appInitErrorTitle": {

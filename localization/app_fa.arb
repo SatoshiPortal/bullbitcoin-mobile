@@ -9255,6 +9255,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "bip85NoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

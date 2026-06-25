@@ -3910,6 +3910,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "bip85NoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

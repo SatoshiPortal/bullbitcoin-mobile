@@ -11,22 +11,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final FetchAllBip85DerivationsWithEntropyUsecase
-  fetchAllBip85DerivationsWithEntropyUsecase;
+  _fetchAllBip85DerivationsWithEntropyUsecase;
   final DeriveNextBip85MnemonicFromDefaultWalletUsecase
-  deriveNextBip85MnemonicFromDefaultWalletUsecase;
+  _deriveNextBip85MnemonicFromDefaultWalletUsecase;
   final DeriveNextBip85HexFromDefaultWalletUsecase
-  deriveNextBip85HexFromDefaultWalletUsecase;
-  final AliasBip85DerivationUsecase aliasBip85DerivationUsecase;
-  final RevokeBip85DerivationUsecase revokeBip85DerivationUsecase;
-  final ActivateBip85DerivationUsecase activateBip85DerivationUsecase;
+  _deriveNextBip85HexFromDefaultWalletUsecase;
+  final AliasBip85DerivationUsecase _aliasBip85DerivationUsecase;
+  final RevokeBip85DerivationUsecase _revokeBip85DerivationUsecase;
+  final ActivateBip85DerivationUsecase _activateBip85DerivationUsecase;
 
   Bip85EntropyCubit({
-    required this.fetchAllBip85DerivationsWithEntropyUsecase,
-    required this.deriveNextBip85MnemonicFromDefaultWalletUsecase,
-    required this.deriveNextBip85HexFromDefaultWalletUsecase,
-    required this.aliasBip85DerivationUsecase,
-    required this.revokeBip85DerivationUsecase,
-    required this.activateBip85DerivationUsecase,
+    required this._fetchAllBip85DerivationsWithEntropyUsecase,
+    required this._deriveNextBip85MnemonicFromDefaultWalletUsecase,
+    required this._deriveNextBip85HexFromDefaultWalletUsecase,
+    required this._aliasBip85DerivationUsecase,
+    required this._revokeBip85DerivationUsecase,
+    required this._activateBip85DerivationUsecase,
   }) : super(const Bip85EntropyState()) {
     init();
   }
@@ -37,17 +37,21 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> fetchAllDerivations() async {
     emit(state.copyWith(isLoading: true));
-    switch (await fetchAllBip85DerivationsWithEntropyUsecase.execute()) {
+    switch (await _fetchAllBip85DerivationsWithEntropyUsecase.execute()) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok(:final value):
-        emit(state.copyWith(derivations: value, isLoading: false));
+        emit(
+          state.copyWith(derivations: value, isLoading: false, failure: null),
+        );
     }
   }
 
   Future<void> deriveNextMnemonic() async {
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (await deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()) {
+    switch (
+      await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()
+    ) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
@@ -58,7 +62,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   Future<void> deriveNextHex() async {
     emit(state.copyWith(isLoading: true, failure: null));
     switch (
-      await deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30)
+      await _deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30)
     ) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
@@ -72,7 +76,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     String alias,
   ) async {
     switch (
-      await aliasBip85DerivationUsecase.execute(
+      await _aliasBip85DerivationUsecase.execute(
         derivation: derivation,
         alias: alias,
       )
@@ -80,24 +84,27 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
       case Ok():
+        emit(state.copyWith(failure: null));
         await fetchAllDerivations();
     }
   }
 
   Future<void> revokeDerivation(Bip85DerivationEntity derivation) async {
-    switch (await revokeBip85DerivationUsecase.execute(derivation)) {
+    switch (await _revokeBip85DerivationUsecase.execute(derivation)) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
       case Ok():
+        emit(state.copyWith(failure: null));
         await fetchAllDerivations();
     }
   }
 
   Future<void> activateDerivation(Bip85DerivationEntity derivation) async {
-    switch (await activateBip85DerivationUsecase.execute(derivation)) {
+    switch (await _activateBip85DerivationUsecase.execute(derivation)) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
       case Ok():
+        emit(state.copyWith(failure: null));
         await fetchAllDerivations();
     }
   }

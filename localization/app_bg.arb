@@ -14,6 +14,7 @@
   "broadcastSignedTxErrorInvalidTransaction": "Това не изглежда като валидна подписана транзакция. Уверете се, че сте поставили целия PSBT или цялата транзакция.",
   "broadcastSignedTxErrorInvalidPushTx": "Не успяхме да прочетем транзакция от този етикет. Моля, опитайте да сканирате отново.",
   "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "bip85NoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
   "translationWarningTitle": "Преводи, генерирани от ИИ",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"

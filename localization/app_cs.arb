@@ -9519,6 +9519,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },

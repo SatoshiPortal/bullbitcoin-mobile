@@ -21,6 +21,7 @@
   "broadcastSignedTxErrorInvalidTransaction": "ეს არ ჰგავს ვალიდურ ხელმოწერილ ტრანზაქციას. დარწმუნდით, რომ ჩასვით სრული PSBT ან ტრანზაქცია.",
   "broadcastSignedTxErrorInvalidPushTx": "ვერ წავიკითხეთ ტრანზაქცია ამ ტეგიდან. გთხოვთ, ხელახლა სცადოთ სკანირება.",
   "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "bip85NoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ.",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"

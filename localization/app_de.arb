@@ -3163,6 +3163,7 @@
     }
   },
   "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "bip85NoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut.",
   "pinStatusSettingUpDescription": "PIN-Code wird eingerichtet.",
   "enterYourPinTitle": "Geben Sie Ihre {pinOrPassword} ein",
   "@enterYourPinTitle": {

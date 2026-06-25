@@ -18,10 +18,13 @@ class FetchArkSecretUsecase {
   });
 
   Future<List<int>?> execute() async {
-    final fetchResult = await _bip85Repository.fetchAll();
-    if (fetchResult is Err) return null;
-    final derivations =
-        (fetchResult as Ok).value as List<Bip85DerivationEntity>;
+    final List<Bip85DerivationEntity> derivations;
+    switch (await _bip85Repository.fetchAll()) {
+      case Err():
+        return null;
+      case Ok(:final value):
+        derivations = value;
+    }
 
     Bip85DerivationEntity? arkDerivation;
     for (final derivation in derivations) {
