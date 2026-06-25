@@ -42,6 +42,7 @@ class ReceiveQrPage extends StatelessWidget {
     final isBitBox = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
     );
+    final showAddressVerification = !isLightning && (isLedger || isBitBox);
 
     final gap = Device.screen.height * 0.02;
     return SingleChildScrollView(
@@ -55,8 +56,13 @@ class ReceiveQrPage extends StatelessWidget {
           Gap(gap),
           ReceiveInfoDetails(wallet: wallet),
           Gap(gap),
-          if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
-          if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
+          if (showAddressVerification) ...[
+            if (isLedger)
+              const Column(children: [VerifyAddressOnLedgerButton()]),
+            if (isBitBox)
+              const Column(children: [VerifyAddressOnBitBoxButton()]),
+            Gap(gap),
+          ],
           if (!isLightning) const ReceiveNewAddressButton(),
           const Gap(40),
         ],
@@ -753,14 +759,14 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
-        label: 'Verify Address on BitBox',
+        label: context.loc.bitboxActionVerifyAddressTitle,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
             SnackBarUtils.showSnackBar(
               context,
-              'Unable to verify address: Missing wallet or address information',
+              context.loc.receiveVerifyAddressError,
             );
             return;
           }

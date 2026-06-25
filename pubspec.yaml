@@ -66,6 +66,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/bull_sdk
       ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/bitbox-transport
+  universal_ble: ^1.2.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^1.1.0

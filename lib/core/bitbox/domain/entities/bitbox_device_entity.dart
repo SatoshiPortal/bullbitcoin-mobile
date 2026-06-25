@@ -2,9 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_device_entity.freezed.dart';
 
-enum BitBoxConnectionType {
-  usb,
-}
+enum BitBoxConnectionType { usb, ble }
 
 @freezed
 abstract class BitBoxDeviceEntity with _$BitBoxDeviceEntity {

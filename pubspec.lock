@@ -2121,7 +2121,7 @@ packages:
     source: hosted
     version: "1.4.0"
   universal_ble:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: universal_ble
       sha256: "8325ca9f5cce2fba2b4efef74a4fcfe7144f303b409d6fc6ed16197b00a1a241"
