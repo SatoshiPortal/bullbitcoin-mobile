@@ -83,8 +83,6 @@ jobs:
               if (typeof v !== 'string') return v;
               try { return JSON.parse(v); } catch { return null; }
             };
-            const fmtD = v => { if (!v) return '—'; const d = new Date(v); return isNaN(+d) ? String(v) : d.toISOString().slice(0, 10); };
-            const fmtDT = v => { if (!v) return '—'; const d = new Date(v); return isNaN(+d) ? String(v) : d.toISOString().slice(0, 16).replace('T', ' ') + ' UTC'; };
             const marker = fp => `<!-- crash-cache-fp: ${fp} -->`;
             // Compare bodies ignoring the volatile "synced" footer line.
             const stripFooter = b => (b || '').replace(/<sub>Tracked by[\s\S]*?<\/sub>\s*/, '');
@@ -124,7 +122,7 @@ jobs:
 
               const plat = (a + ios > 0) ? ` (${a} Android · ${ios} iOS)` : '';
               parts.push('`' + v + '` · **' + events + '** events (' + total + ' all-time) · **' + dev +
-                '** devices' + plat + ' · first seen ' + fmtD(row.first_seen) + ' · last seen ' + fmtDT(row.last_seen));
+                '** devices' + plat + ' · first seen ' + (row.first_seen || '—') + ' · last seen ' + (row.last_seen || '—'));
 
               const cp = row.crash_repo_path || '', cl = num(row.crash_line), fn = row.crash_fn || '';
               if (fn) {
