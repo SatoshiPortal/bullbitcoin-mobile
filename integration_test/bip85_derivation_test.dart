@@ -74,12 +74,12 @@ Future<void> main({bool isInitialized = false}) async {
         // Execute the usecase
         final result = await usecase.execute(length: length, alias: 'test');
         expect(result, isA<Ok>());
-        final (:derivation, :mnemonic) = (result as Ok).value;
+        final (:derivation, mnemonic: resultMnemonic) = (result as Ok).value;
 
         // Verify the derivation path
         expect(derivation, "39'/0'/12'/0'");
-        expect(mnemonic, isA<bip39.Mnemonic>());
-        expect(mnemonic.length, equals(length));
+        expect(resultMnemonic, isA<bip39.Mnemonic>());
+        expect(resultMnemonic.length, equals(length));
 
         // Verify the derivation was stored in the database
         final storedDerivations = await bip85Datasource.fetchAll();
@@ -91,7 +91,8 @@ Future<void> main({bool isInitialized = false}) async {
         expect(firstDerivation.alias, 'test');
         expect(firstDerivation.application, Bip85ApplicationColumn.bip39);
 
-        // Get the xprv from the seed
+        // Get the xprv from the default-wallet seed (the outer `mnemonic`),
+        // i.e. the same seed the usecase derives from — NOT the derived result.
         final xprv = Bip32Derivation.getXprvFromSeed(
           Uint8List.fromList(mnemonic.seed),
           Network.bitcoinMainnet,
@@ -106,7 +107,7 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         // Verify both results are identical
-        expect(mnemonic.sentence, directBip85Mnemonic.sentence);
+        expect(resultMnemonic.sentence, directBip85Mnemonic.sentence);
       });
 
       test('Two derivations with index bump and different lengths', () async {
