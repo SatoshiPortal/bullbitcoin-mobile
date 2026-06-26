@@ -5,12 +5,12 @@ sealed class PayState with _$PayState {
   const factory PayState.recipientSelection({
     UserSummary? userSummary,
     @Default(false) bool isLoadingUserSummary,
-    PayError? error,
+    PayFailure? failure,
   }) = PayRecipientSelectionState;
   const factory PayState.amountInput({
     required RecipientViewModel selectedRecipient,
     required UserSummary userSummary,
-    PayError? error,
+    PayFailure? failure,
   }) = PayAmountInputState;
   const factory PayState.walletSelection({
     required RecipientViewModel selectedRecipient,
@@ -18,7 +18,7 @@ sealed class PayState with _$PayState {
     required FiatAmount amount,
     String? paymentDescription,
     @Default(false) bool isCreatingPayOrder,
-    PayError? error,
+    PayFailure? failure,
   }) = PayWalletSelectionState;
   const factory PayState.payment({
     required RecipientViewModel selectedRecipient,
@@ -29,7 +29,7 @@ sealed class PayState with _$PayState {
     required FiatPaymentOrder payOrder,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
-    PayError? error,
+    PayFailure? failure,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
@@ -92,7 +92,7 @@ sealed class PayState with _$PayState {
   PayRecipientSelectionState? get cleanRecipientSelectionState => switch (this) {
     final PayRecipientSelectionState s => s.copyWith(
       isLoadingUserSummary: false,
-      error: null,
+      failure: null,
     ),
     PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
       userSummary: userSummary,
@@ -107,7 +107,7 @@ sealed class PayState with _$PayState {
   };
 
   PayAmountInputState? get cleanAmountInputState => switch (this) {
-    final PayAmountInputState s => s.copyWith(error: null),
+    final PayAmountInputState s => s.copyWith(failure: null),
     PayWalletSelectionState(:final selectedRecipient, :final userSummary) =>
       PayAmountInputState(
         selectedRecipient: selectedRecipient,
@@ -124,7 +124,7 @@ sealed class PayState with _$PayState {
   PayWalletSelectionState? get cleanWalletSelectionState => switch (this) {
     final PayWalletSelectionState s => s.copyWith(
       isCreatingPayOrder: false,
-      error: null,
+      failure: null,
     ),
     PayPaymentState(
       :final selectedRecipient,
@@ -148,7 +148,7 @@ sealed class PayState with _$PayState {
     final PayPaymentState s => s.copyWith(
       isConfirmingPayment: false,
       isPolling: false,
-      error: null,
+      failure: null,
     ),
     _ => null,
   };

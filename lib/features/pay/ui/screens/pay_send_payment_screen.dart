@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
+import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
@@ -446,7 +447,7 @@ class _PayError extends StatelessWidget {
     final payError = context.select(
       (PayBloc bloc) =>
           bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).error
+              ? (bloc.state as PayPaymentState).failure
               : null,
     );
 

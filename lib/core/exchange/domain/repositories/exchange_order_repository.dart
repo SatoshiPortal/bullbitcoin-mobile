@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/failures/pay_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:meta/meta.dart';
 
 abstract class ExchangeOrderRepository {
   Future<BuyOrder> placeBuyOrder({
@@ -14,7 +17,8 @@ abstract class ExchangeOrderRepository {
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
   });
-  Future<FiatPaymentOrder> placePayOrder({
+  @useResult
+  Future<Result<FiatPaymentOrder, PayFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -29,7 +33,8 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);
   Future<SellOrder> refreshSellOrder(String orderId);
-  Future<FiatPaymentOrder> refreshPayOrder(String orderId);
+  @useResult
+  Future<Result<FiatPaymentOrder, PayFailure>> refreshPayOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);

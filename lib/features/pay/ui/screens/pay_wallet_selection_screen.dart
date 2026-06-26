@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
+import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ class _PayError extends StatelessWidget {
     final payError = context.select(
       (PayBloc bloc) =>
           bloc.state is PayWalletSelectionState
-              ? (bloc.state as PayWalletSelectionState).error
+              ? (bloc.state as PayWalletSelectionState).failure
               : null,
     );
 
