@@ -245,6 +245,12 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
+  "payAboveMaxAmount": "Դուք փորձում եք վճարել այս դրամապանակի համար թույլատրված առավելագույն գումարից ավելի:",
+  "payBelowMinAmount": "Դուք փորձում եք վճարել այս դրամապանակի համար թույլատրված նվազագույն գումարից պակաս:",
+  "payNotAuthenticated": "Դուք չեք վավերացված։ Խնդրում ենք մուտք գործել՝ շարունակելու համար:",
+  "payOrderNotFound": "Վճարման պատվերը չի գտնվել։ Խնդրում ենք կրկին փորձել:",
+  "payOrderAlreadyConfirmed": "Այս վճարման պատվերն արդեն հաստատված է:",
+  "payInsufficientBalance": "Ընտրված դրամապանակում անբավարար մնացորդ կա այս վճարման պատվերը կատարելու համար:",
   "exportTransactionsInvalidDateRange": "Մեկնարկի ամսաթիվը պետք է լինի ավարտի ամսաթվից առաջ",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"

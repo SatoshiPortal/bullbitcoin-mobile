@@ -265,6 +265,12 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
+  "payAboveMaxAmount": "Unajaribu kulipa zaidi ya kiwango cha juu kinachoweza kulipwa na pochi hii.",
+  "payBelowMinAmount": "Unajaribu kulipa chini ya kiwango cha chini kinachoweza kulipwa na pochi hii.",
+  "payNotAuthenticated": "Hujathibitishwa. Tafadhali ingia ili kuendelea.",
+  "payOrderNotFound": "Agizo la malipo halijapatikana. Tafadhali jaribu tena.",
+  "payOrderAlreadyConfirmed": "Agizo hili la malipo limethibitishwa tayari.",
+  "payInsufficientBalance": "Salio halitooshi katika pochi iliyochaguliwa kukamilisha agizo hili la malipo.",
   "exportTransactionsInvalidDateRange": "Tarehe ya kuanza lazima iwe kabla ya tarehe ya kumaliza",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"

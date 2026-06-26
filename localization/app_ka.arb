@@ -457,6 +457,12 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
+  "payAboveMaxAmount": "თქვენ ცდილობთ გადაიხადოთ ამ საფულისთვის დაშვებული მაქსიმალური თანხის ზემოთ.",
+  "payBelowMinAmount": "თქვენ ცდილობთ გადაიხადოთ ამ საფულისთვის დაშვებული მინიმალური თანხის ქვემოთ.",
+  "payNotAuthenticated": "თქვენ ავთენტიფიცირებული არ ხართ. გასაგრძელებლად გთხოვთ შეხვიდეთ სისტემაში.",
+  "payOrderNotFound": "გადახდის ორდერი ვერ მოიძებნა. გთხოვთ სცადოთ ისევ.",
+  "payOrderAlreadyConfirmed": "ეს გადახდის ორდერი უკვე დადასტურებულია.",
+  "payInsufficientBalance": "არჩეულ საფულეში არ არის საკმარისი ბალანსი ამ გადახდის ორდერის შესასრულებლად.",
   "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
