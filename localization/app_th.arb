@@ -991,12 +991,7 @@
   "arkTxPending": "สิ้นสุด",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "คุณพยายามที่จะจ่ายเงินข้างต้นจํานวนเงินสูงสุดที่ไม่สามารถชําระเงินกับกระเป๋าสตางค์นี้.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "แชร์กับ Bull Bitcoin.",
+  },  "sharedWithBullBitcoin": "แชร์กับ Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1235,12 +1230,7 @@
   "recoverbullFailed": "บ้าน",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "การสั่งซื้อนี้ได้รับการยืนยัน.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "ลงทะเบียน",
+  },  "ledgerProcessingSign": "ลงทะเบียน",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1466,12 +1456,7 @@
   "buyYouPay": "คุณชําระเงิน",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "การสั่งซื้อนี้ได้รับการยืนยัน.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนหนังสือเดินทาง การสแกน.",
+  },  "passportStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนหนังสือเดินทาง การสแกน.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2099,12 +2084,7 @@
   "howToDecideBackupText1": "หนึ่งในวิธีที่สําคัญที่สุดที่สูญเสีย Bitcoin เพราะพวกเขาสูญเสียการสํารองข้อมูลทางกายภาพ คุณค้นหาการสํารองข้อมูลทางกายภาพของคุณจะสามารถเข้าถึง Bitcoin ของคุณ หากคุณมีความมั่นใจมากที่คุณสามารถซ่อนมันและไม่เคยสูญเสียมันเป็นตัวเลือกที่ดี.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "สั่งขั้นต่ํา กรุณาลองอีกครั้ง.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนการ์ดเย็น การสแกน.",
+  },  "coldcardStep13": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนการ์ดเย็น การสแกน.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3327,12 +3307,7 @@
   "electrumReset": "รีเซ็ต",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "ยอดคงเหลือไม่เพียงพอในกระเป๋าเงินที่เลือก.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "การสํารองข้อมูลเสร็จสิ้น!",
+  },  "backupCompletedTitle": "การสํารองข้อมูลเสร็จสิ้น!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9288,12 +9263,7 @@
   "buyKycPendingDescription": "คุณต้องตรวจสอบรหัส",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "คุณพยายามที่จะจ่ายขั้นต่ําต่ํากว่าจํานวนขั้นต่ํา.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "ประเทศ",
+  },  "arkReceiveSegmentArk": "ประเทศ",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -10497,9 +10467,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "คุณพยายามที่จะจ่ายขั้นต่ําต่ํากว่าจํานวนขั้นต่ํา.",
+  "payBelowMinAmount": "คุณพยายามที่จะจ่ายขั้นต่ําต่ํากว่าจํานวนขั้นต่ํา ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "โปรดยืนยันที่อยู่บนอุปกรณ์ LED ของคุณ.",
   "@ledgerProcessingVerifySubtext": {
@@ -10905,12 +10878,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "คําแนะนําเมล็ดพันธุ์",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "สั่งขั้นต่ํา กรุณาลองอีกครั้ง.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
+  },  "jadeStep12": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11807,9 +11775,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "คุณพยายามที่จะจ่ายเงินข้างต้นจํานวนเงินสูงสุดที่ไม่สามารถชําระเงินกับกระเป๋าสตางค์นี้.",
+  "payAboveMaxAmount": "คุณพยายามที่จะจ่ายเงินข้างต้นจํานวนเงินสูงสุดที่ไม่สามารถชําระเงินกับกระเป๋าสตางค์นี้ ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} สามารถใช้งานได้",
   "@receiveNetworkUnavailable": {

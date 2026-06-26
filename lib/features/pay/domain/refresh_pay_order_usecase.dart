@@ -27,7 +27,7 @@ class RefreshPayOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      return repo.refreshPayOrder(orderId);
+      return await repo.refreshPayOrder(orderId);
     } catch (e, st) {
       log.severe(message: 'Failed to refresh pay order', error: e, trace: st);
       return Err(PayUnexpectedFailure(e.toString()));

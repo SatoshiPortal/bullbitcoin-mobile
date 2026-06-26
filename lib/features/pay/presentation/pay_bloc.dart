@@ -473,6 +473,11 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       if (latestOrder is FiatPaymentOrder) {
         emit(payPaymentState.toSuccessState(payOrder: latestOrder));
       } else {
+        log.severe(
+          message: 'sendPaymentConfirmed: unexpected order type after broadcast',
+          error: latestOrder.runtimeType,
+          trace: StackTrace.current,
+        );
         emit(
           payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder),
         );

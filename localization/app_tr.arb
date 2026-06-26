@@ -987,12 +987,7 @@
   "arkTxPending": "Pending",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "bull Bitcoin ile paylaşılan.",
+  },  "sharedWithBullBitcoin": "bull Bitcoin ile paylaşılan.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1231,12 +1226,7 @@
   "recoverbullFailed": "Başarısızlık",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "Bu ödeme emri zaten doğrulandı.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "Kayıt İşlemleri",
+  },  "ledgerProcessingSign": "Kayıt İşlemleri",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1462,12 +1452,7 @@
   "buyYouPay": "Ödersiniz",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Bu ödeme emri zaten doğrulandı.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  },  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2091,12 +2076,7 @@
   "howToDecideBackupText1": "İnsanların Bitcoin’i kaybetmesinin en yaygın yollarından biri, fiziksel yedeklemeyi kaybederler. Fiziksel yedeklemenizi bulan herhangi biri tüm Bitcoin'inizi alabilir. Onu iyi saklayabileceğinize ve asla kaybetmeme çok eminseniz, iyi bir seçenek.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "Ödeme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "Bull Bitcoin cüzdanı, soğuk kartta QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  },  "coldcardStep13": "Bull Bitcoin cüzdanı, soğuk kartta QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3319,12 +3299,7 @@
   "electrumReset": "Reset",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "Backup tamamlandı!",
+  },  "backupCompletedTitle": "Backup tamamlandı!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9217,12 +9192,7 @@
   "buyKycPendingDescription": "İlk önce kimlik Doğrulamasını tamamlamanız gerekir",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "Ark",
+  },  "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -10426,9 +10396,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
+  "payBelowMinAmount": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "Lütfen Adresinizi Ledger cihazınızda onaylayın.",
   "@ledgerProcessingVerifySubtext": {
@@ -10830,12 +10803,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Talimatlar",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Ödeme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  },  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11706,9 +11674,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz.",
+  "payAboveMaxAmount": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} şu anda mevcut değildir",
   "@receiveNetworkUnavailable": {

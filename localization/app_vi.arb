@@ -245,12 +245,9 @@
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
   },
-  "payAboveMaxAmount": "Bạn đang cố thanh toán vượt quá số tiền tối đa có thể thanh toán bằng ví này.",
-  "payBelowMinAmount": "Bạn đang cố thanh toán dưới mức số tiền tối thiểu có thể thanh toán bằng ví này.",
-  "payNotAuthenticated": "Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.",
-  "payOrderNotFound": "Không tìm thấy lệnh thanh toán. Vui lòng thử lại.",
-  "payOrderAlreadyConfirmed": "Lệnh thanh toán này đã được xác nhận.",
-  "payInsufficientBalance": "Số dư trong ví đã chọn không đủ để hoàn tất lệnh thanh toán này.",
+  "payAboveMaxAmount": "Bạn đang cố thanh toán vượt quá số tiền tối đa có thể thanh toán bằng ví này ({maxAmountSat} sats).",
+  "payBelowMinAmount": "Bạn đang cố thanh toán dưới mức số tiền tối thiểu có thể thanh toán bằng ví này ({minAmountSat} sats).",
+  "payNotAuthenticated": "Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.",  "payInsufficientBalance": "Số dư trong ví đã chọn không đủ để hoàn tất lệnh thanh toán này.",
   "exportTransactionsInvalidDateRange": "Ngày bắt đầu phải trước ngày kết thúc",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"

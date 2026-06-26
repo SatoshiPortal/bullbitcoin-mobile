@@ -1062,12 +1062,7 @@
   "payFeeTooHigh": "A taxa é excepcionalmente alta",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
-  },
-  "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellKYCRejected": "Verificação de KYC rejeitada",
+  },  "sellKYCRejected": "Verificação de KYC rejeitada",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
@@ -1231,12 +1226,7 @@
   "payPasteInvoice": "Fatura de pasta",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "arkStatusSettled": "Preparado",
+  },  "arkStatusSettled": "Preparado",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
   },
@@ -1259,12 +1249,7 @@
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
-  },
-  "payOrderAlreadyConfirmed": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
+  },  "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
@@ -1937,12 +1922,7 @@
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
-  },
-  "payOrderNotFound": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
+  },  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
   },
@@ -3032,12 +3012,7 @@
   "receiveSwapId": "ID do balanço",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "autoswapRecipientRequired": "*",
+  },  "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
   },
@@ -8455,12 +8430,7 @@
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
-  },
-  "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "pinStatusSettingUpDescription": "Configurando seu código PIN",
+  },  "pinStatusSettingUpDescription": "Configurando seu código PIN",
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
@@ -10012,9 +9982,12 @@
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
   },
-  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
+  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "doneButton": "Feito",
   "@doneButton": {
@@ -10788,9 +10761,12 @@
   "@mempoolCustomServerEdit": {
     "description": "Button text to edit custom mempool server"
   },
-  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
+  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "@exchangeFileUploadInstructions": {
@@ -10976,12 +10952,7 @@
   "arkReceiveArkAddress": "Endereço da arca",
   "@arkReceiveArkAddress": {
     "description": "Label for Ark address"
-  },
-  "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "coreScreensToLabel": "Para",
+  },  "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
     "description": "Label for destination/receiver field"
   },

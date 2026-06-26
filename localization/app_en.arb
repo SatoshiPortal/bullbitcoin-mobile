@@ -2306,32 +2306,12 @@
   "payFromAnotherWallet": "Pay from another Bitcoin wallet",
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },
-  "payAboveMaxAmountError": "You are trying to pay above the maximum amount that can be paid with this wallet.",
-  "@payAboveMaxAmountError": {
+  },  "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
-  },
-  "payBelowMinAmountError": "You are trying to pay below the minimum amount that can be paid with this wallet.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "payInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this pay order.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  },  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
-  },
-  "payOrderNotFoundError": "The pay order was not found. Please try again.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "payOrderAlreadyConfirmedError": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "paySelectNetwork": "Select Network",
+  },  "paySelectNetwork": "Select Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
   },
@@ -2523,27 +2503,24 @@
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "payAboveMaxAmount": "You are trying to pay above the maximum amount of {maxAmountSat} sats that can be paid with this wallet.",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
-  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "payBelowMinAmount": "You are trying to pay below the minimum amount of {minAmountSat} sats that can be paid with this wallet.",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
   "@payNotAuthenticated": {
     "description": "Error message when user is not authenticated"
-  },
-  "payOrderNotFound": "The pay order was not found. Please try again.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "payPaymentInProgress": "Payment In Progress!",
+  },  "payPaymentInProgress": "Payment In Progress!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },

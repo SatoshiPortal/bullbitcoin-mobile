@@ -991,12 +991,7 @@
   "arkTxPending": "관련 기사",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "이 지갑으로 지불 할 수있는 최대 금액 위에 지불하려고합니다.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "bull Bitcoin과 공유하십시오.",
+  },  "sharedWithBullBitcoin": "bull Bitcoin과 공유하십시오.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1235,12 +1230,7 @@
   "recoverbullFailed": "뚱 베어",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "이 지불 순서는 이미 확인되었습니다.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "결제 방법",
+  },  "ledgerProcessingSign": "결제 방법",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1466,12 +1456,7 @@
   "buyYouPay": "결제하기",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "이 지불 순서는 이미 확인되었습니다.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "Bull Bitcoin 지갑은 여권에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  },  "passportStep12": "Bull Bitcoin 지갑은 여권에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2099,12 +2084,7 @@
   "howToDecideBackupText1": "가장 일반적인 방법 중 하나는 Bitcoin을 잃고 물리적 백업을 잃기 때문입니다. 물리적 백업을 찾는 사람은 모든 Bitcoin을 취할 수 있습니다. 당신이 그것을 잘 숨기고 결코 잃을 수 있는 아주 confident인 경우에, 좋은 선택권입니다.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "지불 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "Bull Bitcoin 지갑은 Coldcard에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  },  "coldcardStep13": "Bull Bitcoin 지갑은 Coldcard에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3327,12 +3307,7 @@
   "electrumReset": "지원하다",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "백업 완료!",
+  },  "backupCompletedTitle": "백업 완료!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9296,12 +9271,7 @@
   "buyKycPendingDescription": "ID Verification을 먼저 완료해야 합니다",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "이 지갑으로 지불 할 수있는 최소 금액을 지불하려고합니다.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "한국어",
+  },  "arkReceiveSegmentArk": "한국어",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -10505,9 +10475,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "이 지갑으로 지불 할 수있는 최소 금액을 지불하려고합니다.",
+  "payBelowMinAmount": "이 지갑으로 지불 할 수있는 최소 금액을 지불하려고합니다 ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "Ledger 장치에 주소를 확인하십시오.",
   "@ledgerProcessingVerifySubtext": {
@@ -10913,12 +10886,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner 지침",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "지불 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  },  "jadeStep12": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11815,9 +11783,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "이 지갑으로 지불 할 수있는 최대 금액 위에 지불하려고합니다.",
+  "payAboveMaxAmount": "이 지갑으로 지불 할 수있는 최대 금액 위에 지불하려고합니다 ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network}는 현재 사용할 수 없습니다",
   "@receiveNetworkUnavailable": {

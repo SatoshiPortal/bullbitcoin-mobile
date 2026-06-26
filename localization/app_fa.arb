@@ -2112,12 +2112,7 @@
   "arkTxPending": "امتناع",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "jadeStep7": "   نگه داشتن کد QR ثابت و متمرکز",
+  },  "jadeStep7": "   نگه داشتن کد QR ثابت و متمرکز",
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
   },
@@ -2296,12 +2291,7 @@
   "recoverbullFailed": "شکست",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "jadeStep6": "   افزایش روشنایی صفحه بر روی دستگاه شما",
+  },  "jadeStep6": "   افزایش روشنایی صفحه بر روی دستگاه شما",
   "@jadeStep6": {
     "description": "Jade troubleshooting tip 1"
   },
@@ -2491,12 +2481,7 @@
   "buyYouPay": "پرداخت می کنید",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "کیف پول Bitcoin بول از شما می خواهد کد QR را در پاسپورت اسکن کنید. آن را اسکن کنید.",
+  },  "passportStep12": "کیف پول Bitcoin بول از شما می خواهد کد QR را در پاسپورت اسکن کنید. آن را اسکن کنید.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -3010,12 +2995,7 @@
   "backupWalletHowToDecideVaultCloudSecurity": "ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. آنها فقط می توانند به Bitcoin شما در رویداد غیر محتمل که آنها با سرور کلیدی (خدمات آنلاین که رمز رمزگذاری شما را ذخیره می کند) دسترسی پیدا کنند. اگر سرور کلیدی هک شود، Bitcoin شما می تواند در معرض خطر با Google یا Apple Cloud باشد.",
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
-  },
-  "payOrderNotFound": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "کیف پول Bitcoin بول از شما می خواهد کد QR را در کارت سرد اسکن کنید. آن را اسکن کنید.",
+  },  "coldcardStep13": "کیف پول Bitcoin بول از شما می خواهد کد QR را در کارت سرد اسکن کنید. آن را اسکن کنید.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -4052,12 +4032,7 @@
   "electrumReset": "تنظیم مجدد",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "پشتیبان گیری کامل!",
+  },  "backupCompletedTitle": "پشتیبان گیری کامل!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -8937,12 +8912,7 @@
   "buyKycPendingDescription": "ابتدا باید تایید هویت را تکمیل کنید",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "autoswapRecipientWalletInfo": "انتخاب کنید که کیف پول بیت کوین وجوه منتقل شده (باید) را دریافت کند",
+  },  "autoswapRecipientWalletInfo": "انتخاب کنید که کیف پول بیت کوین وجوه منتقل شده (باید) را دریافت کند",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
@@ -9924,9 +9894,12 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "payBelowMinAmount": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
+  "payBelowMinAmount": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "transactionOrderLabelOriginCedula": "منشأ Cedula",
   "@transactionOrderLabelOriginCedula": {
@@ -10253,12 +10226,7 @@
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "payOrderNotFoundError": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "روی گزینه “I’m Done” در کیف پول Bitcoin بول کلیک کنید.",
+  },  "jadeStep12": "روی گزینه “I’m Done” در کیف پول Bitcoin بول کلیک کنید.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11057,9 +11025,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
+  "payAboveMaxAmount": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} در حال حاضر در دسترس نیست",
   "@receiveNetworkUnavailable": {

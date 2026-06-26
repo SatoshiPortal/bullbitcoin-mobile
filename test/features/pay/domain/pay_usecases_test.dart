@@ -122,15 +122,15 @@ void main() {
       );
     });
 
-    test('returns Err(PayOrderNotFoundFailure) when repo signals not found', () async {
+    test('returns Err(PayUnexpectedFailure) when repo signals unexpected error', () async {
       when(() => mainnetRepo.refreshPayOrder(any()))
-          .thenAnswer((_) async => const Err(PayOrderNotFoundFailure()));
+          .thenAnswer((_) async => const Err(PayUnexpectedFailure()));
 
       final result = await usecase.execute(orderId: 'order-999');
 
       expect(result, isA<Err<FiatPaymentOrder, PayFailure>>());
       final failure = (result as Err<FiatPaymentOrder, PayFailure>).failure;
-      expect(failure, isA<PayOrderNotFoundFailure>());
+      expect(failure, isA<PayUnexpectedFailure>());
     });
 
     test('returns Err(PayUnexpectedFailure) when settings fetch throws', () async {

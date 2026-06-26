@@ -986,12 +986,7 @@
   "arkTxPending": "প্রক্রিয়াধীন",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "আপনি এই ওয়ালেট দিয়ে পাঠাতে পারা সর্বোচ্চ পরিমাণের বেশি পাঠানোর চেষ্টা করছেন।",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "Bull Bitcoin-এর সঙ্গে শেয়ার করা হয়েছে।",
+  },  "sharedWithBullBitcoin": "Bull Bitcoin-এর সঙ্গে শেয়ার করা হয়েছে।",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1226,12 +1221,7 @@
   "recoverbullFailed": "ব্যর্থ",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "এই পেমেন্ট অর্ডারটি ইতোমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "লেনদেন সই করা হচ্ছে",
+  },  "ledgerProcessingSign": "লেনদেন সই করা হচ্ছে",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1456,12 +1446,7 @@
   "buyYouPay": "আপনি পরিশোধ করবেন",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "এই পেমেন্ট অর্ডারটি ইতোমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "Bull Bitcoin ওয়ালেটটি আপনাকে পাসপোর্টে থাকা QR কোড স্ক্যান করতে বলবে। সেটি স্ক্যান করুন।",
+  },  "passportStep12": "Bull Bitcoin ওয়ালেটটি আপনাকে পাসপোর্টে থাকা QR কোড স্ক্যান করতে বলবে। সেটি স্ক্যান করুন।",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2072,12 +2057,7 @@
   "howToDecideBackupText1": "লোকেরা তাদের বিটকয়েন হারানোর সবচেয়ে সাধারণ উপায়গুলোর একটি হলো শারীরিক ব্যাকআপটি হারিয়ে ফেলা। আপনার শারীরিক ব্যাকআপটি যদি কারো হাতে পড়ে, তবে সে আপনার সব বিটকয়েন চুরি করতে পারবে। আপনি যদি খুব বেশি আত্মবিশ্বাসী হন যে আপনি এটি ভালোভাবে গোপন রাখতে পারবেন এবং কখনোই হারাবেন না, তবে এটি একটি ভালো বিকল্প।",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "পেমেন্ট অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "বুল বিটকয়েন ওয়ালেট আপনাকে Coldcard-এ থাকা QR কোডটি স্ক্যান করতে বলবে। এটি স্ক্যান করুন।",
+  },  "coldcardStep13": "বুল বিটকয়েন ওয়ালেট আপনাকে Coldcard-এ থাকা QR কোডটি স্ক্যান করতে বলবে। এটি স্ক্যান করুন।",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3254,12 +3234,7 @@
   "backupWalletPhysicalBackupTag": "বিশ্বাস-নির্ভরহীন (সময় নিয়ে নিন)\n==WEBLATE_PART==",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "payInsufficientBalanceError": "নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "ব্যাকআপ সম্পন্ন!",
+  },  "backupCompletedTitle": "ব্যাকআপ সম্পন্ন!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9061,12 +9036,7 @@
   "buyKycPendingDescription": "আপনাকে প্রথমে পরিচয় যাচাই সম্পন্ন করতে হবে",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন।",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "আর্ক",
+  },  "arkReceiveSegmentArk": "আর্ক",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -10246,9 +10216,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন।",
+  "payBelowMinAmount": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন। ({minAmountSat} sats)",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "দয়া করে আপনার Ledger ডিভাইসে ঠিকানাটি নিশ্চিত করুন।",
   "@ledgerProcessingVerifySubtext": {
@@ -10654,12 +10627,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner নির্দেশনা",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "পেমেন্ট অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "Bull Bitcoin ওয়ালেট-এ \"আমি শেষ করেছি\" ক্লিক করুন",
+  },  "jadeStep12": "Bull Bitcoin ওয়ালেট-এ \"আমি শেষ করেছি\" ক্লিক করুন",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11511,9 +11479,12 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "payAboveMaxAmount": "আপনি এই ওয়ালেট দিয়ে পাঠাতে পারা সর্বোচ্চ পরিমাণের বেশি পাঠানোর চেষ্টা করছেন।",
+  "payAboveMaxAmount": "আপনি এই ওয়ালেট দিয়ে পাঠাতে পারা সর্বোচ্চ পরিমাণের বেশি পাঠানোর চেষ্টা করছেন। ({maxAmountSat} sats)",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} বর্তমানে অনুপলব্ধ",
   "@receiveNetworkUnavailable": {

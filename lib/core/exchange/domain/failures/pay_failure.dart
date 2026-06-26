@@ -22,14 +22,6 @@ final class PayInsufficientBalanceFailure extends PayFailure {
   const PayInsufficientBalanceFailure();
 }
 
-final class PayOrderNotFoundFailure extends PayFailure {
-  const PayOrderNotFoundFailure();
-}
-
-final class PayOrderAlreadyConfirmedFailure extends PayFailure {
-  const PayOrderAlreadyConfirmedFailure();
-}
-
 /// Catch-all. [logMessage] is for logs/Sentry ONLY and MUST never reach the UI.
 final class PayUnexpectedFailure extends PayFailure {
   const PayUnexpectedFailure([super.logMessage]);

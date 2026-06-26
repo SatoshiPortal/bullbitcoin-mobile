@@ -953,12 +953,7 @@
   "arkTxPending": "معلقة",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "jadeStep7": "   -اثبتوا وركزوا",
+  },  "jadeStep7": "   -اثبتوا وركزوا",
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
   },
@@ -1173,12 +1168,7 @@
   "recoverbullFailed": "فشل",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "التوقيع على المعاملات",
+  },  "ledgerProcessingSign": "التوقيع على المعاملات",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1384,12 +1374,7 @@
   "buyYouPay": "تدفع",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
+  },  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -1977,12 +1962,7 @@
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "payOrderNotFound": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
+  },  "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3141,12 +3121,7 @@
   "electrumReset": "إعادة التوطين",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "اكتمل الدعم!",
+  },  "backupCompletedTitle": "اكتمل الدعم!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -8721,12 +8696,7 @@
   "buyKycPendingDescription": "يجب أن تكمل التحقق من الهوية أولا",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "Ark",
+  },  "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -9838,9 +9808,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
+  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
   "@ledgerProcessingVerifySubtext": {
@@ -10226,12 +10199,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  },  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11087,9 +11055,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
+  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} غير متاح حالياً",
   "@receiveNetworkUnavailable": {

@@ -1258,12 +1258,7 @@
   "arkTxPending": "Čeština",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "sdílet s Bull Bitcoin.",
+  },  "sharedWithBullBitcoin": "sdílet s Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1490,12 +1485,7 @@
   "payPaymentInProgress": "Platba v postupu!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "payOrderAlreadyConfirmed": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "Přihlášení Transakce",
+  },  "ledgerProcessingSign": "Přihlášení Transakce",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1704,12 +1694,7 @@
   "buyYouPay": "Platit",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
+  },  "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2312,12 +2297,7 @@
   "howToDecideBackupText1": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
+  },  "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3478,12 +3458,7 @@
   "electrumReset": "Čeština",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "Zálohování dokončeno!",
+  },  "backupCompletedTitle": "Zálohování dokončeno!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9135,12 +9110,7 @@
   "buyKycPendingDescription": "Musíte dokončit ověření totožnosti nejprve",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "autoswapRecipientWalletInfo": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
+  },  "autoswapRecipientWalletInfo": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
@@ -10260,9 +10230,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
+  "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena ({minAmountSat} sats).",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "Prosíme o potvrzení adresy ve vašem zařízení Ledger.",
   "@ledgerProcessingVerifySubtext": {
@@ -10635,12 +10608,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  },  "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11512,9 +11480,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
+  "payAboveMaxAmount": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena ({maxAmountSat} sats).",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} je v současné době nedostupná",
   "@receiveNetworkUnavailable": {

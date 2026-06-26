@@ -30,7 +30,7 @@ class PlacePayOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      return repo.placePayOrder(
+      return await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,

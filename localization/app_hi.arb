@@ -991,12 +991,7 @@
   "arkTxPending": "लंबित",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },
-  "payAboveMaxAmountError": "आप इस वॉलेट से अधिकतम भुगतान योग्य राशि से अधिक भुगतान करने का प्रयास कर रहे हैं।",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sharedWithBullBitcoin": "बिटकॉइन के साथ साझा किया गया।।",
+  },  "sharedWithBullBitcoin": "बिटकॉइन के साथ साझा किया गया।।",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1235,12 +1230,7 @@
   "recoverbullFailed": "विफल",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },
-  "payOrderAlreadyConfirmed": "यह भुगतान आदेश पहले ही पुष्टि हो चुका है।",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
-  "ledgerProcessingSign": "लेनदेन पर हस्ताक्षर करना",
+  },  "ledgerProcessingSign": "लेनदेन पर हस्ताक्षर करना",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1466,12 +1456,7 @@
   "buyYouPay": "आप भुगतान करते हैं",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "यह भुगतान आदेश पहले ही पुष्टि हो चुका है।",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "passportStep12": "बुल बिटकॉइन वॉलेट आपको पासपोर्ट पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  },  "passportStep12": "बुल बिटकॉइन वॉलेट आपको पासपोर्ट पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2099,12 +2084,7 @@
   "howToDecideBackupText1": "सबसे आम तरीके से लोग अपने Bitcoin खो देते हैं क्योंकि वे भौतिक बैकअप खो देते हैं। किसी को भी जो आपके भौतिक बैकअप को ढूंढता है वह आपके सभी बिटकॉइन को ले सकता है। यदि आप बहुत आश्वस्त हैं कि आप इसे अच्छी तरह से छिपा सकते हैं और इसे कभी नहीं खो सकते हैं, तो यह एक अच्छा विकल्प है।।",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "भुगतान आदेश नहीं मिला। कृपया पुनः प्रयास करें।",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "coldcardStep13": "बुल बिटकॉइन वॉलेट आपको कोल्डकार्ड पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  },  "coldcardStep13": "बुल बिटकॉइन वॉलेट आपको कोल्डकार्ड पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3327,12 +3307,7 @@
   "electrumReset": "रीसेट करें",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },
-  "payInsufficientBalanceError": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष राशि नहीं है।",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "backupCompletedTitle": "बैकअप पूरा हो गया!",
+  },  "backupCompletedTitle": "बैकअप पूरा हो गया!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -9296,12 +9271,7 @@
   "buyKycPendingDescription": "आपको पहले ID सत्यापन पूर्ण करना होगा",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "payBelowMinAmountError": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं।",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "arkReceiveSegmentArk": "आर्क",
+  },  "arkReceiveSegmentArk": "आर्क",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -10505,9 +10475,12 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "payBelowMinAmount": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं।",
+  "payBelowMinAmount": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं। ({minAmountSat} sats)",
   "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
+    "description": "Error message when payment amount is below minimum",
+    "placeholders": {
+      "minAmountSat": { "type": "int" }
+    }
   },
   "ledgerProcessingVerifySubtext": "कृपया अपने लेजर डिवाइस पर पते की पुष्टि करें।।",
   "@ledgerProcessingVerifySubtext": {
@@ -10913,12 +10886,7 @@
   "importQrDeviceSeedsignerInstructionsTitle": "बीजगणित निर्देश",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "भुगतान आदेश नहीं मिला। कृपया पुनः प्रयास करें।",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "jadeStep12": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  },  "jadeStep12": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11815,9 +11783,12 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "आप इस वॉलेट से अधिकतम भुगतान योग्य राशि से अधिक भुगतान करने का प्रयास कर रहे हैं।",
+  "payAboveMaxAmount": "आप इस वॉलेट से अधिकतम भुगतान योग्य राशि से अधिक भुगतान करने का प्रयास कर रहे हैं। ({maxAmountSat} sats)",
   "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
+    "description": "Error message when payment amount exceeds maximum",
+    "placeholders": {
+      "maxAmountSat": { "type": "int" }
+    }
   },
   "receiveNetworkUnavailable": "{network} वर्तमान में अनुपलब्ध है",
   "@receiveNetworkUnavailable": {
