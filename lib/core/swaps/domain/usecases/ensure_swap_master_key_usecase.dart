@@ -38,15 +38,23 @@ class EnsureSwapMasterKeyUsecase {
     }
 
     final fingerprint = wallets.first.masterFingerprint;
+
+    // Bind the key for reads and skip the wallet-seed decryption entirely when
+    // it already exists (the common warm-launch case). Only a genuine first
+    // derive reads the mnemonic.
+    if (await _swapRepository.swapMasterKeyReady(walletFingerprint: fingerprint)) {
+      return;
+    }
+
     final seed = await _seedRepository.get(fingerprint);
     if (seed is! MnemonicSeed) {
       return;
     }
 
-    await _swapRepository.ensureSwapMasterKey(
+    await _swapRepository.deriveSwapMasterKey(
       mnemonic: seed.mnemonicWords.join(' '),
       walletFingerprint: fingerprint,
     );
-    log.fine('SWAP_KEY: swap master key ready for wallet $fingerprint');
+    log.fine('SWAP_KEY: swap master key derived for wallet $fingerprint');
   }
 }

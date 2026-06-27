@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
@@ -466,18 +467,52 @@ class BoltzSwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  /// Derives (first launch) and persists the swap master key from the default
-  /// wallet's seed. Called once when wallets become ready (app startup / after
-  /// onboarding), so swap creation and restore can READ the key from storage
-  /// and never derive it lazily. Idempotent.
-  Future<void> ensureSwapMasterKey({
+  /// Binds the swap master key to [walletFingerprint] for reads and reports
+  /// whether it already exists — cheap, so the caller can skip decrypting the
+  /// wallet seed when the key is already present.
+  Future<bool> swapMasterKeyReady({required String walletFingerprint}) =>
+      _boltz.swapMasterKeyReady(
+        walletFingerprint: walletFingerprint,
+        isTestnet: _isTestnet,
+      );
+
+  /// Derives + persists the swap master key from the default wallet's seed.
+  /// Called once, only when [swapMasterKeyReady] reported a miss, so swap
+  /// creation and restore can READ the key from storage and never derive lazily.
+  Future<void> deriveSwapMasterKey({
     required String mnemonic,
     required String walletFingerprint,
-  }) => _boltz.initSwapMasterKey(
+  }) => _boltz.deriveSwapMasterKey(
     mnemonic: mnemonic,
     walletFingerprint: walletFingerprint,
     isTestnet: _isTestnet,
   );
+
+  /// Reads the swap master key (the "swap mnemonic") for [walletFingerprint]
+  /// for display/management in the seed viewer. Null when none is stored.
+  Future<SwapMasterKeyInfo?> getSwapMasterKeyInfo({
+    required String walletFingerprint,
+  }) async {
+    final model = await _boltz.getSwapMasterKeyForWallet(
+      walletFingerprint: walletFingerprint,
+      isTestnet: _isTestnet,
+    );
+    if (model == null) return null;
+    return SwapMasterKeyInfo(
+      mnemonic: model.mnemonic,
+      fingerprint: model.fingerprint,
+      walletFingerprint: walletFingerprint,
+      network: model.network,
+    );
+  }
+
+  /// Deletes the swap master key (and its index counter) for
+  /// [walletFingerprint]. Super-user action; the next ensure re-derives it.
+  Future<void> deleteSwapMasterKey({required String walletFingerprint}) =>
+      _boltz.deleteSwapMasterKey(
+        walletFingerprint: walletFingerprint,
+        isTestnet: _isTestnet,
+      );
 
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
@@ -511,6 +546,14 @@ class BoltzSwapRepository {
       'fp=${swapMasterKey.fingerprint}',
     );
     return current;
+  }
+
+  /// Removes a swap entirely — local row + secure blob. Used when a recovered
+  /// swap is found to be already resolved on-chain (its lockup is already
+  /// spent), so it must not keep lingering in the transaction list.
+  Future<void> deleteSwap({required String swapId}) async {
+    await _boltz.storage.trash(swapId);
+    await _boltz.storage.deleteFromSecureStorage(swapId);
   }
 
   Future<void> updateSwap({required Swap swap}) {

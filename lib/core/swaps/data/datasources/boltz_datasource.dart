@@ -26,9 +26,10 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
-  /// Default-wallet fingerprint the swap master key is keyed under, set once at
-  /// app startup by [initSwapMasterKey]. Public (non-secret) id only; the key
-  /// material itself lives in secure storage and is read on demand.
+  /// Default-wallet fingerprint the swap master key is keyed under, bound by
+  /// [swapMasterKeyReady] / [deriveSwapMasterKey] when wallets become ready.
+  /// Public (non-secret) id only; the key material itself lives in secure
+  /// storage and is read on demand.
   String? _swapMasterKeyWalletFingerprint;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
@@ -152,21 +153,33 @@ class BoltzDatasource {
   // network alone. Keying by fingerprint is what makes restore correct and
   // stops a different default wallet (or a stale key the iOS keychain kept
   // after the app was deleted) from ever being read for the current wallet.
-  // [initSwapMasterKey] is the only place that derives; every swap operation
+  // [deriveSwapMasterKey] is the only place that derives; every swap operation
   // READS via [getSwapMasterKey].
-  Future<void> initSwapMasterKey({
+
+  /// Binds the swap master key to [walletFingerprint] for subsequent reads and
+  /// reports whether it already exists in storage. Cheap: no seed read, no
+  /// derivation — the caller decrypts the wallet seed and calls
+  /// [deriveSwapMasterKey] only on a miss. The fingerprint binding is set ONLY
+  /// when the key is confirmed present, so a read can never resolve to a
+  /// fingerprint whose key was never stored.
+  Future<bool> swapMasterKeyReady({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    final exists = await _boltzStore.swapMasterKeyExists(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (exists) _swapMasterKeyWalletFingerprint = walletFingerprint;
+    return exists;
+  }
+
+  Future<void> deriveSwapMasterKey({
     required String mnemonic,
     required String walletFingerprint,
     required bool isTestnet,
   }) async {
-    _swapMasterKeyWalletFingerprint = walletFingerprint;
-    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    if (await _boltzStore.swapMasterKeyExists(
-      network,
-      walletFingerprint: walletFingerprint,
-    )) {
-      return;
-    }
     final model = await SwapMasterKeyModel.create(
       mnemonic: mnemonic,
       isTestnet: isTestnet,
@@ -175,6 +188,9 @@ class BoltzDatasource {
       model,
       walletFingerprint: walletFingerprint,
     );
+    // Bind only after a successful store, so a failed derive leaves the key
+    // "not initialized" rather than bound to an absent blob.
+    _swapMasterKeyWalletFingerprint = walletFingerprint;
   }
 
   Future<SwapMasterKeyModel> getSwapMasterKey({required bool isTestnet}) async {
@@ -190,6 +206,42 @@ class BoltzDatasource {
       network,
       walletFingerprint: walletFingerprint,
     );
+  }
+
+  /// Reads the swap master key for [walletFingerprint] WITHOUT requiring the
+  /// startup binding — used by the seed viewer to display/delete it. Returns
+  /// null when no key is stored for that wallet+network.
+  Future<SwapMasterKeyModel?> getSwapMasterKeyForWallet({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    final exists = await _boltzStore.swapMasterKeyExists(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (!exists) return null;
+    return _boltzStore.fetchSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+  }
+
+  /// Deletes the swap master key (and its index counter) for
+  /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
+  /// wallet so a subsequent read forces a fresh derive.
+  Future<void> deleteSwapMasterKey({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    await _boltzStore.deleteSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (_swapMasterKeyWalletFingerprint == walletFingerprint) {
+      _swapMasterKeyWalletFingerprint = null;
+    }
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases

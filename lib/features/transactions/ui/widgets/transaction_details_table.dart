@@ -56,12 +56,9 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
-    // "Send Network fee" for a send/chain swap is the user's lockup tx fee.
-    // Prefer the persisted lockupFee; fall back to the linked lockup tx's
-    // actual fee when it wasn't recorded (e.g. older swaps).
-    final swapSendNetworkFee = (swap?.fees?.lockupFee ?? 0) > 0
-        ? swap!.fees!.lockupFee
-        : txFee;
+    final swapSendNetworkFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
+    );
 
     final amountSent = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
@@ -72,14 +69,17 @@ class TransactionDetailsTable extends StatelessWidget {
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
-    // A recovered (restore/rescue-reconstructed) swap: trust only the Boltz
-    // restore data + on-chain facts. The Boltz % rate is stable so the transfer
-    // fee is exact (recomputed at rescue); the rest of the on-chain cost is one
-    // derived line, sent − received − transfer. The counterpart wallet and the
-    // per-leg lockup/server fees are guesses and are hidden (see Swap.recovered).
-    final recovered = swap?.recovered == true;
-    final recoveredBoltzFee = swap?.fees?.boltzFee ?? 0;
-    final recoveredNetworkFee = amountSent - amountReceived - recoveredBoltzFee;
+    // A recovered swap shows only trustworthy figures; the derivation lives in
+    // TransactionDetailsState (see Swap.recovered).
+    final recovered = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.isRecoveredSwap,
+    );
+    final recoveredBoltzFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.recoveredBoltzFeeSat,
+    );
+    final recoveredNetworkFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.recoveredNetworkFeeSat,
+    );
     return DetailsTable(
       items: [
         if (txId != null)

@@ -67,4 +67,9 @@ class RestorableSwap {
   final bool existsLocally;
 
   const RestorableSwap({required this.swap, required this.existsLocally});
+
+  /// Actionable here: on-chain funds locked & unresolved
+  /// ([RestoredSwap.recoverable]) and not yet imported locally. Drives the
+  /// pending-vs-completed display and whether a rescue can be attempted.
+  bool get isRescuable => swap.recoverable && !existsLocally;
 }

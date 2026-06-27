@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -150,6 +151,18 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                             _buildSeedCard(context, seed, isOldWallet: true),
                       ),
                     ],
+                    if (state.swapMasterKey != null) ...[
+                      const SizedBox(height: 24),
+                      BBText(
+                        'Swap mnemonic',
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: .bold,
+                        ),
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildSwapKeyCard(context, state.swapMasterKey!),
+                    ],
                   ],
                 );
               },
@@ -258,6 +271,110 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _showDeleteSwapWarningDialog(BuildContext context) {
+    return BlurredDialog.show<void>(
+      context: context,
+      isDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.surface,
+        title: Text(
+          'Delete swap mnemonic?',
+          style: context.font.headlineSmall?.copyWith(
+            color: context.appColors.error,
+            fontWeight: .bold,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'This removes the swap master key from secure storage. It will be '
+            're-derived from your wallet seed the next time the app needs it, '
+            'with the same fingerprint. Ongoing swaps are unaffected.',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              context.loc.cancel,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<AllSeedViewCubit>().deleteSwapMnemonic();
+            },
+            child: Text(
+              context.loc.delete,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
+                fontWeight: .bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwapKeyCard(BuildContext context, SwapMasterKeyInfo swapKey) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.appColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: context.appColors.outline, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Row(
+              crossAxisAlignment: .start,
+              children: [
+                Expanded(
+                  child: BBText(
+                    swapKey.mnemonic,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.onSurface,
+                    maxLines: 5,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: context.appColors.error,
+                  ),
+                  onPressed: () => _showDeleteSwapWarningDialog(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            BBText(
+              'Fingerprint: ${swapKey.fingerprint} (${swapKey.network})',
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface.withValues(alpha: 0.7),
+            ),
+            BBText(
+              'Linked wallet: ${swapKey.walletFingerprint}',
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface.withValues(alpha: 0.7),
+            ),
+          ],
+        ),
       ),
     );
   }

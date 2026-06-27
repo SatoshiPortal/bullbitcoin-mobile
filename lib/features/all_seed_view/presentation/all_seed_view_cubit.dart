@@ -2,6 +2,9 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -15,12 +18,16 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     required this._getWalletsUsecase,
     required this._deleteSeedUsecase,
     required this._processAndSeparateSeedsUsecase,
+    required this._getSwapMasterKeyUsecase,
+    required this._deleteSwapMasterKeyUsecase,
   }) : super(const AllSeedViewState());
 
   final GetAllSeedsUsecase _getAllSeedsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final DeleteSeedUsecase _deleteSeedUsecase;
   final ProcessAndSeparateSeedsUsecase _processAndSeparateSeedsUsecase;
+  final GetSwapMasterKeyUsecase _getSwapMasterKeyUsecase;
+  final DeleteSwapMasterKeyUsecase _deleteSwapMasterKeyUsecase;
 
   Future<void> fetchAllSeeds() async {
     emit(state.copyWith(loading: true, error: null));
@@ -39,10 +46,20 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
         existingFingerprints: existingFingerprints,
       );
 
+      // Best-effort: the swap mnemonic is a separate secret from the wallet
+      // seeds; a failure to read it must not hide the wallet seeds.
+      SwapMasterKeyInfo? swapMasterKey;
+      try {
+        swapMasterKey = await _getSwapMasterKeyUsecase.execute();
+      } catch (_) {
+        swapMasterKey = null;
+      }
+
       emit(
         state.copyWith(
           existingWallets: result.existingWallets,
           oldWallets: result.oldWallets,
+          swapMasterKey: swapMasterKey,
           error: null,
         ),
       );
@@ -83,6 +100,15 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       );
     } catch (e) {
       emit(state.copyWith(error: 'Failed to delete seed: $e'));
+    }
+  }
+
+  Future<void> deleteSwapMnemonic() async {
+    try {
+      await _deleteSwapMasterKeyUsecase.execute();
+      emit(state.copyWith(swapMasterKey: null));
+    } catch (e) {
+      emit(state.copyWith(error: 'Failed to delete swap mnemonic: $e'));
     }
   }
 

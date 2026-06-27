@@ -53,8 +53,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                           ),
                           BullDetailsTableItem(
                             label: context.loc.swapRescueStatusLabel,
-                            displayValue:
-                                swap.recoverable && !restorable.existsLocally
+                            displayValue: restorable.isRescuable
                                 ? context.loc.coreSwapsStatusPending
                                 : context.loc.coreSwapsStatusCompleted,
                           ),

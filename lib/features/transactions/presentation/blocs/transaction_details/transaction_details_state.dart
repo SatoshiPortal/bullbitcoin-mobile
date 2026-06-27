@@ -48,6 +48,23 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     return amount;
   }
 
+  bool get isRecoveredSwap => swap?.recovered == true;
+
+  /// Recovered-swap fee breakdown (see Swap.recovered): only the Boltz % fee is
+  /// trustworthy, so the remaining on-chain cost is derived as
+  /// sent − received − boltz; the per-leg lockup/server fees are hidden.
+  int get recoveredBoltzFeeSat => swap?.fees?.boltzFee ?? 0;
+  int get recoveredNetworkFeeSat =>
+      getAmountSent() - getAmountReceived() - recoveredBoltzFeeSat;
+
+  /// "Send network fee" for a send/chain swap is the user's lockup tx fee:
+  /// prefer the persisted lockupFee, else fall back to the linked lockup tx's
+  /// actual fee (older swaps didn't record it).
+  int? get swapSendNetworkFeeSat {
+    final lockupFee = swap?.fees?.lockupFee ?? 0;
+    return lockupFee > 0 ? lockupFee : walletTransaction?.feeSat;
+  }
+
   /*
   bool
   get isOngoingPayjoin {

@@ -53,6 +53,7 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     emit(state.copyWith(status: SwapRescueStatus.loading));
     try {
       final wallets = await _rescueSwapUsecase.candidateWallets(_restored);
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: SwapRescueStatus.ready,
@@ -61,6 +62,7 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
     }
   }
@@ -78,8 +80,10 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
         restored: _restored,
         selectedWalletId: walletId,
       );
+      if (isClosed) return;
       emit(state.copyWith(status: SwapRescueStatus.success));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
     }
   }

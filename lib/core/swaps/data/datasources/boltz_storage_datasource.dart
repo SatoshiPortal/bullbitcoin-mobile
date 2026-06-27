@@ -224,6 +224,29 @@ class BoltzStorageDatasource {
     );
   }
 
+  /// Deletes the swap master key blob for [walletFingerprint] and, best-effort,
+  /// its index counter (keyed by the swap master key's OWN fingerprint) so a
+  /// re-derive starts from a clean index. No-op on a missing key.
+  Future<void> deleteSwapMasterKey(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
+    try {
+      final existing = await fetchSwapMasterKey(
+        network,
+        walletFingerprint: walletFingerprint,
+      );
+      await _secureSwapStorage.deleteValue(
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}${existing.fingerprint}',
+      );
+    } catch (_) {
+      // No stored key (or unreadable) — nothing to clean beyond the blob below.
+    }
+    await _secureSwapStorage.deleteValue(
+      _swapMasterKeyStorageKey(network, walletFingerprint),
+    );
+  }
+
   // Keyed by the swap master key's fingerprint, not the network: the swap key
   // material is network-independent, so a per-network counter would reuse child
   // keys. (This is the swap master key's own fingerprint, distinct from the

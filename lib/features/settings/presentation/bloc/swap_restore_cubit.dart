@@ -21,8 +21,14 @@ class SwapRestoreState {
       swaps.isNotEmpty && swaps.every((s) => s.existsLocally);
 
   /// Swaps the user can act on here: funds locked & unresolved, not yet imported.
-  int get actionableCount =>
-      swaps.where((s) => s.swap.recoverable && !s.existsLocally).length;
+  List<RestorableSwap> get recoverableSwaps =>
+      swaps.where((s) => s.isRescuable).toList();
+
+  /// Display-only swaps: resolved, never funded, or already imported.
+  List<RestorableSwap> get otherSwaps =>
+      swaps.where((s) => !s.isRescuable).toList();
+
+  int get actionableCount => recoverableSwaps.length;
 
   SwapRestoreState copyWith({
     SwapRestoreStatus? status,
@@ -47,8 +53,10 @@ class SwapRestoreCubit extends Cubit<SwapRestoreState> {
     emit(state.copyWith(status: SwapRestoreStatus.loading));
     try {
       final swaps = await _restoreSwapsUsecase.execute();
+      if (isClosed) return;
       emit(state.copyWith(status: SwapRestoreStatus.success, swaps: swaps));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SwapRestoreStatus.error, error: e.toString()));
     }
   }

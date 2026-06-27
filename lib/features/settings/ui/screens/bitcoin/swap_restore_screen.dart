@@ -67,12 +67,8 @@ class _SwapRestoreBody extends StatelessWidget {
             ),
           );
         }
-        final recoverable = state.swaps
-            .where((s) => s.swap.recoverable && !s.existsLocally)
-            .toList();
-        final others = state.swaps
-            .where((s) => !(s.swap.recoverable && !s.existsLocally))
-            .toList();
+        final recoverable = state.recoverableSwaps;
+        final others = state.otherSwaps;
         return ListView(
           padding: const EdgeInsets.only(bottom: 24),
           children: [
@@ -133,15 +129,12 @@ class _SwapRow extends StatelessWidget {
     }
   }
 
-  bool get _isRescuable =>
-      restorable.swap.recoverable && !restorable.existsLocally;
-
-  String _statusLabel(BuildContext context) => _isRescuable
+  String _statusLabel(BuildContext context) => restorable.isRescuable
       ? context.loc.coreSwapsStatusPending
       : context.loc.coreSwapsStatusCompleted;
 
   Color _statusColor(BuildContext context) =>
-      _isRescuable ? context.bull.warning : context.bull.success;
+      restorable.isRescuable ? context.bull.warning : context.bull.success;
 
   String _formatDate(DateTime d) {
     final l = d.toLocal();
@@ -155,7 +148,7 @@ class _SwapRow extends StatelessWidget {
     final shortId = id.length > 12 ? '${id.substring(0, 12)}…' : id;
     // Only swaps with locked, unresolved funds that aren't already stored can be
     // rescued; resolved/expired-unfunded swaps are display-only.
-    final canRescue = restorable.swap.recoverable && !restorable.existsLocally;
+    final canRescue = restorable.isRescuable;
 
     final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -188,19 +181,22 @@ class _SwapRow extends StatelessWidget {
             ),
           ),
           const Gap(8),
-          BullBadge(
-            label: _statusLabel(context),
-            background: _statusColor(context).withValues(alpha: 0.15),
-            foreground: _statusColor(context),
-          ),
-          if (canRescue) ...[
-            const Gap(4),
+          // Recoverable rows live under the RECOVERABLE header and carry a
+          // chevron, so a status badge there ("Pending") is misleading — these
+          // may actually be terminal. Only show the badge for display-only
+          // (already-resolved) swaps.
+          if (!canRescue)
+            BullBadge(
+              label: _statusLabel(context),
+              background: _statusColor(context).withValues(alpha: 0.15),
+              foreground: _statusColor(context),
+            ),
+          if (canRescue)
             BullIcon(
               BullIcons.chevronRight,
               color: context.bull.textMuted,
               size: 22,
             ),
-          ],
         ],
       ),
     );

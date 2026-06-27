@@ -13,11 +13,13 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
@@ -89,6 +91,28 @@ class SwapsLocator {
         settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+
+    locator.registerFactory<GetSwapMasterKeyUsecase>(
+      () => GetSwapMasterKeyUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+
+    locator.registerFactory<DeleteSwapMasterKeyUsecase>(
+      () => DeleteSwapMasterKeyUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

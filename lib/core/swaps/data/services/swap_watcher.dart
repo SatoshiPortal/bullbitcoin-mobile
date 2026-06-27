@@ -808,6 +808,21 @@ class SwapWatcherService {
       trace: trace,
     );
 
+    // A recovered swap whose claim/refund is rejected because the lockup input
+    // is already spent ("bad-txns-inputs-missingorspent") was already
+    // claimed/refunded before we recovered it — there is nothing left to do and
+    // its funds are not at risk. It can never make progress, so delete it
+    // instead of leaving it stuck as an ongoing transfer in the list.
+    if (swap.recovered && _isAlreadySpentError(error)) {
+      log.info(
+        '[SwapWatcher] recovered swap ${swap.id} already resolved on-chain '
+        '(lockup spent) — deleting stale entry',
+      );
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+      await _boltzRepo.deleteSwap(swapId: swap.id);
+      return;
+    }
+
     final recovered = await _checkAndRecoverFromOutspend(
       swap: swap,
       isClaim: isClaim,
@@ -943,6 +958,12 @@ class SwapWatcherService {
         message.contains('non-bip68-final') ||
         message.contains('locktime');
   }
+
+  // Electrum rejects a broadcast whose inputs are already spent with
+  // "bad-txns-inputs-missingorspent" (RPC code -25). For a swap lockup that
+  // means it was already claimed or refunded.
+  bool _isAlreadySpentError(Object error) =>
+      _errorMessage(error).toLowerCase().contains('missingorspent');
 
   String _errorMessage(Object error) {
     if (error is boltz.BoltzError) {

@@ -63,7 +63,7 @@
   "@swapRestoreTitle": {
     "description": "Title for the swap restore settings page"
   },
-  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{1 swap can be recovered} other{{count} swaps can be recovered}}",
+  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{You can attempt recovering 1 swap. It may already be in a terminal status.} other{You can attempt recovering {count} swaps. Note, some of them may already be in a terminal status.}}",
   "@swapRestoreActionable": {
     "description": "Header count of restorable swaps with locked, unresolved funds",
     "placeholders": {
