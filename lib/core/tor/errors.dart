@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/recoverbull/errors.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-class TorNotStartedError extends RecoverBullError {
+class TorNotStartedError extends BullException {
   TorNotStartedError() : super('Tor is not started');
 }

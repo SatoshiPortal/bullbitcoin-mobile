@@ -250,7 +250,7 @@
   "sendConfirmCustomFee": "Hyväksy mukautettu kulutaso",
   "sendEstimatedDelivery10Minutes": "10 minuuttia",
   "sendEstimatedDelivery10to30Minutes": "10-30 minuuttia",
-  "sendEstimatedDeliveryHours": "tuntia",
+  "sendEstimatedDeliveryFewHours": "muutama tunti",
   "sendEstimatedDeliveryHoursToDays": "tunneista vuorokausiin",
   "sendEstimatedDelivery": "Arvioitu viive ~ ",
   "sendAddress": "Osoite: ",
@@ -1217,6 +1217,7 @@
     }
   },
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
   "dcaSetRecurringBuyTitle": "Määritä toistuva osto",
@@ -1423,6 +1424,8 @@
   "appUnlockAttemptSingular": "epäonnistunut yritys",
   "appUnlockAttemptPlural": "epäonnistunutta yritystä",
   "appUnlockButton": "Avaa",
+  "appUnlockPinCheckError": "Suojausasetusten lataaminen epäonnistui. Käynnistä sovellus uudelleen.",
+  "appUnlockPinVerifyError": "PIN-koodisi tarkistaminen epäonnistui. Yritä uudelleen.",
   "pinStatusLoading": "Ladataan",
   "pinStatusCheckingDescription": "Tarkistetaan PIN-koodia",
   "pinStatusProcessing": "Käsitellään",
@@ -1721,8 +1724,6 @@
   "replaceByFeeCustomFeeTitle": "Mukautettu kulutaso",
   "replaceByFeeErrorFeeRateTooLow": "Sinun on nostettava kulutasoa vähintään 1 sat/vbyte verrattuna alkuperäiseen transaktioon",
   "replaceByFeeErrorNoFeeRateSelected": "Valitse kulutaso",
-  "replaceByFeeErrorTransactionConfirmed": "Alkuperäinen transaktio on vahvistettu",
-  "replaceByFeeErrorGeneric": "Tapahtui virhe yritettäessä korvata transaktiota",
   "replaceByFeeFastestDescription": "Arvioitu toimitusaika ~ 10 minuuttia",
   "replaceByFeeFastestTitle": "Nopein",
   "replaceByFeeFeeRateDisplay": "Kulutaso: {feeRate} sat/vbyte",
@@ -3123,7 +3124,13 @@
   "broadcastSignedTxTo": "Vastaanottaja",
   "broadcastSignedTxBroadcast": "Lähetä",
   "broadcastSignedTxBroadcasting": "Lähetetään...",
-  "broadcastSignedTxBroadcastError": "Tapahtuman lähetys epäonnistui",
+  "broadcastSignedTxBroadcastError": "Tapahtumaasi ei voitu lähettää. Tarkista internetyhteytesi ja yritä uudelleen.",
+  "importWatchOnlyErrorNoWalletSelected": "Liitä tai skannaa ensin julkinen avain tai deskriptori.",
+  "importWatchOnlyErrorLabelRequired": "Anna lompakollesi nimi ennen tuontia.",
+  "importWatchOnlyErrorInvalidFormat": "Tämä ei näytä kelvolliselta julkiselta avaimelta tai deskriptorilta. Tarkista, mitä liitit.",
+  "importWatchOnlyErrorImportFailed": "Tämän vain katselun lompakon tuonti ei onnistunut. Tarkista tiedot ja yritä uudelleen.",
+  "broadcastSignedTxErrorInvalidTransaction": "Tämä ei näytä kelvolliselta allekirjoitetulta tapahtumalta. Varmista, että liitit koko PSBT:n tai tapahtuman.",
+  "broadcastSignedTxErrorInvalidPushTx": "Tästä tunnisteesta ei voitu lukea tapahtumaa. Yritä skannata uudelleen.",
   "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
   "broadcastSignedTxPasteHint": "Liitä PSBT tai transaktion HEX",
   "broadcastSignedTxCameraButton": "Kamera",
@@ -3566,7 +3573,7 @@
   "electrumDefaultServersInfo": "Yksityisyytesi suojaamiseksi oletuspalvelimia ei käytetä, kun omia palvelimia on määritetty.",
   "electrumCustomServers": "Omat palvelimet",
   "electrumDragToReorder": "(Pitkä painallus, raahaa ja muuta prioriteettia)",
-  "electrumLoadFailedError": "Palvelinten lataus epäonnistui{reason}",
+  "electrumLoadFailedError": "Palvelinten lataus epäonnistui",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -3574,7 +3581,7 @@
       }
     }
   },
-  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui{reason}",
+  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3582,7 +3589,7 @@
       }
     }
   },
-  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui{reason}",
+  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3590,7 +3597,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui{reason}",
+  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -3599,6 +3606,7 @@
     }
   },
   "electrumServerAlreadyExists": "Tämä palvelin on jo olemassa",
+  "electrumServerUnreachable": "Palvelimeen ei saada yhteyttä. Tarkista osoite ja yritä uudelleen.",
   "electrumPrivacyNoticeTitle": "Tietosuoja-ilmoitus",
   "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
   "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet transaktioita mempoolin kautta napsauttamalla transaktio-ID tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",
@@ -4069,31 +4077,6 @@
   "systemLabelSelfSpend": "Oma siirto",
   "systemLabelExchangeBuy": "Osta",
   "systemLabelExchangeSell": "Myy",
-  "labelErrorNotFound": "Tunnistetta \"{label}\" ei löytynyt.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Odottamaton virhe: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
   "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
   "@labelDeleteFailed": {
     "placeholders": {
@@ -4382,11 +4365,10 @@
   "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
   "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
   "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
-  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
-  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui: {error}",
-  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui: {error}",
-  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
+  "mempoolErrorInvalidUrl": "Virheellinen palvelimen URL-osoite. Anna kelvollinen verkkotunnus tai IP-osoite.",
+  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui",
+  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui",
+  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui",
   "deleteLogsTitle": "Poista lokit",
   "logsDeletedMessage": "Lokit poistettu",
   "sendSelfTransfer": "Siirto itselle",
@@ -4621,7 +4603,6 @@
   "coreScreensFetchFailed": "Tapahtumaa {txid} ei voitu noutaa Electrumista.",
   "coreScreensInputResolutionFailed": "Syötettä ei löydy: ulostuloa {vout} kohteesta {parentTxId} ei ole olemassa.",
   "coreScreensParseFailed": "Tapahtuman jäsennys epäonnistui: {message}.",
-  "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
   "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla.",
   "addressViewerTitle": "Osoite",
   "viewerTapToCopy": "Kopioi napauttamalla",
@@ -4644,6 +4625,7 @@
   "recipientsPayoutMethod": "Maksutapa",
   "recipientsFilterByJurisdiction": "Suodata lainkäyttöalueen mukaan:",
   "recipientsListEmpty": "Vastaanottajia ei löytynyt.",
+  "recipientsListLoadError": "Vastaanottajien lataaminen epäonnistui. Päivitä vetämällä alaspäin.",
   "recipientsContinue": "Jatka",
   "recipientsJurisdictionAll": "Kaikki lainkäyttöalueet",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -4795,6 +4777,52 @@
   "onboardingAdvancedOptionsDone": "Valmis",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
+  "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
+  "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
+  "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Muistisanan tuominen edellyttää tunnistetta",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Siemenen poistaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "sendEstimatedDeliveryHours": "tuntia",
+  "labelErrorNotFound": "Tunnistetta \"{label}\" ei löytynyt.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Odottamaton virhe: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
+  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
+  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
+  "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
   "walletButtonCoins": "Hallinnoi kolikoita",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

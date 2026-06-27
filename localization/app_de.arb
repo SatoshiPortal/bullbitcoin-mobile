@@ -85,6 +85,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "Wenn aktiviert, werden Auto-Swaps mit Gebühren über der festgelegten Grenze immer gesperrt",
   "electrumServerAlreadyExists": "Dieser Server existiert bereits",
+  "electrumServerUnreachable": "Server ist nicht erreichbar. Überprüfen Sie die Adresse und versuchen Sie es erneut.",
   "sellPaymentMethod": "Zahlungsmethode",
   "transactionNoteHint": "Hinweis",
   "transactionLabelPreimage": "Preimage",
@@ -223,6 +224,8 @@
   "dcaWalletLiquidSubtitle": "Erfordert kompatible Wallet",
   "fundExchangeCrIbanCrcTitle": "Banküberweisung (CRC)",
   "appUnlockButton": "Entsperren",
+  "appUnlockPinCheckError": "Sicherheitseinstellungen konnten nicht geladen werden. Bitte starten Sie die App neu.",
+  "appUnlockPinVerifyError": "Ihre PIN konnte nicht verifiziert werden. Bitte versuchen Sie es erneut.",
   "payServiceFee": "Servicegebühr",
   "transactionStatusSwapExpired": "Swap abgelaufen",
   "swapAmountPlaceholder": "0",
@@ -415,7 +418,6 @@
   "sendSendAmount": "Betrag",
   "sendSelectedUtxosInsufficient": "Die ausgewählten UTXOs decken den erforderlichen Betrag nicht ab.",
   "swapErrorBalanceTooLow": "Guthaben zu niedrig für den Mindest-Swap-Betrag.",
-  "replaceByFeeErrorGeneric": "Beim Versuch, die Transaktion zu ersetzen, trat ein Fehler auf.",
   "fundExchangeWarningTactic5": "Sie bitten darum, Bitcoin an eine andere Plattform zu senden.",
   "rbfCustomFee": "Benutzerdefinierte Gebühren",
   "importQrDeviceFingerprint": "Fingerabdruck",
@@ -500,14 +502,6 @@
   "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
   "appStartupErrorMessageWithBackup": "Initialisierung fehlgeschlagen. Löschen Sie die App und installieren Sie sie neu, um das Problem zu beheben.",
   "payPasteInvoice": "Rechnung einfügen",
-  "labelErrorUnexpected": "Unerwarteter Fehler: {message}.",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Abgerechnet",
   "dcaWalletBitcoinSubtitle": "Mindestens 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Bitte geben Sie Ihr Passwort auf dem BitBox-Gerät ein, um fortzufahren.",
@@ -619,6 +613,8 @@
   "testBackupSuccessTitle": "Test erfolgreich abgeschlossen!",
   "recoverbullSelectTakeYourTime": "Nehmen Sie sich die Zeit",
   "sendConfirmCustomFee": "Eigene Gebühr bestätigen",
+  "sendSubSatVbyteWarning": "Transaktionen mit weniger als 1 sat/vB können länger zur Bestätigung benötigen und werden möglicherweise nicht an alle Nodes weitergeleitet.",
+  "sendBelowMinFeeRateError": "Die Gebührenrate muss mindestens 0,1 sat/vB betragen.",
   "coreScreensTotalFeesLabel": "Gesamtgebühren",
   "mempoolSettingsDescription": "Benutzerdefinierte Mempool-Server für verschiedene Netzwerke konfigurieren. Jedes Netzwerk kann seinen eigenen Server für den Blockexplorer und die Gebührenschätzung verwenden.",
   "transactionSwapProgressClaim": "Einlösen",
@@ -1106,6 +1102,9 @@
   "walletButtonSend": "Senden",
   "importColdcardInstructionsStep9": "Geben Sie eine „Bezeichnung“ für Ihre Coldcard Q-Wallet ein und tippen Sie auf „Importieren“.",
   "bitboxScreenTroubleshootingStep1": "Stellen Sie sicher, dass Sie die neueste Firmware auf Ihrer BitBox installiert haben.",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Stellen Sie sicher, dass Bluetooth aktiviert ist und für diese App zugelassen ist.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Stellen Sie sicher, dass Bluetooth auf Ihrer BitBox02 Nova aktiviert ist.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Starten Sie Ihre BitBox02 Nova neu und versuchen Sie die Verbindung erneut.",
   "backupSettingsExportVault": "Tresor exportieren",
   "bitboxActionUnlockDeviceTitle": "BitBox-Gerät entsperren",
   "withdrawRecipientsNewTab": "Neuer Empfänger",
@@ -1171,7 +1170,7 @@
   "broadcastSignedTxReviewTransaction": "Transaktion überprüfen",
   "walletArkExperimental": "Experimentell",
   "importQrDeviceKeystoneStep5": "Wählen Sie \"BULL\" aus der Liste der Wallets",
-  "electrumLoadFailedError": "Server konnte nicht geladen werden: {reason}.",
+  "electrumLoadFailedError": "Server konnte nicht geladen werden: .",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1233,6 +1232,7 @@
   "payCopied": "Kopiert!",
   "transactionLabelReceiveNetworkFee": "Netzwerkgebühren empfangen",
   "bitboxScreenTroubleshootingTitle": "BitBox02 Fehlerbehebung",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Fehlerbehebung",
   "broadcastSignedTxPushTxButton": "Senden",
   "fundExchangeCrIbanUsdDescriptionBold": "genau",
   "fundExchangeSelectCountry": "Wählen Sie Ihr Land und Ihre Zahlungsmethode",
@@ -1423,7 +1423,6 @@
   "withdrawConfirmAmount": "Betrag",
   "transactionSwapDoNotUninstall": "Deinstallieren Sie die App erst, wenn der Swap abgeschlossen ist",
   "payDefaultCommentHint": "Standardkommentar eingeben",
-  "labelErrorSystemCannotDelete": "Systemlabels können nicht gelöscht werden.",
   "copyDialogButton": "Kopieren",
   "bitboxActionImportWalletProcessing": "Wallet wird importiert…",
   "swapConfirmTransferTitle": "Bestätigen",
@@ -1793,14 +1792,6 @@
   },
   "rbfErrorNoFeeRate": "Bitte wählen Sie einen Gebührensatz.",
   "backupWalletGoogleDrivePrivacyMessage1": "Diese Informationen",
-  "labelErrorUnsupportedType": "Der Typ {type} wird nicht unterstützt.",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2131,7 +2122,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Liquid-Testnetzwerk",
-  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers: {reason}.",
+  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers: .",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2238,7 +2229,6 @@
   "payDecodeFailed": "Rechnung konnte nicht entschlüsselt werden",
   "sendAbsoluteFees": "Gesamtgebühren",
   "arkSendConfirm": "Bestätigen",
-  "replaceByFeeErrorTransactionConfirmed": "Die ursprüngliche Transaktion wurde bestätigt.",
   "rbfErrorFeeTooLow": "Sie müssen den Gebührensatz um mindestens 1 sat/vbyte gegenüber der ursprünglichen Transaktion erhöhen.",
   "ledgerErrorMissingDerivationPathSign": "Der Ableitungspfad ist zur Anmeldung erforderlich.",
   "backupWalletTitle": "Sichern Sie Ihre Wallet",
@@ -2470,7 +2460,7 @@
   "importQrDeviceKruxInstructionsTitle": "Krux-Anleitung",
   "transactionOrderLabelOriginName": "Ursprungsname",
   "importQrDeviceKeystoneInstructionsTitle": "Keystone-Anleitung",
-  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität: {reason}.",
+  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität: .",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -2980,7 +2970,7 @@
   "buyStandardWithdrawal": "Standardauszahlung",
   "swapContinue": "Fortfahren",
   "arkSettleButton": "Einrichten",
-  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers: {reason}.",
+  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers: .",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3116,14 +3106,6 @@
   "coldcardStep10": "Tippen Sie auf die Schaltflächen, um die Transaktion auf Ihrer Coldcard zu signieren",
   "sendErrorAmountBelowSwapLimits": "Betrag unterhalb der Swap-Grenze.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Erwägen Sie, Sofortzahlungen aufzuladen, um kleinere Zahlungen zu tätigen.",
-  "labelErrorNotFound": "Label „{label}“ nicht gefunden.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Private Zahlung",
   "autoswapDefaultWalletLabel": "Bitcoin-Wallet",
   "recoverbullTestSuccessDescription": "Sie können den Zugriff auf eine verlorene Bitcoin-Wallet wiederherstellen.",
@@ -3185,6 +3167,7 @@
     }
   },
   "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "bip85NoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut.",
   "pinStatusSettingUpDescription": "PIN-Code wird eingerichtet.",
   "enterYourPinTitle": "Geben Sie Ihre {pinOrPassword} ein",
   "@enterYourPinTitle": {
@@ -3279,6 +3262,8 @@
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Zahlungsbeschreibung",
   "fundExchangeInfoBeneficiaryNameLeonod": "Der Name des Empfängers sollte LEONOD sein. Wenn Sie etwas anderes setzen, wird Ihre Zahlung abgelehnt",
   "importWalletLedger": "Ledger",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
   "recoverbullCheckingConnection": "RecoverBull-Verbindung wird geprüft",
   "exchangeLandingTitle": "BITCOIN",
   "psbtFlowSignWithQr": "Klicken Sie auf QR-Code unterschreiben",
@@ -3352,6 +3337,7 @@
   "testBackupStoreItSafe": "Speichern Sie es irgendwo sicher",
   "enterBackupKeyLabel": "Sicherungsschlüssel eingeben",
   "bitboxScreenTroubleshootingSubtitle": "Stellen Sie zunächst sicher, dass Ihr BitBox02-Gerät mit dem USB-Anschluss Ihres Telefons verbunden ist. Wenn Ihr Gerät noch nicht mit der App verbunden ist, versuchen Sie Folgendes:",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Wenn sich Ihr Gerät weiterhin nicht mit der App verbindet, versuchen Sie Folgendes:",
   "securityWarningTitle": "Sicherheitswarnung",
   "never": "nie",
   "notLoggedInTitle": "Sie sind nicht angemeldet",
@@ -3371,6 +3357,10 @@
   "bitboxScreenAddressToVerify": "Adresse:",
   "payConfirmPayment": "Zahlung bestätigen",
   "bitboxErrorPermissionDenied": "USB-Berechtigungen sind erforderlich, um mit BitBox-Geräten zu verbinden.",
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth-Berechtigung ist erforderlich, um sich mit Ihrer BitBox02 Nova zu verbinden.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth ist nicht verfügbar. Aktivieren Sie Bluetooth und versuchen Sie es erneut.",
+  "bitboxErrorNoBleDevicesFound": "Keine BitBox02 Nova in der Nähe gefunden. Prüfen Sie Bluetooth und versuchen Sie es erneut.",
+  "bitboxErrorMultipleBleDevicesFound": "Mehrere BitBox02 Nova-Geräte gefunden. Lassen Sie nur ein Gerät in der Nähe und versuchen Sie es erneut.",
   "recoveryPhraseTitle": "Schreiben Sie Ihre Wiederherstellungsphrase\nin der richtigen Reihenfolge",
   "bitboxActionSignTransactionProcessingSubtext": "Bitte bestätigen Sie die Transaktion auf Ihrem BitBox-Gerät…",
   "sellConfirmPayment": "Zahlung bestätigen",
@@ -3425,6 +3415,7 @@
   "pickPasswordInsteadButton": "Passwort auswählen",
   "coreScreensSendNetworkFeeLabel": "Netzwerkgebühr senden",
   "bitboxScreenScanningSubtext": "Auf der Suche nach Ihrem BitBox-Gerät…",
+  "bitboxScreenScanningSubtextBluetooth": "Es wird nach Ihrer BitBox02 Nova in der Nähe gesucht…",
   "sellOrderFailed": "Verkaufsauftrag fehlgeschlagen",
   "payInvalidAmount": "Ungültiger Betrag",
   "fundExchangeLabelBankName": "Name der Bank",
@@ -3541,6 +3532,7 @@
   "addressViewChangeAddressesDescription": "Anzeige der Wechseladressen der Wallet.",
   "sellReceiveAmount": "Sie erhalten",
   "bitboxErrorInvalidResponse": "Ungültige Antwort vom BitBox-Gerät. Bitte erneut versuchen.",
+  "bitboxErrorOperationFailed": "Der BitBox-Vorgang ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "settingsScreenTitle": "Einstellungen",
   "transactionDetailLabelTransferFee": "Übertragungsgebühr",
   "importQrDeviceKruxStep5": "Scannen Sie den QR-Code, der auf Ihrem Gerät angezeigt wird",
@@ -3550,6 +3542,7 @@
   "recoverButton": "Wiederherstellen",
   "passportStep5": "Erhöhen Sie die Bildschirmhelligkeit Ihres Geräts",
   "bitboxScreenConnectSubtext": "Stellen Sie sicher, dass Ihre BitBox02 entsperrt ist und über USB verbunden ist.",
+  "bitboxScreenConnectSubtextBluetooth": "Stellen Sie sicher, dass Ihre BitBox02 Nova entsperrt ist und Bluetooth aktiviert ist.",
   "payOwnerName": "Name des Empfängers",
   "transactionNetworkLiquid": "Liquid",
   "payEstimatedConfirmation": "Geschätzte Bestätigung: {time}",
@@ -3619,7 +3612,7 @@
   "autoswapMaxFeeInfoText": "Wenn die Gesamtgebühr den festgelegten Prozentsatz überschreitet, wird der automatische Swap pausiert.",
   "backupWalletSuccessDescription": "Jetzt testen wir Ihr Backup, um sicherzustellen, dass alles korrekt ist.",
   "rbfBroadcast": "Senden",
-  "sendEstimatedDeliveryHours": "Stunden",
+  "sendEstimatedDeliveryFewHours": "In wenigen Stunden",
   "dcaConfirmFrequencyMonthly": "Jeden Monat",
   "importWatchOnlyScriptType": "Skript-Typ / Adressformat",
   "electrumCustomServers": "Eigene Electrum-Server",
@@ -3974,7 +3967,13 @@
   "swapProgressPendingMessage": "Die Übertragung läuft. Bitcoin-Transaktionen können eine Weile zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
   "walletDetailsNetworkLabel": "Netzwerk",
   "broadcastSignedTxBroadcasting": "Wird übertragen…",
-  "broadcastSignedTxBroadcastError": "Übertragung der Transaktion fehlgeschlagen",
+  "broadcastSignedTxBroadcastError": "Wir konnten deine Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut.",
+  "importWatchOnlyErrorNoWalletSelected": "Füge zuerst einen öffentlichen Schlüssel oder Descriptor ein oder scanne ihn.",
+  "importWatchOnlyErrorLabelRequired": "Gib deiner Wallet vor dem Importieren einen Namen.",
+  "importWatchOnlyErrorInvalidFormat": "Das sieht nicht nach einem gültigen öffentlichen Schlüssel oder Descriptor aus. Überprüfe, was du eingefügt hast.",
+  "importWatchOnlyErrorImportFailed": "Wir konnten diese Watch-only-Wallet nicht importieren. Bitte überprüfe die Angaben und versuche es erneut.",
+  "broadcastSignedTxErrorInvalidTransaction": "Das sieht nicht nach einer gültigen signierten Transaktion aus. Stelle sicher, dass du das vollständige PSBT oder die vollständige Transaktion eingefügt hast.",
+  "broadcastSignedTxErrorInvalidPushTx": "Wir konnten aus diesem Tag keine Transaktion lesen. Bitte scanne erneut.",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
   "receivePayjoinActivated": "Payjoin aktiviert",
   "importMnemonicContinue": "Fortfahren",
@@ -4027,6 +4026,7 @@
   "autoswapAlwaysBlockInfoDisabled": "Bei Deaktivierung erhalten Sie die Möglichkeit, einen Auto-Swap zuzulassen, der aufgrund hoher Gebühren blockiert wird",
   "dcaSetupTitle": "Wiederkehrenden Kauf einrichten",
   "sendErrorInsufficientBalanceForPayment": "Unzureichendes Guthaben, um diese Zahlung zu decken.",
+  "sendErrorInsufficientBalanceFrozenHint": "Nicht genügend verfügbares Guthaben — {amount} ist eingefroren. Entfrieren Sie Coins unter „Coins verwalten“, um sie zu verwenden.",
   "bitboxScreenPairingCode": "Pairing-Code",
   "testBackupPhysicalBackupTitle": "Physische Sicherung",
   "fundExchangeSpeiDescription": "Überweisung mit CLABE.",
@@ -4128,6 +4128,7 @@
   "transactionSwapProgressInProgress": "In Bearbeitung",
   "payFailedPayments": "Fehlgeschlagen",
   "coreSwapsStatusInProgress": "In Bearbeitung",
+  "coreSwapsStatusRefunded": "Rückerstattet",
   "arkType": "Typ",
   "autoswapSave": "Speichern",
   "cancelButton": "Abbrechen",
@@ -4522,7 +4523,6 @@
   "coreScreensFetchFailed": "Transaktion {txid} konnte nicht von Electrum abgerufen werden.",
   "coreScreensInputResolutionFailed": "Eingang nicht gefunden: Ausgang {vout} von {parentTxId} existiert nicht.",
   "coreScreensParseFailed": "Transaktion konnte nicht verarbeitet werden: {message}.",
-  "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
   "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
   "addressViewerTitle": "Adresse",
   "viewerTapToCopy": "Zum Kopieren tippen",
@@ -4545,6 +4545,7 @@
   "recipientsPayoutMethod": "Auszahlungsmethode",
   "recipientsFilterByJurisdiction": "Nach Land filtern:",
   "recipientsListEmpty": "Keine Empfänger gefunden.",
+  "recipientsListLoadError": "Empfänger konnten nicht geladen werden. Zum erneuten Versuch nach unten ziehen.",
   "recipientsContinue": "Weiter",
   "recipientsJurisdictionAll": "Alle Länder",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -4695,18 +4696,11 @@
   "onboardingAdvancedOptionsFooter": "Sie können diese Einstellungen später in den App-Einstellungen ändern",
   "onboardingAdvancedOptionsDone": "Fertig",
   "appStartupContactSupportMessage": "Kontaktiere den Support unter app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox wird nur unter Android unterstützt",
   "logsViewerDeleteTitle": "Logs löschen",
   "logsViewerDeleteConfirmation": "Möchten Sie wirklich alle Logs löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "logsViewerDeleteButton": "Löschen",
   "logsViewerCancelButton": "Abbrechen",
-  "logsViewerFilterByDate": "Nach Datum filtern",
-  "logsViewerShowingCount": "{shown} von {total} Protokollen werden angezeigt",
-  "logsViewerClearFilter": "Filter löschen",
-  "logsViewerShareButton": "Teilen",
-  "logsShareOptionShare": "Teilen",
-  "logsShareOptionExport": "Exportieren",
-  "logsExportedMessage": "Protokolle erfolgreich exportiert",
-  "logsExportFailedMessage": "Export der Protokolle fehlgeschlagen",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
@@ -4728,11 +4722,10 @@
   "mempoolErrorServerUnavailable": "Der Server ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
   "mempoolErrorServerError": "Beim Server ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
   "mempoolErrorInvalidResponse": "Der Server hat eine ungültige Antwort zurückgegeben.",
-  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
-  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden: {error}",
-  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden: {error}",
-  "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}",
+  "mempoolErrorInvalidUrl": "Ungültige Server-URL. Geben Sie eine gültige Domain oder IP-Adresse ein.",
+  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
+  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
+  "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden",
   "receivePayjoinNoUtxos": "Empfangen Sie zuerst Geld, um dies zu aktivieren.\nUTXOs sind erforderlich, um Payjoin zu nutzen.",
   "payViewReceipt": "Beleg anzeigen",
   "paySinpeReceipt": "SINPE-Beleg",
@@ -4788,6 +4781,60 @@
   "backupWarningBackupNow": "JA",
   "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
   "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
+  "pinCodeSaveError": "PIN konnte nicht gespeichert werden. Bitte versuche es erneut.",
+  "pinCodeDeleteError": "PIN konnte nicht gelöscht werden. Bitte versuche es erneut.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
+  "priceChartLoadFailed": "Preisdiagrammdaten konnten nicht geladen werden. Bitte versuche es erneut.",
+  "allSeedViewErrorFetch": "Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Zum Importieren einer Mnemonic ist eine Bezeichnung erforderlich",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Seed konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "labelErrorUnexpected": "Unerwarteter Fehler: {message}.",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Systemlabels können nicht gelöscht werden.",
+  "labelErrorUnsupportedType": "Der Typ {type} wird nicht unterstützt.",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Label „{label}“ nicht gefunden.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "Stunden",
+  "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
+  "logsViewerFilterByDate": "Nach Datum filtern",
+  "logsViewerShowingCount": "{shown} von {total} Protokollen werden angezeigt",
+  "logsViewerClearFilter": "Filter löschen",
+  "logsViewerShareButton": "Teilen",
+  "logsShareOptionShare": "Teilen",
+  "logsShareOptionExport": "Exportieren",
+  "logsExportedMessage": "Protokolle erfolgreich exportiert",
+  "logsExportFailedMessage": "Export der Protokolle fehlgeschlagen",
+  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
+  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}",
   "walletButtonCoins": "Coins verwalten",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
@@ -5024,7 +5071,21 @@
     "description": "Generic Coins error message for unexpected failures"
   },
   "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
-  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "walletCoinsEntryFrozen": "{amount} gefroren",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}}
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

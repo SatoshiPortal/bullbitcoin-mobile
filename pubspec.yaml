@@ -122,6 +122,7 @@ dependencies:
       ref: 8ab4e8c7509a633f0a328f6a0f3bcda139673320
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
+  ndef: ^0.4.0
   ledger_bitcoin:
     git:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins

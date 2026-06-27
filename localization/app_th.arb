@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
@@ -218,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "เซิร์ฟเวอร์นี้พร้อมใช้งาน",
+  "electrumServerUnreachable": "ไม่สามารถเข้าถึงเซิร์ฟเวอร์ได้ ตรวจสอบที่อยู่แล้วลองอีกครั้ง",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "ปลดล็อค",
+  "appUnlockPinCheckError": "ไม่สามารถโหลดการตั้งค่าความปลอดภัยได้ กรุณาเปิดแอปใหม่",
+  "appUnlockPinVerifyError": "ไม่สามารถยืนยัน PIN ของคุณได้ กรุณาลองอีกครั้ง",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1205,10 +1209,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "ข้อผิดพลาดที่เกิดขึ้นในขณะที่พยายามที่จะแทนที่การทําธุรกรรม",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "พวกเขาขอให้ส่ง Bitcoin บนแพลตฟอร์มอื่น ๆ",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1495,15 +1495,6 @@
   "payPasteInvoice": "พิธีการศุลกากร",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "ชุด",
   "@arkStatusSettled": {
@@ -3553,14 +3544,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ {reason}",
+  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "ที่อยู่:",
   "@ledgerVerifyAddressLabel": {
@@ -4108,6 +4094,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "โหลดซีดไม่สำเร็จ โปรดลองอีกครั้ง",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "ลบซีดไม่สำเร็จ โปรดลองอีกครั้ง",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4427,10 +4421,6 @@
   "payDefaultCommentHint": "ใส่เวลาเริ่มต้น",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "คัดลอก",
   "@copyDialogButton": {
@@ -5577,15 +5567,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} นั่ง/VB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6611,14 +6592,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "กลอง",
   "@receiveBoltzSwapFee": {
@@ -6940,10 +6916,6 @@
   "arkSendConfirm": "ยืนยัน",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "การทําธุรกรรมเดิมจะถูกได้รับการยืนยัน",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@rbfErrorFeeTooLow": {
@@ -7700,14 +7672,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
   "@globalDefaultLiquidWalletLabel": {
@@ -9157,14 +9124,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "ค่าธรรมเนียม",
   "@transactionDetailLabelTransferFees": {
@@ -9535,15 +9497,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "ป้ายชื่อ \"X7X].",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "ชําระเงิน",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9744,6 +9697,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "bip85NoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -11001,8 +10955,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "ชั่วโมง",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "ชั่วโมง",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "เดือน",
@@ -12018,7 +11972,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ออกอากาศ ...",
-  "broadcastSignedTxBroadcastError": "ไม่สามารถบรอดแคสต์ธุรกรรมได้",
+  "broadcastSignedTxBroadcastError": "เราไม่สามารถเผยแพร่ธุรกรรมของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+  "importWatchOnlyErrorNoWalletSelected": "กรุณาวางหรือสแกนกุญแจสาธารณะหรือดิสคริปเตอร์ก่อน",
+  "importWatchOnlyErrorLabelRequired": "ตั้งชื่อกระเป๋าเงินของคุณก่อนนำเข้า",
+  "importWatchOnlyErrorInvalidFormat": "นี่ดูเหมือนจะไม่ใช่กุญแจสาธารณะหรือดิสคริปเตอร์ที่ถูกต้อง กรุณาตรวจสอบสิ่งที่คุณวางอีกครั้ง",
+  "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
+  "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
+  "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12611,7 +12571,6 @@
   "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
   "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
   "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
-  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
   "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
   "addressViewerTitle": "ที่อยู่",
   "viewerTapToCopy": "แตะเพื่อคัดลอก",
@@ -12666,6 +12625,52 @@
   "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
+  "pinCodeSaveError": "ไม่สามารถบันทึก PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
+  "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง",
+  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "ป้ายชื่อ \"X7X].",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ชั่วโมง",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
   "walletButtonCoins": "จัดการเหรียญ",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

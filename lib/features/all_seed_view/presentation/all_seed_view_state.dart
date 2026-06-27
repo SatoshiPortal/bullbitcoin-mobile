@@ -8,7 +8,7 @@ abstract class AllSeedViewState with _$AllSeedViewState {
     @Default(true) bool loading,
     @Default(false) bool seedsVisible,
     SwapMasterKeyInfo? swapMasterKey,
-    String? error,
+    AllSeedViewFailure? failure,
   }) = _AllSeedViewState;
   const AllSeedViewState._();
 

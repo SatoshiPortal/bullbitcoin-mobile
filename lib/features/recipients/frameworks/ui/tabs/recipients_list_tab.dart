@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
@@ -21,11 +20,7 @@ class RecipientsListTab extends StatefulWidget {
 }
 
 class RecipientsListTabState extends State<RecipientsListTab> {
-  String? _jurisdictionFilter;
-  String _searchQuery = '';
-  List<RecipientViewModel>? _recipients;
   RecipientViewModel? _selectedRecipient;
-  late StreamSubscription<RecipientsState> _stateSubscription;
   late ScrollController _scrollController;
   late TextEditingController _searchController;
 
@@ -35,26 +30,6 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     _searchController = TextEditingController();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
-
-    final bloc = context.read<RecipientsBloc>();
-    // Listen for changes in the RecipientsBloc state to update the recipients list
-    _stateSubscription = bloc.stream.listen((state) {
-      setState(() {
-        _recipients = _applyFilters(
-          state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
-        );
-        _jurisdictionFilter = state.availableJurisdictions.length == 1
-            ? state.availableJurisdictions.first
-            : _jurisdictionFilter;
-      });
-    });
-    // Initialize the recipients list
-    _recipients = _applyFilters(
-      bloc.state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
-    );
-    _jurisdictionFilter = bloc.state.availableJurisdictions.length == 1
-        ? bloc.state.availableJurisdictions.first
-        : _jurisdictionFilter;
   }
 
   void _onScroll() {
@@ -64,38 +39,21 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     }
   }
 
-  List<RecipientViewModel>? _applyFilters(
-    List<RecipientViewModel>? recipients,
-  ) {
-    if (recipients == null) return null;
-
-    if (_searchQuery.isEmpty) return recipients;
-
-    final searchLower = _searchQuery.toLowerCase();
-    final filtered = recipients.where((recipient) {
-      final displayName = recipient.displayName?.toLowerCase() ?? '';
-      final label = recipient.label?.toLowerCase() ?? '';
-      return displayName.contains(searchLower) || label.contains(searchLower);
-    }).toList();
-
-    // If search returns no results and there are more recipients to load, trigger loading
-    if (filtered.isEmpty &&
-        _searchQuery.isNotEmpty &&
-        context.read<RecipientsBloc>().state.hasMoreRecipientsToLoad) {
-      // Schedule loading more recipients after this build completes
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<RecipientsBloc>().add(const RecipientsEvent.moreLoaded());
-      });
-    }
-
-    return filtered;
+  Future<void> _onRefresh() async {
+    final bloc = context.read<RecipientsBloc>();
+    bloc.add(const RecipientsEvent.refreshed());
+    // orElse guards against the bloc closing (route popped) before completion,
+    // which would otherwise throw an unhandled StateError on this future.
+    await bloc.stream.firstWhere(
+      (state) => !state.isLoadingRecipients,
+      orElse: () => bloc.state,
+    );
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
-    _stateSubscription.cancel();
     super.dispose();
   }
 
@@ -110,39 +68,28 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           decoration: InputDecoration(
             hintText: context.loc.recipientsSearchHint,
             prefixIcon: const Icon(Icons.search),
-            suffixIcon: _searchQuery.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      setState(() {
+            suffixIcon: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _searchController,
+              builder: (context, value, _) => value.text.isEmpty
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
                         _searchController.clear();
-                        _searchQuery = '';
-                        _recipients = _applyFilters(
-                          context
-                              .read<RecipientsBloc>()
-                              .state
-                              .filteredRecipientsByJurisdiction(
-                                _jurisdictionFilter,
-                              ),
+                        context.read<RecipientsBloc>().add(
+                          const RecipientsEvent.searchChanged(''),
                         );
-                      });
-                    },
-                  )
-                : null,
+                      },
+                    ),
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
           ),
           onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-              _recipients = _applyFilters(
-                context
-                    .read<RecipientsBloc>()
-                    .state
-                    .filteredRecipientsByJurisdiction(_jurisdictionFilter),
-              );
-            });
+            context.read<RecipientsBloc>().add(
+              RecipientsEvent.searchChanged(value),
+            );
           },
         ),
         const Gap(16.0),
@@ -151,54 +98,35 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           style: context.font.bodyMedium,
         ),
         const Gap(8.0),
-        JurisdictionsDropdown(
-          selectedJurisdiction: _jurisdictionFilter,
-          includeAllOption: true,
-          onChanged: (newJurisdiction) {
-            setState(() {
-              _jurisdictionFilter = newJurisdiction;
-              _recipients = _applyFilters(
-                context
-                    .read<RecipientsBloc>()
-                    .state
-                    .filteredRecipientsByJurisdiction(newJurisdiction),
-              );
-              _selectedRecipient =
-                  newJurisdiction == null ||
-                      _selectedRecipient?.jurisdictionCode == newJurisdiction
-                  ? _selectedRecipient
-                  : null;
-            });
+        BlocSelector<RecipientsBloc, RecipientsState, String?>(
+          selector: (state) => state.jurisdictionFilter,
+          builder: (context, selected) {
+            return JurisdictionsDropdown(
+              selectedJurisdiction: selected,
+              includeAllOption: true,
+              onChanged: (newJurisdiction) {
+                context.read<RecipientsBloc>().add(
+                  RecipientsEvent.jurisdictionChanged(newJurisdiction),
+                );
+                if (newJurisdiction != null &&
+                    _selectedRecipient?.jurisdictionCode != newJurisdiction) {
+                  setState(() => _selectedRecipient = null);
+                }
+              },
+            );
           },
         ),
         const Gap(16.0),
         Expanded(
-          child: _recipients == null
-              ? const Center(child: CircularProgressIndicator())
-              : _recipients!.isEmpty
-              ? Center(
-                  child: Text(
-                    context.loc.recipientsListEmpty,
-                    style: context.font.bodyLarge,
-                  ),
-                )
-              : ListView.builder(
-                  controller: _scrollController,
-                  itemBuilder: (context, index) {
-                    final recipient = _recipients![index];
-                    return RecipientsListTile(
-                      recipient: recipient,
-                      selected: _selectedRecipient == recipient,
-                      onTap: () {
-                        setState(() {
-                          _selectedRecipient = recipient;
-                        });
-                      },
-                    );
-                  },
-                  shrinkWrap: true,
-                  itemCount: _recipients!.length,
-                ),
+          child: BlocBuilder<RecipientsBloc, RecipientsState>(
+            builder: (context, state) {
+              final recipients = state.selectableRecipients ?? const [];
+              return BBRefreshIndicator(
+                onRefresh: _onRefresh,
+                child: _buildListContent(state, recipients),
+              );
+            },
+          ),
         ),
         if (widget.hookError != null)
           Padding(
@@ -238,6 +166,49 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           textColor: context.appColors.onSecondary,
         ),
       ],
+    );
+  }
+
+  Widget _buildListContent(
+    RecipientsState state,
+    List<RecipientViewModel> recipients,
+  ) {
+    if (recipients.isEmpty) {
+      if (state.isLoadingRecipients) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final message = state.failedToLoadRecipients != null
+          ? context.loc.recipientsListLoadError
+          : context.loc.recipientsListEmpty;
+      // Wrap in a scrollable so pull-to-refresh works while empty.
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const Gap(96.0),
+          Center(
+            child: Text(message, style: context.font.bodyLarge),
+          ),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final recipient = recipients[index];
+        return RecipientsListTile(
+          recipient: recipient,
+          selected: _selectedRecipient == recipient,
+          onTap: () {
+            setState(() {
+              _selectedRecipient = recipient;
+            });
+          },
+        );
+      },
+      itemCount: recipients.length,
     );
   }
 }

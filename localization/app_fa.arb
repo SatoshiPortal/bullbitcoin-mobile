@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "بارگیری گیرندگان ممکن نشد. برای تلاش مجدد به پایین بکشید.",
   "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
   "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
   "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
@@ -903,6 +904,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "بارگذاری سیدها ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "حذف سید ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "لغو",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -1256,37 +1265,6 @@
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
   },
-  "labelErrorNotFound": "برچسب \"{label}\" یافت نشد.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "خطای غیرمنتظره: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "برچسب های سیستم را نمی توان حذف کرد.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "labelDeleteFailed": "برای حذف \"{label} لطفا دوباره امتحان کنید.",
   "@labelDeleteFailed": {
     "description": "Error message when label deletion fails",
@@ -1478,6 +1456,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "این سرور در حال حاضر وجود دارد",
+  "electrumServerUnreachable": "سرور در دسترس نیست. آدرس را بررسی کرده و دوباره تلاش کنید.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -1792,6 +1771,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "قفل باز",
+  "appUnlockPinCheckError": "بارگذاری تنظیمات امنیتی ناموفق بود. لطفاً برنامه را مجدداً راه‌اندازی کنید.",
+  "appUnlockPinVerifyError": "تأیید PIN شما ناموفق بود. لطفاً دوباره امتحان کنید.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -2292,10 +2273,6 @@
   "swapErrorBalanceTooLow": "تعادل بیش از حد برای حداقل مقدار مبادله",
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
-  },
-  "replaceByFeeErrorGeneric": "یک خطا در هنگام تلاش برای جایگزینی معامله رخ داد",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "fundExchangeWarningTactic5": "آنها می خواهند بیت کوین را در پلتفرم دیگری ارسال کنند",
   "@fundExchangeWarningTactic5": {
@@ -4251,14 +4228,9 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "exchangeAppSettingsEmailNotificationsLabel": "ایمیل اعلان",
   "@exchangeAppSettingsEmailNotificationsLabel": {
@@ -6788,14 +6760,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "هزینه تعویض",
   "@receiveBoltzSwapFee": {
@@ -7044,10 +7011,6 @@
   "sendAbsoluteFees": "هزینه های مطلق",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "معامله اصلی تایید شده است",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
   "@rbfErrorFeeTooLow": {
@@ -7637,14 +7600,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "شکست برای ذخیره اولویت سرور{reason}",
+  "electrumSavePriorityFailedError": "شکست برای ذخیره اولویت سرور",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "پرداخت های فوری",
   "@globalDefaultLiquidWalletLabel": {
@@ -8877,14 +8835,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "هزینه های انتقال",
   "@transactionDetailLabelTransferFees": {
@@ -9303,6 +9256,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "bip85NoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10345,8 +10299,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "ساعت",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "چند ساعت",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "هر ماه",
@@ -11239,7 +11193,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "پخش ...",
-  "broadcastSignedTxBroadcastError": "ارسال تراکنش ناموفق بود",
+  "broadcastSignedTxBroadcastError": "نتوانستیم تراکنش شما را منتشر کنیم. اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.",
+  "importWatchOnlyErrorNoWalletSelected": "ابتدا یک کلید عمومی یا توصیف‌گر را بچسبانید یا اسکن کنید.",
+  "importWatchOnlyErrorLabelRequired": "پیش از وارد کردن، برای کیف پول خود نامی انتخاب کنید.",
+  "importWatchOnlyErrorInvalidFormat": "این به نظر یک کلید عمومی یا توصیف‌گر معتبر نمی‌رسد. آنچه را چسبانده‌اید دوباره بررسی کنید.",
+  "importWatchOnlyErrorImportFailed": "نتوانستیم این کیف پول فقط‌مشاهده را وارد کنیم. لطفاً جزئیات را بررسی کرده و دوباره تلاش کنید.",
+  "broadcastSignedTxErrorInvalidTransaction": "این به نظر یک تراکنش امضاشده معتبر نمی‌رسد. مطمئن شوید که PSBT یا تراکنش کامل را چسبانده‌اید.",
+  "broadcastSignedTxErrorInvalidPushTx": "نتوانستیم تراکنشی از این برچسب بخوانیم. لطفاً دوباره اسکن کنید.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12611,7 +12571,6 @@
   "coreScreensFetchFailed": "دریافت تراکنش {txid} از Electrum ناموفق بود.",
   "coreScreensInputResolutionFailed": "ورودی یافت نشد: خروجی {vout} از {parentTxId} وجود ندارد.",
   "coreScreensParseFailed": "تحلیل تراکنش ناموفق بود: {message}.",
-  "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
   "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
   "addressViewerTitle": "آدرس",
   "viewerTapToCopy": "برای کپی ضربه بزنید",
@@ -12666,6 +12625,52 @@
   "onboardingAdvancedOptionsDone": "انجام شد",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
+  "pinCodeSaveError": "ذخیره پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
+  "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
+  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید.",
+  "mempoolErrorInvalidUrl": "آدرس سرور نامعتبر است. یک دامنه یا آدرس IP معتبر وارد کنید.",
+  "labelErrorNotFound": "برچسب \"{label}\" یافت نشد.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorUnsupportedType": "This type {type} is not supported",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "خطای غیرمنتظره: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "برچسب های سیستم را نمی توان حذف کرد.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "sendEstimatedDeliveryHours": "ساعت",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
   "walletButtonCoins": "مدیریت سکه‌ها",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

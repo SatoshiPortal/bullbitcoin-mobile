@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
+import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -29,11 +29,11 @@ class MnemonicPage extends StatelessWidget {
       ),
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
-          if (state.error != null) {
-            final message = state.error is DuplicateMnemonicException
-                ? context.loc.importMnemonicDuplicateError
-                : state.error!.toString();
-            SnackBarUtils.showSnackBar(context, message);
+          if (state.failure != null) {
+            SnackBarUtils.showSnackBar(
+              context,
+              state.failure!.toTranslated(context),
+            );
           }
         },
         builder: (context, state) {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
@@ -11,6 +12,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -35,6 +37,12 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
        ) {
     on<RecipientsStarted>(_onStarted);
     on<RecipientsMoreLoaded>(_onMoreLoaded);
+    on<RecipientsRefreshed>(_onRefreshed, transformer: restartable());
+    on<RecipientsJurisdictionChanged>(
+      _onJurisdictionChanged,
+      transformer: restartable(),
+    );
+    on<RecipientsSearchChanged>(_onSearchChanged, transformer: restartable());
     on<RecipientsAdded>(_onAdded);
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
@@ -42,6 +50,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }
 
   static const pageSize = 50;
+  // Monotonic token: a first-page load only commits its result if no newer
+  // filter/refresh load has started meanwhile. Guards against out-of-order
+  // responses racing across event types (e.g. jurisdiction vs search).
+  int _loadGeneration = 0;
   final Future<void>? Function(
     RecipientViewModel recipient, {
     required bool isNew,
@@ -57,53 +69,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsStarted event,
     Emitter<RecipientsState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        isLoadingRecipients: true,
-        recipients: null,
-        failedToLoadRecipients: null,
-      ),
-    );
-    try {
-      log.info('Loading first recipients');
-      final result = await _getRecipientsUsecase.execute(
-        GetRecipientsParams(pageSize: pageSize),
-      );
-      log.fine(
-        'Loaded first ${result.recipients.length} recipients of ${result.totalRecipients} total',
-      );
-      emit(
-        state.copyWith(
-          totalRecipients: result.totalRecipients,
-          recipients: result.recipients
-              .map((recipient) {
-                // Wrap each transformation in try/catch so a single malformed element
-                // doesn't fail the entire list. Nulls are filtered out with the
-                // whereType.
-                try {
-                  return RecipientViewModel.fromDto(recipient);
-                } catch (err, stackTrace) {
-                  log.severe(
-                    message: 'Error transforming recipient to view model',
-                    error: err,
-                    trace: stackTrace,
-                  );
-                  return null;
-                }
-              })
-              .whereType<RecipientViewModel>()
-              .toList(),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          failedToLoadRecipients: Exception('Failed to load recipients: $e'),
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isLoadingRecipients: false));
+    final jurisdictions = state.availableJurisdictions;
+    if (jurisdictions.length == 1) {
+      emit(state.copyWith(jurisdictionFilter: jurisdictions.first));
     }
+    await _loadFirstPage(emit, clearList: true);
 
     String preferredJurisdictionCode = 'CA'; // Default to Canada
     try {
@@ -149,6 +119,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       return;
     }
 
+    final generation = _loadGeneration;
     emit(
       state.copyWith(isLoadingRecipients: true, failedToLoadRecipients: null),
     );
@@ -156,10 +127,14 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.info('Loading more recipients');
       final result = await _getRecipientsUsecase.execute(
         GetRecipientsParams(
-          page: (state.recipients!.length ~/ pageSize) + 1,
+          page: state.loadedPages + 1,
           pageSize: pageSize,
+          recipientTypes: _effectiveTypes(state),
+          isOwner: state.allowedRecipientFilters.isOwner,
+          search: state.searchQuery,
         ),
       );
+      if (generation != _loadGeneration || emit.isDone) return;
       log.fine(
         'Loaded additional ${result.recipients.length} recipients, '
         'total loaded: ${state.recipients!.length + result.recipients.length} '
@@ -168,27 +143,15 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       emit(
         state.copyWith(
           totalRecipients: result.totalRecipients,
+          loadedPages: state.loadedPages + 1,
           recipients: [
             ...state.recipients!,
-            ...result.recipients.map((recipient) {
-              // Wrap each transformation in try/catch so a single malformed element
-              // doesn't fail the entire list. Nulls are filtered out with the
-              // whereType.
-              try {
-                return RecipientViewModel.fromDto(recipient);
-              } catch (err, stackTrace) {
-                log.severe(
-                  message: 'Error transforming recipient to view model',
-                  error: err,
-                  trace: stackTrace,
-                );
-                return null;
-              }
-            }).whereType<RecipientViewModel>(),
+            ..._toViewModels(result.recipients),
           ],
         ),
       );
     } catch (e) {
+      if (generation != _loadGeneration || emit.isDone) return;
       emit(
         state.copyWith(
           failedToLoadRecipients: Exception(
@@ -197,8 +160,107 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         ),
       );
     } finally {
-      emit(state.copyWith(isLoadingRecipients: false));
+      if (generation == _loadGeneration && !emit.isDone) {
+        emit(state.copyWith(isLoadingRecipients: false));
+      }
     }
+  }
+
+  Future<void> _onRefreshed(
+    RecipientsRefreshed event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    await _loadFirstPage(emit, clearList: false);
+  }
+
+  Future<void> _onJurisdictionChanged(
+    RecipientsJurisdictionChanged event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    emit(state.copyWith(jurisdictionFilter: event.jurisdiction));
+    await _loadFirstPage(emit, clearList: true);
+  }
+
+  Future<void> _onSearchChanged(
+    RecipientsSearchChanged event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    if (event.query.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 600));
+    }
+    emit(state.copyWith(searchQuery: event.query));
+    await _loadFirstPage(emit, clearList: true);
+  }
+
+  Future<void> _loadFirstPage(
+    Emitter<RecipientsState> emit, {
+    required bool clearList,
+  }) async {
+    final generation = ++_loadGeneration;
+    emit(
+      state.copyWith(
+        isLoadingRecipients: true,
+        failedToLoadRecipients: null,
+        recipients: clearList ? null : state.recipients,
+      ),
+    );
+    try {
+      log.info('Loading first page of recipients with current filters');
+      final result = await _getRecipientsUsecase.execute(
+        GetRecipientsParams(
+          pageSize: pageSize,
+          recipientTypes: _effectiveTypes(state),
+          isOwner: state.allowedRecipientFilters.isOwner,
+          search: state.searchQuery,
+        ),
+      );
+      if (generation != _loadGeneration || emit.isDone) return;
+      emit(
+        state.copyWith(
+          totalRecipients: result.totalRecipients,
+          loadedPages: 1,
+          recipients: _toViewModels(result.recipients),
+        ),
+      );
+    } catch (e) {
+      if (generation != _loadGeneration || emit.isDone) return;
+      emit(
+        state.copyWith(
+          failedToLoadRecipients: Exception('Failed to load recipients: $e'),
+        ),
+      );
+    } finally {
+      if (generation == _loadGeneration && !emit.isDone) {
+        emit(state.copyWith(isLoadingRecipients: false));
+      }
+    }
+  }
+
+  List<RecipientType> _effectiveTypes(RecipientsState state) {
+    final allowed = state.allowedRecipientFilters.types;
+    final jurisdiction = state.jurisdictionFilter;
+    if (jurisdiction == null) return allowed;
+    return allowed
+        .where((type) => type.jurisdictionCode == jurisdiction)
+        .toList();
+  }
+
+  List<RecipientViewModel> _toViewModels(List<RecipientDto> dtos) {
+    return dtos
+        .map((recipient) {
+          try {
+            return RecipientViewModel.fromDto(recipient);
+          } catch (err, stackTrace) {
+            log.severe(
+              message: 'Error transforming recipient to view model',
+              error: err,
+              trace: stackTrace,
+            );
+            return null;
+          }
+        })
+        .whereType<RecipientViewModel>()
+        .toList();
   }
 
   Future<void> _onAdded(

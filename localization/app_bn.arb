@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "প্রাপকদের লোড করা যায়নি। আবার চেষ্টা করতে নিচে টানুন।",
   "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
   "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
   "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
@@ -235,6 +236,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "এই সার্ভারটি আগে থেকেই বিদ্যমান",
+  "electrumServerUnreachable": "সার্ভারে পৌঁছানো যাচ্ছে না। ঠিকানা যাচাই করে আবার চেষ্টা করুন।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -617,6 +619,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "আনলক",
+  "appUnlockPinCheckError": "নিরাপত্তা সেটিংস লোড করা যাচ্ছে না। অ্যাপটি পুনরায় চালু করুন।",
+  "appUnlockPinVerifyError": "আপনার PIN যাচাই করা যাচ্ছে না। আবার চেষ্টা করুন।",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1196,10 +1200,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "ট্রান্স্যাকশনটি ফি দ্বারা প্রতিস্থাপন করার চেষ্টা করার সময় একটি ত্রুটি ঘটেছে",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "তারা অন্য প্ল্যাটফর্মে বিটকয়েন পাঠাতে বলছে",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1485,15 +1485,6 @@
   "payPasteInvoice": "চালান পেস্ট করুন",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "অপ্রত্যাশিত ত্রুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "সমাপ্ত হয়েছে",
   "@arkStatusSettled": {
@@ -3479,14 +3470,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "সার্ভারগুলো লোড করতে ব্যর্থ হয়েছে{reason}",
+  "electrumLoadFailedError": "সার্ভারগুলো লোড করতে ব্যর্থ হয়েছে",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "যাচাই করার ঠিকানা:",
   "@ledgerVerifyAddressLabel": {
@@ -4026,6 +4012,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "সিড লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "সিড মুছে ফেলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "আপনি {network} মাধ্যমে প্রতি {frequency} {amount} কিনছেন যতক্ষণ আপনার অ্যাকাউন্টে তহবিল আছে",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4336,10 +4330,6 @@
   "payDefaultCommentHint": "ডিফল্ট মন্তব্য লিখুন",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "সিস্টেম লেবেলগুলি মুছে ফেলা যাবে না।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "কপি",
   "@copyDialogButton": {
@@ -5427,15 +5417,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "এই ধরনের {type} সমর্থিত নয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6444,14 +6425,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে{reason}",
+  "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap ফি",
   "@receiveBoltzSwapFee": {
@@ -6761,10 +6737,6 @@
   "arkSendConfirm": "নিশ্চিত করুন",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "মূল ট্রান্স্যাকশনটি নিশ্চিত হয়েছে",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "মূল ট্রান্স্যাকশনটির তুলনায় ফি রেট অন্তত 1 sat/vbyte বেশি করতে হবে",
   "@rbfErrorFeeTooLow": {
@@ -7516,14 +7488,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "সার্ভারের অগ্রাধিকার সংরক্ষণ করতে ব্যর্থ হয়েছে{reason}",
+  "electrumSavePriorityFailedError": "সার্ভারের অগ্রাধিকার সংরক্ষণ করতে ব্যর্থ হয়েছে",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "তাত্ক্ষণিক লেনদেন",
   "@globalDefaultLiquidWalletLabel": {
@@ -8934,14 +8901,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "কাস্টম সার্ভার যোগ করতে ব্যর্থ হয়েছে{reason}",
+  "electrumAddFailedError": "কাস্টম সার্ভার যোগ করতে ব্যর্থ হয়েছে",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "হস্তান্তর ফি",
   "@transactionDetailLabelTransferFees": {
@@ -9300,15 +9262,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "লেবেল \"{label}\" খুঁজে পাওয়া যায়নি।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "ব্যক্তিগত পেমেন্ট",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9505,6 +9458,7 @@
     }
   },
   "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "bip85NoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10746,8 +10700,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "ঘণ্টা",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "কয়েক ঘণ্টা",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "প্রতি মাসে",
@@ -11718,7 +11672,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
-  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্রচার করতে ব্যর্থ হয়েছে",
+  "broadcastSignedTxBroadcastError": "আমরা আপনার লেনদেন ব্রডকাস্ট করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "importWatchOnlyErrorNoWalletSelected": "প্রথমে একটি পাবলিক কী বা ডেসক্রিপ্টর পেস্ট বা স্ক্যান করুন।",
+  "importWatchOnlyErrorLabelRequired": "ইম্পোর্ট করার আগে আপনার ওয়ালেটকে একটি নাম দিন।",
+  "importWatchOnlyErrorInvalidFormat": "এটি একটি বৈধ পাবলিক কী বা ডেসক্রিপ্টর বলে মনে হচ্ছে না। আপনি যা পেস্ট করেছেন তা আবার পরীক্ষা করুন।",
+  "importWatchOnlyErrorImportFailed": "আমরা এই ওয়াচ-অনলি ওয়ালেটটি ইম্পোর্ট করতে পারিনি। অনুগ্রহ করে বিবরণ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "broadcastSignedTxErrorInvalidTransaction": "এটি একটি বৈধ স্বাক্ষরিত লেনদেন বলে মনে হচ্ছে না। নিশ্চিত করুন যে আপনি সম্পূর্ণ PSBT বা লেনদেন পেস্ট করেছেন।",
+  "broadcastSignedTxErrorInvalidPushTx": "আমরা এই ট্যাগ থেকে কোনো লেনদেন পড়তে পারিনি। অনুগ্রহ করে আবার স্ক্যান করুন।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12303,6 +12263,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "একটি মনেমোনিক আমদানি করতে একটি লেবেল প্রয়োজন",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "recoverbullVaultRecovery": "ভল্ট পুনরুদ্ধার",
   "@recoverbullVaultRecovery": {
     "description": "Screen title for vault recovery process"
@@ -12354,8 +12318,8 @@
   "mempoolErrorServerUnavailable": "সার্ভার অনুপলব্ধ। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "mempoolErrorServerError": "সার্ভারে ত্রুটি ঘটেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "mempoolErrorInvalidResponse": "সার্ভার একটি অবৈধ প্রতিক্রিয়া দিয়েছে।",
-  "mempoolErrorUnexpected": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
-  "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorInvalidUrl": "অবৈধ সার্ভার URL। একটি বৈধ ডোমেইন বা IP ঠিকানা লিখুন।",
+  "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {
       "error": {
@@ -12363,7 +12327,7 @@
       }
     }
   },
-  "mempoolErrorLoadFailed": "Mempool সার্ভার ডেটা লোড ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorLoadFailed": "Mempool সার্ভার ডেটা লোড ব্যর্থ হয়েছে",
   "@mempoolErrorLoadFailed": {
     "placeholders": {
       "error": {
@@ -12371,16 +12335,8 @@
       }
     }
   },
-  "mempoolErrorDeleteFailed": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে: {error}",
+  "mempoolErrorDeleteFailed": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@mempoolErrorDeleteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -12899,7 +12855,6 @@
   "coreScreensFetchFailed": "Electrum থেকে লেনদেন {txid} আনা যায়নি।",
   "coreScreensInputResolutionFailed": "ইনপুট পাওয়া যায়নি: {parentTxId}-এর আউটপুট {vout} বিদ্যমান নেই।",
   "coreScreensParseFailed": "লেনদেন পার্স করতে ব্যর্থ: {message}।",
-  "coreScreensUnexpectedError": "অপ্রত্যাশিত ত্রুটি: {message}।",
   "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।",
   "addressViewerTitle": "ঠিকানা",
   "viewerTapToCopy": "কপি করতে ট্যাপ করুন",
@@ -12954,106 +12909,309 @@
   "onboardingAdvancedOptionsDone": "সম্পন্ন",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support এ সাপোর্টের সাথে যোগাযোগ করুন",
   "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত",
+  "pinCodeSaveError": "আপনার পিন সেভ করা যায়নি। আবার চেষ্টা করুন।",
+  "pinCodeDeleteError": "আপনার পিন মুছে ফেলা যায়নি। আবার চেষ্টা করুন।",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "labelErrorUnexpected": "অপ্রত্যাশিত ত্রুটি: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "সিস্টেম লেবেলগুলি মুছে ফেলা যাবে না।",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "এই ধরনের {type} সমর্থিত নয়",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "লেবেল \"{label}\" খুঁজে পাওয়া যায়নি।",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "mempoolErrorUnexpected": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
+  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensUnexpectedError": "অপ্রত্যাশিত ত্রুটি: {message}।",
   "walletButtonCoins": "কয়েন পরিচালনা করুন",
-  "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
   "coinsTitle": "কয়েন",
-  "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
   "coinsSummaryCoinsCount": "{count, plural, one{১টি কয়েন} other{{count}টি কয়েন}}",
-  "@coinsSummaryCoinsCount": {"description": "Coin count in the summary bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFrozen": "ফ্রোজেন",
-  "@coinsFrozen": {"description": "Label for the frozen amount stat and frozen pill"},
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
   "coinsSpendable": "ব্যয়যোগ্য",
-  "@coinsSpendable": {"description": "Label for the spendable amount sub-stat"},
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
   "coinsNoneFrozen": "কোনোটি ফ্রোজেন নয়",
-  "@coinsNoneFrozen": {"description": "Sub-text shown in the frozen stat when nothing is frozen"},
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
   "coinsSortFilter": "সাজান ও ফিল্টার",
-  "@coinsSortFilter": {"description": "Label for the sort & filter sheet button"},
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
   "coinsShownOf": "{total}টির মধ্যে {visible}টি দেখানো হচ্ছে",
-  "@coinsShownOf": {"description": "Result count shown when the list is filtered", "placeholders": {"visible": {"type": "int"}, "total": {"type": "int"}}},
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnspentOutputsCount": "{count, plural, one{১টি অব্যয়িত আউটপুট} other{{count}টি অব্যয়িত আউটপুট}}",
-  "@coinsUnspentOutputsCount": {"description": "Result count shown when the list is unfiltered", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSync": "সিঙ্ক",
-  "@coinsSync": {"description": "Label for the manual sync button on the Coins screen"},
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
   "coinsClearAll": "সব মুছুন",
-  "@coinsClearAll": {"description": "Label for the clear-all-filters action"},
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
   "coinsSortAmountDesc": "পরিমাণ: বেশি থেকে কম",
-  "@coinsSortAmountDesc": {"description": "Sort option: amount descending"},
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
   "coinsSortAmountAsc": "পরিমাণ: কম থেকে বেশি",
-  "@coinsSortAmountAsc": {"description": "Sort option: amount ascending"},
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
   "coinsSortDateNew": "তারিখ: নতুন",
-  "@coinsSortDateNew": {"description": "Sort option: newest first"},
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
   "coinsSortDateOld": "তারিখ: পুরোনো",
-  "@coinsSortDateOld": {"description": "Sort option: oldest first"},
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
   "coinsKeychain": "কীচেইন",
-  "@coinsKeychain": {"description": "Label for the keychain filter segment"},
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
   "coinsKeychainAll": "সব",
-  "@coinsKeychainAll": {"description": "Keychain filter option: all"},
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
   "coinsKeychainReceive": "গ্রহণ",
-  "@coinsKeychainReceive": {"description": "Keychain filter / badge: receive (external) keychain"},
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
   "coinsKeychainChange": "চেঞ্জ",
-  "@coinsKeychainChange": {"description": "Keychain filter / badge: change (internal) keychain"},
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
   "coinsFrozenStatus": "ফ্রোজেন স্ট্যাটাস",
-  "@coinsFrozenStatus": {"description": "Label for the frozen-status filter segment"},
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
   "coinsFrozenStatusAll": "সব",
-  "@coinsFrozenStatusAll": {"description": "Frozen-status filter option: all"},
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
   "coinsFrozenStatusFrozen": "ফ্রোজেন",
-  "@coinsFrozenStatusFrozen": {"description": "Frozen-status filter option: frozen only"},
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
   "coinsFrozenStatusUnfrozen": "আনফ্রোজেন",
-  "@coinsFrozenStatusUnfrozen": {"description": "Frozen-status filter option: unfrozen only"},
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
   "coinsLabels": "লেবেল",
-  "@coinsLabels": {"description": "Label for the labels filter section"},
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
   "coinsReset": "রিসেট",
-  "@coinsReset": {"description": "Reset filters button in the sort & filter sheet"},
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
   "coinsApply": "প্রয়োগ করুন",
-  "@coinsApply": {"description": "Apply filters button in the sort & filter sheet"},
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
   "coinsSelectedCount": "{count, plural, one{১টি নির্বাচিত} other{{count}টি নির্বাচিত}}",
-  "@coinsSelectedCount": {"description": "Selection count in the selection app bar / action bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSelectAll": "সব নির্বাচন করুন",
-  "@coinsSelectAll": {"description": "Selects all unfrozen visible coins"},
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
   "coinsFreeze": "ফ্রিজ",
-  "@coinsFreeze": {"description": "Freeze action label"},
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
   "coinsUnfreeze": "আনফ্রিজ",
-  "@coinsUnfreeze": {"description": "Unfreeze action label"},
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
   "coinsUndo": "পূর্বাবস্থায় ফেরান",
-  "@coinsUndo": {"description": "Undo action on the unfreeze toast"},
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
   "coinsFreezeConfirmTitle": "{count, plural, one{১টি কয়েন ফ্রিজ করবেন?} other{{count}টি কয়েন ফ্রিজ করবেন?}}",
-  "@coinsFreezeConfirmTitle": {"description": "Title of the freeze confirmation dialog", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFreezeConfirmBody": "ফ্রোজেন কয়েনগুলো আপনার ওয়ালেটে থাকে কিন্তু আপনি আনফ্রিজ না করা পর্যন্ত ব্যয় থেকে বাদ থাকে।",
-  "@coinsFreezeConfirmBody": {"description": "Body of the freeze confirmation dialog"},
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
   "coinsFreezeZeroWarning": "এই কয়েনগুলো ফ্রিজ করলে আপনার কোনো ব্যয়যোগ্য ব্যালেন্স থাকবে না।",
-  "@coinsFreezeZeroWarning": {"description": "Warning shown when freezing would drop spendable balance to zero"},
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
   "coinsFrozenToast": "{count, plural, one{১টি কয়েন ফ্রোজেন · ব্যয় থেকে বাদ} other{{count}টি কয়েন ফ্রোজেন · ব্যয় থেকে বাদ}}",
-  "@coinsFrozenToast": {"description": "Toast shown after freezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnfrozenToast": "{count, plural, one{১টি কয়েন আনফ্রোজেন} other{{count}টি কয়েন আনফ্রোজেন}}",
-  "@coinsUnfrozenToast": {"description": "Toast shown after unfreezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsConfsCount": "{count, plural, one{১টি নিশ্চিতকরণ} other{{count}টি নিশ্চিতকরণ}}",
-  "@coinsConfsCount": {"description": "Confirmation count pill", "placeholders": {"count": {"type": "int"}}},
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsPending": "অপেক্ষমাণ",
-  "@coinsPending": {"description": "Confirmation pill text for an unconfirmed (0-conf) coin"},
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
   "coinsEmptyTitle": "এখনও কোনো কয়েন নেই",
-  "@coinsEmptyTitle": {"description": "Empty-state title when the wallet has no UTXOs"},
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
   "coinsEmptyBody": "আপনি বিটকয়েন গ্রহণ করলে কয়েনগুলো এখানে দেখা যাবে।",
-  "@coinsEmptyBody": {"description": "Empty-state body when the wallet has no UTXOs"},
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
   "coinsFilteredEmptyTitle": "কোনো কয়েন মেলেনি",
-  "@coinsFilteredEmptyTitle": {"description": "Title shown when filters exclude all coins"},
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
   "coinsClearFilters": "ফিল্টার মুছুন",
-  "@coinsClearFilters": {"description": "Button to clear filters from the filtered-empty state"},
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
   "coinsErrorRetry": "পুনরায় চেষ্টা করুন",
-  "@coinsErrorRetry": {"description": "Retry button on the Coins error state"},
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
   "coinsSwipeHint": "ফ্রিজ করতে কয়েন সোয়াইপ করুন · নির্বাচন করতে দীর্ঘক্ষণ চাপুন",
-  "@coinsSwipeHint": {"description": "Footer hint shown when not selecting"},
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
   "coinsErrorLoadFailed": "আপনার কয়েন লোড করা যায়নি। আবার চেষ্টা করতে টেনে রিফ্রেশ করুন।",
-  "@coinsErrorLoadFailed": {"description": "Error message when loading UTXOs fails"},
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
   "coinsErrorFreezeFailed": "নির্বাচিত কয়েনগুলো ফ্রিজ করা যায়নি। দয়া করে আবার চেষ্টা করুন।",
-  "@coinsErrorFreezeFailed": {"description": "Error message when freezing fails"},
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
   "coinsErrorUnfreezeFailed": "নির্বাচিত কয়েনগুলো আনফ্রিজ করা যায়নি। দয়া করে আবার চেষ্টা করুন।",
-  "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
   "coinsErrorUnexpected": "কিছু একটা ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন।",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
   "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "walletCoinsEntryFrozen": "{amount} জমাকৃত",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "তারিখ অনুযায়ী ফিল্টার করুন",
   "logsViewerShowingCount": "{total} টি লগের মধ্যে {shown} টি দেখানো হচ্ছে",
   "logsViewerClearFilter": "ফিল্টার সাফ করুন",

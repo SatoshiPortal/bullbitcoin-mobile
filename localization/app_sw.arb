@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",
   "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
   "exchangeTestnetBasicAuthTitle": "Kitambulisho cha testnet exchange",
   "exchangeTestnetBasicAuthDescription": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za testnet exchange (kuingia na KYC).",
@@ -13,7 +14,15 @@
   "backupWarningLoseReasonCloudRestore": "Utarejesha kifaa chako kutoka kwenye nakala rudufu ya wingu",
   "backupWarningNoRecovery": "Hakuna njia ya kurejesha pochi yako bila nakala rudufu.",
   "swapInsufficientFunds": "Fedha hazitoshi",
-  "broadcastSignedTxBroadcastError": "Imeshindwa kutangaza muamala",
+  "broadcastSignedTxBroadcastError": "Hatukuweza kutangaza muamala wako. Angalia muunganisho wako wa intaneti na ujaribu tena.",
+  "importWatchOnlyErrorNoWalletSelected": "Bandika au changanua ufunguo wa umma au kielezo kwanza.",
+  "importWatchOnlyErrorLabelRequired": "Ipe pochi yako jina kabla ya kuingiza.",
+  "importWatchOnlyErrorInvalidFormat": "Hii haionekani kuwa ufunguo wa umma au kielezo halali. Angalia tena ulichobandika.",
+  "importWatchOnlyErrorImportFailed": "Hatukuweza kuingiza pochi hii ya kutazama-pekee. Tafadhali angalia maelezo na ujaribu tena.",
+  "broadcastSignedTxErrorInvalidTransaction": "Hii haionekani kuwa muamala halali uliosainiwa. Hakikisha umebandika PSBT kamili au muamala mzima.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hatukuweza kusoma muamala kutoka kwa lebo hii. Tafadhali jaribu kuchanganua tena.",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "bip85NoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
@@ -216,7 +225,6 @@
   "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
   "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "addressViewerTitle": "Anwani",
   "viewerTapToCopy": "Gusa kunakili",
@@ -253,6 +261,10 @@
   "exportTransactionsError": "Failed to export transactions",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "importMnemonicEmptyLabelError": "Lebo inahitajika ili kuingiza mnemonic",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "exportTransactionsInvalidDateRange": "Tarehe ya kuanza lazima iwe kabla ya tarehe ya kumaliza",
   "@exportTransactionsInvalidDateRange": {
@@ -291,6 +303,7 @@
   "onboardingAdvancedOptionsFooter": "Unaweza kubadilisha mipangilio hii baadaye katika Mipangilio ya Programu",
   "onboardingAdvancedOptionsDone": "Imekamilika",
   "appStartupContactSupportMessage": "Wasiliana na usaidizi kupitia app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox inasaidiwa kwenye Android pekee",
   "sendErrorUnsupportedQrCodeFormat": "Muundo wa msimbo wa QR haujaamuliwa",
   "fundExchangeErrorTitleOrdPo404": "Chaguo la Malipo Halipatikani",
   "fundExchangeErrorTitleRcpPo404": "Chaguo la Malipo Halipatikani",
@@ -308,6 +321,24 @@
   "fundExchangeErrorRcpPosinpe404": "Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye.",
   "fundExchangeMethodInstantSepa": "Uhawilishaji wa SEPA wa haraka na wa kawaida",
+  "pinCodeSaveError": "Imeshindwa kuhifadhi PIN yako. Tafadhali jaribu tena.",
+  "pinCodeDeleteError": "Imeshindwa kufuta PIN yako. Tafadhali jaribu tena.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
+  "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
+  "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena.",
+  "mempoolErrorInvalidUrl": "URL ya seva si sahihi. Weka kikoa au anwani ya IP sahihi.",
+  "allSeedViewErrorFetch": "Imeshindwa kupakia mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Imeshindwa kufuta mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "walletButtonCoins": "Dhibiti sarafu",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

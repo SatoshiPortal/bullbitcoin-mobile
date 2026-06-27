@@ -173,6 +173,7 @@
     "description": "Unit suffix for satoshi amounts"
   },
   "electrumServerAlreadyExists": "Este servidor já existe",
+  "electrumServerUnreachable": "Servidor inacessível. Verifique o endereço e tente novamente.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -647,6 +648,8 @@
     "description": "Status message for in-flight payment"
   },
   "appUnlockButton": "Desbloqueio",
+  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
+  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1265,15 +1268,6 @@
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
-  "labelErrorUnexpected": "Erro inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "electrumServerOnline": "Online",
   "@electrumServerOnline": {
     "description": "Status text for online servers"
@@ -1298,10 +1292,6 @@
   "testBackupDefaultWallets": "Carteiras padrão",
   "@testBackupDefaultWallets": {
     "description": "Label shown when testing the default wallets"
-  },
-  "replaceByFeeErrorGeneric": "Um erro ocorreu ao tentar substituir a transação",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "sendChange": "Variação",
   "@sendChange": {
@@ -3439,14 +3429,9 @@
   "@seedsignerStep11": {
     "description": "SeedSigner instruction to return to app"
   },
-  "electrumLoadFailedError": "Falhados em servidores de carga{reason}",
+  "electrumLoadFailedError": "Falhados em servidores de carga",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "kruxStep5": "Digitalizar o código QR mostrado na carteira Bull",
   "@kruxStep5": {
@@ -4004,6 +3989,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Falha ao carregar as seeds. Por favor, tente novamente.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Falha ao excluir a seed. Por favor, tente novamente.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "buyInputTitle": "Comprar Bitcoin",
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
@@ -4229,10 +4222,6 @@
   "psbtFlowScanQrOption": "Selecione \"Scan QR\" opção",
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
-  },
-  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4797,15 +4786,6 @@
   "ledgerDefaultWalletLabel": "Carteira de Ledger",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "A carregar",
   "@pinStatusLoading": {
@@ -5796,14 +5776,9 @@
   "@fundExchangeLabelPaymentDescription": {
     "description": "Label for payment description field"
   },
-  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado{reason}",
+  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "replaceByFeeFastestTitle": "Mais rápido",
   "@replaceByFeeFastestTitle": {
@@ -6187,10 +6162,6 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "A transação original foi confirmada",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "dcaNetworkLiquid": "Rede líquida",
   "@dcaNetworkLiquid": {
@@ -7616,14 +7587,9 @@
   "@buyProofOfAddress": {
     "description": "Type of document required"
   },
-  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor{reason}",
+  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "allSeedViewTitle": "Visualizador de sementes",
   "@allSeedViewTitle": {
@@ -9080,14 +9046,9 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "electrumAddFailedError": "Falhado em adicionar servidor personalizado{reason}",
+  "electrumAddFailedError": "Falhado em adicionar servidor personalizado",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "@jadeStep12": {
@@ -9476,15 +9437,6 @@
   "transactionDetailLabelOrderType": "Tipo de ordem",
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
-  },
-  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "arkReceiveButton": "Receber",
   "@arkReceiveButton": {
@@ -10198,7 +10150,13 @@
     "description": "Bold label for Google/Apple cloud recommendation"
   },
   "broadcastSignedTxBroadcasting": "Transmissão...",
-  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
+  "broadcastSignedTxBroadcastError": "Não foi possível transmitir sua transação. Verifique sua conexão com a internet e tente novamente.",
+  "importWatchOnlyErrorNoWalletSelected": "Cole ou escaneie primeiro uma chave pública ou um descritor.",
+  "importWatchOnlyErrorLabelRequired": "Dê um nome à sua carteira antes de importar.",
+  "importWatchOnlyErrorInvalidFormat": "Isto não parece uma chave pública ou um descritor válido. Verifique o que você colou.",
+  "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira somente leitura. Verifique os detalhes e tente novamente.",
+  "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Verifique se você colou o PSBT ou a transação completos.",
+  "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente escanear novamente.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -10899,8 +10857,8 @@
   "@transactionLabelBoltzSwapFee": {
     "description": "Label for Boltz swap fee component"
   },
-  "sendEstimatedDeliveryHours": "horas",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "poucas horas",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "buyVerificationInProgress": "Verificação em andamento...",
@@ -12141,6 +12099,7 @@
     "description": "Title for how to decide backup method modal"
   },
   "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "bip85NoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -12606,7 +12565,6 @@
   "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
   "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
   "coreScreensParseFailed": "Falha ao analisar a transação: {message}.",
-  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
   "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível.",
   "addressViewerTitle": "Endereço",
   "viewerTapToCopy": "Toque para copiar",
@@ -12629,6 +12587,7 @@
   "recipientsPayoutMethod": "Método de pagamento",
   "recipientsFilterByJurisdiction": "Filtrar por jurisdição:",
   "recipientsListEmpty": "Nenhum destinatário encontrado.",
+  "recipientsListLoadError": "Não foi possível carregar os destinatários. Puxe para baixo para tentar novamente.",
   "recipientsContinue": "Continuar",
   "recipientsJurisdictionAll": "Todas as jurisdições",
   "recipientsJurisdictionCanada": "🇨🇦 Canadá",
@@ -12780,6 +12739,52 @@
   "onboardingAdvancedOptionsDone": "Concluído",
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
+  "pinCodeSaveError": "Não foi possível salvar seu PIN. Por favor, tente novamente.",
+  "pinCodeDeleteError": "Não foi possível excluir seu PIN. Por favor, tente novamente.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
+  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente.",
+  "mempoolErrorInvalidUrl": "URL do servidor inválido. Insira um domínio ou endereço IP válido.",
+  "labelErrorUnexpected": "Erro inesperado: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "horas",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
   "walletButtonCoins": "Gerenciar moedas",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

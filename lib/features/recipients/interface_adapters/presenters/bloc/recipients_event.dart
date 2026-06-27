@@ -4,6 +4,11 @@ part of 'recipients_bloc.dart';
 sealed class RecipientsEvent with _$RecipientsEvent {
   const factory RecipientsEvent.started() = RecipientsStarted;
   const factory RecipientsEvent.moreLoaded() = RecipientsMoreLoaded;
+  const factory RecipientsEvent.refreshed() = RecipientsRefreshed;
+  const factory RecipientsEvent.jurisdictionChanged(String? jurisdiction) =
+      RecipientsJurisdictionChanged;
+  const factory RecipientsEvent.searchChanged(String query) =
+      RecipientsSearchChanged;
   const factory RecipientsEvent.added(RecipientFormDataModel recipient) =
       RecipientsAdded;
   const factory RecipientsEvent.sinpeChecked(String phoneNumber) =

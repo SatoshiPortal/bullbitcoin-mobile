@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "수신자를 불러올 수 없습니다. 아래로 당겨 다시 시도하세요.",
   "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
   "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
   "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
@@ -218,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
+  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "다운로드",
+  "appUnlockPinCheckError": "보안 설정을 불러올 수 없습니다. 앱을 다시 시작해 주세요.",
+  "appUnlockPinVerifyError": "PIN을 확인할 수 없습니다. 다시 시도해 주세요.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1205,10 +1209,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "오류가 발생했습니다",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "그들은 다른 플랫폼에 Bitcoin을 보낼 것을 요청",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1495,15 +1495,6 @@
   "payPasteInvoice": "페이스 북",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "오류: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "옵션 정보",
   "@arkStatusSettled": {
@@ -3553,14 +3544,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "로드 서버에 실패{reason}",
+  "electrumLoadFailedError": "로드 서버에 실패",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "인증:",
   "@ledgerVerifyAddressLabel": {
@@ -4108,6 +4094,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "시드를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "시드를 삭제하지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "{amount} 모든 {frequency}를 구입하고 있습니다. {network} 귀하의 계정에 자금이 있습니다.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4427,10 +4421,6 @@
   "payDefaultCommentHint": "자주 묻는 질문",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "관련 기사",
   "@copyDialogButton": {
@@ -5577,15 +5567,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "이 유형 {type}는 지원되지 않습니다",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6611,14 +6592,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패{reason}",
+  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
@@ -6940,10 +6916,6 @@
   "arkSendConfirm": "제품정보",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "원래 거래가 확인되었습니다",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@rbfErrorFeeTooLow": {
@@ -7704,14 +7676,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "서버 우선순위{reason} 저장 실패",
+  "electrumSavePriorityFailedError": "서버 우선순위 저장 실패",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "즉시 결제",
   "@globalDefaultLiquidWalletLabel": {
@@ -9165,14 +9132,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "사용자 정의 서버 추가 실패{reason}",
+  "electrumAddFailedError": "사용자 정의 서버 추가 실패",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "송금 수수료",
   "@transactionDetailLabelTransferFees": {
@@ -9543,15 +9505,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "레이블 \"{label}\"을 찾을 수 없습니다.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "지불 방법",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9752,6 +9705,7 @@
     }
   },
   "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "bip85NoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -11009,8 +10963,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "시간",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "몇 시간",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "매월",
@@ -12026,7 +11980,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
-  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
+  "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
+  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
+  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
+  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
+  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
+  "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
+  "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12611,7 +12571,6 @@
   "coreScreensFetchFailed": "Electrum에서 거래 {txid}를 가져올 수 없습니다.",
   "coreScreensInputResolutionFailed": "입력을 찾을 수 없음: {parentTxId}의 출력 {vout}이 존재하지 않습니다.",
   "coreScreensParseFailed": "거래 분석 실패: {message}.",
-  "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
   "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다.",
   "addressViewerTitle": "주소",
   "viewerTapToCopy": "복사하려면 탭하세요",
@@ -12666,6 +12625,52 @@
   "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
+  "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "mempoolErrorInvalidUrl": "잘못된 서버 URL입니다. 유효한 도메인 또는 IP 주소를 입력하세요.",
+  "labelErrorUnexpected": "오류: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "이 유형 {type}는 지원되지 않습니다",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "레이블 \"{label}\"을 찾을 수 없습니다.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "시간",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
   "walletButtonCoins": "코인 관리",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

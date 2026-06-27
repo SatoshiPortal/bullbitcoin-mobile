@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/test_completed_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/view_vault_key_page.dart';
@@ -74,19 +75,17 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         ],
       ),
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
-        listenWhen:
-            (previous, current) =>
-                previous.error != current.error ||
-                current.decryptedVault != null &&
-                    previous.decryptedVault != current.decryptedVault ||
-                current.vaultKey != null &&
-                    previous.vaultKey != current.vaultKey ||
-                previous.isFlowFinished != current.isFlowFinished,
+        listenWhen: (previous, current) =>
+            previous.failure != current.failure ||
+            current.decryptedVault != null &&
+                previous.decryptedVault != current.decryptedVault ||
+            current.vaultKey != null && previous.vaultKey != current.vaultKey ||
+            previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
-          if (state.error != null) {
+          if (state.failure != null) {
             SnackBarUtils.showSnackBar(
               context,
-              state.error!.toTranslated(context),
+              state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();
@@ -103,9 +102,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               case RecoverBullFlow.viewVaultKey:
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            ViewVaultKeyPage(vaultKey: state.vaultKey!),
+                    builder: (context) =>
+                        ViewVaultKeyPage(vaultKey: state.vaultKey!),
                   ),
                 );
               case RecoverBullFlow.testVault:

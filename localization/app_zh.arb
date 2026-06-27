@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "无法加载收款人。下拉以重试。",
   "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
   "backupWarningLoseReasonLostPhone": "您丢失手机",
   "backupWarningLoseReasonDeletedApp": "您删除应用程序",
@@ -86,6 +87,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "electrumServerAlreadyExists": "这个服务器已经存在",
+  "electrumServerUnreachable": "无法连接服务器。请检查地址后重试。",
   "sellPaymentMethod": "支付方法",
   "transactionNoteHint": "说明",
   "transactionLabelPreimage": "预 估",
@@ -225,6 +227,8 @@
   "dcaWalletLiquidSubtitle": "要求兼容的钱包",
   "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
   "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "无法加载安全设置。请重启应用。",
+  "appUnlockPinVerifyError": "无法验证您的 PIN。请重试。",
   "payServiceFee": "Service Fee",
   "transactionStatusSwapExpired": "页: 1",
   "swapAmountPlaceholder": "页: 1",
@@ -419,7 +423,6 @@
   "sendSendAmount": "数额",
   "sendSelectedUtxosInsufficient": "部分税项不包括所需数额",
   "swapErrorBalanceTooLow": "最低外汇数额的平衡太低",
-  "replaceByFeeErrorGeneric": "在试图取代交易时发生错误",
   "fundExchangeWarningTactic5": "他们要求将另一个平台送至鹿特丹",
   "rbfCustomFee": "习俗税",
   "importQrDeviceFingerprint": "Print",
@@ -509,14 +512,6 @@
   "appStartupErrorMessage": "应用启动失败。请尝试完全关闭应用并重新启动。如果错误仍然存在，请联系支持并提供日志。",
   "appStartupErrorMessageWithBackup": "无法初始化。请删除并重新安装以修复。",
   "payPasteInvoice": "Paste Invoice",
-  "labelErrorUnexpected": "意外错误:{message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "重新安置",
   "dcaWalletBitcoinSubtitle": "最低0.001 BTC",
   "bitboxScreenEnterPasswordSubtext": "请进入您关于Bibox装置的密码,以便继续使用.",
@@ -1194,7 +1189,7 @@
   "broadcastSignedTxReviewTransaction": "审查交易",
   "walletArkExperimental": "试验",
   "importQrDeviceKeystoneStep5": "从钱包列表中选择 \"BULL\"",
-  "electrumLoadFailedError": "未能装载服务器{reason}",
+  "electrumLoadFailedError": "未能装载服务器",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1452,7 +1447,6 @@
   "withdrawConfirmAmount": "数额",
   "transactionSwapDoNotUninstall": "不要 app,直到打完 complete.",
   "payDefaultCommentHint": "加入违约评论",
-  "labelErrorSystemCannotDelete": "系统标签不能删除.",
   "copyDialogButton": "页: 1",
   "bitboxActionImportWalletProcessing": "导入钱包中",
   "swapConfirmTransferTitle": "1. 集体转让",
@@ -1825,14 +1819,6 @@
   },
   "rbfErrorNoFeeRate": "请选择收费率",
   "backupWalletGoogleDrivePrivacyMessage1": "这些资料 ",
-  "labelErrorUnsupportedType": "这种{type}不支持",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2167,7 +2153,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "流动测试",
-  "electrumDeleteFailedError": "未能删除海关服务器{reason}",
+  "electrumDeleteFailedError": "未能删除海关服务器",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2275,7 +2261,6 @@
   "payDecodeFailed": "未编码发票",
   "sendAbsoluteFees": "绝对费用",
   "arkSendConfirm": "执 行",
-  "replaceByFeeErrorTransactionConfirmed": "原始交易得到了确认",
   "rbfErrorFeeTooLow": "您需要将收费率提高到至少1分之一的CO/vbyte,而不是原来的交易",
   "ledgerErrorMissingDerivationPathSign": "签署《公约》需要一条通向的道路",
   "backupWalletTitle": "页: 1",
@@ -2508,7 +2493,7 @@
   "importQrDeviceKruxInstructionsTitle": "Krux号指令",
   "transactionOrderLabelOriginName": "出生地名称",
   "importQrDeviceKeystoneInstructionsTitle": "主要指示",
-  "electrumSavePriorityFailedError": "未能节省服务器优先事项{reason}",
+  "electrumSavePriorityFailedError": "未能节省服务器优先事项",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3023,7 +3008,7 @@
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "arkSettleButton": "定居者",
-  "electrumAddFailedError": "未能增加海关服务器{reason}",
+  "electrumAddFailedError": "未能增加海关服务器",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3159,14 +3144,6 @@
   "coldcardStep10": "• 在 but子上签署交易.",
   "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
   "sendErrorAmountBelowSwapLimitsBitcoin": "考虑为即时支付充值以进行小额支付。",
-  "labelErrorNotFound": "Label “{label}”没有发现.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "私人支付",
   "autoswapDefaultWalletLabel": "页: 1",
   "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
@@ -3229,6 +3206,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! 某些错误",
+  "bip85NoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
   "pinStatusSettingUpDescription": "1. 制定您的《个人资料》",
   "enterYourPinTitle": "{pinOrPassword}",
   "@enterYourPinTitle": {
@@ -3667,7 +3645,7 @@
   "recoverbullGoogleDriveCancelButton": "Cancel",
   "backupWalletSuccessDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "rbfBroadcast": "广播",
-  "sendEstimatedDeliveryHours": "小时",
+  "sendEstimatedDeliveryFewHours": "小时数",
   "dcaConfirmFrequencyMonthly": "每个月",
   "importWatchOnlyScriptType": "文字类型",
   "electrumCustomServers": "海关服务器",
@@ -4025,7 +4003,13 @@
   "swapProgressPendingMessage": "移交工作正在进行之中。 交易可在确认时进行。 你可以回家,等待.",
   "walletDetailsNetworkLabel": "网络",
   "broadcastSignedTxBroadcasting": "广播.",
-  "broadcastSignedTxBroadcastError": "广播交易失败",
+  "broadcastSignedTxBroadcastError": "无法广播您的交易。请检查您的网络连接后重试。",
+  "importWatchOnlyErrorNoWalletSelected": "请先粘贴或扫描公钥或描述符。",
+  "importWatchOnlyErrorLabelRequired": "导入前请为您的钱包命名。",
+  "importWatchOnlyErrorInvalidFormat": "这看起来不是有效的公钥或描述符。请仔细检查您粘贴的内容。",
+  "importWatchOnlyErrorImportFailed": "无法导入此只读钱包。请检查信息后重试。",
+  "broadcastSignedTxErrorInvalidTransaction": "这看起来不是有效的已签名交易。请确认您粘贴了完整的 PSBT 或交易。",
+  "broadcastSignedTxErrorInvalidPushTx": "无法从此标签读取交易。请重新扫描。",
   "recoverbullSelectRecoverWallet": "恢复钱包",
   "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",
@@ -4400,11 +4384,10 @@
   "mempoolErrorServerUnavailable": "服务器暂时不可用。请稍后重试。",
   "mempoolErrorServerError": "服务器遇到错误。请稍后重试或尝试其他服务器。",
   "mempoolErrorInvalidResponse": "服务器返回了意外的响应。",
-  "mempoolErrorUnexpected": "发生了意外错误",
-  "mempoolErrorSaveServerFailed": "保存服务器失败：{error}",
-  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败：{error}",
-  "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
-  "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
+  "mempoolErrorInvalidUrl": "服务器 URL 无效。请输入有效的域名或 IP 地址。",
+  "mempoolErrorSaveServerFailed": "保存服务器失败",
+  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败",
+  "mempoolErrorDeleteFailed": "删除自定义服务器失败",
   "settingsErrorReportingTitle": "错误报告",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4630,7 +4613,6 @@
   "coreScreensFetchFailed": "无法从 Electrum 获取交易 {txid}。",
   "coreScreensInputResolutionFailed": "未找到输入：{parentTxId} 的输出 {vout} 不存在。",
   "coreScreensParseFailed": "解析交易失败：{message}。",
-  "coreScreensUnexpectedError": "意外错误：{message}。",
   "coreScreensNoServersAvailable": "没有可用的 Electrum 服务器。",
   "addressViewerTitle": "地址",
   "viewerTapToCopy": "点击复制",
@@ -4685,6 +4667,52 @@
   "onboardingAdvancedOptionsDone": "完成",
   "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
   "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android",
+  "pinCodeSaveError": "无法保存您的PIN码，请重试。",
+  "pinCodeDeleteError": "无法删除您的PIN码，请重试。",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
+  "priceChartLoadFailed": "价格图表数据无法加载。请重试。",
+  "allSeedViewErrorFetch": "加载种子失败。请重试。",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "导入助记词需要标签",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "删除种子失败。请重试。",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "labelErrorUnexpected": "意外错误:{message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "系统标签不能删除.",
+  "labelErrorUnsupportedType": "这种{type}不支持",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Label “{label}”没有发现.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "小时",
+  "mempoolErrorUnexpected": "发生了意外错误",
+  "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
+  "coreScreensUnexpectedError": "意外错误：{message}。",
   "walletButtonCoins": "管理币",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

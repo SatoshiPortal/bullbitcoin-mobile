@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/recipients/application/ports/recipients_gatew
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
 // This class delegates recipient-related operations to the appropriate
 // gateway based on whether the operation is for testnet or mainnet.
@@ -39,6 +40,9 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
     required bool isTestnet,
     int page = 1,
     int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listRecipients(
@@ -46,12 +50,18 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
           isTestnet: isTestnet,
           page: page,
           pageSize: pageSize,
+          recipientTypes: recipientTypes,
+          isOwner: isOwner,
+          search: search,
         )
         : _bullbitcoinApiClient.listRecipients(
           fiatOnly: fiatOnly,
           isTestnet: isTestnet,
           page: page,
           pageSize: pageSize,
+          recipientTypes: recipientTypes,
+          isOwner: isOwner,
+          search: search,
         );
   }
 

@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "प्राप्तकर्ता लोड नहीं हो सके। पुनः प्रयास के लिए नीचे खींचें।",
   "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
   "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
   "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
@@ -219,6 +220,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "यह सर्वर पहले से ही मौजूद है",
+  "electrumServerUnreachable": "सर्वर तक नहीं पहुँचा जा सका। पता जाँचें और पुनः प्रयास करें।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "अनलॉक",
+  "appUnlockPinCheckError": "सुरक्षा सेटिंग लोड नहीं हो सकीं। कृपया ऐप को पुनः प्रारंभ करें।",
+  "appUnlockPinVerifyError": "आपका PIN सत्यापित नहीं हो सका। कृपया पुनः प्रयास करें।",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1205,10 +1209,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "लेन-देन को बदलने की कोशिश करते समय कोई त्रुटि हुई",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "वे किसी अन्य प्लेटफॉर्म पर Bitcoin भेजने के लिए कह रहे हैं",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1495,15 +1495,6 @@
   "payPasteInvoice": "Invoice",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "Unexpected त्रुटि: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "निपटान",
   "@arkStatusSettled": {
@@ -3553,14 +3544,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "सर्वर लोड करने में विफल {reason}",
+  "electrumLoadFailedError": "सर्वर लोड करने में विफल ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "सत्यापित करने के लिए पता:",
   "@ledgerVerifyAddressLabel": {
@@ -4108,6 +4094,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "सीड लोड करने में विफल। कृपया पुनः प्रयास करें।",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "सीड हटाने में विफल। कृपया पुनः प्रयास करें।",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "आप {amount} हर {frequency} को {network} के माध्यम से खरीद रहे हैं, जब तक आपके खाते में धन हो।।",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4427,10 +4421,6 @@
   "payDefaultCommentHint": "डिफ़ॉल्ट टिप्पणी दर्ज करें",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "सिस्टम लेबल को हटाया नहीं जा सकता है।।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "कॉपी",
   "@copyDialogButton": {
@@ -5577,15 +5567,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "इस प्रकार {type} समर्थित नहीं है",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6611,14 +6592,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "कस्टम सर्वर {reason} को हटाने में विफल",
+  "electrumDeleteFailedError": "कस्टम सर्वर  को हटाने में विफल",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap शुल्क",
   "@receiveBoltzSwapFee": {
@@ -6940,10 +6916,6 @@
   "arkSendConfirm": "पुष्टि",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "मूल लेनदेन की पुष्टि की गई है",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@rbfErrorFeeTooLow": {
@@ -7704,14 +7676,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल {reason}",
+  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "तत्काल भुगतान",
   "@globalDefaultLiquidWalletLabel": {
@@ -9165,14 +9132,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "कस्टम सर्वर {reason} जोड़ने में विफल",
+  "electrumAddFailedError": "कस्टम सर्वर  जोड़ने में विफल",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "ट्रांसफर शुल्क",
   "@transactionDetailLabelTransferFees": {
@@ -9543,15 +9505,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "लेबल \"{label}\" नहीं मिला।।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "निजी भुगतान",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9752,6 +9705,7 @@
     }
   },
   "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "bip85NoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -11009,8 +10963,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "घंटे",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "कुछ घंटे",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "हर माह",
@@ -12026,7 +11980,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
-  "broadcastSignedTxBroadcastError": "लेन-देन प्रसारित करने में विफल",
+  "broadcastSignedTxBroadcastError": "हम आपका ट्रांज़ैक्शन ब्रॉडकास्ट नहीं कर सके। अपना इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "importWatchOnlyErrorNoWalletSelected": "पहले कोई पब्लिक की या डिस्क्रिप्टर पेस्ट या स्कैन करें।",
+  "importWatchOnlyErrorLabelRequired": "इम्पोर्ट करने से पहले अपने वॉलेट को एक नाम दें।",
+  "importWatchOnlyErrorInvalidFormat": "यह एक मान्य पब्लिक की या डिस्क्रिप्टर नहीं लगता। आपने जो पेस्ट किया है उसे दोबारा जाँच लें।",
+  "importWatchOnlyErrorImportFailed": "हम इस वॉच-ओनली वॉलेट को इम्पोर्ट नहीं कर सके। कृपया जानकारी जाँचें और फिर से कोशिश करें।",
+  "broadcastSignedTxErrorInvalidTransaction": "यह एक मान्य साइन्ड ट्रांज़ैक्शन नहीं लगता। पक्का करें कि आपने पूरा PSBT या ट्रांज़ैक्शन पेस्ट किया है।",
+  "broadcastSignedTxErrorInvalidPushTx": "हम इस टैग से कोई ट्रांज़ैक्शन नहीं पढ़ सके। कृपया फिर से स्कैन करें।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12611,6 +12571,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "मेमोनिक आयात करने के लिए एक लेबल आवश्यक है",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "recoverbullVaultRecovery": "वॉल्ट रिकवरी",
   "@recoverbullVaultRecovery": {
     "description": "Screen title for vault recovery process"
@@ -12662,46 +12626,18 @@
   "mempoolErrorServerUnavailable": "सर्वर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
   "mempoolErrorServerError": "सर्वर में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
   "mempoolErrorInvalidResponse": "सर्वर ने अमान्य प्रतिक्रिया दी।",
-  "mempoolErrorUnexpected": "एक अप्रत्याशित त्रुटि हुई",
-  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल: {error}",
+  "mempoolErrorInvalidUrl": "अमान्य सर्वर URL। एक मान्य डोमेन या IP पता दर्ज करें।",
+  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल: {error}",
+  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल: {error}",
+  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "सेटिंग्स अपडेट करने में विफल: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
   "exchangeStatisticsBuySellRatioDesc": "खरीदने बनाम बेचने से कुल वॉल्यूम का प्रतिशत",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin खरीदने में खर्च की गई कुल राशि",
@@ -12897,7 +12833,6 @@
   "coreScreensFetchFailed": "Electrum से लेन-देन {txid} प्राप्त नहीं हो सका।",
   "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
   "coreScreensParseFailed": "लेन-देन पार्स करने में विफल: {message}।",
-  "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
   "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
   "addressViewerTitle": "पता",
   "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
@@ -12952,6 +12887,58 @@
   "onboardingAdvancedOptionsDone": "पूर्ण",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
   "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है",
+  "pinCodeSaveError": "आपका PIN सेव नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "pinCodeDeleteError": "आपका PIN हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
+  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "labelErrorUnexpected": "Unexpected त्रुटि: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "सिस्टम लेबल को हटाया नहीं जा सकता है।।",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "इस प्रकार {type} समर्थित नहीं है",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "लेबल \"{label}\" नहीं मिला।।",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "घंटे",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "mempoolErrorUnexpected": "एक अप्रत्याशित त्रुटि हुई",
+  "mempoolErrorUpdateSettingsFailed": "सेटिंग्स अपडेट करने में विफल: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
   "walletButtonCoins": "कॉइन प्रबंधित करें",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

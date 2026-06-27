@@ -3,9 +3,7 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 class CheckServerConnectionUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  CheckServerConnectionUsecase({
-    required this._recoverBullRepository,
-  });
+  CheckServerConnectionUsecase({required this._recoverBullRepository});
 
   Future<bool> execute() async {
     try {
