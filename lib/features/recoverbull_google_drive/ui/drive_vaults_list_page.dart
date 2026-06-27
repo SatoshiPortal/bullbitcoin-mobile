@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/event.dart';
+import 'package:bb_mobile/features/recoverbull_google_drive/presentation/recoverbull_google_drive_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +26,7 @@ class DriveVaultsListPage extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    final error = state.error;
+    final failure = state.failure;
     final driveMetadata = state.driveMetadata;
 
     return Scaffold(
@@ -46,8 +47,8 @@ class DriveVaultsListPage extends StatelessWidget {
             height: 2.0,
           ),
           Expanded(
-            child: error != null
-                ? Center(child: Text(error.toTranslated(context)))
+            child: failure != null
+                ? Center(child: Text(failure.toTranslated(context)))
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: SingleChildScrollView(

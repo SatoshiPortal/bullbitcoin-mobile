@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -56,11 +57,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
     try {
       emit(
-        state.copyWith(
-          loadingPrice: true,
-          startupFailed: false,
-          error: null,
-        ),
+        state.copyWith(loadingPrice: true, startupFailed: false, failure: null),
       );
 
       final settings = await _getSettingsUsecase.execute();
@@ -78,7 +75,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           state.copyWith(
             loadingPrice: false,
             startupFailed: true,
-            error: null,
+            failure: null,
           ),
         );
         return;
@@ -90,15 +87,15 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
           startupFailed: false,
-          error: null,
+          failure: null,
           loadingPrice: false,
         ),
       );
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.warning('BitcoinPriceStarted failed', error: e);
       emit(
         state.copyWith(
-          error: e,
+          failure: BitcoinPriceUnexpectedFailure(e.toString()),
           startupFailed: true,
           loadingPrice: false,
         ),
@@ -121,27 +118,29 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         );
 
         if (price <= 0) {
-          emit(state.copyWith(error: StateError('Invalid fiat rate')));
+          emit(state.copyWith(failure: const BitcoinPriceInvalidRateFailure()));
           return;
         }
 
         emit(
           state.copyWith(
             bitcoinPrice: price,
-            error: null,
+            failure: null,
             startupFailed: false,
           ),
         );
       }
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
       // TODO: would it make sense to not emit a failure state here, but keep the
       //  previous success state as to be able to show an exchange rate allthough
       //  not the most recent one? If that makes sense, we can add the error directly
       //  to the success state. So the UI can show the exchange rate, but also show
       //  that it might not be the most recent one.
       //  (Adding a fetch and rate timestamp to the success can also help)
-      emit(state.copyWith(error: e));
+      log.warning('BitcoinPriceFetched failed', error: e);
+      emit(
+        state.copyWith(failure: BitcoinPriceUnexpectedFailure(e.toString())),
+      );
     }
   }
 
@@ -160,13 +159,15 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       );
 
       if (price <= 0) {
-        log.warning('Fiat rate invalid or zero after currency change to $currency');
+        log.warning(
+          'Fiat rate invalid or zero after currency change to $currency',
+        );
         emit(
           state.copyWith(
             bitcoinPrice: null,
             currency: currency,
             loadingPrice: false,
-            error: StateError('Invalid fiat rate'),
+            failure: const BitcoinPriceInvalidRateFailure(),
             startupFailed: false,
           ),
         );
@@ -178,18 +179,18 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           currency: currency,
           bitcoinPrice: price,
           loadingPrice: false,
-          error: null,
+          failure: null,
           startupFailed: false,
         ),
       );
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.warning('BitcoinPriceCurrencyChanged failed', error: e);
       emit(
         state.copyWith(
           bitcoinPrice: null,
           currency: event.currencyCode,
           loadingPrice: false,
-          error: e,
+          failure: BitcoinPriceUnexpectedFailure(e.toString()),
           startupFailed: false,
         ),
       );

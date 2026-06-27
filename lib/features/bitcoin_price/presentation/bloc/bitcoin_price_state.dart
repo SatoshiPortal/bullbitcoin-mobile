@@ -4,7 +4,7 @@ part of 'bitcoin_price_bloc.dart';
 sealed class BitcoinPriceState with _$BitcoinPriceState {
   const factory BitcoinPriceState({
     @Default(false) bool loadingPrice,
-    Object? error,
+    BitcoinPriceFailure? failure,
     @Default(false) bool startupFailed,
     //
     List<String>? availableCurrencies,

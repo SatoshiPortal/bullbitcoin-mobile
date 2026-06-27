@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_review_state.freezed.dart';
@@ -18,8 +18,8 @@ sealed class TransactionReviewState with _$TransactionReviewState {
     required ReviewableTransaction transaction,
   }) = TransactionReviewLoaded;
 
-  /// Resolution failed; carries a [TransactionReviewError] for the UI to map.
+  /// Resolution failed; carries a [TransactionReviewFailure] for the UI to map.
   const factory TransactionReviewState.error({
-    required TransactionReviewError error,
+    required TransactionReviewFailure failure,
   }) = TransactionReviewErrorState;
 }

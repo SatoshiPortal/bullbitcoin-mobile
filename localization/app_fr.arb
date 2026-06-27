@@ -288,7 +288,7 @@
   "sendConfirmCustomFee": "Confirmer les frais personnalisés",
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "sendEstimatedDelivery10to30Minutes": "10-30 minutes",
-  "sendEstimatedDeliveryHours": "heures",
+  "sendEstimatedDeliveryFewHours": "quelques heures",
   "sendEstimatedDeliveryHoursToDays": "heures à jours",
   "sendEstimatedDelivery": "Livraison estimée ~ ",
   "sendAddress": "Adresse : ",
@@ -1255,6 +1255,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "bip85NoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "connectingToKeyServer": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
   "anErrorOccurred": "Une erreur s'est produite",
   "dcaSetRecurringBuyTitle": "Configurer un achat récurrent",
@@ -1461,6 +1462,8 @@
   "appUnlockAttemptSingular": "tentative échouée",
   "appUnlockAttemptPlural": "tentatives échouées",
   "appUnlockButton": "Déverrouiller",
+  "appUnlockPinCheckError": "Impossible de charger les paramètres de sécurité. Veuillez redémarrer l'application.",
+  "appUnlockPinVerifyError": "Impossible de vérifier votre code PIN. Veuillez réessayer.",
   "pinStatusLoading": "Chargement",
   "pinStatusCheckingDescription": "Vérification du statut du code PIN",
   "pinStatusProcessing": "Traitement en cours",
@@ -1769,8 +1772,6 @@
   "replaceByFeeCustomFeeTitle": "Frais personnalisés",
   "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
   "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
-  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
-  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
   "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
   "replaceByFeeFastestTitle": "Le plus rapide",
   "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
@@ -3094,6 +3095,10 @@
   },
   "importWatchOnlyTitle": "Importer en lecture seule",
   "importWatchOnlyPasteHint": "Coller xpub, ypub, zpub ou descripteur",
+  "importWatchOnlyErrorNoWalletSelected": "Collez ou scannez d'abord une clé publique ou un descripteur.",
+  "importWatchOnlyErrorLabelRequired": "Nommez votre portefeuille avant de l'importer.",
+  "importWatchOnlyErrorInvalidFormat": "Cela ne ressemble pas à une clé publique ou un descripteur valide. Vérifiez ce que vous avez collé.",
+  "importWatchOnlyErrorImportFailed": "Impossible d'importer ce portefeuille en lecture seule. Vérifiez les informations et réessayez.",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
@@ -3171,7 +3176,9 @@
   "broadcastSignedTxTo": "À",
   "broadcastSignedTxBroadcast": "Diffuser",
   "broadcastSignedTxBroadcasting": "Diffusion en cours...",
-  "broadcastSignedTxBroadcastError": "Échec de la diffusion de la transaction",
+  "broadcastSignedTxBroadcastError": "Impossible de diffuser votre transaction. Vérifiez votre connexion Internet et réessayez.",
+  "broadcastSignedTxErrorInvalidTransaction": "Cela ne ressemble pas à une transaction signée valide. Assurez-vous d'avoir collé le PSBT ou la transaction en entier.",
+  "broadcastSignedTxErrorInvalidPushTx": "Impossible de lire une transaction depuis ce tag. Veuillez réessayer de scanner.",
   "broadcastSignedTxPageTitle": "Diffuser une transaction signée",
   "broadcastSignedTxPasteHint": "Coller un PSBT ou un HEX de transaction",
   "broadcastSignedTxCameraButton": "Caméra",
@@ -3618,7 +3625,7 @@
   "electrumDefaultServersInfo": "Pour protéger votre vie privée, les serveurs par défaut ne sont pas utilisés lorsque des serveurs personnalisés sont configurés.",
   "electrumCustomServers": "Serveurs personnalisés",
   "electrumDragToReorder": "(Appuyez longuement pour faire glisser et changer la priorité)",
-  "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
+  "electrumLoadFailedError": "Échec du chargement des serveurs",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -3626,7 +3633,7 @@
       }
     }
   },
-  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur{reason}",
+  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3634,7 +3641,7 @@
       }
     }
   },
-  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé{reason}",
+  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3642,7 +3649,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé{reason}",
+  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -3651,6 +3658,7 @@
     }
   },
   "electrumServerAlreadyExists": "Ce serveur existe déjà",
+  "electrumServerUnreachable": "Le serveur est injoignable. Vérifiez l'adresse et réessayez.",
   "electrumPrivacyNoticeTitle": "Avis de confidentialité",
   "electrumPrivacyNoticeContent1": "Avis de confidentialité : L'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions.",
   "electrumPrivacyNoticeContent2": "Cependant, si vous consultez les transactions via mempool en cliquant sur votre ID de transaction ou la page Détails du destinataire, ces informations seront connues de BullBitcoin.",
@@ -4121,31 +4129,6 @@
   "systemLabelSelfSpend": "Auto transfert",
   "systemLabelExchangeBuy": "Achat",
   "systemLabelExchangeSell": "Vente",
-  "labelErrorNotFound": "Label \"{label}\" introuvable.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Erreur inattendue : {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
   "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
   "@labelDeleteFailed": {
     "placeholders": {
@@ -4379,11 +4362,10 @@
   "mempoolErrorServerUnavailable": "Serveur indisponible. Veuillez réessayer plus tard.",
   "mempoolErrorServerError": "Le serveur a rencontré une erreur. Veuillez réessayer plus tard.",
   "mempoolErrorInvalidResponse": "Le serveur a renvoyé une réponse invalide.",
-  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
-  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur : {error}",
-  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool : {error}",
-  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé : {error}",
-  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "mempoolErrorInvalidUrl": "URL du serveur invalide. Saisissez un domaine ou une adresse IP valide.",
+  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur",
+  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool",
+  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé",
   "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningExplanationBold": "automatiquement",
   "deleteLogsTitle": "Supprimer les journaux",
@@ -4618,7 +4600,6 @@
   "coreScreensFetchFailed": "Impossible de récupérer la transaction {txid} depuis Electrum.",
   "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
   "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
-  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
   "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
   "addressViewerTitle": "Adresse",
   "viewerTapToCopy": "Appuyez pour copier",
@@ -4793,6 +4774,52 @@
   "onboardingAdvancedOptionsDone": "Terminé",
   "appStartupContactSupportMessage": "Contactez le support sur app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android",
+  "pinCodeSaveError": "Impossible d'enregistrer votre code PIN. Veuillez réessayer.",
+  "pinCodeDeleteError": "Impossible de supprimer votre code PIN. Veuillez réessayer.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Taux de change indisponible. Veuillez réessayer plus tard.",
+  "priceChartLoadFailed": "Les données du graphique de prix n'ont pas pu être chargées. Veuillez réessayer.",
+  "allSeedViewErrorFetch": "Échec du chargement des mnémoniques. Veuillez réessayer.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Une étiquette est requise pour importer un mnémonique",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Échec de la suppression de la mnémonique. Veuillez réessayer.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "sendEstimatedDeliveryHours": "heures",
+  "labelErrorNotFound": "Label \"{label}\" introuvable.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Erreur inattendue : {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
+  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
+  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
   "walletButtonCoins": "Gérer les pièces",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

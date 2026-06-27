@@ -789,7 +789,7 @@
   "sendConfirmCustomFee": "Підтвердити збір",
   "sendEstimatedDelivery10Minutes": "10 хвилин",
   "sendEstimatedDelivery10to30Minutes": "10-30 хвилин",
-  "sendEstimatedDeliveryHours": "години",
+  "sendEstimatedDeliveryFewHours": "кілька годин",
   "sendEstimatedDeliveryHoursToDays": "час",
   "sendEstimatedDelivery": "Орієнтовна доставка ~ ",
   "sendAddress": "Адреса: ",
@@ -1237,6 +1237,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "При включенні автоперевезення з комісією над встановленим лімітом завжди буде заблоковано",
   "electrumServerAlreadyExists": "Цей сервер вже існує",
+  "electrumServerUnreachable": "Сервер недоступний. Перевірте адресу та спробуйте ще раз.",
   "sellPaymentMethod": "Спосіб оплати",
   "importColdcardInstructionsStep2": "Вкажіть прохід, якщо це можливо",
   "satsSuffix": " атласне",
@@ -1322,6 +1323,8 @@
   "save": "Зберегти",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
   "appUnlockButton": "Розблокувати",
+  "appUnlockPinCheckError": "Не вдалося завантажити налаштування безпеки. Будь ласка, перезапустіть додаток.",
+  "appUnlockPinVerifyError": "Не вдалося перевірити ваш PIN. Будь ласка, спробуйте ще раз.",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
   "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
@@ -1467,7 +1470,6 @@
   "payEstimatedFee": "Орієнтовна Fee",
   "sendSendAmount": "Надіслати",
   "swapErrorBalanceTooLow": "Баланс занадто низький для мінімальної кількості клаптів",
-  "replaceByFeeErrorGeneric": "При спробі замінити операцію",
   "rbfCustomFee": "Спеціальний Fee",
   "importQrDeviceFingerprint": "Друк",
   "importWatchOnlyDescriptor": "Дескриптор",
@@ -1523,14 +1525,6 @@
   "appStartupErrorMessage": "Не вдалося запустити застосунок. Спробуйте повністю його закрити та перезапустити. Якщо помилка повторюється, зверніться до підтримки та поділіться логами.",
   "appStartupErrorMessageWithBackup": "Не вдалося ініціалізувати. Видаліть і перевстановіть, щоб виправити.",
   "payPasteInvoice": "Паста Invoice",
-  "labelErrorUnexpected": "Несподівана помилка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Шахрайство",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Введіть пароль на пристрої BitBox.",
@@ -1993,7 +1987,7 @@
   "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
   "broadcastSignedTxReviewTransaction": "Огляд транзакцій",
   "importQrDeviceKeystoneStep5": "Виберіть \"BULL\" зі списку гаманців",
-  "electrumLoadFailedError": "Переміщені на серверах навантаження{reason}",
+  "electrumLoadFailedError": "Переміщені на серверах навантаження",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -2160,7 +2154,6 @@
   "bip329LabelsImportButton": "Імпорт етикеток",
   "arkStatusConfirmed": "Підтвердження",
   "withdrawConfirmAmount": "Сума",
-  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
   "copyDialogButton": "Партнерство",
   "bitboxActionImportWalletProcessing": "Імпорт гаманця",
   "swapConfirmTransferTitle": "Підтвердження трансферу",
@@ -2432,14 +2425,6 @@
   },
   "rbfErrorNoFeeRate": "Оберіть тариф",
   "backupWalletGoogleDrivePrivacyMessage1": "Інформація ",
-  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2686,7 +2671,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Видаліть користувальницький сервер{reason}",
+  "electrumDeleteFailedError": "Видаліть користувальницький сервер",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2760,7 +2745,6 @@
   "receiveQRCode": "QR-код",
   "payDecodeFailed": "Заборонено декодувати рахунок",
   "arkSendConfirm": "Підтвердження",
-  "replaceByFeeErrorTransactionConfirmed": "Підтверджено оригінальну операцію",
   "rbfErrorFeeTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
   "ledgerErrorMissingDerivationPathSign": "Зняття потрібно для підписання",
   "jadeStep10": "Натисніть кнопку, щоб зареєструвати операцію на Jade.",
@@ -2932,7 +2916,7 @@
   "dcaBackToHomeButton": "Головна",
   "importQrDeviceKruxInstructionsTitle": "Krux Інструкції",
   "importQrDeviceKeystoneInstructionsTitle": "Інструкція Keystone",
-  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3304,7 +3288,7 @@
   "buyStandardWithdrawal": "Стандартний знімок",
   "swapContinue": "Продовжити",
   "arkSettleButton": "Смітт",
-  "electrumAddFailedError": "Заборонено додавати користувацький сервер{reason}",
+  "electrumAddFailedError": "Заборонено додавати користувацький сервер",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3412,14 +3396,6 @@
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
-  "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Приватний платіж",
   "autoswapDefaultWalletLabel": "Bitcoin гаманець",
   "recoverbullTestSuccessDescription": "Ви можете відновити доступ до втраченого біткойн-гаманця",
@@ -3474,6 +3450,7 @@
     }
   },
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "bip85NoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
   "pinStatusSettingUpDescription": "Налаштування коду PIN",
   "swapFromLabel": "З",
   "importQrDeviceKeystoneStep4": "Натисніть \"Connect Software Wallet\"",
@@ -4054,7 +4031,13 @@
   "dcaPaymentMethodLabel": "Спосіб оплати",
   "swapProgressPendingMessage": "Передача здійснюється в процесі. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "broadcastSignedTxBroadcasting": "Трансляція...",
-  "broadcastSignedTxBroadcastError": "Не вдалося транслювати транзакцію",
+  "broadcastSignedTxBroadcastError": "Не вдалося передати вашу транзакцію. Перевірте підключення до інтернету та спробуйте ще раз.",
+  "importWatchOnlyErrorNoWalletSelected": "Спочатку вставте або відскануйте публічний ключ чи дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте гаманцю назву перед імпортом.",
+  "importWatchOnlyErrorInvalidFormat": "Це не схоже на дійсний публічний ключ або дескриптор. Перевірте, що ви вставили.",
+  "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
+  "broadcastSignedTxErrorInvalidTransaction": "Це не схоже на дійсну підписану транзакцію. Переконайтеся, що ви вставили повний PSBT або транзакцію.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
@@ -4397,11 +4380,10 @@
   "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
   "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
   "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
-  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
-  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер: {error}",
-  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
-  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
+  "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
+  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
+  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
+  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4626,7 +4608,6 @@
   "coreScreensFetchFailed": "Не вдалося отримати транзакцію {txid} з Electrum.",
   "coreScreensInputResolutionFailed": "Вхід не знайдено: вихід {vout} з {parentTxId} не існує.",
   "coreScreensParseFailed": "Не вдалося розібрати транзакцію: {message}.",
-  "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
   "coreScreensNoServersAvailable": "Немає доступних серверів Electrum.",
   "addressViewerTitle": "Адреса",
   "viewerTapToCopy": "Натисніть для копіювання",
@@ -4801,6 +4782,52 @@
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android",
+  "pinCodeSaveError": "Не вдалося зберегти ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeDeleteError": "Не вдалося видалити ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
+  "priceChartLoadFailed": "Дані графіка цін не вдалося завантажити. Будь ласка, спробуйте знову.",
+  "allSeedViewErrorFetch": "Не вдалося завантажити сіди. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Для імпорту мнемоніки потрібна мітка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Не вдалося видалити сід. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "sendEstimatedDeliveryHours": "години",
+  "labelErrorUnexpected": "Несподівана помилка: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
+  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
+  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
+  "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
   "walletButtonCoins": "Керувати монетами",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

@@ -8,7 +8,9 @@ import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -65,10 +67,10 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       onChanged: cubit.tryParseTransaction,
                     ),
                   ),
-                  if (state.error != null) ...[
+                  if (state.failure != null) ...[
                     const Gap(16),
                     BBText(
-                      state.error.toString(),
+                      state.failure!.toTranslated(context),
                       style: context.font.bodyMedium,
                       color: context.appColors.error,
                     ),
@@ -125,9 +127,9 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   // Broadcast failure is shown here in the scroll content so
                   // the pinned action buttons stay put when it toggles.
-                  if (state.error != null) ...[
+                  if (state.failure != null) ...[
                     const Gap(16),
-                    const _BroadcastError(),
+                    _BroadcastError(failure: state.failure!),
                   ],
                 ],
 
@@ -204,11 +206,13 @@ class _BroadcastActions extends StatelessWidget {
 }
 
 /// Error block shown in the review screen when a broadcast attempt fails.
-/// Shows a generic localized message only — the underlying server/node reason
-/// is logged via `log.warning` (file + console, no Sentry), not leaked to the
-/// UI.
+/// Renders the localized, user-safe message from the typed error — the
+/// underlying server/node reason is logged via `log.warning` (file + console,
+/// no Sentry), not leaked to the UI.
 class _BroadcastError extends StatelessWidget {
-  const _BroadcastError();
+  const _BroadcastError({required this.failure});
+
+  final BroadcastSignedTxFailure failure;
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +225,7 @@ class _BroadcastError extends StatelessWidget {
           const Gap(8),
           Expanded(
             child: BBText(
-              context.loc.broadcastSignedTxBroadcastError,
+              failure.toTranslated(context),
               style: context.font.bodyMedium,
               color: context.appColors.error,
             ),

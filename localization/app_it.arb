@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "Quando abilitato, i trasferimenti automatici con tasse superiori al limite impostato saranno sempre bloccati",
   "electrumServerAlreadyExists": "Questo server esiste già",
+  "electrumServerUnreachable": "Server non raggiungibile. Controlla l'indirizzo e riprova.",
   "sellPaymentMethod": "Metodo di pagamento",
   "transactionNoteHint": "Nota",
   "transactionLabelPreimage": "Preimaging",
@@ -225,6 +226,8 @@
   "dcaWalletLiquidSubtitle": "Richiede portafoglio compatibile",
   "fundExchangeCrIbanCrcTitle": "Trasferimento bancario (CRC)",
   "appUnlockButton": "Sblocca",
+  "appUnlockPinCheckError": "Impossibile caricare le impostazioni di sicurezza. Riavvia l'app.",
+  "appUnlockPinVerifyError": "Impossibile verificare il tuo PIN. Riprova.",
   "payServiceFee": "Costo del servizio",
   "transactionStatusSwapExpired": "Scambio scaduto",
   "swapAmountPlaceholder": "0",
@@ -419,7 +422,6 @@
   "sendSendAmount": "Inviare Importo",
   "sendSelectedUtxosInsufficient": "Utxos selezionato non copre l'importo richiesto",
   "swapErrorBalanceTooLow": "Bilancia troppo bassa per importo minimo di swap",
-  "replaceByFeeErrorGeneric": "Si è verificato un errore durante il tentativo di sostituire la transazione",
   "fundExchangeWarningTactic5": "Essi chiedono di inviare Bitcoin su un'altra piattaforma",
   "rbfCustomFee": "Costo personalizzato",
   "importQrDeviceFingerprint": "Impronte pubblicitarie",
@@ -509,14 +511,6 @@
   "appStartupErrorMessage": "L'app non è riuscita ad avviarsi. Prova a chiuderla completamente e a riavviarla. Se l'errore persiste, contatta il supporto e condividi i tuoi log.",
   "appStartupErrorMessageWithBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere.",
   "payPasteInvoice": "Fatturato",
-  "labelErrorUnexpected": "Errore inaspettato: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Settled",
   "dcaWalletBitcoinSubtitle": "Minimo 0,00",
   "bitboxScreenEnterPasswordSubtext": "Inserisci la password sul dispositivo BitBox per continuare.",
@@ -1194,7 +1188,7 @@
   "broadcastSignedTxReviewTransaction": "Revisione delle transazioni",
   "walletArkExperimental": "Sperimentale",
   "importQrDeviceKeystoneStep5": "Seleziona \"BULL\" dall'elenco dei portafogli",
-  "electrumLoadFailedError": "Non caricare server{reason}",
+  "electrumLoadFailedError": "Non caricare server",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1452,7 +1446,6 @@
   "withdrawConfirmAmount": "Importo",
   "transactionSwapDoNotUninstall": "Non disinstallare l'app finché non si completa lo swap.",
   "payDefaultCommentHint": "Inserisci commento predefinito",
-  "labelErrorSystemCannotDelete": "Le etichette di sistema non possono essere eliminate.",
   "copyDialogButton": "Copia",
   "bitboxActionImportWalletProcessing": "Importazione di Wallet",
   "swapConfirmTransferTitle": "Confermare il trasferimento",
@@ -1825,14 +1818,6 @@
   },
   "rbfErrorNoFeeRate": "Si prega di selezionare una tariffa di tassa",
   "backupWalletGoogleDrivePrivacyMessage1": "Queste informazioni ",
-  "labelErrorUnsupportedType": "Questo tipo {type} non è supportato",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2167,7 +2152,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Testato liquido",
-  "electrumDeleteFailedError": "Non è stato possibile eliminare server personalizzati{reason}",
+  "electrumDeleteFailedError": "Non è stato possibile eliminare server personalizzati",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2275,7 +2260,6 @@
   "payDecodeFailed": "Non codificare la fattura",
   "sendAbsoluteFees": "Tasse assolute",
   "arkSendConfirm": "Conferma",
-  "replaceByFeeErrorTransactionConfirmed": "La transazione originale è stata confermata",
   "rbfErrorFeeTooLow": "È necessario aumentare il tasso di tassa di almeno 1 sat/vbyte rispetto alla transazione originale",
   "ledgerErrorMissingDerivationPathSign": "Il percorso di derivazione è richiesto per la firma",
   "backupWalletTitle": "Eseguire il backup del portafoglio",
@@ -2507,7 +2491,7 @@
   "importQrDeviceKruxInstructionsTitle": "Istruzioni Krux",
   "transactionOrderLabelOriginName": "Nome di origine",
   "importQrDeviceKeystoneInstructionsTitle": "Istruzioni Keystone",
-  "electrumSavePriorityFailedError": "Non riuscito a salvare la priorità del server{reason}",
+  "electrumSavePriorityFailedError": "Non riuscito a salvare la priorità del server",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3022,7 +3006,7 @@
   "buyStandardWithdrawal": "Ritiro standard",
   "swapContinue": "Continua",
   "arkSettleButton": "Settle",
-  "electrumAddFailedError": "Non è possibile aggiungere server personalizzati{reason}",
+  "electrumAddFailedError": "Non è possibile aggiungere server personalizzati",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3158,14 +3142,6 @@
   "coldcardStep10": "Fare clic sui pulsanti per firmare la transazione sulla Coldcard.",
   "sendErrorAmountBelowSwapLimits": "L'importo è inferiore ai limiti di swap",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considera di finanziare Pagamenti Istantanei per effettuare pagamenti più piccoli.",
-  "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Pagamento privato",
   "autoswapDefaultWalletLabel": "Portafoglio Bitcoin",
   "recoverbullTestSuccessDescription": "Sei in grado di recuperare l'accesso a un portafoglio Bitcoin perso",
@@ -3228,6 +3204,7 @@
     }
   },
   "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "bip85NoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
   "pinStatusSettingUpDescription": "Impostazione del codice PIN",
   "enterYourPinTitle": "Inserisci il tuo {pinOrPassword}",
   "@enterYourPinTitle": {
@@ -3668,7 +3645,7 @@
   "recoverbullGoogleDriveCancelButton": "Annulla",
   "backupWalletSuccessDescription": "Ora testiamo il backup per assicurarci che tutto sia stato fatto correttamente.",
   "rbfBroadcast": "Trasmissione",
-  "sendEstimatedDeliveryHours": "ore",
+  "sendEstimatedDeliveryFewHours": "poche ore",
   "dcaConfirmFrequencyMonthly": "Ogni mese",
   "importWatchOnlyScriptType": "Tipo di script",
   "electrumCustomServers": "Server personalizzati",
@@ -4027,7 +4004,13 @@
   "swapProgressPendingMessage": "Il trasferimento è in corso. Le transazioni Bitcoin possono richiedere un po' di tempo per confermare. Puoi tornare a casa e aspettare.",
   "walletDetailsNetworkLabel": "Rete di rete",
   "broadcastSignedTxBroadcasting": "Trasmissione...",
-  "broadcastSignedTxBroadcastError": "Trasmissione della transazione non riuscita",
+  "broadcastSignedTxBroadcastError": "Non siamo riusciti a trasmettere la tua transazione. Controlla la tua connessione a internet e riprova.",
+  "importWatchOnlyErrorNoWalletSelected": "Incolla o scansiona prima una chiave pubblica o un descriptor.",
+  "importWatchOnlyErrorLabelRequired": "Dai un nome al tuo portafoglio prima di importarlo.",
+  "importWatchOnlyErrorInvalidFormat": "Questo non sembra una chiave pubblica o un descriptor valido. Controlla ciò che hai incollato.",
+  "importWatchOnlyErrorImportFailed": "Non siamo riusciti a importare questo portafoglio di sola lettura. Controlla i dettagli e riprova.",
+  "broadcastSignedTxErrorInvalidTransaction": "Questa non sembra una transazione firmata valida. Assicurati di aver incollato il PSBT o la transazione completi.",
+  "broadcastSignedTxErrorInvalidPushTx": "Non siamo riusciti a leggere una transazione da questo tag. Prova a scansionare di nuovo.",
   "recoverbullSelectRecoverWallet": "Recuperare Wallet",
   "receivePayjoinActivated": "Payjoin attivato",
   "importMnemonicContinue": "Continua",
@@ -4400,11 +4383,10 @@
   "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
   "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
   "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
-  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
-  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
-  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
-  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
+  "mempoolErrorInvalidUrl": "URL del server non valido. Inserisci un dominio o un indirizzo IP valido.",
+  "mempoolErrorSaveServerFailed": "Impossibile salvare il server",
+  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool",
+  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato",
   "settingsErrorReportingTitle": "Segnalazione errori",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4629,7 +4611,6 @@
   "coreScreensFetchFailed": "Impossibile recuperare la transazione {txid} da Electrum.",
   "coreScreensInputResolutionFailed": "Input non trovato: l'output {vout} di {parentTxId} non esiste.",
   "coreScreensParseFailed": "Analisi della transazione fallita: {message}.",
-  "coreScreensUnexpectedError": "Errore imprevisto: {message}.",
   "coreScreensNoServersAvailable": "Nessun server Electrum disponibile.",
   "addressViewerTitle": "Indirizzo",
   "viewerTapToCopy": "Tocca per copiare",
@@ -4804,6 +4785,52 @@
   "onboardingAdvancedOptionsDone": "Fatto",
   "appStartupContactSupportMessage": "Contatta il supporto su app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox è supportato solo su Android",
+  "pinCodeSaveError": "Impossibile salvare il PIN. Riprova.",
+  "pinCodeDeleteError": "Impossibile eliminare il PIN. Riprova.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
+  "priceChartLoadFailed": "I dati del grafico dei prezzi non sono stati caricati. Riprova.",
+  "allSeedViewErrorFetch": "Impossibile caricare i seed. Riprova.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "È richiesta un'etichetta per importare una mnemonica",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Impossibile eliminare il seed. Riprova.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "labelErrorUnexpected": "Errore inaspettato: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Le etichette di sistema non possono essere eliminate.",
+  "labelErrorUnsupportedType": "Questo tipo {type} non è supportato",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ore",
+  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
+  "coreScreensUnexpectedError": "Errore imprevisto: {message}.",
   "walletButtonCoins": "Gestisci monete",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

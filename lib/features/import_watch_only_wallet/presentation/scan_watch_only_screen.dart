@@ -68,8 +68,12 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   ImportWatchOnlyWalletRoutes.import.name,
                   extra: watchOnly,
                 );
-              } catch (e) {
-                log.warning(e.toString());
+              } catch (e, st) {
+                log.warning(
+                  'Failed to parse scanned watch-only',
+                  error: e,
+                  trace: st,
+                );
                 _handled = false;
               }
             },

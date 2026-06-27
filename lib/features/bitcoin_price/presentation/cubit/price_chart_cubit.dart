@@ -2,18 +2,13 @@ import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'price_chart_cubit.freezed.dart';
 part 'price_chart_state.dart';
-
-class PriceHistoryLoadException implements Exception {
-  const PriceHistoryLoadException();
-
-  @override
-  String toString() => 'PriceHistoryLoadException';
-}
 
 class PriceChartCubit extends Cubit<PriceChartState> {
   PriceChartCubit({
@@ -30,7 +25,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
     String? currency,
     RateTimelineInterval? interval,
   }) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
     String? selectedCurrency;
     try {
@@ -65,7 +60,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             isLoading: false,
             prices: localAllPrices,
             currency: selectedCurrency,
-            error: null,
+            failure: null,
           ),
         );
       }
@@ -98,7 +93,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             isLoading: false,
             prices: refreshedAllPrices,
             currency: selectedCurrency,
-            error: null,
+            failure: null,
           ),
         );
       } else if (localAllPrices.isEmpty) {
@@ -107,15 +102,16 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             isLoading: false,
             prices: [],
             currency: selectedCurrency,
-            error: const PriceHistoryLoadException(),
+            failure: const PriceChartLoadFailure(),
           ),
         );
       }
     } catch (e) {
+      log.warning('loadPriceHistory failed', error: e);
       emit(
         state.copyWith(
           isLoading: false,
-          error: e,
+          failure: PriceChartUnexpectedFailure(e.toString()),
           currency: selectedCurrency ?? state.currency,
         ),
       );

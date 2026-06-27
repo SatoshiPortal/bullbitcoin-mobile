@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -56,11 +58,17 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           lastPhysicalBackup: lastPhysicalBackup,
           lastEncryptedBackup: lastEncryptedBackup,
           status: BackupSettingsStatus.success,
-          error: null,
+          failure: null,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(status: BackupSettingsStatus.error, error: e));
+      log.warning('checkBackupStatus failed', error: e);
+      emit(
+        state.copyWith(
+          status: BackupSettingsStatus.error,
+          failure: BackupSettingsUnexpectedFailure(e.toString()),
+        ),
+      );
     }
   }
 }

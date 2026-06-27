@@ -344,6 +344,18 @@
   "@pinCodeBackupRequiredWarning": {
     "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
+  "pinCodeSaveError": "Could not save your PIN. Please try again.",
+  "@pinCodeSaveError": {
+    "description": "Error shown when the PIN code cannot be saved"
+  },
+  "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
+  "@pinCodeDeleteError": {
+    "description": "Error shown when the PIN code cannot be deleted"
+  },
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "@pinCodeNotSetError": {
+    "description": "Error shown when a PIN code operation is attempted but no PIN has been set"
+  },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -644,49 +656,21 @@
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
-  "mempoolErrorUnexpected": "An unexpected error occurred",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
+  "mempoolErrorInvalidUrl": "Invalid server URL. Enter a valid domain or IP address.",
+  "@mempoolErrorInvalidUrl": {
+    "description": "Error when the custom mempool server URL is malformed"
   },
-  "mempoolErrorSaveServerFailed": "Failed to save server: {error}",
+  "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Failed to load mempool server data: {error}",
+  "mempoolErrorLoadFailed": "Failed to load mempool server data",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "Failed to delete custom server: {error}",
+  "mempoolErrorDeleteFailed": "Failed to delete custom server",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
@@ -1364,14 +1348,6 @@
   "@sendConfirmCustomFee": {
     "description": "Button label for confirming a custom fee"
   },
-  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
-  "@sendSubSatVbyteWarning": {
-    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
-  },
-  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
-  "@sendBelowMinFeeRateError": {
-    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
-  },
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
@@ -1380,9 +1356,9 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryHours": "hours",
-  "@sendEstimatedDeliveryHours": {
-    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
+  "sendEstimatedDeliveryFewHours": "few hours",
+  "@sendEstimatedDeliveryFewHours": {
+    "description": "Estimated delivery time of a few hours"
   },
   "sendEstimatedDeliveryHoursToDays": "hours to days",
   "@sendEstimatedDeliveryHoursToDays": {
@@ -4753,6 +4729,10 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
+  "bip85NoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@bip85NoDefaultWalletError": {
+    "description": "Error shown when BIP85 derivation fails because no default wallet is configured"
+  },
   "connectingToKeyServer": "Connecting to Key Server over Tor.\nThis can take upto a minute.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
@@ -5273,6 +5253,14 @@
   "appUnlockButton": "Unlock",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
+  },
+  "appUnlockPinCheckError": "Unable to load security settings. Please restart the app.",
+  "@appUnlockPinCheckError": {
+    "description": "Error shown when the app cannot load PIN security settings during unlock"
+  },
+  "appUnlockPinVerifyError": "Unable to verify your PIN. Please try again.",
+  "@appUnlockPinVerifyError": {
+    "description": "Error shown when PIN verification fails due to a system error during unlock"
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
@@ -5842,29 +5830,13 @@
   "@bitboxErrorPermissionDenied": {
     "description": "Error when USB permissions are not granted for BitBox"
   },
-  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
-  "@bitboxErrorBluetoothPermissionDenied": {
-    "description": "Error when Bluetooth permissions are not granted for BitBox"
-  },
-  "bitboxErrorBluetoothUnavailable": "Bluetooth is unavailable. Turn on Bluetooth and try again.",
-  "@bitboxErrorBluetoothUnavailable": {
-    "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
-  },
   "bitboxErrorNoDevicesFound": "No BitBox devices found. Make sure your device is powered on and connected via USB.",
   "@bitboxErrorNoDevicesFound": {
     "description": "Error when no BitBox devices are detected"
   },
-  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
-  "@bitboxErrorNoBleDevicesFound": {
-    "description": "Error when no BitBox02 Nova BLE devices are detected"
-  },
   "bitboxErrorMultipleDevicesFound": "Multiple BitBox devices found. Please ensure only one device is connected.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
-  },
-  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
-  "@bitboxErrorMultipleBleDevicesFound": {
-    "description": "Error when multiple BitBox02 Nova BLE devices are detected"
   },
   "bitboxErrorDeviceNotFound": "BitBox device not found.",
   "@bitboxErrorDeviceNotFound": {
@@ -5909,10 +5881,6 @@
   "bitboxErrorOperationCancelled": "Operation was cancelled. Please try again.",
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
-  },
-  "bitboxErrorOperationFailed": "BitBox operation failed. Please try again.",
-  "@bitboxErrorOperationFailed": {
-    "description": "Generic error when a BitBox operation fails"
   },
   "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
   "@bitboxActionUnlockDeviceTitle": {
@@ -6071,17 +6039,9 @@
   "@bitboxScreenConnectSubtext": {
     "description": "Subtext for initial state"
   },
-  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
-  "@bitboxScreenConnectSubtextBluetooth": {
-    "description": "Subtext for initial Bluetooth state"
-  },
   "bitboxScreenScanningSubtext": "Looking for your BitBox device...",
   "@bitboxScreenScanningSubtext": {
     "description": "Subtext when scanning"
-  },
-  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
-  "@bitboxScreenScanningSubtextBluetooth": {
-    "description": "Subtext when scanning over Bluetooth"
   },
   "bitboxScreenConnectingSubtext": "Establishing secure connection...",
   "@bitboxScreenConnectingSubtext": {
@@ -6143,17 +6103,9 @@
   "@bitboxScreenTroubleshootingTitle": {
     "description": "Title for troubleshooting instructions"
   },
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
-  "@bitboxScreenTroubleshootingBluetoothTitle": {
-    "description": "Title for Bluetooth troubleshooting instructions"
-  },
   "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
   "@bitboxScreenTroubleshootingSubtitle": {
     "description": "Subtitle for troubleshooting instructions"
-  },
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "If your device still doesn't connect with the app, try the following:",
-  "@bitboxScreenTroubleshootingBluetoothSubtitle": {
-    "description": "Subtitle for Bluetooth troubleshooting instructions"
   },
   "bitboxScreenTroubleshootingStep1": "Make sure you have the latest firmware installed on your BitBox.",
   "@bitboxScreenTroubleshootingStep1": {
@@ -6166,18 +6118,6 @@
   "bitboxScreenTroubleshootingStep3": "Restart your BitBox02 device by unplugging and reconnecting it.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
-  },
-  "bitboxScreenTroubleshootingBluetoothStep1": "Make sure Bluetooth is turned on and permitted for this app.",
-  "@bitboxScreenTroubleshootingBluetoothStep1": {
-    "description": "Bluetooth troubleshooting step 1"
-  },
-  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
-  "@bitboxScreenTroubleshootingBluetoothStep2": {
-    "description": "Bluetooth troubleshooting step 2"
-  },
-  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
-  "@bitboxScreenTroubleshootingBluetoothStep3": {
-    "description": "Bluetooth troubleshooting step 3"
   },
   "bitboxScreenTryAgainButton": "Try Again",
   "@bitboxScreenTryAgainButton": {
@@ -6250,14 +6190,6 @@
   "replaceByFeeErrorNoFeeRateSelected": "Please select a fee rate",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "The original transaction has been confirmed",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
   "@replaceByFeeFastestDescription": {
@@ -7424,15 +7356,6 @@
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
-  },
-  "sendErrorInsufficientBalanceFrozenHint": "Not enough spendable balance — {amount} is frozen. Unfreeze coins in Manage coins to use it.",
-  "@sendErrorInsufficientBalanceFrozenHint": {
-    "description": "Shown instead of the plain insufficient-balance error when the wallet has frozen coins that could cover the payment, pointing the user to unfreeze them (#2337)",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
   "@sendErrorInvalidAddressOrInvoice": {
@@ -9851,14 +9774,6 @@
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
   },
-  "importWalletBitBox": "BitBox02",
-  "@importWalletBitBox": {
-    "description": "Button label for BitBox02 hardware wallet"
-  },
-  "importWalletBitBoxNova": "BitBox02 Nova",
-  "@importWalletBitBoxNova": {
-    "description": "Button label for BitBox02 Nova hardware wallet"
-  },
   "importWalletJade": "Blockstream Jade",
   "@importWalletJade": {
     "description": "Button label for Blockstream Jade hardware wallet"
@@ -9974,6 +9889,22 @@
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
   "@importWatchOnlyPasteHint": {
     "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyErrorNoWalletSelected": "Paste or scan a public key or descriptor first.",
+  "@importWatchOnlyErrorNoWalletSelected": {
+    "description": "Shown when import is attempted before a wallet has been provided"
+  },
+  "importWatchOnlyErrorLabelRequired": "Give your wallet a name before importing.",
+  "@importWatchOnlyErrorLabelRequired": {
+    "description": "Shown when the wallet label is empty on import"
+  },
+  "importWatchOnlyErrorInvalidFormat": "This doesn't look like a valid public key or descriptor. Double-check what you pasted.",
+  "@importWatchOnlyErrorInvalidFormat": {
+    "description": "Shown when the pasted/scanned watch-only input cannot be parsed"
+  },
+  "importWatchOnlyErrorImportFailed": "We couldn't import this watch-only wallet. Please check the details and try again.",
+  "@importWatchOnlyErrorImportFailed": {
+    "description": "Shown when the wallet layer rejects the descriptor or xpub"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -10213,9 +10144,17 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "broadcastSignedTxBroadcastError": "We couldn't broadcast your transaction. Check your internet connection and try again.",
   "@broadcastSignedTxBroadcastError": {
     "description": "Headline shown when broadcasting a signed transaction fails"
+  },
+  "broadcastSignedTxErrorInvalidTransaction": "This doesn't look like a valid signed transaction. Make sure you pasted the full PSBT or transaction.",
+  "@broadcastSignedTxErrorInvalidTransaction": {
+    "description": "Shown when pasted/scanned input is not a valid PSBT or raw transaction"
+  },
+  "broadcastSignedTxErrorInvalidPushTx": "We couldn't read a transaction from this tag. Please try scanning again.",
+  "@broadcastSignedTxErrorInvalidPushTx": {
+    "description": "Shown when an NFC PushTx tag cannot be parsed into a transaction"
   },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
@@ -11763,43 +11702,27 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "This server already exists",
+  "electrumServerUnreachable": "Server is unreachable. Check the address and try again.",
+  "@electrumServerUnreachable": {
+    "description": "Error shown when a custom server cannot be reached"
+  },
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -12752,6 +12675,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Failed to load seeds. Please try again.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Failed to delete seed. Please try again.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -13124,15 +13055,6 @@
       }
     }
   },
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
-  "@coreScreensUnexpectedError": {
-    "description": "Generic unexpected error",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "@coreScreensNoServersAvailable": {
     "description": "Error when no Electrum servers are available"
@@ -13208,37 +13130,6 @@
   "systemLabelExchangeSell": "Sell",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "Label \"{label}\" not found.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "Unable to delete \"{label}\". Please try again.",
   "@labelDeleteFailed": {
@@ -14158,6 +14049,10 @@
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
   },
+  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "transactionStatusPayjoinCompleted": "Payjoin completed",
   "@transactionStatusPayjoinCompleted": {
     "description": "Shown when a Payjoin transaction has been successfully completed"
@@ -14201,46 +14096,6 @@
   "logsViewerCancelButton": "Cancel",
   "@logsViewerCancelButton": {
     "description": "Button to cancel deleting logs"
-  },
-  "logsViewerFilterByDate": "Filter by Date",
-  "@logsViewerFilterByDate": {
-    "description": "Button label to filter logs by date range"
-  },
-  "logsViewerShowingCount": "Showing {shown} of {total} logs",
-  "@logsViewerShowingCount": {
-    "description": "Counter showing filtered vs total log entries",
-    "placeholders": {
-      "shown": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "logsViewerClearFilter": "Clear filter",
-  "@logsViewerClearFilter": {
-    "description": "Tooltip for the button that clears the date filter"
-  },
-  "logsViewerShareButton": "Share",
-  "@logsViewerShareButton": {
-    "description": "Button to open the share/export options for logs"
-  },
-  "logsShareOptionShare": "Share",
-  "@logsShareOptionShare": {
-    "description": "Option in the bottom sheet to share logs as text"
-  },
-  "logsShareOptionExport": "Export",
-  "@logsShareOptionExport": {
-    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
-  },
-  "logsExportedMessage": "Logs exported successfully",
-  "@logsExportedMessage": {
-    "description": "Confirmation message when logs are exported as a file"
-  },
-  "logsExportFailedMessage": "Failed to export logs",
-  "@logsExportFailedMessage": {
-    "description": "Error message when log export fails"
   },
   "mempoolCustomServerSsl": "SSL",
   "@mempoolCustomServerSsl": {
@@ -14358,9 +14213,192 @@
   "@appStartupContactSupportMessage": {
     "description": "Message shown on the app startup error screen pointing to support"
   },
+  "importWalletBitboxAndroidOnly": "BitBox is only supported on Android",
+  "@importWalletBitboxAndroidOnly": {
+    "description": "Snackbar shown when tapping BitBox import on a non-Android device"
+  },
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "priceChartLoadFailed": "Price chart data could not be loaded. Please try again.",
+  "@priceChartLoadFailed": {
+    "description": "Error shown when price chart data fails to load"
+  },
+  "mempoolErrorUnexpected": "An unexpected error occurred",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
+  "@sendSubSatVbyteWarning": {
+    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
+  },
+  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
+  "@sendBelowMinFeeRateError": {
+    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
+  },
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
+  },
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
+  "@bitboxErrorBluetoothPermissionDenied": {
+    "description": "Error when Bluetooth permissions are not granted for BitBox"
+  },
+  "bitboxErrorBluetoothUnavailable": "Bluetooth is unavailable. Turn on Bluetooth and try again.",
+  "@bitboxErrorBluetoothUnavailable": {
+    "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
+  },
+  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
+  "@bitboxErrorNoBleDevicesFound": {
+    "description": "Error when no BitBox02 Nova BLE devices are detected"
+  },
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
+  "@bitboxErrorMultipleBleDevicesFound": {
+    "description": "Error when multiple BitBox02 Nova BLE devices are detected"
+  },
+  "bitboxErrorOperationFailed": "BitBox operation failed. Please try again.",
+  "@bitboxErrorOperationFailed": {
+    "description": "Generic error when a BitBox operation fails"
+  },
+  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
+  "@bitboxScreenConnectSubtextBluetooth": {
+    "description": "Subtext for initial Bluetooth state"
+  },
+  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
+  "@bitboxScreenScanningSubtextBluetooth": {
+    "description": "Subtext when scanning over Bluetooth"
+  },
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "@bitboxScreenTroubleshootingBluetoothTitle": {
+    "description": "Title for Bluetooth troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "If your device still doesn't connect with the app, try the following:",
+  "@bitboxScreenTroubleshootingBluetoothSubtitle": {
+    "description": "Subtitle for Bluetooth troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep1": "Make sure Bluetooth is turned on and permitted for this app.",
+  "@bitboxScreenTroubleshootingBluetoothStep1": {
+    "description": "Bluetooth troubleshooting step 1"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
+  "@bitboxScreenTroubleshootingBluetoothStep2": {
+    "description": "Bluetooth troubleshooting step 2"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
+  "@bitboxScreenTroubleshootingBluetoothStep3": {
+    "description": "Bluetooth troubleshooting step 3"
+  },
+  "sendErrorInsufficientBalanceFrozenHint": "Not enough spendable balance — {amount} is frozen. Unfreeze coins in Manage coins to use it.",
+  "@sendErrorInsufficientBalanceFrozenHint": {
+    "description": "Shown instead of the plain insufficient-balance error when the wallet has frozen coins that could cover the payment, pointing the user to unfreeze them (#2337)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "@importWalletBitBox": {
+    "description": "Button label for BitBox02 hardware wallet"
+  },
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "@importWalletBitBoxNova": {
+    "description": "Button label for BitBox02 Nova hardware wallet"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "@coreScreensUnexpectedError": {
+    "description": "Generic unexpected error",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Label \"{label}\" not found.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "This type {type} is not supported",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Unexpected error: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "logsViewerFilterByDate": "Filter by Date",
+  "@logsViewerFilterByDate": {
+    "description": "Button label to filter logs by date range"
+  },
+  "logsViewerShowingCount": "Showing {shown} of {total} logs",
+  "@logsViewerShowingCount": {
+    "description": "Counter showing filtered vs total log entries",
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logsViewerClearFilter": "Clear filter",
+  "@logsViewerClearFilter": {
+    "description": "Tooltip for the button that clears the date filter"
+  },
+  "logsViewerShareButton": "Share",
+  "@logsViewerShareButton": {
+    "description": "Button to open the share/export options for logs"
+  },
+  "logsShareOptionShare": "Share",
+  "@logsShareOptionShare": {
+    "description": "Option in the bottom sheet to share logs as text"
+  },
+  "logsShareOptionExport": "Export",
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "logsExportedMessage": "Logs exported successfully",
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "logsExportFailedMessage": "Failed to export logs",
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
   },
   "walletButtonCoins": "Manage coins",
   "@walletButtonCoins": {

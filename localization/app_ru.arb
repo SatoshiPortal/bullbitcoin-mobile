@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "При включении автопередачи с тарифами выше установленного лимита всегда будут заблокированы",
   "electrumServerAlreadyExists": "Этот сервер уже существует",
+  "electrumServerUnreachable": "Сервер недоступен. Проверьте адрес и попробуйте снова.",
   "sellPaymentMethod": "Способ оплаты",
   "transactionLabelPreimage": "Преимущество",
   "coreSwapsChainCanCoop": "Перенос будет завершен мгновенно.",
@@ -224,6 +225,8 @@
   "dcaWalletLiquidSubtitle": "Требуется совместимый кошелек",
   "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
   "appUnlockButton": "Разблокировка",
+  "appUnlockPinCheckError": "Не удалось загрузить настройки безопасности. Пожалуйста, перезапустите приложение.",
+  "appUnlockPinVerifyError": "Не удалось проверить ваш PIN. Пожалуйста, попробуйте снова.",
   "payServiceFee": "Сервисная плата",
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
@@ -418,7 +421,6 @@
   "sendSendAmount": "Отправить",
   "sendSelectedUtxosInsufficient": "Выбранные utxos не покрывают требуемую сумму",
   "swapErrorBalanceTooLow": "Слишком низкий баланс для минимальной суммы свопов",
-  "replaceByFeeErrorGeneric": "При попытке заменить транзакцию произошла ошибка",
   "fundExchangeWarningTactic5": "Они просят отправить биткойн на другую платформу",
   "rbfCustomFee": "Пользовательские феи",
   "importQrDeviceFingerprint": "Fingerprint",
@@ -507,14 +509,6 @@
   "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
   "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите, чтобы исправить.",
   "payPasteInvoice": "Счет-фактура",
-  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Установлено",
   "dcaWalletBitcoinSubtitle": "Минимальный 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Пожалуйста, введите свой пароль на устройстве BitBox, чтобы продолжить.",
@@ -1191,7 +1185,7 @@
   "broadcastSignedTxReviewTransaction": "Обзорная сделка",
   "walletArkExperimental": "Экспериментальный",
   "importQrDeviceKeystoneStep5": "Выберите \"BULL\" из списка кошельков",
-  "electrumLoadFailedError": "Не удалось загрузить серверы {reason}",
+  "electrumLoadFailedError": "Не удалось загрузить серверы ",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1449,7 +1443,6 @@
   "withdrawConfirmAmount": "Сумма",
   "transactionSwapDoNotUninstall": "Не удаляйте приложение до завершения обмена.",
   "payDefaultCommentHint": "Введите комментарий по умолчанию",
-  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
   "copyDialogButton": "Копировать",
   "bitboxActionImportWalletProcessing": "Импорт кошелька",
   "swapConfirmTransferTitle": "Подтверждение передачи",
@@ -1822,14 +1815,6 @@
   },
   "rbfErrorNoFeeRate": "Пожалуйста, выберите ставку сбора",
   "backupWalletGoogleDrivePrivacyMessage1": "Эта информация ",
-  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2164,7 +2149,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Жидкий Тестет",
-  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер {reason}",
+  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер ",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2272,7 +2257,6 @@
   "payDecodeFailed": "Не удалось расшифровать счет",
   "sendAbsoluteFees": "Абсолютные сборы",
   "arkSendConfirm": "Подтверждение",
-  "replaceByFeeErrorTransactionConfirmed": "Первоначальная сделка подтверждена",
   "rbfErrorFeeTooLow": "Вы должны увеличить ставку сбора как минимум на 1 атт/вбайт по сравнению с первоначальной транзакцией",
   "ledgerErrorMissingDerivationPathSign": "Путь заезда требуется для подписания",
   "backupWalletTitle": "Назад ваш кошелек",
@@ -2505,7 +2489,7 @@
   "importQrDeviceKruxInstructionsTitle": "Инструкции Krux",
   "transactionOrderLabelOriginName": "Название происхождения",
   "importQrDeviceKeystoneInstructionsTitle": "Инструкции по кистоне",
-  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3020,7 +3004,7 @@
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
   "arkSettleButton": "Настройка",
-  "electrumAddFailedError": "Не удалось добавить пользовательский сервер {reason}",
+  "electrumAddFailedError": "Не удалось добавить пользовательский сервер ",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3156,14 +3140,6 @@
   "coldcardStep10": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard.",
   "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
-  "labelErrorNotFound": "Лейбл «{label}» не найден.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Частная оплата",
   "autoswapDefaultWalletLabel": "Bitcoin Wallet",
   "recoverbullTestSuccessDescription": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
@@ -3226,6 +3202,7 @@
     }
   },
   "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "bip85NoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "pinStatusSettingUpDescription": "Настройка PIN-кода",
   "enterYourPinTitle": "Введите {pinOrPassword}",
   "@enterYourPinTitle": {
@@ -3666,7 +3643,7 @@
   "recoverbullGoogleDriveCancelButton": "Отмена",
   "backupWalletSuccessDescription": "Теперь давайте проверим вашу резервную копию, чтобы убедиться, что все было сделано правильно.",
   "rbfBroadcast": "Broadcast",
-  "sendEstimatedDeliveryHours": "часы",
+  "sendEstimatedDeliveryFewHours": "несколько часов",
   "dcaConfirmFrequencyMonthly": "Каждый месяц",
   "importWatchOnlyScriptType": "Тип сценария",
   "electrumCustomServers": "Пользовательские серверы",
@@ -4025,7 +4002,13 @@
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
-  "broadcastSignedTxBroadcastError": "Не удалось транслировать транзакцию",
+  "broadcastSignedTxBroadcastError": "Не удалось передать вашу транзакцию. Проверьте подключение к интернету и попробуйте снова.",
+  "importWatchOnlyErrorNoWalletSelected": "Сначала вставьте или отсканируйте публичный ключ или дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте кошельку название перед импортом.",
+  "importWatchOnlyErrorInvalidFormat": "Это не похоже на действительный публичный ключ или дескриптор. Проверьте то, что вы вставили.",
+  "importWatchOnlyErrorImportFailed": "Не удалось импортировать этот кошелёк только для наблюдения. Пожалуйста, проверьте данные и попробуйте снова.",
+  "broadcastSignedTxErrorInvalidTransaction": "Это не похоже на действительную подписанную транзакцию. Убедитесь, что вы вставили полный PSBT или транзакцию.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не удалось прочитать транзакцию из этой метки. Пожалуйста, попробуйте отсканировать снова.",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",
@@ -4409,11 +4392,10 @@
   "mempoolErrorServerUnavailable": "Сервер недоступен. Попробуйте позже.",
   "mempoolErrorServerError": "На сервере произошла ошибка. Попробуйте позже.",
   "mempoolErrorInvalidResponse": "Сервер вернул неверный ответ.",
-  "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
-  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер: {error}",
-  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool: {error}",
-  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
+  "mempoolErrorInvalidUrl": "Недействительный URL-адрес сервера. Введите действительный домен или IP-адрес.",
+  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер",
+  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool",
+  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер",
   "settingsErrorReportingTitle": "Отчет об ошибках",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4638,7 +4620,6 @@
   "coreScreensFetchFailed": "Не удалось получить транзакцию {txid} из Electrum.",
   "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
   "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
-  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
   "coreScreensNoServersAvailable": "Нет доступных серверов Electrum.",
   "addressViewerTitle": "Адрес",
   "viewerTapToCopy": "Нажмите для копирования",
@@ -4813,6 +4794,52 @@
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Обратитесь в поддержку по адресу app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android",
+  "pinCodeSaveError": "Не удалось сохранить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова.",
+  "allSeedViewErrorFetch": "Не удалось загрузить сид-фразы. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Для импорта мнемоники необходима метка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Не удалось удалить сид-фразу. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
+  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Лейбл «{label}» не найден.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "часы",
+  "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
+  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
+  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
   "walletButtonCoins": "Управление монетами",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

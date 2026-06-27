@@ -641,52 +641,21 @@
     "description": "Error when mempool server returns 500 error"
   },
   "mempoolErrorInvalidResponse": "Server ne galat response diya.",
+  "mempoolErrorInvalidUrl": "Amanya server URL. Ek manya domain ya IP pata darj karein.",
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
-  "mempoolErrorUnexpected": "Ek unexpected error aayi",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
-  },
-  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya: {error}",
+  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya: {error}",
+  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya: {error}",
+  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
@@ -1354,8 +1323,8 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryHours": "ghante",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "kuch ghante",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "sendEstimatedDeliveryHoursToDays": "ghanton se dinontak",
@@ -3911,6 +3880,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "bip85NoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -4294,6 +4264,8 @@
     "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "appUnlockButton": "Unlock Karo",
+  "appUnlockPinCheckError": "Security settings load nahi ho sake. Kripaya app restart karein.",
+  "appUnlockPinVerifyError": "Aapka PIN verify nahi ho saka. Kripaya dobara try karein.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -5225,14 +5197,6 @@
   "replaceByFeeErrorNoFeeRateSelected": "Kripya fee rate select karo",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Original transaction already confirm ho chuki hai",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "Transaction replace karne ki koshish mein error aaya",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minute",
   "@replaceByFeeFastestDescription": {
@@ -8784,6 +8748,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "Mnemonic import karne ke liye ek label aavashyak hai",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "importWatchOnlyTitle": "Watch-only import karo",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"
@@ -9000,7 +8968,13 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
-  "broadcastSignedTxBroadcastError": "Len-den prasarit karne mein viphal raha",
+  "broadcastSignedTxBroadcastError": "Hum aapka transaction broadcast nahi kar sake. Apna internet connection jaanchein aur phir se koshish karein.",
+  "importWatchOnlyErrorNoWalletSelected": "Pehle koi public key ya descriptor paste ya scan karein.",
+  "importWatchOnlyErrorLabelRequired": "Import karne se pehle apne wallet ko ek naam dein.",
+  "importWatchOnlyErrorInvalidFormat": "Yeh valid public key ya descriptor nahi lagta. Aapne jo paste kiya hai use dobara jaanch lein.",
+  "importWatchOnlyErrorImportFailed": "Hum is watch-only wallet ko import nahi kar sake. Kripya jaankari jaanchein aur phir se koshish karein.",
+  "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -10411,43 +10385,24 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Servers load karne mein fail{reason}",
+  "electrumLoadFailedError": "Servers load karne mein fail",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Server priority save karne mein fail{reason}",
+  "electrumSavePriorityFailedError": "Server priority save karne mein fail",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Custom server add karne mein fail{reason}",
+  "electrumAddFailedError": "Custom server add karne mein fail",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Custom server delete karne mein fail{reason}",
+  "electrumDeleteFailedError": "Custom server delete karne mein fail",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
+  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -11400,6 +11355,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Seeds load karne mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Seed hatane mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -11752,37 +11715,6 @@
   "systemLabelExchangeSell": "Sell",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "\"{label}\" delete karne mein asmarth. Kripya dobara try karo.",
   "@labelDeleteFailed": {
@@ -13140,6 +13072,60 @@
   "onboardingAdvancedOptionsDone": "Done",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
   "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
+  "pinCodeSaveError": "Aapka PIN save nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
+  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein.",
+  "mempoolErrorUnexpected": "Ek unexpected error aayi",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ghante",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Unexpected error: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
   "walletButtonCoins": "Coins manage karein",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

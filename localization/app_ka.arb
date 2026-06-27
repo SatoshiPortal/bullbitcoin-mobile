@@ -14,7 +14,15 @@
   "backupWarningLoseReasonCloudRestore": "აღადგენთ თქვენს მოწყობილობას ღრუბლოვანი სარეზერვო ასლიდან",
   "backupWarningNoRecovery": "სარეზერვო ასლის გარეშე საფულის აღდგენა შეუძლებელია.",
   "swapInsufficientFunds": "არასაკმარისი სახსრები",
-  "broadcastSignedTxBroadcastError": "ტრანზაქციის გავრცელება ვერ მოხერხდა",
+  "broadcastSignedTxBroadcastError": "ვერ მოვახერხეთ თქვენი ტრანზაქციის გავრცელება. შეამოწმეთ ინტერნეტთან კავშირი და სცადეთ ხელახლა.",
+  "importWatchOnlyErrorNoWalletSelected": "ჯერ ჩასვით ან დაასკანერეთ საჯარო გასაღები ან დესკრიპტორი.",
+  "importWatchOnlyErrorLabelRequired": "იმპორტამდე დაარქვით სახელი თქვენს საფულეს.",
+  "importWatchOnlyErrorInvalidFormat": "ეს არ ჰგავს ვალიდურ საჯარო გასაღებს ან დესკრიპტორს. გადაამოწმეთ ის, რაც ჩასვით.",
+  "importWatchOnlyErrorImportFailed": "ვერ მოვახერხეთ ამ მხოლოდ-სათვალთვალო საფულის იმპორტი. გთხოვთ, შეამოწმოთ დეტალები და სცადოთ ხელახლა.",
+  "broadcastSignedTxErrorInvalidTransaction": "ეს არ ჰგავს ვალიდურ ხელმოწერილ ტრანზაქციას. დარწმუნდით, რომ ჩასვით სრული PSBT ან ტრანზაქცია.",
+  "broadcastSignedTxErrorInvalidPushTx": "ვერ წავიკითხეთ ტრანზაქცია ამ ტეგიდან. გთხოვთ, ხელახლა სცადოთ სკანირება.",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "bip85NoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ.",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
@@ -409,7 +417,6 @@
   "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
   "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "addressViewerTitle": "მისამართი",
   "viewerTapToCopy": "კოპირებისთვის შეეხეთ ღილაკს",
@@ -446,6 +453,10 @@
   "exportTransactionsError": "Failed to export transactions",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "importMnemonicEmptyLabelError": "მნემონიკის შემოსატანად ჩანაწერი აუცილებელია",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
   "@exportTransactionsInvalidDateRange": {
@@ -484,6 +495,7 @@
   "onboardingAdvancedOptionsFooter": "ამ პარამეტრების შეცვლა მოგვიანებით შეგიძლიათ აპლიკაციის პარამეტრებში",
   "onboardingAdvancedOptionsDone": "მზადაა",
   "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე",
   "sendErrorUnsupportedQrCodeFormat": "QR კოდის ფორმატი მხარდაჭერილი არ არის",
   "fundExchangeErrorTitleOrdPo404": "გადახდის ვარიანტი მიუწვდომელია",
   "fundExchangeErrorTitleRcpPo404": "გადახდის ვარიანტი ხელმისაწვდომი არ არის",
@@ -501,6 +513,24 @@
   "fundExchangeErrorRcpPosinpe404": "ამ დაფინანსების ვარიანტზე წვდომისთვის თქვენი ტელეფონის ნომერი უნდა იყოს რეგისტრირებული SINPE ქსელში Costa Rica-ში.",
   "fundExchangeErrorFetchingBankCodes": "ბანკის კოდების მიღებისას მოხდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.",
   "fundExchangeMethodInstantSepa": "მყისიერი და სტანდარტული SEPA გადარიცხვა",
+  "pinCodeSaveError": "PIN-ის შენახვა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
+  "pinCodeDeleteError": "PIN-ის წაშლა ვერ მოხერხდა. გთხოვთ, სცადეთ ხელახლა.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "უსაფრთხოების პარამეტრების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, გადატვირთოთ აპლიკაცია.",
+  "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ.",
+  "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
+  "electrumServerUnreachable": "სერვერი მიუწვდომელია. შეამოწმეთ მისამართი და სცადეთ თავიდან.",
+  "mempoolErrorInvalidUrl": "სერვერის არასწორი URL. შეიყვანეთ სწორი დომენი ან IP მისამართი.",
+  "allSeedViewErrorFetch": "სიდების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "სიდის წაშლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "walletButtonCoins": "მონეტების მართვა",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"

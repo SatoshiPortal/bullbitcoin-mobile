@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_server_model.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 class DriftMempoolServerRepository implements MempoolServerRepository {
   final MempoolServerStorageDatasource _datasource;
@@ -12,28 +15,68 @@ class DriftMempoolServerRepository implements MempoolServerRepository {
   }) : _datasource = mempoolServerStorageDatasource;
 
   @override
-  Future<void> save(MempoolServer server) {
-    final model = MempoolServerModel.fromEntity(server);
-    return _datasource.store(model);
-  }
-
-  @override
-  Future<MempoolServer?> fetchCustomServer(MempoolServerNetwork network) async {
-    final model = await _datasource.fetchCustomServerByNetwork(network);
-    return model?.toEntity();
-  }
-
-  @override
-  Future<MempoolServer> fetchDefaultServer(MempoolServerNetwork network) async {
-    final model = await _datasource.fetchDefaultServerByNetwork(network);
-    if (model == null) {
-      throw Exception('No default mempool server found for network: $network');
+  Future<Result<void, MempoolFailure>> save(MempoolServer server) async {
+    try {
+      final model = MempoolServerModel.fromEntity(server);
+      await _datasource.store(model);
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(message: 'Failed to save mempool server', error: e, trace: st);
+      return Err(MempoolSaveFailure(e.toString()));
     }
-    return model.toEntity();
   }
 
   @override
-  Future<void> deleteCustomServer(MempoolServerNetwork network) {
-    return _datasource.deleteCustomServer(network);
+  Future<Result<MempoolServer?, MempoolFailure>> fetchCustomServer(
+    MempoolServerNetwork network,
+  ) async {
+    try {
+      final model = await _datasource.fetchCustomServerByNetwork(network);
+      return Ok(model?.toEntity());
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to fetch custom mempool server',
+        error: e,
+        trace: st,
+      );
+      return Err(MempoolLoadFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<MempoolServer, MempoolFailure>> fetchDefaultServer(
+    MempoolServerNetwork network,
+  ) async {
+    try {
+      final model = await _datasource.fetchDefaultServerByNetwork(network);
+      if (model == null) {
+        return const Err(MempoolLoadFailure('No default mempool server found'));
+      }
+      return Ok(model.toEntity());
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to fetch default mempool server',
+        error: e,
+        trace: st,
+      );
+      return Err(MempoolLoadFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void, MempoolFailure>> deleteCustomServer(
+    MempoolServerNetwork network,
+  ) async {
+    try {
+      await _datasource.deleteCustomServer(network);
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to delete custom mempool server',
+        error: e,
+        trace: st,
+      );
+      return Err(MempoolDeleteFailure(e.toString()));
+    }
   }
 }

@@ -1,23 +1,15 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 class GetAllSeedsUsecase {
   final SeedRepository _seedRepository;
 
-  GetAllSeedsUsecase({required this._seedRepository});
+  const GetAllSeedsUsecase({required this._seedRepository});
 
-  Future<List<MnemonicSeed>> execute() async {
-    try {
-      final seeds = await _seedRepository.getAllMnemonicSeeds();
-      return seeds;
-    } catch (e) {
-      log.severe(
-        message: 'Failed to fetch all seeds from secure storage',
-        error: e,
-        trace: StackTrace.current,
-      );
-      rethrow;
-    }
-  }
+  @useResult
+  Future<Result<List<MnemonicSeed>, SeedFetchFailure>> execute() =>
+      _seedRepository.getAllMnemonicSeeds();
 }

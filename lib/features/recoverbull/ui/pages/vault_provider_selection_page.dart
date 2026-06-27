@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_sele
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_created_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_selected_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
@@ -42,15 +43,14 @@ class VaultProviderSelectionPage extends StatelessWidget {
         ],
       ),
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
-        listenWhen:
-            (previous, current) =>
-                previous.error != current.error ||
-                current.vault != null && previous.vault != current.vault,
+        listenWhen: (previous, current) =>
+            previous.failure != current.failure ||
+            current.vault != null && previous.vault != current.vault,
         listener: (context, state) {
-          if (state.error != null) {
+          if (state.failure != null) {
             SnackBarUtils.showSnackBar(
               context,
-              state.error!.toTranslated(context),
+              state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
           }
@@ -70,12 +70,11 @@ class VaultProviderSelectionPage extends StatelessWidget {
               default:
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) => VaultSelectedPage(
-                          provider: state.vaultProvider!,
-                          vault: state.vault!,
-                          flow: state.flow,
-                        ),
+                    builder: (context) => VaultSelectedPage(
+                      provider: state.vaultProvider!,
+                      vault: state.vault!,
+                      flow: state.flow,
+                    ),
                   ),
                 );
             }
@@ -210,19 +209,17 @@ class HowToDecideVaultLocation extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideVaultCustomRecommendation,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideVaultCustomRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideVaultCustomRecommendationText,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideVaultCustomRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],
@@ -234,19 +231,17 @@ class HowToDecideVaultLocation extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideVaultCloudRecommendation,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideVaultCloudRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideVaultCloudRecommendationText,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideVaultCloudRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],

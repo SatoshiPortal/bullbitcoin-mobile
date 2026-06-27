@@ -4,9 +4,10 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_failure_l10n.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,7 +79,9 @@ class TransactionReviewView extends StatelessWidget {
             feePriorityWidget: feePriorityWidget,
             topWidget: topWidget,
           ),
-          TransactionReviewErrorState(:final error) => _ErrorView(error: error),
+          TransactionReviewErrorState(:final failure) => _ErrorView(
+            failure: failure,
+          ),
         };
       },
     );
@@ -116,20 +119,9 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.error});
+  const _ErrorView({required this.failure});
 
-  final TransactionReviewError error;
-
-  String _message(BuildContext context) => switch (error) {
-    TransactionReviewFetchFailed(:final txid) =>
-      context.loc.coreScreensFetchFailed(txid),
-    TransactionReviewNoServersAvailable() =>
-      context.loc.coreScreensNoServersAvailable,
-    TransactionReviewInputResolutionFailed(:final parentTxId, :final vout) =>
-      context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
-    UnexpectedTransactionReviewError(:final message) =>
-      context.loc.coreScreensUnexpectedError(message ?? 'unknown'),
-  };
+  final TransactionReviewFailure failure;
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +134,7 @@ class _ErrorView extends StatelessWidget {
             Icon(Icons.error_outline, color: context.appColors.error, size: 48),
             const Gap(16),
             BBText(
-              _message(context),
+              failure.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),

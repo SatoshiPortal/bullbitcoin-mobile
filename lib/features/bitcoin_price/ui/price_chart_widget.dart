@@ -7,13 +7,14 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 extension _CurrencyIconExtension on String {
@@ -46,18 +47,23 @@ class PriceChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PriceChartCubit, PriceChartState>(
+    return BlocListener<BitcoinPriceBloc, BitcoinPriceState>(
+      listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
+      listener: (context, state) {
+        BullSnackBar.show(context, message: state.failure!.toTranslated(context));
+      },
+      child: BlocBuilder<PriceChartCubit, PriceChartState>(
       builder: (context, state) {
         final rates = state.prices;
         final hasNoLocalData = rates.isEmpty;
 
-        if (state.error != null && hasNoLocalData) {
+        if (state.failure != null && hasNoLocalData) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 BBText(
-                  context.loc.priceChartFailedToLoad,
+                  state.failure!.toTranslated(context),
                   style: context.font.bodyLarge?.copyWith(
                     color: context.appColors.onPrimary,
                   ),
@@ -141,6 +147,7 @@ class PriceChartWidget extends StatelessWidget {
           ),
         );
       },
+      ),
     );
   }
 }
