@@ -196,7 +196,7 @@ flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).
   # Without an explicit --flavor (e.g. `flutter run`, IDE launches, integration
   # tests) Flutter builds this default, so existing workflows keep working.
-  # default-flavor: production # temporarily commented out to run on iOS simulator
+  default-flavor: production
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
 
