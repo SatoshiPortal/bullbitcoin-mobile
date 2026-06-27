@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "प्राप्तकर्ता लोड नहीं हो सके। पुनः प्रयास के लिए नीचे खींचें।",
   "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
   "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
   "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",

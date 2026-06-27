@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Alıcılar yüklenemedi. Yeniden denemek için aşağı çekin.",
   "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
   "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
   "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",

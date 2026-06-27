@@ -4641,6 +4641,7 @@
   "recipientsPayoutMethod": "Méthode de paiement",
   "recipientsFilterByJurisdiction": "Filtrer par juridiction :",
   "recipientsListEmpty": "Aucun destinataire trouvé.",
+  "recipientsListLoadError": "Impossible de charger les destinataires. Tirez vers le bas pour réessayer.",
   "recipientsContinue": "Continuer",
   "recipientsJurisdictionAll": "Toutes les juridictions",
   "recipientsJurisdictionCanada": "🇨🇦 Canada",

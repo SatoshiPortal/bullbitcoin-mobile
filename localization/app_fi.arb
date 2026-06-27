@@ -4644,6 +4644,7 @@
   "recipientsPayoutMethod": "Maksutapa",
   "recipientsFilterByJurisdiction": "Suodata lainkäyttöalueen mukaan:",
   "recipientsListEmpty": "Vastaanottajia ei löytynyt.",
+  "recipientsListLoadError": "Vastaanottajien lataaminen epäonnistui. Päivitä vetämällä alaspäin.",
   "recipientsContinue": "Jatka",
   "recipientsJurisdictionAll": "Kaikki lainkäyttöalueet",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",

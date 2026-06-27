@@ -4563,6 +4563,7 @@
   "recipientsPayoutMethod": "Auszahlungsmethode",
   "recipientsFilterByJurisdiction": "Nach Land filtern:",
   "recipientsListEmpty": "Keine Empfänger gefunden.",
+  "recipientsListLoadError": "Empfänger konnten nicht geladen werden. Zum erneuten Versuch nach unten ziehen.",
   "recipientsContinue": "Weiter",
   "recipientsJurisdictionAll": "Alle Länder",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",

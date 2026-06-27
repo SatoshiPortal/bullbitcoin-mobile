@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Recipients load nahi ho sake. Dobara try karne ke liye neeche kheenchein.",
   "backupWarningDescription": "Backup ke bina, aap apne bitcoin access kho denge agar:",
   "backupWarningLoseReasonLostPhone": "Aap apna phone kho dete hain",
   "backupWarningLoseReasonDeletedApp": "Aap app delete karte hain",

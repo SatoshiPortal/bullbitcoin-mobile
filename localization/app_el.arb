@@ -12633,6 +12633,7 @@
   "recipientsPayoutMethod": "Μέθοδος πληρωμής",
   "recipientsFilterByJurisdiction": "Φιλτράρισμα ανά δικαιοδοσία:",
   "recipientsListEmpty": "Δεν βρέθηκαν παραλήπτες.",
+  "recipientsListLoadError": "Δεν ήταν δυνατή η φόρτωση των παραληπτών. Τραβήξτε προς τα κάτω για επανάληψη.",
   "recipientsContinue": "Συνέχεια",
   "recipientsJurisdictionAll": "Όλες οι δικαιοδοσίες",
   "recipientsJurisdictionCanada": "🇨🇦 Καναδάς",

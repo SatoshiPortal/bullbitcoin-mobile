@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
