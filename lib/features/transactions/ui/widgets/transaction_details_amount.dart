@@ -14,7 +14,19 @@ class TransactionDetailsAmount extends StatelessWidget {
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
     final isOrder = tx?.isOrder ?? false;
-    final amountSat = tx?.swapDisplayAmountSat;
+    // A recovered swap's canonical tx may be the lockup (send) leg, so
+    // swapDisplayAmountSat would headline the SENT amount. The cubit resolves
+    // what the user actually received on the counterpart leg (claim or refund);
+    // use it so a refund headlines the refunded amount, not the lockup.
+    final isRecoveredSwap = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.isRecoveredSwap,
+    );
+    final recoveredReceivedSat = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.getAmountReceived(),
+    );
+    final amountSat = isRecoveredSwap
+        ? recoveredReceivedSat
+        : tx?.swapDisplayAmountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrder &&

@@ -130,12 +130,57 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           wallet: wallet,
           counterpartWallet: counterpartWallet,
           swapCounterpartTxId: swapCounterpartTxId,
+          swapClaimedAmountSat: await _counterpartAmountForSwap(swap),
         ),
       );
     } on TransactionNotFoundError catch (e) {
       emit(state.copyWith(notFoundError: e));
     } catch (e) {
       emit(state.copyWith(err: e));
+    }
+  }
+
+  /// The exact amount returned on the recovered chain swap's *counterpart* leg —
+  /// what the user actually received. The canonical tx shown from the send
+  /// wallet is the lockup leg (its amount is what was SENT), so the received
+  /// figure comes from the other leg: the claim tx on a forward swap, or the
+  /// refund tx on a refunded swap. Returns null when not a recovered chain swap
+  /// or that leg isn't available yet.
+  Future<int?> _counterpartAmountForSwap(Swap? swap) async {
+    return await _claimedAmountForSwap(swap) ??
+        await _refundedAmountForSwap(swap);
+  }
+
+  /// Forward (claim) leg: `receiveTxId` in the receive wallet.
+  Future<int?> _claimedAmountForSwap(Swap? swap) async {
+    if (swap is! ChainSwap || !swap.recovered) return null;
+    final receiveTxId = swap.receiveTxId;
+    final receiveWalletId = swap.receiveWalletId;
+    if (receiveTxId == null || receiveWalletId == null) return null;
+    return _amountForTxInWallet(receiveTxId, receiveWalletId);
+  }
+
+  /// Refund leg: the refund spends the lockup back to the SOURCE (send) chain,
+  /// so the returned amount is the refund tx's incoming amount in the send
+  /// wallet (lockup minus the refund tx fee).
+  Future<int?> _refundedAmountForSwap(Swap? swap) async {
+    if (swap is! ChainSwap || !swap.recovered) return null;
+    final refundTxId = swap.refundTxId;
+    if (refundTxId == null) return null;
+    return _amountForTxInWallet(refundTxId, swap.sendWalletId);
+  }
+
+  Future<int?> _amountForTxInWallet(String txId, String walletId) async {
+    try {
+      final txs = await _getTransactionsByTxIdUsecase.execute(txId);
+      for (final t in txs) {
+        if (t.walletId == walletId) {
+          return t.walletTransaction?.amountSat;
+        }
+      }
+      return txs.isEmpty ? null : txs.first.walletTransaction?.amountSat;
+    } catch (_) {
+      return null;
     }
   }
 

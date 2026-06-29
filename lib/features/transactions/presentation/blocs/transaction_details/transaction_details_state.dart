@@ -7,6 +7,10 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     Wallet? wallet,
     Wallet? counterpartWallet,
     String? swapCounterpartTxId,
+    // The exact amount claimed on a recovered chain swap's receive (claim) leg,
+    // resolved by the cubit. Used as the received amount because the canonical
+    // tx shown can be the lockup (send) leg, whose amount is what was sent.
+    int? swapClaimedAmountSat,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     @Default(false) bool retryingSwap,
     TransactionNotFoundError? notFoundError,
@@ -35,14 +39,35 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     }
 
     if (swap != null) {
-      return swap.sendAmount ?? 0;
+      // Recovered swaps carry no sendAmount; when the linked tx is the lockup
+      // (send) leg, its amount IS what was sent.
+      if (swap.sendAmount != null) return swap.sendAmount!;
+      if (walletTransaction?.isOutgoing == true) {
+        return walletTransaction!.amountSat;
+      }
+      return 0;
     }
     return amount ?? 0 + txFee;
+  }
+
+  /// Send amount for the details row — null when genuinely unknown so the row
+  /// is hidden rather than showing a misleading "0 sats". A loading state has
+  /// no transaction yet, which also yields null (not a real zero).
+  int? get displayAmountSentSat {
+    if (isLoading) return null;
+    final sent = getAmountSent();
+    return sent > 0 ? sent : null;
   }
 
   int getAmountReceived() {
     if (payjoin != null) {
       return payjoin?.amountSat ?? 0;
+    }
+    // A recovered chain swap's canonical tx may be the lockup (send) leg, whose
+    // amount is what was SENT. Use the exact amount the user received on the
+    // counterpart leg (claim tx on a forward swap, refund tx on a refund).
+    if (isRecoveredSwap && swapClaimedAmountSat != null) {
+      return swapClaimedAmountSat!;
     }
     final amount = walletTransaction?.amountSat ?? 0;
     return amount;

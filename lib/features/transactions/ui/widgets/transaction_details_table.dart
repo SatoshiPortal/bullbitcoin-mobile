@@ -63,6 +63,11 @@ class TransactionDetailsTable extends StatelessWidget {
     final amountSent = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
     );
+    // Null when the sent amount is genuinely unknown (e.g. a recovered swap
+    // whose lockup leg isn't linked) — the row is hidden rather than showing 0.
+    final displayAmountSent = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.displayAmountSentSat,
+    );
     final amountReceived = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountReceived(),
     );
@@ -141,7 +146,8 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.
-        if (!isOrder)
+        if (!isOrder &&
+            (transaction?.isIncoming == true || displayAmountSent != null))
           DetailsTableItem(
             label: transaction?.isIncoming == true
                 ? context.loc.transactionDetailLabelAmountReceived
@@ -150,13 +156,13 @@ class TransactionDetailsTable extends StatelessWidget {
                 ? FormatAmount.sats(
                     transaction?.isIncoming == true
                         ? amountReceived
-                        : amountSent,
+                        : (displayAmountSent ?? amountSent),
                   ).toUpperCase()
                 : FormatAmount.btc(
                     ConvertAmount.satsToBtc(
                       transaction?.isIncoming == true
                           ? amountReceived
-                          : amountSent,
+                          : (displayAmountSent ?? amountSent),
                     ),
                   ).toUpperCase(),
           ),
