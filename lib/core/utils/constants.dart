@@ -28,6 +28,10 @@ class ConversionConstants {
 class SecureStorageKeyPrefixConstants {
   static const seed = 'seed_';
   static const swap = 'swap_';
+  static const swapMasterKey = 'swap_master_key_';
+  // Fresh key (the old `swap_key_index_` was seeded high by a now-removed bug);
+  // this resets the per-network swap index counter to 0.
+  static const swapKeyIndex = 'swap_master_key_index_';
 }
 
 class HiveBoxNameConstants {

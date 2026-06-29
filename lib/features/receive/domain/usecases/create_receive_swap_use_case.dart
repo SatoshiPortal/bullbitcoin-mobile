@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -10,14 +8,12 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final LabelsFacade _labelsFacade;
 
   CreateReceiveSwapUsecase({
     required this._walletRepository,
     required this._swapRepository,
-    required this._seedRepository,
     required this._getReceiveAddressUsecase,
     required this._labelsFacade,
   });
@@ -43,10 +39,6 @@ class CreateReceiveSwapUsecase {
       if (amountSat > limits.max) {
         throw Exception('Maximum Swap Amount: $limits.max sats');
       }
-
-      final mnemonicSeed =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
-      final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
 
       if (wallet.network.isTestnet) {
         throw Exception('Swaps are not supported on testnet');
@@ -89,7 +81,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
             description: description,
@@ -99,7 +90,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,
             description: description,

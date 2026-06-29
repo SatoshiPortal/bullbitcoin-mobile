@@ -5994,6 +5994,7 @@ final class Schema13 extends i0.VersionedSchema {
         _column_237,
         _column_208,
         _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6178,6 +6179,8 @@ class Shape38 extends i0.VersionedTable {
       columnsByName['server_network_fees']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get wasDirectPayment =>
       columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recovered =>
+      columnsByName['recovered']! as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<int> _column_237(String aliasedName) =>
@@ -6196,6 +6199,15 @@ i1.GeneratedColumn<int> _column_238(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints:
           'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_239(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'recovered',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (recovered IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
 
@@ -6463,6 +6475,7 @@ final class Schema14 extends i0.VersionedSchema {
         _column_237,
         _column_208,
         _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6548,7 +6561,7 @@ final class Schema14 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
-      columns: [_column_161, _column_239, _column_240],
+      columns: [_column_161, _column_240, _column_241],
       attachedDatabase: database,
     ),
     alias: null,
@@ -6565,7 +6578,7 @@ class Shape39 extends i0.VersionedTable {
       columnsByName['vout']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_239(String aliasedName) =>
+i1.GeneratedColumn<String> _column_240(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'tx_id',
       aliasedName,
@@ -6573,7 +6586,7 @@ i1.GeneratedColumn<String> _column_239(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_240(String aliasedName) =>
+i1.GeneratedColumn<int> _column_241(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'vout',
       aliasedName,

@@ -59,6 +59,89 @@
   "@coreSwapsStatusRefunded": {
     "description": "Display name for refunded swap status (payment failed, funds returned)"
   },
+  "swapRestoreTitle": "Swap restore",
+  "@swapRestoreTitle": {
+    "description": "Title for the swap restore settings page"
+  },
+  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{You can attempt recovering 1 swap. It may already be in a terminal status.} other{You can attempt recovering {count} swaps. Note, some of them may already be in a terminal status.}}",
+  "@swapRestoreActionable": {
+    "description": "Header count of restorable swaps with locked, unresolved funds",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "swapRestoreNoSwaps": "No swaps found to restore",
+  "@swapRestoreNoSwaps": {
+    "description": "Empty state when the restore endpoint returns no swaps"
+  },
+  "swapRestoreRecoverableSection": "Recoverable",
+  "@swapRestoreRecoverableSection": {
+    "description": "Section header for swaps that can be recovered (tappable)"
+  },
+  "swapRestoreAllSection": "All swaps",
+  "@swapRestoreAllSection": {
+    "description": "Section header for the remaining (non-recoverable) swaps"
+  },
+  "swapRestoreFailed": "Couldn't restore swaps",
+  "@swapRestoreFailed": {
+    "description": "Error message when restoring swaps fails"
+  },
+  "swapRestoreKindLightningSend": "Lightning Send",
+  "@swapRestoreKindLightningSend": {
+    "description": "Label for a submarine (on-chain to Lightning) swap in the restore list"
+  },
+  "swapRestoreKindLightningReceive": "Lightning Receive",
+  "@swapRestoreKindLightningReceive": {
+    "description": "Label for a reverse (Lightning to on-chain) swap in the restore list"
+  },
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "@swapRestoreKindCrossChain": {
+    "description": "Label for a chain swap in the restore list"
+  },
+  "swapRescueTitle": "Rescue swap",
+  "@swapRescueTitle": {
+    "description": "Title of the swap rescue details page"
+  },
+  "swapRescueTypeLabel": "Type",
+  "@swapRescueTypeLabel": {
+    "description": "Detail row label for the swap type"
+  },
+  "swapRescueStatusLabel": "Status",
+  "@swapRescueStatusLabel": {
+    "description": "Detail row label for the swap status"
+  },
+  "swapRescueAmountLabel": "Amount",
+  "@swapRescueAmountLabel": {
+    "description": "Detail row label for the swap amount"
+  },
+  "swapRescueRouteLabel": "Route",
+  "@swapRescueRouteLabel": {
+    "description": "Detail row label for the swap from/to assets"
+  },
+  "swapRescueCreatedLabel": "Created",
+  "@swapRescueCreatedLabel": {
+    "description": "Detail row label for when the swap was created"
+  },
+  "swapRescueIdLabel": "Swap ID",
+  "@swapRescueIdLabel": {
+    "description": "Detail row label for the swap id"
+  },
+  "swapRescueWalletLabel": "Restore to wallet",
+  "@swapRescueWalletLabel": {
+    "description": "Label above the wallet picker on the rescue page"
+  },
+  "swapRescueWalletHint": "Select a wallet",
+  "@swapRescueWalletHint": {
+    "description": "Placeholder for the rescue wallet picker"
+  },
+  "swapRescueButton": "Restore",
+  "@swapRescueButton": {
+    "description": "Button that re-imports the swap and resumes it"
+  },
+  "swapRescueSuccess": "Swap restored — it will now resume",
+  "@swapRescueSuccess": {
+    "description": "Confirmation shown after a swap is rescued"
+  },
   "coreSwapsStatusExpired": "Expired",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
@@ -3173,6 +3256,10 @@
   "transactionLabelServerNetworkFees": "Server Network Fees",
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
+  },
+  "transactionLabelNetworkFees": "Network fees",
+  "@transactionLabelNetworkFees": {
+    "description": "Combined on-chain network fees shown for a recovered swap, derived from the actual sent and received amounts"
   },
   "transactionLabelPreimage": "Preimage",
   "@transactionLabelPreimage": {

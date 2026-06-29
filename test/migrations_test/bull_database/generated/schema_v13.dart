@@ -5170,6 +5170,15 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
         'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
+  late final GeneratedColumn<int> recovered = GeneratedColumn<int>(
+    'recovered',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (recovered IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5197,6 +5206,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     refundFees,
     serverNetworkFees,
     wasDirectPayment,
+    recovered,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5309,6 +5319,10 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
         DriftSqlType.int,
         data['${effectivePrefix}was_direct_payment'],
       )!,
+      recovered: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recovered'],
+      )!,
     );
   }
 
@@ -5349,6 +5363,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
   final int? refundFees;
   final int? serverNetworkFees;
   final int wasDirectPayment;
+  final int recovered;
   const SwapsData({
     required this.id,
     required this.type,
@@ -5375,6 +5390,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     this.refundFees,
     this.serverNetworkFees,
     required this.wasDirectPayment,
+    required this.recovered,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5438,6 +5454,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       map['server_network_fees'] = Variable<int>(serverNetworkFees);
     }
     map['was_direct_payment'] = Variable<int>(wasDirectPayment);
+    map['recovered'] = Variable<int>(recovered);
     return map;
   }
 
@@ -5502,6 +5519,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           ? const Value.absent()
           : Value(serverNetworkFees),
       wasDirectPayment: Value(wasDirectPayment),
+      recovered: Value(recovered),
     );
   }
 
@@ -5536,6 +5554,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       refundFees: serializer.fromJson<int?>(json['refundFees']),
       serverNetworkFees: serializer.fromJson<int?>(json['serverNetworkFees']),
       wasDirectPayment: serializer.fromJson<int>(json['wasDirectPayment']),
+      recovered: serializer.fromJson<int>(json['recovered']),
     );
   }
   @override
@@ -5567,6 +5586,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       'refundFees': serializer.toJson<int?>(refundFees),
       'serverNetworkFees': serializer.toJson<int?>(serverNetworkFees),
       'wasDirectPayment': serializer.toJson<int>(wasDirectPayment),
+      'recovered': serializer.toJson<int>(recovered),
     };
   }
 
@@ -5596,6 +5616,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     Value<int?> refundFees = const Value.absent(),
     Value<int?> serverNetworkFees = const Value.absent(),
     int? wasDirectPayment,
+    int? recovered,
   }) => SwapsData(
     id: id ?? this.id,
     type: type ?? this.type,
@@ -5636,6 +5657,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
         ? serverNetworkFees.value
         : this.serverNetworkFees,
     wasDirectPayment: wasDirectPayment ?? this.wasDirectPayment,
+    recovered: recovered ?? this.recovered,
   );
   SwapsData copyWithCompanion(SwapsCompanion data) {
     return SwapsData(
@@ -5692,6 +5714,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       wasDirectPayment: data.wasDirectPayment.present
           ? data.wasDirectPayment.value
           : this.wasDirectPayment,
+      recovered: data.recovered.present ? data.recovered.value : this.recovered,
     );
   }
 
@@ -5722,7 +5745,8 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           ..write('claimFees: $claimFees, ')
           ..write('refundFees: $refundFees, ')
           ..write('serverNetworkFees: $serverNetworkFees, ')
-          ..write('wasDirectPayment: $wasDirectPayment')
+          ..write('wasDirectPayment: $wasDirectPayment, ')
+          ..write('recovered: $recovered')
           ..write(')'))
         .toString();
   }
@@ -5754,6 +5778,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     refundFees,
     serverNetworkFees,
     wasDirectPayment,
+    recovered,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -5783,7 +5808,8 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           other.claimFees == this.claimFees &&
           other.refundFees == this.refundFees &&
           other.serverNetworkFees == this.serverNetworkFees &&
-          other.wasDirectPayment == this.wasDirectPayment);
+          other.wasDirectPayment == this.wasDirectPayment &&
+          other.recovered == this.recovered);
 }
 
 class SwapsCompanion extends UpdateCompanion<SwapsData> {
@@ -5812,6 +5838,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
   final Value<int?> refundFees;
   final Value<int?> serverNetworkFees;
   final Value<int> wasDirectPayment;
+  final Value<int> recovered;
   final Value<int> rowid;
   const SwapsCompanion({
     this.id = const Value.absent(),
@@ -5839,6 +5866,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     this.refundFees = const Value.absent(),
     this.serverNetworkFees = const Value.absent(),
     this.wasDirectPayment = const Value.absent(),
+    this.recovered = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SwapsCompanion.insert({
@@ -5867,6 +5895,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     this.refundFees = const Value.absent(),
     this.serverNetworkFees = const Value.absent(),
     this.wasDirectPayment = const Value.absent(),
+    this.recovered = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        type = Value(type),
@@ -5901,6 +5930,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Expression<int>? refundFees,
     Expression<int>? serverNetworkFees,
     Expression<int>? wasDirectPayment,
+    Expression<int>? recovered,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -5929,6 +5959,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
       if (refundFees != null) 'refund_fees': refundFees,
       if (serverNetworkFees != null) 'server_network_fees': serverNetworkFees,
       if (wasDirectPayment != null) 'was_direct_payment': wasDirectPayment,
+      if (recovered != null) 'recovered': recovered,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5959,6 +5990,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Value<int?>? refundFees,
     Value<int?>? serverNetworkFees,
     Value<int>? wasDirectPayment,
+    Value<int>? recovered,
     Value<int>? rowid,
   }) {
     return SwapsCompanion(
@@ -5987,6 +6019,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
       refundFees: refundFees ?? this.refundFees,
       serverNetworkFees: serverNetworkFees ?? this.serverNetworkFees,
       wasDirectPayment: wasDirectPayment ?? this.wasDirectPayment,
+      recovered: recovered ?? this.recovered,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6069,6 +6102,9 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     if (wasDirectPayment.present) {
       map['was_direct_payment'] = Variable<int>(wasDirectPayment.value);
     }
+    if (recovered.present) {
+      map['recovered'] = Variable<int>(recovered.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6103,6 +6139,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
           ..write('refundFees: $refundFees, ')
           ..write('serverNetworkFees: $serverNetworkFees, ')
           ..write('wasDirectPayment: $wasDirectPayment, ')
+          ..write('recovered: $recovered, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

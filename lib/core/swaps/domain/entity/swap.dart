@@ -176,6 +176,24 @@ sealed class Swap with _$Swap {
     @Default(false) bool wasDirectPayment,
     SwapFees? fees,
     DateTime? completionTime,
+    // Reconstructed by the restore/rescue flow rather than created in-app.
+    //
+    // For a recovered swap the following are NOT trustworthy — they aren't in
+    // the Boltz restore response and weren't produced by our own creation flow
+    // — so the UI hides them rather than show a guess:
+    //  - the counterpart wallet: the send/receive side the user did NOT pick is
+    //    a default-of-chain guess (rescue only asks for one wallet);
+    //  - `fees.lockupFee`: the original on-chain lockup tx fee (paid on the old
+    //    device, unknowable here);
+    //  - `fees.serverNetworkFees`: Boltz's server miner fee from the original
+    //    quote (only a *current* estimate is fetchable, not what was paid).
+    //
+    // What IS trustworthy: the locked amount, the actual received amount
+    // (on-chain), the Boltz % service fee (the rate is stable, so we recompute
+    // it from the live fees), the claim we performed + its fee, status, dates.
+    // TODO: recover the uncertain fields accurately later — e.g. query Boltz
+    // for the historical swap, and read the original lockup tx fee on-chain.
+    @Default(false) bool recovered,
   }) = LnReceiveSwap;
 
   const factory Swap.lnSend({
@@ -195,6 +213,7 @@ sealed class Swap with _$Swap {
     String? refundTxid,
     SwapFees? fees,
     DateTime? completionTime,
+    @Default(false) bool recovered,
   }) = LnSendSwap;
 
   const factory Swap.chain({
@@ -215,6 +234,7 @@ sealed class Swap with _$Swap {
     String? refundTxid,
     SwapFees? fees,
     DateTime? completionTime,
+    @Default(false) bool recovered,
   }) = ChainSwap;
 
   const Swap._();
@@ -284,18 +304,25 @@ sealed class Swap with _$Swap {
   };
 
   int get amountSat => switch (this) {
-    LnReceiveSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
-    LnSendSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
+    LnSendSwap(:final invoice) => _invoiceAmountSat(invoice),
     ChainSwap(:final paymentAmount) => paymentAmount,
   };
+
+  // Restored/rescued LN swaps can carry an empty invoice (Boltz's restore
+  // response doesn't return it), so parse defensively instead of crashing the
+  // bolt11 bech32 decoder ("separator '1' at invalid position: -1").
+  static int _invoiceAmountSat(String invoice) {
+    if (invoice.isEmpty) return 0;
+    try {
+      return (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt();
+    } catch (_) {
+      return 0;
+    }
+  }
 
   String? get sendTxId => switch (this) {
     LnReceiveSwap() => null,
@@ -383,13 +410,7 @@ sealed class Swap with _$Swap {
     }(),
     LnReceiveSwap(:final invoice, :final fees) => () {
       if (fees == null) return null;
-      final invoiceAmount =
-          (Bolt11PaymentRequest(invoice).amount *
-                  Decimal.fromBigInt(
-                    ConversionConstants.satsAmountOfOneBitcoin,
-                  ))
-              .toBigInt()
-              .toInt();
+      final invoiceAmount = _invoiceAmountSat(invoice);
       final totalFees = fees.totalFees(invoiceAmount);
       return invoiceAmount - totalFees;
     }(),
@@ -404,16 +425,7 @@ sealed class Swap with _$Swap {
       if (fees == null) return null;
       return paymentAmount;
     }(),
-    LnReceiveSwap(:final invoice) => () {
-      final invoiceAmount =
-          (Bolt11PaymentRequest(invoice).amount *
-                  Decimal.fromBigInt(
-                    ConversionConstants.satsAmountOfOneBitcoin,
-                  ))
-              .toBigInt()
-              .toInt();
-      return invoiceAmount;
-    }(),
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
   };
 }
 

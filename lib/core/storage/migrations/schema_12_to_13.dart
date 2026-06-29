@@ -10,6 +10,10 @@ import 'package:drift/drift.dart';
 ///   Magic Routing Hint direct payment (no lockup existed, nothing to claim)
 /// - Backfills status 'refunded' for swaps stored as 'completed' that have a
 ///   refund txid: a refunded swap is a failed payment, not a successful one
+/// - Adds 'recovered' column: marks swaps reconstructed by the restore/rescue
+///   flow rather than created in-app. Fields not derivable from the Boltz
+///   restore response + on-chain data are untrustworthy for these and hidden
+///   in the UI.
 ///
 /// Changes to settings table:
 /// - Adds 'exchange_testnet_basic_auth_username'/'...password' columns: in-app
@@ -24,6 +28,12 @@ class Schema12To13 {
 
     try {
       await m.addColumn(schema13.swaps, schema13.swaps.wasDirectPayment);
+    } catch (e) {
+      if (!e.toString().contains('duplicate column')) rethrow;
+    }
+
+    try {
+      await m.addColumn(schema13.swaps, schema13.swaps.recovered);
     } catch (e) {
       if (!e.toString().contains('duplicate column')) rethrow;
     }
