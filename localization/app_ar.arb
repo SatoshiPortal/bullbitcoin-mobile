@@ -207,7 +207,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -452,7 +452,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -840,7 +840,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -953,7 +953,8 @@
   "arkTxPending": "معلقة",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },  "jadeStep7": "   -اثبتوا وركزوا",
+  },
+  "jadeStep7": "   -اثبتوا وركزوا",
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
   },
@@ -1056,7 +1057,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1168,7 +1169,8 @@
   "recoverbullFailed": "فشل",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },  "ledgerProcessingSign": "التوقيع على المعاملات",
+  },
+  "ledgerProcessingSign": "التوقيع على المعاملات",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1374,7 +1376,8 @@
   "buyYouPay": "تدفع",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
+  },
+  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -1962,7 +1965,8 @@
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },  "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
+  },
+  "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3121,7 +3125,8 @@
   "electrumReset": "إعادة التوطين",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },  "backupCompletedTitle": "اكتمل الدعم!",
+  },
+  "backupCompletedTitle": "اكتمل الدعم!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -3221,7 +3226,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -3849,10 +3854,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5499,7 +5504,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5531,10 +5536,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8044,7 +8049,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -8696,7 +8701,8 @@
   "buyKycPendingDescription": "يجب أن تكمل التحقق من الهوية أولا",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "arkReceiveSegmentArk": "Ark",
+  },
+  "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -8740,10 +8746,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9253,7 +9259,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -10199,7 +10205,8 @@
   "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  },
+  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -10356,7 +10363,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -10372,10 +10379,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "ملف المساندة يفوت مسار التعقيم.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -10408,7 +10411,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -12504,7 +12507,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12685,7 +12688,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

@@ -207,7 +207,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -476,7 +476,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -864,7 +864,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -987,7 +987,8 @@
   "arkTxPending": "Pending",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },  "sharedWithBullBitcoin": "bull Bitcoin ile paylaşılan.",
+  },
+  "sharedWithBullBitcoin": "bull Bitcoin ile paylaşılan.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1098,7 +1099,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1226,7 +1227,8 @@
   "recoverbullFailed": "Başarısızlık",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },  "ledgerProcessingSign": "Kayıt İşlemleri",
+  },
+  "ledgerProcessingSign": "Kayıt İşlemleri",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1452,7 +1454,8 @@
   "buyYouPay": "Ödersiniz",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  },
+  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2076,7 +2079,8 @@
   "howToDecideBackupText1": "İnsanların Bitcoin’i kaybetmesinin en yaygın yollarından biri, fiziksel yedeklemeyi kaybederler. Fiziksel yedeklemenizi bulan herhangi biri tüm Bitcoin'inizi alabilir. Onu iyi saklayabileceğinize ve asla kaybetmeme çok eminseniz, iyi bir seçenek.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },  "coldcardStep13": "Bull Bitcoin cüzdanı, soğuk kartta QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  },
+  "coldcardStep13": "Bull Bitcoin cüzdanı, soğuk kartta QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3299,7 +3303,8 @@
   "electrumReset": "Reset",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },  "backupCompletedTitle": "Backup tamamlandı!",
+  },
+  "backupCompletedTitle": "Backup tamamlandı!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -3403,7 +3408,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4071,10 +4076,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5808,7 +5813,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5852,10 +5857,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8494,7 +8499,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9192,7 +9197,8 @@
   "buyKycPendingDescription": "İlk önce kimlik Doğrulamasını tamamlamanız gerekir",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "arkReceiveSegmentArk": "Ark",
+  },
+  "arkReceiveSegmentArk": "Ark",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -9236,10 +9242,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9807,7 +9813,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -10803,7 +10809,8 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Talimatlar",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  },
+  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -10972,7 +10979,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -10988,10 +10995,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Backup file eksik toplama yolu.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -11024,7 +11027,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -12501,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12681,7 +12684,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

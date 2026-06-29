@@ -979,7 +979,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -2033,7 +2033,8 @@
   "payNotAuthenticated": "Aap authenticated nahi ho. Jaari rakhne ke liye login karo.",
   "@payNotAuthenticated": {
     "description": "Error message when user is not authenticated"
-  },  "payPaymentInProgress": "Payment Ho Rahi Hai!",
+  },
+  "payPaymentInProgress": "Payment Ho Rahi Hai!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
@@ -4154,7 +4155,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -4243,7 +4244,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -4569,7 +4570,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -6811,7 +6812,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -7985,7 +7986,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -9584,10 +9585,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -10175,7 +10176,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -10289,7 +10290,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -11160,10 +11161,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -11176,7 +11177,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -11521,10 +11522,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -12054,12 +12055,8 @@
   "payFromAnotherWallet": "Kisi aur Bitcoin wallet se pay karein",
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },  "paySelectNetwork": "Network Chunein",
+  },
+  "paySelectNetwork": "Network Chunein",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
   },
@@ -12668,7 +12665,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -12896,7 +12893,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -13142,7 +13139,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

@@ -208,7 +208,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -477,7 +477,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -868,7 +868,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -991,7 +991,8 @@
   "arkTxPending": "लंबित",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },  "sharedWithBullBitcoin": "बिटकॉइन के साथ साझा किया गया।।",
+  },
+  "sharedWithBullBitcoin": "बिटकॉइन के साथ साझा किया गया।।",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1102,7 +1103,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1230,7 +1231,8 @@
   "recoverbullFailed": "विफल",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },  "ledgerProcessingSign": "लेनदेन पर हस्ताक्षर करना",
+  },
+  "ledgerProcessingSign": "लेनदेन पर हस्ताक्षर करना",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1456,7 +1458,8 @@
   "buyYouPay": "आप भुगतान करते हैं",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "बुल बिटकॉइन वॉलेट आपको पासपोर्ट पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  },
+  "passportStep12": "बुल बिटकॉइन वॉलेट आपको पासपोर्ट पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2084,7 +2087,8 @@
   "howToDecideBackupText1": "सबसे आम तरीके से लोग अपने Bitcoin खो देते हैं क्योंकि वे भौतिक बैकअप खो देते हैं। किसी को भी जो आपके भौतिक बैकअप को ढूंढता है वह आपके सभी बिटकॉइन को ले सकता है। यदि आप बहुत आश्वस्त हैं कि आप इसे अच्छी तरह से छिपा सकते हैं और इसे कभी नहीं खो सकते हैं, तो यह एक अच्छा विकल्प है।।",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },  "coldcardStep13": "बुल बिटकॉइन वॉलेट आपको कोल्डकार्ड पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  },
+  "coldcardStep13": "बुल बिटकॉइन वॉलेट आपको कोल्डकार्ड पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3307,7 +3311,8 @@
   "electrumReset": "रीसेट करें",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },  "backupCompletedTitle": "बैकअप पूरा हो गया!",
+  },
+  "backupCompletedTitle": "बैकअप पूरा हो गया!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -3415,7 +3420,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4083,10 +4088,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5836,7 +5841,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5880,10 +5885,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8565,7 +8570,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9271,7 +9276,8 @@
   "buyKycPendingDescription": "आपको पहले ID सत्यापन पूर्ण करना होगा",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "arkReceiveSegmentArk": "आर्क",
+  },
+  "arkReceiveSegmentArk": "आर्क",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -9315,10 +9321,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9886,7 +9892,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -10886,7 +10892,8 @@
   "importQrDeviceSeedsignerInstructionsTitle": "बीजगणित निर्देश",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },  "jadeStep12": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  },
+  "jadeStep12": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11055,7 +11062,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -11071,10 +11078,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "बैकअप फ़ाइल लापता विचलन पथ।।",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -11107,7 +11110,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -12501,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12949,7 +12952,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

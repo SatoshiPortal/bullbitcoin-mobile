@@ -2306,12 +2306,8 @@
   "payFromAnotherWallet": "Pay from another Bitcoin wallet",
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },  "paySelectNetwork": "Select Network",
+  },
+  "paySelectNetwork": "Select Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
   },

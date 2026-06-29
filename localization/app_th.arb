@@ -207,7 +207,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -476,7 +476,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -868,7 +868,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -991,7 +991,8 @@
   "arkTxPending": "สิ้นสุด",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },  "sharedWithBullBitcoin": "แชร์กับ Bull Bitcoin.",
+  },
+  "sharedWithBullBitcoin": "แชร์กับ Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1102,7 +1103,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1230,7 +1231,8 @@
   "recoverbullFailed": "บ้าน",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
-  },  "ledgerProcessingSign": "ลงทะเบียน",
+  },
+  "ledgerProcessingSign": "ลงทะเบียน",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1456,7 +1458,8 @@
   "buyYouPay": "คุณชําระเงิน",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนหนังสือเดินทาง การสแกน.",
+  },
+  "passportStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนหนังสือเดินทาง การสแกน.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2084,7 +2087,8 @@
   "howToDecideBackupText1": "หนึ่งในวิธีที่สําคัญที่สุดที่สูญเสีย Bitcoin เพราะพวกเขาสูญเสียการสํารองข้อมูลทางกายภาพ คุณค้นหาการสํารองข้อมูลทางกายภาพของคุณจะสามารถเข้าถึง Bitcoin ของคุณ หากคุณมีความมั่นใจมากที่คุณสามารถซ่อนมันและไม่เคยสูญเสียมันเป็นตัวเลือกที่ดี.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },  "coldcardStep13": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนการ์ดเย็น การสแกน.",
+  },
+  "coldcardStep13": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนการ์ดเย็น การสแกน.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3307,7 +3311,8 @@
   "electrumReset": "รีเซ็ต",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },  "backupCompletedTitle": "การสํารองข้อมูลเสร็จสิ้น!",
+  },
+  "backupCompletedTitle": "การสํารองข้อมูลเสร็จสิ้น!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -3415,7 +3420,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4083,10 +4088,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5836,7 +5841,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5880,10 +5885,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8557,7 +8562,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9263,7 +9268,8 @@
   "buyKycPendingDescription": "คุณต้องตรวจสอบรหัส",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "arkReceiveSegmentArk": "ประเทศ",
+  },
+  "arkReceiveSegmentArk": "ประเทศ",
   "@arkReceiveSegmentArk": {
     "description": "Segment option for Ark address type"
   },
@@ -9307,10 +9313,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9878,7 +9884,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -10878,7 +10884,8 @@
   "importQrDeviceSeedsignerInstructionsTitle": "คําแนะนําเมล็ดพันธุ์",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },  "jadeStep12": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
+  },
+  "jadeStep12": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -11047,7 +11054,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -11063,10 +11070,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "การสํารองข้อมูลไฟล์หายไป.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "ชั้น",
   "@payClabe": {
@@ -11099,7 +11102,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -12501,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12681,7 +12684,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

@@ -512,7 +512,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -772,7 +772,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -1147,7 +1147,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -1258,7 +1258,8 @@
   "arkTxPending": "Čeština",
   "@arkTxPending": {
     "description": "Status label for pending Ark transactions"
-  },  "sharedWithBullBitcoin": "sdílet s Bull Bitcoin.",
+  },
+  "sharedWithBullBitcoin": "sdílet s Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1365,7 +1366,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1485,7 +1486,8 @@
   "payPaymentInProgress": "Platba v postupu!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },  "ledgerProcessingSign": "Přihlášení Transakce",
+  },
+  "ledgerProcessingSign": "Přihlášení Transakce",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -1694,7 +1696,8 @@
   "buyYouPay": "Platit",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
+  },
+  "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -2297,7 +2300,8 @@
   "howToDecideBackupText1": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },  "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
+  },
+  "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -3458,7 +3462,8 @@
   "electrumReset": "Čeština",
   "@electrumReset": {
     "description": "Reset button label in advanced options"
-  },  "backupCompletedTitle": "Zálohování dokončeno!",
+  },
+  "backupCompletedTitle": "Zálohování dokončeno!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -3566,7 +3571,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4176,10 +4181,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5833,7 +5838,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -5877,10 +5882,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -8437,7 +8442,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9110,7 +9115,8 @@
   "buyKycPendingDescription": "Musíte dokončit ověření totožnosti nejprve",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "autoswapRecipientWalletInfo": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
+  },
+  "autoswapRecipientWalletInfo": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
@@ -9142,10 +9148,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -9677,7 +9683,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -10608,7 +10614,8 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },  "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  },
+  "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -10760,7 +10767,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -10776,10 +10783,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Záložní soubor chybějící derivační cestu.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "ČEŠTINA",
   "@payClabe": {
@@ -10812,7 +10815,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -12501,7 +12504,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12799,7 +12802,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

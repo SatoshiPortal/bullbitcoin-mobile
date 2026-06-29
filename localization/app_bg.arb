@@ -650,7 +650,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -1012,7 +1012,8 @@
   "receiveShareAddress": "Сподели адрес",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },  "sharedWithBullBitcoin": "споделено с Bull Bitcoin.",
+  },
+  "sharedWithBullBitcoin": "споделено с Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
@@ -1083,7 +1084,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1179,7 +1180,8 @@
   "payPaymentInProgress": "Плащането е в процес на обработка!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },  "jadeStep6": "   - Увеличете яркостта на екрана на вашето устройство",
+  },
+  "jadeStep6": "   - Увеличете яркостта на екрана на вашето устройство",
   "@jadeStep6": {
     "description": "Jade troubleshooting tip 1"
   },
@@ -1360,7 +1362,8 @@
   "buyYouPay": "Плащате",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },  "passportStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Passport. Сканирайте го.",
+  },
+  "passportStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Passport. Сканирайте го.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
@@ -1851,7 +1854,8 @@
   "howToDecideBackupText1": "Един от най-често срещаните начини, по които хората губят своите биткойни, е като загубят физическото резервно копие. Всеки, който намери вашето физическо резервно копие, ще може да открадне всички ваши биткойни. Ако сте много уверени, че можете да го скриете добре и никога да не го изгубите, това е добър вариант.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },  "coldcardStep13": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Coldcard. Сканирайте го.",
+  },
+  "coldcardStep13": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Coldcard. Сканирайте го.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
@@ -2788,7 +2792,8 @@
   "backupWalletPhysicalBackupTag": "Без доверие (вземете си време)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },  "backupCompletedTitle": "Резервното копие е завършено!",
+  },
+  "backupCompletedTitle": "Резервното копие е завършено!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
@@ -4581,7 +4586,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -6564,7 +6569,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -7079,7 +7084,8 @@
   "buyKycPendingDescription": "Първо трябва да завършите проверката на самоличността",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },  "importWalletKrux": "Krux",
+  },
+  "importWalletKrux": "Krux",
   "@importWalletKrux": {
     "description": "Button label for Krux hardware wallet"
   },
@@ -7509,7 +7515,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8278,7 +8284,8 @@
   "walletDetailsDescriptorLabel": "Дескриптор",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },  "jadeStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  },
+  "jadeStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
@@ -8410,7 +8417,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -8422,10 +8429,6 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Липсва деривационен път за резервното копие.",
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
-  },
-  "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "payClabe": "CLABE",
   "@payClabe": {
@@ -8450,7 +8453,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -9554,7 +9557,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -9831,7 +9834,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }

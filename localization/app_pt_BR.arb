@@ -142,7 +142,7 @@
         "type": "String",
         "description": "The address label (e.g., 'Bitcoin address')"
       },
-      "address": {
+  "address": {
         "type": "String",
         "description": "The actual address"
       }
@@ -475,7 +475,7 @@
       "count": {
         "type": "int"
       },
-      "required": {
+  "required": {
         "type": "int"
       }
     }
@@ -965,7 +965,7 @@
       "timeoutValue": {
         "type": "String"
       },
-      "recommended": {
+  "recommended": {
         "type": "String"
       }
     }
@@ -1062,7 +1062,8 @@
   "payFeeTooHigh": "A taxa é excepcionalmente alta",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
-  },  "sellKYCRejected": "Verificação de KYC rejeitada",
+  },
+  "sellKYCRejected": "Verificação de KYC rejeitada",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
@@ -1162,7 +1163,7 @@
       "current": {
         "type": "String"
       },
-      "total": {
+  "total": {
         "type": "String"
       }
     }
@@ -1226,7 +1227,8 @@
   "payPasteInvoice": "Fatura de pasta",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },  "arkStatusSettled": "Preparado",
+  },
+  "arkStatusSettled": "Preparado",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
   },
@@ -1249,7 +1251,8 @@
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
-  },  "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
+  },
+  "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
@@ -1922,7 +1925,8 @@
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
-  },  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
+  },
+  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
   },
@@ -3012,7 +3016,8 @@
   "receiveSwapId": "ID do balanço",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },  "autoswapRecipientRequired": "*",
+  },
+  "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
   },
@@ -3262,7 +3267,7 @@
       "network": {
         "type": "String"
       },
-      "environment": {
+  "environment": {
         "type": "String"
       }
     }
@@ -4154,10 +4159,10 @@
       "amount": {
         "type": "String"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -5178,7 +5183,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -8229,7 +8234,7 @@
       "uploaded": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -8430,7 +8435,8 @@
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
-  },  "pinStatusSettingUpDescription": "Configurando seu código PIN",
+  },
+  "pinStatusSettingUpDescription": "Configurando seu código PIN",
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
@@ -8494,7 +8500,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
+  "currency": {
         "type": "String"
       }
     }
@@ -9167,7 +9173,7 @@
       "count": {
         "type": "String"
       },
-      "transaction": {
+  "transaction": {
         "type": "String"
       }
     }
@@ -9305,7 +9311,7 @@
       "failedAttempts": {
         "type": "int"
       },
-      "attemptsWord": {
+  "attemptsWord": {
         "type": "String"
       }
     }
@@ -9380,10 +9386,10 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
+  "frequency": {
         "type": "String"
       },
-      "network": {
+  "network": {
         "type": "String"
       }
     }
@@ -10952,7 +10958,8 @@
   "arkReceiveArkAddress": "Endereço da arca",
   "@arkReceiveArkAddress": {
     "description": "Label for Ark address"
-  },  "coreScreensToLabel": "Para",
+  },
+  "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
     "description": "Label for destination/receiver field"
   },
@@ -11071,10 +11078,6 @@
   "googleDriveSignInMessage": "Você precisará se inscrever no Google Drive",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "transactionOrderLabelPayinAmount": "Quantidade de pagamento",
   "@transactionOrderLabelPayinAmount": {
@@ -12332,10 +12335,10 @@
       "amount": {
         "type": "String"
       },
-      "currentFee": {
+  "currentFee": {
         "type": "String"
       },
-      "thresholdFee": {
+  "thresholdFee": {
         "type": "String"
       }
     }
@@ -12497,7 +12500,7 @@
       "current": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
@@ -12795,7 +12798,7 @@
       "visible": {
         "type": "int"
       },
-      "total": {
+  "total": {
         "type": "int"
       }
     }
