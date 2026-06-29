@@ -2217,7 +2217,6 @@
   "sellProcessingOrder": "Procesando orden...",
   "sellOrderPlaced": "Orden de venta realizada exitosamente",
   "sellOrderFailed": "Error al realizar la orden de venta",
-  "sellInsufficientBalance": "Saldo insuficiente en la billetera",
   "sellMinimumAmount": "Cantidad mínima de venta: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2234,7 +2233,6 @@
       }
     }
   },
-  "sellNetworkError": "Error de red. Por favor, intente nuevamente",
   "sellRateExpired": "Tasa de cambio expirada. Actualizando...",
   "sellUpdatingRate": "Actualizando tasa de cambio...",
   "sellCurrentRate": "Tasa Actual",
@@ -3932,36 +3930,7 @@
   "sellViewDetailsButton": "Ver detalles",
   "sellKycPendingTitle": "Verificación KYC pendiente",
   "sellKycPendingDescription": "Debes completar la verificación de identidad primero",
-  "sellErrorPrepareTransaction": "Error al preparar la transacción: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "No se seleccionó ningún billetera para enviar el pago",
   "sellErrorFeesNotCalculated": "Tarifas de transacción no calculadas. Por favor, inténtalo de nuevo.",
-  "sellErrorUnexpectedOrderType": "Se esperaba SellOrder pero se recibió un tipo de orden diferente",
-  "sellErrorLoadUtxos": "Error al cargar UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Error al recalcular tarifas: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "sellLoadingGeneric": "Cargando...",
   "allSeedViewTitle": "Visualizador de Semillas",
   "allSeedViewLoadingMessage": "Esto puede tardar un tiempo en cargar si tiene muchas semillas en este dispositivo.",
@@ -5228,5 +5197,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin está activado, pero esta cartera todavía no tiene saldo para contribuir. Se activará cuando recibas fondos.",
   "announcementAutoswapDescription": "Tu Liquid se convierte automáticamente en Bitcoin.",
   "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
-  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo."
+  "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
+  "sellErrorLoadUtxos": "Error al cargar las monedas. Por favor intente de nuevo."
 }

@@ -6437,10 +6437,6 @@
   "@sellOrderFailed": {
     "description": "Error message when order fails"
   },
-  "sellInsufficientBalance": "Wallet mein balance kam hai",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "sellMinimumAmount": "Minimum bechne ki raashi: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -6458,10 +6454,6 @@
         "type": "String"
       }
     }
-  },
-  "sellNetworkError": "Network error. Dobara koshish karo",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sellRateExpired": "Vinimay dar khatam ho gayi. Refresh ho rahi hai...",
   "@sellRateExpired": {
@@ -11160,47 +11152,9 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellErrorPrepareTransaction": "Transaction prepare karne mein fail: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "Payment bhejne ke liye koi wallet select nahi kiya",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
-  },
   "sellErrorFeesNotCalculated": "Transaction fees calculate nahi hui. Kripya dobara try karo.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
-  },
-  "sellErrorUnexpectedOrderType": "SellOrder expected tha lekin alag order type mila",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
-  "sellErrorLoadUtxos": "UTXOs load karne mein fail: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Fees recalculate karne mein fail: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
   },
   "sellLoadingGeneric": "Load ho raha hai...",
   "@sellLoadingGeneric": {
@@ -13591,5 +13545,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
   "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
-  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein."
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
+  "sellErrorLoadUtxos": "Coins load karne mein asafal. Dobara koshish karo."
 }

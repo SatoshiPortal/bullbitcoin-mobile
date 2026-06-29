@@ -2402,10 +2402,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "Ανεπαρκή ισορροπία πορτοφολιού",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "mempoolCustomServerDeleteMessage": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον προσαρμοσμένο διακομιστή mempool; Ο προεπιλεγμένος server θα χρησιμοποιηθεί αντ 'αυτού.",
   "@mempoolCustomServerDeleteMessage": {
     "description": "Message for delete custom server confirmation dialog"
@@ -3761,16 +3757,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "Απέτυχε να φορτώσει UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Διακοσμητικό τιμολόγιο...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -4316,10 +4302,6 @@
   "coreSwapsStatusInProgress": "Σε εξέλιξη",
   "@coreSwapsStatusInProgress": {
     "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
-  },
-  "sellErrorUnexpectedOrderType": "Αναμένεται SellOrder αλλά έλαβε διαφορετικό τύπο παραγγελίας",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "pinCreateHeadline": "Δημιουργήστε νέο pin",
   "@pinCreateHeadline": {
@@ -5814,16 +5796,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "Απέτυχε να υπολογίσει τα τέλη: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Επιλέξτε μια συχνότητα",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -7055,10 +7027,6 @@
   "pinAuthenticationTitle": "Αναγνώριση",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "Κανένα πορτοφόλι επέλεξε να στείλει πληρωμή",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -8707,16 +8675,6 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "Απέτυχε να προετοιμάσει τη συναλλαγή: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "importQrDeviceSeedsignerStep7": "Στην κινητή σας συσκευή, πατήστε Open Camera",
   "@importQrDeviceSeedsignerStep7": {
     "description": "SeedSigner instruction step 7"
@@ -9603,10 +9561,6 @@
   "sendSwapFailed": "Η ανταλλαγή απέτυχε. Η επιστροφή σας θα υποβληθεί σε επεξεργασία σύντομα.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "Σφάλμα δικτύου. Παρακαλώ δοκιμάστε ξανά",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "Hardware Wallet",
   "@sendHardwareWallet": {
@@ -13200,5 +13154,6 @@
   "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
   "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
-  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά."
+  "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
+  "sellErrorLoadUtxos": "Αποτυχία φόρτωσης κερμάτων. Παρακαλώ δοκιμάστε ξανά."
 }

@@ -3026,10 +3026,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "Nedostatečná vyváženost peněženky",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "recoverWalletButton": "Obnovit peněženku",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
@@ -4567,16 +4563,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "Podařilo se načíst UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Dekódovací faktura...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5199,10 +5185,6 @@
         "example": "PIN"
       }
     }
-  },
-  "sellErrorUnexpectedOrderType": "Očekávané SellOrder ale obdržel jiný typ objednávky",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "sellRoutingNumber": "Číslo směrování",
   "@sellRoutingNumber": {
@@ -6926,16 +6908,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "Přepočtení poplatků: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Vyberte frekvenci",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8391,10 +8363,6 @@
   "receiveBitcoin": "Čeština",
   "@receiveBitcoin": {
     "description": "Label for receiving Bitcoin on the base layer"
-  },
-  "sellErrorNoWalletSelected": "Žádná peněženka vybrána k odeslání platby",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10365,16 +10333,6 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "Vypnuto k přípravě transakce: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Online platba za účet",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -11349,10 +11307,6 @@
   "sendSwapFailed": "Swap selhal. Vaše náhrada bude zpracována krátce.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "Hardware Peněženka",
   "@sendHardwareWallet": {
@@ -13200,5 +13154,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
   "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
-  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu."
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
+  "sellErrorLoadUtxos": "Načtení mincí se nezdařilo. Prosím, zkuste to znovu."
 }

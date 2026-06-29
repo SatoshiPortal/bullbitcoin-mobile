@@ -2856,10 +2856,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "ยอดคงเหลือของกระเป๋าเงิน",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "recoverWalletButton": "การกู้คืนกระเป๋าสตางค์",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
@@ -4495,16 +4491,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "โหลด UTXO ไม่สำเร็จ: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "ใบแจ้งหนี้ ...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5171,10 +5157,6 @@
         "example": "PIN"
       }
     }
-  },
-  "sellErrorUnexpectedOrderType": "คาดว่าจะขายคําสั่งซื้อ แต่ได้รับประเภทที่แตกต่างกัน",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "pinCreateHeadline": "สร้างเข็มใหม่",
   "@pinCreateHeadline": {
@@ -6983,20 +6965,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "bitboxErrorInvalidMagicBytes": "รูปแบบ PSBT ตรวจจับ.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
-  "sellErrorRecalculateFees": "คำนวณค่าธรรมเนียมใหม่ไม่สำเร็จ: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "เลือกความถี่",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8516,10 +8484,6 @@
   "pinAuthenticationTitle": "ข้อควรระวัง",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "ไม่มีกระเป๋าสตางค์ที่เลือกเพื่อชําระเงิน",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "ใช้ชื่อบริษัทอย่างเป็นทางการ อย่าใช้ \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10615,16 +10579,6 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "เตรียมธุรกรรมไม่สำเร็จ: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "ชําระเงินออนไลน์",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -11649,10 +11603,6 @@
   "sendSwapFailed": "สัญญาณล้มเหลว การคืนเงินของคุณจะถูกประมวลผล.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "สัญญาณเครือข่าย กรุณาลองอีกครั้ง",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "ฮาร์ดแวร์",
   "@sendHardwareWallet": {
@@ -13204,5 +13154,6 @@
   "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
   "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
-  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง"
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "sellErrorLoadUtxos": "โหลดเหรียญไม่สำเร็จ กรุณาลองอีกครั้ง"
 }

@@ -964,7 +964,6 @@
   "payTotalAmount": "Importo totale",
   "exchangeLegacyTransactionsTitle": "Transazioni legacy",
   "autoswapWarningDontShowAgain": "Non mostrare di nuovo questo avvertimento.",
-  "sellInsufficientBalance": "Bilancio portafoglio insufficiente",
   "recoverWalletButton": "Recuperare Wallet",
   "mempoolCustomServerDeleteMessage": "Sei sicuro di voler eliminare questo server mempool personalizzato? Il server predefinito verrà utilizzato invece.",
   "coldcardStep6": "   - Aumentare la luminosità dello schermo sul dispositivo",
@@ -1465,15 +1464,6 @@
   "receiveWaitForSenderToFinish": "Attendere che il mittente finisca la transazione payjoin",
   "arkSetupTitle": "Ark Setup",
   "seedsignerStep3": "Scansione del codice QR mostrato nel portafoglio Bull",
-  "sellErrorLoadUtxos": "Non caricare UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Decoding fattura...",
   "importColdcardInstructionsStep5": "Selezionare \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap sembra troppo alto. {maxStopGap}",
@@ -1698,7 +1688,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "SellOrder previsto ma ha ricevuto un diverso tipo di ordine",
   "pinCreateHeadline": "Crea nuovo pin",
   "transactionSwapProgressConfirmed": "Confermato",
   "sellRoutingNumber": "Numero di rotazione",
@@ -2282,15 +2271,6 @@
   "recoverbullRecoveryContinueButton": "Continua",
   "payTimeoutError": "Tempo di pagamento. Si prega di controllare lo stato",
   "kruxStep4": "Fare clic su Carica dalla fotocamera",
-  "sellErrorRecalculateFees": "Non ha ricalcolato le tasse: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Seleziona una frequenza",
   "testBackupErrorNoMnemonic": "Nessun mnemonic caricato",
   "payInvoiceExpired": "Fattura scaduta",
@@ -2817,7 +2797,6 @@
   "addressViewCopyAddress": "Copia indirizzo",
   "receiveBitcoin": "Bitcoin",
   "pinAuthenticationTitle": "Autenticazione",
-  "sellErrorNoWalletSelected": "Nessun portafoglio selezionato per inviare il pagamento",
   "fundExchangeCrIbanCrcRecipientNameHelp": "Usa il nostro nome ufficiale. Non usare \"Bull Bitcoin\".",
   "receiveVerifyAddressLedger": "Verifica l'indirizzo su Ledger",
   "howToDecideButton": "Come decidere?",
@@ -3515,15 +3494,6 @@
   "importQrDeviceKeystoneStep2": "Sbloccalo inserendo il PIN",
   "receiveBitcoinTransactionWillTakeTime": "La transazione Bitcoin richiederà un po 'per confermare.",
   "sellOrderNotFoundError": "L'ordine di vendita non è stato trovato. Per favore riprovate.",
-  "sellErrorPrepareTransaction": "Non è riuscito a preparare la transazione: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Pagamento online",
   "importQrDeviceSeedsignerStep7": "Sul tuo dispositivo mobile, tocca Telecamera aperta",
   "addressViewChangeAddressesDescription": "Portafoglio display Modifica degli indirizzi",
@@ -3878,7 +3848,6 @@
   "backupWalletInstructionNoPassphrase": "Il backup non è protetto da passphrase. Aggiungi una passphrase al backup in seguito creando un nuovo portafoglio.",
   "transactionDetailLabelSwapId": "ID Swap",
   "sendSwapFailed": "Lo scambio e' fallito. Il rimborso verrà effettuato a breve.",
-  "sellNetworkError": "Errore di rete. Si prega di riprovare",
   "sendHardwareWallet": "Portafoglio hardware",
   "sendUserRejected": "L'utente ha rifiutato sul dispositivo",
   "swapSubtractFeesLabel": "Sottrarre tasse da importo",
@@ -5237,5 +5206,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin è attivo, ma questo portafoglio non ha ancora un saldo da contribuire. Si attiverà non appena riceverai fondi.",
   "announcementAutoswapDescription": "Il tuo Liquid viene convertito automaticamente in Bitcoin.",
   "addressViewErrorWalletNotFound": "Impossibile trovare questo portafoglio.",
-  "addressViewErrorLoadFailed": "Impossibile caricare i tuoi indirizzi. Riprova."
+  "addressViewErrorLoadFailed": "Impossibile caricare i tuoi indirizzi. Riprova.",
+  "sellErrorLoadUtxos": "Caricamento delle monete non riuscito. Per favore riprovate."
 }

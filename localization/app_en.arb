@@ -7639,10 +7639,6 @@
   "@sellOrderFailed": {
     "description": "Error message when order fails"
   },
-  "sellInsufficientBalance": "Insufficient wallet balance",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "sellMinimumAmount": "Minimum sell amount: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
@@ -7660,10 +7656,6 @@
         "type": "String"
       }
     }
-  },
-  "sellNetworkError": "Network error. Please try again",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sellRateExpired": "Exchange rate expired. Refreshing...",
   "@sellRateExpired": {
@@ -12649,47 +12641,13 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellErrorPrepareTransaction": "Failed to prepare transaction: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "No wallet selected to send payment",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
-  },
   "sellErrorFeesNotCalculated": "Transaction fees not calculated. Please try again.",
   "@sellErrorFeesNotCalculated": {
-    "description": "Error message when transaction fees calculation failed"
+    "description": "Error shown when transaction fee estimation or payment preparation fails"
   },
-  "sellErrorUnexpectedOrderType": "Expected SellOrder but received a different order type",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
-  },
-  "sellErrorLoadUtxos": "Failed to load UTXOs: {error}",
+  "sellErrorLoadUtxos": "Failed to load coins. Please try again.",
   "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Failed to recalculate fees: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
+    "description": "Error shown when loading wallet UTXOs fails"
   },
   "sellLoadingGeneric": "Loading...",
   "@sellLoadingGeneric": {

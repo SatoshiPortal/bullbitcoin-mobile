@@ -2562,10 +2562,6 @@
   "@arkSendButton": {
     "description": "Bottom button to navigate to send page"
   },
-  "sellInsufficientBalance": "Balança de carteira insuficiente",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "importWalletConnectHardware": "Conecte a carteira de hardware",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
@@ -3940,16 +3936,6 @@
   "@sellBankDetails": {
     "description": "Section header for bank account info"
   },
-  "sellErrorLoadUtxos": "Falhado para carregar UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "pinStatusCheckingDescription": "Verificando o status PIN",
   "@pinStatusCheckingDescription": {
     "description": "Status screen description during initialization"
@@ -4481,10 +4467,6 @@
   "ledgerHelpTitle": "Resolução de problemas do Ledger",
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
-  },
-  "sellErrorUnexpectedOrderType": "SellOrder esperado, mas recebeu um tipo de ordem diferente",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "onboardingScreenTitle": "Bem-vindo",
   "@onboardingScreenTitle": {
@@ -6791,16 +6773,6 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "sellErrorRecalculateFees": "Falhado em taxas recalculadas: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "receiveTitle": "Receber",
   "@receiveTitle": {
     "description": "Main screen title for receive feature"
@@ -7599,10 +7571,6 @@
   "fundExchangeCrIbanCrcRecipientNameHelp": "Use nosso nome corporativo oficial. Não use \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
     "description": "Help text for recipient name field explaining to use corporate name"
-  },
-  "sellErrorNoWalletSelected": "Nenhuma carteira selecionada para enviar pagamento",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "sellTitle": "Venda de Bitcoin",
   "@sellTitle": {
@@ -8833,16 +8801,6 @@
   "sellInteracEmail": "E-mail Interac",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
-  },
-  "sellErrorPrepareTransaction": "Falhado para preparar a transação: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
   },
   "buyStandardWithdrawal": "Retirada padrão",
   "@buyStandardWithdrawal": {
@@ -11179,10 +11137,6 @@
   "@pinCodeLoading": {
     "description": "Status screen title while loading PIN settings"
   },
-  "sellNetworkError": "Erro de rede. Por favor, tente novamente",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
-  },
   "satsBitcoinUnitSettingsLabel": "Unidade de exibição em satélites",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -13193,5 +13147,6 @@
   "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
   "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
-  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente."
+  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
+  "sellErrorLoadUtxos": "Falha ao carregar moedas. Por favor, tente novamente."
 }

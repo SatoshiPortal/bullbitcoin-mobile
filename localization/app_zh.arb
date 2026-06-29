@@ -965,7 +965,6 @@
   "payTotalAmount": "总额",
   "exchangeLegacyTransactionsTitle": "遗产交易",
   "autoswapWarningDontShowAgain": "不要再次表明这一警告.",
-  "sellInsufficientBalance": "钱包余额不足",
   "recoverWalletButton": "恢复钱包",
   "mempoolCustomServerDeleteMessage": "你们是否希望删除这一定制的超级服务器? 相反,将使用违约服务器.",
   "coldcardStep6": "   - 提高你的器具的亮度",
@@ -1466,15 +1465,6 @@
   "receiveWaitForSenderToFinish": "投标者完成工资交易",
   "arkSetupTitle": "方 法",
   "seedsignerStep3": "扫描 Bull 钱包中显示的二维码",
-  "sellErrorLoadUtxos": "Failed toload UEKOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "发票的下降......",
   "importColdcardInstructionsStep5": "选择“Export Wallet”",
   "electrumStopGapTooHighError": "消除差距似乎太高。 (Max. {maxStopGap}",
@@ -1699,7 +1689,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "预期SellOrder,但收到不同的订单类型",
   "pinCreateHeadline": "创建新的支柱",
   "transactionSwapProgressConfirmed": "1. 确认",
   "sellRoutingNumber": "序号",
@@ -2283,15 +2272,6 @@
   "recoverbullRecoveryContinueButton": "继续",
   "payTimeoutError": "支付时间。 请检查情况",
   "kruxStep4": "Click Load",
-  "sellErrorRecalculateFees": "未收回费用:{error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "请选择频率",
   "testBackupErrorNoMnemonic": "无mon装",
   "payInvoiceExpired": "发票过期",
@@ -2819,7 +2799,6 @@
   "addressViewCopyAddress": "复印件",
   "receiveBitcoin": "页: 1",
   "pinAuthenticationTitle": "认证",
-  "sellErrorNoWalletSelected": "未选中任何用于发送的钱包",
   "fundExchangeCrIbanCrcRecipientNameHelp": "利用我们的正式公司名称。 不要使用“Bul>.",
   "receiveVerifyAddressLedger": "更正",
   "howToDecideButton": "如何决定?",
@@ -3515,15 +3494,6 @@
   "importQrDeviceKeystoneStep2": "输入您的 PIN 码解锁",
   "receiveBitcoinTransactionWillTakeTime": "交易将同时确认.",
   "sellOrderNotFoundError": "没有发现销售订单。 请再次审判.",
-  "sellErrorPrepareTransaction": "未准备交易:{error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "《在线法案》支付",
   "importQrDeviceSeedsignerStep7": "在你的移动装置上,利用开放式照相机",
   "addressViewChangeAddressesDescription": "显示钱包找零地址",
@@ -3878,7 +3848,6 @@
   "backupWalletInstructionNoPassphrase": "您的备份未受到密码短语的保护。稍后可以通过创建新钱包的方式为您的备份添加一个密码短语",
   "transactionDetailLabelSwapId": "Swap ID",
   "sendSwapFailed": "s湖失败。 你的退款将很快处理.",
-  "sellNetworkError": "网络错误。 请再次审判",
   "sendHardwareWallet": "软墙",
   "sendUserRejected": "装置上被拒的用户",
   "swapSubtractFeesLabel": "数额减去费用",
@@ -5237,5 +5206,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin 已启用，但此钱包还没有可用于参与的余额。收到资金后，它将自动生效。",
   "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
-  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。"
+  "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
+  "sellErrorLoadUtxos": "加载币失败。请重试。"
 }

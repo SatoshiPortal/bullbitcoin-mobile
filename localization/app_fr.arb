@@ -2214,7 +2214,6 @@
   "sellProcessingOrder": "Traitement de l'ordre...",
   "sellOrderPlaced": "Ordre de vente placé avec succès",
   "sellOrderFailed": "Échec du placement de l'ordre de vente",
-  "sellInsufficientBalance": "Solde du portefeuille insuffisant",
   "sellMinimumAmount": "Montant minimum de vente : {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2231,7 +2230,6 @@
       }
     }
   },
-  "sellNetworkError": "Erreur réseau. Veuillez réessayer",
   "sellRateExpired": "Taux de change expiré. Actualisation...",
   "sellUpdatingRate": "Mise à jour du taux de change...",
   "sellCurrentRate": "Taux actuel",
@@ -3918,36 +3916,7 @@
   "sellViewDetailsButton": "Voir les détails",
   "sellKycPendingTitle": "Vérification KYC en attente",
   "sellKycPendingDescription": "Vous devez d'abord compléter la vérification d'identité",
-  "sellErrorPrepareTransaction": "Échec de préparation de la transaction : {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorNoWalletSelected": "Aucun portefeuille sélectionné pour envoyer le paiement",
   "sellErrorFeesNotCalculated": "Frais de transaction non calculés. Veuillez réessayer.",
-  "sellErrorUnexpectedOrderType": "SellOrder attendu mais un type de commande différent reçu",
-  "sellErrorLoadUtxos": "Échec du chargement des UTXOs : {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
-  "sellErrorRecalculateFees": "Échec du recalcul des frais : {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "sellLoadingGeneric": "Chargement...",
   "allSeedViewTitle": "Visualiseur de Graines",
   "allSeedViewLoadingMessage": "Cela peut prendre un certain temps à charger si vous avez beaucoup de graines sur cet appareil.",
@@ -5247,5 +5216,6 @@
   "sendPayjoinLabel": "Payjoin",
   "receivePayjoinAwaitingFunds": "Payjoin est activé, mais ce portefeuille n’a pas encore de solde à apporter. Il s’activera dès que vous recevrez des fonds.",
   "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
-  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer."
+  "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
+  "sellErrorLoadUtxos": "Échec du chargement des pièces. Veuillez réessayer."
 }

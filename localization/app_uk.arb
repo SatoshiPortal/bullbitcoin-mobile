@@ -1833,7 +1833,6 @@
   "arkTransactionDetails": "Деталі транзакції",
   "payTotalAmount": "Загальна кількість",
   "autoswapWarningDontShowAgain": "Не показувати цю попередження знову.",
-  "sellInsufficientBalance": "Недостатній баланс гаманця",
   "mempoolCustomServerDeleteMessage": "Ви впевнені, що ви хочете видалити цей користувальницький сервер? Сервер за замовчуванням буде використаний замість.",
   "coldcardStep6": "   - Збільшення яскравості екрану на вашому пристрої",
   "sellCashPickup": "Готівковий пікап",
@@ -2164,15 +2163,6 @@
   "swapValidationSelectToWallet": "Будь ласка, виберіть гаманець для перенесення",
   "arkSetupTitle": "Арк Настроювання",
   "seedsignerStep3": "Сканування QR-коду, показаного в булл-гаманці",
-  "sellErrorLoadUtxos": "Надіслане навантаження UTXOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Випадковий рахунок ...",
   "importColdcardInstructionsStep5": "Виберіть \"Експорт Гаманець\"",
   "electrumStopGapTooHighError": "Stop Gap здається занадто високою. {maxStopGap})",
@@ -2331,7 +2321,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "Розширений SellOrder, але отримав інший тип замовлення",
   "pinCreateHeadline": "Створення нового штифта",
   "sellRoutingNumber": "Номер маршрутизації",
   "sellDailyLimitReached": "Щоденне обмеження продажу",
@@ -2764,15 +2753,6 @@
   "recoverbullRecoveryContinueButton": "Продовжити",
   "payTimeoutError": "Розстрочка платежу. Будь ласка, перевірте статус",
   "kruxStep4": "Натисніть завантаження з камери",
-  "sellErrorRecalculateFees": "Плата за перерахунок: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Виберіть частоту",
   "testBackupErrorNoMnemonic": "Немає мнемічних навантажень",
   "payInvoiceExpired": "Войце розширюється",
@@ -3166,7 +3146,6 @@
   "electrumAddServer": "Додати сервер",
   "addressViewCopyAddress": "Статус на сервери",
   "pinAuthenticationTitle": "Аутентифікація",
-  "sellErrorNoWalletSelected": "Немає гаманця, обраного для відправки оплати",
   "testBackupFetchingFromDevice": "Захоплення від пристрою.",
   "backupWalletHowToDecideVaultCustomLocation": "Зручне розташування може бути набагато більш безпечною, в залежності від місця розташування, яку ви обираєте. Ви також повинні переконатися, що не втратити файл резервного копіювання або втратити пристрій, на якому зберігаються файли резервного копіювання.",
   "buyProofOfAddress": "Адреса",
@@ -3654,15 +3633,6 @@
   "dcaConfirmLightningAddress": "Адреса блискавки",
   "backupWalletErrorGoogleDriveSave": "Не вдалося зберегти Google диск",
   "importQrDeviceKeystoneStep2": "Розблокуйте його, ввівши PIN-код",
-  "sellErrorPrepareTransaction": "Не вдалося підготувати операцію: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Онлайн платіж",
   "importQrDeviceSeedsignerStep7": "На мобільному пристрої натисніть Open Camera",
   "addressViewChangeAddressesDescription": "Показати гаманець Зміна адрес",
@@ -3921,7 +3891,6 @@
   "arkAboutBoardingExitDelay": "Затримка виходу",
   "backupWalletInstructionNoPassphrase": "Ваше резервне копіювання не захищено пасфальним способом. Створіть новий гаманець.",
   "sendSwapFailed": "Не вдалося. Ваше повернення буде оброблятися найближчим часом.",
-  "sellNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
   "sendHardwareWallet": "Обладнання гаманець",
   "sendUserRejected": "Користувач відхилений від пристрою",
   "swapSubtractFeesLabel": "Відрахування платежів від суми",
@@ -5234,5 +5203,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
   "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
   "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
-  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз."
+  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
+  "sellErrorLoadUtxos": "Не вдалося завантажити монети. Будь ласка, спробуйте ще раз."
 }

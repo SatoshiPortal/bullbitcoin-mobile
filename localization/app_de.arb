@@ -939,7 +939,6 @@
   "payTotalAmount": "Gesamtbetrag",
   "exchangeLegacyTransactionsTitle": "Legacy-Transaktionen",
   "autoswapWarningDontShowAgain": "Diese Warnung nicht mehr anzeigen.",
-  "sellInsufficientBalance": "Unzureichendes Guthaben in der Wallet",
   "recoverWalletButton": "Wallet wiederherstellen",
   "mempoolCustomServerDeleteMessage": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Mempool-Server löschen möchten? Anschließend wird der Standardserver verwendet.",
   "exchangeAppSettingsValidationWarning": "Bitte legen Sie vor dem Speichern sowohl die Sprach- als auch die Währungseinstellungen fest.",
@@ -1431,15 +1430,6 @@
   "receiveWaitForSenderToFinish": "Warten Sie, bis der Absender die Payjoin-Transaktion abgeschlossen hat",
   "arkSetupTitle": "Ark-Setup",
   "seedsignerStep3": "Scannen Sie den QR-Code, der in der Bull Bitcoin-Wallet angezeigt wird",
-  "sellErrorLoadUtxos": "UTXOs konnten nicht geladen werden: {error}.",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Rechnung wird entschlüsselt…",
   "electrumStopGapTooHighError": "Stop Gap scheint zu hoch zu sein. Maximal {maxStopGap}.",
   "@electrumStopGapTooHighError": {
@@ -1659,7 +1649,6 @@
       }
     }
   },
-  "sellErrorUnexpectedOrderType": "Es wurde ein Verkaufsauftrag erwartet, aber ein anderer Auftragstyp erhalten.",
   "pinCreateHeadline": "Neue PIN erstellen",
   "transactionSwapProgressConfirmed": "Bestätigt",
   "sellRoutingNumber": "Bankleitzahl",
@@ -2231,15 +2220,6 @@
   "recoverbullRecoveryContinueButton": "Fortfahren",
   "payTimeoutError": "Zahlungszeitüberschreitung. Bitte überprüfen Sie den Status.",
   "kruxStep4": "Von Kamera laden",
-  "sellErrorRecalculateFees": "Gebühren konnten nicht neu berechnet werden: {error}.",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Bitte wählen Sie eine Häufigkeit.",
   "testBackupErrorNoMnemonic": "Keine Mnemonik geladen.",
   "payInvoiceExpired": "Rechnung abgelaufen",
@@ -2756,7 +2736,6 @@
   "electrumAddServer": "Server hinzufügen",
   "addressViewCopyAddress": "Adresse kopieren",
   "receiveBitcoin": "Bitcoin",
-  "sellErrorNoWalletSelected": "Es wurde keine Wallet zum Senden der Zahlung ausgewählt.",
   "fundExchangeCrIbanCrcRecipientNameHelp": "Nutzen Sie unseren offiziellen Firmennamen. Verwenden Sie nicht „Bull Bitcoin“",
   "receiveVerifyAddressLedger": "Bitte überprüfen Sie die Adresse auf dem Ledger",
   "howToDecideButton": "Wie Sie entscheiden?",
@@ -3455,15 +3434,6 @@
   "importQrDeviceKeystoneStep2": "Entsperren Sie das Gerät mit Ihrer PIN",
   "receiveBitcoinTransactionWillTakeTime": "Die Bestätigung der Bitcoin-Transaktion kann einige Zeit in Anspruch nehmen",
   "sellOrderNotFoundError": "Der Verkaufsauftrag wurde nicht gefunden. Bitte versuchen Sie es erneut.",
-  "sellErrorPrepareTransaction": "Transaktion konnte nicht vorbereitet werden: {error}.",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "Die Fehlermeldung"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Online-Rechnungszahlung",
   "importQrDeviceSeedsignerStep7": "Tippen Sie auf Ihrem mobilen Gerät auf „Kamera öffnen“",
   "addressViewChangeAddressesDescription": "Anzeige der Wechseladressen der Wallet.",
@@ -3813,7 +3783,6 @@
   "backupWalletInstructionNoPassphrase": "Ihre Sicherung ist nicht durch eine Passphrase geschützt. Fügen Sie Ihrer Sicherung später eine Passphrase hinzu, indem Sie eine neue Wallet erstellen.",
   "transactionDetailLabelSwapId": "Swap-ID",
   "sendSwapFailed": "Der Swap ist fehlgeschlagen. Ihre Rückerstattung wird in Kürze bearbeitet.",
-  "sellNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
   "sendHardwareWallet": "Hardware-Wallet",
   "sendUserRejected": "Benutzer auf Gerät abgelehnt.",
   "swapSubtractFeesLabel": "Gebühren vom Betrag abziehen",
@@ -5180,5 +5149,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin ist aktiviert, aber dieses Wallet hat noch kein Guthaben für einen Beitrag. Es wird aktiv, sobald du Guthaben empfängst.",
   "announcementAutoswapDescription": "Dein Liquid wird automatisch in Bitcoin getauscht.",
   "addressViewErrorWalletNotFound": "Diese Wallet konnte nicht gefunden werden.",
-  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut."
+  "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "sellErrorLoadUtxos": "Coins konnten nicht geladen werden. Bitte versuche es erneut."
 }

@@ -2417,10 +2417,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "Недостатъчен баланс в портфейла",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "recoverWalletButton": "Възстанови портфейла.",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
@@ -8885,10 +8881,6 @@
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
-  "sellNetworkError": "Грешка в мрежата. Моля, опитайте отново.",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
-  },
   "sendHardwareWallet": "Хардуерен портфейл",
   "@sendHardwareWallet": {
     "description": "Option to sign with hardware device"
@@ -10727,12 +10719,6 @@
   "sellViewDetailsButton": "Виж детайлите",
   "sellKycPendingTitle": "Изчаква се проверка на самоличността (KYC)",
   "sellKycPendingDescription": "Първо трябва да завършите проверка на самоличността",
-  "sellErrorPrepareTransaction": "Неуспешна подготовка на транзакцията: {error}",
-  "sellErrorNoWalletSelected": "Не е избран портфейл за изпращане на плащането",
-  "sellErrorFeesNotCalculated": "Таксите за транзакцията не бяха изчислени. Моля, опитайте отново.",
-  "sellErrorUnexpectedOrderType": "Очакваше се SellOrder, но беше получен различен тип поръчка",
-  "sellErrorLoadUtxos": "Неуспешно зареждане на UTXO: {error}",
-  "sellErrorRecalculateFees": "Неуспешно преизчисляване на таксите: {error}",
   "sellLoadingGeneric": "Зареждане...",
   "allSeedViewTitle": "Преглед на seed фразите",
   "allSeedViewLoadingMessage": "Зареждането може да отнеме известно време, ако имате много seed фрази на това устройство.",
@@ -10909,5 +10895,7 @@
   "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
   "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
-  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново."
+  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
+  "sellErrorFeesNotCalculated": "Транзакционните такси не са изчислени. Моля, опитайте отново.",
+  "sellErrorLoadUtxos": "Неуспешно зареждане на монети. Моля, опитайте отново."
 }

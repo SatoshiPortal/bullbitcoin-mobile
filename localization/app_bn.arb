@@ -2804,10 +2804,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "ওয়ালেট ব্যালেন্স পর্যাপ্ত নয়",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "recoverWalletButton": "ওয়ালেট পুনরুদ্ধার করুন",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
@@ -4404,16 +4400,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "UTXOs লোড করতে ব্যর্থ: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "ইনভয়েস ডিকোড হচ্ছে..।",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5033,10 +5019,6 @@
         "example": "PIN"
       }
     }
-  },
-  "sellErrorUnexpectedOrderType": "আশা করা SellOrder কিন্তু ভিন্ন ধরনের অর্ডার টাইপ পাওয়া গেছে",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "pinCreateHeadline": "নতুন পিন তৈরি করুন",
   "@pinCreateHeadline": {
@@ -6804,16 +6786,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "ফি পুনরায় গণনা করতে ব্যর্থ: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "দয়া করে একটি পুনরাবৃত্তি নির্ধারণ করুন",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8295,10 +8267,6 @@
   "pinAuthenticationTitle": "প্রমাণীকরণ",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "পেমেন্ট পাঠাতে কোনো ওয়ালেট নির্বাচন করা হয়নি",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "আমাদের অফিসিয়াল কর্পোরেট নাম ব্যবহার করুন। \"Bull Bitcoin\" ব্যবহার করবেন না।",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10360,16 +10328,6 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "লেনদেন প্রস্তুত করতে ব্যর্থ: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "অনলাইন বিল পরিশোধ",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -11357,10 +11315,6 @@
   "sendSwapFailed": "বিনিময় ব্যর্থ হয়েছে। আপনার ফেরতটি শীঘ্রই প্রক্রিয়াকৃত হবে।",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "হার্ডওয়্যার ওয়ালেট",
   "@sendHardwareWallet": {
@@ -13410,5 +13364,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin চালু আছে, কিন্তু এই ওয়ালেটে অবদান রাখার মতো কোনো ব্যালেন্স নেই। অর্থ পাওয়ার পর এটি সক্রিয় হবে।",
   "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।",
   "addressViewErrorWalletNotFound": "এই ওয়ালেটটি খুঁজে পাওয়া যায়নি।",
-  "addressViewErrorLoadFailed": "আপনার ঠিকানাগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+  "addressViewErrorLoadFailed": "আপনার ঠিকানাগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "sellErrorLoadUtxos": "কয়েন লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

@@ -2848,10 +2848,6 @@
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
   },
-  "sellInsufficientBalance": "Yeterli cüzdan dengesi",
-  "@sellInsufficientBalance": {
-    "description": "Error when wallet lacks funds"
-  },
   "recoverWalletButton": "Recover Cüzdan",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
@@ -4475,16 +4471,6 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "UTXOs'u yüklemek için başarısız oldu: {error}",
-  "@sellErrorLoadUtxos": {
-    "description": "Error message when loading UTXOs fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "Faturayı yaymak...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -5151,10 +5137,6 @@
         "example": "PIN"
       }
     }
-  },
-  "sellErrorUnexpectedOrderType": "Beklenilen SellOrder ama farklı bir sipariş türü aldı",
-  "@sellErrorUnexpectedOrderType": {
-    "description": "Error message when wrong order type is received"
   },
   "pinCreateHeadline": "Yeni pin oluşturun",
   "@pinCreateHeadline": {
@@ -6955,16 +6937,6 @@
   "@kruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "sellErrorRecalculateFees": "Ücretleri yeniden hesaplamak için başarısız oldu: {error}",
-  "@sellErrorRecalculateFees": {
-    "description": "Error message when fee recalculation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "Lütfen bir frekansı seçin",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
@@ -8449,10 +8421,6 @@
   "pinAuthenticationTitle": "Kimlik Doğrulama",
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
-  },
-  "sellErrorNoWalletSelected": "Ödeme göndermek için seçilen cüzdan yok",
-  "@sellErrorNoWalletSelected": {
-    "description": "Error message when no wallet is selected for payment"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "Resmi şirket adını kullanın. \"Bull Bitcoin\" kullanmayın.",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -10540,16 +10508,6 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "İşlem hazırlamak için başarısız oldu: {error}",
-  "@sellErrorPrepareTransaction": {
-    "description": "Error message when transaction preparation fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -11548,10 +11506,6 @@
   "sendSwapFailed": "Değişim başarısız oldu. Para iadeniz kısa sürede işlenecektir.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
-  },
-  "sellNetworkError": "Ağ hatası. Lütfen tekrar deneyin",
-  "@sellNetworkError": {
-    "description": "Error for connectivity issues"
   },
   "sendHardwareWallet": "Donanım Cüzdanı",
   "@sendHardwareWallet": {
@@ -13200,5 +13154,6 @@
   "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
   "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
-  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin."
+  "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
+  "sellErrorLoadUtxos": "Coinler yüklenemedi. Lütfen tekrar deneyin."
 }
