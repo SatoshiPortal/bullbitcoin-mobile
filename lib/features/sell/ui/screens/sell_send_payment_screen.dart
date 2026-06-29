@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';

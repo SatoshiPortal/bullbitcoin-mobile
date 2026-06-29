@@ -3,7 +3,7 @@ part of 'sell_bloc.dart';
 @freezed
 sealed class SellState with _$SellState {
   const factory SellState.initial({
-    GetExchangeUserSummaryException? getUserSummaryException,
+    SellFailure? failure,
   }) = SellInitialState;
   const factory SellState.amountInput({
     required UserSummary userSummary,
@@ -15,7 +15,7 @@ sealed class SellState with _$SellState {
     required OrderAmount orderAmount,
     required FiatCurrency fiatCurrency,
     @Default(false) bool isCreatingSellOrder,
-    SellError? error,
+    SellFailure? error,
   }) = SellWalletSelectionState;
   const factory SellState.payment({
     required UserSummary userSummary,
@@ -26,7 +26,7 @@ sealed class SellState with _$SellState {
     required SellOrder sellOrder,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
-    SellError? error,
+    SellFailure? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
