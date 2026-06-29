@@ -62,12 +62,7 @@ class WalletDetailScreen extends StatelessWidget {
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: BBPullableBody(
-                onRefresh: () async {
-                  // User gesture — bypass the coordinator throttle.
-                  final bloc = context.read<WalletBloc>();
-                  bloc.add(const WalletRefreshed(force: true));
-                  await bloc.stream.firstWhere((state) => !state.isRefreshing);
-                },
+                onRefresh: () => context.read<WalletBloc>().refresh(),
                 slivers: [
                   SliverToBoxAdapter(
                     child: WalletDetailBalanceCard(
@@ -78,9 +73,7 @@ class WalletDetailScreen extends StatelessWidget {
                   ),
                   if (wallet.isBitcoin) ...[
                     const SliverToBoxAdapter(child: Gap(8)),
-                    SliverToBoxAdapter(
-                      child: _CoinsEntryTile(wallet: wallet),
-                    ),
+                    SliverToBoxAdapter(child: _CoinsEntryTile(wallet: wallet)),
                   ],
                   const SliverToBoxAdapter(child: Gap(16)),
                   const WalletDetailTxsList(sliver: true),
