@@ -68,7 +68,6 @@ class WalletRepository {
     bool sync = false,
     DateTime? birthday,
   }) async {
-    // Derive and store the wallet metadata
     final walletLabel =
         isDefault &&
             (network == Network.bitcoinMainnet ||
@@ -99,7 +98,7 @@ class WalletRepository {
     }
 
     final balance = await _getBalance(metadata, sync: sync);
-    await _walletMetadataDatasource.store(metadata);
+    await _walletMetadataDatasource.create(metadata);
 
     return Wallet(
       origin: metadata.id,
@@ -129,12 +128,13 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
+
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    await _walletMetadataDatasource.create(metadata);
 
     // Return the created wallet entity
     return Wallet(
@@ -174,12 +174,12 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    await _walletMetadataDatasource.create(metadata);
 
     // Return the created wallet entity
     return Wallet(
@@ -317,7 +317,7 @@ class WalletRepository {
       throw WalletError.notFound(walletId);
     }
 
-    await _walletMetadataDatasource.store(
+    await _walletMetadataDatasource.update(
       metadata.copyWith(
         latestEncryptedBackup: time?.millisecondsSinceEpoch,
         isEncryptedVaultTested: time != null,
@@ -338,7 +338,7 @@ class WalletRepository {
       throw WalletError.notFound(walletId);
     }
 
-    await _walletMetadataDatasource.store(
+    await _walletMetadataDatasource.update(
       metadata.copyWith(
         isEncryptedVaultTested: isEncryptedVaultTested,
         isPhysicalBackupTested: isPhysicalBackupTested,
@@ -423,7 +423,7 @@ class WalletRepository {
 
     final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
 
-    await _walletMetadataDatasource.store(updatedWalletMetadata);
+    await _walletMetadataDatasource.update(updatedWalletMetadata);
   }
 
   Future<BalanceModel> _getBalance(

@@ -6,7 +6,12 @@ class WalletMetadataDatasource {
 
   WalletMetadataDatasource({required this._sqlite});
 
-  Future<void> store(WalletMetadataModel metadata) async {
+  Future<void> create(WalletMetadataModel metadata) async {
+    final companion = metadata.toSqlite();
+    await _sqlite.into(_sqlite.walletMetadatas).insert(companion);
+  }
+
+  Future<void> update(WalletMetadataModel metadata) async {
     final companion = metadata.toSqlite();
     await _sqlite
         .into(_sqlite.walletMetadatas)
@@ -14,10 +19,9 @@ class WalletMetadataDatasource {
   }
 
   Future<WalletMetadataModel?> fetch(String walletId) async {
-    final row =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final row = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (row == null) return null;
     return WalletMetadataModelMapper.fromSqlite(row);
