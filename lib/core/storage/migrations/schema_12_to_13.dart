@@ -1,7 +1,12 @@
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 12 to 13
+///
+/// v12 is the last released schema (v6.11.1). Every change below was added
+/// after that release, so this single step is the only hop any user database
+/// takes — the unreleased 12→13 and 13→14 steps are collapsed into one.
 ///
 /// Changes to swaps table:
 /// - Adds 'refund_fees' column: network fees actually paid by a refund
@@ -18,6 +23,9 @@ import 'package:drift/drift.dart';
 /// Changes to settings table:
 /// - Adds 'exchange_testnet_basic_auth_username'/'...password' columns: in-app
 ///   HTTP basic auth creds gating the testnet exchange web frontend
+///
+/// Additive: creates the `frozen_utxos` table backing user freeze persistence
+/// (issue #760). Idempotent: if the table already exists the create is swallowed.
 class Schema12To13 {
   static Future<void> migrate(Migrator m, Schema13 schema13) async {
     try {
@@ -58,6 +66,19 @@ class Schema12To13 {
       );
     } catch (e) {
       if (!e.toString().contains('duplicate column')) rethrow;
+    }
+
+    try {
+      await m.createTable(schema13.frozenUtxos);
+    } catch (e) {
+      // Idempotency guard: only swallow "table already exists" (a re-run over a
+      // partially-applied migration) — log it so a driver wording change
+      // surfaces instead of silently becoming a hard failure.
+      if (!e.toString().contains('already exists')) rethrow;
+      log.warning(
+        'Schema12To13: frozen_utxos already exists — skipping create',
+        error: e,
+      );
     }
   }
 }
