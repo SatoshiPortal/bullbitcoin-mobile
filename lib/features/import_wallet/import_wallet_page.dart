@@ -12,9 +12,7 @@ import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -109,20 +107,18 @@ class ImportWalletPage extends StatelessWidget {
                 title: context.loc.importWalletLedger,
                 onTap: () => context.pushNamed(LedgerRoute.importLedger.name),
               ),
-              if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
-                const Gap(16),
-                TabMenuVerticalButton(
-                  title: Platform.isAndroid
-                      ? context.loc.importWalletBitBox
-                      : context.loc.importWalletBitBoxNova,
-                  onTap: () => context.pushNamed(
-                    BitBoxRoute.importBitBox.name,
-                    extra: const BitBoxRouteParams(
-                      requestedDeviceType: SignerDeviceEntity.bitbox02,
-                    ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: Platform.isAndroid
+                    ? context.loc.importWalletBitBox
+                    : context.loc.importWalletBitBoxNova,
+                onTap: () => context.pushNamed(
+                  BitBoxRoute.importBitBox.name,
+                  extra: const BitBoxRouteParams(
+                    requestedDeviceType: SignerDeviceEntity.bitbox02,
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         ),

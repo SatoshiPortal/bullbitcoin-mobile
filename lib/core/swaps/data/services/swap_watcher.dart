@@ -348,12 +348,24 @@ class SwapWatcherService {
 
     // Claim happens on the receiving chain.
     final claimOnLiquid = swap.type == SwapType.bitcoinToLiquid;
-    final absoluteFees = await _claimFees(
-      swap: swap,
-      isLiquid: claimOnLiquid,
-      amountSat: swap.paymentAmount,
-      chainClaimAddress: claimAddress,
-    );
+    // Pin the claim fee to the stored creation-time claimFee. An exact-amount
+    // external transfer inflates the lockup at creation assuming THIS exact
+    // claim fee (see SwapFees.calculateSwapAmountFromReceivableAmount), so a
+    // live fee here makes the recipient get more (live < quote) or less
+    // (live > quote) than the exact amount — the regression this fixes.
+    // Recovered/rescued swaps carry no trustworthy stored claimFee, so they
+    // fall back to live estimation (also what keeps the rescue path working).
+    // Trade-off accepted for now: a mempool spike above the quote can leave a
+    // pinned claim underpriced; revisit with a persisted exact-amount flag.
+    final storedClaimFee = swap.fees?.claimFee;
+    final absoluteFees = (storedClaimFee != null && storedClaimFee > 0)
+        ? storedClaimFee
+        : await _claimFees(
+            swap: swap,
+            isLiquid: claimOnLiquid,
+            amountSat: swap.paymentAmount,
+            chainClaimAddress: claimAddress,
+          );
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
     try {
