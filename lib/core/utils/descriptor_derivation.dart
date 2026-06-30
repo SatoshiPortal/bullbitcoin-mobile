@@ -48,7 +48,9 @@ class DescriptorDerivation {
   }) async {
     final lwk.Descriptor confidentialDescriptor =
         await lwk.Descriptor.newConfidential(
-          network: isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
+          network: isTestnet
+              ? lwk.LiquidNetwork.testnet
+              : lwk.LiquidNetwork.mainnet,
           mnemonic: mnemonic,
         );
 
@@ -68,12 +70,6 @@ class DescriptorDerivation {
         ? bdk.KeychainKind.internal
         : bdk.KeychainKind.external_;
 
-    bdk.Descriptor.newBip84Public(
-      publicKey: publicKey,
-      fingerprint: fingerprint,
-      keychainKind: keychain,
-      networkKind: networkKind,
-    );
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
