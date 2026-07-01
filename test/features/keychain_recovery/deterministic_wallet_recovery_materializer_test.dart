@@ -2,9 +2,10 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/ports/keychain_recovery_wallet_materializer_port.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/features/keychain_recovery/data/deterministic_wallet_recovery_materializer.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
-import 'package:bb_mobile/features/keychain_recovery/frameworks/deterministic_wallet_recovery_materializer.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wallet_materializer_port.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -32,9 +33,14 @@ void main() {
       deterministicWallets.result = _prepared(
         childSeedFingerprint: '0123abcd',
         wallets: [
-          _preparedWallet(
-            specId: supported.materializationKey,
+          PreparedDeterministicWallet(
+            specId: _materializationKey(supported),
             walletId: supported.walletId,
+            network: supported.network,
+            scriptType: supported.scriptType,
+            externalPublicDescriptor: 'external',
+            internalPublicDescriptor: 'internal',
+            created: true,
           ),
         ],
       );
@@ -58,9 +64,14 @@ void main() {
       deterministicWallets.result = _prepared(
         childSeedFingerprint: 'deadbeef',
         wallets: [
-          _preparedWallet(
-            specId: intent.materializationKey,
+          PreparedDeterministicWallet(
+            specId: _materializationKey(intent),
             walletId: intent.walletId,
+            network: intent.network,
+            scriptType: intent.scriptType,
+            externalPublicDescriptor: 'external',
+            internalPublicDescriptor: 'internal',
+            created: true,
           ),
         ],
       );
@@ -72,25 +83,73 @@ void main() {
       expect(deterministicWallets.rollbackCalls, 1);
     },
   );
+
+  test(
+    'rolls back and reports all supported wallets on wallet id conflict',
+    () async {
+      final first = _intent(walletId: 'btc-wallet');
+      final second = _intent(
+        walletId: 'lbtc-wallet',
+        network: Network.liquidMainnet,
+      );
+      deterministicWallets.result = _prepared(
+        childSeedFingerprint: '0123abcd',
+        wallets: [
+          PreparedDeterministicWallet(
+            specId: _materializationKey(first),
+            walletId: 'other-wallet',
+            network: first.network,
+            scriptType: first.scriptType,
+            externalPublicDescriptor: 'external',
+            internalPublicDescriptor: 'internal',
+            created: true,
+          ),
+          PreparedDeterministicWallet(
+            specId: _materializationKey(second),
+            walletId: second.walletId,
+            network: second.network,
+            scriptType: second.scriptType,
+            externalPublicDescriptor: 'external',
+            internalPublicDescriptor: 'internal',
+            created: true,
+          ),
+        ],
+      );
+
+      final result = await materializer.materialize(
+        _batch(intents: [first, second]),
+      );
+
+      expect(result.materializedWallets, isEmpty);
+      expect(result.failedOutcomes.map((outcome) => outcome.status), [
+        _conflict,
+        _conflict,
+      ]);
+      expect(result.failedOutcomes.map((outcome) => outcome.walletId), [
+        'btc-wallet',
+        'lbtc-wallet',
+      ]);
+      expect(deterministicWallets.rollbackCalls, 1);
+    },
+  );
 }
 
 KeychainRecoveryWalletMaterializationBatch _batch({
-  required List<KeychainRecoveryWalletIntent> intents,
+  required List<KeychainManifestWalletMaterializationIntent> intents,
 }) {
   return KeychainRecoveryWalletMaterializationBatch(
     parentFingerprint: 'fedcba98',
-    reservationId: 'btcpay_wallet_seed',
     bip85Index: 100,
     deterministicAlias: 'BTCPay',
     intents: intents,
   );
 }
 
-KeychainRecoveryWalletIntent _intent({
+KeychainManifestWalletMaterializationIntent _intent({
   String walletId = 'btc-wallet',
   Network network = Network.bitcoinMainnet,
 }) {
-  return KeychainRecoveryWalletIntent(
+  return KeychainManifestWalletMaterializationIntent(
     entryId: "fedcba98:39'/0'/12'/100'",
     reservationId: 'btcpay_wallet_seed',
     bip85DerivationPath: "39'/0'/12'/100'",
@@ -99,6 +158,10 @@ KeychainRecoveryWalletIntent _intent({
     network: network,
     scriptType: ScriptType.bip84,
   );
+}
+
+String _materializationKey(KeychainManifestWalletMaterializationIntent intent) {
+  return '${intent.entryId}:${intent.walletId}';
 }
 
 PreparedDeterministicWallets _prepared({
@@ -111,21 +174,6 @@ PreparedDeterministicWallets _prepared({
     parentFingerprint: 'fedcba98',
     childSeedFingerprint: childSeedFingerprint,
     childSeedStoredDuringAttempt: true,
-  );
-}
-
-PreparedDeterministicWallet _preparedWallet({
-  required String specId,
-  required String walletId,
-}) {
-  return PreparedDeterministicWallet(
-    specId: specId,
-    walletId: walletId,
-    network: Network.bitcoinMainnet,
-    scriptType: ScriptType.bip84,
-    externalPublicDescriptor: 'external',
-    internalPublicDescriptor: 'internal',
-    created: true,
   );
 }
 
@@ -168,3 +216,4 @@ class _FakeGetSettingsUsecase implements GetSettingsUsecase {
 const _skipped = KeychainRecoveryWalletRestoreStatus.skippedUnsupported;
 const _childFingerprintMismatch =
     KeychainRecoveryWalletRestoreStatus.failedChildSeedFingerprintMismatch;
+const _conflict = KeychainRecoveryWalletRestoreStatus.failedConflict;

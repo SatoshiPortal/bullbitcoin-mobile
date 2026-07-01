@@ -352,17 +352,6 @@ class _InMemoryKeychainManifestStore
   final records = <KeychainManifestWalletMaterializationRecord>[];
 
   @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByWalletId(String walletId) async {
-    return records
-        .cast<KeychainManifestWalletMaterializationRecord?>()
-        .firstWhere(
-          (record) => record!.walletId == walletId,
-          orElse: () => null,
-        );
-  }
-
-  @override
   Future<List<KeychainManifestWalletMaterializationRecord>>
   fetchWalletMaterializationRecordsByParentFingerprint(
     String parentFingerprint,
@@ -373,22 +362,40 @@ class _InMemoryKeychainManifestStore
   }
 
   @override
-  Future<void> insertWalletMaterializationRecord(
-    KeychainManifestWalletMaterializationRecord record,
+  Future<void> insertWalletMaterializationRecords(
+    List<KeychainManifestWalletMaterializationRecord> records,
   ) async {
-    if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
-        null) {
-      throw KeychainManifestDuplicateException('duplicate');
+    final nextEntries = [...entries];
+    final nextRecords = [...this.records];
+    for (final record in records) {
+      final existingRecord = nextRecords
+          .cast<KeychainManifestWalletMaterializationRecord?>()
+          .firstWhere(
+            (stored) => stored!.walletId == record.walletId,
+            orElse: () => null,
+          );
+      if (existingRecord != null) {
+        if (existingRecord.sameRecordAs(record)) continue;
+        throw KeychainManifestEntryConflictException('duplicate');
+      }
+      final existingEntry = nextEntries
+          .cast<KeychainManifestEntry?>()
+          .firstWhere(
+            (entry) => entry!.entryId == record.entry.entryId,
+            orElse: () => null,
+          );
+      if (existingEntry == null) {
+        nextEntries.add(record.entry);
+      } else if (!existingEntry.sameRecordAs(record.entry)) {
+        throw KeychainManifestDuplicateException('entry duplicate');
+      }
+      nextRecords.add(record);
     }
-    final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(
-      (entry) => entry!.entryId == record.entry.entryId,
-      orElse: () => null,
-    );
-    if (existingEntry == null) {
-      entries.add(record.entry);
-    } else if (!existingEntry.sameRecordAs(record.entry)) {
-      throw KeychainManifestDuplicateException('entry duplicate');
-    }
-    records.add(record);
+    entries
+      ..clear()
+      ..addAll(nextEntries);
+    this.records
+      ..clear()
+      ..addAll(nextRecords);
   }
 }

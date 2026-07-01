@@ -3,9 +3,10 @@
 ## Scope
 
 `keychain_recovery` restores supported wallet materializations from validated
-`keychain_manifest` import plans. It is a neutral orchestration boundary: it
-creates or reuses local wallets through deterministic wallet public APIs and
-records restored materializations through `keychain_manifest/public`.
+`keychain_manifest` import plans. Its domain use case coordinates local wallet
+creation/reuse through deterministic wallet public APIs and records restored
+materializations through `keychain_manifest/public`; its data implementation
+adapts deterministic wallet materialization.
 
 It does not decode manifest files, own manifest persistence, publish or fetch
 remote manifests, submit product descriptors, mark product accounts connected,
@@ -43,7 +44,6 @@ Restore returns one outcome per wallet materialization:
 
 - `created`
 - `alreadyPresent`
-- `metadataRepaired`
 - `skippedUnsupported`
 - `failedParentFingerprintMismatch`
 - `failedChildSeedFingerprintMismatch`
@@ -52,10 +52,6 @@ Restore returns one outcome per wallet materialization:
 - `failedManifestRecord`
 - `failedConflict`
 
-`metadataRepaired` only means an already-present verified wallet received a
-missing keychain manifest materialization record. It does not repair descriptors,
-labels, product accounts, or pairing state.
-
 Unsupported wallet networks do not invalidate the whole manifest file or the
 whole entry; supported wallet materializations continue and unsupported ones are
 reported per wallet. Invalid manifest file structure, duplicate wallet
@@ -63,3 +59,11 @@ materializations, and reservation mismatches are rejected before recovery by
 `keychain_manifest`. Because import-plan DTOs cross a public facade boundary,
 `keychain_recovery` also revalidates reservation identity, derivation path,
 entry identity, and wallet membership before materializing wallets.
+
+Once a wallet materialization is returned as `created` or `alreadyPresent`, it
+is treated as current local wallet inventory. If manifest recording then fails,
+recovery returns `failedManifestRecord` for those wallets and leaves local wallet
+state intact for retry. Rollback is only allowed inside the deterministic wallet
+materializer before any wallet is reported as successfully materialized, for
+batch-level validation failures such as fingerprint mismatch or wallet-id
+conflict.

@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 
 enum KeychainRecoveryWalletRestoreStatus {
   created,
   alreadyPresent,
-  metadataRepaired,
   skippedUnsupported,
   failedParentFingerprintMismatch,
   failedChildSeedFingerprintMismatch,
@@ -13,44 +12,21 @@ enum KeychainRecoveryWalletRestoreStatus {
   failedConflict,
 }
 
-class KeychainRecoveryWalletIntent {
-  final String entryId;
-  final String reservationId;
-  final String bip85DerivationPath;
-  final String walletId;
-  final String childSeedFingerprint;
-  final Network network;
-  final ScriptType scriptType;
-
-  const KeychainRecoveryWalletIntent({
-    required this.entryId,
-    required this.reservationId,
-    required this.bip85DerivationPath,
-    required this.walletId,
-    required this.childSeedFingerprint,
-    required this.network,
-    required this.scriptType,
-  });
-
-  String get materializationKey => '$entryId:$walletId';
-}
-
 class KeychainRecoveryWalletRestoreOutcome {
-  final KeychainRecoveryWalletIntent intent;
+  final KeychainManifestWalletMaterializationIntent intent;
   final KeychainRecoveryWalletRestoreStatus status;
-  final String? walletId;
+
+  String get walletId => intent.walletId;
 
   const KeychainRecoveryWalletRestoreOutcome({
     required this.intent,
     required this.status,
-    this.walletId,
   });
 
   bool get succeeded {
     return switch (status) {
       KeychainRecoveryWalletRestoreStatus.created ||
-      KeychainRecoveryWalletRestoreStatus.alreadyPresent ||
-      KeychainRecoveryWalletRestoreStatus.metadataRepaired => true,
+      KeychainRecoveryWalletRestoreStatus.alreadyPresent => true,
       _ => false,
     };
   }

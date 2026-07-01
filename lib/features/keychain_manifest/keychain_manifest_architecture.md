@@ -15,9 +15,10 @@ persistence failure keep the manifest entry. This PR intentionally treats the
 manifest as local retry/recovery metadata and inventory, not product rollback
 state. Later retries of the same record operation may idempotently add missing
 proven entries, but this PR does not implement a separate repair API or flow.
-If a multi-wallet record call partially succeeds and later materializations
-fail, the successfully recorded rows remain durable. A later retry must record
-missing proven materializations idempotently instead of rolling back valid rows.
+Multi-wallet record calls are atomic: all wallet materializations for the call
+are committed together, or none are committed. A later retry may idempotently
+skip already-recorded identical rows and add missing proven materializations,
+but no caller should observe a half-recorded batch from one failed call.
 
 It can build an on-demand manifest file payload from local records for a
 requested parent fingerprint. The local Drift records remain the source of

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/restore_keychain_manifest_wallets_usecase.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/restore_keychain_manifest_wallets_usecase.dart';
 
 export 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
 
@@ -12,27 +12,6 @@ class KeychainRecoveryFacade {
   Future<KeychainRecoveryResult> restoreWallets(
     KeychainManifestImportPlan importPlan,
   ) async {
-    try {
-      return await _restoreWallets.execute(importPlan);
-    } catch (e) {
-      throw KeychainRecoveryException.fromInternal(e);
-    }
+    return _restoreWallets.execute(importPlan);
   }
-}
-
-class KeychainRecoveryException implements Exception {
-  final String message;
-  final Object? cause;
-
-  const KeychainRecoveryException(this.message, {this.cause});
-
-  factory KeychainRecoveryException.fromInternal(Object error) {
-    return KeychainRecoveryException(
-      'keychain recovery operation failed',
-      cause: error,
-    );
-  }
-
-  @override
-  String toString() => 'KeychainRecoveryException: $message';
 }

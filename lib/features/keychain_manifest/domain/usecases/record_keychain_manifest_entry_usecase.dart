@@ -79,9 +79,7 @@ class RecordKeychainManifestEntryUsecase {
     List<KeychainManifestWalletMaterializationRecord> records,
   ) async {
     try {
-      for (final record in records) {
-        await _executeRecord(record);
-      }
+      await _repository.insertWalletMaterializationRecords(records);
     } catch (e, stack) {
       log.warning(
         'Keychain manifest batch record failed',
@@ -89,34 +87,6 @@ class RecordKeychainManifestEntryUsecase {
         trace: stack,
       );
       rethrow;
-    }
-  }
-
-  Future<void> _executeRecord(
-    KeychainManifestWalletMaterializationRecord record,
-  ) async {
-    final byWallet = await _repository
-        .fetchWalletMaterializationRecordByWalletId(record.walletId);
-    if (byWallet != null) {
-      if (byWallet.sameRecordAs(record)) {
-        return;
-      }
-      throw KeychainManifestEntryConflictException(
-        'wallet already has a different keychain manifest entry',
-      );
-    }
-
-    try {
-      await _repository.insertWalletMaterializationRecord(record);
-    } on KeychainManifestDuplicateException {
-      final insertedByWallet = await _repository
-          .fetchWalletMaterializationRecordByWalletId(record.walletId);
-      if (insertedByWallet != null && insertedByWallet.sameRecordAs(record)) {
-        return;
-      }
-      throw KeychainManifestEntryConflictException(
-        'keychain manifest entry conflicts with an existing entry',
-      );
     }
   }
 

@@ -23,13 +23,14 @@ void main() {
     () async {
       final record = _record();
 
-      await store.insertWalletMaterializationRecord(record);
+      await store.insertWalletMaterializationRecords([record]);
 
-      final byWallet = await store.fetchWalletMaterializationRecordByWalletId(
-        record.walletId,
-      );
+      final byWallet =
+          (await store.fetchWalletMaterializationRecordsByParentFingerprint(
+            'fedcba98',
+          )).single;
 
-      expect(byWallet!.walletId, record.walletId);
+      expect(byWallet.walletId, record.walletId);
       expect(byWallet.entry.parentFingerprint, record.entry.parentFingerprint);
       expect(
         byWallet.walletMaterialization.childSeedFingerprint,
@@ -39,21 +40,33 @@ void main() {
   );
 
   test('enforces wallet id uniqueness', () async {
-    await store.insertWalletMaterializationRecord(_record());
+    await store.insertWalletMaterializationRecords([_record()]);
 
     expect(
-      () => store.insertWalletMaterializationRecord(
+      () => store.insertWalletMaterializationRecords([
         _record(network: 'liquidMainnet'),
-      ),
-      throwsA(isA<KeychainManifestDuplicateException>()),
+      ]),
+      throwsA(isA<KeychainManifestEntryConflictException>()),
     );
   });
 
+  test('records exact duplicate batch rows idempotently', () async {
+    final record = _record();
+
+    await store.insertWalletMaterializationRecords([record, record]);
+    await store.insertWalletMaterializationRecords([record]);
+
+    final bindings = await database
+        .select(database.keychainManifestWalletBindings)
+        .get();
+    expect(bindings, hasLength(1));
+  });
+
   test('allows same entry and network on another wallet id', () async {
-    await store.insertWalletMaterializationRecord(_record());
-    await store.insertWalletMaterializationRecord(
+    await store.insertWalletMaterializationRecords([_record()]);
+    await store.insertWalletMaterializationRecords([
       _record(walletId: 'other-wallet'),
-    );
+    ]);
 
     final bindings = await database
         .select(database.keychainManifestWalletBindings)
@@ -62,10 +75,10 @@ void main() {
   });
 
   test('allows same entry on another wallet network', () async {
-    await store.insertWalletMaterializationRecord(_record());
-    await store.insertWalletMaterializationRecord(
+    await store.insertWalletMaterializationRecords([_record()]);
+    await store.insertWalletMaterializationRecords([
       _record(walletId: 'lbtc-wallet', network: 'liquidMainnet'),
-    );
+    ]);
 
     final entries = await database
         .select(database.keychainManifestEntries)
@@ -78,36 +91,50 @@ void main() {
   });
 
   test('fetches wallet materializations by parent fingerprint', () async {
-    await store.insertWalletMaterializationRecord(
-      _record(
-        walletId: 'z-wallet',
-        bip85DerivationPath: "39'/0'/12'/101'",
-        bip85Index: 101,
-      ),
-    );
-    await store.insertWalletMaterializationRecord(
+    await store.insertWalletMaterializationRecords([
+      _record(walletId: 'z-wallet', bip85DerivationPath: "39'/0'/12'/101'"),
+    ]);
+    await store.insertWalletMaterializationRecords([
       _record(walletId: 'btc-wallet', network: 'bitcoinMainnet'),
-    );
-    await store.insertWalletMaterializationRecord(
+    ]);
+    await store.insertWalletMaterializationRecords([
       _record(walletId: 'lbtc-wallet', network: 'liquidMainnet'),
-    );
-    await store.insertWalletMaterializationRecord(
+    ]);
+    await store.insertWalletMaterializationRecords([
       _record(walletId: 'other-parent', parentFingerprint: '00112233'),
-    );
+    ]);
 
     final records = await store
         .fetchWalletMaterializationRecordsByParentFingerprint(' FEDCBA98 ');
 
-    // Order is unspecified at the repository boundary; deterministic file
-    // ordering is owned by the build usecase.
-    expect(
-      records.map((record) => record.walletId),
-      unorderedEquals(['btc-wallet', 'lbtc-wallet', 'z-wallet']),
-    );
+    expect(records.map((record) => record.walletId), [
+      'btc-wallet',
+      'lbtc-wallet',
+      'z-wallet',
+    ]);
     expect(
       records.every((record) => record.entry.parentFingerprint == 'fedcba98'),
       isTrue,
     );
+  });
+
+  test('rolls back the whole batch when a later row conflicts', () async {
+    await store.insertWalletMaterializationRecords([
+      _record(walletId: 'existing-wallet', network: 'bitcoinMainnet'),
+    ]);
+
+    await expectLater(
+      store.insertWalletMaterializationRecords([
+        _record(walletId: 'new-wallet', network: 'bitcoinMainnet'),
+        _record(walletId: 'existing-wallet', network: 'liquidMainnet'),
+      ]),
+      throwsA(isA<KeychainManifestEntryConflictException>()),
+    );
+
+    final records = await store
+        .fetchWalletMaterializationRecordsByParentFingerprint('fedcba98');
+
+    expect(records.map((record) => record.walletId), ['existing-wallet']);
   });
 }
 

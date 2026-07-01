@@ -2,8 +2,9 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/ports/keychain_recovery_wallet_materializer_port.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wallet_materializer_port.dart';
 
 class DeterministicWalletRecoveryMaterializer
     implements KeychainRecoveryWalletMaterializerPort {
@@ -47,7 +48,7 @@ class DeterministicWalletRecoveryMaterializer
           walletSpecs: supportedIntents
               .map(
                 (intent) => DeterministicWalletSpec(
-                  id: intent.materializationKey,
+                  id: _materializationKey(intent),
                   network: intent.network,
                   scriptType: intent.scriptType,
                   isDefault: false,
@@ -98,43 +99,37 @@ class DeterministicWalletRecoveryMaterializer
     }
 
     final materialized = <KeychainRecoveryMaterializedWallet>[];
-    final failures = <KeychainRecoveryWalletRestoreOutcome>[];
+    var hasConflict = false;
     for (final intent in supportedIntents) {
       final preparedWallet = prepared.wallets.firstWhere(
-        (wallet) => wallet.specId == intent.materializationKey,
+        (wallet) => wallet.specId == _materializationKey(intent),
       );
       if (preparedWallet.walletId != intent.walletId) {
-        failures.add(
-          KeychainRecoveryWalletRestoreOutcome(
-            intent: intent,
-            status: KeychainRecoveryWalletRestoreStatus.failedConflict,
-            walletId: preparedWallet.walletId,
-          ),
-        );
+        hasConflict = true;
         continue;
       }
       materialized.add(
         KeychainRecoveryMaterializedWallet(
           intent: intent,
-          walletId: preparedWallet.walletId,
           childSeedFingerprint: prepared.childSeedFingerprint,
           created: preparedWallet.created,
         ),
       );
     }
-    if (failures.isNotEmpty) {
+    if (hasConflict) {
       await _rollbackCreatedWalletsBestEffort(prepared);
       return KeychainRecoveryWalletMaterializationResult(
         materializedWallets: const [],
-        failedOutcomes: [...unsupportedOutcomes, ...failures],
+        failedOutcomes: [
+          ...unsupportedOutcomes,
+          ..._failed(supportedIntents, status: _failedConflict),
+        ],
       );
     }
     return KeychainRecoveryWalletMaterializationResult(
       materializedWallets: materialized,
       failedOutcomes: unsupportedOutcomes,
       derivationPath: prepared.derivationPath,
-      rollbackCreatedWallets: () =>
-          _deterministicWallets.rollbackCreatedWallets(prepared!),
     );
   }
 
@@ -149,7 +144,7 @@ class DeterministicWalletRecoveryMaterializer
   }
 
   List<KeychainRecoveryWalletRestoreOutcome> _unsupportedEnvironmentOutcomes(
-    List<KeychainRecoveryWalletIntent> intents,
+    List<KeychainManifestWalletMaterializationIntent> intents,
     Environment environment,
   ) {
     return intents
@@ -160,7 +155,6 @@ class DeterministicWalletRecoveryMaterializer
           (intent) => KeychainRecoveryWalletRestoreOutcome(
             intent: intent,
             status: KeychainRecoveryWalletRestoreStatus.skippedUnsupported,
-            walletId: intent.walletId,
           ),
         )
         .toList(growable: false);
@@ -173,8 +167,14 @@ class DeterministicWalletRecoveryMaterializer
     };
   }
 
+  String _materializationKey(
+    KeychainManifestWalletMaterializationIntent intent,
+  ) {
+    return '${intent.entryId}:${intent.walletId}';
+  }
+
   List<KeychainRecoveryWalletRestoreOutcome> _failed(
-    List<KeychainRecoveryWalletIntent> intents, {
+    List<KeychainManifestWalletMaterializationIntent> intents, {
     required KeychainRecoveryWalletRestoreStatus status,
   }) {
     return intents
@@ -182,7 +182,6 @@ class DeterministicWalletRecoveryMaterializer
           (intent) => KeychainRecoveryWalletRestoreOutcome(
             intent: intent,
             status: status,
-            walletId: intent.walletId,
           ),
         )
         .toList(growable: false);
@@ -195,3 +194,4 @@ const _parentFingerprintMismatch =
     KeychainRecoveryWalletRestoreStatus.failedParentFingerprintMismatch;
 const _childSeedFingerprintMismatch =
     KeychainRecoveryWalletRestoreStatus.failedChildSeedFingerprintMismatch;
+const _failedConflict = KeychainRecoveryWalletRestoreStatus.failedConflict;

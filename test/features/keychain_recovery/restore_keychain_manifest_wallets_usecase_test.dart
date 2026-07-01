@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/ports/keychain_recovery_wallet_materializer_port.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/restore_keychain_manifest_wallets_usecase.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wallet_materializer_port.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/restore_keychain_manifest_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,8 +26,7 @@ void main() {
     materializer.result = KeychainRecoveryWalletMaterializationResult(
       materializedWallets: [
         KeychainRecoveryMaterializedWallet(
-          intent: _recoveryIntent(intent),
-          walletId: intent.walletId,
+          intent: intent,
           childSeedFingerprint: intent.childSeedFingerprint,
           created: true,
         ),
@@ -56,9 +55,8 @@ void main() {
       materializedWallets: const [],
       failedOutcomes: [
         KeychainRecoveryWalletRestoreOutcome(
-          intent: _recoveryIntent(intent),
+          intent: intent,
           status: KeychainRecoveryWalletRestoreStatus.skippedUnsupported,
-          walletId: intent.walletId,
         ),
       ],
     );
@@ -72,31 +70,37 @@ void main() {
 
   test('reports manifest record failures per materialized wallet', () async {
     final intent = _intent();
-    keychainManifest.recordError = KeychainManifestException.fromInternal(
-      Exception('failed'),
+    final liquidIntent = _intent(
+      walletId: 'lbtc-wallet',
+      network: Network.liquidMainnet,
     );
-    var rollbackCalled = false;
+    keychainManifest.recordError = KeychainManifestFileParseException(
+      reason: KeychainManifestFileParseFailureReason.invalidMetadata,
+    );
     materializer.result = KeychainRecoveryWalletMaterializationResult(
       materializedWallets: [
         KeychainRecoveryMaterializedWallet(
-          intent: _recoveryIntent(intent),
-          walletId: intent.walletId,
+          intent: intent,
           childSeedFingerprint: intent.childSeedFingerprint,
+          created: true,
+        ),
+        KeychainRecoveryMaterializedWallet(
+          intent: liquidIntent,
+          childSeedFingerprint: liquidIntent.childSeedFingerprint,
           created: true,
         ),
       ],
       failedOutcomes: const [],
       derivationPath: "39'/0'/12'/100'",
-      rollbackCreatedWallets: () async {
-        rollbackCalled = true;
-      },
     );
 
-    final result = await usecase.execute(_plan(intent));
+    final result = await usecase.execute(_plan(intent, liquidIntent));
 
     expect(result.hasFailures, true);
-    expect(result.walletOutcomes.single.status, _recordFailed);
-    expect(rollbackCalled, true);
+    expect(result.walletOutcomes.map((outcome) => outcome.status), [
+      _recordFailed,
+      _recordFailed,
+    ]);
   });
 
   test(
@@ -106,8 +110,7 @@ void main() {
       materializer.result = KeychainRecoveryWalletMaterializationResult(
         materializedWallets: [
           KeychainRecoveryMaterializedWallet(
-            intent: _recoveryIntent(intent),
-            walletId: intent.walletId,
+            intent: intent,
             childSeedFingerprint: intent.childSeedFingerprint,
             created: false,
           ),
@@ -126,9 +129,9 @@ void main() {
   test('rejects forged import plans before wallet materialization', () async {
     final intent = _intent();
     final forgedIntent = KeychainManifestWalletMaterializationIntent(
-      entryId: "fedcba98:39'/0'/12'/101'",
+      entryId: intent.entryId,
       reservationId: intent.reservationId,
-      bip85DerivationPath: "39'/0'/12'/101'",
+      bip85DerivationPath: intent.bip85DerivationPath,
       walletId: intent.walletId,
       childSeedFingerprint: intent.childSeedFingerprint,
       network: intent.network,
@@ -140,7 +143,7 @@ void main() {
         KeychainManifestImportEntryIntent(
           entryId: "fedcba98:39'/0'/12'/101'",
           parentFingerprint: 'fedcba98',
-          bip85DerivationPath: "39'/0'/12'/101'",
+          bip85DerivationPath: "39'/0'/12'/100'",
           reservationId: 'btcpay_wallet_seed',
           walletMaterializations: [forgedIntent],
         ),
@@ -157,8 +160,9 @@ void main() {
 }
 
 KeychainManifestImportPlan _plan(
-  KeychainManifestWalletMaterializationIntent intent,
-) {
+  KeychainManifestWalletMaterializationIntent intent, [
+  KeychainManifestWalletMaterializationIntent? secondIntent,
+]) {
   return KeychainManifestImportPlan(
     parentFingerprint: 'fedcba98',
     entries: [
@@ -167,35 +171,24 @@ KeychainManifestImportPlan _plan(
         parentFingerprint: 'fedcba98',
         bip85DerivationPath: "39'/0'/12'/100'",
         reservationId: 'btcpay_wallet_seed',
-        walletMaterializations: [intent],
+        walletMaterializations: [intent, ?secondIntent],
       ),
     ],
   );
 }
 
-KeychainManifestWalletMaterializationIntent _intent() {
+KeychainManifestWalletMaterializationIntent _intent({
+  String walletId = 'btc-wallet',
+  Network network = Network.bitcoinMainnet,
+}) {
   return KeychainManifestWalletMaterializationIntent(
     entryId: "fedcba98:39'/0'/12'/100'",
     reservationId: 'btcpay_wallet_seed',
     bip85DerivationPath: "39'/0'/12'/100'",
-    walletId: 'btc-wallet',
+    walletId: walletId,
     childSeedFingerprint: '0123abcd',
-    network: Network.bitcoinMainnet,
+    network: network,
     scriptType: ScriptType.bip84,
-  );
-}
-
-KeychainRecoveryWalletIntent _recoveryIntent(
-  KeychainManifestWalletMaterializationIntent intent,
-) {
-  return KeychainRecoveryWalletIntent(
-    entryId: intent.entryId,
-    reservationId: intent.reservationId,
-    bip85DerivationPath: intent.bip85DerivationPath,
-    walletId: intent.walletId,
-    childSeedFingerprint: intent.childSeedFingerprint,
-    network: intent.network,
-    scriptType: intent.scriptType,
   );
 }
 

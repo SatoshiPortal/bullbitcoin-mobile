@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/keychain_recovery/application/ports/keychain_recovery_wallet_materializer_port.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
+import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wallet_materializer_port.dart';
 
 class RestoreKeychainManifestWalletsUsecase {
   final KeychainRecoveryWalletMaterializerPort _walletMaterializer;
@@ -90,26 +90,9 @@ class RestoreKeychainManifestWalletsUsecase {
     final reservation = _registry.reservationById(entry.reservationId)!;
     return KeychainRecoveryWalletMaterializationBatch(
       parentFingerprint: importPlan.parentFingerprint,
-      reservationId: entry.reservationId,
       bip85Index: reservation.walletIndex,
       deterministicAlias: reservation.deterministicAlias,
-      intents: entry.walletMaterializations
-          .map(_walletIntent)
-          .toList(growable: false),
-    );
-  }
-
-  KeychainRecoveryWalletIntent _walletIntent(
-    KeychainManifestWalletMaterializationIntent intent,
-  ) {
-    return KeychainRecoveryWalletIntent(
-      entryId: intent.entryId,
-      reservationId: intent.reservationId,
-      bip85DerivationPath: intent.bip85DerivationPath,
-      walletId: intent.walletId,
-      childSeedFingerprint: intent.childSeedFingerprint,
-      network: intent.network,
-      scriptType: intent.scriptType,
+      intents: entry.walletMaterializations,
     );
   }
 
@@ -119,9 +102,8 @@ class RestoreKeychainManifestWalletsUsecase {
     return intents
         .map(
           (intent) => KeychainRecoveryWalletRestoreOutcome(
-            intent: _walletIntent(intent),
+            intent: intent,
             status: KeychainRecoveryWalletRestoreStatus.failedInvalidImportPlan,
-            walletId: intent.walletId,
           ),
         )
         .toList(growable: false);
@@ -152,7 +134,6 @@ class RestoreKeychainManifestWalletsUsecase {
                 intent: intent,
                 status:
                     KeychainRecoveryWalletRestoreStatus.failedWalletCreation,
-                walletId: intent.walletId,
               ),
             )
             .toList(growable: false),
@@ -178,7 +159,7 @@ class RestoreKeychainManifestWalletsUsecase {
           materializations: wallets
               .map(
                 (wallet) => KeychainManifestWalletMaterializationRequest(
-                  walletId: wallet.walletId,
+                  walletId: wallet.intent.walletId,
                   childSeedFingerprint: wallet.childSeedFingerprint,
                   network: wallet.intent.network,
                   scriptType: wallet.intent.scriptType,
@@ -192,25 +173,15 @@ class RestoreKeychainManifestWalletsUsecase {
             return KeychainRecoveryWalletRestoreOutcome(
               intent: wallet.intent,
               status: _successStatus(wallet),
-              walletId: wallet.walletId,
             );
           })
           .toList(growable: false);
     } on KeychainManifestException {
-      final rollback = materializationResult.rollbackCreatedWallets;
-      if (rollback != null) {
-        try {
-          await rollback();
-        } catch (_) {
-          // Preserve the recovery failure result; rollback is best effort here.
-        }
-      }
       return wallets
           .map((wallet) {
             return KeychainRecoveryWalletRestoreOutcome(
               intent: wallet.intent,
               status: KeychainRecoveryWalletRestoreStatus.failedManifestRecord,
-              walletId: wallet.walletId,
             );
           })
           .toList(growable: false);

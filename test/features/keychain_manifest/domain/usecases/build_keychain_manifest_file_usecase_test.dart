@@ -110,20 +110,9 @@ class _InMemoryKeychainManifestStore
   }
 
   @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByWalletId(String walletId) async {
-    return records
-        .cast<KeychainManifestWalletMaterializationRecord?>()
-        .firstWhere(
-          (record) => record!.walletId == walletId,
-          orElse: () => null,
-        );
-  }
-
-  @override
-  Future<void> insertWalletMaterializationRecord(
-    KeychainManifestWalletMaterializationRecord record,
+  Future<void> insertWalletMaterializationRecords(
+    List<KeychainManifestWalletMaterializationRecord> records,
   ) async {
-    records.add(record);
+    this.records.addAll(records);
   }
 }

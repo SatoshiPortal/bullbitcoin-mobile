@@ -247,7 +247,7 @@ void main() {
     });
   });
 
-  test('keeps inserted batch records if a later record fails', () async {
+  test('does not keep batch records if a later record fails', () async {
     store.failOnWalletId = 'lbtc-wallet';
 
     await expectLater(
@@ -266,8 +266,8 @@ void main() {
       throwsA(isA<StateError>()),
     );
 
-    expect(store.records.map((record) => record.walletId), ['btc-wallet']);
-    expect(store.entries, hasLength(1));
+    expect(store.records, isEmpty);
+    expect(store.entries, isEmpty);
 
     store.failOnWalletId = null;
     await usecase.execute(
@@ -289,6 +289,18 @@ void main() {
     ]);
     expect(store.entries, hasLength(1));
   });
+
+  test(
+    'treats duplicate identical rows after precheck as idempotent',
+    () async {
+      store.insertIdenticalRowsBeforeBatch = true;
+
+      await usecase.execute(_command());
+
+      expect(store.records.map((record) => record.walletId), ['btc-wallet']);
+      expect(store.entries, hasLength(1));
+    },
+  );
 }
 
 KeychainManifestReservedDerivationRequest _command({
@@ -364,17 +376,7 @@ class _InMemoryKeychainManifestStore
   final entries = <KeychainManifestEntry>[];
   final records = <KeychainManifestWalletMaterializationRecord>[];
   String? failOnWalletId;
-
-  @override
-  Future<KeychainManifestWalletMaterializationRecord?>
-  fetchWalletMaterializationRecordByWalletId(String walletId) async {
-    return records
-        .cast<KeychainManifestWalletMaterializationRecord?>()
-        .firstWhere(
-          (record) => record!.walletId == walletId,
-          orElse: () => null,
-        );
-  }
+  bool insertIdenticalRowsBeforeBatch = false;
 
   @override
   Future<List<KeychainManifestWalletMaterializationRecord>>
@@ -387,25 +389,56 @@ class _InMemoryKeychainManifestStore
   }
 
   @override
-  Future<void> insertWalletMaterializationRecord(
-    KeychainManifestWalletMaterializationRecord record,
+  Future<void> insertWalletMaterializationRecords(
+    List<KeychainManifestWalletMaterializationRecord> records,
   ) async {
-    if (record.walletId == failOnWalletId) {
-      throw StateError('insert failed');
+    final nextEntries = [...entries];
+    final nextRecords = [...this.records];
+    if (insertIdenticalRowsBeforeBatch) {
+      for (final record in records) {
+        if (!nextRecords.any((stored) => stored.walletId == record.walletId)) {
+          nextRecords.add(record);
+          if (!nextEntries.any(
+            (entry) => entry.entryId == record.entry.entryId,
+          )) {
+            nextEntries.add(record.entry);
+          }
+        }
+      }
+      insertIdenticalRowsBeforeBatch = false;
     }
-    if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
-        null) {
-      throw KeychainManifestDuplicateException('duplicate');
+    for (final record in records) {
+      if (record.walletId == failOnWalletId) {
+        throw StateError('insert failed');
+      }
+      final existingRecord = nextRecords
+          .cast<KeychainManifestWalletMaterializationRecord?>()
+          .firstWhere(
+            (stored) => stored!.walletId == record.walletId,
+            orElse: () => null,
+          );
+      if (existingRecord != null) {
+        if (existingRecord.sameRecordAs(record)) continue;
+        throw KeychainManifestEntryConflictException('duplicate');
+      }
+      final existingEntry = nextEntries
+          .cast<KeychainManifestEntry?>()
+          .firstWhere(
+            (entry) => entry!.entryId == record.entry.entryId,
+            orElse: () => null,
+          );
+      if (existingEntry == null) {
+        nextEntries.add(record.entry);
+      } else if (!existingEntry.sameRecordAs(record.entry)) {
+        throw KeychainManifestDuplicateException('entry duplicate');
+      }
+      nextRecords.add(record);
     }
-    final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(
-      (entry) => entry!.entryId == record.entry.entryId,
-      orElse: () => null,
-    );
-    if (existingEntry == null) {
-      entries.add(record.entry);
-    } else if (!existingEntry.sameRecordAs(record.entry)) {
-      throw KeychainManifestDuplicateException('entry duplicate');
-    }
-    records.add(record);
+    entries
+      ..clear()
+      ..addAll(nextEntries);
+    this.records
+      ..clear()
+      ..addAll(nextRecords);
   }
 }
