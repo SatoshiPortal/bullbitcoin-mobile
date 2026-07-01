@@ -1,59 +1,31 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
-
-class RecordReservedKeychainDerivationCommand {
-  final String reservationId;
-  final String parentFingerprint;
-  final List<RecordKeychainManifestWalletMaterializationCommand>
-  walletMaterializations;
-
-  const RecordReservedKeychainDerivationCommand({
-    required this.reservationId,
-    required this.parentFingerprint,
-    required this.walletMaterializations,
-  });
-}
-
-class RecordKeychainManifestWalletMaterializationCommand {
-  final String walletId;
-  final String childSeedFingerprint;
-  final String network;
-  final String walletPurpose;
-  final String scriptType;
-
-  const RecordKeychainManifestWalletMaterializationCommand({
-    required this.walletId,
-    required this.childSeedFingerprint,
-    required this.network,
-    required this.walletPurpose,
-    required this.scriptType,
-  });
-}
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 
 class RecordKeychainManifestEntryUsecase {
-  final KeychainManifestEntryStore _store;
+  final KeychainManifestEntryRepository _repository;
   final Bip85RegistryFacade _bip85Registry;
 
   RecordKeychainManifestEntryUsecase({
-    required this._store,
+    required this._repository,
     this._bip85Registry = const Bip85RegistryFacade(),
   });
 
   Future<void> execute(
-    RecordReservedKeychainDerivationCommand command, {
+    KeychainManifestReservedDerivationRequest request, {
     DateTime? now,
   }) async {
-    final reservation = _reservationFor(command.reservationId);
+    final reservation = _reservationFor(request.reservationId);
     if (reservation.purpose != Bip85ReservationPurpose.walletSeed) {
       throw KeychainManifestReservationMismatchException(
         'wallet materialization does not match BIP85 reservation purpose',
       );
     }
-    if (command.walletMaterializations.isEmpty) {
-      throw const KeychainManifestEntryConflictException(
+    if (request.materializations.isEmpty) {
+      throw KeychainManifestEntryConflictException(
         'at least one materialization is required',
       );
     }
@@ -61,7 +33,7 @@ class RecordKeychainManifestEntryUsecase {
     final timestamp =
         (now ?? DateTime.now().toUtc()).millisecondsSinceEpoch ~/ 1000;
     final entry = KeychainManifestEntry(
-      parentFingerprint: command.parentFingerprint,
+      parentFingerprint: request.parentFingerprint,
       bip85DerivationPath: reservation.scope.exactPath,
       reservationId: reservation.id,
       entryType: reservation.purpose.name,
@@ -71,7 +43,7 @@ class RecordKeychainManifestEntryUsecase {
       createdAt: timestamp,
       updatedAt: timestamp,
     );
-    final records = command.walletMaterializations
+    final records = request.materializations
         .map((materialization) {
           return KeychainManifestWalletMaterializationRecord(
             entry: entry,
@@ -79,9 +51,9 @@ class RecordKeychainManifestEntryUsecase {
               walletId: materialization.walletId,
               entryId: entry.entryId,
               childSeedFingerprint: materialization.childSeedFingerprint,
-              network: materialization.network,
+              network: materialization.network.name,
               walletPurpose: materialization.walletPurpose,
-              scriptType: materialization.scriptType,
+              scriptType: materialization.scriptType.name,
               createdAt: timestamp,
               updatedAt: timestamp,
             ),
@@ -112,29 +84,26 @@ class RecordKeychainManifestEntryUsecase {
   Future<void> _executeRecord(
     KeychainManifestWalletMaterializationRecord record,
   ) async {
-    _validateReservation(record.entry);
-
-    final byWallet = await _store.fetchWalletMaterializationRecordByWalletId(
-      record.walletId,
-    );
+    final byWallet = await _repository
+        .fetchWalletMaterializationRecordByWalletId(record.walletId);
     if (byWallet != null) {
       if (byWallet.sameRecordAs(record)) {
         return;
       }
-      throw const KeychainManifestEntryConflictException(
+      throw KeychainManifestEntryConflictException(
         'wallet already has a different keychain manifest entry',
       );
     }
 
     try {
-      await _store.insertWalletMaterializationRecord(record);
+      await _repository.insertWalletMaterializationRecord(record);
     } on KeychainManifestDuplicateException {
-      final insertedByWallet = await _store
+      final insertedByWallet = await _repository
           .fetchWalletMaterializationRecordByWalletId(record.walletId);
       if (insertedByWallet != null && insertedByWallet.sameRecordAs(record)) {
         return;
       }
-      throw const KeychainManifestEntryConflictException(
+      throw KeychainManifestEntryConflictException(
         'keychain manifest entry conflicts with an existing entry',
       );
     }
@@ -148,29 +117,5 @@ class RecordKeychainManifestEntryUsecase {
       );
     }
     return reservation;
-  }
-
-  void _validateReservation(KeychainManifestEntry entry) {
-    final reservation = _bip85Registry.reservationById(entry.reservationId);
-    if (reservation == null) {
-      throw KeychainManifestReservationMismatchException(
-        'unknown BIP85 reservation id: ${entry.reservationId}',
-      );
-    }
-    if (!reservation.scope.matchesExactPath(entry.bip85DerivationPath)) {
-      throw KeychainManifestReservationMismatchException(
-        'BIP85 reservation does not match manifest entry path',
-      );
-    }
-    if (reservation.application.number != entry.bip85Application) {
-      throw KeychainManifestReservationMismatchException(
-        'BIP85 reservation application does not match manifest entry',
-      );
-    }
-    if (reservation.scope.segmentValue('index') != entry.bip85Index) {
-      throw KeychainManifestReservationMismatchException(
-        'BIP85 reservation index does not match manifest entry',
-      );
-    }
   }
 }

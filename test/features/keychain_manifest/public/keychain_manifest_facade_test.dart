@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/usecases/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +13,7 @@ void main() {
   setUp(() {
     store = _InMemoryKeychainManifestStore();
     facade = KeychainManifestFacade(
-      recordEntry: RecordKeychainManifestEntryUsecase(store: store),
+      recordEntry: RecordKeychainManifestEntryUsecase(repository: store),
     );
   });
 
@@ -41,9 +41,9 @@ void main() {
       ),
       throwsA(
         isA<KeychainManifestException>().having(
-          (error) => error.cause,
-          'cause',
-          isA<KeychainManifestEntryConflictException>(),
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.conflict,
         ),
       ),
     );
@@ -114,7 +114,8 @@ KeychainManifestWalletMaterializationRequest _walletMaterialization({
   );
 }
 
-class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
+class _InMemoryKeychainManifestStore
+    implements KeychainManifestEntryRepository {
   final entries = <KeychainManifestEntry>[];
   final records = <KeychainManifestWalletMaterializationRecord>[];
 
@@ -135,7 +136,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
   ) async {
     if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
         null) {
-      throw const KeychainManifestDuplicateException('duplicate');
+      throw KeychainManifestDuplicateException('duplicate');
     }
     final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(
       (entry) => entry!.entryId == record.entry.entryId,
@@ -144,7 +145,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
     if (existingEntry == null) {
       entries.add(record.entry);
     } else if (!existingEntry.sameRecordAs(record.entry)) {
-      throw const KeychainManifestDuplicateException('entry duplicate');
+      throw KeychainManifestDuplicateException('entry duplicate');
     }
     records.add(record);
   }

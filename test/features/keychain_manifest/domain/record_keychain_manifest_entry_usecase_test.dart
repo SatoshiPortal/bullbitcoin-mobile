@@ -1,7 +1,8 @@
-import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/usecases/record_keychain_manifest_entry_usecase.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/domain_errors.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,7 +12,7 @@ void main() {
 
   setUp(() {
     store = _InMemoryKeychainManifestStore();
-    usecase = RecordKeychainManifestEntryUsecase(store: store);
+    usecase = RecordKeychainManifestEntryUsecase(repository: store);
   });
 
   test('normalizes fingerprints and registry-relative BIP85 paths', () {
@@ -48,16 +49,16 @@ void main() {
     'records reserved derivation commands with registry-owned metadata',
     () async {
       await usecase.execute(
-        const RecordReservedKeychainDerivationCommand(
+        const KeychainManifestReservedDerivationRequest(
           reservationId: 'btcpay_wallet_seed',
           parentFingerprint: 'fedcba98',
-          walletMaterializations: [
-            RecordKeychainManifestWalletMaterializationCommand(
+          materializations: [
+            KeychainManifestWalletMaterializationRequest(
               walletId: 'btc-wallet',
               childSeedFingerprint: '0123abcd',
-              network: 'bitcoinMainnet',
+              network: Network.bitcoinMainnet,
               walletPurpose: 'bitcoin',
-              scriptType: 'bip84',
+              scriptType: ScriptType.bip84,
             ),
           ],
         ),
@@ -85,7 +86,7 @@ void main() {
       await usecase.execute(_command());
 
       expect(
-        () => usecase.execute(_command(network: 'liquidMainnet')),
+        () => usecase.execute(_command(network: Network.liquidMainnet)),
         throwsA(isA<KeychainManifestEntryConflictException>()),
       );
     },
@@ -103,7 +104,7 @@ void main() {
   test('allows the same BIP85 entry on a different wallet network', () async {
     await usecase.execute(_command());
     await usecase.execute(
-      _command(walletId: 'lbtc-wallet', network: 'liquidMainnet'),
+      _command(walletId: 'lbtc-wallet', network: Network.liquidMainnet),
     );
 
     expect(store.entries, hasLength(1));
@@ -124,12 +125,12 @@ void main() {
       usecase.execute(
         _command(
           extraWalletMaterializations: [
-            const RecordKeychainManifestWalletMaterializationCommand(
+            const KeychainManifestWalletMaterializationRequest(
               walletId: 'lbtc-wallet',
               childSeedFingerprint: '0123abcd',
-              network: 'liquidMainnet',
+              network: Network.liquidMainnet,
               walletPurpose: 'liquid',
-              scriptType: 'bip84',
+              scriptType: ScriptType.bip84,
             ),
           ],
         ),
@@ -144,12 +145,12 @@ void main() {
     await usecase.execute(
       _command(
         extraWalletMaterializations: [
-          const RecordKeychainManifestWalletMaterializationCommand(
+          const KeychainManifestWalletMaterializationRequest(
             walletId: 'lbtc-wallet',
             childSeedFingerprint: '0123abcd',
-            network: 'liquidMainnet',
+            network: Network.liquidMainnet,
             walletPurpose: 'liquid',
-            scriptType: 'bip84',
+            scriptType: ScriptType.bip84,
           ),
         ],
       ),
@@ -163,23 +164,23 @@ void main() {
   });
 }
 
-RecordReservedKeychainDerivationCommand _command({
+KeychainManifestReservedDerivationRequest _command({
   String reservationId = 'btcpay_wallet_seed',
   String parentFingerprint = 'fedcba98',
   String walletId = 'btc-wallet',
   String childSeedFingerprint = '0123abcd',
-  String network = 'bitcoinMainnet',
+  Network network = Network.bitcoinMainnet,
   String walletPurpose = 'bitcoin',
-  String scriptType = 'bip84',
-  List<RecordKeychainManifestWalletMaterializationCommand>
+  ScriptType scriptType = ScriptType.bip84,
+  List<KeychainManifestWalletMaterializationRequest>
       extraWalletMaterializations =
       const [],
 }) {
-  return RecordReservedKeychainDerivationCommand(
+  return KeychainManifestReservedDerivationRequest(
     reservationId: reservationId,
     parentFingerprint: parentFingerprint,
-    walletMaterializations: [
-      RecordKeychainManifestWalletMaterializationCommand(
+    materializations: [
+      KeychainManifestWalletMaterializationRequest(
         walletId: walletId,
         childSeedFingerprint: childSeedFingerprint,
         network: network,
@@ -233,7 +234,8 @@ KeychainManifestWalletMaterializationRecord _record({
   );
 }
 
-class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
+class _InMemoryKeychainManifestStore
+    implements KeychainManifestEntryRepository {
   final entries = <KeychainManifestEntry>[];
   final records = <KeychainManifestWalletMaterializationRecord>[];
   String? failOnWalletId;
@@ -258,7 +260,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
     }
     if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
         null) {
-      throw const KeychainManifestDuplicateException('duplicate');
+      throw KeychainManifestDuplicateException('duplicate');
     }
     final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(
       (entry) => entry!.entryId == record.entry.entryId,
@@ -267,7 +269,7 @@ class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
     if (existingEntry == null) {
       entries.add(record.entry);
     } else if (!existingEntry.sameRecordAs(record.entry)) {
-      throw const KeychainManifestDuplicateException('entry duplicate');
+      throw KeychainManifestDuplicateException('entry duplicate');
     }
     records.add(record);
   }

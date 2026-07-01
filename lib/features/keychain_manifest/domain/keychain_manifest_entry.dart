@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/keychain_manifest/domain/domain_errors.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 
 class KeychainManifestEntry {
   final String entryId;
@@ -40,32 +40,26 @@ class KeychainManifestEntry {
       bip85DerivationPath: this.bip85DerivationPath,
     );
     if (this.entryId != expectedEntryId) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'entry id must match parent fingerprint and BIP85 path',
       );
     }
     if (reservationId.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'reservation id is required',
-      );
+      throw KeychainManifestInvalidEntryException('reservation id is required');
     }
     if (entryType.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'entry type is required',
-      );
+      throw KeychainManifestInvalidEntryException('entry type is required');
     }
     if (ownerFeature.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'owner feature is required',
-      );
+      throw KeychainManifestInvalidEntryException('owner feature is required');
     }
     if (bip85Application < 0 || bip85Index < 0) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'BIP85 application and index must be non-negative',
       );
     }
     if (createdAt < 0 || updatedAt < 0) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'timestamps must be non-negative',
       );
     }
@@ -111,28 +105,22 @@ class KeychainManifestWalletMaterialization {
          childSeedFingerprint,
        ) {
     if (walletId.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'wallet id is required',
-      );
+      throw KeychainManifestInvalidEntryException('wallet id is required');
     }
     if (entryId.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException('entry id is required');
+      throw KeychainManifestInvalidEntryException('entry id is required');
     }
     if (network.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException('network is required');
+      throw KeychainManifestInvalidEntryException('network is required');
     }
     if (walletPurpose.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'wallet purpose is required',
-      );
+      throw KeychainManifestInvalidEntryException('wallet purpose is required');
     }
     if (scriptType.trim().isEmpty) {
-      throw const KeychainManifestInvalidEntryException(
-        'script type is required',
-      );
+      throw KeychainManifestInvalidEntryException('script type is required');
     }
     if (createdAt < 0 || updatedAt < 0) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'timestamps must be non-negative',
       );
     }
@@ -209,7 +197,7 @@ class KeychainManifestFingerprint {
   static String normalize(String value) {
     final normalized = value.trim().toLowerCase();
     if (!_pattern.hasMatch(normalized)) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'fingerprint must be 8 hex characters',
       );
     }
@@ -226,7 +214,7 @@ class KeychainManifestBip85Path {
   static String normalize(String value) {
     final normalized = value.trim();
     if (!_pattern.hasMatch(normalized)) {
-      throw const KeychainManifestInvalidEntryException(
+      throw KeychainManifestInvalidEntryException(
         'BIP85 path must be a registry-relative hardened path',
       );
     }
@@ -234,7 +222,7 @@ class KeychainManifestBip85Path {
     for (final match in _segmentPattern.allMatches(normalized)) {
       final segment = int.tryParse(match.group(1)!);
       if (segment == null || segment < 0 || segment > 0x7fffffff) {
-        throw const KeychainManifestInvalidEntryException(
+        throw KeychainManifestInvalidEntryException(
           'BIP85 path segment is invalid',
         );
       }

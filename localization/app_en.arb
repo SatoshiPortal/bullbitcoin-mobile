@@ -13411,6 +13411,10 @@
   "@btcpayPairingLocalSetupError": {
     "description": "Error shown when dedicated BTCPay wallets were prepared locally but setup failed before server submission"
   },
+  "btcpayPairingKeychainConflictError": "Dedicated BTCPay wallets already have different recovery metadata. Do not retry with this pairing request; contact support before continuing.",
+  "@btcpayPairingKeychainConflictError": {
+    "description": "Error shown when BTCPay wallet materialization conflicts with existing keychain manifest metadata"
+  },
   "btcpayPairingInvalidRequestError": "The SamRock pairing URL is invalid.",
   "@btcpayPairingInvalidRequestError": {
     "description": "Error shown when the BTCPay pairing URL cannot be parsed or is unsupported"
@@ -13521,6 +13525,10 @@
   "deterministicWalletsGenericError": "Something went wrong preparing wallets.",
   "@deterministicWalletsGenericError": {
     "description": "Generic error message when deterministic wallet preparation fails"
+  },
+  "keychainManifestGenericError": "Could not update recovery metadata.",
+  "@keychainManifestGenericError": {
+    "description": "Generic error shown when keychain manifest metadata cannot be recorded"
   },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
   "@exchangeSettingsDeleteAccountTitle": {

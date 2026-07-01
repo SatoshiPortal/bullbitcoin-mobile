@@ -1,17 +1,17 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
-import 'package:bb_mobile/features/keychain_manifest/frameworks/drift_keychain_manifest_entry_store.dart';
+import 'package:bb_mobile/features/keychain_manifest/data/drift_keychain_manifest_entry_repository.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SqliteDatabase database;
-  late DriftKeychainManifestEntryStore store;
+  late DriftKeychainManifestEntryRepository store;
 
   setUp(() {
     database = SqliteDatabase(NativeDatabase.memory());
-    store = DriftKeychainManifestEntryStore(database: database);
+    store = DriftKeychainManifestEntryRepository(database: database);
   });
 
   tearDown(() async {

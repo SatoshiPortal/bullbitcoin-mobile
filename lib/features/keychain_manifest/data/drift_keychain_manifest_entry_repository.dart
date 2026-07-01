@@ -1,13 +1,14 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
-import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:drift/native.dart' show SqliteException;
 
-class DriftKeychainManifestEntryStore implements KeychainManifestEntryStore {
+class DriftKeychainManifestEntryRepository
+    implements KeychainManifestEntryRepository {
   final SqliteDatabase _database;
 
-  DriftKeychainManifestEntryStore({required this._database});
+  DriftKeychainManifestEntryRepository({required this._database});
 
   @override
   Future<KeychainManifestWalletMaterializationRecord?>
@@ -60,7 +61,7 @@ class DriftKeychainManifestEntryStore implements KeychainManifestEntryStore {
     final existing = await existingQuery.getSingleOrNull();
     if (existing != null) {
       if (_rowToEntry(existing).sameRecordAs(entry)) return;
-      throw const KeychainManifestDuplicateException(
+      throw KeychainManifestDuplicateException(
         'keychain manifest entry identity already exists',
       );
     }
