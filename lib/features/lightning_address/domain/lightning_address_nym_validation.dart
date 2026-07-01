@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/lightning_address/application/application_errors.dart';
+import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 
 void validateLightningAddressNym(String nym) {
   if (nym.trim().isEmpty) {

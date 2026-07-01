@@ -13435,6 +13435,14 @@
   "@btcpayPairingInvalidRequestError": {
     "description": "Error shown when the BTCPay pairing URL cannot be parsed or is unsupported"
   },
+  "lightningAddressInvalidNymError": "Enter a Lightning Address name.",
+  "@lightningAddressInvalidNymError": {
+    "description": "Validation error shown when the Lightning Address name field is empty"
+  },
+  "lightningAddressInvalidRegistrationInputError": "The Lightning Address registration request is invalid. Check the wallet identity and try again.",
+  "@lightningAddressInvalidRegistrationInputError": {
+    "description": "Error shown when Bullnym rejects Lightning Address registration input that is not specifically local name validation"
+  },
   "btcpayPairingRejectedError": "BTCPay Server rejected the pairing request. Dedicated BTCPay wallets were kept. Check the pairing URL or create a new pairing request in BTCPay, then retry.",
   "@btcpayPairingRejectedError": {
     "description": "Error shown when BTCPay Server rejects the SamRock pairing setup"
