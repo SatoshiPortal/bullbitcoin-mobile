@@ -108,7 +108,7 @@ void main() {
         (tester) async {
       var called = false;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: zooSecret.fingerprint,
+        fingerprint: zooSecret.fingerprint,
         reader: lockedReader(),
         onResult: (_) => called = true,
         unavailableMessage: 'unavailable',
@@ -151,7 +151,7 @@ void main() {
         (tester) async {
       bool? outcome;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: zooSecret.fingerprint,
+        fingerprint: zooSecret.fingerprint,
         onResult: (v) => outcome = v,
         unavailableMessage: 'unavailable',
       )));
@@ -180,7 +180,7 @@ void main() {
       final second = _unwrap(await Secrets.importMnemonic(distinct));
 
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: zooSecret.fingerprint,
+        fingerprint: zooSecret.fingerprint,
         onResult: (_) {},
         unavailableMessage: 'unavailable',
       )));
@@ -189,7 +189,7 @@ void main() {
 
       // Swap to the second seed (no key change).
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: second.fingerprint,
+        fingerprint: second.fingerprint,
         onResult: (_) {},
         unavailableMessage: 'unavailable',
       )));
@@ -210,7 +210,7 @@ void main() {
 
       bool? outcome;
       await tester.pumpWidget(_wrap(VerifyBackupView(
-        seed: secret.fingerprint,
+        fingerprint: secret.fingerprint,
         onResult: (v) => outcome = v,
         unavailableMessage: 'unavailable',
       )));

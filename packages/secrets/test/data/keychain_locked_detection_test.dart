@@ -108,7 +108,7 @@ void main() {
       final guard = SecretGuard(store);
       final res = await guard.run<void>(
         () async => store.useAndForget('seed_x', (_) async => const Ok(null)),
-        seed: Fingerprint('deadbeef'),
+        fingerprint: Fingerprint('deadbeef'),
         onError: SecretsUnexpectedFailure.new,
       );
       final failure = (res as Err<void, SecretsFailure>).failure;

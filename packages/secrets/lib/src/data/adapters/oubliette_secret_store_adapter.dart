@@ -121,6 +121,37 @@ class OublietteSecretStoreAdapter implements SecretStorePort {
     }
   }
 
+  /// A reserved sentinel key — NOT a `seed_*` key, so reconciliation ignores it.
+  static const _probeKey = '__probe__';
+
+  /// A self-contained capability probe: a full `init → trash → store → read-back
+  /// → verify` round-trip on the sentinel (never a real secret). Returns true iff
+  /// the round-trip proves oubliette is usable on this device.
+  ///
+  /// Confined to this adapter (a [SecretStorePort] implementation) so the only
+  /// raw-secret `useAndForget` call sites stay the guard + the sealed UI reader —
+  /// the probe reads back only its own 2-byte sentinel. A translated failure
+  /// (locked vs. structural) propagates for the caller to classify; cleanup is
+  /// best-effort and never downgrades a decided outcome (a trailing trash that
+  /// trips a transient lock must not turn a capable device into "deferred" — any
+  /// residual sentinel is cleared by the trash-before-store on the next probe).
+  Future<bool> probeRoundTrip() async {
+    final bytes = Uint8List.fromList(const [0x0b, 0xb1]);
+    await init();
+    await trash(_probeKey); // clear any stale sentinel (idempotent)
+    await store(_probeKey, bytes);
+    final ok = await useAndForget(
+      _probeKey,
+      (b) async => b.length == 2 && b[0] == bytes[0] && b[1] == bytes[1],
+    );
+    try {
+      await trash(_probeKey);
+    } on Exception {
+      // ignore — outcome already determined; sentinel cleared next probe.
+    }
+    return ok;
+  }
+
   /// Exhaustive over the sealed [OublietteException]. Carries only the runtime
   /// type name into [MalformedSecretException] — never `cause`/`keyAlias`, which
   /// can hold OEM/biometric text or caller-sensitive identifiers.

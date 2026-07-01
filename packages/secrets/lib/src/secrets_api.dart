@@ -9,6 +9,7 @@ import 'package:secrets/src/data/adapters/flutter_secure_storage_adapter.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/oubliette_secret_store_adapter.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
+import 'package:secrets/src/data/migration/reconcile_report.dart';
 import 'package:secrets/src/data/migration/secret_migrator.dart';
 import 'package:secrets/src/data/adapters/key_derivation_adapter.dart';
 import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
@@ -219,34 +220,17 @@ abstract final class Secrets {
     return _probe(o);
   }
 
-  /// A reserved sentinel key — not a `seed_*` key, ignored by reconciliation.
-  static const _probeKey = '__probe__';
-
-  /// Full round-trip on the sentinel. Distinguishes a permanent incompatibility
-  /// (record FSS) from a transient lock (defer, re-probe later) by the kind of
-  /// failure — a recoverable lock surfaces as [KeychainLockedException].
+  /// Runs the adapter's sentinel round-trip and classifies the outcome:
+  /// distinguishes a permanent incompatibility (record FSS) from a transient
+  /// lock (defer, re-probe later) by the kind of failure — a recoverable lock
+  /// surfaces as [KeychainLockedException]. The round-trip itself (incl. the raw
+  /// `useAndForget` on the sentinel) is sealed inside [OublietteSecretStoreAdapter].
   static Future<SecretsInitResult> _probe(OublietteSecretStoreAdapter o) async {
-    final bytes = Uint8List.fromList(const [0x0b, 0xb1]);
     try {
-      await o.init();
-      await o.trash(_probeKey); // clear any stale sentinel (idempotent)
-      await o.store(_probeKey, bytes);
-      final ok = await o.useAndForget(
-        _probeKey,
-        (b) async => b.length == 2 && b[0] == bytes[0] && b[1] == bytes[1],
-      );
+      final ok = await o.probeRoundTrip();
       final outcome = ok
           ? SecretsBackendOutcome.oubliette
           : SecretsBackendOutcome.fssIncompatible;
-      // Cleanup is best-effort and must NOT downgrade a decided outcome: a
-      // capable device whose trailing trash trips a transient lock would
-      // otherwise be misreported as fssDeferred. Any residual `__probe__` is
-      // cleared by the trash-before-store on the next probe (self-healing).
-      try {
-        await o.trash(_probeKey);
-      } on Exception {
-        // ignore — outcome already determined; sentinel cleared next probe.
-      }
       return (outcome: outcome, probeError: null);
     } on KeychainLockedException catch (e) {
       // Recoverable (device locked / keyring unavailable): capability unknown.
@@ -276,6 +260,19 @@ abstract final class Secrets {
           () => _migrationInFlight = null,
         );
   }
+
+  /// Heals any drift between the secret store and the non-secret index, then
+  /// reports it (the app `log.shout`s the report, like [migrateToHardware]).
+  ///
+  /// A secret present in the store but missing from the index is invisible to
+  /// [fetch]/[list] (both index-driven) — an orphan left by a non-atomic import,
+  /// or EVERY secret at once if the index database was lost/rebuilt. This
+  /// re-indexes them from the store. Meant to run ONCE at startup, before the
+  /// first [fetch]/[list]. A total failure (e.g. the keychain is locked at
+  /// startup) returns `Err` so the app can defer and retry next launch; per-seed
+  /// heal failures are collected in the report, never thrown.
+  static Future<Result<ReconcileReport, SecretsFailure>> reconcile() =>
+      _w.lifecycle.reconcile();
 
   /// Drops the wired graph — test isolation only.
   @visibleForTesting
@@ -415,7 +412,7 @@ sealed class Secret {
     required int account,
   }) =>
       Secrets._w.keyDerivation.accountXpub(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         scriptType: scriptType,
         isTestnet: !network.isMainnet,
         account: account,
@@ -426,7 +423,7 @@ sealed class Secret {
     required BitcoinNetwork network,
   }) =>
       Secrets._w.keyDerivation.bitcoinDescriptor(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         scriptType: scriptType,
         isTestnet: !network.isMainnet,
       );
@@ -435,7 +432,7 @@ sealed class Secret {
     required LiquidNetwork network,
   }) =>
       Secrets._w.keyDerivation.liquidDescriptor(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         isTestnet: !network.isMainnet,
       );
 
@@ -448,7 +445,7 @@ sealed class Secret {
     required BitcoinNetwork network,
   }) =>
       Secrets._w.signer.signBitcoinPsbt(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         psbt: psbt,
         intent: intent,
         scriptType: scriptType,
@@ -461,7 +458,7 @@ sealed class Secret {
     required LiquidNetwork network,
   }) =>
       Secrets._w.signer.signLiquidPset(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         pset: pset,
         intent: intent,
         isTestnet: !network.isMainnet,
@@ -479,7 +476,7 @@ sealed class Secret {
     String? outAddress,
   }) =>
       Secrets._w.swap.createBtcReverse(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         index: index,
         intent: intent,
         outAmountSat: outAmountSat,
@@ -498,7 +495,7 @@ sealed class Secret {
     required BitcoinNetwork network,
   }) =>
       Secrets._w.swap.createBtcSubmarine(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         index: index,
         intent: intent,
         invoice: invoice,
@@ -517,7 +514,7 @@ sealed class Secret {
     String? outAddress,
   }) =>
       Secrets._w.swap.createLbtcReverse(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         index: index,
         intent: intent,
         outAmountSat: outAmountSat,
@@ -536,7 +533,7 @@ sealed class Secret {
     required LiquidNetwork network,
   }) =>
       Secrets._w.swap.createLbtcSubmarine(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         index: index,
         intent: intent,
         invoice: invoice,
@@ -556,7 +553,7 @@ sealed class Secret {
     required ChainDirection direction,
   }) =>
       Secrets._w.swap.createChainSwap(
-        seed: fingerprint,
+        fingerprint: fingerprint,
         index: index,
         intent: intent,
         amountSat: amountSat,
@@ -571,7 +568,7 @@ sealed class Secret {
 
   Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
       encryptVault() =>
-          Secrets._w.backup.encryptVault(seed: fingerprint);
+          Secrets._w.backup.encryptVault(fingerprint: fingerprint);
 
   // ── BIP85 child derivation ─────────────────────────────────────────────────
 
@@ -580,7 +577,7 @@ sealed class Secret {
     required int index,
   }) =>
       Secrets._w.bip85.deriveChildMnemonic(
-        masterSeed: fingerprint,
+        fingerprint: fingerprint,
         length: length,
         index: index,
       );
@@ -591,7 +588,7 @@ sealed class Secret {
     required MnemonicLength length,
   }) =>
       Secrets._w.bip85.deriveBip39Child(
-        masterSeed: fingerprint,
+        fingerprint: fingerprint,
         app: app,
         index: index,
         length: length,
@@ -602,7 +599,7 @@ sealed class Secret {
     required int index,
   }) =>
       Secrets._w.bip85.deriveHex(
-        masterSeed: fingerprint,
+        fingerprint: fingerprint,
         numBytes: numBytes,
         index: index,
       );
@@ -611,12 +608,12 @@ sealed class Secret {
     required Bip85Path path,
   }) =>
       Secrets._w.bip85.deriveRecoverbullKey(
-        masterSeed: fingerprint,
+        fingerprint: fingerprint,
         path: path,
       );
 
   Future<Result<ArkSecret, SecretsFailure>> bip85Ark() =>
-      Secrets._w.bip85.deriveArkSecret(masterSeed: fingerprint);
+      Secrets._w.bip85.deriveArkSecret(fingerprint: fingerprint);
 
   // ── lifecycle ──────────────────────────────────────────────────────────────
 

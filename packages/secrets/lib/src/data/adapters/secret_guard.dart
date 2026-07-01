@@ -29,20 +29,20 @@ class SecretGuard {
   const SecretGuard(this._store);
   final SecretStorePort _store;
 
-  /// Reads the stored [Mnemonic] for [seed] and runs [use]. [onError] builds the
+  /// Reads the stored [Mnemonic] for [fingerprint] and runs [use]. [onError] builds the
   /// adapter-specific failure for an unexpected foreign exception; it receives
   /// only the exception's runtime type name (never its secret-bearing message).
   Future<Result<T, SecretsFailure>> read<T>(
-    Fingerprint seed,
+    Fingerprint fingerprint,
     Future<Result<T, SecretsFailure>> Function(Mnemonic mnemonic) use, {
     required SecretsFailure Function(String errorType) onError,
   }) =>
       run(
         () => _store.useAndForget(
-          SecretStoreKeys.seedKey(seed.hex),
+          SecretStoreKeys.seedKey(fingerprint.hex),
           (bytes) => use(Mnemonic.fromStorageBytes(bytes)),
         ),
-        seed: seed,
+        fingerprint: fingerprint,
         onError: onError,
       );
 
@@ -50,7 +50,7 @@ class SecretGuard {
   /// (programmer bugs) propagate and crash, by design.
   Future<Result<T, SecretsFailure>> run<T>(
     Future<Result<T, SecretsFailure>> Function() body, {
-    Fingerprint? seed,
+    Fingerprint? fingerprint,
     required SecretsFailure Function(String errorType) onError,
   }) async {
     try {
@@ -58,8 +58,8 @@ class SecretGuard {
     } on KeychainLockedException {
       return const Err(KeychainLockedFailure());
     } on SecretNotFoundException catch (e) {
-      return Err(seed != null
-          ? SecretNotFoundFailure(seed)
+      return Err(fingerprint != null
+          ? SecretNotFoundFailure(fingerprint)
           : onError(e.runtimeType.toString()));
     } on bip39.MnemonicException catch (e) {
       // Record only the exception CLASS (e.g. MnemonicInvalidChecksumException);

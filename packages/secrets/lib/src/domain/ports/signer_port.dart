@@ -13,7 +13,7 @@ import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 abstract interface class SignerPort {
   @useResult
   Future<Result<SignedPsbt, SecretsFailure>> signBitcoinPsbt({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required Psbt psbt,
     required SigningIntent intent,
     required ScriptType scriptType,
@@ -22,7 +22,7 @@ abstract interface class SignerPort {
 
   @useResult
   Future<Result<SignedPsbt, SecretsFailure>> signLiquidPset({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required Psbt pset,
     required SigningIntent intent,
     required bool isTestnet,

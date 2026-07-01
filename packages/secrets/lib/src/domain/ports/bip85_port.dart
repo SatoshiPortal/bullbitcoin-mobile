@@ -13,14 +13,14 @@ import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 abstract interface class Bip85Port {
   @useResult
   Future<Result<Bip85Derivation, SecretsFailure>> deriveChildMnemonic({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required MnemonicLength length,
     required int index,
   });
 
   @useResult
   Future<Result<Bip85Derivation, SecretsFailure>> deriveBip39Child({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required Bip85Application app,
     required int index,
     required MnemonicLength length,
@@ -28,19 +28,19 @@ abstract interface class Bip85Port {
 
   @useResult
   Future<Result<Bip85HexResult, SecretsFailure>> deriveHex({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required int numBytes,
     required int index,
   });
 
   @useResult
   Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required Bip85Path path,
   });
 
   @useResult
   Future<Result<ArkSecret, SecretsFailure>> deriveArkSecret({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
   });
 }

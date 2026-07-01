@@ -10,7 +10,7 @@ import 'package:secrets/src/domain/value_objects/backup.dart';
 abstract interface class BackupVaultPort {
   @useResult
   Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
-      encryptVault({required Fingerprint seed});
+      encryptVault({required Fingerprint fingerprint});
 
   @useResult
   Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({

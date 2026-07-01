@@ -18,8 +18,8 @@ import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 /// per-swap KeyPair). Native (Boltz/electrum) execution is integration-tier;
 /// the security-critical commitment check is pure and unit-tested.
 class SwapSignerAdapter implements SwapSignerPort {
-  SwapSignerAdapter(SecretStorePort store) : _secretGuard = SecretGuard(store);
-  final SecretGuard _secretGuard;
+  SwapSignerAdapter(SecretStorePort store) : _guard = SecretGuard(store);
+  final SecretGuard _guard;
 
   static boltz.Chain _btcChain(bool t) =>
       t ? boltz.Chain.bitcoinTestnet : boltz.Chain.bitcoin;
@@ -28,7 +28,7 @@ class SwapSignerAdapter implements SwapSignerPort {
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int outAmountSat,
@@ -37,7 +37,7 @@ class SwapSignerAdapter implements SwapSignerPort {
     required bool isTestnet,
     String? outAddress,
   }) =>
-      _guard(seed, (m) async {
+      _readMnemonic(fingerprint, (m) async {
         final swap = await boltz.BtcLnSwap.newReverse(
           mnemonic: m,
           index: BigInt.from(index),
@@ -52,7 +52,7 @@ class SwapSignerAdapter implements SwapSignerPort {
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createBtcSubmarine({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required String invoice,
@@ -60,7 +60,7 @@ class SwapSignerAdapter implements SwapSignerPort {
     required String boltzUrl,
     required bool isTestnet,
   }) =>
-      _guard(seed, (m) async {
+      _readMnemonic(fingerprint, (m) async {
         final swap = await boltz.BtcLnSwap.newSubmarine(
           mnemonic: m,
           index: BigInt.from(index),
@@ -74,7 +74,7 @@ class SwapSignerAdapter implements SwapSignerPort {
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcReverse({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int outAmountSat,
@@ -83,7 +83,7 @@ class SwapSignerAdapter implements SwapSignerPort {
     required bool isTestnet,
     String? outAddress,
   }) =>
-      _guard(seed, (m) async {
+      _readMnemonic(fingerprint, (m) async {
         final swap = await boltz.LbtcLnSwap.newReverse(
           mnemonic: m,
           index: BigInt.from(index),
@@ -98,7 +98,7 @@ class SwapSignerAdapter implements SwapSignerPort {
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcSubmarine({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required String invoice,
@@ -106,7 +106,7 @@ class SwapSignerAdapter implements SwapSignerPort {
     required String boltzUrl,
     required bool isTestnet,
   }) =>
-      _guard(seed, (m) async {
+      _readMnemonic(fingerprint, (m) async {
         final swap = await boltz.LbtcLnSwap.newSubmarine(
           mnemonic: m,
           index: BigInt.from(index),
@@ -120,7 +120,7 @@ class SwapSignerAdapter implements SwapSignerPort {
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createChainSwap({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int amountSat,
@@ -130,7 +130,7 @@ class SwapSignerAdapter implements SwapSignerPort {
     required bool isTestnet,
     required ChainDirection direction,
   }) =>
-      _guard(seed, (m) async {
+      _readMnemonic(fingerprint, (m) async {
         final swap = await boltz.ChainSwap.newSwap(
           direction: direction == ChainDirection.btcToLbtc
               ? boltz.ChainSwapDirection.btcToLbtc
@@ -173,32 +173,28 @@ class SwapSignerAdapter implements SwapSignerPort {
         );
       });
 
+  // BTC / L-BTC single-leg swaps share no supertype (distinct FRB-generated
+  // types + `*SwapScriptStr`), so each extracts its own script fields and
+  // delegates the actual commitment check to the shared [_assertLeg] below.
   Result<CreatedSwap, SecretsFailure> _assertBtc(
     SwapIntent intent,
     boltz.BtcLnSwap swap, {
     String? ownClaim,
     String? ownRefund,
   }) =>
-      IntentValidator.validateSwapCommitment(
+      _assertLeg(
         intent,
-        ownClaimPubkey: ownClaim,
-        ownRefundPubkey: ownRefund,
+        ownClaim: ownClaim,
+        ownRefund: ownRefund,
         scriptReceiverPubkey: swap.swapScript.receiverPubkey,
         scriptSenderPubkey: swap.swapScript.senderPubkey,
         scriptHashlock: swap.swapScript.hashlock,
-        actualAmountSat: swap.outAmount.toInt(),
         scriptLocktime: swap.swapScript.locktime,
-        // Bind the locktime only on the REFUND leg (submarine, ownRefund set) —
-        // that script's timeout IS our refund window. On the CLAIM leg (reverse)
-        // the locktime is Boltz's refund window, not ours, so leave it unbound
-        // (matches validateChainSwapCommitment's claim-leg rationale).
-        expectedLocktime: ownRefund != null ? intent.timeout : null,
-      ).map((_) => CreatedSwap(
-            id: swap.id,
-            scriptAddress: swap.scriptAddress,
-            outAmountSat: swap.outAmount.toInt(),
-            invoice: swap.invoice,
-          ));
+        outAmountSat: swap.outAmount.toInt(),
+        id: swap.id,
+        scriptAddress: swap.scriptAddress,
+        invoice: swap.invoice,
+      );
 
   Result<CreatedSwap, SecretsFailure> _assertLbtc(
     SwapIntent intent,
@@ -206,34 +202,64 @@ class SwapSignerAdapter implements SwapSignerPort {
     String? ownClaim,
     String? ownRefund,
   }) =>
+      _assertLeg(
+        intent,
+        ownClaim: ownClaim,
+        ownRefund: ownRefund,
+        scriptReceiverPubkey: swap.swapScript.receiverPubkey,
+        scriptSenderPubkey: swap.swapScript.senderPubkey,
+        scriptHashlock: swap.swapScript.hashlock,
+        scriptLocktime: swap.swapScript.locktime,
+        outAmountSat: swap.outAmount.toInt(),
+        id: swap.id,
+        scriptAddress: swap.scriptAddress,
+        invoice: swap.invoice,
+      );
+
+  /// The single-leg (reverse/submarine) commitment check + `CreatedSwap` mapping,
+  /// shared by both chains. Centralizing it keeps the security-critical
+  /// locktime-binding rule from drifting between the BTC and L-BTC legs.
+  Result<CreatedSwap, SecretsFailure> _assertLeg(
+    SwapIntent intent, {
+    String? ownClaim,
+    String? ownRefund,
+    required String scriptReceiverPubkey,
+    required String scriptSenderPubkey,
+    required String scriptHashlock,
+    required int scriptLocktime,
+    required int outAmountSat,
+    required String id,
+    required String scriptAddress,
+    String? invoice,
+  }) =>
       IntentValidator.validateSwapCommitment(
         intent,
         ownClaimPubkey: ownClaim,
         ownRefundPubkey: ownRefund,
-        scriptReceiverPubkey: swap.swapScript.receiverPubkey,
-        scriptSenderPubkey: swap.swapScript.senderPubkey,
-        scriptHashlock: swap.swapScript.hashlock,
-        actualAmountSat: swap.outAmount.toInt(),
-        scriptLocktime: swap.swapScript.locktime,
+        scriptReceiverPubkey: scriptReceiverPubkey,
+        scriptSenderPubkey: scriptSenderPubkey,
+        scriptHashlock: scriptHashlock,
+        actualAmountSat: outAmountSat,
+        scriptLocktime: scriptLocktime,
         // Bind the locktime only on the REFUND leg (submarine, ownRefund set) —
         // that script's timeout IS our refund window. On the CLAIM leg (reverse)
         // the locktime is Boltz's refund window, not ours, so leave it unbound
         // (matches validateChainSwapCommitment's claim-leg rationale).
         expectedLocktime: ownRefund != null ? intent.timeout : null,
       ).map((_) => CreatedSwap(
-            id: swap.id,
-            scriptAddress: swap.scriptAddress,
-            outAmountSat: swap.outAmount.toInt(),
-            invoice: swap.invoice,
+            id: id,
+            scriptAddress: scriptAddress,
+            outAmountSat: outAmountSat,
+            invoice: invoice,
           ));
 
   /// Reads the mnemonic and hands the SDK its sentence form (stays in-package).
-  Future<Result<CreatedSwap, SecretsFailure>> _guard(
-    Fingerprint seed,
+  Future<Result<CreatedSwap, SecretsFailure>> _readMnemonic(
+    Fingerprint fingerprint,
     Future<Result<CreatedSwap, SecretsFailure>> Function(String mnemonic) body,
   ) =>
-      _secretGuard.read(
-        seed,
+      _guard.read(
+        fingerprint,
         (m) => body(m.words.join(' ')),
         onError: SigningFailure.new,
       );

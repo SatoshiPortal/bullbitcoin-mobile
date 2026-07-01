@@ -28,12 +28,10 @@ class BackupVaultAdapter implements BackupVaultPort {
   final SecretGuard _guard;
   final SecretLifecyclePort _repo;
 
-  SecretsFailure _err(String log) => VaultFailure(log);
-
   @override
   Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
-      encryptVault({required Fingerprint seed}) =>
-          _guard.read(seed, (m) async {
+      encryptVault({required Fingerprint fingerprint}) =>
+          _guard.read(fingerprint, (m) async {
             final xprv = Bip32Derivation.xprvFromSeed(
                 m.toSeed().bytes, BitcoinNetwork.mainnet);
             final path = Bip85Crypto.generateRecoverbullPath();
@@ -48,7 +46,7 @@ class BackupVaultAdapter implements BackupVaultPort {
               vault: EncryptedVault(backup.toJson()),
               vaultKey: VaultKey(keyBytes),
             ));
-          }, onError: _err);
+          }, onError: VaultFailure.new);
 
   @override
   Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
@@ -77,5 +75,5 @@ class BackupVaultAdapter implements BackupVaultPort {
             Ok([fingerprint]),
           Err(:final failure) => Err(failure),
         };
-      }, onError: _err);
+      }, onError: VaultFailure.new);
 }

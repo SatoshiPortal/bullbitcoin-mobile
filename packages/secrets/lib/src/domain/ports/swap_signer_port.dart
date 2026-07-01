@@ -18,7 +18,7 @@ import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 abstract interface class SwapSignerPort {
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int outAmountSat,
@@ -30,7 +30,7 @@ abstract interface class SwapSignerPort {
 
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createBtcSubmarine({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required String invoice,
@@ -41,7 +41,7 @@ abstract interface class SwapSignerPort {
 
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcReverse({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int outAmountSat,
@@ -53,7 +53,7 @@ abstract interface class SwapSignerPort {
 
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcSubmarine({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required String invoice,
@@ -64,7 +64,7 @@ abstract interface class SwapSignerPort {
 
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createChainSwap({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required int index,
     required SwapIntent intent,
     required int amountSat,

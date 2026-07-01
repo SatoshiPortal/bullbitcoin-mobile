@@ -50,7 +50,7 @@ void main() {
   });
 
   test('encrypt → restore round-trips to the same fingerprint', () async {
-    final enc = _unwrap(await vaultPort.encryptVault(seed: zooFp));
+    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
     expect(enc.vaultKey.bytes.length, greaterThanOrEqualTo(32));
 
     // Wipe the seed so restore must re-import it from the vault.
@@ -66,7 +66,7 @@ void main() {
   });
 
   test('restore with a wrong key → VaultFailure (no crash)', () async {
-    final enc = _unwrap(await vaultPort.encryptVault(seed: zooFp));
+    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
     final res = await vaultPort.restoreVault(
       vault: enc.vault,
       vaultKey: VaultKey(Uint8List.fromList(List.filled(32, 0))),
@@ -76,7 +76,7 @@ void main() {
 
   test('restore of a TAMPERED ciphertext → VaultFailure (HMAC rejects)',
       () async {
-    final enc = _unwrap(await vaultPort.encryptVault(seed: zooFp));
+    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
     // Flip one byte inside the authenticated (nonce‖ciphertext‖HMAC) blob, then
     // re-wrap as valid JSON so the failure is the MAC check — not a parse error
     // — proving the vault authenticates ciphertext (encrypt-then-MAC), distinct
@@ -98,7 +98,7 @@ void main() {
   });
 
   test('encrypt of a missing seed → SecretNotFoundFailure', () async {
-    final res = await vaultPort.encryptVault(seed: Fingerprint('00000000'));
+    final res = await vaultPort.encryptVault(fingerprint: Fingerprint('00000000'));
     expect((res as Err).failure, isA<SecretNotFoundFailure>());
   });
 }

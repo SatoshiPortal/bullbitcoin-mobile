@@ -53,7 +53,7 @@ void main() {
 
   test('deriveRecoverbullKey matches the frozen KAT vector', () async {
     final key = _unwrap(await bip85.deriveRecoverbullKey(
-      masterSeed: zooFp,
+      fingerprint: zooFp,
       path: Bip85Path("1608'/0'/586053381"),
     ));
     expect(conv.hex.encode(key.bytes), recoverbullKeyForPath);
@@ -61,7 +61,7 @@ void main() {
 
   test('deriveChildMnemonic returns the right path + 12 words', () async {
     final d = _unwrap(await bip85.deriveChildMnemonic(
-      masterSeed: zooFp,
+      fingerprint: zooFp,
       length: MnemonicLength.words12,
       index: 0,
     ));
@@ -70,13 +70,13 @@ void main() {
   });
 
   test('deriveArkSecret matches the frozen vector', () async {
-    final ark = _unwrap(await bip85.deriveArkSecret(masterSeed: zooFp));
+    final ark = _unwrap(await bip85.deriveArkSecret(fingerprint: zooFp));
     expect(conv.hex.encode(ark.bytes), arkSecretForZooSeed);
   });
 
   test('deriveHex returns the requested byte length', () async {
     final hexRes = _unwrap(await bip85.deriveHex(
-      masterSeed: zooFp,
+      fingerprint: zooFp,
       numBytes: 16,
       index: 0,
     ));
@@ -84,7 +84,7 @@ void main() {
   });
 
   test('missing seed → SecretNotFoundFailure (not locked, not a crash)', () async {
-    final res = await bip85.deriveArkSecret(masterSeed: Fingerprint('00000000'));
+    final res = await bip85.deriveArkSecret(fingerprint: Fingerprint('00000000'));
     expect((res as Err).failure, isA<SecretNotFoundFailure>());
   });
 }

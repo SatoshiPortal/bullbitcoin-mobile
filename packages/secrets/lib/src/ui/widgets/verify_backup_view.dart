@@ -11,13 +11,13 @@ import 'package:secrets/src/ui/privacy_guard.dart';
 class VerifyBackupView extends StatefulWidget {
   const VerifyBackupView({
     super.key,
-    required this.seed,
+    required this.fingerprint,
     required this.onResult,
     required this.unavailableMessage,
     @visibleForTesting this.reader,
   });
 
-  final Fingerprint seed;
+  final Fingerprint fingerprint;
   final ValueChanged<bool> onResult;
 
   /// Caller-supplied (localized) copy shown when the seed can't be verified
@@ -35,7 +35,7 @@ class VerifyBackupView extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('seed', seed.hex));
+    properties.add(StringProperty('fingerprint', fingerprint.hex));
   }
 }
 
@@ -59,7 +59,7 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
     // Re-fetch if the parent swapped in a different seed/reader without changing
     // the key — otherwise the old seed's words would stay on screen (same
     // stale-secret guard SecretRevealer uses).
-    if (oldWidget.seed != widget.seed || oldWidget.reader != widget.reader) {
+    if (oldWidget.fingerprint != widget.fingerprint || oldWidget.reader != widget.reader) {
       _load();
     }
   }
@@ -73,7 +73,7 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
     _unavailable = false;
     _done = false;
     final reader = widget.reader ?? Secrets.mnemonicReader;
-    reader.read(widget.seed).then((data) {
+    reader.read(widget.fingerprint).then((data) {
       if (!mounted) return;
       setState(() {
         _loading = false;

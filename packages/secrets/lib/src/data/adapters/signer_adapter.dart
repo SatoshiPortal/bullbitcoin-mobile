@@ -19,8 +19,6 @@ class SignerAdapter implements SignerPort {
   SignerAdapter(SecretStorePort store) : _guard = SecretGuard(store);
   final SecretGuard _guard;
 
-  SecretsFailure _err(String log) => SigningFailure(log);
-
   /// How many script-pubkeys to pre-index per keychain on the throwaway signing
   /// wallet, so `wallet.isMine(...)` can recognize owned inputs/change.
   ///
@@ -51,13 +49,13 @@ class SignerAdapter implements SignerPort {
 
   @override
   Future<Result<SignedPsbt, SecretsFailure>> signBitcoinPsbt({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required Psbt psbt,
     required SigningIntent intent,
     required ScriptType scriptType,
     required bool isTestnet,
   }) =>
-      _guard.read(seed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
         final bdkMnemonic =
             bdk.Mnemonic.fromString(mnemonic: m.words.join(' '));
@@ -144,9 +142,20 @@ class SignerAdapter implements SignerPort {
         }
 
         // --- SIGN ---
-        wallet.sign(psbt: bdkPsbt, signOptions: _safeSignOptions());
+        // `sign` returns whether the PSBT is now FINALIZED. With
+        // `tryFinalize: true` and BULL's single-sig sends (every input owned),
+        // a real signature finalizes; `false` means no owned input signed (e.g.
+        // wrong scriptType, or an owned index beyond the lookahead) — return a
+        // failure instead of a serialized-but-unsigned PSBT mislabeled
+        // `SignedPsbt`, which would silently fail at broadcast.
+        final finalized =
+            wallet.sign(psbt: bdkPsbt, signOptions: _safeSignOptions());
+        if (!finalized) {
+          return const Err(SigningFailure(
+              'psbt not finalized after signing — no owned input signed'));
+        }
         return Ok(SignedPsbt(bdkPsbt.serialize()));
-      }, onError: _err);
+      }, onError: SigningFailure.new);
 
   (bdk.Descriptor, bdk.Descriptor) _bitcoinDescriptors(
     bdk.DescriptorSecretKey secretKey,
@@ -166,12 +175,12 @@ class SignerAdapter implements SignerPort {
 
   @override
   Future<Result<SignedPsbt, SecretsFailure>> signLiquidPset({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required Psbt pset,
     required SigningIntent intent,
     required bool isTestnet,
   }) =>
-      _guard.read(seed, (m) async {
+      _guard.read(fingerprint, (m) async {
         // LWK has no in-memory persistence (dep-audit §11): use an ephemeral
         // temp dir, deleted in `finally` (residual: a kill mid-sign leaks it).
         final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
@@ -219,7 +228,7 @@ class SignerAdapter implements SignerPort {
             tmpDir.deleteSync(recursive: true);
           }
         }
-      }, onError: _err);
+      }, onError: SigningFailure.new);
 
   /// Pure, testable Liquid fee-cap check. Returns a failure to reject, or null
   /// to proceed. A `SwapIntent` is refused (swaps use SwapSignerPort).

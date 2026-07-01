@@ -20,18 +20,16 @@ class Bip85Adapter implements Bip85Port {
   Bip85Adapter(SecretStorePort store) : _guard = SecretGuard(store);
   final SecretGuard _guard;
 
-  SecretsFailure _err(String log) => DerivationFailure(log);
-
   String _xprv(Mnemonic m) =>
       Bip32Derivation.xprvFromSeed(m.toSeed().bytes, BitcoinNetwork.mainnet);
 
   @override
   Future<Result<Bip85Derivation, SecretsFailure>> deriveChildMnemonic({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required MnemonicLength length,
     required int index,
   }) =>
-      _guard.read(masterSeed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final child = Bip85Crypto.deriveChildMnemonic(
           xprvBase58: _xprv(m),
           length: length,
@@ -43,11 +41,11 @@ class Bip85Adapter implements Bip85Port {
           length: length,
           words: child.words,
         ));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 
   @override
   Future<Result<Bip85Derivation, SecretsFailure>> deriveBip39Child({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required Bip85Application app,
     required int index,
     required MnemonicLength length,
@@ -57,16 +55,16 @@ class Bip85Adapter implements Bip85Port {
           'deriveBip39Child requires the bip39 application')));
     }
     return deriveChildMnemonic(
-        masterSeed: masterSeed, length: length, index: index);
+        fingerprint: fingerprint, length: length, index: index);
   }
 
   @override
   Future<Result<Bip85HexResult, SecretsFailure>> deriveHex({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required int numBytes,
     required int index,
   }) =>
-      _guard.read(masterSeed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final hexStr = Bip85Crypto.deriveHex(
           xprvBase58: _xprv(m),
           numBytes: numBytes,
@@ -76,23 +74,23 @@ class Bip85Adapter implements Bip85Port {
           path: Bip85Path("128169'/$numBytes'/$index'"),
           hex: hexStr,
         ));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 
   @override
   Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
     required Bip85Path path,
   }) =>
-      _guard.read(masterSeed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final keyHex = Bip85Crypto.deriveBackupKeyHex(_xprv(m), path.path);
         return Ok(VaultKey(Uint8List.fromList(conv.hex.decode(keyHex))));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 
   @override
   Future<Result<ArkSecret, SecretsFailure>> deriveArkSecret({
-    required Fingerprint masterSeed,
+    required Fingerprint fingerprint,
   }) =>
-      _guard.read(masterSeed,
+      _guard.read(fingerprint,
           (m) async => Ok(ArkSecret(Bip85Crypto.deriveArk(_xprv(m)))),
-          onError: _err);
+          onError: DerivationFailure.new);
 }

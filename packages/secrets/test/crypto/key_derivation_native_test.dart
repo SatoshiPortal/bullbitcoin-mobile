@@ -56,7 +56,7 @@ void main() {
 
   test('accountXpub (testnet bip84) derives a deterministic vpub', () async {
     final xpub = _unwrap(await kd.accountXpub(
-      seed: zooFp,
+      fingerprint: zooFp,
       scriptType: ScriptType.bip84,
       isTestnet: true,
       account: 0,
@@ -65,7 +65,7 @@ void main() {
     expect(xpub.value, startsWith('vpub'));
     // Determinism.
     final again = _unwrap(await kd.accountXpub(
-      seed: zooFp,
+      fingerprint: zooFp,
       scriptType: ScriptType.bip84,
       isTestnet: true,
       account: 0,
@@ -76,7 +76,7 @@ void main() {
   test('bitcoinDescriptor returns distinct external/internal wpkh descriptors',
       () async {
     final d = _unwrap(await kd.bitcoinDescriptor(
-      seed: zooFp,
+      fingerprint: zooFp,
       scriptType: ScriptType.bip84,
       isTestnet: true,
     ));
@@ -88,7 +88,7 @@ void main() {
   test('missing seed → SecretNotFoundFailure (native path still typed)',
       () async {
     final res = await kd.accountXpub(
-      seed: Fingerprint('00000000'),
+      fingerprint: Fingerprint('00000000'),
       scriptType: ScriptType.bip84,
       isTestnet: true,
       account: 0,

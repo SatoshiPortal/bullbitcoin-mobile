@@ -12,21 +12,19 @@ class KeyDerivationAdapter implements KeyDerivationPort {
   KeyDerivationAdapter(SecretStorePort store) : _guard = SecretGuard(store);
   final SecretGuard _guard;
 
-  SecretsFailure _err(String log) => DerivationFailure(log);
-
   @override
   Future<Result<Fingerprint, SecretsFailure>> masterFingerprint(
-          Fingerprint seed) =>
-      _guard.read(seed, (m) async => Ok(m.fingerprint), onError: _err);
+          Fingerprint fingerprint) =>
+      _guard.read(fingerprint, (m) async => Ok(m.fingerprint), onError: DerivationFailure.new);
 
   @override
   Future<Result<Xpub, SecretsFailure>> accountXpub({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required ScriptType scriptType,
     required bool isTestnet,
     required int account,
   }) =>
-      _guard.read(seed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final network =
             isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet;
         final acct = Bip32Derivation.accountXpub(
@@ -40,15 +38,15 @@ class KeyDerivationAdapter implements KeyDerivationPort {
           value: Bip32Derivation.convertXpub(acct, type),
           type: type,
         ));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 
   @override
   Future<Result<BitcoinDescriptor, SecretsFailure>> bitcoinDescriptor({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required ScriptType scriptType,
     required bool isTestnet,
   }) =>
-      _guard.read(seed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final network =
             isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet;
         final xprv = Bip32Derivation.xprvFromSeed(m.toSeed().bytes, network);
@@ -65,18 +63,18 @@ class KeyDerivationAdapter implements KeyDerivationPort {
           internalKeychain: true,
         );
         return Ok(BitcoinDescriptor(external: external, internal: internal));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 
   @override
   Future<Result<LiquidDescriptor, SecretsFailure>> liquidDescriptor({
-    required Fingerprint seed,
+    required Fingerprint fingerprint,
     required bool isTestnet,
   }) =>
-      _guard.read(seed, (m) async {
+      _guard.read(fingerprint, (m) async {
         final ct = await DescriptorDerivation.publicLiquidDescriptorFromMnemonic(
           m.words.join(' '),
           isTestnet: isTestnet,
         );
         return Ok(LiquidDescriptor(ct));
-      }, onError: _err);
+      }, onError: DerivationFailure.new);
 }
