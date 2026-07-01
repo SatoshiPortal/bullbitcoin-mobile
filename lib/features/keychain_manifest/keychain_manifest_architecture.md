@@ -166,7 +166,8 @@ Rules:
   across all entries.
 - `inventoryUpdatedAt` is the data-recency timestamp: the latest `updatedAt`
   among included entries and materializations. An empty manifest serializes
-  `inventoryUpdatedAt` as `0`.
+  `inventoryUpdatedAt` as `0`. V1 decode rejects payloads whose declared
+  `inventoryUpdatedAt` does not match the value derived from the entries.
 - Cross-manifest recency ordering uses data recency (`inventoryUpdatedAt`),
   so an empty manifest never outranks a populated one. `generatedAt` records
   when the payload was built and is informational only; it must not be used
@@ -174,8 +175,11 @@ Rules:
 - V1 supports only wallet materializations with `"type": "wallet"`.
 - Enumerated fields carry frozen wire vocabulary (see the table below).
 - Public callers must explicitly opt in before exporting an empty manifest.
-- V1 decode validates the same payload shape into import intents. Wallet
-  creation and restore semantics belong to later consumer features.
+- V1 decode validates the payload wire shape in `data/`, then validates registry
+  metadata into import intents in `domain/usecases`. Public import parsing
+  requires the caller's expected parent fingerprint and rejects files from a
+  different wallet before returning a plan. Wallet creation and restore semantics
+  belong to later consumer features.
 
 ### Frozen wire vocabulary
 

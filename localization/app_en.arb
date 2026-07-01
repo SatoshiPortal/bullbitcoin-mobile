@@ -13530,6 +13530,26 @@
   "@keychainManifestGenericError": {
     "description": "Generic error shown when keychain manifest metadata cannot be recorded"
   },
+  "keychainManifestMalformedFileError": "Could not read this recovery file.",
+  "@keychainManifestMalformedFileError": {
+    "description": "Error shown when a keychain manifest recovery file is not valid JSON or is missing required fields."
+  },
+  "keychainManifestUnsupportedFileError": "This recovery file was created by an unsupported app version.",
+  "@keychainManifestUnsupportedFileError": {
+    "description": "Error shown when a keychain manifest recovery file has an unsupported format version."
+  },
+  "keychainManifestWrongWalletFileError": "This recovery file belongs to a different wallet.",
+  "@keychainManifestWrongWalletFileError": {
+    "description": "Error shown when a keychain manifest recovery file belongs to a different parent wallet fingerprint."
+  },
+  "keychainManifestIncompatibleFileError": "This recovery file is not compatible with this app version.",
+  "@keychainManifestIncompatibleFileError": {
+    "description": "Error shown when a keychain manifest recovery file references reservation metadata unknown to this app version."
+  },
+  "keychainManifestInvalidFileError": "This recovery file is invalid.",
+  "@keychainManifestInvalidFileError": {
+    "description": "Error shown when a keychain manifest recovery file is internally inconsistent or duplicated."
+  },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
   "@exchangeSettingsDeleteAccountTitle": {
     "description": "Label for the delete account option in exchange settings"

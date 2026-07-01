@@ -12,6 +12,14 @@ enum KeychainManifestExceptionType {
   generic,
 }
 
+enum KeychainManifestFileParseFailureReason {
+  malformedFile,
+  unsupportedVersion,
+  wrongParentFingerprint,
+  unknownReservation,
+  invalidMetadata,
+}
+
 sealed class KeychainManifestException extends BullException {
   final KeychainManifestExceptionType type;
   final Object? cause;
@@ -26,7 +34,22 @@ sealed class KeychainManifestException extends BullException {
   }
 
   String toTranslated(BuildContext context) {
-    return context.loc.keychainManifestGenericError;
+    return switch (this) {
+      KeychainManifestFileParseException(reason: final reason) =>
+        switch (reason) {
+          KeychainManifestFileParseFailureReason.malformedFile =>
+            context.loc.keychainManifestMalformedFileError,
+          KeychainManifestFileParseFailureReason.unsupportedVersion =>
+            context.loc.keychainManifestUnsupportedFileError,
+          KeychainManifestFileParseFailureReason.wrongParentFingerprint =>
+            context.loc.keychainManifestWrongWalletFileError,
+          KeychainManifestFileParseFailureReason.unknownReservation =>
+            context.loc.keychainManifestIncompatibleFileError,
+          KeychainManifestFileParseFailureReason.invalidMetadata =>
+            context.loc.keychainManifestInvalidFileError,
+        },
+      _ => context.loc.keychainManifestGenericError,
+    };
   }
 }
 
@@ -47,7 +70,9 @@ final class KeychainManifestEmptyInventoryException
 
 final class KeychainManifestFileParseException
     extends KeychainManifestException {
-  KeychainManifestFileParseException({Object? cause})
+  final KeychainManifestFileParseFailureReason reason;
+
+  KeychainManifestFileParseException({required this.reason, Object? cause})
     : super._(
         KeychainManifestExceptionType.fileParse,
         'keychain manifest file parse failed',
