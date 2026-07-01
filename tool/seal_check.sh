@@ -31,6 +31,8 @@ $hits"
 #    `show` export AND its path here, in the same review.
 barrel=packages/secrets/lib/secrets.dart
 public_exports='src/secrets_api.dart
+src/data/migration/secret_migrator.dart
+src/data/migration/reconcile_report.dart
 src/domain/ports/secret_index_port.dart
 src/domain/secrets_failure.dart
 src/domain/secrets_error.dart
@@ -94,16 +96,26 @@ impl=$(grep -rnE "class\s+[A-Za-z0-9_]+Impl\b" --include='*.dart' "$pkg" 2>/dev/
 [ -n "$impl" ] && note "a *Impl class exists — use *Adapter (Port/Adapter convention):
 $impl"
 
-# 5) `useAndForget` (the raw secret-read) is allow-listed to the single guard +
-#    the sealed UI reader. Anywhere else widens the secret's exposure surface.
+# 5) `useAndForget` (the raw secret-read) is allow-listed to two — and only two —
+#    principled categories, so the secret's exposure surface cannot creep:
+#      (A) RAW-SECRET READERS — the code that decodes plaintext to USE it. Kept
+#          to exactly two: the single guard chokepoint + the sealed UI reader.
+#      (B) SecretStorePort IMPLEMENTATIONS / DECORATORS — the store layer itself,
+#          which delegates `useAndForget` to a backing store (the oubliette
+#          adapter → the plugin; the dual-read decorator → hw/fss; the migrator →
+#          copies fss→hw). These do not *consume* a secret to act on it; they are
+#          the storage plumbing the readers sit on top of.
+#    Anything OUTSIDE these two categories widens the surface. (The FSS adapter
+#    *defines* `useAndForget` but its body calls `use(bytes)`, not `.useAndForget(`,
+#    so it is not a call site and needs no entry.)
 # Match actual call sites (`.useAndForget(`), not the declaration/doc comments.
 # Anchored on the FULL allow-listed path (leading `^`, literal dots, trailing
 # `:` from grep -n) so a name that merely CONTAINS an allow-listed basename
 # (e.g. `evil_secret_guard.dart`) is NOT exempted.
 uaf=$(grep -rnE "\.useAndForget\(" --include='*.dart' "$pkg" 2>/dev/null \
-  | grep -vE "^($pkg/src/data/adapters/secret_guard\.dart|$pkg/src/ui/mnemonic_reader\.dart):" \
+  | grep -vE "^($pkg/src/data/adapters/secret_guard\.dart|$pkg/src/ui/mnemonic_reader\.dart|$pkg/src/data/adapters/oubliette_secret_store_adapter\.dart|$pkg/src/data/adapters/dual_read_store\.dart|$pkg/src/data/migration/secret_migrator\.dart):" \
   || true)
-[ -n "$uaf" ] && note "useAndForget called outside the guard/reader allow-list:
+[ -n "$uaf" ] && note "useAndForget called outside the reader / store-implementation allow-list:
 $uaf"
 
 # 6) `flutter_secure_storage` (the raw secret-at-rest backend) may be imported

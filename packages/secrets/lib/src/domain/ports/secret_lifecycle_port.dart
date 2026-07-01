@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'package:secrets/src/data/migration/reconcile_report.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_language.dart';
 import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
@@ -45,4 +46,13 @@ abstract interface class SecretLifecyclePort {
     String? passphrase,
     MnemonicLanguage language = MnemonicLanguage.english,
   });
+
+  /// Heals drift between the store and the index: re-indexes any secret present
+  /// in the store but missing from the index (an orphan left by a non-atomic
+  /// import, or the whole set when the index DB is lost/rebuilt), and surfaces
+  /// danglers/malformed keys. Meant to run once at startup, before any
+  /// index-driven [getInfo]/[listSeeds]. A total failure (e.g. locked keychain)
+  /// returns `Err` so the caller can defer and retry next launch.
+  @useResult
+  Future<Result<ReconcileReport, SecretsFailure>> reconcile();
 }

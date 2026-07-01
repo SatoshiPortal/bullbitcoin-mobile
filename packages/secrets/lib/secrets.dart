@@ -20,8 +20,10 @@ export 'src/secrets_api.dart'
         SecretsBackendOutcome,
         SecretsInitResult;
 
-// ── Storage-backend selection result (the app persists/telemeters this) ────
+// ── Storage-backend selection + startup-maintenance results (the app
+//    persists/telemeters these) ──────────────────────────────────────────────
 export 'src/data/migration/secret_migrator.dart' show MigrationReport;
+export 'src/data/migration/reconcile_report.dart' show ReconcileReport;
 
 // ── The one injected contract (the APP implements this; everything else internal)
 export 'src/domain/ports/secret_index_port.dart' show SecretIndexPort;
