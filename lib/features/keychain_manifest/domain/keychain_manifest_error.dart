@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 enum KeychainManifestExceptionType {
   invalidEntry,
+  emptyInventory,
   reservationMismatch,
   conflict,
   duplicate,
@@ -32,6 +33,15 @@ final class KeychainManifestInvalidEntryException
     extends KeychainManifestException {
   KeychainManifestInvalidEntryException(String message)
     : super._(KeychainManifestExceptionType.invalidEntry, message);
+}
+
+final class KeychainManifestEmptyInventoryException
+    extends KeychainManifestException {
+  KeychainManifestEmptyInventoryException()
+    : super._(
+        KeychainManifestExceptionType.emptyInventory,
+        'keychain manifest inventory is empty',
+      );
 }
 
 final class KeychainManifestReservationMismatchException

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/build_keychain_manifest_file_usecase.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -124,16 +124,61 @@ void main() {
     );
 
     final payload = await facade.buildManifestFilePayload(
-      const KeychainManifestFileRequest(parentFingerprint: 'fedcba98'),
+      'fedcba98',
       now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
     );
 
-    expect(payload.payload, contains('"version":1'));
-    expect(payload.payload, contains('"parentFingerprint":"fedcba98"'));
-    expect(payload.payload, contains('"walletId":"btc-wallet"'));
-    expect(payload.payload, contains('"walletId":"lbtc-wallet"'));
+    expect(payload.payload, _manifestPayload);
+    expect(payload.entryCount, 1);
+    expect(payload.materializationCount, 2);
+    expect(payload.generatedAt, 20);
+    expect(payload.inventoryUpdatedAt, 10);
+    expect(payload.isEmpty, isFalse);
   });
+
+  test(
+    'requires an explicit caller decision before exporting empty inventory',
+    () async {
+      await expectLater(
+        facade.buildManifestFilePayload('fedcba98'),
+        throwsA(
+          isA<KeychainManifestException>().having(
+            (error) => error.type,
+            'type',
+            KeychainManifestExceptionType.emptyInventory,
+          ),
+        ),
+      );
+
+      final payload = await facade.buildManifestFilePayload(
+        'fedcba98',
+        allowEmpty: true,
+        now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+      );
+
+      expect(payload.payload, contains('"entries":[]'));
+      expect(payload.entryCount, 0);
+      expect(payload.materializationCount, 0);
+      expect(payload.generatedAt, 20);
+      expect(payload.inventoryUpdatedAt, 20);
+      expect(payload.isEmpty, isTrue);
+    },
+  );
 }
+
+const _manifestPayload =
+    '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'
+    '"inventoryUpdatedAt":10,"entries":[{"entryId":"fedcba98:39\'/0\'/12\'/100\'",'
+    '"bip85DerivationPath":"39\'/0\'/12\'/100\'",'
+    '"reservationId":"btcpay_wallet_seed","entryType":"walletSeed",'
+    '"ownerFeature":"btcpay","bip85Application":39,"bip85Index":100,'
+    '"createdAt":10,"updatedAt":10,"materializations":[{"type":"wallet",'
+    '"walletId":"btc-wallet","childSeedFingerprint":"0123abcd",'
+    '"network":"bitcoinMainnet","scriptType":"bip84",'
+    '"createdAt":10,"updatedAt":10},{"type":"wallet",'
+    '"walletId":"lbtc-wallet","childSeedFingerprint":"0123abcd",'
+    '"network":"liquidMainnet","scriptType":"bip84",'
+    '"createdAt":10,"updatedAt":10}]}]}';
 
 KeychainManifestWalletMaterializationRequest _walletMaterialization({
   String walletId = 'btc-wallet',

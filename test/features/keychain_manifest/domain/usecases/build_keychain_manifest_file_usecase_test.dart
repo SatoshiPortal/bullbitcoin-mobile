@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/build_keychain_manifest_file_usecase.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,13 +15,13 @@ void main() {
 
   test('builds an empty manifest file for a parent fingerprint', () async {
     final manifestFile = await usecase.execute(
-      const BuildKeychainManifestFileCommand(parentFingerprint: 'fedcba98'),
+      'fedcba98',
       now: DateTime.fromMillisecondsSinceEpoch(2000, isUtc: true),
     );
 
     expect(manifestFile.parentFingerprint, 'fedcba98');
     expect(manifestFile.generatedAt, 2);
-    expect(manifestFile.updatedAt, 2);
+    expect(manifestFile.inventoryUpdatedAt, 2);
     expect(manifestFile.entries, isEmpty);
   });
 
@@ -32,12 +32,12 @@ void main() {
     ]);
 
     final manifestFile = await usecase.execute(
-      const BuildKeychainManifestFileCommand(parentFingerprint: 'fedcba98'),
+      'fedcba98',
       now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
     );
 
     expect(manifestFile.generatedAt, 20);
-    expect(manifestFile.updatedAt, 12);
+    expect(manifestFile.inventoryUpdatedAt, 12);
     expect(manifestFile.entries, hasLength(1));
     expect(manifestFile.entries.single.bip85DerivationPath, "39'/0'/12'/100'");
     expect(
@@ -50,14 +50,12 @@ void main() {
 
   test('maps invalid file input to a keychain manifest error', () async {
     await expectLater(
-      usecase.execute(
-        const BuildKeychainManifestFileCommand(parentFingerprint: 'invalid'),
-      ),
+      usecase.execute('invalid'),
       throwsA(
-        isA<KeychainManifestEntryConflictException>().having(
-          (error) => error.cause,
-          'cause',
-          isNotNull,
+        isA<KeychainManifestInvalidEntryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.invalidEntry,
         ),
       ),
     );

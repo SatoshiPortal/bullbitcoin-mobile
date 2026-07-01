@@ -1,46 +1,32 @@
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_file.dart';
-
-class BuildKeychainManifestFileCommand {
-  final String parentFingerprint;
-
-  const BuildKeychainManifestFileCommand({required this.parentFingerprint});
-}
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 
 class BuildKeychainManifestFileUsecase {
-  final KeychainManifestEntryRepository _repository;
+  final KeychainManifestEntryRepository repository;
 
-  const BuildKeychainManifestFileUsecase({required this._repository});
+  const BuildKeychainManifestFileUsecase({required this.repository});
 
   Future<KeychainManifestFile> execute(
-    BuildKeychainManifestFileCommand command, {
+    String parentFingerprint, {
     DateTime? now,
   }) async {
-    try {
-      final generatedAt =
-          (now ?? DateTime.now().toUtc()).millisecondsSinceEpoch ~/ 1000;
-      final parentFingerprint = KeychainManifestFingerprint.normalize(
-        command.parentFingerprint,
-      );
-      final records = await _repository
-          .fetchWalletMaterializationRecordsByParentFingerprint(
-            parentFingerprint,
-          );
-      final entries = _entriesFromRecords(records);
-      return KeychainManifestFile(
-        parentFingerprint: parentFingerprint,
-        generatedAt: generatedAt,
-        updatedAt: _updatedAt(entries, generatedAt),
-        entries: entries,
-      );
-    } on KeychainManifestInvalidEntryException catch (e) {
-      throw KeychainManifestEntryConflictException(
-        'keychain manifest file build failed',
-        cause: e,
-      );
-    }
+    final generatedAt =
+        (now ?? DateTime.now().toUtc()).millisecondsSinceEpoch ~/ 1000;
+    final normalizedParentFingerprint = KeychainManifestFingerprint.normalize(
+      parentFingerprint,
+    );
+    final records = await repository
+        .fetchWalletMaterializationRecordsByParentFingerprint(
+          normalizedParentFingerprint,
+        );
+    final entries = _entriesFromRecords(records);
+    return KeychainManifestFile(
+      parentFingerprint: normalizedParentFingerprint,
+      generatedAt: generatedAt,
+      inventoryUpdatedAt: _inventoryUpdatedAt(entries, generatedAt),
+      entries: entries,
+    );
   }
 
   List<KeychainManifestFileEntry> _entriesFromRecords(
@@ -84,7 +70,10 @@ class BuildKeychainManifestFileUsecase {
     return left.walletId.compareTo(right.walletId);
   }
 
-  int _updatedAt(List<KeychainManifestFileEntry> entries, int generatedAt) {
+  int _inventoryUpdatedAt(
+    List<KeychainManifestFileEntry> entries,
+    int generatedAt,
+  ) {
     if (entries.isEmpty) return generatedAt;
     var latest = 0;
     for (final entry in entries) {

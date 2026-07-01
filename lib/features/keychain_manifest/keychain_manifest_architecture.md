@@ -76,9 +76,12 @@ Current-device source of truth:
 
 - `bip85_registry` defines reserved paths and purposes.
 - `keychain_manifest` database records define which app-created BIP85 material
-  currently exists locally.
+  has been recorded for recovery/retry inventory.
 - The manifest file payload is the latest projection of those records at the
   moment a caller builds it.
+- The payload does not prove that every recorded wallet still exists locally.
+  A future consumer that needs current wallet-existence guarantees must join
+  against wallet inventory and define missing-wallet behavior explicitly.
 
 The v1 file is deterministic JSON with this shape:
 
@@ -87,7 +90,7 @@ The v1 file is deterministic JSON with this shape:
   "version": 1,
   "parentFingerprint": "fedcba98",
   "generatedAt": 20,
-  "updatedAt": 12,
+  "inventoryUpdatedAt": 12,
   "entries": [
     {
       "entryId": "fedcba98:39'/0'/12'/100'",
@@ -121,9 +124,10 @@ Rules:
 - Fingerprints must be normalized 8-character lowercase hex values.
 - `bip85DerivationPath` is the registry-relative hardened path.
 - `entryId` is derived from parent fingerprint and BIP85 path.
-- `updatedAt` is the latest timestamp among included entries and
+- `inventoryUpdatedAt` is the latest timestamp among included entries and
   materializations. Empty manifests use the build timestamp.
 - V1 supports only wallet materializations with `"type": "wallet"`.
+- Public callers must explicitly opt in before exporting an empty manifest.
 - This PR only encodes the v1 payload. Decoding, import validation, and restore
   semantics belong to a later consumer PR.
 

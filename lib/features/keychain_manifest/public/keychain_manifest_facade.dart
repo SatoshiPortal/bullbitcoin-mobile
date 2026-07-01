@@ -12,11 +12,13 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_re
         KeychainManifestReservedDerivationRequest,
         KeychainManifestWalletMaterializationRequest;
 
-import 'package:bb_mobile/features/keychain_manifest/domain/build_keychain_manifest_file_usecase.dart';
+import 'dart:convert';
+
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_file_codec.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 
 class KeychainManifestFacade {
   final RecordKeychainManifestEntryUsecase _recordEntry;
@@ -39,18 +41,27 @@ class KeychainManifestFacade {
   }
 
   Future<KeychainManifestFilePayload> buildManifestFilePayload(
-    KeychainManifestFileRequest request, {
+    String parentFingerprint, {
+    bool allowEmpty = false,
     DateTime? now,
   }) async {
     try {
       final manifestFile = await _buildManifestFile.execute(
-        BuildKeychainManifestFileCommand(
-          parentFingerprint: request.parentFingerprint,
-        ),
+        parentFingerprint,
         now: now,
       );
+      if (manifestFile.entries.isEmpty && !allowEmpty) {
+        throw KeychainManifestEmptyInventoryException();
+      }
       return KeychainManifestFilePayload._(
-        payload: const KeychainManifestFileCodec().encode(manifestFile),
+        payload: const _KeychainManifestFileEncoder().encode(manifestFile),
+        entryCount: manifestFile.entries.length,
+        materializationCount: manifestFile.entries.fold<int>(
+          0,
+          (count, entry) => count + entry.materializations.length,
+        ),
+        generatedAt: manifestFile.generatedAt,
+        inventoryUpdatedAt: manifestFile.inventoryUpdatedAt,
       );
     } catch (e) {
       throw KeychainManifestException.fromInternal(e);
@@ -58,14 +69,69 @@ class KeychainManifestFacade {
   }
 }
 
-class KeychainManifestFileRequest {
-  final String parentFingerprint;
-
-  const KeychainManifestFileRequest({required this.parentFingerprint});
-}
-
 class KeychainManifestFilePayload {
   final String payload;
+  final int entryCount;
+  final int materializationCount;
+  final int generatedAt;
+  final int inventoryUpdatedAt;
 
-  const KeychainManifestFilePayload._({required this.payload});
+  bool get isEmpty => entryCount == 0;
+
+  const KeychainManifestFilePayload._({
+    required this.payload,
+    required this.entryCount,
+    required this.materializationCount,
+    required this.generatedAt,
+    required this.inventoryUpdatedAt,
+  });
+}
+
+class _KeychainManifestFileEncoder {
+  const _KeychainManifestFileEncoder();
+
+  String encode(KeychainManifestFile manifestFile) {
+    return jsonEncode(_manifestToJson(manifestFile));
+  }
+
+  Map<String, Object?> _manifestToJson(KeychainManifestFile manifestFile) {
+    return {
+      'version': manifestFile.version,
+      'parentFingerprint': manifestFile.parentFingerprint,
+      'generatedAt': manifestFile.generatedAt,
+      'inventoryUpdatedAt': manifestFile.inventoryUpdatedAt,
+      'entries': manifestFile.entries.map(_entryToJson).toList(growable: false),
+    };
+  }
+
+  Map<String, Object?> _entryToJson(KeychainManifestFileEntry entry) {
+    return {
+      'entryId': entry.entryId,
+      'bip85DerivationPath': entry.bip85DerivationPath,
+      'reservationId': entry.reservationId,
+      'entryType': entry.entryType,
+      'ownerFeature': entry.ownerFeature,
+      'bip85Application': entry.bip85Application,
+      'bip85Index': entry.bip85Index,
+      'createdAt': entry.createdAt,
+      'updatedAt': entry.updatedAt,
+      'materializations': entry.materializations
+          .map(_materializationToJson)
+          .toList(growable: false),
+    };
+  }
+
+  Map<String, Object?> _materializationToJson(
+    KeychainManifestFileWalletMaterialization materialization,
+  ) {
+    return {
+      'type': KeychainManifestFileWalletMaterialization.type,
+      'walletId': materialization.walletId,
+      'childSeedFingerprint': materialization.childSeedFingerprint,
+      'network': materialization.network,
+      'scriptType': materialization.scriptType,
+      'createdAt': materialization.createdAt,
+      'updatedAt': materialization.updatedAt,
+    };
+  }
 }

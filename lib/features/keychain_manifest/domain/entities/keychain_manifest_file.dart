@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 
 class KeychainManifestFile {
   static const currentVersion = 1;
@@ -7,14 +7,14 @@ class KeychainManifestFile {
   final int version;
   final String parentFingerprint;
   final int generatedAt;
-  final int updatedAt;
+  final int inventoryUpdatedAt;
   final List<KeychainManifestFileEntry> entries;
 
   KeychainManifestFile({
     this.version = currentVersion,
     required String parentFingerprint,
     required this.generatedAt,
-    required this.updatedAt,
+    required this.inventoryUpdatedAt,
     required List<KeychainManifestFileEntry> entries,
   }) : parentFingerprint = KeychainManifestFingerprint.normalize(
          parentFingerprint,
@@ -25,7 +25,7 @@ class KeychainManifestFile {
         'unsupported keychain manifest file version',
       );
     }
-    if (generatedAt < 0 || updatedAt < 0) {
+    if (generatedAt < 0 || inventoryUpdatedAt < 0) {
       throw KeychainManifestInvalidEntryException(
         'manifest file timestamps must be non-negative',
       );
