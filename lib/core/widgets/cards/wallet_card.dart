@@ -114,7 +114,7 @@ class WalletCard extends StatelessWidget {
                   child: FadingLinearProgress(
                     trigger: isSyncing,
                     backgroundColor: context.appColors.transparent,
-                    foregroundColor: context.appColors.onSecondaryFixed,
+                    foregroundColor: context.appColors.secondary,
                     height: 3.0,
                   ),
                 ),
