@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/bullnym/application/application_errors.dart';
-import 'package:bb_mobile/features/bullnym/application/ports/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 import 'package:dio/dio.dart';
 
@@ -39,7 +39,7 @@ class BullnymHttpClient implements BullnymClientPort {
     if (normalized.isEmpty ||
         uri == null ||
         !uri.hasScheme ||
-        (uri.scheme != 'http' && uri.scheme != 'https') ||
+        (uri.scheme != 'https' && !_isLocalHttpUri(uri)) ||
         uri.host.isEmpty) {
       throw ArgumentError.value(baseUrl, 'baseUrl', 'Invalid Bullnym base URL');
     }
@@ -65,7 +65,7 @@ class BullnymHttpClient implements BullnymClientPort {
   Future<void> deleteRegistration(
     BullnymDeleteRegistrationRequest request,
   ) async {
-    await _deleteMap(
+    await _deleteSuccess(
       '/register',
       data: {
         'nym': request.nym,
@@ -100,18 +100,31 @@ class BullnymHttpClient implements BullnymClientPort {
     return _requestMap(() => _dio.post<dynamic>(path, data: data));
   }
 
-  Future<Map<String, dynamic>> _deleteMap(String path, {Object? data}) async {
-    return _requestMap(() => _dio.delete<dynamic>(path, data: data));
+  Future<void> _deleteSuccess(String path, {Object? data}) async {
+    final response = await _requestResponse(
+      () => _dio.delete<dynamic>(path, data: data),
+    );
+    _throwIfBullnymError(response);
+    final statusCode = response.statusCode;
+    if (statusCode == null || statusCode < 200 || statusCode >= 300) {
+      throw _httpExceptionFromResponse(response);
+    }
   }
 
   Future<Map<String, dynamic>> _requestMap(
     Future<Response<dynamic>> Function() request,
   ) async {
+    return _decodeMap(await _requestResponse(request));
+  }
+
+  Future<Response<dynamic>> _requestResponse(
+    Future<Response<dynamic>> Function() request,
+  ) async {
     try {
-      return _decodeMap(await request());
+      return await request();
     } on DioException catch (e) {
       final response = e.response;
-      if (response != null) return _decodeMap(response);
+      if (response != null) return response;
       throw _networkException(e);
     }
   }
@@ -121,12 +134,11 @@ class BullnymHttpClient implements BullnymClientPort {
         e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.receiveTimeout;
-    return BullnymException(
-      kind: isTimeout ? BullnymErrorKind.timeout : BullnymErrorKind.network,
-      code: isTimeout ? 'Timeout' : 'NetworkError',
-      diagnosticReason: e.message ?? 'Network request failed',
-      retryable: true,
-    );
+    final diagnosticReason = e.message ?? 'Network request failed';
+    if (isTimeout) {
+      return BullnymException.timeout(diagnosticReason: diagnosticReason);
+    }
+    return BullnymException.network(diagnosticReason: diagnosticReason);
   }
 
   Map<String, dynamic> _decodeMap(Response<dynamic> response) {
@@ -146,13 +158,7 @@ class BullnymHttpClient implements BullnymClientPort {
   dynamic _requireJson(Response<dynamic> response) {
     final data = response.data;
     if (data == null) {
-      throw BullnymException(
-        kind: BullnymErrorKind.emptyResponse,
-        code: 'EmptyResponse',
-        diagnosticReason: 'Server returned an empty response',
-        statusCode: response.statusCode,
-        retryable: true,
-      );
+      throw BullnymException.emptyResponse(statusCode: response.statusCode);
     }
     return data;
   }
@@ -177,20 +183,15 @@ class BullnymHttpClient implements BullnymClientPort {
           statusCode: response.statusCode,
         );
       }
-      return BullnymException(
-        kind: BullnymErrorKind.serverRejectedRequest,
+      return BullnymException.serverRejectedRequest(
         code: code is String ? code : 'ServerRejectedRequest',
         diagnosticReason: reason,
         statusCode: response.statusCode,
         retryable: _isRetryableStatus(response.statusCode),
       );
     }
-    return BullnymException(
-      kind: BullnymErrorKind.unexpectedHttpStatus,
-      code: 'HttpError',
-      diagnosticReason: 'Unexpected server response',
+    return BullnymException.unexpectedHttpStatus(
       statusCode: response.statusCode,
-      retryable: true,
     );
   }
 
@@ -199,16 +200,19 @@ class BullnymHttpClient implements BullnymClientPort {
     return statusCode == 408 || statusCode == 429 || statusCode >= 500;
   }
 
+  static bool _isLocalHttpUri(Uri uri) {
+    if (uri.scheme != 'http') return false;
+    return uri.host == 'localhost' ||
+        uri.host == '127.0.0.1' ||
+        uri.host == '::1';
+  }
+
   BullnymException _httpExceptionFromResponse(Response<dynamic> response) {
     if (response.data is Map<String, dynamic>) {
       return _serverErrorExceptionFromResponse(response);
     }
-    return BullnymException(
-      kind: BullnymErrorKind.unexpectedHttpStatus,
-      code: 'HttpError',
-      diagnosticReason: 'Unexpected server response',
+    return BullnymException.unexpectedHttpStatus(
       statusCode: response.statusCode,
-      retryable: true,
     );
   }
 

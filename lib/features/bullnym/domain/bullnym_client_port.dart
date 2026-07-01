@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 
-abstract class BullnymClientPort {
+abstract interface class BullnymClientPort {
   Future<BullnymRegisterResult> register(BullnymRegisterRequest request);
 
   Future<void> deleteRegistration(BullnymDeleteRegistrationRequest request);

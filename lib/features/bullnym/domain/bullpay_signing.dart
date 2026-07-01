@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
@@ -20,6 +21,7 @@ Uint8List buildBullpaySchnorrMessage({
 }) {
   final builder = BytesBuilder();
   void addField(String value) {
+    _throwIfContainsNull(value);
     builder.add(utf8.encode(value));
     builder.addByte(0);
   }
@@ -35,24 +37,44 @@ Uint8List buildBullpaySchnorrMessage({
   return builder.toBytes();
 }
 
-String signBullpayAction({
-  required NostrKeychainHandle handle,
+Future<String> signBullpayAction({
+  required BullnymAuthSigner signer,
   required String action,
   required String nymOrEmpty,
   required List<String> payloadFields,
   required int timestampSecs,
-}) {
+}) async {
   final message = buildBullpaySchnorrMessage(
     action: action,
-    npubHex: handle.publicKeyHex,
+    npubHex: signer.npubHex,
     nymOrEmpty: nymOrEmpty,
     payloadFields: payloadFields,
     timestampSecs: timestampSecs,
   );
   final digest = sha256.convert(message).bytes;
-  return handle.signHashHex(hex.encode(digest));
+  return Future<String>.value(signer.signHashHex(hex.encode(digest)));
 }
 
 int currentBullpayTimestampSecs() {
   return DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+}
+
+void validateBullnymNpubHex(String npubHex) {
+  try {
+    final decoded = hex.decode(npubHex);
+    if (decoded.length == 32) return;
+  } on FormatException {
+    // Throw the feature error below.
+  }
+  throw const BullnymException.invalidInput(
+    'Bullnym npub must be a 32-byte hex value',
+  );
+}
+
+void _throwIfContainsNull(String value) {
+  if (value.contains('\u0000')) {
+    throw const BullnymException.invalidInput(
+      'Bullnym signing fields must not contain null separators',
+    );
+  }
 }

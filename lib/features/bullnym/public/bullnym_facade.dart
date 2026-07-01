@@ -1,10 +1,13 @@
-import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/delete_bullnym_registration_usecase.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/lookup_bullnym_registration_usecase.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/register_bullnym_usecase.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
+import 'package:bb_mobile/features/bullnym/domain/usecases/delete_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/domain/usecases/lookup_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/domain/usecases/register_bullnym_usecase.dart';
 
-export 'package:bb_mobile/features/bullnym/application/application_errors.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 
 class BullnymFacade {
@@ -12,29 +15,30 @@ class BullnymFacade {
   final DeleteBullnymRegistrationUsecase _deleteRegistration;
   final LookupBullnymRegistrationUsecase _lookupRegistration;
 
-  const BullnymFacade({
-    required this._register,
-    required this._deleteRegistration,
-    required this._lookupRegistration,
-  });
+  BullnymFacade({
+    required BullnymClientPort client,
+    int Function() nowSecs = currentBullpayTimestampSecs,
+  }) : _register = RegisterBullnymUsecase(client, nowSecs),
+       _deleteRegistration = DeleteBullnymRegistrationUsecase(client, nowSecs),
+       _lookupRegistration = LookupBullnymRegistrationUsecase(client);
 
   Future<BullnymRegisterResult> register({
-    required NostrKeychainHandle handle,
+    required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
   }) {
     return _register.execute(
-      handle: handle,
+      signer: signer,
       nym: nym,
       ctDescriptor: ctDescriptor,
     );
   }
 
   Future<void> deleteRegistration({
-    required NostrKeychainHandle handle,
+    required BullnymAuthSigner signer,
     required String nym,
   }) {
-    return _deleteRegistration.execute(handle: handle, nym: nym);
+    return _deleteRegistration.execute(signer: signer, nym: nym);
   }
 
   Future<BullnymLookupResult> lookupRegistration({required String npubHex}) {

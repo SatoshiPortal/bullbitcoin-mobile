@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
-import 'package:bb_mobile/features/bullnym/application/application_errors.dart';
-import 'package:bb_mobile/features/bullnym/application/ports/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 
@@ -10,25 +10,26 @@ class RegisterBullnymUsecase {
   final BullnymClientPort _client;
   final BullnymNowSecs _nowSecs;
 
-  const RegisterBullnymUsecase({
-    required this._client,
+  const RegisterBullnymUsecase(
+    this._client, [
     this._nowSecs = currentBullpayTimestampSecs,
-  });
+  ]);
 
   Future<BullnymRegisterResult> execute({
-    required NostrKeychainHandle handle,
+    required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
-  }) {
+  }) async {
     final timestamp = _nowSecs();
     try {
+      validateBullnymNpubHex(signer.npubHex);
       return _client.register(
         BullnymRegisterRequest(
           nym: nym,
           ctDescriptor: ctDescriptor,
-          npubHex: handle.publicKeyHex,
-          signatureHex: signBullpayAction(
-            handle: handle,
+          npubHex: signer.npubHex,
+          signatureHex: await signBullpayAction(
+            signer: signer,
             action: bullpayActionRegister,
             nymOrEmpty: nym,
             payloadFields: [ctDescriptor],
@@ -39,8 +40,8 @@ class RegisterBullnymUsecase {
       );
     } on BullnymException {
       rethrow;
-    } catch (e) {
-      throw BullnymException.signingFailed(e);
+    } catch (_) {
+      throw const BullnymException.signingFailed();
     }
   }
 }

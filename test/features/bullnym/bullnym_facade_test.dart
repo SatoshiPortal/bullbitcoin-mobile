@@ -2,11 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/delete_bullnym_registration_usecase.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/lookup_bullnym_registration_usecase.dart';
-import 'package:bb_mobile/features/bullnym/application/usecases/register_bullnym_usecase.dart';
+import 'package:bb_mobile/features/bullnym/data/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
-import 'package:bb_mobile/features/bullnym/frameworks/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -58,6 +55,7 @@ class _Captured {
 void main() {
   const timestamp = 1710000000;
   late NostrKeychainHandle handle;
+  late BullnymAuthSigner signer;
 
   setUpAll(() {
     registerFallbackValue(RequestOptions(path: ''));
@@ -65,6 +63,7 @@ void main() {
 
   setUp(() {
     handle = _bullnymAuthHandle();
+    signer = _signerFromHandle(handle);
   });
 
   test('does not mutate caller-supplied Dio options', () {
@@ -105,52 +104,65 @@ void main() {
       () => BullnymHttpClient(baseUrl: 'ftp://custom.bullnym.test'),
       throwsArgumentError,
     );
-  });
-
-  test('posts signed register requests using the proven contract', () async {
-    final stub = _stubDio([
-      {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
-    ]);
-    final facade = _facadeForClient(
-      BullnymHttpClient.withDio(stub.dio),
-      nowSecs: () => timestamp,
-    );
-
-    final response = await facade.register(
-      handle: handle,
-      nym: 'alice',
-      ctDescriptor: 'ct-desc',
-    );
-
-    expect(response.nym, 'alice');
-    expect(response.lightningAddress, 'alice@bullpay.ca');
-    final request = stub.captured.requests.single;
-    expect(request.method, 'POST');
-    expect(request.path, '/register');
-    expect(request.data, {
-      'nym': 'alice',
-      'ct_descriptor': 'ct-desc',
-      'npub': handle.publicKeyHex,
-      'signature': isA<String>().having((s) => s.length, 'length', 128),
-      'timestamp': timestamp,
-    });
     expect(
-      (request.data as Map<String, dynamic>).containsKey(
-        'verification'
-        '_npub',
-      ),
-      isFalse,
-    );
-    _expectSignatureValid(
-      handle: handle,
-      signatureHex:
-          (request.data as Map<String, dynamic>)['signature'] as String,
-      action: bullpayActionRegister,
-      nymOrEmpty: 'alice',
-      payloadFields: const ['ct-desc'],
-      timestampSecs: timestamp,
+      () => BullnymHttpClient(baseUrl: 'http://custom.bullnym.test'),
+      throwsArgumentError,
     );
   });
+
+  test('allows http only for local Bullnym fixtures', () {
+    final client = BullnymHttpClient(baseUrl: 'http://localhost:3000');
+
+    expect(client.baseUrl, 'http://localhost:3000');
+  });
+
+  test(
+    'posts signed register requests using the harness-backed contract',
+    () async {
+      final stub = _stubDio([
+        {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
+      ]);
+      final facade = _facadeForClient(
+        BullnymHttpClient.withDio(stub.dio),
+        nowSecs: () => timestamp,
+      );
+
+      final response = await facade.register(
+        signer: signer,
+        nym: 'alice',
+        ctDescriptor: 'ct-desc',
+      );
+
+      expect(response.nym, 'alice');
+      expect(response.lightningAddress, 'alice@bullpay.ca');
+      final request = stub.captured.requests.single;
+      expect(request.method, 'POST');
+      expect(request.path, '/register');
+      expect(request.data, {
+        'nym': 'alice',
+        'ct_descriptor': 'ct-desc',
+        'npub': signer.npubHex,
+        'signature': isA<String>().having((s) => s.length, 'length', 128),
+        'timestamp': timestamp,
+      });
+      expect(
+        (request.data as Map<String, dynamic>).containsKey(
+          'verification'
+          '_npub',
+        ),
+        isFalse,
+      );
+      _expectSignatureValid(
+        handle: handle,
+        signatureHex:
+            (request.data as Map<String, dynamic>)['signature'] as String,
+        action: bullpayActionRegister,
+        nymOrEmpty: 'alice',
+        payloadFields: const ['ct-desc'],
+        timestampSecs: timestamp,
+      );
+    },
+  );
 
   test('deletes registration with a signed delete action', () async {
     final stub = _stubDio([
@@ -161,14 +173,14 @@ void main() {
       nowSecs: () => timestamp,
     );
 
-    await facade.deleteRegistration(handle: handle, nym: 'alice');
+    await facade.deleteRegistration(signer: signer, nym: 'alice');
 
     final request = stub.captured.requests.single;
     expect(request.method, 'DELETE');
     expect(request.path, '/register');
     expect(request.data, {
       'nym': 'alice',
-      'npub': handle.publicKeyHex,
+      'npub': signer.npubHex,
       'signature': isA<String>().having((s) => s.length, 'length', 128),
       'timestamp': timestamp,
     });
@@ -187,7 +199,21 @@ void main() {
     );
   });
 
-  test('parses proven lookup response shape', () async {
+  test('accepts empty successful delete responses', () async {
+    final stub = _stubDio([null], statuses: [204]);
+    final facade = _facadeForClient(
+      BullnymHttpClient.withDio(stub.dio),
+      nowSecs: () => timestamp,
+    );
+
+    await facade.deleteRegistration(signer: signer, nym: 'alice');
+
+    final request = stub.captured.requests.single;
+    expect(request.method, 'DELETE');
+    expect(request.path, '/register');
+  });
+
+  test('parses documented lookup response shape', () async {
     final stub = _stubDio([
       {'nym': 'alice', 'active': false},
     ]);
@@ -201,6 +227,23 @@ void main() {
     expect(request.method, 'GET');
     expect(request.path, '/register/lookup');
     expect(request.queryParameters['npub'], 'aa' * 32);
+  });
+
+  test('rejects malformed lookup npub before network request', () async {
+    final stub = _stubDio([
+      {'nym': 'alice', 'active': false},
+    ]);
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+    expect(
+      () => facade.lookupRegistration(npubHex: 'not-hex'),
+      throwsA(
+        isA<BullnymException>()
+            .having((e) => e.kind, 'kind', BullnymErrorKind.invalidInput)
+            .having((e) => e.retryable, 'retryable', false),
+      ),
+    );
+    expect(stub.captured.requests, isEmpty);
   });
 
   test('maps backend error responses with diagnostics', () async {
@@ -269,7 +312,7 @@ void main() {
 
     expect(
       () => facade.register(
-        handle: handle,
+        signer: signer,
         nym: 'alice',
         ctDescriptor: 'ct-desc',
       ),
@@ -281,6 +324,87 @@ void main() {
         ),
       ),
     );
+  });
+
+  test('rejects null separators in signed register fields', () async {
+    final stub = _stubDio([
+      {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
+    ]);
+    final facade = _facadeForClient(
+      BullnymHttpClient.withDio(stub.dio),
+      nowSecs: () => timestamp,
+    );
+
+    expect(
+      () => facade.register(
+        signer: signer,
+        nym: 'ali\u0000ce',
+        ctDescriptor: 'ct-desc',
+      ),
+      throwsA(
+        isA<BullnymException>()
+            .having((e) => e.kind, 'kind', BullnymErrorKind.invalidInput)
+            .having((e) => e.retryable, 'retryable', false),
+      ),
+    );
+    expect(stub.captured.requests, isEmpty);
+  });
+
+  test('rejects null separators in signed descriptor fields', () async {
+    final stub = _stubDio([
+      {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
+    ]);
+    final facade = _facadeForClient(
+      BullnymHttpClient.withDio(stub.dio),
+      nowSecs: () => timestamp,
+    );
+
+    expect(
+      () => facade.register(
+        signer: signer,
+        nym: 'alice',
+        ctDescriptor: 'ct\u0000desc',
+      ),
+      throwsA(isA<BullnymException>()),
+    );
+    expect(stub.captured.requests, isEmpty);
+  });
+
+  test('does not expose signer exception text on signing failure', () async {
+    final stub = _stubDio([
+      {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
+    ]);
+    final facade = _facadeForClient(
+      BullnymHttpClient.withDio(stub.dio),
+      nowSecs: () => timestamp,
+    );
+    final throwingSigner = BullnymAuthSigner(
+      npubHex: signer.npubHex,
+      signHashHex: (_) => throw Exception('xprv-secret-leak'),
+    );
+
+    await expectLater(
+      () => facade.register(
+        signer: throwingSigner,
+        nym: 'alice',
+        ctDescriptor: 'ct-desc',
+      ),
+      throwsA(
+        isA<BullnymException>()
+            .having((e) => e.kind, 'kind', BullnymErrorKind.signingFailed)
+            .having(
+              (e) => e.diagnosticReason,
+              'diagnosticReason',
+              isNot(contains('xprv-secret-leak')),
+            )
+            .having(
+              (e) => e.toString(),
+              'toString',
+              isNot(contains('xprv-secret-leak')),
+            ),
+      ),
+    );
+    expect(stub.captured.requests, isEmpty);
   });
 
   test(
@@ -307,7 +431,7 @@ void main() {
     },
   );
 
-  test('builds deployed Bullnym signing message with null separators', () {
+  test('builds Bullpay LA v2 signing message with null separators', () {
     final expected = <int>[];
     void addField(String value) {
       expected.addAll(utf8.encode(value));
@@ -336,22 +460,22 @@ void main() {
 
 BullnymFacade _facadeForClient(
   BullnymHttpClient client, {
-  BullnymNowSecs nowSecs = currentBullpayTimestampSecs,
+  int Function() nowSecs = currentBullpayTimestampSecs,
 }) {
-  return BullnymFacade(
-    register: RegisterBullnymUsecase(client: client, nowSecs: nowSecs),
-    deleteRegistration: DeleteBullnymRegistrationUsecase(
-      client: client,
-      nowSecs: nowSecs,
-    ),
-    lookupRegistration: LookupBullnymRegistrationUsecase(client: client),
-  );
+  return BullnymFacade(client: client, nowSecs: nowSecs);
 }
 
 NostrKeychainHandle _bullnymAuthHandle() {
   return NostrKeychainHandle.deriveFromBip85Path(
     xprvBase58: _zeroMnemonicXprv(),
     hardenedPath: "9000'/2'/1'",
+  );
+}
+
+BullnymAuthSigner _signerFromHandle(NostrKeychainHandle handle) {
+  return BullnymAuthSigner(
+    npubHex: handle.publicKeyHex,
+    signHashHex: handle.signHashHex,
   );
 }
 
