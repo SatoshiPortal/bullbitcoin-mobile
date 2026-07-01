@@ -14,20 +14,19 @@ The **sole owner of user secrets** (mnemonics, seed bytes, xprv) for the Bull wa
 import 'package:secrets/secrets.dart';
 
 // Once, at app start. `index` is the app's SecretIndexPort (Drift-backed);
-// it stores only NON-secret metadata. `store` is optional (defaults to the
-// OS keychain-backed adapter); it is the test / future-hardware-backend seam.
-Secrets.init(index: DriftSecretIndex());
+// it stores only NON-secret metadata. `store` is optional (a test seam).
+await Secrets.init(index: DriftSecretIndex());
 ```
 
-Calling any `Secrets` member before `init` throws a `StateError`. The single re-exported import (`package:secrets/secrets.dart`) also brings in the `primitives` types used in signatures (`Fingerprint`, `BitcoinNetwork` / `LiquidNetwork` / `NetworkEnv`, `ScriptType`, `Result` / `Ok` / `Err`) — a consumer never imports `primitives`, `src/`, or any DI library directly.
+`init` is **async** and returns a `SecretsInitResult` (`{outcome, probeError}`) describing which storage backend was wired; it also accepts an optional `mode` (`SecretsStorageMode.autoDetect` | `oublietteFirst` | `fssOnly`, default `autoDetect`) — see [Storage](#storage). Calling any `Secrets` member before `init` throws a `StateError`. The single re-exported import (`package:secrets/secrets.dart`) also brings in the `primitives` types used in signatures (`Fingerprint`, `BitcoinNetwork` / `LiquidNetwork` / `NetworkEnv`, `ScriptType`, `XpubType`, `Result` / `Ok` / `Err`) — a consumer never imports `primitives`, `src/`, or any DI library directly.
 
 ### Entry points — the static `Secrets` API
 
-Every async op returns `Future<Result<T, SecretsFailure>>`.
+Every async *secret* op returns `Future<Result<T, SecretsFailure>>`. (The wiring/telemetry statics — `init`, `probeBackend`, `migrateToHardware` — return backend/report records instead, not a `Result`.)
 
 | Static | Returns | Purpose |
 |---|---|---|
-| `Secrets.init({index, store?})` | `void` | Build the internal graph once (the only wiring step). |
+| `Secrets.init({index, mode, store?})` | `Future<SecretsInitResult>` | Build the internal graph once, choosing the storage backend per `mode`; returns the resolved backend outcome. |
 | `Secrets.importMnemonic(words, {passphrase, language})` | `MnemonicSecret` | Import existing words, store, return the typed handle. |
 | `Secrets.generateMnemonic({length})` | `MnemonicSecret` | Generate fresh words, store, return the handle. |
 | `Secrets.fingerprintOfMnemonic(words, {passphrase, language})` | `Fingerprint` | Derive the fingerprint **without** storing (duplicate pre-check). |
@@ -35,6 +34,9 @@ Every async op returns `Future<Result<T, SecretsFailure>>`.
 | `Secrets.list()` | `List<Secret>` | All stored secrets, as handles. |
 | `Secrets.exists(fp)` | `bool` | Whether a secret with `fp` is stored. |
 | `Secrets.restoreVault({vault, vaultKey})` | `List<Fingerprint>` | Decrypt a vault in-package, write the recovered secret(s), return their fingerprints. |
+| `Secrets.reconcile()` | `Result<ReconcileReport, …>` | Heal store↔index drift at startup: re-index store-orphans; report danglers/malformed keys (never dropped). |
+| `Secrets.migrateToHardware()` | `MigrationReport?` | One-time FSS→hardware seed copy when a hardware backend is active (else `null`). |
+| `Secrets.probeBackend()` | `Future<SecretsInitResult>` | Probe device hardware-storage capability **without** wiring the seed layer (standalone census). |
 
 `importMnemonic` / `generateMnemonic` return the precise subtype (`MnemonicSecret`), so you can operate immediately without a second `fetch`. `fetch` resolves the kind from the index and returns the base `Secret` (narrow with `is MnemonicSecret`).
 
@@ -145,17 +147,26 @@ Ports-and-adapters internally, enforced by `make seal-check`:
 
 1. **Library privacy + non-export** (the hard wall): raw-secret code lives under `src/`, never exported from `lib/secrets.dart`. A cross-package `import 'package:secrets/src/...'` is an `implementation_imports` info → fatal under CI's `--fatal-infos`.
 2. **`@internal` accessors** for the few secret-bearing payloads that must cross the barrel (`Bip85Derivation.words`, `Bip85HexResult.hexForView`, `ArkSecret.bytes`) — external use trips `invalid_use_of_internal_member`.
-3. **`make seal-check`** — CI gate against external `src/` imports, internal barrel exports, and suppression of the internal-member lint; the `useAndForget` allow-list covers the handle and `SecretRevealer` read paths.
+3. **`make seal-check`** — CI gate against external `src/` imports, internal barrel exports, and suppression of the internal-member lint. Its `useAndForget` allow-list covers exactly two categories: the raw-secret **readers** (`secret_guard.dart`, `mnemonic_reader.dart`) and the `SecretStorePort` **implementations/decorators** (`oubliette_secret_store_adapter.dart`, `dual_read_store.dart`, `secret_migrator.dart`).
 4. **Redacted `toString` + no `toJson`** on every secret-bearing type; the boundary never logs secret-bearing text — a foreign exception contributes only its runtime *type* name (never its message) to `logMessage`, alongside the public fingerprint.
+
+### Threat model — what the seal is, and is NOT
+
+The seal is a **first-party blast-radius / API boundary**, not a runtime privilege boundary. It is enforced entirely at compile/CI time (library-privacy + non-export + `make seal-check`).
+
+- **It DOES** stop accidental first-party misuse: a teammate can't `import` `src/`, re-export an internal, grow the raw-read surface, or log a secret's text without failing CI. It shrinks the code that can touch raw material to a tiny, reviewed set of files, and keeps secret lifetime minimal (use-and-forget + buffer zeroing).
+- **It does NOT** defend against a **compromised process**: `secrets` links into the app's isolate, so a malicious/compromised dependency in the same process, a debugger, a core/memory dump, or FFI reading the heap can still reach the material. Crucially, **BIP32/39/85 run in pure Dart on a moving-GC heap that cannot be zeroized**, so the raw seed transits process RAM on every derive/sign regardless of the storage backend. Runtime confidentiality of an already-compromised device is an explicit **non-goal** — the storage backends harden the secret **at rest**, not in use.
 
 ## Security guarantees (and honest limits)
 
 - **Signing is intent-gated** (`IntentValidator`, issue #1703): a `signBitcoin` / `signLiquid` call carries a `SigningIntent` (the caller's authorization — outputs + max fee). A send rejects an over-cap fee, a non-wallet input, a duplicated/missing/exfiltration output; payjoin enforces the BIP78 checklist (fail-closed); a swap asserts the lockup script commits to your own derived key (the Boltz address is untrusted).
 - **`trustWitnessUtxo: false`** on Bitcoin signing; FSS uses `resetOnError:false` + `AfterFirstUnlockThisDeviceOnly`; `KeychainLockedFailure` is **never** collapsed into `SecretNotFoundFailure` (locked keychain ≠ not found).
-- **At rest only** is hardware-adjacent: BIP32/39/85 are pure Dart, so the secret transits the Dart heap during each derive/sign and **cannot be zeroized** (moving GC). A hardware backend is a future initiative behind the internal `SecretStorePort` seam (the optional `store` argument to `init`).
+- **At rest only** is hardware-adjacent: BIP32/39/85 are pure Dart, so the secret transits the Dart heap during each derive/sign and **cannot be zeroized** (moving GC). A hardware-backed store now exists (`OublietteSecretStoreAdapter`, iOS/Android) and is wired by `init` behind the internal `SecretStorePort` seam — but it hardens the secret at rest only, not in use (see [Threat model](#threat-model--what-the-seal-is-and-is-not)).
 - **Liquid signing** enforces the fee cap (the only soundly-checkable invariant on confidential outputs); per-output change-ownership is not provable on blinded outputs and is a documented residual. Liquid uses an ephemeral temp LWK db deleted after signing.
 - **Backup vault** is **not** AEAD. The pinned third-party `recoverbull` uses AES-256-CBC + HMAC-SHA256 (encrypt-and-MAC, one key shared by cipher and MAC), and the surrounding JSON envelope (`createdAt`/`id`/`salt`) is unauthenticated. Each backup gets a fresh `Random.secure()` IV and a fresh per-backup BIP85 `VaultKey` (no IV/key reuse), and tamper/wrong-key is detected via a constant-time MAC compare — so it is sound-but-not-AEAD. Hardening (HKDF enc/MAC key separation, full-envelope MAC) is an upstream `recoverbull` concern.
 
 ## Storage
 
-FSS-only today (`FssSecretStoreAdapter` over `flutter_secure_storage`). The internal `SecretStorePort` is use-and-forget shaped so a hardware backend drops in unchanged. The non-secret `SecretIndexPort` (app-side Drift) is reconciled against the store at startup; drift is surfaced, never silently dropped.
+Two backends behind the internal use-and-forget `SecretStorePort`: `FssSecretStoreAdapter` (over `flutter_secure_storage`) and `OublietteSecretStoreAdapter` (hardware-backed, iOS/Android only). `Secrets.init` probes device capability and wires either FSS-only or a `DualReadStore` (hardware-first read, FSS fallback + safety net; new writes go to hardware). Existing FSS seeds are copied into hardware by the one-time `Secrets.migrateToHardware()` pass; FSS removal is a later, data-driven step.
+
+The non-secret `SecretIndexPort` (app-side Drift) is reconciled against the store at startup via `Secrets.reconcile()`: store-orphans (present in the store under the `seed_<fp>` scheme, missing from the index) are **re-indexed** (`ReconcileReport.healed`); dangling index entries, malformed keys, and any legacy-scheme keys are **surfaced, never silently dropped**.

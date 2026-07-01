@@ -28,7 +28,8 @@ class InMemorySecretIndex implements SecretIndexPort {
 Future<void> main() async {
   // 1. Wire once at startup with the app's index (the OS keychain store is the
   //    default; pass `store:` to override for tests / a hardware backend).
-  Secrets.init(index: InMemorySecretIndex());
+  //    `init` is async — await it before the first `Secrets.*` op.
+  await Secrets.init(index: InMemorySecretIndex());
 
   // 2. Import a mnemonic → a typed handle. The words are stored; they never
   //    come back out as data.

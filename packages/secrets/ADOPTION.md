@@ -1,9 +1,11 @@
 # `secrets` Adoption Plan — wiring the sealed package into the app
 
-Status: **planning** (no code changes in the app yet). This is the working spec for the
-migration PR(s) that make the app consume `packages/secrets` as the sole owner of
-seed/mnemonic/signing/swap/backup/BIP85/Ark operations, then delete the duplicated
-in-`lib/` logic.
+Status: **planning** for the app (`lib/` imports nothing from the package yet). This is the
+working spec for the migration PR(s) that make the app consume `packages/secrets` as the sole
+owner of seed/mnemonic/signing/swap/backup/BIP85/Ark operations, then delete the duplicated
+in-`lib/` logic. Package-side, the terminology/facade, `Secrets.reconcile()`, and the oubliette
+dual backend have **shipped**; prerequisites §B (typed swap requests) and §C (payjoin
+extraction) are **not** yet built.
 
 Derived from a deep per-folder code investigation cross-checked against reputable
 sources (BIP78, BIP85, Boltz docs, BDK docs, recoverbull source). **Nothing is
@@ -148,11 +150,14 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
   `language` default english, `createdAt?`) + `DriftSecretIndex implements SecretIndexPort`
   (returns `SecretInfo`). Bump schema **v13 → v14** (`stepByStep` `from13To14` = `createTable`),
   regenerate `drift_schema_v14.json` + `Schema14`.
-- Single wiring call: `Secrets.init(index: DriftSecretIndex())` inside `AppLocator.setup`'s
-  existing seed phase. `init` **requires** `index` (the only injected dependency); the
-  optional `store` is left to default to the keychain-backed adapter. This one call replaces
-  the old datasource/repository registration entirely — there is no locator and no
-  per-port resolution.
+- Single wiring call: `await Secrets.init(index: DriftSecretIndex(), mode: /* from the
+  persisted backend flag */)` inside `AppLocator.setup`'s existing seed phase. `init` is
+  **async**, **requires** `index` (the only injected dependency), takes an optional `mode`
+  (`autoDetect`/`oublietteFirst`/`fssOnly`), and returns a `SecretsInitResult` (persist as the
+  `SeedStorageLibrary` flag + `log.shout` the census). This one call replaces the old
+  datasource/repository registration entirely — there is no locator and no per-port resolution.
+  On hardware-capable devices, run `Secrets.migrateToHardware()` once at startup and shout the
+  `MigrationReport` (see `OUBLIETTE_INTEGRATION_PLAN.md`).
 - Outcome: `Secrets`/the `Secret` handle are usable; nothing calls them yet → identical behavior.
 
 ### Phase 1 — derivation + seed read/index/reconcile (foundation)
@@ -168,7 +173,10 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
   `wallet_metadata_service.deriveFromSeed`.
   - **CONFIRM/ADD:** `deriveFromSeed` also stores an `xpubFingerprint` (account-key fp); add
     a handle accessor for it or derive it app-side from the returned `Xpub`.
-- Implement `ReconcileSeedsUsecase` wrapping the package's startup reconcile (index vs store):
+- Implement `ReconcileSeedsUsecase` wrapping the package's `Secrets.reconcile()` (which
+  returns a `ReconcileReport` — `healed` / `danglingFingerprints` / `legacyKeys` /
+  `malformedKeys` / `failures`; `Err` on a locked keychain). The package already performs the
+  heal below; the usecase just runs it at the right startup point and telemeters the report:
   - orphan fingerprints (in store, not in index) → **self-heal** (`index.upsert(SecretInfo)`);
     this backfills the empty index for all existing users on first launch.
   - dangling index fingerprints → **telemetry, never remove** (on iOS this is usually a
