@@ -9,14 +9,14 @@ class WalletStarted extends WalletEvent {
 }
 
 class WalletRefreshed extends WalletEvent {
-  const WalletRefreshed({this.force = false});
+  const WalletRefreshed({this.trigger = SyncTrigger.automatic});
 
-  /// When `true`, bypasses the [SyncCoordinator] per-kind throttle. Reserved
-  /// for explicit user gestures such as pull-to-refresh. Default callers
-  /// (route-aware navigation triggers, environment changes, post-startup)
-  /// leave this `false` so back-pop-to-home doesn't burn the network on
-  /// every navigation.
-  final bool force;
+  /// Why the refresh was requested. [SyncTrigger.user] (pull-to-refresh and
+  /// other explicit gestures) bypasses the [SyncCoordinator] per-kind
+  /// throttle; [SyncTrigger.automatic] (route-aware navigation triggers,
+  /// environment changes, post-startup, post-delete) respects it so
+  /// back-pop-to-home doesn't burn the network on every navigation.
+  final SyncTrigger trigger;
 }
 
 class WalletSyncStarted extends WalletEvent {

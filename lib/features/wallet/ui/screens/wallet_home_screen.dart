@@ -132,12 +132,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             ),
             BBPullableBody(
               indicatorKey: _indicatorKey,
-              onRefresh: () async {
-                // User gesture — bypass the coordinator throttle.
-                final bloc = context.read<WalletBloc>();
-                bloc.add(const WalletRefreshed(force: true));
-                await bloc.stream.firstWhere((state) => !state.isRefreshing);
-              },
+              onRefresh: () => context.read<WalletBloc>().refresh(),
               slivers: [
                 const SliverToBoxAdapter(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
