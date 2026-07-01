@@ -35,6 +35,7 @@ import 'package:secrets/src/domain/value_objects/psbt.dart';
 import 'package:secrets/src/domain/value_objects/secret_info.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';
+part 'secret.dart';
 
 /// What the app asks [Secrets.init] for (computed app-side from the persisted
 /// backend flag). `autoDetect` runs the capability probe; `oublietteFirst`
@@ -51,58 +52,10 @@ enum SecretsBackendOutcome { oubliette, fssIncompatible, fssDeferred }
 /// The non-secret result of [Secrets.init] / [Secrets.probeBackend]: the
 /// resolved [SecretsBackendOutcome] plus the probe error (if any) for the app to
 /// log. Never carries secret material — the probe uses a fixed sentinel.
-typedef SecretsInitResult = ({SecretsBackendOutcome outcome, Object? probeError});
-
-/// The internal object graph built once by [Secrets.init]. Holds the injected
-/// [SecretIndexPort] plus the six adapters, all wired against a single
-/// [SecretStorePort]. Process-global; resolved lazily per call so static-field
-/// initializers never touch it before [Secrets.init].
-class _Wiring {
-  _Wiring._({
-    required this.store,
-    required this.index,
-    required this.lifecycle,
-    required this.keyDerivation,
-    required this.signer,
-    required this.swap,
-    required this.bip85,
-    required this.mnemonicReader,
-    required this.backup,
-  });
-
-  factory _Wiring({
-    required SecretStorePort store,
-    required SecretIndexPort index,
-  }) {
-    // One lifecycle adapter, shared with the backup adapter (which re-imports
-    // restored secrets through it). They are stateless, but build it once.
-    final lifecycle = SecretLifecycleAdapter(store: store, index: index);
-    return _Wiring._(
-      store: store,
-      index: index,
-      lifecycle: lifecycle,
-      keyDerivation: KeyDerivationAdapter(store),
-      signer: SignerAdapter(store),
-      swap: SwapSignerAdapter(store),
-      bip85: Bip85Adapter(store),
-      mnemonicReader: MnemonicReader(store),
-      backup: BackupVaultAdapter(store: store, repository: lifecycle),
-    );
-  }
-
-  final SecretStorePort store;
-  final SecretIndexPort index;
-  final SecretLifecyclePort lifecycle;
-  final KeyDerivationPort keyDerivation;
-  final SignerPort signer;
-  final SwapSignerPort swap;
-  final Bip85Port bip85;
-  final BackupVaultPort backup;
-
-  /// In-package seam letting the sealed display widgets read a stored mnemonic
-  /// for rendering — never exported.
-  final MnemonicReader mnemonicReader;
-}
+typedef SecretsInitResult = ({
+  SecretsBackendOutcome outcome,
+  Object? probeError,
+});
 
 /// The static entry point to the `secrets` package — wiring, creation, and the
 /// cross-kind registry. Operations on an existing secret live on the [Secret]
@@ -111,6 +64,8 @@ class _Wiring {
 /// Call [init] exactly once (at app start) with the app's [SecretIndexPort];
 /// any use before [init] throws a [StateError].
 abstract final class Secrets {
+  // ── private process-global state (resolved lazily via [_w]) ───────────────
+
   static _Wiring? _instance;
 
   /// One-shot guard: makes the now-async [init] idempotent (concurrent or
@@ -118,9 +73,11 @@ abstract final class Secrets {
   /// a retry re-runs). Cleared by [reset].
   static Future<SecretsInitResult>? _initInFlight;
 
-  static _Wiring get _w =>
-      _instance ??
-      (throw StateError('Secrets.init() must be called before use.'));
+  /// Guards the migration against an accidental concurrent second pass — see
+  /// [migrateToHardware]. Cleared on completion and by [reset].
+  static Future<MigrationReport?>? _migrationInFlight;
+
+  // ── wiring / maintenance ────────────────────────────────────────────────────
 
   /// Builds the internal graph once, choosing the storage backend per [mode].
   ///
@@ -137,73 +94,7 @@ abstract final class Secrets {
     required SecretIndexPort index,
     SecretsStorageMode mode = SecretsStorageMode.autoDetect,
     SecretStorePort? store,
-  }) =>
-      _initInFlight ??= _doInit(index: index, mode: mode, store: store);
-
-  static Future<SecretsInitResult> _doInit({
-    required SecretIndexPort index,
-    required SecretsStorageMode mode,
-    SecretStorePort? store,
-  }) async {
-    try {
-      final (SecretStorePort s, SecretsInitResult result) =
-          await _resolveStore(mode, store);
-      await s.init();
-      _instance = _Wiring(store: s, index: index);
-      return result;
-    } catch (_) {
-      _initInFlight = null; // allow a retry after a failed init
-      rethrow;
-    }
-  }
-
-  /// Builds the store for [mode] and reports the outcome. Only `autoDetect` runs
-  /// the probe. [injected] (the test seam) bypasses everything.
-  static Future<(SecretStorePort, SecretsInitResult)> _resolveStore(
-    SecretsStorageMode mode,
-    SecretStorePort? injected,
-  ) async {
-    if (injected != null) {
-      return (injected, (outcome: SecretsBackendOutcome.oubliette, probeError: null));
-    }
-    // Built only on the real path — keep the injected-store seam hermetic (no
-    // FlutterSecureStorage plugin touch in a unit test that supplied its own store).
-    final fss = FssSecretStoreAdapter(FlutterSecureStorageAdapter.standard());
-    final o = _buildOubliette(); // null where oubliette isn't wired
-    if (o == null || mode == SecretsStorageMode.fssOnly) {
-      return (fss, (outcome: SecretsBackendOutcome.fssIncompatible, probeError: null));
-    }
-    final dual = DualReadStore(hardware: o, fallback: fss);
-    if (mode == SecretsStorageMode.oublietteFirst) {
-      // Flag already says capable — trust it, skip the probe.
-      return (dual, (outcome: SecretsBackendOutcome.oubliette, probeError: null));
-    }
-    final probe = await _probe(o); // autoDetect
-    return switch (probe.outcome) {
-      SecretsBackendOutcome.oubliette => (dual, probe),
-      _ => (fss, probe), // incompatible | deferred → FSS-only
-    };
-  }
-
-  /// Builds the oubliette-backed adapter for this device, or null where
-  /// oubliette is not wired (macOS/Linux/Windows/Web — it gives no hardware
-  /// benefit there). [injected] is the test seam (a `FakeOubliette`), which also
-  /// bypasses the platform gate.
-  static OublietteSecretStoreAdapter? _buildOubliette({Oubliette? injected}) {
-    final supported = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
-    if (injected == null && !supported) return null;
-    return OublietteSecretStoreAdapter(
-      injected ??
-          Oubliette(
-            android: AndroidSecretAccess.evenLocked(
-              strongBox: false,
-              requireHardwareBacking: false,
-            ),
-            darwin: DarwinSecretAccess.evenLocked(secureEnclave: false),
-          ),
-    );
-  }
+  }) => _initInFlight ??= _doInit(index: index, mode: mode, store: store);
 
   /// Probes device capability WITHOUT wiring the package as the seed layer, so a
   /// standalone census can run before any adoption. The probe round-trip, the
@@ -220,31 +111,6 @@ abstract final class Secrets {
     return _probe(o);
   }
 
-  /// Runs the adapter's sentinel round-trip and classifies the outcome:
-  /// distinguishes a permanent incompatibility (record FSS) from a transient
-  /// lock (defer, re-probe later) by the kind of failure — a recoverable lock
-  /// surfaces as [KeychainLockedException]. The round-trip itself (incl. the raw
-  /// `useAndForget` on the sentinel) is sealed inside [OublietteSecretStoreAdapter].
-  static Future<SecretsInitResult> _probe(OublietteSecretStoreAdapter o) async {
-    try {
-      final ok = await o.probeRoundTrip();
-      final outcome = ok
-          ? SecretsBackendOutcome.oubliette
-          : SecretsBackendOutcome.fssIncompatible;
-      return (outcome: outcome, probeError: null);
-    } on KeychainLockedException catch (e) {
-      // Recoverable (device locked / keyring unavailable): capability unknown.
-      return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
-    } on Exception catch (e) {
-      // Structural (no plugin, hardware/config error, decrypt mismatch): FSS.
-      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
-    }
-  }
-
-  /// Guards the migration against an accidental concurrent second pass — see
-  /// [migrateToHardware]. Cleared on completion and by [reset].
-  static Future<MigrationReport?>? _migrationInFlight;
-
   /// Runs the one-time FSS→hardware migration when a hardware backend is active;
   /// returns null on an FSS-only device. The app `log.shout`s the report.
   ///
@@ -256,9 +122,9 @@ abstract final class Secrets {
   static Future<MigrationReport?> migrateToHardware() async {
     final store = _w.store;
     if (store is! DualReadStore) return null;
-    return _migrationInFlight ??= store.migratePending(_w.index).whenComplete(
-          () => _migrationInFlight = null,
-        );
+    return _migrationInFlight ??= store
+        .migratePending(_w.index)
+        .whenComplete(() => _migrationInFlight = null);
   }
 
   /// Heals any drift between the secret store and the non-secret index, then
@@ -316,12 +182,11 @@ abstract final class Secrets {
     List<String> words, {
     String? passphrase,
     MnemonicLanguage language = MnemonicLanguage.english,
-  }) =>
-      _w.lifecycle.fingerprintOf(
-        words: words,
-        passphrase: passphrase,
-        language: language,
-      );
+  }) => _w.lifecycle.fingerprintOf(
+    words: words,
+    passphrase: passphrase,
+    language: language,
+  );
 
   // ── operate on an existing secret → resolves kind from the index ──────────
 
@@ -354,15 +219,116 @@ abstract final class Secrets {
   static Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
     required EncryptedVault vault,
     required VaultKey vaultKey,
-  }) =>
-      _w.backup.restoreVault(vault: vault, vaultKey: vaultKey);
+  }) => _w.backup.restoreVault(vault: vault, vaultKey: vaultKey);
 
-  // ── file-private helpers ──────────────────────────────────────────────────
+  // ── private helpers ────────────────────────────────────────────────────────
+
+  static _Wiring get _w =>
+      _instance ??
+      (throw StateError('Secrets.init() must be called before use.'));
+
+  static Future<SecretsInitResult> _doInit({
+    required SecretIndexPort index,
+    required SecretsStorageMode mode,
+    SecretStorePort? store,
+  }) async {
+    try {
+      final (SecretStorePort s, SecretsInitResult result) = await _resolveStore(
+        mode,
+        store,
+      );
+      await s.init();
+      _instance = _Wiring(store: s, index: index);
+      return result;
+    } catch (_) {
+      _initInFlight = null; // allow a retry after a failed init
+      rethrow;
+    }
+  }
+
+  /// Builds the store for [mode] and reports the outcome. Only `autoDetect` runs
+  /// the probe. [injected] (the test seam) bypasses everything.
+  static Future<(SecretStorePort, SecretsInitResult)> _resolveStore(
+    SecretsStorageMode mode,
+    SecretStorePort? injected,
+  ) async {
+    if (injected != null) {
+      return (
+        injected,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: null),
+      );
+    }
+    // Built only on the real path — keep the injected-store seam hermetic (no
+    // FlutterSecureStorage plugin touch in a unit test that supplied its own store).
+    final fss = FssSecretStoreAdapter(FlutterSecureStorageAdapter.standard());
+    final o = _buildOubliette(); // null where oubliette isn't wired
+    if (o == null || mode == SecretsStorageMode.fssOnly) {
+      return (
+        fss,
+        (outcome: SecretsBackendOutcome.fssIncompatible, probeError: null),
+      );
+    }
+    final dual = DualReadStore(hardware: o, fallback: fss);
+    if (mode == SecretsStorageMode.oublietteFirst) {
+      // Flag already says capable — trust it, skip the probe.
+      return (
+        dual,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: null),
+      );
+    }
+    final probe = await _probe(o); // autoDetect
+    return switch (probe.outcome) {
+      SecretsBackendOutcome.oubliette => (dual, probe),
+      _ => (fss, probe), // incompatible | deferred → FSS-only
+    };
+  }
+
+  /// Builds the oubliette-backed adapter for this device, or null where
+  /// oubliette is not wired (macOS/Linux/Windows/Web — it gives no hardware
+  /// benefit there). [injected] is the test seam (a `FakeOubliette`), which also
+  /// bypasses the platform gate.
+  static OublietteSecretStoreAdapter? _buildOubliette({Oubliette? injected}) {
+    final supported =
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+    if (injected == null && !supported) return null;
+    return OublietteSecretStoreAdapter(
+      injected ??
+          Oubliette(
+            android: AndroidSecretAccess.evenLocked(
+              strongBox: false,
+              requireHardwareBacking: false,
+            ),
+            darwin: DarwinSecretAccess.evenLocked(secureEnclave: false),
+          ),
+    );
+  }
+
+  /// Runs the adapter's sentinel round-trip and classifies the outcome:
+  /// distinguishes a permanent incompatibility (record FSS) from a transient
+  /// lock (defer, re-probe later) by the kind of failure — a recoverable lock
+  /// surfaces as [KeychainLockedException]. The round-trip itself (incl. the raw
+  /// `useAndForget` on the sentinel) is sealed inside [OublietteSecretStoreAdapter].
+  static Future<SecretsInitResult> _probe(OublietteSecretStoreAdapter o) async {
+    try {
+      final ok = await o.probeRoundTrip();
+      final outcome = ok
+          ? SecretsBackendOutcome.oubliette
+          : SecretsBackendOutcome.fssIncompatible;
+      return (outcome: outcome, probeError: null);
+    } on KeychainLockedException catch (e) {
+      // Recoverable (device locked / keyring unavailable): capability unknown.
+      return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
+    } on Exception catch (e) {
+      // Structural (no plugin, hardware/config error, decrypt mismatch): FSS.
+      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
+    }
+  }
 
   static Secret _build(SecretInfo i) => switch (i.kind) {
-        SecretKind.mnemonic => MnemonicSecret._(i),
-        SecretKind.seed => SeedSecret._(i),
-      };
+    SecretKind.mnemonic => MnemonicSecret._(i),
+    SecretKind.seed => SeedSecret._(i),
+  };
 
   /// On `Ok(fp)`: reads the (just-stored) [SecretInfo] back and wraps it as a
   /// [MnemonicSecret]; on `Err`: passes the failure through.
@@ -373,9 +339,10 @@ abstract final class Secrets {
       case Ok(:final value):
         final info = await _w.lifecycle.getInfo(value);
         return switch (info) {
-          Ok(value: final i) => i == null
-              ? Err(SecretNotFoundFailure(value))
-              : Ok(MnemonicSecret._(i)),
+          Ok(value: final i) =>
+            i == null
+                ? Err(SecretNotFoundFailure(value))
+                : Ok(MnemonicSecret._(i)),
           Err(:final failure) => Err(failure),
         };
       case Err(:final failure):
@@ -384,256 +351,53 @@ abstract final class Secrets {
   }
 }
 
-/// A capability handle over a stored secret. Carries NON-secret metadata (from
-/// the index) and the operations every secret-bearing kind supports. The object
-/// holds NO words/bytes — each method does its own use-and-forget read
-/// internally and discards the material.
-sealed class Secret {
-  const Secret(this._info);
+/// The internal object graph built once by [Secrets.init]. Holds the injected
+/// [SecretIndexPort] plus the six adapters, all wired against a single
+/// [SecretStorePort]. Process-global; resolved lazily per call so static-field
+/// initializers never touch it before [Secrets.init].
+class _Wiring {
+  _Wiring._({
+    required this.store,
+    required this.index,
+    required this.lifecycle,
+    required this.keyDerivation,
+    required this.signer,
+    required this.swap,
+    required this.bip85,
+    required this.mnemonicReader,
+    required this.backup,
+  });
 
-  final SecretInfo _info;
+  factory _Wiring({
+    required SecretStorePort store,
+    required SecretIndexPort index,
+  }) {
+    // One lifecycle adapter, shared with the backup adapter (which re-imports
+    // restored secrets through it). They are stateless, but build it once.
+    final lifecycle = SecretLifecycleAdapter(store: store, index: index);
+    return _Wiring._(
+      store: store,
+      index: index,
+      lifecycle: lifecycle,
+      keyDerivation: KeyDerivationAdapter(store),
+      signer: SignerAdapter(store),
+      swap: SwapSignerAdapter(store),
+      bip85: Bip85Adapter(store),
+      mnemonicReader: MnemonicReader(store),
+      backup: BackupVaultAdapter(store: store, repository: lifecycle),
+    );
+  }
 
-  Fingerprint get fingerprint => _info.fingerprint;
-  SecretKind get kind => _info.kind;
-  bool get hasPassphrase => _info.hasPassphrase;
-  DateTime? get createdAt => _info.createdAt;
-  SecretInfo get info => _info;
+  final SecretStorePort store;
+  final SecretIndexPort index;
+  final SecretLifecyclePort lifecycle;
+  final KeyDerivationPort keyDerivation;
+  final SignerPort signer;
+  final SwapSignerPort swap;
+  final Bip85Port bip85;
+  final BackupVaultPort backup;
 
-  // ── derivation/signing/swaps map the chain-typed network → the internal
-  //    ports' boolean seam via `isTestnet: !network.isMainnet`. NOTE: every
-  //    non-mainnet env (Bitcoin signet/regtest, Liquid regtest) therefore
-  //    collapses to `isTestnet: true`. Derivation is correct (they share the
-  //    testnet coin type + version bytes); distinguishing them at the bdk/lwk
-  //    signing layer is a documented later concern (the ports stay boolean). ──
-
-  Future<Result<Xpub, SecretsFailure>> xpub({
-    required ScriptType scriptType,
-    required BitcoinNetwork network,
-    required int account,
-  }) =>
-      Secrets._w.keyDerivation.accountXpub(
-        fingerprint: fingerprint,
-        scriptType: scriptType,
-        isTestnet: !network.isMainnet,
-        account: account,
-      );
-
-  Future<Result<BitcoinDescriptor, SecretsFailure>> bitcoinDescriptor({
-    required ScriptType scriptType,
-    required BitcoinNetwork network,
-  }) =>
-      Secrets._w.keyDerivation.bitcoinDescriptor(
-        fingerprint: fingerprint,
-        scriptType: scriptType,
-        isTestnet: !network.isMainnet,
-      );
-
-  Future<Result<LiquidDescriptor, SecretsFailure>> liquidDescriptor({
-    required LiquidNetwork network,
-  }) =>
-      Secrets._w.keyDerivation.liquidDescriptor(
-        fingerprint: fingerprint,
-        isTestnet: !network.isMainnet,
-      );
-
-  // ── signing ────────────────────────────────────────────────────────────────
-
-  Future<Result<SignedPsbt, SecretsFailure>> signBitcoin({
-    required Psbt psbt,
-    required SigningIntent intent,
-    required ScriptType scriptType,
-    required BitcoinNetwork network,
-  }) =>
-      Secrets._w.signer.signBitcoinPsbt(
-        fingerprint: fingerprint,
-        psbt: psbt,
-        intent: intent,
-        scriptType: scriptType,
-        isTestnet: !network.isMainnet,
-      );
-
-  Future<Result<SignedPsbt, SecretsFailure>> signLiquid({
-    required Psbt pset,
-    required SigningIntent intent,
-    required LiquidNetwork network,
-  }) =>
-      Secrets._w.signer.signLiquidPset(
-        fingerprint: fingerprint,
-        pset: pset,
-        intent: intent,
-        isTestnet: !network.isMainnet,
-      );
-
-  // ── swaps (commitment-asserted) ────────────────────────────────────────────
-
-  Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
-    required int index,
-    required SwapIntent intent,
-    required int outAmountSat,
-    required String electrumUrl,
-    required String boltzUrl,
-    required BitcoinNetwork network,
-    String? outAddress,
-  }) =>
-      Secrets._w.swap.createBtcReverse(
-        fingerprint: fingerprint,
-        index: index,
-        intent: intent,
-        outAmountSat: outAmountSat,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        isTestnet: !network.isMainnet,
-        outAddress: outAddress,
-      );
-
-  Future<Result<CreatedSwap, SecretsFailure>> createBtcSubmarine({
-    required int index,
-    required SwapIntent intent,
-    required String invoice,
-    required String electrumUrl,
-    required String boltzUrl,
-    required BitcoinNetwork network,
-  }) =>
-      Secrets._w.swap.createBtcSubmarine(
-        fingerprint: fingerprint,
-        index: index,
-        intent: intent,
-        invoice: invoice,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        isTestnet: !network.isMainnet,
-      );
-
-  Future<Result<CreatedSwap, SecretsFailure>> createLbtcReverse({
-    required int index,
-    required SwapIntent intent,
-    required int outAmountSat,
-    required String electrumUrl,
-    required String boltzUrl,
-    required LiquidNetwork network,
-    String? outAddress,
-  }) =>
-      Secrets._w.swap.createLbtcReverse(
-        fingerprint: fingerprint,
-        index: index,
-        intent: intent,
-        outAmountSat: outAmountSat,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        isTestnet: !network.isMainnet,
-        outAddress: outAddress,
-      );
-
-  Future<Result<CreatedSwap, SecretsFailure>> createLbtcSubmarine({
-    required int index,
-    required SwapIntent intent,
-    required String invoice,
-    required String electrumUrl,
-    required String boltzUrl,
-    required LiquidNetwork network,
-  }) =>
-      Secrets._w.swap.createLbtcSubmarine(
-        fingerprint: fingerprint,
-        index: index,
-        intent: intent,
-        invoice: invoice,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        isTestnet: !network.isMainnet,
-      );
-
-  Future<Result<CreatedSwap, SecretsFailure>> createChainSwap({
-    required int index,
-    required SwapIntent intent,
-    required int amountSat,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
-    required String boltzUrl,
-    required NetworkEnv env,
-    required ChainDirection direction,
-  }) =>
-      Secrets._w.swap.createChainSwap(
-        fingerprint: fingerprint,
-        index: index,
-        intent: intent,
-        amountSat: amountSat,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
-        boltzUrl: boltzUrl,
-        isTestnet: env != NetworkEnv.mainnet,
-        direction: direction,
-      );
-
-  // ── backup vault ─────────────────────────────────────────────────────────
-
-  Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
-      encryptVault() =>
-          Secrets._w.backup.encryptVault(fingerprint: fingerprint);
-
-  // ── BIP85 child derivation ─────────────────────────────────────────────────
-
-  Future<Result<Bip85Derivation, SecretsFailure>> bip85ChildMnemonic({
-    required MnemonicLength length,
-    required int index,
-  }) =>
-      Secrets._w.bip85.deriveChildMnemonic(
-        fingerprint: fingerprint,
-        length: length,
-        index: index,
-      );
-
-  Future<Result<Bip85Derivation, SecretsFailure>> bip85Bip39Child({
-    required Bip85Application app,
-    required int index,
-    required MnemonicLength length,
-  }) =>
-      Secrets._w.bip85.deriveBip39Child(
-        fingerprint: fingerprint,
-        app: app,
-        index: index,
-        length: length,
-      );
-
-  Future<Result<Bip85HexResult, SecretsFailure>> bip85Hex({
-    required int numBytes,
-    required int index,
-  }) =>
-      Secrets._w.bip85.deriveHex(
-        fingerprint: fingerprint,
-        numBytes: numBytes,
-        index: index,
-      );
-
-  Future<Result<VaultKey, SecretsFailure>> bip85RecoverbullKey({
-    required Bip85Path path,
-  }) =>
-      Secrets._w.bip85.deriveRecoverbullKey(
-        fingerprint: fingerprint,
-        path: path,
-      );
-
-  Future<Result<ArkSecret, SecretsFailure>> bip85Ark() =>
-      Secrets._w.bip85.deriveArkSecret(fingerprint: fingerprint);
-
-  // ── lifecycle ──────────────────────────────────────────────────────────────
-
-  Future<Result<void, SecretsFailure>> delete() =>
-      Secrets._w.lifecycle.delete(fingerprint);
-}
-
-/// A stored mnemonic (words + optional passphrase + language).
-final class MnemonicSecret extends Secret {
-  const MnemonicSecret._(super.info);
-
-  int get wordCount => _info.wordCount;
-  String get language => _info.language;
-}
-
-/// A stored bytes/hex seed. DORMANT — no bytes-import path exists yet; reachable
-/// only once the seed-import seam is built.
-final class SeedSecret extends Secret {
-  const SeedSecret._(super.info);
-
-  // `byteLength` is dormant — no field on SecretInfo carries it yet. Add once
-  // the seed-import path lands (it would extend SecretInfo).
+  /// In-package seam letting the sealed display widgets read a stored mnemonic
+  /// for rendering — never exported.
+  final MnemonicReader mnemonicReader;
 }
