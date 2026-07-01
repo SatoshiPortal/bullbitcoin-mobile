@@ -36,11 +36,21 @@ class Bip85Path {
   final String path;
 
   /// First path element (the application number).
-  int get appNumber =>
-      int.parse(path.replaceAll("'", '').split('/').first);
+  int get appNumber => _segmentInt(path.split('/').first);
 
   /// Last path element (the index).
-  int get index => int.parse(path.replaceAll("'", '').split('/').last);
+  int get index => _segmentInt(path.split('/').last);
+
+  /// Parses a hardened path segment (`"128169'"` → `128169`) into an int,
+  /// surfacing a malformed stored path as the typed [InvalidBip85PathError]
+  /// rather than a raw `FormatException` a caller can't distinguish.
+  static int _segmentInt(String segment) {
+    final n = int.tryParse(segment.replaceAll("'", ''));
+    if (n == null) {
+      throw InvalidBip85PathError('non-numeric BIP85 path segment', 'path');
+    }
+    return n;
+  }
 
   @override
   bool operator ==(Object other) => other is Bip85Path && other.path == path;

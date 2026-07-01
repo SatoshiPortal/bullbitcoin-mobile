@@ -4,6 +4,7 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bs58check/bs58check.dart' as base58;
 import 'package:convert/convert.dart' as conv;
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 
 /// Pure-Dart BIP32 derivation. Ported verbatim from the app's
 /// `lib/core/utils/bip32_derivation.dart`, re-pointed onto `primitives` types.
@@ -45,9 +46,22 @@ class Bip32Derivation {
   }
 
   /// Re-encodes a neutered key's base58 with the [target] version bytes.
+  ///
+  /// REQUIRES a neutered (public) key. `bs58check.decode` strips the checksum,
+  /// leaving the 78-byte payload; the 33-byte key-data is its tail. A public
+  /// key's data begins with the compressed-point prefix 0x02/0x03, a private
+  /// key's with 0x00. Re-versioning a private key under a public prefix would
+  /// emit a malformed "xpub" that leaks a private scalar — so reject it as a
+  /// programmer bug (thrown [InvalidXpubError], never returned) rather than
+  /// silently produce one.
   static String convertXpub(bip32.Bip32Keys key, XpubType target) {
     final decoded = base58.decode(key.toBase58());
     final keyBytes = decoded.sublist(4);
+    final keyDataPrefix = keyBytes[keyBytes.length - 33];
+    if (keyDataPrefix != 0x02 && keyDataPrefix != 0x03) {
+      throw InvalidXpubError(
+          'convertXpub requires a neutered (public) key', 'key');
+    }
     return base58.encode(
       Uint8List.fromList([...target.versionBytes, ...keyBytes]),
     );
