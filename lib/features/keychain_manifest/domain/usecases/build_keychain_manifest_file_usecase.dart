@@ -24,7 +24,6 @@ class BuildKeychainManifestFileUsecase {
     return KeychainManifestFile(
       parentFingerprint: normalizedParentFingerprint,
       generatedAt: generatedAt,
-      inventoryUpdatedAt: _inventoryUpdatedAt(entries, generatedAt),
       entries: entries,
     );
   }
@@ -68,22 +67,5 @@ class BuildKeychainManifestFileUsecase {
     );
     if (networkCompare != 0) return networkCompare;
     return left.walletId.compareTo(right.walletId);
-  }
-
-  int _inventoryUpdatedAt(
-    List<KeychainManifestFileEntry> entries,
-    int generatedAt,
-  ) {
-    if (entries.isEmpty) return generatedAt;
-    var latest = 0;
-    for (final entry in entries) {
-      if (entry.updatedAt > latest) latest = entry.updatedAt;
-      for (final materialization in entry.materializations) {
-        if (materialization.updatedAt > latest) {
-          latest = materialization.updatedAt;
-        }
-      }
-    }
-    return latest;
   }
 }

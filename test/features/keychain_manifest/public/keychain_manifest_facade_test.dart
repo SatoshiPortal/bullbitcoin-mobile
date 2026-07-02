@@ -156,11 +156,12 @@ void main() {
         now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
       );
 
+      expect(payload.payload, contains('"inventoryUpdatedAt":0'));
       expect(payload.payload, contains('"entries":[]'));
       expect(payload.entryCount, 0);
       expect(payload.materializationCount, 0);
       expect(payload.generatedAt, 20);
-      expect(payload.inventoryUpdatedAt, 20);
+      expect(payload.inventoryUpdatedAt, 0);
       expect(payload.isEmpty, isTrue);
     },
   );

@@ -124,8 +124,13 @@ Rules:
 - Fingerprints must be normalized 8-character lowercase hex values.
 - `bip85DerivationPath` is the registry-relative hardened path.
 - `entryId` is derived from parent fingerprint and BIP85 path.
-- `inventoryUpdatedAt` is the latest timestamp among included entries and
-  materializations. Empty manifests use the build timestamp.
+- `inventoryUpdatedAt` is the data-recency timestamp: the latest `updatedAt`
+  among included entries and materializations. An empty manifest serializes
+  `inventoryUpdatedAt` as `0`.
+- Cross-manifest recency ordering uses data recency (`inventoryUpdatedAt`),
+  so an empty manifest never outranks a populated one. `generatedAt` records
+  when the payload was built and is informational only; it must not be used
+  to rank manifests.
 - V1 supports only wallet materializations with `"type": "wallet"`.
 - Public callers must explicitly opt in before exporting an empty manifest.
 - This PR only encodes the v1 payload. Decoding, import validation, and restore

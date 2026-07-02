@@ -21,7 +21,7 @@ void main() {
 
     expect(manifestFile.parentFingerprint, 'fedcba98');
     expect(manifestFile.generatedAt, 2);
-    expect(manifestFile.inventoryUpdatedAt, 2);
+    expect(manifestFile.inventoryUpdatedAt, 0);
     expect(manifestFile.entries, isEmpty);
   });
 

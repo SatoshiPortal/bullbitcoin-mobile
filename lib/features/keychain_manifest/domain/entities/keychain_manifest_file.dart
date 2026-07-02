@@ -7,6 +7,11 @@ class KeychainManifestFile {
   final int version;
   final String parentFingerprint;
   final int generatedAt;
+
+  /// Data recency of the projected inventory: the latest `updatedAt` among
+  /// included entries and materializations. An empty manifest carries no
+  /// inventory, so it derives to `0` and sorts oldest in any cross-manifest
+  /// recency ordering; it can never outrank a populated manifest.
   final int inventoryUpdatedAt;
   final List<KeychainManifestFileEntry> entries;
 
@@ -14,18 +19,18 @@ class KeychainManifestFile {
     this.version = currentVersion,
     required String parentFingerprint,
     required this.generatedAt,
-    required this.inventoryUpdatedAt,
     required List<KeychainManifestFileEntry> entries,
   }) : parentFingerprint = KeychainManifestFingerprint.normalize(
          parentFingerprint,
        ),
+       inventoryUpdatedAt = _deriveInventoryUpdatedAt(entries),
        entries = List.unmodifiable(entries) {
     if (version != currentVersion) {
       throw KeychainManifestInvalidEntryException(
         'unsupported keychain manifest file version',
       );
     }
-    if (generatedAt < 0 || inventoryUpdatedAt < 0) {
+    if (generatedAt < 0) {
       throw KeychainManifestInvalidEntryException(
         'manifest file timestamps must be non-negative',
       );
@@ -37,6 +42,21 @@ class KeychainManifestFile {
         );
       }
     }
+  }
+
+  static int _deriveInventoryUpdatedAt(
+    List<KeychainManifestFileEntry> entries,
+  ) {
+    var latest = 0;
+    for (final entry in entries) {
+      if (entry.updatedAt > latest) latest = entry.updatedAt;
+      for (final materialization in entry.materializations) {
+        if (materialization.updatedAt > latest) {
+          latest = materialization.updatedAt;
+        }
+      }
+    }
+    return latest;
   }
 }
 
