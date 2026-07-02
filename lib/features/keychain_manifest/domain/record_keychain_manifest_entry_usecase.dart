@@ -35,7 +35,7 @@ class RecordKeychainManifestEntryUsecase {
       );
     }
     if (request.materializations.isEmpty) {
-      throw KeychainManifestEntryConflictException(
+      throw KeychainManifestInvalidEntryException(
         'at least one materialization is required',
       );
     }

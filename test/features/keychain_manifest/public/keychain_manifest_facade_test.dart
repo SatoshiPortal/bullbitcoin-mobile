@@ -45,7 +45,7 @@ void main() {
         isA<KeychainManifestException>().having(
           (error) => error.type,
           'type',
-          KeychainManifestExceptionType.conflict,
+          KeychainManifestExceptionType.invalidEntry,
         ),
       ),
     );
