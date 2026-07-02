@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
@@ -44,6 +45,19 @@ void main() {
         (materialization) => materialization.walletId,
       ),
       ['btc-wallet', 'lbtc-wallet'],
+    );
+  });
+
+  test('maps invalid fingerprint input to a keychain manifest error', () async {
+    await expectLater(
+      usecase.execute('invalid'),
+      throwsA(
+        isA<KeychainManifestInvalidEntryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.invalidEntry,
+        ),
+      ),
     );
   });
 }
