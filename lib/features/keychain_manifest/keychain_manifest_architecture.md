@@ -184,6 +184,29 @@ Rules:
   mirroring the empty-export gate: silently returning a plan with nothing to
   recover would be indistinguishable from a successful import.
 
+### Consumer obligations
+
+An imported manifest file is unsigned, unauthenticated input. Parsing validates
+shape, internal consistency, and registry metadata; it cannot prove that the
+file's claims are true for this device. Consumers of an import plan MUST:
+
+- Source `expectedParentFingerprint` from local seed storage. It must never be
+  taken from the file, from user input, or from another remote artifact.
+- Treat `childSeedFingerprint` on wallet materialization intents as
+  file-CLAIMED. After deriving the child seed, the consumer MUST verify the
+  derived fingerprint against the claimed one and refuse the materialization on
+  mismatch.
+- Treat `walletId` as file-CLAIMED. The consumer MUST recompute the wallet id
+  from the descriptor derived locally (child seed fingerprint, script type,
+  network) and never trust or persist the claimed value.
+- Treat every string field on intents as untrusted input when rendering UI:
+  no markup interpretation, apply length truncation where layout requires it.
+- Require explicit user confirmation for empty plans (parsed with
+  `allowEmpty: true`); an empty plan restores nothing.
+- Handle environment/network mismatches (for example a testnet materialization
+  on a mainnet build): filtering or refusing such intents is the consumer's
+  responsibility, not the parser's.
+
 ### Frozen wire vocabulary
 
 The enumerated v1 fields below serialize the `.name` of a production enum (or

@@ -3,8 +3,18 @@ import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_ma
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 
+/// A typed import plan parsed from an unsigned manifest file.
+///
+/// Parsing validates shape, internal consistency, and registry metadata; it
+/// cannot prove the file's claims are true for this device. Fields below are
+/// marked VERIFIED (checked against local sources during parsing) or CLAIMED
+/// (asserted by the file only — the consumer must verify before acting). See
+/// "Consumer obligations" in `keychain_manifest_architecture.md`.
 class KeychainManifestImportPlan {
+  /// VERIFIED: matched against the caller-supplied expected fingerprint,
+  /// which must come from local seed storage.
   final String parentFingerprint;
+
   final List<KeychainManifestImportEntryIntent> entries;
 
   KeychainManifestImportPlan({
@@ -22,10 +32,19 @@ class KeychainManifestImportPlan {
 }
 
 class KeychainManifestImportEntryIntent {
+  /// VERIFIED: derived from the verified parent fingerprint and the
+  /// registry-validated BIP85 path.
   final String entryId;
+
+  /// VERIFIED: matched against the caller-supplied expected fingerprint.
   final String parentFingerprint;
+
+  /// VERIFIED: matched against the registry reservation's exact path.
   final String bip85DerivationPath;
+
+  /// VERIFIED: resolved against the local BIP85 registry.
   final String reservationId;
+
   final List<KeychainManifestWalletMaterializationIntent>
   walletMaterializations;
 
@@ -66,12 +85,30 @@ class KeychainManifestImportEntryIntent {
 }
 
 class KeychainManifestWalletMaterializationIntent {
+  /// VERIFIED: derived from the verified parent fingerprint and the
+  /// registry-validated BIP85 path.
   final String entryId;
+
+  /// VERIFIED: resolved against the local BIP85 registry.
   final String reservationId;
+
+  /// VERIFIED: matched against the registry reservation's exact path.
   final String bip85DerivationPath;
+
+  /// CLAIMED: asserted by the file only. Consumers MUST recompute the wallet
+  /// id from the locally derived descriptor and never trust this value.
   final String walletId;
+
+  /// CLAIMED: asserted by the file only. Consumers MUST verify it against
+  /// the fingerprint of the locally derived child seed and refuse the
+  /// materialization on mismatch.
   final String childSeedFingerprint;
+
+  /// CLAIMED: a known wire value, but whether this binding belongs on this
+  /// device (environment/network match) is the consumer's decision.
   final Network network;
+
+  /// CLAIMED: a known wire value; the binding itself is file-claimed.
   final ScriptType scriptType;
 
   KeychainManifestWalletMaterializationIntent({
