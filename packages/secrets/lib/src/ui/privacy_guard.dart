@@ -52,6 +52,11 @@ class _PrivacyGuardState extends State<PrivacyGuard>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Seed from the CURRENT lifecycle state — a guard mounted while the app is
+    // already backgrounded must cover immediately, or the OS snapshots the secret
+    // on the first frame.
+    _obscured = WidgetsBinding.instance.lifecycleState != null &&
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed;
     if (_mounted++ == 0) _set(enabled: true);
   }
 
@@ -74,12 +79,17 @@ class _PrivacyGuardState extends State<PrivacyGuard>
       override(enabled: enabled);
       return;
     }
-    try {
-      final ns = NoScreenshot.instance;
-      enabled ? ns.screenshotOff() : ns.screenshotOn();
-    } catch (_) {
-      // Best-effort: platform channel may be absent (tests / unsupported OS).
+    // Fire-and-forget in an async wrapper so async MissingPluginExceptions
+    // (e.g. Linux desktop) are caught here, not escaped to the zone handler.
+    Future<void> apply() async {
+      try {
+        final ns = NoScreenshot.instance;
+        await (enabled ? ns.screenshotOff() : ns.screenshotOn());
+      } catch (_) {
+        // Best-effort: platform channel may be absent (tests / unsupported OS).
+      }
     }
+    apply();
   }
 
   @override

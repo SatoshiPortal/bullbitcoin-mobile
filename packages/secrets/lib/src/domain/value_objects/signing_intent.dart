@@ -1,10 +1,5 @@
 import 'package:meta/meta.dart';
 
-/// Direction of a Boltz swap. Submarine = on-chain → Lightning (uses the refund
-/// key); reverse = Lightning → on-chain (uses the claim key); chain commits to
-/// BOTH.
-enum SwapDirection { submarine, reverse, chain }
-
 /// Direction of a chain swap (which chain is the source). Package-pure mirror of
 /// the SDK's enum so no native type crosses the `secrets` boundary.
 enum ChainDirection { btcToLbtc, lbtcToBtc }
@@ -13,6 +8,12 @@ enum ChainDirection { btcToLbtc, lbtcToBtc }
 @immutable
 class Output {
   const Output({required this.scriptPubKey, required this.amountSat});
+
+  /// The output's scriptPubKey as LOWERCASE HEX of the raw script bytes — NOT a
+  /// bech32/base58 address. The validator matches it byte-for-byte against the
+  /// tx's extracted output scripts, so a caller passing an address gets a
+  /// confusing "declared output is missing" rejection (fail-closed). Convert the
+  /// recipient address to its scriptPubKey hex before constructing an [Output].
   final String scriptPubKey;
   final int amountSat;
 
@@ -29,10 +30,11 @@ class Output {
   String toString() => 'Output($scriptPubKey, $amountSat sat)';
 }
 
-/// What the user intends a signature to authorize. A [SignerPort]/[SwapSignerPort]
-/// MUST validate the intent against the PSBT/PSET/redeem-script BEFORE signing —
-/// BDK/LWK sign blindly (issue #1703), so this is the security gate that closes
-/// the `trustWitnessUtxo` fee-inflation footgun and untrusted-address attacks.
+/// What the user intends a signature to authorize. A [SignerPort] MUST validate
+/// the intent against the PSBT/PSET BEFORE signing — BDK/LWK sign blindly (issue
+/// #1703), so this is the security gate that closes the `trustWitnessUtxo`
+/// fee-inflation footgun. (Swap CREATION is a separate surface: see
+/// `SwapRequest` + `IntentValidator.validateSwapCommitment`.)
 @immutable
 sealed class SigningIntent {
   const SigningIntent();
@@ -73,27 +75,4 @@ final class PayjoinIntent extends SigningIntent {
   final int originalVersion;
   final int originalLockTime;
   final int maxFeeContributionSat;
-}
-
-/// A Boltz swap. Carries the redeem-script components so the swap signer can
-/// reconstruct the script from its OWN derived key and assert the lockup output
-/// commits to it (the Boltz-supplied address is untrusted). A chain swap
-/// commits to BOTH [claimPubkey] and [refundPubkey]; submarine uses refund,
-/// reverse uses claim.
-final class SwapIntent extends SigningIntent {
-  const SwapIntent({
-    required this.preimageHash,
-    required this.claimPubkey,
-    required this.refundPubkey,
-    required this.timeout,
-    required this.amountSat,
-    required this.direction,
-  });
-
-  final String preimageHash;
-  final String claimPubkey;
-  final String refundPubkey;
-  final int timeout;
-  final int amountSat;
-  final SwapDirection direction;
 }

@@ -1,10 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart' as conv;
 import 'package:primitives/primitives.dart';
 import 'package:recoverbull/recoverbull.dart' as rb;
-import 'package:secrets/src/crypto/bip32_derivation.dart';
-import 'package:secrets/src/crypto/bip85_derivation.dart';
 import 'package:secrets/src/data/adapters/secret_guard.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
 import 'package:secrets/src/domain/ports/backup_vault_port.dart';
@@ -16,8 +13,10 @@ import 'package:secrets/src/domain/value_objects/mnemonic_language.dart';
 
 /// Wraps the `recoverbull` package directly (NOT the app-layer JSON wrappers).
 /// The vault plaintext is the mnemonic's storage representation, encrypted with
-/// a fresh BIP85-derived backup key; restore re-imports through
-/// [SecretLifecyclePort] so the mnemonic never escapes.
+/// a CALLER-SUPPLIED [VaultKey]; restore re-imports through [SecretLifecyclePort]
+/// so the mnemonic never escapes. The key is taken as an input (never minted and
+/// returned beside the ciphertext) so a single call can't hand a caller both the
+/// ciphertext and its decryption key — see [BackupVaultPort].
 class BackupVaultAdapter implements BackupVaultPort {
   BackupVaultAdapter({
     required SecretStorePort store,
@@ -29,24 +28,20 @@ class BackupVaultAdapter implements BackupVaultPort {
   final SecretLifecyclePort _repo;
 
   @override
-  Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
-      encryptVault({required Fingerprint fingerprint}) =>
-          _guard.read(fingerprint, (m) async {
-            final xprv = Bip32Derivation.xprvFromSeed(
-                m.toSeed().bytes, BitcoinNetwork.mainnet);
-            final path = Bip85Crypto.generateRecoverbullPath();
-            final keyHex = Bip85Crypto.deriveBackupKeyHex(xprv, path);
-            final keyBytes = Uint8List.fromList(conv.hex.decode(keyHex));
-
-            final backup = rb.RecoverBull.createBackup(
-              secret: m.toStorageBytes(),
-              backupKey: keyBytes,
-            );
-            return Ok((
-              vault: EncryptedVault(backup.toJson()),
-              vaultKey: VaultKey(keyBytes),
-            ));
-          }, onError: VaultFailure.new);
+  Future<Result<EncryptedVault, SecretsFailure>> encryptVault({
+    required Fingerprint fingerprint,
+    required VaultKey vaultKey,
+  }) =>
+      _guard.read(fingerprint, (m) async {
+        // The key is caller-supplied — the package encrypts with it and returns
+        // ONLY the ciphertext, never the key. A `VaultKey.bytes` getter defends
+        // its buffer with a copy, so read it once here.
+        final backup = rb.RecoverBull.createBackup(
+          secret: m.toStorageBytes(),
+          backupKey: vaultKey.bytes,
+        );
+        return Ok(EncryptedVault(backup.toJson()));
+      }, onError: VaultFailure.new);
 
   @override
   Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({

@@ -112,7 +112,11 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
       for (var i = 0; i < _correct.length; i++) {
         if (reconstructed[i] != _correct[i]) mismatch |= 1;
       }
-      _done = true; // onResult fires exactly once
+      if (mismatch == 0) {
+        _done = true; // success — onResult fires once, no more taps
+      } else {
+        _picked.clear(); // wrong — allow retry without parent rebuild
+      }
       widget.onResult(mismatch == 0);
     }
   }

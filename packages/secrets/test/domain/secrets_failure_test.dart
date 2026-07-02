@@ -14,12 +14,34 @@ void main() {
         const DerivationFailure(),
         const SigningFailure(),
         const VaultFailure(),
+        const KeyInvalidatedFailure(),
         const SecretsUnexpectedFailure(),
       ];
       for (final v in variants) {
         expect(v, isA<Failure>());
         expect(v, isA<SecretsFailure>());
       }
+    });
+
+    test('the sealed taxonomy is EXHAUSTIVE (every subtype nameable, incl. '
+        'KeyInvalidatedFailure)', () {
+      // A default-free switch over `SecretsFailure` — the compiler enforces that
+      // every subtype is listed. KeyInvalidatedFailure MUST be here: its
+      // documented recovery is destructive (purge + re-enter from backup), so an
+      // app that could only hit `_` for it would never route users to recovery.
+      String recovery(SecretsFailure f) => switch (f) {
+            SecretNotFoundFailure() => 'maybe-recover',
+            KeychainLockedFailure() => 'retry-after-unlock',
+            InvalidMnemonicFailure() => 'report',
+            DuplicateSecretFailure() => 'benign',
+            NotAMnemonicFailure() => 'report',
+            DerivationFailure() => 'report',
+            SigningFailure() => 'report',
+            VaultFailure() => 'report',
+            KeyInvalidatedFailure() => 're-enter-from-backup',
+            SecretsUnexpectedFailure() => 'report',
+          };
+      expect(recovery(const KeyInvalidatedFailure()), 're-enter-from-backup');
     });
 
     test('DuplicateSecretFailure carries its fingerprint', () {

@@ -8,6 +8,7 @@ import 'package:secrets/src/data/adapters/secret_guard.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
 import 'package:secrets/src/domain/ports/bip85_port.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
+import 'package:secrets/src/domain/secrets_error.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/ark_secret.dart';
 import 'package:secrets/src/domain/value_objects/backup.dart';
@@ -51,8 +52,10 @@ class Bip85Adapter implements Bip85Port {
     required MnemonicLength length,
   }) {
     if (app != Bip85Application.bip39) {
-      return Future.value(const Err(NotAMnemonicFailure(
-          'deriveBip39Child requires the bip39 application')));
+      // Programmer error — wrong application for this method. Thrown as a
+      // SecretsError (precondition bug), not returned as a recoverable Failure.
+      throw UnknownBip85ApplicationError(
+          'deriveBip39Child requires the bip39 application, got ${app.name}');
     }
     return deriveChildMnemonic(
         fingerprint: fingerprint, length: length, index: index);
@@ -63,18 +66,24 @@ class Bip85Adapter implements Bip85Port {
     required Fingerprint fingerprint,
     required int numBytes,
     required int index,
-  }) =>
-      _guard.read(fingerprint, (m) async {
-        final hexStr = Bip85Crypto.deriveHex(
-          xprvBase58: _xprv(m),
-          numBytes: numBytes,
-          index: index,
-        );
-        return Ok(Bip85HexResult(
-          path: Bip85Path("128169'/$numBytes'/$index'"),
-          hex: hexStr,
-        ));
-      }, onError: DerivationFailure.new);
+  }) {
+    // BIP85 spec: byte length must be in [16, 64].
+    if (numBytes < 16 || numBytes > 64) {
+      return Future.value(Err(DerivationFailure(
+          'BIP85 deriveHex requires numBytes in [16, 64], got $numBytes')));
+    }
+    return _guard.read(fingerprint, (m) async {
+      final hexStr = Bip85Crypto.deriveHex(
+        xprvBase58: _xprv(m),
+        numBytes: numBytes,
+        index: index,
+      );
+      return Ok(Bip85HexResult(
+        path: Bip85Path("128169'/$numBytes'/$index'"),
+        hex: hexStr,
+      ));
+    }, onError: DerivationFailure.new);
+  }
 
   @override
   Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({

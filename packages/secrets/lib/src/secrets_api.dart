@@ -34,6 +34,7 @@ import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
 import 'package:secrets/src/domain/value_objects/psbt.dart';
 import 'package:secrets/src/domain/value_objects/secret_info.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
+import 'package:secrets/src/domain/value_objects/swap_request.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';
 part 'secret.dart';
 
@@ -73,6 +74,11 @@ abstract final class Secrets {
   /// a retry re-runs). Cleared by [reset].
   static Future<SecretsInitResult>? _initInFlight;
 
+  /// The args from the first [init] call — a second call with DIFFERENT args
+  /// is a programmer error (silent ignore would mask a wiring bug).
+  static ({SecretIndexPort index, SecretsStorageMode mode, SecretStorePort? store})?
+      _initArgs;
+
   /// Guards the migration against an accidental concurrent second pass — see
   /// [migrateToHardware]. Cleared on completion and by [reset].
   static Future<MigrationReport?>? _migrationInFlight;
@@ -94,7 +100,21 @@ abstract final class Secrets {
     required SecretIndexPort index,
     SecretsStorageMode mode = SecretsStorageMode.autoDetect,
     SecretStorePort? store,
-  }) => _initInFlight ??= _doInit(index: index, mode: mode, store: store);
+  }) {
+    if (_initInFlight != null) {
+      // A second call with the SAME args is idempotent (concurrent duplicate).
+      // A second call with DIFFERENT args is a wiring bug — fail loudly.
+      final prev = _initArgs!;
+      if (prev.index != index || prev.mode != mode || prev.store != store) {
+        throw StateError(
+            'Secrets.init called twice with different arguments — '
+            'use Secrets.reset() first or pass the same args.');
+      }
+      return _initInFlight!;
+    }
+    _initArgs = (index: index, mode: mode, store: store);
+    return _initInFlight ??= _doInit(index: index, mode: mode, store: store);
+  }
 
   /// Probes device capability WITHOUT wiring the package as the seed layer, so a
   /// standalone census can run before any adoption. The probe round-trip, the
@@ -145,6 +165,7 @@ abstract final class Secrets {
   static void reset() {
     _instance = null;
     _initInFlight = null;
+    _initArgs = null;
     _migrationInFlight = null;
   }
 
@@ -242,6 +263,7 @@ abstract final class Secrets {
       return result;
     } catch (_) {
       _initInFlight = null; // allow a retry after a failed init
+      _initArgs = null;
       rethrow;
     }
   }

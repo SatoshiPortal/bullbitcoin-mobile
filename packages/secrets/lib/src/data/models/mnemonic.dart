@@ -121,7 +121,7 @@ class Mnemonic {
     } on MalformedSecretException {
       rethrow;
     } catch (e) {
-      throw MalformedSecretException('Malformed stored secret: $e');
+      throw MalformedSecretException('Malformed stored secret: ${e.runtimeType}');
     }
   }
 

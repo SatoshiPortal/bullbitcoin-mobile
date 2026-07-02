@@ -50,7 +50,10 @@ void main() {
     expect(MnemonicLanguage.english, isNotNull);
     expect(SecretKind.values, contains(SecretKind.seed));
     expect(Bip85Application.recoverbull.number, 1608);
-    expect(SwapDirection.values, contains(SwapDirection.reverse));
+    expect(ChainDirection.values, contains(ChainDirection.btcToLbtc));
+    // Swap-creation requests are caller-knowable value objects on the barrel.
+    const req = ReverseSwapRequest(requestedReceiveSat: 1000);
+    expect(req, isA<SwapRequest>());
     // primitives re-exported so consumers need only one import:
     expect(BitcoinNetwork.signet.coinType, 1);
     expect(LiquidNetwork.mainnet.coinType, 1776);

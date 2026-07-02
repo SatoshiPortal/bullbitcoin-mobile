@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
-import 'package:secrets/src/data/adapters/signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
@@ -138,169 +137,148 @@ void main() {
     });
   });
 
-  group('SwapIntent commitment validation (untrusted Boltz address)', () {
-    const reverse = SwapIntent(
-      preimageHash: 'ph', claimPubkey: 'mykey', refundPubkey: 'boltzkey',
-      timeout: 100, amountSat: 50000, direction: SwapDirection.reverse,
-    );
-    const submarine = SwapIntent(
-      preimageHash: 'ph', claimPubkey: 'boltzkey', refundPubkey: 'mykey',
-      timeout: 100, amountSat: 50000, direction: SwapDirection.submarine,
-    );
-
-    test('reverse: accepts when claim script + intent commit to our key', () {
+  group('swap commitment validation (built from the SDK swap, not the caller)',
+      () {
+    // Reverse: WE claim → our key is the RECEIVER; amount is exact.
+    test('reverse: accepts when the claim script commits to our key + preimage',
+        () {
       final r = IntentValidator.validateSwapCommitment(
-        reverse,
-        ownClaimPubkey: 'mykey',
+        weAreReceiver: true,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
-        actualAmountSat: 50000,
+        outAmountSat: 50000,
+        exactSat: 50000,
       );
       expect(_isOk(r), isTrue);
     });
 
-    test('reverse: REJECTS a Boltz amount that differs from the intent', () {
-      // The server quotes a smaller outAmount than the user intended (50000).
+    test('reverse: REJECTS a Boltz amount that differs from the requested', () {
       final r = IntentValidator.validateSwapCommitment(
-        reverse,
-        ownClaimPubkey: 'mykey',
+        weAreReceiver: true,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'mykey',
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
-        actualAmountSat: 40000, // under-pays the reverse
+        outAmountSat: 40000, // under-pays the reverse
+        exactSat: 50000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('reverse: REJECTS when Boltz script uses a different claim key', () {
+    test('reverse: REJECTS when the script uses a different receiver key', () {
       final r = IntentValidator.validateSwapCommitment(
-        reverse,
-        ownClaimPubkey: 'mykey',
+        weAreReceiver: true,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'attackerkey', // not ours
         scriptSenderPubkey: 'boltzkey',
         scriptHashlock: 'ph',
-        actualAmountSat: 50000,
+        outAmountSat: 50000,
+        exactSat: 50000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('submarine: accepts when refund script + intent commit to our key', () {
+    test('reverse: REJECTS a hashlock that is not our preimage', () {
       final r = IntentValidator.validateSwapCommitment(
-        submarine,
-        ownRefundPubkey: 'mykey',
+        weAreReceiver: true,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
+        scriptReceiverPubkey: 'mykey',
+        scriptSenderPubkey: 'boltzkey',
+        scriptHashlock: 'WRONG',
+        outAmountSat: 50000,
+        exactSat: 50000,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    // Submarine: WE refund → our key is the SENDER; amount is a lockup range.
+    test('submarine: accepts a lockup within [invoice, maxLockup]', () {
+      final r = IntentValidator.validateSwapCommitment(
+        weAreReceiver: false,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'boltzkey',
         scriptSenderPubkey: 'mykey',
         scriptHashlock: 'ph',
-        actualAmountSat: 50000,
-        // A refund leg holds our funds, so its locktime binding is mandatory.
-        scriptLocktime: 100,
-        expectedLocktime: 100,
+        outAmountSat: 50500, // invoice 50000 + boltz fee 500
+        minSat: 50000,
+        maxSat: 51000,
       );
       expect(_isOk(r), isTrue);
     });
 
-    test('submarine: REJECTS a refund leg with no expected locktime to bind',
-        () {
-      // Fail-closed: a refund leg without a positive expectedLocktime leaves
-      // the refund window unbound (the server could set it arbitrarily).
+    test('submarine: REJECTS a lockup below the invoice floor', () {
       final r = IntentValidator.validateSwapCommitment(
-        submarine,
-        ownRefundPubkey: 'mykey',
+        weAreReceiver: false,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'boltzkey',
         scriptSenderPubkey: 'mykey',
         scriptHashlock: 'ph',
-        actualAmountSat: 50000,
-        // expectedLocktime omitted on purpose
+        outAmountSat: 49000, // below invoice 50000
+        minSat: 50000,
+        maxSat: 51000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('submarine: REJECTS a hashlock that differs from the intent', () {
+    test('submarine: REJECTS a lockup above the caller ceiling (over-charge)',
+        () {
       final r = IntentValidator.validateSwapCommitment(
-        submarine,
-        ownRefundPubkey: 'mykey',
+        weAreReceiver: false,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
         scriptReceiverPubkey: 'boltzkey',
         scriptSenderPubkey: 'mykey',
-        scriptHashlock: 'WRONG',
-        actualAmountSat: 50000,
-        scriptLocktime: 100,
-        expectedLocktime: 100,
+        scriptHashlock: 'ph',
+        outAmountSat: 60000, // above maxLockup 51000
+        minSat: 50000,
+        maxSat: 51000,
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('chain: requires BOTH claim and refund keys to commit', () {
-      const chain = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'ck', refundPubkey: 'rk',
-        timeout: 1, amountSat: 1, direction: SwapDirection.chain,
-      );
-      final ok = IntentValidator.validateSwapCommitment(
-        chain,
-        ownClaimPubkey: 'ck',
-        ownRefundPubkey: 'rk',
-        scriptReceiverPubkey: 'ck',
-        scriptSenderPubkey: 'rk',
-        scriptHashlock: 'ph',
-        actualAmountSat: 1,
-        scriptLocktime: 1,
-        expectedLocktime: 1,
-      );
-      expect(_isOk(ok), isTrue);
-      final bad = IntentValidator.validateSwapCommitment(
-        chain,
-        ownClaimPubkey: 'ck',
-        ownRefundPubkey: 'rk',
-        scriptReceiverPubkey: 'ck',
-        scriptSenderPubkey: 'attacker', // refund side tampered
-        scriptHashlock: 'ph',
-        actualAmountSat: 1,
-        scriptLocktime: 1,
-        expectedLocktime: 1,
-      );
-      expect(_err(bad), isA<SigningFailure>());
-    });
-
-    test('chain btcToLbtc: validates refund on BTC lockup + claim on LBTC claim',
-        () {
-      const chain = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'myclaim', refundPubkey: 'myrefund',
-        timeout: 1, amountSat: 1, direction: SwapDirection.chain,
-      );
-      // btcToLbtc: BTC = lockup (our refund = sender), LBTC = claim (our claim
-      // = receiver).
+    // Chain: commits to BOTH keys across two legs; both hashlock our preimage.
+    test('chain btcToLbtc: refund on BTC lockup + claim on LBTC claim', () {
       final ok = IntentValidator.validateChainSwapCommitment(
-        chain,
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
-        actualAmountSat: 1,
-        // BTC = lockup: its locktime must match the intent timeout (1).
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
             senderPubkey: 'myrefund',
             hashlock: 'ph',
-            locktime: 1),
+            locktime: 111),
         lbtcScript: const SwapScriptLeg(
             receiverPubkey: 'myclaim',
             senderPubkey: 'server',
             hashlock: 'ph',
-            locktime: 999), // claim leg locktime is not bound
+            locktime: 999),
       );
       expect(_isOk(ok), isTrue);
 
-      // The LBTC (claim) leg is REALLY validated: tamper it → reject.
+      // The claim leg is REALLY validated: tamper its receiver key → reject.
       final tampered = IntentValidator.validateChainSwapCommitment(
-        chain,
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
-        actualAmountSat: 1,
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
             senderPubkey: 'myrefund',
             hashlock: 'ph',
-            locktime: 1),
+            locktime: 111),
         lbtcScript: const SwapScriptLeg(
             receiverPubkey: 'attacker',
             senderPubkey: 'server',
@@ -310,23 +288,19 @@ void main() {
       expect(_err(tampered), isA<SigningFailure>());
     });
 
-    test('chain: REJECTS when the LOCKUP leg locktime != intent timeout', () {
-      const chain = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'myclaim', refundPubkey: 'myrefund',
-        timeout: 100, amountSat: 1, direction: SwapDirection.chain,
-      );
+    test('chain: REJECTS when the lockup (refund) key is tampered', () {
       final r = IntentValidator.validateChainSwapCommitment(
-        chain,
         direction: ChainDirection.btcToLbtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
-        actualAmountSat: 1,
-        // BTC lockup leg locktime (50) pushed away from the intended 100.
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
         btcScript: const SwapScriptLeg(
             receiverPubkey: 'server',
-            senderPubkey: 'myrefund',
+            senderPubkey: 'attacker', // lockup refund side tampered
             hashlock: 'ph',
-            locktime: 50),
+            locktime: 111),
         lbtcScript: const SwapScriptLeg(
             receiverPubkey: 'myclaim',
             senderPubkey: 'server',
@@ -336,86 +310,57 @@ void main() {
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('single leg: REJECTS a script locktime that differs from the intent',
-        () {
-      final r = IntentValidator.validateSwapCommitment(
-        reverse, // timeout: 100
-        ownClaimPubkey: 'mykey',
-        scriptReceiverPubkey: 'mykey',
-        scriptSenderPubkey: 'boltzkey',
-        scriptHashlock: 'ph',
-        actualAmountSat: 50000,
-        scriptLocktime: 777, // server pushed the refund window out
-        expectedLocktime: 100,
+    test('chain: REJECTS a send amount that differs from the request', () {
+      final r = IntentValidator.validateChainSwapCommitment(
+        direction: ChainDirection.btcToLbtc,
+        ownClaimPubkey: 'myclaim',
+        ownRefundPubkey: 'myrefund',
+        preimageSha256: 'ph',
+        outAmountSat: 2000, // server quoted a different lockup
+        sendAmountSat: 1000,
+        btcScript: const SwapScriptLeg(
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 111),
+        lbtcScript: const SwapScriptLeg(
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999),
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('single leg: accepts a matching script locktime', () {
-      final r = IntentValidator.validateSwapCommitment(
-        reverse, // timeout: 100
-        ownClaimPubkey: 'mykey',
-        scriptReceiverPubkey: 'mykey',
-        scriptSenderPubkey: 'boltzkey',
-        scriptHashlock: 'ph',
-        actualAmountSat: 50000,
-        scriptLocktime: 100,
-        expectedLocktime: 100,
-      );
-      expect(_isOk(r), isTrue);
-    });
-
-    test('chain lbtcToBtc: legs swap chains (BTC claim / LBTC lockup)', () {
-      const chain = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'myclaim', refundPubkey: 'myrefund',
-        timeout: 1, amountSat: 1, direction: SwapDirection.chain,
-      );
+    test('chain lbtcToBtc: legs swap chains (LBTC lockup / BTC claim)', () {
       final ok = IntentValidator.validateChainSwapCommitment(
-        chain,
         direction: ChainDirection.lbtcToBtc,
         ownClaimPubkey: 'myclaim',
         ownRefundPubkey: 'myrefund',
-        actualAmountSat: 1,
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
         btcScript: const SwapScriptLeg(
-            receiverPubkey: 'myclaim',
+            receiverPubkey: 'myclaim', // BTC = claim leg now
             senderPubkey: 'server',
             hashlock: 'ph',
-            locktime: 999), // claim leg, not bound
-        // LBTC = lockup here: its locktime must match the intent timeout (1).
+            locktime: 999),
         lbtcScript: const SwapScriptLeg(
-            receiverPubkey: 'server',
+            receiverPubkey: 'server', // LBTC = lockup leg now
             senderPubkey: 'myrefund',
             hashlock: 'ph',
-            locktime: 1),
+            locktime: 111),
       );
       expect(_isOk(ok), isTrue);
     });
 
-    test('REJECTS when no own key is supplied', () {
-      final r = IntentValidator.validateSwapCommitment(
-        reverse,
-        scriptReceiverPubkey: 'x',
-        scriptSenderPubkey: 'y',
-        scriptHashlock: 'ph',
-        actualAmountSat: 50000,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('reverse: REJECTS when intent.claimPubkey disagrees with our key', () {
-      const badIntent = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'someoneelse', refundPubkey: 'b',
-        timeout: 1, amountSat: 1, direction: SwapDirection.reverse,
-      );
-      final r = IntentValidator.validateSwapCommitment(
-        badIntent,
-        ownClaimPubkey: 'mykey',
-        scriptReceiverPubkey: 'mykey',
-        scriptSenderPubkey: 'b',
-        scriptHashlock: 'ph',
-        actualAmountSat: 1,
-      );
-      expect(_err(r), isA<SigningFailure>());
+    test('checkSwapAmount: rejects a negative/out-of-range amount', () {
+      expect(_err(IntentValidator.checkSwapAmount(outAmountSat: -1)),
+          isA<SigningFailure>());
+      expect(
+          _err(IntentValidator.checkSwapAmount(
+              outAmountSat: 2100000000000001)),
+          isA<SigningFailure>());
     });
   });
 
@@ -516,76 +461,84 @@ void main() {
       );
       expect(_err(r), isA<SigningFailure>());
     });
+
+    test('REJECTS dropping one of two identical original outputs (multiset)',
+        () {
+      // A batched double-payment: the sender declared the SAME output twice. A
+      // Set-based check would let the receiver drop one copy and redirect its
+      // value — the single survivor would satisfy both membership tests. The
+      // multiset check requires BOTH copies to survive.
+      final batched = PayjoinIntent(
+        originalInputs: const ['outpoint_a'],
+        originalOutputs: const [_recipient, _recipient], // pay twice
+        originalVersion: 2,
+        originalLockTime: 0,
+        maxFeeContributionSat: 1000,
+      );
+      final r = IntentValidator.validate(
+        batched,
+        const TxFacts(
+          outputs: [_recipient, _change], // only ONE copy survived
+          feeSat: 0,
+          version: 2,
+          lockTime: 0,
+          inputOutpoints: ['outpoint_a'],
+        ),
+        ownsScript: _ownsMyChange,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
   });
 
-  group('SwapIntent validation (untrusted Boltz address)', () {
-    const swap = SwapIntent(
-      preimageHash: 'ph',
-      claimPubkey: 'claim',
-      refundPubkey: 'refund',
-      timeout: 100,
-      amountSat: 50000,
-      direction: SwapDirection.reverse,
-    );
-
-    test('accepts when the lockup address matches our own derived script', () {
-      final r = IntentValidator.validate(
-        swap,
-        const TxFacts(outputs: [], feeSat: 0, lockupScriptAddress: 'addr_ours'),
-        ownsScript: (_) => false,
-        reconstructLockupAddress: (_) => 'addr_ours',
+  group('Liquid validation (blinded amounts; scripts + fee are checkable)', () {
+    test('SendIntent: accepts fee within cap when the recipient script present',
+        () {
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(
+          feeSat: 1500,
+          // recipient script + a change script + the empty fee output
+          outputScriptPubKeys: ['recipient_spk', 'my_change_spk', ''],
+          lockTime: 0,
+        ),
       );
       expect(_isOk(r), isTrue);
     });
 
-    test('REJECTS a Boltz address that does not commit to our key', () {
-      final r = IntentValidator.validate(
-        swap,
-        const TxFacts(
-            outputs: [], feeSat: 0, lockupScriptAddress: 'addr_boltz_evil'),
-        ownsScript: (_) => false,
-        reconstructLockupAddress: (_) => 'addr_ours',
+    test('SendIntent: REJECTS fee above the cap', () {
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(feeSat: 9999, outputScriptPubKeys: ['recipient_spk']),
       );
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('REJECTS when there is no lockup output', () {
-      final r = IntentValidator.validate(
-        swap,
-        const TxFacts(outputs: [], feeSat: 0),
-        ownsScript: (_) => false,
-        reconstructLockupAddress: (_) => 'addr_ours',
+    test('SendIntent: REJECTS address substitution (recipient script absent)',
+        () {
+      // The blinded amounts can't be checked, but the SCRIPTS aren't blinded —
+      // a tx paying only the attacker's script is refused.
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(
+            feeSat: 100, outputScriptPubKeys: ['attacker_spk', '']),
       );
       expect(_err(r), isA<SigningFailure>());
     });
-  });
 
-  group('Liquid fee-cap (sound under confidential outputs)', () {
-    test('SendIntent: accepts fee within cap, rejects above', () {
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 1500), isNull);
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 9999),
-          isA<SigningFailure>());
-    });
-
-    test('SwapIntent is refused on the generic Liquid PSET path', () {
-      const swap = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'c', refundPubkey: 'r',
-        timeout: 1, amountSat: 1, direction: SwapDirection.reverse,
+    test('SendIntent: FAILS CLOSED when no output scripts can be extracted', () {
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(feeSat: 100, outputScriptPubKeys: []),
       );
-      expect(SignerAdapter.debugValidateLiquidFee(swap, 0),
-          isA<SigningFailure>());
+      expect(_err(r), isA<SigningFailure>());
     });
 
-    test('REJECTS a fee far above the cap (out-of-range overpay)', () {
-      // The cap check feeding debugValidateLiquidFee: a fee well beyond the
-      // intent's maxFeeSat must be refused, not waved through.
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 2100000000000000),
-          isA<SigningFailure>());
+    test('REJECTS a negative (u64-wrapped) fee', () {
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(feeSat: -1, outputScriptPubKeys: ['recipient_spk']),
+      );
+      expect(_err(r), isA<SigningFailure>());
     });
-    // NOTE: the negative/u64-wrap and absolute upper-bound (> 2.1e15) guards
-    // live INLINE in signLiquidPset/signBitcoinPsbt (on a BigInt / the raw
-    // BDK fee), BEFORE debugValidateLiquidFee is reached. They cannot be hit
-    // through the pure helper without a real native PSBT/PSET, so they are not
-    // unit-testable here (see signer_adapter_test.dart for what is reachable).
   });
 }

@@ -139,6 +139,34 @@ void main() {
       final got = await store.useAndForget(key, (b) async => b.first);
       expect(got, 9);
     });
+
+    test(
+        'SECURITY: persistent null while the key EXISTS → locked, NOT not-found',
+        () async {
+      // A degraded keystore (post-restore, keyring not unlocked, OEM hiccup) can
+      // read null even though the seed key is present. Reporting SecretNotFound
+      // there would tell the user their seed is gone — breaking locked≠missing.
+      final kv = FakeSecureKeyValueStore();
+      final store = _store(kv);
+      final key = SecretStoreKeys.seedKey('deadbeef');
+      await store.store(key, Uint8List.fromList([9]));
+      kv.transientNullReads = 5; // every attempt reads null, but the key exists
+      await expectLater(
+        store.useAndForget(key, (b) async => b),
+        throwsA(isA<KeychainLockedException>()),
+      );
+    });
+
+    test('persistent null while the key is ABSENT → SecretNotFound (genuine)',
+        () async {
+      final kv = FakeSecureKeyValueStore();
+      final store = _store(kv);
+      // Never stored → containsKey is false, so a null read IS a real miss.
+      await expectLater(
+        store.useAndForget(SecretStoreKeys.seedKey('deadbeef'), (b) async => b),
+        throwsA(isA<SecretNotFoundException>()),
+      );
+    });
   });
 
   group('keys() enumeration incl. legacy patterns', () {

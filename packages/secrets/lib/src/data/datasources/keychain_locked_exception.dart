@@ -22,24 +22,36 @@ class KeychainLockedException implements Exception {
 bool isKeychainLockedError(Object error) {
   if (error is KeychainLockedException) return true;
   if (error is PlatformException) {
-    final code = error.code.toLowerCase();
-    final msg = (error.message ?? '').toLowerCase();
+    // Normalize BOTH sides: lowercase and strip every non-alphanumeric char, so
+    // separator variants collapse to one form — `user_not_authenticated`,
+    // `user not authenticated`, and `UserNotAuthenticated` all become
+    // `usernotauthenticated`. Otherwise a locked device whose platform spelling
+    // differs only in punctuation is left raw and later mis-classified.
+    final code = _normalize(error.code);
+    final msg = _normalize(error.message ?? '');
     // Match ONLY signals that specifically mean "locked / not authenticated".
     // Deliberately NOT the bare substring 'keystore' — it appears in many
     // non-lock Android errors (corrupt/missing entry, decryption failure), and
     // misclassifying those as "locked" would hide a real loss behind an endless
-    // "unlock and retry" (the inverse of the locked≠missing invariant).
+    // "unlock and retry" (the inverse of the locked≠missing invariant). Needles
+    // are stored separator-free to match the normalized input.
     const needles = [
-      '-25308',
+      '25308', // errSecInteractionNotAllowed (the leading '-' is stripped)
       'interactionnotallowed',
-      'interaction_not_allowed',
       'usernotauthenticated',
-      'user not authenticated',
-      'keychain is locked',
-      'keystore is locked',
-      'keystore not initialized',
+      'keyisnotauthenticated',
+      'keychainislocked',
+      'keystoreislocked',
+      'keystorenotinitialized',
+      'keystorelocked',
+      'keyusernotauthenticated',
     ];
     return needles.any((n) => code.contains(n) || msg.contains(n));
   }
   return false;
 }
+
+/// Lowercase + strip every non-`[a-z0-9]` char, so punctuation/casing/spelling
+/// variants of the same locked signal collapse to one comparable form.
+String _normalize(String s) =>
+    s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');

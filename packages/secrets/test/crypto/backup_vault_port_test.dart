@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -49,26 +50,41 @@ void main() {
     vaultPort = BackupVaultAdapter(store: store, repository: repo);
   });
 
+  // A caller-supplied key — encryptVault no longer mints one. A random 32-byte
+  // key round-trips; real callers derive it via bip85RecoverbullKey / the key
+  // server and store it APART from the ciphertext.
+  VaultKey freshKey() {
+    final rnd = Random.secure();
+    return VaultKey(
+        Uint8List.fromList(List.generate(32, (_) => rnd.nextInt(256))));
+  }
+
+  test('encrypt returns ONLY the ciphertext (no key co-returned)', () async {
+    final vault = _unwrap(
+        await vaultPort.encryptVault(fingerprint: zooFp, vaultKey: freshKey()));
+    // The return type is the bare EncryptedVault — the key is never handed back.
+    expect(vault, isA<EncryptedVault>());
+  });
+
   test('encrypt → restore round-trips to the same fingerprint', () async {
-    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
-    expect(enc.vaultKey.bytes.length, greaterThanOrEqualTo(32));
+    final key = freshKey();
+    final vault =
+        _unwrap(await vaultPort.encryptVault(fingerprint: zooFp, vaultKey: key));
 
     // Wipe the seed so restore must re-import it from the vault.
     await repo.delete(zooFp);
     expect(_unwrap(await repo.exists(zooFp)), isFalse);
 
-    final fps = _unwrap(await vaultPort.restoreVault(
-      vault: enc.vault,
-      vaultKey: enc.vaultKey,
-    ));
+    final fps = _unwrap(await vaultPort.restoreVault(vault: vault, vaultKey: key));
     expect(fps, [zooFp]);
     expect(_unwrap(await repo.exists(zooFp)), isTrue);
   });
 
   test('restore with a wrong key → VaultFailure (no crash)', () async {
-    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
+    final vault =
+        _unwrap(await vaultPort.encryptVault(fingerprint: zooFp, vaultKey: freshKey()));
     final res = await vaultPort.restoreVault(
-      vault: enc.vault,
+      vault: vault,
       vaultKey: VaultKey(Uint8List.fromList(List.filled(32, 0))),
     );
     expect((res as Err).failure, isA<VaultFailure>());
@@ -76,12 +92,14 @@ void main() {
 
   test('restore of a TAMPERED ciphertext → VaultFailure (HMAC rejects)',
       () async {
-    final enc = _unwrap(await vaultPort.encryptVault(fingerprint: zooFp));
+    final key = freshKey();
+    final vault =
+        _unwrap(await vaultPort.encryptVault(fingerprint: zooFp, vaultKey: key));
     // Flip one byte inside the authenticated (nonce‖ciphertext‖HMAC) blob, then
     // re-wrap as valid JSON so the failure is the MAC check — not a parse error
     // — proving the vault authenticates ciphertext (encrypt-then-MAC), distinct
     // from the wrong-key case above.
-    final map = jsonDecode(enc.vault.ciphertextJson) as Map<String, dynamic>;
+    final map = jsonDecode(vault.ciphertextJson) as Map<String, dynamic>;
     final blob = base64.decode(map['ciphertext'] as String);
     blob[blob.length ~/ 2] ^= 0xFF; // mutate a middle (ciphertext) byte
     map['ciphertext'] = base64.encode(blob);
@@ -90,7 +108,7 @@ void main() {
     await repo.delete(zooFp); // restore must actually decrypt, not short-circuit
     final res = await vaultPort.restoreVault(
       vault: tampered,
-      vaultKey: enc.vaultKey, // CORRECT key — only the ciphertext is tampered
+      vaultKey: key, // CORRECT key — only the ciphertext is tampered
     );
     expect((res as Err).failure, isA<VaultFailure>());
     // The rejected vault imported nothing.
@@ -98,7 +116,24 @@ void main() {
   });
 
   test('encrypt of a missing seed → SecretNotFoundFailure', () async {
-    final res = await vaultPort.encryptVault(fingerprint: Fingerprint('00000000'));
+    final res = await vaultPort.encryptVault(
+        fingerprint: Fingerprint('00000000'), vaultKey: freshKey());
     expect((res as Err).failure, isA<SecretNotFoundFailure>());
+  });
+
+  test('restore of an ALREADY-PRESENT seed → Ok (duplicate is benign)',
+      () async {
+    // The seed is still stored (not deleted). Restore decrypts to the SAME
+    // words → SAME fingerprint; the import hits DuplicateSecretFailure, which
+    // restoreVault deliberately rewrites to Ok([fp]) — the ONLY Err→Ok in the
+    // package. Pin that it is FINGERPRINT IDENTITY (content-derived) that proves
+    // equivalence, so the rewrite can never mask a different seed.
+    final key = freshKey();
+    final vault =
+        _unwrap(await vaultPort.encryptVault(fingerprint: zooFp, vaultKey: key));
+    expect(_unwrap(await repo.exists(zooFp)), isTrue); // NOT deleted
+
+    final fps = _unwrap(await vaultPort.restoreVault(vault: vault, vaultKey: key));
+    expect(fps, [zooFp]); // the duplicate resolved to the existing fingerprint
   });
 }

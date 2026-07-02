@@ -84,32 +84,27 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
-  // ── swaps (commitment-asserted) ────────────────────────────────────────────
+  // ── swaps (commitment-asserted; caller-knowable SwapRequest) ───────────────
 
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
     required int index,
-    required SwapIntent intent,
-    required int outAmountSat,
+    required ReverseSwapRequest request,
     required String electrumUrl,
     required String boltzUrl,
     required BitcoinNetwork network,
-    String? outAddress,
   }) =>
       Secrets._w.swap.createBtcReverse(
         fingerprint: fingerprint,
         index: index,
-        intent: intent,
-        outAmountSat: outAmountSat,
+        request: request,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
         isTestnet: !network.isMainnet,
-        outAddress: outAddress,
       );
 
   Future<Result<CreatedSwap, SecretsFailure>> createBtcSubmarine({
     required int index,
-    required SwapIntent intent,
-    required String invoice,
+    required SubmarineSwapRequest request,
     required String electrumUrl,
     required String boltzUrl,
     required BitcoinNetwork network,
@@ -117,8 +112,7 @@ sealed class Secret {
       Secrets._w.swap.createBtcSubmarine(
         fingerprint: fingerprint,
         index: index,
-        intent: intent,
-        invoice: invoice,
+        request: request,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
         isTestnet: !network.isMainnet,
@@ -126,28 +120,23 @@ sealed class Secret {
 
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcReverse({
     required int index,
-    required SwapIntent intent,
-    required int outAmountSat,
+    required ReverseSwapRequest request,
     required String electrumUrl,
     required String boltzUrl,
     required LiquidNetwork network,
-    String? outAddress,
   }) =>
       Secrets._w.swap.createLbtcReverse(
         fingerprint: fingerprint,
         index: index,
-        intent: intent,
-        outAmountSat: outAmountSat,
+        request: request,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
         isTestnet: !network.isMainnet,
-        outAddress: outAddress,
       );
 
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcSubmarine({
     required int index,
-    required SwapIntent intent,
-    required String invoice,
+    required SubmarineSwapRequest request,
     required String electrumUrl,
     required String boltzUrl,
     required LiquidNetwork network,
@@ -155,8 +144,7 @@ sealed class Secret {
       Secrets._w.swap.createLbtcSubmarine(
         fingerprint: fingerprint,
         index: index,
-        intent: intent,
-        invoice: invoice,
+        request: request,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
         isTestnet: !network.isMainnet,
@@ -164,31 +152,33 @@ sealed class Secret {
 
   Future<Result<CreatedSwap, SecretsFailure>> createChainSwap({
     required int index,
-    required SwapIntent intent,
-    required int amountSat,
+    required ChainSwapRequest request,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     required String boltzUrl,
     required NetworkEnv env,
-    required ChainDirection direction,
   }) =>
       Secrets._w.swap.createChainSwap(
         fingerprint: fingerprint,
         index: index,
-        intent: intent,
-        amountSat: amountSat,
+        request: request,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
         boltzUrl: boltzUrl,
         isTestnet: env != NetworkEnv.mainnet,
-        direction: direction,
       );
 
   // ── backup vault ─────────────────────────────────────────────────────────
 
-  Future<Result<({EncryptedVault vault, VaultKey vaultKey}), SecretsFailure>>
-      encryptVault() =>
-          Secrets._w.backup.encryptVault(fingerprint: fingerprint);
+  /// Encrypts the seed under a CALLER-SUPPLIED [vaultKey] and returns ONLY the
+  /// ciphertext. The key is never minted-and-returned here — obtain it from a
+  /// separate step ([bip85RecoverbullKey] or the key server) and store it apart
+  /// from the ciphertext, or the two-location recoverbull model collapses to one
+  /// caller-held plaintext (offline seed extraction).
+  Future<Result<EncryptedVault, SecretsFailure>> encryptVault({
+    required VaultKey vaultKey,
+  }) =>
+      Secrets._w.backup.encryptVault(fingerprint: fingerprint, vaultKey: vaultKey);
 
   // ── BIP85 child derivation ─────────────────────────────────────────────────
 

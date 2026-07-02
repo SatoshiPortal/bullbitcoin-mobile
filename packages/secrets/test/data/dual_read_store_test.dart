@@ -152,5 +152,48 @@ void main() {
       expect(report.failures.single.fingerprint.hex, 'cafebabe');
       expect(report.complete, isFalse);
     });
+
+    test('an FSS seed key ABSENT from the index blocks complete (census)',
+        () async {
+      // An un-healed orphan: material lives in FSS but the index never saw it.
+      // A completeness-gated FSS removal would destroy it, so complete must be
+      // false and the orphan reported.
+      await fss.store(SecretStoreKeys.seedKey('abcd1234'), b([1, 2, 3]));
+      final report = await dual.migratePending(_FakeIndex()); // empty index
+      expect(report.migrated, 0);
+      expect(report.complete, isFalse);
+      expect(
+        report.failures.map((f) => f.errorType),
+        contains('fss_orphan_not_indexed'),
+      );
+    });
+
+    test('a delete racing the pass does NOT resurrect the seed in hardware',
+        () async {
+      const hex = 'deadbeef';
+      final key = SecretStoreKeys.seedKey(hex);
+      await fss.store(key, b([4, 5, 6]));
+      // The index reports the seed in all() (the pass snapshot) but get()
+      // returns null — modelling a delete that completed after the snapshot.
+      final report = await dual.migratePending(_RacingDeleteIndex(_info(hex)));
+      expect(report.migrated, 0);
+      // The re-check before store saw the deletion → hardware stays clean.
+      expect(await hw.exists(key), isFalse);
+    });
   });
+}
+
+/// An index whose `all()` still lists the seed (the migrator's snapshot) but
+/// whose `get()` returns null — a delete that completed mid-pass.
+class _RacingDeleteIndex implements SecretIndexPort {
+  _RacingDeleteIndex(this._snapshot);
+  final SecretInfo _snapshot;
+  @override
+  Future<List<SecretInfo>> all() async => [_snapshot];
+  @override
+  Future<SecretInfo?> get(Fingerprint fp) async => null; // deleted meanwhile
+  @override
+  Future<void> remove(Fingerprint fp) async {}
+  @override
+  Future<void> upsert(SecretInfo info) async {}
 }

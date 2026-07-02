@@ -38,6 +38,24 @@ Initial sealed-package extraction — the sole owner of user secret material
 ### Security
 - Library-privacy + non-export + `make seal-check` seal; no-secret-logging
   (runtime type names only); redacted `toString`, no `toJson`; buffer zeroing on
-  every FSS read and during migration. Bitcoin signing is intent-gated with
-  `trustWitnessUtxo: false`; swap lockups are asserted to commit to the caller's
-  own derived key. See the README "Threat model" for the seal's non-goals.
+  every FSS read, on the main write, and during migration. Bitcoin signing is
+  intent-gated with `trustWitnessUtxo: false`; swap lockups are asserted to commit
+  to the caller's own derived key. See the README "Threat model" for the seal's
+  non-goals.
+- **Backup vault:** `encryptVault({vaultKey})` takes the key as an INPUT and
+  returns ONLY the ciphertext — the key is never co-returned, so one call can't
+  hand a caller both halves of recoverbull's two-location model.
+- **Swaps:** caller-knowable `SwapRequest` types (`ReverseSwapRequest` /
+  `SubmarineSwapRequest` / `ChainSwapRequest`) replace the unconstructible
+  `SwapIntent`; the package builds the commitment from the SDK swap (own key(s),
+  `preimage.sha256`, locktime) and gates the amount per type. `CreatedSwap`
+  exposes `preimageSha256` / own pubkey(s) / `lockupLocktime`.
+- **Liquid signing** additionally checks that every declared recipient script is
+  present (blocking address substitution) and fails closed when no output scripts
+  can be extracted; `hasPassphrase` wallets are rejected on both Liquid and swap
+  paths (the bare-mnemonic derivation would use a different wallet).
+- **Storage:** a persistent-null FSS read while the key still exists surfaces as
+  locked (not not-found); locked-keychain detection is separator-insensitive;
+  migration verifies by reading bytes back, re-checks the index before storing
+  (no delete-race resurrection), and reports un-indexed FSS orphans so
+  `complete` stays honest.

@@ -45,6 +45,7 @@ src/domain/value_objects/bip85_types.dart
 src/domain/value_objects/backup.dart
 src/domain/value_objects/ark_secret.dart
 src/domain/value_objects/signing_intent.dart
+src/domain/value_objects/swap_request.dart
 src/domain/value_objects/created_swap.dart
 src/ui/widgets/secret_revealer.dart
 src/ui/widgets/verify_backup_view.dart
@@ -72,6 +73,16 @@ while IFS= read -r stmt; do
   fi
 done <<< "$statements"
 
+# 2b) The barrel is the ONLY .dart file that may live directly under
+#     packages/secrets/lib/ — a second file there could re-export src/ internals
+#     while sidestepping the barrel-export grep above (it checks exports IN the
+#     barrel, not other files). An import of `package:secrets/other.dart` would
+#     also bypass the `package:secrets/src/` grep in check 1.
+other_lib_files=$(find packages/secrets/lib -maxdepth 1 -name '*.dart' \
+  ! -name 'secrets.dart' 2>/dev/null || true)
+[ -n "$other_lib_files" ] && note "a .dart file other than the barrel exists directly under packages/secrets/lib/:
+$other_lib_files"
+
 # 3) No one may suppress the internal-member lint to reach a @internal secret
 #    accessor (Bip85Derivation.words / Bip85HexResult.hexForView / ArkSecret.bytes).
 sup=$(grep -rnE "//\s*ignore.*invalid_use_of_internal_member" \
@@ -83,11 +94,18 @@ $sup"
 # 3b) Nor may a consumer downgrade the lint via analysis_options.yaml config
 #     (errors: invalid_use_of_internal_member: ignore/info) — that silences the
 #     only hard wall for an entire package without an inline comment.
+#     SCAN_DIRS covers subdirs; the ROOT analysis_options.yaml (which governs
+#     lib/) is checked separately since "." isn't in SCAN_DIRS.
 cfg=$(grep -rnE "invalid_use_of_internal_member" \
   --include='analysis_options.yaml' $SCAN_DIRS 2>/dev/null \
   | grep -v 'packages/secrets/' || true)
+root_cfg=$(grep -nE "invalid_use_of_internal_member" \
+  analysis_options.yaml 2>/dev/null \
+  | grep -v 'packages/secrets/' || true)
 [ -n "$cfg" ] && note "analysis_options downgrades invalid_use_of_internal_member outside secrets:
 $cfg"
+[ -n "$root_cfg" ] && note "root analysis_options.yaml downgrades invalid_use_of_internal_member:
+$root_cfg"
 
 # 4) Naming convention: capability implementations are `*Adapter`, never
 #    `*Impl` (Port/Adapter, secrets-package convention).

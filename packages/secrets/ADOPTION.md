@@ -3,9 +3,10 @@
 Status: **planning** for the app (`lib/` imports nothing from the package yet). This is the
 working spec for the migration PR(s) that make the app consume `packages/secrets` as the sole
 owner of seed/mnemonic/signing/swap/backup/BIP85/Ark operations, then delete the duplicated
-in-`lib/` logic. Package-side, the terminology/facade, `Secrets.reconcile()`, and the oubliette
-dual backend have **shipped**; prerequisites §B (typed swap requests) and §C (payjoin
-extraction) are **not** yet built.
+in-`lib/` logic. Package-side, the terminology/facade, `Secrets.reconcile()`, the oubliette
+dual backend, and **§B (typed swap requests, package-built commitment)** have **shipped**;
+prerequisite §C (payjoin extraction) is **not** yet built, and §A's remaining piece is the
+legacy-envelope/`path` self-recovery format (the key-as-input hardening below has shipped).
 
 Derived from a deep per-folder code investigation cross-checked against reputable
 sources (BIP78, BIP85, Boltz docs, BDK docs, recoverbull source). **Nothing is
@@ -86,12 +87,22 @@ Two real breaks vs the app's existing backups:
   fixtures), new-format round-trip + `path` present, downgrade (old `DecryptedVault.fromJson`
   still parses new output), tampered ciphertext (HMAC), wrong key, empty-words, `path`-absent.
 
-### B. Swap creation / SwapIntent — make the contract constructible (and fix the amount gate)
+### B. Swap creation / SwapIntent — make the contract constructible (and fix the amount gate) — ✅ SHIPPED
 
-`SwapIntent` currently requires `claimPubkey/refundPubkey/preimageHash/timeout/amountSat`
+**Status: implemented.** `SwapIntent` is replaced by the caller-knowable `SwapRequest`
+hierarchy (`ReverseSwapRequest` / `SubmarineSwapRequest` / `ChainSwapRequest`); the adapter
+builds the expected commitment from the SDK-returned swap (own pubkey(s), `hashlock ==
+swap.preimage.sha256`, locktime) with no caller-supplied secret/pubkey/preimage. Amounts are
+gated per type (reverse: exact `requestedReceiveSat`; submarine: `[invoiceAmount, maxLockup]`
+range; chain: exact `sendAmount`). `CreatedSwap` now exposes `preimageSha256`, own pubkey(s),
+and `lockupLocktime`. `hasPassphrase` wallets are rejected (boltz drops the passphrase). The
+chain net-receive floor (`minReceiveSat`) is carried but not gated (the SDK does not expose
+`claim_details.amount` on the swap object — documented residual). Original design notes below.
+
+`SwapIntent` previously required `claimPubkey/refundPubkey/preimageHash/timeout/amountSat`
 up front — but the preimage and per-swap keys are generated **inside** the SDK during
 creation and Boltz chooses the locktime, so the caller cannot know them. And the amount
-gate I added (`intent.amountSat == swap.outAmount`) is **only correct for reverse swaps**:
+gate (`intent.amountSat == swap.outAmount`) was **only correct for reverse swaps**:
 
 | Swap | `swap.outAmount` means | Correct amount check |
 |---|---|---|

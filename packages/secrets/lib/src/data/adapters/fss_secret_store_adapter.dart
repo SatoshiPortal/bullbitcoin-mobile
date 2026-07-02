@@ -114,6 +114,17 @@ class FssSecretStoreAdapter implements SecretStorePort {
         delay *= 2;
       }
     }
+    // Every attempt read null. Distinguish GONE from a DEGRADED read: if the key
+    // still exists in the keystore but persistently reads null, the seed is NOT
+    // missing — the backend is in a locked/degraded state (post-restore, keyring
+    // not yet unlocked, an OEM keystore hiccup). Reporting SecretNotFound there
+    // would break the locked≠missing invariant and tell the user their seed is
+    // gone. Surface it as locked (retryable), not not-found. Only when the key
+    // genuinely does not exist do we report not-found.
+    if (await _kv.containsKey(key)) {
+      throw KeychainLockedException(
+          'key exists but read null $_maxReadRetries times — degraded/locked');
+    }
     throw SecretNotFoundException(key);
   }
 

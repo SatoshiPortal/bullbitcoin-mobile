@@ -26,10 +26,20 @@ void main() {
       expect(Fingerprint.tryParse('deadbeef')?.hex, 'deadbeef');
     });
 
+    test('accepts uppercase and NORMALIZES to lowercase (untrusted-input path)',
+        () {
+      // Hardware wallets commonly export uppercase; tryParse is the designated
+      // untrusted-input path, so it lowercases rather than rejecting. (The
+      // throwing constructor stays strict — see the constructor group above.)
+      expect(Fingerprint.tryParse('DEADBEEF')?.hex, 'deadbeef');
+      expect(Fingerprint.tryParse('DeAdBeEf')?.hex, 'deadbeef');
+    });
+
     test('returns null for invalid input instead of throwing', () {
-      expect(Fingerprint.tryParse('DEADBEEF'), isNull);
       expect(Fingerprint.tryParse('nope'), isNull);
       expect(Fingerprint.tryParse(''), isNull);
+      expect(Fingerprint.tryParse('deadbee'), isNull); // wrong length
+      expect(Fingerprint.tryParse('zzzzzzzz'), isNull); // non-hex
     });
   });
 

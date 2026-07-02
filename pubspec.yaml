@@ -165,22 +165,23 @@ dependency_overrides:
   # oubliette integration (Phase 1): force its sibling plugins to the same git
   # ref as the oubliette dep in packages/secrets. oubliette declares them as
   # hosted ^1.0.0 (unpublished); pub won't mix a hosted constraint with a git
-  # source, so the root overrides the source here. Pinned to the
-  # security-hardening PR branch (PR #1).
+  # source, so the root overrides the source here. Pinned to the IMMUTABLE
+  # security-hardening commit (PR #1) — a SHA, not the branch head, so a
+  # force-push/GC can't silently re-resolve `--enforce-lockfile` / deps-update.
   keychain:
     git:
       url: https://github.com/ethicnology/dart-oubliette.git
-      ref: refactor/security-hardening
+      ref: 71ddecc437c4a38ae61805db99c9f5e6abce0d79
       path: keychain
   keystore:
     git:
       url: https://github.com/ethicnology/dart-oubliette.git
-      ref: refactor/security-hardening
+      ref: 71ddecc437c4a38ae61805db99c9f5e6abce0d79
       path: keystore
   secret_service:
     git:
       url: https://github.com/ethicnology/dart-oubliette.git
-      ref: refactor/security-hardening
+      ref: 71ddecc437c4a38ae61805db99c9f5e6abce0d79
       path: secret_service
   # CONFLICT: oubliette needs pointycastle ^4.0.0 (Argon2id); ledger_bitcoin pins
   # ^3.7.4 (<4) — disjoint, so version-solving fails. Forced to 4.x here to unblock

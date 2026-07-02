@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:convert/convert.dart' as conv;
-import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
 import 'package:secrets/src/data/adapters/secret_guard.dart';
@@ -182,6 +181,15 @@ class SignerAdapter implements SignerPort {
     required bool isTestnet,
   }) =>
       _guard.read(fingerprint, (m) async {
+        // Liquid signing uses the BARE mnemonic (LWK's confidential descriptor
+        // derives from words only — no passphrase). A `hasPassphrase` wallet
+        // would sign/derive under the DIFFERENT bare-seed wallet, so refuse
+        // rather than mis-derive (M2 — inherited lwk binding limitation).
+        if (m.hasPassphrase) {
+          return const Err(SigningFailure(
+              'liquid signing is unsupported for passphrase wallets — lwk '
+              'derives from the bare mnemonic and would use a different wallet'));
+        }
         // LWK has no in-memory persistence (dep-audit §11): use an ephemeral
         // temp dir, deleted in `finally` (residual: a kill mid-sign leaks it).
         final network = isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet;
@@ -194,23 +202,29 @@ class SignerAdapter implements SignerPort {
           );
 
           // --- INTENT VALIDATION (before signing) ---
-          // Liquid outputs are CONFIDENTIAL (blinded): per-output/change checks
-          // aren't soundly possible. The network FEE is always unblinded, so we
-          // enforce the fee cap (the inflation footgun) and reject a SwapIntent
-          // (swaps go through SwapSignerPort). Full confidential output
-          // validation is a documented residual (SPEC §10).
-          final liquidFeeBig =
-              lwk.LiquidTransaction.fromPset(psetString: pset.base64).fee();
+          // Liquid output amounts/assets are CONFIDENTIAL (blinded): per-output
+          // VALUE and change-ownership checks aren't soundly possible (SPEC
+          // §10). The network FEE and the output SCRIPTS are NOT blinded, so we
+          // extract those and enforce the fee cap AND that every declared
+          // recipient script is present (blocking address substitution). Fails
+          // closed if outputs can't be extracted.
+          final tx = lwk.LiquidTransaction.fromPset(psetString: pset.base64);
+          final liquidFeeBig = tx.fee();
           // Guard the BigInt→int conversion: a crafted PSET reporting an absurd
           // fee could otherwise wrap to a small int and slip under the cap.
           if (liquidFeeBig.isNegative ||
               liquidFeeBig > BigInt.from(2100000000000000)) {
             return const Err(SigningFailure('liquid fee out of range'));
           }
-          final liquidVerdict =
-              _validateLiquidFee(intent, liquidFeeBig.toInt());
-          if (liquidVerdict != null) {
-            return Err<SignedPsbt, SecretsFailure>(liquidVerdict);
+          final facts = LiquidFacts(
+            feeSat: liquidFeeBig.toInt(),
+            outputScriptPubKeys:
+                tx.getOutputs().map((o) => o.scriptPubkey).toList(),
+            lockTime: tx.lockTime(),
+          );
+          final verdict = IntentValidator.validateLiquid(intent, facts);
+          if (verdict is Err<void, SecretsFailure>) {
+            return Err<SignedPsbt, SecretsFailure>(verdict.failure);
           }
 
           final wallet = await lwk.Wallet.init(
@@ -230,27 +244,4 @@ class SignerAdapter implements SignerPort {
           }
         }
       }, onError: SigningFailure.new);
-
-  /// Pure, testable Liquid fee-cap check. Returns a failure to reject, or null
-  /// to proceed. A `SwapIntent` is refused (swaps use SwapSignerPort).
-  static SecretsFailure? _validateLiquidFee(SigningIntent intent, int feeSat) {
-    return switch (intent) {
-      SendIntent(:final maxFeeSat) => feeSat > maxFeeSat
-          ? SigningFailure('liquid fee $feeSat exceeds cap $maxFeeSat')
-          : null,
-      PayjoinIntent(:final maxFeeContributionSat) =>
-        feeSat > maxFeeContributionSat
-            ? SigningFailure(
-                'liquid fee $feeSat exceeds cap $maxFeeContributionSat')
-            : null,
-      SwapIntent() => const SigningFailure(
-          'swap intents must use SwapSignerPort, not signLiquidPset'),
-    };
-  }
-
-  /// Test seam for [_validateLiquidFee].
-  @visibleForTesting
-  static SecretsFailure? debugValidateLiquidFee(
-          SigningIntent intent, int feeSat) =>
-      _validateLiquidFee(intent, feeSat);
 }

@@ -28,9 +28,12 @@ class Fingerprint {
   const Fingerprint._(this.hex);
 
   /// Non-throwing parse for untrusted input. Returns `null` if [hex] is not
-  /// exactly 8 lowercase hex characters.
-  static Fingerprint? tryParse(String hex) =>
-      _pattern.hasMatch(hex) ? Fingerprint._(hex) : null;
+  /// exactly 8 hex characters. Accepts uppercase (hardware wallets commonly
+  /// export uppercase) and normalizes to lowercase internally.
+  static Fingerprint? tryParse(String hex) {
+    final lower = hex.toLowerCase();
+    return _pattern.hasMatch(lower) ? Fingerprint._(lower) : null;
+  }
 
   static final RegExp _pattern = RegExp(r'^[0-9a-f]{8}$');
 

@@ -72,6 +72,19 @@ void main() {
       );
     });
 
+    // Detection is separator-INSENSITIVE (normalize strips punctuation/casing),
+    // so the same locked signal is caught regardless of the platform's spelling.
+    for (final variant in [
+      'user_not_authenticated', // snake_case (the M4 example)
+      'USER-NOT-AUTHENTICATED', // SCREAMING-KEBAB
+      'User Not Authenticated', // Title Case with spaces
+      'userNotAuthenticated', // camelCase
+    ]) {
+      test('classifies separator variant "$variant" as locked', () {
+        expect(isKeychainLockedError(PlatformException(code: variant)), isTrue);
+      });
+    }
+
     test('does NOT classify a generic Keystore corruption as locked', () {
       // The bare substring "keystore" must not match — a corrupt/missing entry
       // is a real loss, not a transient lock (would otherwise hide it behind an

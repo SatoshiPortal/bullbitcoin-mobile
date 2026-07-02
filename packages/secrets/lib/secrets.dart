@@ -40,6 +40,7 @@ export 'src/domain/secrets_failure.dart'
         DerivationFailure,
         SigningFailure,
         VaultFailure,
+        KeyInvalidatedFailure,
         SecretsUnexpectedFailure;
 
 // ── Errors (THROWN precondition/programmer bugs — invalid value-object input) ─
@@ -68,14 +69,13 @@ export 'src/domain/value_objects/bip85_types.dart'
 export 'src/domain/value_objects/backup.dart' show VaultKey, EncryptedVault;
 export 'src/domain/value_objects/ark_secret.dart' show ArkSecret;
 export 'src/domain/value_objects/signing_intent.dart'
+    show SigningIntent, SendIntent, PayjoinIntent, Output, ChainDirection;
+export 'src/domain/value_objects/swap_request.dart'
     show
-        SigningIntent,
-        SendIntent,
-        PayjoinIntent,
-        SwapIntent,
-        Output,
-        SwapDirection,
-        ChainDirection;
+        SwapRequest,
+        ReverseSwapRequest,
+        SubmarineSwapRequest,
+        ChainSwapRequest;
 export 'src/domain/value_objects/created_swap.dart' show CreatedSwap;
 
 // ── Sealed display widgets (the ONLY Flutter exports) ─────────────────────

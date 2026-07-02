@@ -2,6 +2,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/secret_guard.dart';
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/data/migration/reconcile_report.dart';
 import 'package:secrets/src/data/models/mnemonic.dart';
@@ -35,11 +36,18 @@ class SecretLifecycleAdapter implements SecretLifecyclePort {
     if (await _store.exists(_key(fp))) {
       return Err(DuplicateSecretFailure(fp));
     }
+    // Zero the JSON-encoded write buffer after the store, matching the package's
+    // own hygiene standard (the migrator and FSS reads zero their buffers; the
+    // main write site must too). The FSS adapter base64-copies before persisting,
+    // so this buffer is ours to wipe.
+    final bytes = m.toStorageBytes();
     try {
-      await _store.store(_key(fp), m.toStorageBytes());
+      await _store.store(_key(fp), bytes);
     } on SecretAlreadyExistsException {
       // A concurrent import won the race between exists() and store().
       return Err(DuplicateSecretFailure(fp));
+    } finally {
+      bytes.fillRange(0, bytes.length, 0);
     }
     await _index.upsert(m.toInfo(createdAt: DateTime.now()));
     return Ok(fp);
@@ -148,6 +156,18 @@ class SecretLifecycleAdapter implements SecretLifecyclePort {
 
   Future<Result<void, SecretsFailure>> _healOrphan(Fingerprint fp) =>
       _guard.read<void>(fp, (m) async {
+        // Assert the content-derived fingerprint matches the storage key. A
+        // mis-keyed blob (stored under seed_<fpA> but decoding to fpB) would
+        // otherwise be "healed" into a phantom fpB index entry that re-heals and
+        // reports success every startup, while fpA stays orphaned forever. Throw
+        // a MalformedSecretException (a catchable Exception, NOT a dart:core
+        // Error that would escape SecretGuard and crash reconcile) so it is
+        // COLLECTED as a per-orphan failure — surfaced, never silently healed.
+        if (m.fingerprint != fp) {
+          throw MalformedSecretException(
+              'orphan key mismatch: stored under ${fp.hex} but decodes to '
+              '${m.fingerprint.hex}');
+        }
         await _index.upsert(m.toInfo());
         return const Ok<void, SecretsFailure>(null);
       }, onError: SecretsUnexpectedFailure.new);

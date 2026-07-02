@@ -17,6 +17,14 @@ const zooWrongWords = [
 const recoverbullKeyForPath =
     '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
 
+/// The SAME logical path but with a HARDENED final index (`586053381'`) — the
+/// form `generateRecoverbullPath` actually emits. Distinct from the non-hardened
+/// vector above (hardened vs. non-hardened derive different keys), so freezing it
+/// proves the generator's output path derives deterministically, not just the
+/// legacy non-hardened one. Generated once from the zoo seed and FROZEN.
+const recoverbullKeyForHardenedPath =
+    '8f2c4b36f3a0b36058481ea6e2d740ae9b27d46986e24d92cc288bcacbab58d0';
+
 /// No precomputed in-repo vector existed for ARK; generated once from the zoo
 /// seed (path m/83696968'/128169'/32'/11811', 32 bytes) and FROZEN here.
 const arkSecretForZooSeed =
@@ -154,6 +162,18 @@ void main() {
         "1608'/0'/586053381",
       );
       expect(key, recoverbullKeyForPath);
+    });
+
+    test('HARDENED final index (generator form) derives the frozen key', () {
+      // generateRecoverbullPath emits `1608'/0'/{index}'` — a hardened final
+      // index. Prove that path derives a stable, distinct key (parity proven,
+      // not assumed).
+      final key = Bip85Crypto.deriveBackupKeyHex(
+        _zooXprv(),
+        "1608'/0'/586053381'",
+      );
+      expect(key, recoverbullKeyForHardenedPath);
+      expect(key, isNot(recoverbullKeyForPath)); // hardened ≠ non-hardened
     });
   });
 

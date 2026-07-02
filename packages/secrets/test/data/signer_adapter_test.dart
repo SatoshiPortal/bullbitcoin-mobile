@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
-import 'package:secrets/src/data/adapters/signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
@@ -104,23 +103,44 @@ void main() {
     });
   });
 
-  group('Liquid fee-cap helper (the only pure seam in the PSET path)', () {
-    test('within cap proceeds; over cap (incl. out-of-range overpay) refuses',
-        () {
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 1500), isNull);
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 999999),
-          isA<SigningFailure>());
-      expect(SignerAdapter.debugValidateLiquidFee(_send, 2100000000000000),
-          isA<SigningFailure>());
+  group('Liquid decision: validateLiquid on extracted (blinded) facts', () {
+    // The adapter extracts fee + unblinded output scripts + locktime from the
+    // PSET and hands them to IntentValidator.validateLiquid. These pin the
+    // decision the adapter delegates (the native extraction itself is
+    // device-only, per the coverage note above).
+    test('within cap + recipient script present proceeds', () {
+      final r = IntentValidator.validateLiquid(
+        _send,
+        const LiquidFacts(
+          feeSat: 1500,
+          outputScriptPubKeys: ['recipient_spk', 'my_change_spk', ''],
+        ),
+      );
+      expect(_isOk(r), isTrue);
     });
 
-    test('a SwapIntent is refused on the generic PSET path', () {
-      const swap = SwapIntent(
-        preimageHash: 'ph', claimPubkey: 'c', refundPubkey: 'r',
-        timeout: 1, amountSat: 1, direction: SwapDirection.reverse,
+    test('over cap (incl. out-of-range overpay) refuses', () {
+      expect(
+        _err(IntentValidator.validateLiquid(_send,
+            const LiquidFacts(feeSat: 999999, outputScriptPubKeys: ['recipient_spk']))),
+        isA<SigningFailure>(),
       );
-      expect(SignerAdapter.debugValidateLiquidFee(swap, 0),
-          isA<SigningFailure>());
+      expect(
+        _err(IntentValidator.validateLiquid(
+            _send,
+            const LiquidFacts(
+                feeSat: 2100000000000000,
+                outputScriptPubKeys: ['recipient_spk']))),
+        isA<SigningFailure>(),
+      );
+    });
+
+    test('address substitution (recipient script absent) refuses', () {
+      expect(
+        _err(IntentValidator.validateLiquid(_send,
+            const LiquidFacts(feeSat: 10, outputScriptPubKeys: ['attacker_spk', '']))),
+        isA<SigningFailure>(),
+      );
     });
   });
 }

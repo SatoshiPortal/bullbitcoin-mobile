@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -177,6 +178,32 @@ void main() {
       expect(report.failures, isEmpty);
       expect(report.legacyKeys, contains('a1b2c3d4'));
       expect(report.didWork, isTrue);
+    });
+
+    test('a MIS-KEYED orphan (blob decodes to a different fp) is collected, '
+        'never crashes or phantom-heals', () async {
+      final kv = FakeSecureKeyValueStore();
+      final m = _make(kv);
+      // A valid zoo mnemonic blob stored under the WRONG key (seed_deadbeef).
+      // Reconcile treats deadbeef as an orphan, but the heal must detect that the
+      // content decodes to a DIFFERENT fingerprint and refuse — collecting it as
+      // a failure (a catchable MalformedSecretException → InvalidMnemonicFailure),
+      // NOT crashing (a dart:core Error would escape the guard) and NOT indexing a
+      // phantom entry under the real fingerprint.
+      final store = FssSecretStoreAdapter(kv, initialRetryDelay: Duration.zero);
+      final blob = Uint8List.fromList(utf8.encode(jsonEncode({
+        'kind': 'mnemonic',
+        'words': _zooWords,
+        'language': 'english',
+      })));
+      await store.store(SecretStoreKeys.seedKey('deadbeef'), blob);
+
+      final report = _report(await m.repo.reconcile()); // Ok, not a crash
+      expect(report.healed, 0);
+      expect(report.failures, hasLength(1));
+      expect(report.failures.single.fingerprint, Fingerprint('deadbeef'));
+      // No phantom index entry under the real zoo fingerprint (3f635a63).
+      expect(await m.index.get(Fingerprint('3f635a63')), isNull);
     });
 
     test('a locked keychain defers cleanly (Err), never crashes', () async {
