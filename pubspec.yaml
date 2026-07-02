@@ -153,33 +153,35 @@ dependencies:
   keyboard_actions: ^4.2.1
 
 dependency_overrides:
-  bdk_dart:
-    git:
-      url: https://github.com/i5hi/bdk-dart
-      ref: 6ddecbb360fb894068bdfd79ab0c10abf49b9fca
-  # ws-resilience until merged into bull_sdk main. Overrides (not plain dep
-  # refs) because satoshifier pins bull_sdk@main and pub treats different git
-  # refs as conflicting packages; overrides bypass that.
+  # The secrets workspace package declares bull_sdk@main (branch ref); the root
+  # pins bull_sdk@db80946 (commit ref). Pub treats different git refs as
+  # conflicting packages, so the override forces them to the same pinned commit.
+  # db80946 is main's HEAD and includes the merged ws-resilience branch.
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: ws-resilience
+      ref: db80946aa078f954de08f76e69b57ee047f89505
       path: packages/bull_sdk
-  boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: ws-resilience
-      path: packages/boltz-stream
-  # oubliette integration (Phase 1): force its sibling plugins to the local path.
-  # oubliette declares them as hosted ^1.0.0 (unpublished); pub won't mix a hosted
-  # constraint with a path source, so the root overrides the source here — the
-  # same trick used for bull_sdk above. Switch to git-pinned before publish.
+  # oubliette integration (Phase 1): force its sibling plugins to the same git
+  # ref as the oubliette dep in packages/secrets. oubliette declares them as
+  # hosted ^1.0.0 (unpublished); pub won't mix a hosted constraint with a git
+  # source, so the root overrides the source here. Pinned to the
+  # security-hardening PR branch (PR #1).
   keychain:
-    path: ../dart-oubliette/keychain
+    git:
+      url: https://github.com/ethicnology/dart-oubliette.git
+      ref: refactor/security-hardening
+      path: keychain
   keystore:
-    path: ../dart-oubliette/keystore
+    git:
+      url: https://github.com/ethicnology/dart-oubliette.git
+      ref: refactor/security-hardening
+      path: keystore
   secret_service:
-    path: ../dart-oubliette/secret_service
+    git:
+      url: https://github.com/ethicnology/dart-oubliette.git
+      ref: refactor/security-hardening
+      path: secret_service
   # CONFLICT: oubliette needs pointycastle ^4.0.0 (Argon2id); ledger_bitcoin pins
   # ^3.7.4 (<4) — disjoint, so version-solving fails. Forced to 4.x here to unblock
   # the secrets package (its tests never touch Ledger). ⚠️ FOLLOW-UP before the app

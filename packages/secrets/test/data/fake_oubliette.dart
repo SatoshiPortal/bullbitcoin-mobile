@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:oubliette/oubliette.dart';
 
-/// In-memory [Oubliette] for unit tests. Reuses the base-class `useAndForget`
-/// (fetch + zero-after-use), so only the abstract storage primitives are
-/// overridden. Error-injection flags make each primitive throw the sealed
-/// [OublietteException] the adapter must translate.
+/// In-memory [Oubliette] for unit tests. Implements `useAndForget` directly
+/// (fetch + zero-after-use) since the shared `OublietteFetch` mixin is
+/// `@internal` to the oubliette package. Error-injection flags make each
+/// primitive throw the sealed [OublietteException] the adapter must translate.
 class FakeOubliette extends Oubliette {
   FakeOubliette() : super.internal();
 
@@ -52,7 +52,8 @@ class FakeOubliette extends Oubliette {
     _m[key] = Uint8List.fromList(value);
   }
 
-  @override
+  /// Raw fetch — not on the public [Oubliette] interface (moved to the
+  /// internal `OublietteFetch` mixin), but needed here for `useAndForget`.
   Future<Uint8List?> fetch(String key) async {
     _guard(key);
     final v = _m[key];
@@ -85,5 +86,23 @@ class FakeOubliette extends Oubliette {
   Future<List<String>> keys() async {
     _guard(null);
     return _m.keys.toList(growable: false);
+  }
+
+  @override
+  Future<T?> useAndForget<T>(
+    String key,
+    Future<T> Function(Uint8List bytes) action,
+  ) async {
+    final bytes = await fetch(key);
+    if (bytes == null) return null;
+    try {
+      return await action(bytes);
+    } finally {
+      try {
+        bytes.fillRange(0, bytes.length, 0);
+      } on UnsupportedError {
+        // Unmodifiable buffer — cannot zero it.
+      }
+    }
   }
 }

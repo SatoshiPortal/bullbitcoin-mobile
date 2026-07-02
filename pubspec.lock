@@ -1255,16 +1255,20 @@ packages:
   keychain:
     dependency: "direct overridden"
     description:
-      path: "../dart-oubliette/keychain"
-      relative: true
-    source: path
+      path: keychain
+      ref: "refactor/security-hardening"
+      resolved-ref: "71ddecc437c4a38ae61805db99c9f5e6abce0d79"
+      url: "https://github.com/ethicnology/dart-oubliette.git"
+    source: git
     version: "1.0.0"
   keystore:
     dependency: "direct overridden"
     description:
-      path: "../dart-oubliette/keystore"
-      relative: true
-    source: path
+      path: keystore
+      ref: "refactor/security-hardening"
+      resolved-ref: "71ddecc437c4a38ae61805db99c9f5e6abce0d79"
+      url: "https://github.com/ethicnology/dart-oubliette.git"
+    source: git
     version: "1.0.0"
   leak_tracker:
     dependency: transitive
@@ -1462,9 +1466,11 @@ packages:
   oubliette:
     dependency: transitive
     description:
-      path: "../dart-oubliette/oubliette"
-      relative: true
-    source: path
+      path: oubliette
+      ref: "refactor/security-hardening"
+      resolved-ref: "71ddecc437c4a38ae61805db99c9f5e6abce0d79"
+      url: "https://github.com/ethicnology/dart-oubliette.git"
+    source: git
     version: "1.0.0"
   package_config:
     dependency: transitive
@@ -1793,9 +1799,11 @@ packages:
   secret_service:
     dependency: "direct overridden"
     description:
-      path: "../dart-oubliette/secret_service"
-      relative: true
-    source: path
+      path: secret_service
+      ref: "refactor/security-hardening"
+      resolved-ref: "71ddecc437c4a38ae61805db99c9f5e6abce0d79"
+      url: "https://github.com/ethicnology/dart-oubliette.git"
+    source: git
     version: "1.0.0"
   sentry:
     dependency: transitive
