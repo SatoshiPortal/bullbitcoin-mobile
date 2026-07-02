@@ -6,6 +6,7 @@ enum KeychainManifestExceptionType {
   invalidEntry,
   emptyInventory,
   fileParse,
+  unsupportedFileVersion,
   reservationMismatch,
   conflict,
   duplicate,
@@ -14,7 +15,6 @@ enum KeychainManifestExceptionType {
 
 enum KeychainManifestFileParseFailureReason {
   malformedFile,
-  unsupportedVersion,
   wrongParentFingerprint,
   unknownReservation,
   invalidMetadata,
@@ -35,12 +35,12 @@ sealed class KeychainManifestException extends BullException {
 
   String toTranslated(BuildContext context) {
     return switch (this) {
+      KeychainManifestUnsupportedVersionException() =>
+        context.loc.keychainManifestUnsupportedFileError,
       KeychainManifestFileParseException(reason: final reason) =>
         switch (reason) {
           KeychainManifestFileParseFailureReason.malformedFile =>
             context.loc.keychainManifestMalformedFileError,
-          KeychainManifestFileParseFailureReason.unsupportedVersion =>
-            context.loc.keychainManifestUnsupportedFileError,
           KeychainManifestFileParseFailureReason.wrongParentFingerprint =>
             context.loc.keychainManifestWrongWalletFileError,
           KeychainManifestFileParseFailureReason.unknownReservation =>
@@ -77,6 +77,17 @@ final class KeychainManifestFileParseException
         KeychainManifestExceptionType.fileParse,
         'keychain manifest file parse failed',
         cause: cause,
+      );
+}
+
+final class KeychainManifestUnsupportedVersionException
+    extends KeychainManifestException {
+  final int version;
+
+  KeychainManifestUnsupportedVersionException(this.version)
+    : super._(
+        KeychainManifestExceptionType.unsupportedFileVersion,
+        'unsupported keychain manifest file version',
       );
 }
 

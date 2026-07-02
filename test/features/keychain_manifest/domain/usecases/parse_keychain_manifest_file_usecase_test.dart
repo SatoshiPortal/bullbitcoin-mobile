@@ -123,6 +123,54 @@ void main() {
     );
   });
 
+  test('classifies newer format versions as unsupported, not malformed', () {
+    final payload = _manifestPayload.replaceFirst('"version":1', '"version":2');
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestUnsupportedVersionException>().having(
+          (error) => error.version,
+          'version',
+          2,
+        ),
+      ),
+    );
+  });
+
+  test('classifies a non-integer version as malformed', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"version":1',
+      '"version":"1"',
+    );
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
+      ),
+    );
+  });
+
+  test('classifies a missing version as malformed', () {
+    final payload = _manifestPayload.replaceFirst('"version":1,', '');
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
+      ),
+    );
+  });
+
   test('rejects stale inventory timestamps', () {
     final payload = _manifestPayload.replaceFirst(
       '"inventoryUpdatedAt":12',

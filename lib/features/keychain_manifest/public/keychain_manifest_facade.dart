@@ -8,7 +8,8 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_er
         KeychainManifestFileParseFailureReason,
         KeychainManifestGenericException,
         KeychainManifestInvalidEntryException,
-        KeychainManifestReservationMismatchException;
+        KeychainManifestReservationMismatchException,
+        KeychainManifestUnsupportedVersionException;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart'
     show
         KeychainManifestImportPlan,

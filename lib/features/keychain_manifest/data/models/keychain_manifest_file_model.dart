@@ -13,13 +13,33 @@ class KeychainManifestFileCodec {
   }
 
   KeychainManifestFile decode(String payload) {
+    final Object? decoded;
     try {
-      final decoded = jsonDecode(payload);
-      if (decoded is! Map<String, Object?>) {
-        throw KeychainManifestFileParseException(
-          reason: KeychainManifestFileParseFailureReason.malformedFile,
-        );
-      }
+      decoded = jsonDecode(payload);
+    } on FormatException catch (e) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.malformedFile,
+        cause: e,
+      );
+    }
+    if (decoded is! Map<String, Object?>) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.malformedFile,
+      );
+    }
+    // The version gate runs before any strict field parsing: a well-formed
+    // payload written by a newer format version must surface as unsupported,
+    // not as a malformed or invalid file.
+    final version = decoded['version'];
+    if (version is! int) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.malformedFile,
+      );
+    }
+    if (version != KeychainManifestFile.currentVersion) {
+      throw KeychainManifestUnsupportedVersionException(version);
+    }
+    try {
       final model = _KeychainManifestFileModel.fromJson(decoded);
       final manifestFile = model.toEntity();
       // The entity owns the derivation of the data-recency timestamp; a
@@ -33,32 +53,12 @@ class KeychainManifestFileCodec {
       return manifestFile;
     } on KeychainManifestFileParseException {
       rethrow;
-    } on FormatException catch (e) {
-      throw KeychainManifestFileParseException(
-        reason: KeychainManifestFileParseFailureReason.malformedFile,
-        cause: e,
-      );
-    } on KeychainManifestInvalidEntryException catch (e) {
-      throw KeychainManifestFileParseException(
-        reason: _reasonForInvalidEntry(e),
-        cause: e,
-      );
     } catch (e) {
       throw KeychainManifestFileParseException(
         reason: KeychainManifestFileParseFailureReason.invalidMetadata,
         cause: e,
       );
     }
-  }
-
-  KeychainManifestFileParseFailureReason _reasonForInvalidEntry(
-    KeychainManifestInvalidEntryException exception,
-  ) {
-    return switch (exception.message) {
-      'unsupported keychain manifest file version' =>
-        KeychainManifestFileParseFailureReason.unsupportedVersion,
-      _ => KeychainManifestFileParseFailureReason.invalidMetadata,
-    };
   }
 }
 
