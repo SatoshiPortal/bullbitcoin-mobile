@@ -72,8 +72,11 @@ abstract final class Octojoin {
   static bool isOctojoinLabel(String? label) =>
       label != null && label.toLowerCase().contains(labelTag);
 
-  static bool isSwappedUtxo(WalletUtxo utxo) =>
-      utxo.labels.any((l) => isOctojoinLabel(l.label));
+  static bool isSwappedUtxo(WalletUtxo utxo) => [
+    ...utxo.labels,
+    ...utxo.txLabels,
+    ...utxo.addressLabels,
+  ].any((l) => isOctojoinLabel(l.label));
 
   static int inputVbytesForScriptType(ScriptType scriptType) {
     return switch (scriptType) {

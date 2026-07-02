@@ -89,7 +89,7 @@ void main() {
       expect(Octojoin.isOctojoinLabel(null), false);
     });
 
-    test('isSwappedUtxo counts only the utxo own labels', () {
+    test('isSwappedUtxo counts utxo, transaction and address labels', () {
       expect(Octojoin.isSwappedUtxo(_utxo(sats: 1000, isSwapped: true)), true);
       expect(Octojoin.isSwappedUtxo(_utxo(sats: 1000, isSwapped: false)), false);
 
@@ -104,7 +104,7 @@ void main() {
           Label.tx(id: 0, transactionId: 'a' * 64, label: 'Octojoin receive'),
         ],
       );
-      expect(Octojoin.isSwappedUtxo(txLabeled), false);
+      expect(Octojoin.isSwappedUtxo(txLabeled), true);
 
       final addressLabeled = WalletUtxo.bitcoin(
         walletId: 'w',
@@ -117,7 +117,7 @@ void main() {
           Label.addr(id: 0, address: 'bc1qtest2', label: 'octojoin'),
         ],
       );
-      expect(Octojoin.isSwappedUtxo(addressLabeled), false);
+      expect(Octojoin.isSwappedUtxo(addressLabeled), true);
     });
 
     test('selectUtxos isolates octojoin-tagged coins from the rest', () {
