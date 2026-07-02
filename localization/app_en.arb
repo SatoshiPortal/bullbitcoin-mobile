@@ -13423,7 +13423,7 @@
   "@btcpayPairingConfirmTitle": {
     "description": "Title for the consent dialog before BTCPay wallet descriptors are shared"
   },
-  "btcpayPairingConfirmBody": "You are about to create or use dedicated {wallets} and share watch-only wallet descriptors with a BTCPay Server at {serverUrl}. That server can monitor payments received by these dedicated wallets. No private keys are shared. These wallets are derived from the same backup as your default wallets. Do you wish to proceed?",
+  "btcpayPairingConfirmBody": "You are about to create or use dedicated {wallets} and share watch-only wallet descriptors with a BTCPay Server at {serverUrl}. That server can monitor payments received by these dedicated wallets. No private keys are shared. These wallets are derived from the same backup as your default wallets. The BTCPay Liquid wallet is hidden from your home screen and automatically sweeps received funds to your default Liquid wallet; you can change both settings later in BTCPay settings. Do you wish to proceed?",
   "@btcpayPairingConfirmBody": {
     "placeholders": {
       "wallets": {
