@@ -39,6 +39,8 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/octojoin.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_octojoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -65,6 +67,7 @@ class SendCubit extends Cubit<SendState>
     required this._getWalletUtxosUsecase,
     required this._getAvailableCurrenciesUsecase,
     required this._prepareBitcoinSendUsecase,
+    required this._prepareOctojoinSendUsecase,
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
     required this._getWalletsUsecase,
@@ -109,6 +112,7 @@ class SendCubit extends Cubit<SendState>
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+  final PrepareOctojoinSendUsecase _prepareOctojoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CalculateLiquidPsetSizeUsecase _calculateLiquidPsetSizeUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
@@ -199,6 +203,7 @@ class SendCubit extends Cubit<SendState>
         invalidBitcoinStringException: null,
         buildTransactionException: null,
         confirmTransactionException: null,
+        octojoinException: null,
       ),
     );
   }
@@ -210,7 +215,11 @@ class SendCubit extends Cubit<SendState>
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
       emit(
-        state.copyWith(step: SendStep.amount, buildTransactionException: null),
+        state.copyWith(
+          step: SendStep.amount,
+          buildTransactionException: null,
+          octojoinException: null,
+        ),
       );
     }
   }
@@ -265,6 +274,10 @@ class SendCubit extends Cubit<SendState>
         RegExp(r'^["\"]+|["\"]+$'),
         '',
       );
+      if (state.isOctojoin) {
+        await _onChangedOctojoinText(sanitizedText);
+        return;
+      }
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
@@ -292,6 +305,100 @@ class SendCubit extends Cubit<SendState>
       );
       if (recipientCleared) clearBitcoinFeePreviews();
     }
+  }
+
+  Future<void> _onChangedOctojoinText(String sanitizedText) async {
+    final parts = sanitizedText
+        .split(',')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) throw InvalidBitcoinStringException();
+
+    final requests = <BitcoinPaymentRequest>[];
+    for (final part in parts) {
+      final request = await _detectBitcoinStringUsecase.execute(data: part);
+      if (request is! BitcoinPaymentRequest) {
+        throw InvalidBitcoinStringException();
+      }
+      if (requests.isNotEmpty &&
+          request.isTestnet != requests.first.isTestnet) {
+        throw InvalidBitcoinStringException();
+      }
+      requests.add(request);
+    }
+
+    final recipientChanged =
+        state.paymentRequest != requests.first ||
+        !listEquals(
+          state.octojoinAddresses,
+          requests.map((r) => r.address).toList(),
+        );
+    emit(
+      state.copyWith(
+        copiedRawPaymentRequest: sanitizedText,
+        paymentRequest: requests.first,
+        octojoinAddresses: requests.map((r) => r.address).toList(),
+      ),
+    );
+    if (recipientChanged) clearBitcoinFeePreviews();
+  }
+
+  Future<void> octojoinToggled(bool enabled) async {
+    if (state.isOctojoin == enabled) return;
+    emit(
+      state.copyWith(
+        isOctojoin: enabled,
+        octojoinAddresses: [],
+        paymentRequest: null,
+        octojoinException: null,
+        selectedUtxos: [],
+      ),
+    );
+    clearBitcoinFeePreviews();
+    final raw = state.copiedRawPaymentRequest.isNotEmpty
+        ? state.copiedRawPaymentRequest
+        : state.scannedRawPaymentRequest;
+    if (raw.isNotEmpty) await onChangedText(raw);
+  }
+
+  void octojoinNumInputsChanged(String text) {
+    emit(
+      state.copyWith(
+        octojoinNumInputs: text.replaceAll(RegExp(r'[^0-9]'), ''),
+      ),
+    );
+  }
+
+  void octojoinNumOutputsChanged(String text) {
+    emit(
+      state.copyWith(
+        octojoinNumOutputs: text.replaceAll(RegExp(r'[^0-9]'), ''),
+      ),
+    );
+  }
+
+  OctojoinException? _validateOctojoin() {
+    final numInputs = int.tryParse(state.octojoinNumInputs) ?? 0;
+    if (numInputs < Octojoin.minInputs) {
+      return OctojoinException(OctojoinIssue.numInputsTooLow);
+    }
+    final numOutputs = int.tryParse(state.octojoinNumOutputs) ?? 0;
+    if (numOutputs < Octojoin.minOutputs) {
+      return OctojoinException(OctojoinIssue.numOutputsTooLow);
+    }
+    if (state.paymentRequest is! BitcoinPaymentRequest ||
+        state.octojoinAddresses.length < Octojoin.minOutputs) {
+      return OctojoinException(
+        OctojoinIssue.notEnoughAddresses,
+        needed: Octojoin.minOutputs,
+        found: state.octojoinAddresses.length,
+      );
+    }
+    if (state.octojoinAddresses.length != numOutputs) {
+      return OctojoinException(OctojoinIssue.outputsMismatch);
+    }
+    return null;
   }
 
   Future<void> continueOnAddressConfirmed() async {
@@ -360,13 +467,38 @@ class SendCubit extends Cubit<SendState>
       //       `_wallet`.
       // The `state.isChainSwap` getter (see send_state.dart) flips true when
       // selectedWallet.network does not match the payment request's network.
+      if (state.isOctojoin) {
+        final octojoinError = _validateOctojoin();
+        if (octojoinError != null) {
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              octojoinException: octojoinError,
+            ),
+          );
+          return;
+        }
+      }
+
       final wallet =
           _wallet ??
           _bestWalletUsecase.execute(
-            wallets: state.wallets,
+            wallets: state.isOctojoin
+                ? state.wallets.where((w) => w.network.isBitcoin).toList()
+                : state.wallets,
             request: state.paymentRequest!,
             amountSat: state.paymentRequest!.amountSat,
           );
+
+      if (state.isOctojoin && !wallet.network.isBitcoin) {
+        emit(
+          state.copyWith(
+            loadingBestWallet: false,
+            octojoinException: OctojoinException(OctojoinIssue.bitcoinOnly),
+          ),
+        );
+        return;
+      }
 
       final sendType = SendType.from(state.paymentRequest!);
 
@@ -1132,7 +1264,8 @@ class SendCubit extends Cubit<SendState>
       );
       return;
     }
-    if (state.buildTransactionException == null) {
+    if (state.buildTransactionException == null &&
+        state.octojoinException == null) {
       emit(
         state.copyWith(
           step: SendStep.confirm,
@@ -1353,6 +1486,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> previewBitcoinCustomFee(NetworkFee fee) async {
     if (state.selectedWallet == null) return;
     if (state.selectedWallet!.isLiquid) return; // Liquid path handled elsewhere
+    if (state.isOctojoin) return;
     final address = _previewBitcoinAddress();
     final amount = _previewBitcoinAmountSat();
     if (address == null || amount == null) {
@@ -1418,6 +1552,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> loadBitcoinFeePresetPreviews() async {
     if (state.selectedWallet == null) return;
     if (state.selectedWallet!.isLiquid) return;
+    if (state.isOctojoin) return;
     final presets = state.bitcoinFeesList;
     if (presets == null) return;
     final address = _previewBitcoinAddress();
@@ -1657,7 +1792,11 @@ class SendCubit extends Cubit<SendState>
         final cachedSlot = state.feePreviewCache.slotFor(
           state.selectedFeeOption,
         );
-        final canUseCache = cachedSlot.isCacheReady;
+        final isOctojoinBuild =
+            state.isOctojoin &&
+            state.lightningSwap == null &&
+            state.chainSwap == null;
+        final canUseCache = !isOctojoinBuild && cachedSlot.isCacheReady;
         log.info(
           '[create-tx] build address=$address amount=$amount '
           'rate=${selectedFee is RelativeFee ? selectedFee.satPerVbyte : selectedFee.value} '
@@ -1665,27 +1804,52 @@ class SendCubit extends Cubit<SendState>
           'rbf=${state.replaceByFee} '
           'lightningSwap=${state.lightningSwap != null} '
           'chainSwap=${state.chainSwap != null} '
+          'octojoin=$isOctojoinBuild '
           'cacheHit=$canUseCache',
         );
-        final txPreparation = canUseCache
-            ? (
-                unsignedPsbt: cachedSlot.unsignedPsbt!,
-                txSize: cachedSlot.txSize!,
-                // The cached PSBT was built for the same address, so the
-                // to-self determination is invariant — preserve it rather
-                // than dropping it to false (which would flip the "to self"
-                // badge and mis-gate payjoin on a self-send).
-                isToSelf: state.isToSelf ?? false,
-              )
-            : await _prepareBitcoinSendUsecase.execute(
-                walletId: state.selectedWallet!.id,
-                address: address,
+        final ({String unsignedPsbt, int txSize, bool isToSelf}) txPreparation;
+        if (isOctojoinBuild) {
+          if (drain) {
+            throw OctojoinException(OctojoinIssue.sendMaxUnsupported);
+          }
+          final octojoinPreparation = await _prepareOctojoinSendUsecase
+              .execute(
+                wallet: state.selectedWallet!,
+                addresses: state.octojoinAddresses,
+                amountSat: amount ?? 0,
                 networkFee: selectedFee,
-                amountSat: amount,
+                numInputs:
+                    int.tryParse(state.octojoinNumInputs) ??
+                    Octojoin.minInputs,
+                utxos: state.utxos,
                 replaceByFee: state.replaceByFee,
-                selectedInputs: state.selectedUtxos,
-                drain: drain,
               );
+          txPreparation = (
+            unsignedPsbt: octojoinPreparation.unsignedPsbt,
+            txSize: octojoinPreparation.txSize,
+            isToSelf: false,
+          );
+        } else if (canUseCache) {
+          txPreparation = (
+            unsignedPsbt: cachedSlot.unsignedPsbt!,
+            txSize: cachedSlot.txSize!,
+            // The cached PSBT was built for the same address, so the
+            // to-self determination is invariant — preserve it rather
+            // than dropping it to false (which would flip the "to self"
+            // badge and mis-gate payjoin on a self-send).
+            isToSelf: state.isToSelf ?? false,
+          );
+        } else {
+          txPreparation = await _prepareBitcoinSendUsecase.execute(
+            walletId: state.selectedWallet!.id,
+            address: address,
+            networkFee: selectedFee,
+            amountSat: amount,
+            replaceByFee: state.replaceByFee,
+            selectedInputs: state.selectedUtxos,
+            drain: drain,
+          );
+        }
         final builtFee = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: txPreparation.unsignedPsbt,
         );
@@ -1825,7 +1989,22 @@ class SendCubit extends Cubit<SendState>
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+      if (e is OctojoinException) {
+        emit(
+          state.copyWith(octojoinException: e, buildingTransaction: false),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
+        emit(
+          state.copyWith(
+            buildTransactionException: BuildTransactionException(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
+      if (e is PrepareOctojoinSendException) {
         emit(
           state.copyWith(
             buildTransactionException: BuildTransactionException(e.message),

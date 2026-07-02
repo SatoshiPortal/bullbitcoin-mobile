@@ -29,6 +29,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/send/domain/octojoin.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
@@ -138,6 +139,7 @@ class SendAddressScreen extends StatelessWidget {
                               const Gap(16),
                               const AddressField(),
                               const Gap(16),
+                              const OctojoinToggleRow(),
                               const AddressErrorSection(),
                               const Gap(16),
                               const SendContinueWithAddressButton(),
@@ -220,6 +222,90 @@ class AddressField extends StatelessWidget {
   }
 }
 
+class OctojoinToggleRow extends StatelessWidget {
+  const OctojoinToggleRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isOctojoin = context.select(
+      (SendCubit cubit) => cubit.state.isOctojoin,
+    );
+    final octojoinNumInputs = context.select(
+      (SendCubit cubit) => cubit.state.octojoinNumInputs,
+    );
+    final octojoinNumOutputs = context.select(
+      (SendCubit cubit) => cubit.state.octojoinNumOutputs,
+    );
+
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            BBText(
+              context.loc.sendOctojoin,
+              style: context.font.bodyLarge,
+              color: context.appColors.secondary,
+            ),
+            Switch(
+              value: isOctojoin,
+              onChanged: (value) async =>
+                  await context.read<SendCubit>().octojoinToggled(value),
+            ),
+          ],
+        ),
+        if (isOctojoin) ...[
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    BBText(
+                      context.loc.sendOctojoinNumInputs,
+                      style: context.font.bodySmall,
+                      color: context.appColors.textMuted,
+                    ),
+                    const Gap(4),
+                    BBInputText(
+                      onChanged:
+                          context.read<SendCubit>().octojoinNumInputsChanged,
+                      value: octojoinNumInputs,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    BBText(
+                      context.loc.sendOctojoinNumOutputs,
+                      style: context.font.bodySmall,
+                      color: context.appColors.textMuted,
+                    ),
+                    const Gap(4),
+                    BBInputText(
+                      onChanged:
+                          context.read<SendCubit>().octojoinNumOutputsChanged,
+                      value: octojoinNumOutputs,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Gap(8),
+        ],
+      ],
+    );
+  }
+}
+
 class AddressErrorSection extends StatelessWidget {
   const AddressErrorSection({super.key});
 
@@ -243,6 +329,18 @@ class AddressErrorSection extends StatelessWidget {
     final invalidAddress = context.select(
       (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
     );
+    final octojoinError = context.select(
+      (SendCubit cubit) => cubit.state.octojoinException,
+    );
+    if (octojoinError != null) {
+      return BBText(
+        _octojoinErrorMessage(context, octojoinError),
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: .center,
+        maxLines: 3,
+      );
+    }
     if (balanceError != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
@@ -605,7 +703,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       balance: state.formattedWalletBalance(),
                                       currencyCode: '',
                                       isMax: _isMax,
-                                      onMaxToggled: !isLightning && !isChainSwap
+                                      onMaxToggled:
+                                          !isLightning &&
+                                              !isChainSwap &&
+                                              !state.isOctojoin
                                           ? (value) {
                                               _setIsMax(value);
                                               context
@@ -619,7 +720,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       walletLabel: selectedWallet.label,
                                     ),
                                   ),
-                                  if (buildError != null) ...[
+                                  if (buildError != null ||
+                                      state.octojoinException != null) ...[
                                     const Gap(16),
                                     const _SendError(),
                                   ],
@@ -795,6 +897,22 @@ class _SendError extends StatelessWidget {
       (SendCubit cubit) => cubit.state.confirmTransactionException,
     );
 
+    final octojoinError = context.select(
+      (SendCubit cubit) => cubit.state.octojoinException,
+    );
+
+    if (octojoinError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BBText(
+          _octojoinErrorMessage(context, octojoinError),
+          style: context.font.bodyLarge,
+          color: context.appColors.error,
+          maxLines: 5,
+          textAlign: .center,
+        ),
+      );
+    }
     if (buildError != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
@@ -2070,6 +2188,26 @@ String _swapCreationErrorMessage(
     return context.loc.sendErrorInvoiceMustContainAmount;
   }
   return error.message;
+}
+
+String _octojoinErrorMessage(BuildContext context, OctojoinException error) {
+  return switch (error.issue) {
+    OctojoinIssue.amountBelowDust =>
+      context.loc.sendErrorOctojoinAmountTooSmall,
+    OctojoinIssue.notEnoughAddresses =>
+      context.loc.sendErrorOctojoinNotEnoughAddresses,
+    OctojoinIssue.numInputsTooLow => context.loc.sendOctojoinNumInputs,
+    OctojoinIssue.numOutputsTooLow => context.loc.sendOctojoinNumOutputs,
+    OctojoinIssue.outputsMismatch =>
+      context.loc.sendErrorOctojoinOutputsMismatch,
+    OctojoinIssue.notEnoughSwappedCoins => context.loc
+        .sendErrorOctojoinNotEnoughSwapped(error.needed ?? 0, error.found ?? 0),
+    OctojoinIssue.noSenderCoin => context.loc.sendErrorOctojoinNoSenderCoin,
+    OctojoinIssue.insufficientFunds =>
+      context.loc.sendErrorOctojoinInsufficientFunds,
+    OctojoinIssue.sendMaxUnsupported => context.loc.sendErrorOctojoinSendMax,
+    OctojoinIssue.bitcoinOnly => context.loc.sendErrorOctojoinBitcoinOnly,
+  };
 }
 
 String _getSwapLimitsErrorMessage(

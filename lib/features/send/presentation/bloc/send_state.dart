@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/send/domain/octojoin.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -81,6 +82,11 @@ abstract class SendState with _$SendState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
+    @Default(false) bool isOctojoin,
+    @Default('3') String octojoinNumInputs,
+    @Default('2') String octojoinNumOutputs,
+    @Default([]) List<String> octojoinAddresses,
+    OctojoinException? octojoinException,
     @Default(false) bool invoiceHasMrh,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,

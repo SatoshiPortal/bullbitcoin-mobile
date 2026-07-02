@@ -1391,6 +1391,58 @@
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
   },
+  "sendOctojoin": "Enable Octojoin",
+  "@sendOctojoin": {
+    "description": "Label for the octojoin privacy send toggle"
+  },
+  "sendOctojoinNumInputs": "Inputs (min 3)",
+  "@sendOctojoinNumInputs": {
+    "description": "Label for the number of inputs used by an octojoin transaction"
+  },
+  "sendOctojoinNumOutputs": "Outputs (min 2)",
+  "@sendOctojoinNumOutputs": {
+    "description": "Label for the number of outputs used by an octojoin transaction"
+  },
+  "sendErrorOctojoinNotEnoughAddresses": "Enter at least 2 comma-separated addresses.",
+  "@sendErrorOctojoinNotEnoughAddresses": {
+    "description": "Error when octojoin is enabled but fewer than 2 destination addresses were entered"
+  },
+  "sendErrorOctojoinOutputsMismatch": "Number of outputs must match the number of addresses entered.",
+  "@sendErrorOctojoinOutputsMismatch": {
+    "description": "Error when the octojoin outputs count does not equal the number of destination addresses"
+  },
+  "sendErrorOctojoinNotEnoughSwapped": "Not enough 'octojoin' coins. You need at least {needed}, but only found {found}.",
+  "@sendErrorOctojoinNotEnoughSwapped": {
+    "description": "Error when the wallet lacks enough octojoin-labeled swapped coins for the chosen input count",
+    "placeholders": {
+      "needed": {
+        "type": "int"
+      },
+      "found": {
+        "type": "int"
+      }
+    }
+  },
+  "sendErrorOctojoinNoSenderCoin": "Requires at least 1 non-octojoin coin.",
+  "@sendErrorOctojoinNoSenderCoin": {
+    "description": "Error when every spendable coin is octojoin-labeled so no sender coin is available"
+  },
+  "sendErrorOctojoinInsufficientFunds": "Insufficient funds to cover the payment and fee. Increase the number of inputs or use larger coins.",
+  "@sendErrorOctojoinInsufficientFunds": {
+    "description": "Error when the swapped coins plus a single sender coin cannot cover the payment and fee"
+  },
+  "sendErrorOctojoinAmountTooSmall": "Amount is below the dust threshold and cannot be octojoined.",
+  "@sendErrorOctojoinAmountTooSmall": {
+    "description": "Error when the payment amount is below the dust threshold and cannot be decomposed"
+  },
+  "sendErrorOctojoinSendMax": "Octojoin does not support sending the maximum amount",
+  "@sendErrorOctojoinSendMax": {
+    "description": "Error when send max is combined with octojoin"
+  },
+  "sendErrorOctojoinBitcoinOnly": "Octojoin is only available from Bitcoin wallets",
+  "@sendErrorOctojoinBitcoinOnly": {
+    "description": "Error when octojoin is attempted with a non-Bitcoin wallet or via a swap"
+  },
   "sendRecipientAddress": "Recipient's address",
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
