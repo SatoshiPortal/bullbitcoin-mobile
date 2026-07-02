@@ -124,6 +124,8 @@ Rules:
 - Fingerprints must be normalized 8-character lowercase hex values.
 - `bip85DerivationPath` is the registry-relative hardened path.
 - `entryId` is derived from parent fingerprint and BIP85 path.
+- Entry ids must be unique across entries, and wallet ids must be unique
+  across all materializations in the file, mirroring local record uniqueness.
 - `inventoryUpdatedAt` is the data-recency timestamp: the latest `updatedAt`
   among included entries and materializations. An empty manifest serializes
   `inventoryUpdatedAt` as `0`.

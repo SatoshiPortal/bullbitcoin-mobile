@@ -35,12 +35,67 @@ void main() {
       ),
     );
   });
+
+  test('accepts distinct entry and wallet identities in a file', () {
+    final manifestFile = KeychainManifestFile(
+      parentFingerprint: 'fedcba98',
+      generatedAt: 20,
+      entries: [
+        _entry(),
+        _entry(
+          bip85DerivationPath: "39'/0'/12'/101'",
+          bip85Index: 101,
+          walletId: 'other-wallet',
+        ),
+      ],
+    );
+
+    expect(manifestFile.entries, hasLength(2));
+  });
+
+  test('rejects duplicate entry ids across manifest file entries', () {
+    expect(
+      () => KeychainManifestFile(
+        parentFingerprint: 'fedcba98',
+        generatedAt: 20,
+        entries: [_entry(), _entry(walletId: 'other-wallet')],
+      ),
+      throwsA(
+        isA<KeychainManifestInvalidEntryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.invalidEntry,
+        ),
+      ),
+    );
+  });
+
+  test('rejects duplicate wallet ids across all materializations', () {
+    expect(
+      () => KeychainManifestFile(
+        parentFingerprint: 'fedcba98',
+        generatedAt: 20,
+        entries: [
+          _entry(),
+          _entry(bip85DerivationPath: "39'/0'/12'/101'", bip85Index: 101),
+        ],
+      ),
+      throwsA(
+        isA<KeychainManifestInvalidEntryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.invalidEntry,
+        ),
+      ),
+    );
+  });
 }
 
 KeychainManifestFileEntry _entry({
   String bip85DerivationPath = "39'/0'/12'/100'",
   int bip85Application = 39,
   int bip85Index = 100,
+  String walletId = 'btc-wallet',
 }) {
   final entryId = "fedcba98:$bip85DerivationPath";
   return KeychainManifestFileEntry(
@@ -56,7 +111,7 @@ KeychainManifestFileEntry _entry({
     updatedAt: 10,
     materializations: [
       KeychainManifestFileWalletMaterialization(
-        walletId: 'btc-wallet',
+        walletId: walletId,
         entryId: entryId,
         childSeedFingerprint: '0123abcd',
         network: 'bitcoinMainnet',

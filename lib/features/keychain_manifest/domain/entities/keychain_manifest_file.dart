@@ -35,11 +35,25 @@ class KeychainManifestFile {
         'manifest file timestamps must be non-negative',
       );
     }
+    final entryIds = <String>{};
+    final walletIds = <String>{};
     for (final entry in this.entries) {
       if (entry.parentFingerprint != this.parentFingerprint) {
         throw KeychainManifestInvalidEntryException(
           'manifest file entry parent fingerprint mismatch',
         );
+      }
+      if (!entryIds.add(entry.entryId)) {
+        throw KeychainManifestInvalidEntryException(
+          'manifest file entry ids must be unique',
+        );
+      }
+      for (final materialization in entry.materializations) {
+        if (!walletIds.add(materialization.walletId)) {
+          throw KeychainManifestInvalidEntryException(
+            'manifest file wallet ids must be unique',
+          );
+        }
       }
     }
   }
