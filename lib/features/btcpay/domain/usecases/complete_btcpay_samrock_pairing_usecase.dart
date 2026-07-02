@@ -217,6 +217,9 @@ class CompleteBtcpaySamRockPairingUsecase {
     };
   }
 
+  /// Applies the BTCPay wallet behavior defaults best-effort: the server has
+  /// already accepted the descriptors at this point, so a local
+  /// defaults-application failure must not degrade a successful pairing.
   Future<void> _applyBtcpayWalletBehaviorDefaults(
     PreparedDeterministicWallets preparedWallets,
   ) async {
