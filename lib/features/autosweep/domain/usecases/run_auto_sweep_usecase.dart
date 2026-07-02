@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_error.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_fee_policy.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_result.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
@@ -33,39 +34,51 @@ class RunAutoSweepUsecase {
     required this._feePolicy,
   });
 
-  Future<String?> execute(Wallet syncedWallet) async {
-    if (!syncedWallet.autoSweepEnabled) return null;
-    if (syncedWallet.balanceSat <= BigInt.from(_dustThresholdSat)) return null;
-    if (!_inFlightWalletIds.add(syncedWallet.id)) return null;
+  Future<AutosweepResult> execute(Wallet syncedWallet) async {
+    if (!syncedWallet.autoSweepEnabled) {
+      return const AutosweepSkipped(AutosweepSkipReason.disabled);
+    }
+    if (syncedWallet.balanceSat <= BigInt.from(_dustThresholdSat)) {
+      return const AutosweepSkipped(AutosweepSkipReason.dust);
+    }
+    if (!_inFlightWalletIds.add(syncedWallet.id)) {
+      return const AutosweepSkipped(AutosweepSkipReason.inFlight);
+    }
 
     try {
-      final txid = syncedWallet.isLiquid
+      final result = syncedWallet.isLiquid
           ? await _sweepLiquid(syncedWallet)
           : await _sweepBitcoin(syncedWallet);
-      if (txid == null) return null;
-
-      await _storeSweepLabel(
-        txid: txid,
-        label: 'Autosweep from ${syncedWallet.label ?? syncedWallet.id}',
-        origin: syncedWallet.id,
-      );
-      return txid;
-    } on AutosweepError {
-      rethrow;
+      if (result is AutosweepSwept) {
+        await _storeSweepLabel(
+          txid: result.txid,
+          label: 'Autosweep from ${syncedWallet.label ?? syncedWallet.id}',
+          origin: syncedWallet.id,
+        );
+      }
+      return result;
+    } on AutosweepError catch (e) {
+      return AutosweepFailed(e);
     } catch (e) {
-      throw AutosweepUnexpectedException('Autosweep failed: $e');
+      return AutosweepFailed(
+        AutosweepUnexpectedException('Autosweep failed: $e'),
+      );
     } finally {
       _inFlightWalletIds.remove(syncedWallet.id);
     }
   }
 
-  Future<String?> _sweepLiquid(Wallet sourceWallet) async {
+  Future<AutosweepResult> _sweepLiquid(Wallet sourceWallet) async {
     final defaultLiquid = await _defaultWallet(
       sourceWallet: sourceWallet,
       onlyLiquid: true,
     );
-    if (defaultLiquid == null) return null;
-    if (defaultLiquid.id == sourceWallet.id) return null;
+    if (defaultLiquid == null) {
+      return const AutosweepSkipped(AutosweepSkipReason.noDefaultWallet);
+    }
+    if (defaultLiquid.id == sourceWallet.id) {
+      return const AutosweepSkipped(AutosweepSkipReason.selfSweep);
+    }
 
     final destinationAddress = await _wallets.getCurrentReceiveAddress(
       walletId: defaultLiquid.id,
@@ -82,19 +95,24 @@ class RunAutoSweepUsecase {
       walletId: sourceWallet.id,
     );
 
-    return _broadcastLiquid.execute(
+    final txid = await _broadcastLiquid.execute(
       signedPset,
       isTestnet: sourceWallet.isTestnet,
     );
+    return AutosweepSwept(txid);
   }
 
-  Future<String?> _sweepBitcoin(Wallet sourceWallet) async {
+  Future<AutosweepResult> _sweepBitcoin(Wallet sourceWallet) async {
     final defaultBitcoin = await _defaultWallet(
       sourceWallet: sourceWallet,
       onlyBitcoin: true,
     );
-    if (defaultBitcoin == null) return null;
-    if (defaultBitcoin.id == sourceWallet.id) return null;
+    if (defaultBitcoin == null) {
+      return const AutosweepSkipped(AutosweepSkipReason.noDefaultWallet);
+    }
+    if (defaultBitcoin.id == sourceWallet.id) {
+      return const AutosweepSkipped(AutosweepSkipReason.selfSweep);
+    }
 
     final destinationAddress = await _wallets.getCurrentReceiveAddress(
       walletId: defaultBitcoin.id,
@@ -113,14 +131,15 @@ class RunAutoSweepUsecase {
       walletBalanceSat: sourceWallet.balanceSat,
     )) {
       log.warning('Bitcoin autosweep skipped because fee exceeds policy');
-      return null;
+      return const AutosweepSkipped(AutosweepSkipReason.feePolicy);
     }
 
     final signedPsbt = await _wallets.signBitcoinPsbt(
       psbt: psbt,
       walletId: sourceWallet.id,
     );
-    return _broadcastBitcoin.execute(signedPsbt, isPsbt: true);
+    final txid = await _broadcastBitcoin.execute(signedPsbt, isPsbt: true);
+    return AutosweepSwept(txid);
   }
 
   Future<Wallet?> _defaultWallet({

@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_error.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_fee_policy.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_result.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/autosweep/domain/usecases/run_auto_sweep_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -97,9 +99,10 @@ void main() {
       () => broadcastLiquid.execute('signed-pset', isTestnet: false),
     ).thenAnswer((_) async => 'txid');
 
-    final txid = await usecase.execute(source);
+    final result = await usecase.execute(source);
 
-    expect(txid, 'txid');
+    expect(result, isA<AutosweepSwept>());
+    expect((result as AutosweepSwept).txid, 'txid');
     verify(
       () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
@@ -151,9 +154,9 @@ void main() {
       () => wallets.getBitcoinFeeSat(psbt: 'psbt'),
     ).thenAnswer((_) async => 100);
 
-    final txid = await usecase.execute(source);
+    final result = await usecase.execute(source);
 
-    expect(txid, isNull);
+    expect(result, const AutosweepSkipped(AutosweepSkipReason.feePolicy));
     verifyNever(
       () => wallets.signBitcoinPsbt(
         psbt: any(named: 'psbt'),
@@ -166,12 +169,124 @@ void main() {
     verifyNever(() => labelsFacade.store(any()));
   });
 
+  test('skips dust balances below the sweep threshold', () async {
+    final result = await usecase.execute(
+      _wallet(
+        id: 'btcpay-liquid',
+        network: Network.liquidMainnet,
+        autoSweepEnabled: true,
+        balanceSat: BigInt.from(100),
+      ),
+    );
+
+    expect(result, const AutosweepSkipped(AutosweepSkipReason.dust));
+  });
+
+  test('skips when no default wallet exists for the network', () async {
+    final source = _wallet(
+      id: 'btcpay-liquid',
+      network: Network.liquidMainnet,
+      autoSweepEnabled: true,
+      balanceSat: BigInt.from(1000),
+    );
+    when(
+      () => wallets.getDefaultWallet(
+        sourceWallet: source,
+        onlyBitcoin: false,
+        onlyLiquid: true,
+      ),
+    ).thenAnswer((_) async => null);
+
+    final result = await usecase.execute(source);
+
+    expect(
+      result,
+      const AutosweepSkipped(AutosweepSkipReason.noDefaultWallet),
+    );
+  });
+
+  test('reports a failed outcome when a wallet operation throws', () async {
+    final source = _wallet(
+      id: 'btcpay-liquid',
+      network: Network.liquidMainnet,
+      autoSweepEnabled: true,
+      balanceSat: BigInt.from(1000),
+    );
+    when(
+      () => wallets.getDefaultWallet(
+        sourceWallet: source,
+        onlyBitcoin: false,
+        onlyLiquid: true,
+      ),
+    ).thenThrow(
+      AutosweepWalletOperationException(
+        'Autosweep default wallet lookup failed',
+      ),
+    );
+
+    final result = await usecase.execute(source);
+
+    expect(result, isA<AutosweepFailed>());
+    expect(
+      (result as AutosweepFailed).error,
+      isA<AutosweepWalletOperationException>(),
+    );
+    verifyNever(() => labelsFacade.store(any()));
+  });
+
+  test('reports a failed outcome when broadcasting throws raw', () async {
+    final source = _wallet(
+      id: 'btcpay-liquid',
+      network: Network.liquidMainnet,
+      autoSweepEnabled: true,
+      balanceSat: BigInt.from(1000),
+    );
+    when(
+      () => wallets.getDefaultWallet(
+        sourceWallet: source,
+        onlyBitcoin: false,
+        onlyLiquid: true,
+      ),
+    ).thenAnswer(
+      (_) async => _wallet(
+        id: 'default-liquid',
+        network: Network.liquidMainnet,
+        isDefault: true,
+      ),
+    );
+    when(
+      () => wallets.getCurrentReceiveAddress(walletId: 'default-liquid'),
+    ).thenAnswer((_) async => 'lq1destination');
+    when(
+      () => wallets.buildLiquidDrainPset(
+        walletId: 'btcpay-liquid',
+        address: 'lq1destination',
+        networkFee: const NetworkFee.relative(0.1),
+      ),
+    ).thenAnswer((_) async => 'pset');
+    when(
+      () => wallets.signLiquidPset(pset: 'pset', walletId: 'btcpay-liquid'),
+    ).thenAnswer((_) async => 'signed-pset');
+    when(
+      () => broadcastLiquid.execute('signed-pset', isTestnet: false),
+    ).thenThrow(Exception('electrum down'));
+
+    final result = await usecase.execute(source);
+
+    expect(result, isA<AutosweepFailed>());
+    expect(
+      (result as AutosweepFailed).error,
+      isA<AutosweepUnexpectedException>(),
+    );
+    verifyNever(() => labelsFacade.store(any()));
+  });
+
   test('does not sweep wallets without auto-sweep enabled', () async {
-    final txid = await usecase.execute(
+    final result = await usecase.execute(
       _wallet(id: 'manual', network: Network.liquidMainnet),
     );
 
-    expect(txid, isNull);
+    expect(result, const AutosweepSkipped(AutosweepSkipReason.disabled));
     verifyNever(
       () => wallets.getDefaultWallet(
         sourceWallet: any(named: 'sourceWallet'),

@@ -22,6 +22,15 @@ same environment and network family.
 - Broadcasting is delegated to core blockchain use cases. Labels are delegated
   through the labels facade.
 
+## Outcome Reporting
+
+Every sweep attempt resolves to a sealed `AutosweepResult`: `AutosweepSwept`
+with the broadcast txid, `AutosweepSkipped` with a typed reason (disabled,
+dust, in flight, no default wallet, self sweep, fee policy), or
+`AutosweepFailed` carrying an `AutosweepError`. Consumers log failed outcomes
+distinctly today; user-facing surfacing of sweep outcomes lands with the later
+wallet readiness work and depends on this contract.
+
 ## Address Policy
 
 AutoSweep sends to the default wallet receive address returned by the wallet

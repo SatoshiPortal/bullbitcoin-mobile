@@ -408,7 +408,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<void> _runAutoSweep(Wallet wallet) async {
     try {
-      await _runWalletAutoSweepUsecase.execute(wallet);
+      final result = await _runWalletAutoSweepUsecase.execute(wallet);
+      if (result is AutosweepFailed) {
+        log.warning(
+          '[WalletBloc] Autosweep failed for wallet ${wallet.id}',
+          error: result.error,
+        );
+      }
     } catch (e, stack) {
       log.warning('[WalletBloc] Autosweep failed', error: e, trace: stack);
     }
