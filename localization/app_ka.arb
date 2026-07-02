@@ -1,4 +1,6 @@
 {
+  "fundExchangeRestrictedTitle": "დაფინანსება მიუწვდომელია",
+  "fundExchangeRestrictedMessage": "დაფინანსება მიუწვდომელია თქვენს ანგარიშზე. დამატებითი ინფორმაციისთვის დაუკავშირდით მხარდაჭერას.",
   "recipientsListLoadError": "მიმღებების ჩატვირთვა ვერ მოხერხდა. ხელახლა საცდელად ჩამოწიეთ ქვემოთ.",
   "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
   "exchangeTestnetBasicAuthTitle": "Testnet გაცვლის სერთიფიკატები",

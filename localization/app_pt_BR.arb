@@ -8953,6 +8953,8 @@
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
   },
+  "fundExchangeRestrictedTitle": "Financiamento indisponível",
+  "fundExchangeRestrictedMessage": "O financiamento não está disponível na sua conta. Entre em contato com o suporte para mais informações.",
   "fundExchangeWarningTitle": "Cuidado com os scammers",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

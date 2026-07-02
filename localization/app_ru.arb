@@ -3619,6 +3619,8 @@
   "importQrDevicePassportStep12": "Настройка завершена.",
   "fundExchangeLabelIbanUsdOnly": "Номер счета IBAN (только в долларах США)",
   "payRecipientDetails": "Реквизиты",
+  "fundExchangeRestrictedTitle": "Пополнение недоступно",
+  "fundExchangeRestrictedMessage": "Пополнение недоступно для вашего аккаунта. Пожалуйста, свяжитесь со службой поддержки для получения дополнительной информации.",
   "fundExchangeWarningTitle": "Следите за мошенниками",
   "receiveError": "Ошибка:",
   "@receiveError": {

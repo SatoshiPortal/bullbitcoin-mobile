@@ -10203,6 +10203,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "التمويل غير متاح",
+  "fundExchangeRestrictedMessage": "التمويل غير متاح على حسابك. يرجى التواصل مع الدعم لمزيد من المعلومات.",
   "fundExchangeWarningTitle": "احترس من المسامير",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
