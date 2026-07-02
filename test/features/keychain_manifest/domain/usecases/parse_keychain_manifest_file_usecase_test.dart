@@ -71,6 +71,95 @@ void main() {
     );
   });
 
+  test('rejects payloads larger than the size bound', () {
+    final payload = _manifestPayload.padRight(
+      KeychainManifestFileCodec.maxPayloadSizeBytes + 1,
+    );
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
+      ),
+    );
+  });
+
+  test('rejects entries with too many materializations', () {
+    final extras = StringBuffer();
+    for (var i = 0; i < 8; i++) {
+      extras.write(
+        '{"type":"wallet","walletId":"wallet-$i",'
+        '"childSeedFingerprint":"0123abcd","network":"bitcoinTestnet",'
+        '"scriptType":"bip84","createdAt":10,"updatedAt":10},',
+      );
+    }
+    final payload = _manifestPayload.replaceFirst(
+      '"materializations":[',
+      '"materializations":[$extras',
+    );
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
+  test('rejects oversized string fields', () {
+    final oversized = 'a' * (KeychainManifestFileCodec.maxStringFieldLength + 1);
+    final payload = _manifestPayload.replaceFirst(
+      '"walletId":"btc-wallet"',
+      '"walletId":"$oversized"',
+    );
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
+      ),
+    );
+  });
+
+  test('rejects more entries than the registry reserves', () {
+    final extraEntry =
+        '{"entryId":"fedcba98:39\'/0\'/12\'/101\'",'
+        '"bip85DerivationPath":"39\'/0\'/12\'/101\'",'
+        '"reservationId":"btcpay_wallet_seed","entryType":"walletSeed",'
+        '"ownerFeature":"btcpay","bip85Application":39,"bip85Index":101,'
+        '"createdAt":10,"updatedAt":12,"materializations":[{"type":"wallet",'
+        '"walletId":"extra-wallet","childSeedFingerprint":"0123abcd",'
+        '"network":"bitcoinMainnet",'
+        '"scriptType":"bip84","createdAt":10,"updatedAt":10}]}';
+    final payload = _manifestPayload
+        .replaceFirst(']}]}', ']},$extraEntry]}')
+        .replaceFirst('"entryCount":1', '"entryCount":2')
+        .replaceFirst('"materializationCount":2', '"materializationCount":3');
+
+    expect(
+      () => usecase.execute(codec.decode(payload)),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
   test('rejects unknown network wire values as invalid files', () {
     final payload = _manifestPayload.replaceFirst(
       '"network":"liquidMainnet"',

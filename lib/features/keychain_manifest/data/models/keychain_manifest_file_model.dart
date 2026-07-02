@@ -4,6 +4,18 @@ import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_ma
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 
 class KeychainManifestFileCodec {
+  /// Upper bound on an accepted payload size in UTF-8 bytes. A v1 manifest
+  /// covering every reserved path fits far below this.
+  static const maxPayloadSizeBytes = 1024 * 1024;
+
+  /// Upper bound on wallet materializations per entry. One reserved seed
+  /// materializes one wallet per network/script-type pair, which leaves
+  /// generous headroom below this.
+  static const maxMaterializationsPerEntry = 8;
+
+  /// Upper bound on any single string field in the payload.
+  static const maxStringFieldLength = 512;
+
   const KeychainManifestFileCodec();
 
   String encode(KeychainManifestFile manifestFile) {
@@ -13,6 +25,14 @@ class KeychainManifestFileCodec {
   }
 
   KeychainManifestFile decode(String payload) {
+    // A UTF-8 encoding is never shorter than the UTF-16 code-unit count, so
+    // the cheap length check short-circuits before encoding huge payloads.
+    if (payload.length > maxPayloadSizeBytes ||
+        utf8.encode(payload).length > maxPayloadSizeBytes) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.malformedFile,
+      );
+    }
     final Object? decoded;
     try {
       decoded = jsonDecode(payload);
@@ -180,6 +200,13 @@ class _KeychainManifestFileEntryModel {
   }
 
   factory _KeychainManifestFileEntryModel.fromJson(Map<String, Object?> json) {
+    final materializations = _list(json, 'materializations');
+    if (materializations.length >
+        KeychainManifestFileCodec.maxMaterializationsPerEntry) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.invalidMetadata,
+      );
+    }
     return _KeychainManifestFileEntryModel(
       entryId: _string(json, 'entryId'),
       bip85DerivationPath: _string(json, 'bip85DerivationPath'),
@@ -190,7 +217,7 @@ class _KeychainManifestFileEntryModel {
       bip85Index: _int(json, 'bip85Index'),
       createdAt: _int(json, 'createdAt'),
       updatedAt: _int(json, 'updatedAt'),
-      materializations: _list(json, 'materializations')
+      materializations: materializations
           .map(
             (materialization) =>
                 _KeychainManifestFileWalletMaterializationModel.fromJson(
@@ -319,7 +346,10 @@ class _KeychainManifestFileWalletMaterializationModel {
 
 String _string(Map<String, Object?> json, String key) {
   final value = json[key];
-  if (value is String) return value;
+  if (value is String &&
+      value.length <= KeychainManifestFileCodec.maxStringFieldLength) {
+    return value;
+  }
   throw KeychainManifestFileParseException(
     reason: KeychainManifestFileParseFailureReason.malformedFile,
   );

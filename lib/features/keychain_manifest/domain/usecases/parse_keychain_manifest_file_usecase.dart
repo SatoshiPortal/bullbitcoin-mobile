@@ -11,6 +11,14 @@ class ParseKeychainManifestFileUsecase {
   });
 
   KeychainManifestImportPlan execute(KeychainManifestFile manifestFile) {
+    // Every valid entry maps to a distinct registry reservation, so a file
+    // with more entries than reservations can never validate; bound the
+    // work before per-entry validation.
+    if (manifestFile.entries.length > registry.reservations.length) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.invalidMetadata,
+      );
+    }
     final entries = manifestFile.entries
         .map(_entryIntent)
         .toList(growable: false);
