@@ -3,13 +3,13 @@ name: Crash-cache → Issues
 # Manually-triggered sync of the latest reported app version's crashes from
 # crash-cache (via a read-only Metabase question) into GitHub issues.
 #
-#   - new fingerprint            → create an issue (label `crash`)
+#   - new fingerprint            → create an issue (labels `bug` + `report-program`, type Bug)
 #   - existing & open            → rewrite body in place (bump counts/last-seen)
 #   - existing & closed          → skip (a closed crash stays closed)
 #
 # Dedup key is the in-app-frame fingerprint, embedded as a hidden
 # `<!-- crash-cache-fp: <sha256> -->` marker. We find matches by listing
-# `crash`-labelled issues (state=all) and matching the marker in memory — no
+# `report-program`/`crash`-labelled issues (state=all) and matching the marker in memory — no
 # Search API (unreliable for long hex tokens + index lag).
 
 on:
@@ -20,10 +20,10 @@ on:
         type: boolean
         default: true
 
-# Only the issues API + the built-in token. No PAT.
+# Only the issues API + the built-in token. No PAT. No checkout runs and the
+# script only calls the issues API, so no `contents` scope is needed.
 permissions:
   issues: write
-  contents: read
 
 # One sync at a time.
 concurrency:
@@ -60,7 +60,7 @@ jobs:
           echo "Fetched $(wc -c < metabase.json) bytes."
 
       - name: Sync issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -69,6 +69,10 @@ jobs:
             const REPO_URL = `https://github.com/${owner}/${repo}`;
             const CC_URL = 'https://github.com/ethicnology/crash-cache';
             const today = new Date().toISOString().slice(0, 10);
+            const actor = context.actor; // GitHub login that triggered this manual run
+            // 'report-program' replaces the legacy 'crash' label; 'bug' matches the
+            // repo's manual bug-report label so synced crashes sit alongside them.
+            const LABELS = ['bug', 'report-program'];
 
             // ---- helpers ---------------------------------------------------
             const norm = r => Object.fromEntries(
@@ -107,7 +111,10 @@ jobs:
               const fp = row.fingerprint, fpShort = row.fingerprint_short || (fp || '').slice(0, 8);
               // Neutralize any HTML-comment opener so crash content can never forge
               // the fingerprint marker that drives dedup (zero-width break, invisible).
-              const devMsg = (row.dev_message || '').trim().replace(/<!--/g, '<​!--');
+              let devMsg = (row.dev_message || '').trim().replace(/<!--/g, '<​!--');
+              // Cap length so a pathological message can't push the body past
+              // GitHub's 65,536-char issue-body limit (see the trace cap below).
+              if (devMsg.length > 8000) devMsg = devMsg.slice(0, 8000) + '\n… (truncated)';
               const variants = num(row.dev_message_variant_count);
               const frames = parseJSON(row.frames) || [];
               const realFrames = frames.filter(f => f && f.function);
@@ -136,11 +143,17 @@ jobs:
               }
 
               if (realFrames.length > 1) {
+                // Cap the trace so the body stays under GitHub's 65,536-char limit;
+                // truncating inside the code fence keeps the markdown well-formed.
+                let trace = renderTrace(frames);
+                if (trace.length > 40000) trace = trace.slice(0, 40000) + '\n… (trace truncated)';
                 parts.push('<details><summary>Full stack trace (' + realFrames.length + ' frames)</summary>\n\n```\n' +
-                  renderTrace(frames) + '\n```\n</details>');
+                  trace + '\n```\n</details>');
               }
 
-              parts.push('---\n<sub>Tracked by [crash-cache](' + CC_URL + ') · fp `' + fpShort +
+              parts.push('---\n' +
+                '<sub>Filed automatically from anonymized error reports contributed by users who opted in to Bull\'s error reporting program — thank you.</sub>\n' +
+                '<sub>Tracked by [crash-cache](' + CC_URL + ') · synced by [@' + actor + '](https://github.com/' + actor + ') · fp `' + fpShort +
                 '` · first synced ' + firstSynced + ' · last synced ' + today +
                 ' · latest reported version only.</sub>\n' + marker(fp));
 
@@ -152,10 +165,24 @@ jobs:
               .filter(r => r.fingerprint);
             console.log(`Loaded ${rows.length} crash rows.`);
 
-            // ---- index existing crash issues by fingerprint ---------------
-            const existing = await github.paginate(github.rest.issues.listForRepo, {
-              owner, repo, labels: 'crash', state: 'all', per_page: 100,
-            });
+            // ---- index existing synced issues by fingerprint --------------
+            // Fetch the union of the new `report-program` label and the legacy
+            // `crash` label. GitHub's `labels` filter is AND, so query each and
+            // merge by number — this keeps issues created under the old label
+            // matchable, so the migration below relabels them in place instead of
+            // creating duplicates.
+            const seenNums = new Set();
+            const existing = [];
+            for (const label of ['report-program', 'crash']) {
+              const page = await github.paginate(github.rest.issues.listForRepo, {
+                owner, repo, labels: label, state: 'all', per_page: 100,
+              });
+              for (const it of page) {
+                if (seenNums.has(it.number)) continue;
+                seenNums.add(it.number);
+                existing.push(it);
+              }
+            }
             const byFp = new Map();
             for (const it of existing) {
               if (it.pull_request) continue;
@@ -165,51 +192,81 @@ jobs:
               const all = [...(it.body || '').matchAll(/<!-- crash-cache-fp: ([0-9a-f]{64}) -->/g)];
               if (all.length) byFp.set(all[all.length - 1][1], it);
             }
-            console.log(`Found ${byFp.size} existing crash issues.`);
+            console.log(`Found ${byFp.size} existing synced issues.`);
 
-            // ---- ensure the `crash` label exists --------------------------
-            async function ensureLabel() {
-              try { await github.rest.issues.getLabel({ owner, repo, name: 'crash' }); }
+            // ---- ensure labels exist --------------------------------------
+            // `bug` is the repo's manual-report label (issue templates create it):
+            // create only if missing, never recolor. `report-program` is the
+            // crash-cache marker label — create with its own color + description.
+            async function ensureLabel(name, color, description) {
+              try { await github.rest.issues.getLabel({ owner, repo, name }); }
               catch (e) {
                 if (e.status !== 404) throw e;
-                await github.rest.issues.createLabel({ owner, repo, name: 'crash', color: 'B60205', description: 'Synced from crash-cache' });
+                await github.rest.issues.createLabel({ owner, repo, name, color, description });
               }
             }
-            if (!dry) await ensureLabel();
+            if (!dry) {
+              await ensureLabel('bug', 'd73a4a', 'Something isn\'t working');
+              await ensureLabel('report-program', 'B60205', 'Synced from Bull\'s error reporting program (crash-cache)');
+            }
 
             // ---- reconcile -------------------------------------------------
-            const stats = { created: 0, bumped: 0, unchanged: 0, skipped_closed: 0 };
+            const stats = { created: 0, bumped: 0, unchanged: 0, skipped_closed: 0, failed: 0 };
             for (const row of rows) {
               const fp = row.fingerprint;
               const title = String(row.title || `[${row.version}] ${row.exception_type || 'Error'}`).slice(0, 256);
               const it = byFp.get(fp);
 
-              if (!it) {
-                const body = buildBody(row, today);
-                console.log(`CREATE  ${row.fingerprint_short}  ${title}`);
-                if (!dry) await github.rest.issues.create({ owner, repo, title, body, labels: ['crash'] });
-                stats.created++;
-              } else if (it.state === 'closed') {
-                console.log(`SKIP    ${row.fingerprint_short}  #${it.number} (closed)`);
-                stats.skipped_closed++;
-              } else {
-                const fm = (it.body || '').match(/first synced (\d{4}-\d{2}-\d{2})/);
-                const body = buildBody(row, fm ? fm[1] : today);
-                // Normalize line endings + trailing whitespace so a server-side
-                // round-trip can't trigger a no-op bump; also bump on title drift.
-                const k = s => stripFooter(s).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trim();
-                if (k(body) !== k(it.body) || title !== it.title) {
-                  console.log(`BUMP    ${row.fingerprint_short}  #${it.number}`);
-                  if (!dry) await github.rest.issues.update({ owner, repo, issue_number: it.number, title, body });
-                  stats.bumped++;
+              // One failed write must not abort the whole sync (and lose the run
+              // summary): record it, keep going, and mark the job failed at the end.
+              try {
+                if (!it) {
+                  const body = buildBody(row, today);
+                  console.log(`CREATE  ${row.fingerprint_short}  ${title}`);
+                  if (!dry) await github.rest.issues.create({ owner, repo, title, body, labels: LABELS, type: 'Bug' });
+                  stats.created++;
+                } else if (it.state === 'closed') {
+                  console.log(`SKIP    ${row.fingerprint_short}  #${it.number} (closed)`);
+                  stats.skipped_closed++;
                 } else {
-                  console.log(`OK      ${row.fingerprint_short}  #${it.number} (unchanged)`);
-                  stats.unchanged++;
+                  // Migrate labels + type in place, folded into the same update:
+                  // keep any manual labels, ensure bug + report-program, drop the
+                  // legacy `crash`, and set the Bug issue type.
+                  const names = (it.labels || []).map(l => typeof l === 'string' ? l : l.name);
+                  const labels = [...new Set([...names.filter(n => n !== 'crash'), ...LABELS])];
+                  const labelsChanged = labels.length !== names.length || labels.some(n => !names.includes(n));
+                  // `it.type` is null when unset, an object when set, undefined only
+                  // if the repo has no issue types — guard so we never force a bump.
+                  const curType = it.type === undefined ? undefined : (it.type ? it.type.name : null);
+                  const typeChanged = curType !== undefined && curType !== 'Bug';
+
+                  const fm = (it.body || '').match(/first synced (\d{4}-\d{2}-\d{2})/);
+                  const body = buildBody(row, fm ? fm[1] : today);
+                  // Normalize line endings + trailing whitespace so a server-side
+                  // round-trip can't trigger a no-op bump; also bump on title drift.
+                  const k = s => stripFooter(s).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trim();
+                  const bodyChanged = k(body) !== k(it.body) || title !== it.title;
+
+                  if (bodyChanged || labelsChanged || typeChanged) {
+                    console.log(`BUMP    ${row.fingerprint_short}  #${it.number}`);
+                    if (!dry) await github.rest.issues.update({ owner, repo, issue_number: it.number, title, body, labels, type: 'Bug' });
+                    stats.bumped++;
+                  } else {
+                    console.log(`OK      ${row.fingerprint_short}  #${it.number} (unchanged)`);
+                    stats.unchanged++;
+                  }
                 }
+              } catch (e) {
+                stats.failed++;
+                console.log(`::error::FAIL    ${row.fingerprint_short || fp.slice(0, 8)}  ${e.status || ''} ${e.message}`);
               }
             }
 
             const summary = `crash-cache sync ${dry ? '(DRY RUN) ' : ''}— ` +
-              `created ${stats.created}, bumped ${stats.bumped}, unchanged ${stats.unchanged}, skipped(closed) ${stats.skipped_closed}, total ${rows.length}`;
+              `created ${stats.created}, bumped ${stats.bumped}, unchanged ${stats.unchanged}, ` +
+              `skipped(closed) ${stats.skipped_closed}, failed ${stats.failed}, total ${rows.length}`;
             console.log(summary);
             await core.summary.addRaw(summary).write();
+            // Surface write failures as a red run — but only after the summary is
+            // written, so the partial results above are never lost.
+            if (stats.failed > 0) core.setFailed(`${stats.failed} issue write(s) failed — see log.`);
