@@ -265,6 +265,35 @@ void main() {
     expect(plan.walletMaterializations.first.walletId, 'btc-wallet');
     expect(plan.walletMaterializations.last.walletId, 'lbtc-wallet');
   });
+
+  test('exposes the explicit empty-import decision to callers', () {
+    const emptyPayload =
+        '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'
+        '"inventoryUpdatedAt":0,"entryCount":0,"materializationCount":0,'
+        '"entries":[]}';
+
+    expect(
+      () => facade.parseManifestFilePayload(
+        emptyPayload,
+        expectedParentFingerprint: 'fedcba98',
+      ),
+      throwsA(
+        isA<KeychainManifestException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.emptyInventory,
+        ),
+      ),
+    );
+
+    final plan = facade.parseManifestFilePayload(
+      emptyPayload,
+      expectedParentFingerprint: 'fedcba98',
+      allowEmpty: true,
+    );
+
+    expect(plan.entries, isEmpty);
+  });
 }
 
 const _manifestPayload =

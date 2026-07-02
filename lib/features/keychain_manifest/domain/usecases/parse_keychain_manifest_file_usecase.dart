@@ -18,6 +18,7 @@ class ParseKeychainManifestFileUsecase {
   KeychainManifestImportPlan execute(
     String payload, {
     required String expectedParentFingerprint,
+    bool allowEmpty = false,
   }) {
     final manifestFile = _codec.decode(payload);
     // The fingerprint gate runs before any registry validation: a manifest
@@ -28,6 +29,12 @@ class ParseKeychainManifestFileUsecase {
       throw KeychainManifestFileParseException(
         reason: KeychainManifestFileParseFailureReason.wrongParentFingerprint,
       );
+    }
+    // Mirrors the export gate: an empty plan carries no recoverable
+    // inventory, so returning one silently must be an explicit caller
+    // decision.
+    if (manifestFile.entries.isEmpty && !allowEmpty) {
+      throw KeychainManifestEmptyInventoryException();
     }
     // Every valid entry maps to a distinct registry reservation, so a file
     // with more entries than reservations can never validate; bound the

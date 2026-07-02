@@ -88,11 +88,13 @@ class KeychainManifestFacade {
   KeychainManifestImportPlan parseManifestFilePayload(
     String payload, {
     required String expectedParentFingerprint,
+    bool allowEmpty = false,
   }) {
     try {
       return _parseManifestFile.execute(
         payload,
         expectedParentFingerprint: expectedParentFingerprint,
+        allowEmpty: allowEmpty,
       );
     } catch (e, stack) {
       if (e is! KeychainManifestException) {

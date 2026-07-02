@@ -48,6 +48,32 @@ void main() {
     );
   });
 
+  test('requires an explicit caller decision before importing empty files', () {
+    expect(
+      () => usecase.execute(
+        _emptyManifestPayload,
+        expectedParentFingerprint: 'fedcba98',
+      ),
+      throwsA(
+        isA<KeychainManifestEmptyInventoryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.emptyInventory,
+        ),
+      ),
+    );
+
+    final plan = usecase.execute(
+      _emptyManifestPayload,
+      expectedParentFingerprint: 'fedcba98',
+      allowEmpty: true,
+    );
+
+    expect(plan.parentFingerprint, 'fedcba98');
+    expect(plan.entries, isEmpty);
+    expect(plan.walletMaterializations, isEmpty);
+  });
+
   test('rejects unknown reservations', () {
     final payload = _manifestPayload.replaceFirst(
       'btcpay_wallet_seed',
@@ -406,6 +432,11 @@ void main() {
     );
   });
 }
+
+const _emptyManifestPayload =
+    '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'
+    '"inventoryUpdatedAt":0,"entryCount":0,"materializationCount":0,'
+    '"entries":[]}';
 
 const _manifestPayload =
     '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'

@@ -180,6 +180,9 @@ Rules:
   requires the caller's expected parent fingerprint and rejects files from a
   different wallet before returning a plan. Wallet creation and restore semantics
   belong to later consumer features.
+- Import parsing refuses an empty plan unless the caller explicitly opts in,
+  mirroring the empty-export gate: silently returning a plan with nothing to
+  recover would be indistinguishable from a successful import.
 
 ### Frozen wire vocabulary
 
