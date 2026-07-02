@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
@@ -13,7 +14,10 @@ void main() {
   setUp(() {
     store = _InMemoryKeychainManifestStore();
     facade = KeychainManifestFacade(
-      recordEntry: RecordKeychainManifestEntryUsecase(repository: store),
+      recordEntry: RecordKeychainManifestEntryUsecase(
+        repository: store,
+        bip85Registry: const Bip85RegistryFacade(),
+      ),
     );
   });
 

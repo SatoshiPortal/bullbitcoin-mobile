@@ -11,7 +11,7 @@ class RecordKeychainManifestEntryUsecase {
 
   RecordKeychainManifestEntryUsecase({
     required this._repository,
-    this._bip85Registry = const Bip85RegistryFacade(),
+    required this._bip85Registry,
   });
 
   Future<void> execute(
