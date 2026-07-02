@@ -83,14 +83,15 @@ Current-device source of truth:
   A future consumer that needs current wallet-existence guarantees must join
   against wallet inventory and define missing-wallet behavior explicitly.
 
-The v1 file is deterministic JSON with this shape:
+The v1 file is deterministic JSON. Shown pretty-printed for readability; the
+serialized payload contains no whitespace (see canonical form below):
 
 ```json
 {
   "version": 1,
   "parentFingerprint": "fedcba98",
-  "generatedAt": 20,
-  "inventoryUpdatedAt": 12,
+  "generatedAt": 1751328000,
+  "inventoryUpdatedAt": 1751241600,
   "entryCount": 1,
   "materializationCount": 1,
   "entries": [
@@ -102,23 +103,52 @@ The v1 file is deterministic JSON with this shape:
       "ownerFeature": "btcpay",
       "bip85Application": 39,
       "bip85Index": 100,
-      "createdAt": 10,
-      "updatedAt": 12,
+      "createdAt": 1751241600,
+      "updatedAt": 1751241600,
       "materializations": [
         {
           "type": "wallet",
-          "walletId": "btc-wallet",
+          "walletId": "wpkh([0123abcd/84h/0h/0h])",
           "childSeedFingerprint": "0123abcd",
           "network": "bitcoinMainnet",
           "scriptType": "bip84",
-          "createdAt": 10,
-          "updatedAt": 10
+          "createdAt": 1751241600,
+          "updatedAt": 1751241600
         }
       ]
     }
   ]
 }
 ```
+
+`walletId` is the wallet's descriptor-origin string, e.g.
+`wpkh([0123abcd/84h/0h/0h])` for a BIP84 Bitcoin mainnet wallet whose child
+seed fingerprint is `0123abcd`. It is deterministic from the child seed
+fingerprint, script type, and network.
+
+### Canonical form
+
+Every v1 payload has exactly one byte representation:
+
+- All timestamps (`generatedAt`, `inventoryUpdatedAt`, `createdAt`,
+  `updatedAt`) are Unix timestamps in seconds, UTC.
+- JSON object keys appear in the fixed order shown in the example above:
+  - top level: `version`, `parentFingerprint`, `generatedAt`,
+    `inventoryUpdatedAt`, `entryCount`, `materializationCount`, `entries`;
+  - entry: `entryId`, `bip85DerivationPath`, `reservationId`, `entryType`,
+    `ownerFeature`, `bip85Application`, `bip85Index`, `createdAt`,
+    `updatedAt`, `materializations`;
+  - materialization: `type`, `walletId`, `childSeedFingerprint`, `network`,
+    `scriptType`, `createdAt`, `updatedAt`.
+- Entries are sorted by `bip85DerivationPath`, then by `entryId`.
+- Materializations within an entry are sorted by `network`, then by
+  `walletId`.
+- The payload contains no whitespace: no spaces after separators, no
+  newlines, no indentation.
+- Unknown fields are ignored on read. This is a deliberate forward-compat
+  decision: a v1 reader accepts payloads that carry additional fields from a
+  newer writer, and it validates only the fields specified here. Writers must
+  not emit fields outside this specification.
 
 Rules:
 
