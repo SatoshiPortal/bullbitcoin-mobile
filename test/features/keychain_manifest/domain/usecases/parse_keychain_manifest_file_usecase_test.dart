@@ -56,6 +56,44 @@ void main() {
       throwsA(isA<KeychainManifestFileParseException>()),
     );
   });
+
+  test('rejects duplicate wallet materializations in the same entry', () {
+    final duplicate =
+        '{"type":"wallet","walletId":"btc-wallet",'
+        '"childSeedFingerprint":"0123abcd","network":"bitcoinMainnet",'
+        '"scriptType":"bip84",'
+        '"createdAt":10,"updatedAt":10},';
+    final payload = _manifestPayload.replaceFirst(
+      '"materializations":[',
+      '"materializations":[$duplicate',
+    );
+
+    expect(
+      () => usecase.execute(payload),
+      throwsA(isA<KeychainManifestFileParseException>()),
+    );
+  });
+
+  test('rejects duplicate entry ids', () {
+    final duplicateEntry =
+        '{"entryId":"fedcba98:39\'/0\'/12\'/100\'",'
+        '"bip85DerivationPath":"39\'/0\'/12\'/100\'",'
+        '"reservationId":"btcpay_wallet_seed","entryType":"walletSeed",'
+        '"ownerFeature":"btcpay","bip85Application":39,"bip85Index":100,'
+        '"createdAt":10,"updatedAt":12,"materializations":[{"type":"wallet",'
+        '"walletId":"duplicate-wallet","childSeedFingerprint":"0123abcd",'
+        '"network":"bitcoinMainnet",'
+        '"scriptType":"bip84","createdAt":10,"updatedAt":10}]}';
+    final payload = _manifestPayload.replaceFirst(
+      ']}]}',
+      ']},$duplicateEntry]}',
+    );
+
+    expect(
+      () => usecase.execute(payload),
+      throwsA(isA<KeychainManifestFileParseException>()),
+    );
+  });
 }
 
 const _manifestPayload =
