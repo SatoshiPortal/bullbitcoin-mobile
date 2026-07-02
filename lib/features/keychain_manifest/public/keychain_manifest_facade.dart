@@ -14,6 +14,7 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_re
 
 import 'dart:convert';
 
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
@@ -60,7 +61,14 @@ class KeychainManifestFacade {
         generatedAt: manifestFile.generatedAt,
         inventoryUpdatedAt: manifestFile.inventoryUpdatedAt,
       );
-    } catch (e) {
+    } catch (e, stack) {
+      if (e is! KeychainManifestException) {
+        log.warning(
+          'Keychain manifest file build failed',
+          error: e,
+          trace: stack,
+        );
+      }
       throw KeychainManifestException.fromInternal(e);
     }
   }

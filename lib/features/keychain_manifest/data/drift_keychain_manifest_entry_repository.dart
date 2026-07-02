@@ -48,26 +48,8 @@ class DriftKeychainManifestEntryRepository
           );
         }
       }
-      records.sort(_compareRecords);
       return records;
     });
-  }
-
-  int _compareRecords(
-    KeychainManifestWalletMaterializationRecord left,
-    KeychainManifestWalletMaterializationRecord right,
-  ) {
-    final pathCompare = left.entry.bip85DerivationPath.compareTo(
-      right.entry.bip85DerivationPath,
-    );
-    if (pathCompare != 0) return pathCompare;
-    final entryIdCompare = left.entry.entryId.compareTo(right.entry.entryId);
-    if (entryIdCompare != 0) return entryIdCompare;
-    final networkCompare = left.walletMaterialization.network.compareTo(
-      right.walletMaterialization.network,
-    );
-    if (networkCompare != 0) return networkCompare;
-    return left.walletId.compareTo(right.walletId);
   }
 
   @override

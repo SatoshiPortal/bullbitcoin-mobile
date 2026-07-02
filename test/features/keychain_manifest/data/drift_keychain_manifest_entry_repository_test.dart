@@ -98,11 +98,12 @@ void main() {
     final records = await store
         .fetchWalletMaterializationRecordsByParentFingerprint(' FEDCBA98 ');
 
-    expect(records.map((record) => record.walletId), [
-      'btc-wallet',
-      'lbtc-wallet',
-      'z-wallet',
-    ]);
+    // Order is unspecified at the repository boundary; deterministic file
+    // ordering is owned by the build usecase.
+    expect(
+      records.map((record) => record.walletId),
+      unorderedEquals(['btc-wallet', 'lbtc-wallet', 'z-wallet']),
+    );
     expect(
       records.every((record) => record.entry.parentFingerprint == 'fedcba98'),
       isTrue,
