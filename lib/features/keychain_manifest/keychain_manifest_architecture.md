@@ -134,9 +134,27 @@ Rules:
   when the payload was built and is informational only; it must not be used
   to rank manifests.
 - V1 supports only wallet materializations with `"type": "wallet"`.
+- Enumerated fields carry frozen wire vocabulary (see the table below).
 - Public callers must explicitly opt in before exporting an empty manifest.
 - This PR only encodes the v1 payload. Decoding, import validation, and restore
   semantics belong to a later consumer PR.
+
+### Frozen wire vocabulary
+
+The enumerated v1 fields below serialize the `.name` of a production enum (or
+a serialization constant). These strings are frozen wire vocabulary: renaming
+a source enum must not change what is serialized, and a contract test pins
+every value. Adding or changing a value is a versioned wire-format decision,
+not a refactor.
+
+| Field | Allowed values | Source |
+| --- | --- | --- |
+| `type` (materialization) | `wallet` | `KeychainManifestFileWalletMaterialization.type` constant |
+| `entryType` | `walletSeed` | `Bip85ReservationPurpose` (`bip85_registry`) |
+| `ownerFeature` | `btcpay` | `Bip85ReservationOwner` (`bip85_registry`) |
+| `reservationId` | `btcpay_wallet_seed` | `bip85_registry` reservation ids |
+| `network` | `bitcoinMainnet`, `bitcoinTestnet`, `liquidMainnet`, `liquidTestnet` | `Network` (`core/wallet`) |
+| `scriptType` | `bip84`, `bip49`, `bip44` | `ScriptType` (`core/wallet`) |
 
 The payload is generated on demand by callers that need a serialized projection.
 Transport, import, restore, and UI flows are out of scope and are not specified

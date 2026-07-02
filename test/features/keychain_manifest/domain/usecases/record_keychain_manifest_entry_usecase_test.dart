@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -181,12 +182,13 @@ void main() {
   );
 
   group('frozen wire values', () {
-    // These strings are persisted to the local manifest store and (later in
-    // the stack) exported into the manifest file contract. They are FROZEN
-    // WIRE VALUES: renaming the source enums or registry ids must not change
-    // what is written, or previously recorded rows would stop matching and
-    // exported manifests would change meaning. Update these tests only with
-    // an explicit, versioned wire-format decision.
+    // These strings are persisted to the local manifest store and exported
+    // into the v1 manifest file contract. They are FROZEN WIRE VALUES:
+    // renaming the source enums or registry ids must not change what is
+    // written, or previously recorded rows would stop matching and exported
+    // manifests would change meaning. The allowed-values table lives in
+    // keychain_manifest_architecture.md. Update these tests only with an
+    // explicit, versioned wire-format decision.
     test('frozen wire value: reservation id btcpay_wallet_seed', () async {
       await usecase.execute(_command());
 
@@ -216,6 +218,22 @@ void main() {
       expect(ScriptType.bip84.name, 'bip84');
       expect(ScriptType.bip49.name, 'bip49');
       expect(ScriptType.bip44.name, 'bip44');
+    });
+
+    test('frozen wire value: BIP85 reservation owner names', () {
+      expect(Bip85ReservationOwner.values, [Bip85ReservationOwner.btcpay]);
+      expect(Bip85ReservationOwner.btcpay.name, 'btcpay');
+    });
+
+    test('frozen wire value: BIP85 reservation purpose names', () {
+      expect(Bip85ReservationPurpose.values, [
+        Bip85ReservationPurpose.walletSeed,
+      ]);
+      expect(Bip85ReservationPurpose.walletSeed.name, 'walletSeed');
+    });
+
+    test('frozen wire value: wallet materialization type constant', () {
+      expect(KeychainManifestFileWalletMaterialization.type, 'wallet');
     });
 
     test('frozen wire value: persisted network and script type', () async {
