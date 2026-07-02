@@ -213,8 +213,25 @@ void main() {
       expect(repo.claimCalls, 1);
       expect(repo.swap.status, SwapStatus.completed);
       expect((repo.swap as LnReceiveSwap).receiveTxid, 'claim-txid');
-      // 1000 vb at 0.5 sat/vb live estimate = 500 sats — NOT the stale
-      // creation-time estimate of 100.
+      // The claim is pinned to the stored creation-time claimFee (100) so the
+      // user receives exactly what the receive screen promised — NOT the live
+      // estimate of 500 (1000 vb at 0.5 sat/vb).
+      expect(repo.swap.fees?.claimFee, 100);
+    });
+
+    test('falls back to live fee estimation when no claimFee is stored',
+        () async {
+      final repo = FakeBoltzSwapRepository(
+        claimableSwap().copyWith(fees: null),
+      );
+      final service = watcher(repo);
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repo.claimCalls, 1);
+      expect(repo.swap.status, SwapStatus.completed);
+      // 1000 vb at 0.5 sat/vb live estimate = 500 sats.
       expect(repo.swap.fees?.claimFee, 500);
     });
 
