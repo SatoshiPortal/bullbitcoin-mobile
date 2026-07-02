@@ -348,6 +348,46 @@ void main() {
     );
   });
 
+  test('rejects a declared entry count that mismatches the entries', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"entryCount":1',
+      '"entryCount":2',
+    );
+
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
+  test(
+    'rejects a declared materialization count that mismatches the '
+    'materializations',
+    () {
+      final payload = _manifestPayload.replaceFirst(
+        '"materializationCount":2',
+        '"materializationCount":3',
+      );
+
+      expect(
+        () => codec.decode(payload),
+        throwsA(
+          isA<KeychainManifestFileParseException>().having(
+            (error) => error.reason,
+            'reason',
+            KeychainManifestFileParseFailureReason.invalidMetadata,
+          ),
+        ),
+      );
+    },
+  );
+
   test('rejects stale inventory timestamps', () {
     final payload = _manifestPayload.replaceFirst(
       '"inventoryUpdatedAt":12',

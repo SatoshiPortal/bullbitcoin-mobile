@@ -144,10 +144,14 @@ class _KeychainManifestFileModel {
   }
 
   KeychainManifestFile toEntity() {
+    // The declared integrity counts are handed to the entity, which rejects
+    // any mismatch with the actual entries.
     return KeychainManifestFile(
       version: version,
       parentFingerprint: parentFingerprint,
       generatedAt: generatedAt,
+      entryCount: entryCount,
+      materializationCount: materializationCount,
       entries: entries
           .map((entry) => entry.toEntity(parentFingerprint: parentFingerprint))
           .toList(growable: false),
