@@ -70,15 +70,14 @@ class KeychainManifestEntry {
     bip85DerivationPath: bip85DerivationPath,
   );
 
+  /// Compares durable identity fields only. Descriptive metadata
+  /// (reservationId, entryType, ownerFeature) and path-derived numbers are
+  /// deliberately excluded: entries are append-only, so on an identity-equal
+  /// record the stored row wins and a metadata rename must never turn a
+  /// re-pair into a conflict.
   bool sameRecordAs(KeychainManifestEntry other) {
-    return entryId == other.entryId &&
-        parentFingerprint == other.parentFingerprint &&
-        bip85DerivationPath == other.bip85DerivationPath &&
-        reservationId == other.reservationId &&
-        entryType == other.entryType &&
-        ownerFeature == other.ownerFeature &&
-        bip85Application == other.bip85Application &&
-        bip85Index == other.bip85Index;
+    return parentFingerprint == other.parentFingerprint &&
+        bip85DerivationPath == other.bip85DerivationPath;
   }
 }
 
@@ -126,12 +125,15 @@ class KeychainManifestWalletMaterialization {
     }
   }
 
+  /// Compares durable identity fields only: the wallet binding is identified
+  /// by wallet id, entry id, child seed fingerprint, network, and script
+  /// type. Descriptive metadata mismatches on an identity-equal record are
+  /// not a conflict; the stored row wins (append-only, no update).
   bool sameRecordAs(KeychainManifestWalletMaterialization other) {
     return walletId == other.walletId &&
         entryId == other.entryId &&
         childSeedFingerprint == other.childSeedFingerprint &&
         network == other.network &&
-        walletPurpose == other.walletPurpose &&
         scriptType == other.scriptType;
   }
 }

@@ -139,6 +139,93 @@ void main() {
     },
   );
 
+  test(
+    'treats metadata-only differences on an identity-equal record as the same '
+    'record, stored row wins',
+    () async {
+      // Simulates a stored row written by an older app version whose
+      // descriptive metadata strings have since been renamed in code. The
+      // durable identity (fingerprint + path + wallet binding) is equal, so
+      // re-recording must be idempotent instead of a conflict, and the
+      // stored row must win because entries are append-only (no update).
+      final stored = _record(
+        reservationId: 'legacy_reservation_name',
+        entryType: 'legacyEntryType',
+        ownerFeature: 'legacyOwner',
+      );
+      store.entries.add(stored.entry);
+      store.records.add(stored);
+
+      await expectLater(usecase.execute(_command()), completes);
+
+      expect(store.records, hasLength(1));
+      expect(store.entries.single.reservationId, 'legacy_reservation_name');
+      expect(store.entries.single.entryType, 'legacyEntryType');
+      expect(store.entries.single.ownerFeature, 'legacyOwner');
+    },
+  );
+
+  test(
+    'still conflicts when identity fields differ for the same wallet',
+    () async {
+      await usecase.execute(_command());
+
+      expect(
+        () => usecase.execute(_command(childSeedFingerprint: 'aaaa1111')),
+        throwsA(isA<KeychainManifestEntryConflictException>()),
+      );
+    },
+  );
+
+  group('frozen wire values', () {
+    // These strings are persisted to the local manifest store and (later in
+    // the stack) exported into the manifest file contract. They are FROZEN
+    // WIRE VALUES: renaming the source enums or registry ids must not change
+    // what is written, or previously recorded rows would stop matching and
+    // exported manifests would change meaning. Update these tests only with
+    // an explicit, versioned wire-format decision.
+    test('frozen wire value: reservation id btcpay_wallet_seed', () async {
+      await usecase.execute(_command());
+
+      expect(store.entries.single.reservationId, 'btcpay_wallet_seed');
+    });
+
+    test('frozen wire value: entry type walletSeed', () async {
+      await usecase.execute(_command());
+
+      expect(store.entries.single.entryType, 'walletSeed');
+    });
+
+    test('frozen wire value: owner feature btcpay', () async {
+      await usecase.execute(_command());
+
+      expect(store.entries.single.ownerFeature, 'btcpay');
+    });
+
+    test('frozen wire value: network names', () {
+      expect(Network.bitcoinMainnet.name, 'bitcoinMainnet');
+      expect(Network.bitcoinTestnet.name, 'bitcoinTestnet');
+      expect(Network.liquidMainnet.name, 'liquidMainnet');
+      expect(Network.liquidTestnet.name, 'liquidTestnet');
+    });
+
+    test('frozen wire value: script type names', () {
+      expect(ScriptType.bip84.name, 'bip84');
+      expect(ScriptType.bip49.name, 'bip49');
+      expect(ScriptType.bip44.name, 'bip44');
+    });
+
+    test('frozen wire value: persisted network and script type', () async {
+      await usecase.execute(_command());
+
+      expect(
+        store.records.single.walletMaterialization.network,
+        'bitcoinMainnet',
+      );
+      expect(store.records.single.walletMaterialization.scriptType, 'bip84');
+    });
+  });
+
   test('keeps inserted batch records if a later record fails', () async {
     store.failOnWalletId = 'lbtc-wallet';
 
