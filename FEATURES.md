@@ -59,6 +59,7 @@ graph TB
     AUTOSWAPS --> TRANSFER
     AUTOSWEEP --> FEES
     AUTOSWEEP --> LABELS
+    AUTOSWEEP --> WALLETS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BIP85 --> BIP85_REGISTRY
@@ -172,10 +173,15 @@ graph TB
 
 ## Key Dependency Patterns
 
+### Node Semantics
+
+- **Wallets** covers the shared wallet domain (`lib/core/wallet`, graduating to `packages/wallet` under the melos migration) together with the wallet home feature (`lib/features/wallet`). An edge into WALLETS means a feature consumes wallet domain APIs; edges out of WALLETS come from either half of that fused node.
+- The WALLETS <-> AUTOSWEEP pair is therefore not a real cycle: the wallet home feature (presentation) consumes the AutoSweep facade, while AutoSweep's data adapter consumes the core wallet domain. The melos split into separate nodes will make this two acyclic edges.
+
 ### Central Features (Highly Depended Upon)
 
 - **Core**: Foundation for all features
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
+- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup, BTCPay, AutoSweep
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
