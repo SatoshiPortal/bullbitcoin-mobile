@@ -71,6 +71,62 @@ void main() {
     );
   });
 
+  test('rejects unknown network wire values as invalid files', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"network":"liquidMainnet"',
+      '"network":"solanaMainnet"',
+    );
+
+    expect(
+      () => usecase.execute(codec.decode(payload)),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
+  test('rejects wrong-case network wire values as invalid files', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"network":"bitcoinMainnet"',
+      '"network":"BitcoinMainnet"',
+    );
+
+    expect(
+      () => usecase.execute(codec.decode(payload)),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
+  test('rejects unknown script type wire values as invalid files', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"scriptType":"bip84",'
+      '"createdAt":11',
+      '"scriptType":"bip86",'
+      '"createdAt":11',
+    );
+
+    expect(
+      () => usecase.execute(codec.decode(payload)),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
+        ),
+      ),
+    );
+  });
+
   test('rejects duplicate wallet materializations in the same entry', () {
     final duplicate =
         '{"type":"wallet","walletId":"btc-wallet",'

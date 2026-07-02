@@ -101,6 +101,27 @@ class KeychainManifestWalletMaterializationIntent {
     required KeychainManifestFileEntry entry,
     required KeychainManifestFileWalletMaterialization materialization,
   }) {
+    // Wire values are untrusted file input: gate them against the known enum
+    // names before Network.fromName/ScriptType.fromName, whose firstWhere
+    // would otherwise escape as an untyped StateError.
+    if (!Network.values.any(
+      (network) => network.name == materialization.network,
+    )) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.invalidMetadata,
+        cause: const FormatException('unknown manifest wallet network value'),
+      );
+    }
+    if (!ScriptType.values.any(
+      (scriptType) => scriptType.name == materialization.scriptType,
+    )) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.invalidMetadata,
+        cause: const FormatException(
+          'unknown manifest wallet script type value',
+        ),
+      );
+    }
     return KeychainManifestWalletMaterializationIntent(
       entryId: entry.entryId,
       reservationId: entry.reservationId,

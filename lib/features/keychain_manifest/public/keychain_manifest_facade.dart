@@ -101,7 +101,14 @@ class KeychainManifestFacade {
         );
       }
       return _parseManifestFile.execute(manifestFile);
-    } catch (e) {
+    } catch (e, stack) {
+      if (e is! KeychainManifestException) {
+        log.warning(
+          'Keychain manifest file parse failed',
+          error: e,
+          trace: stack,
+        );
+      }
       throw KeychainManifestException.fromInternal(e);
     }
   }
