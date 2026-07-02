@@ -1,20 +1,38 @@
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_file_model.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart';
 
 class ParseKeychainManifestFileUsecase {
-  final Bip85RegistryFacade registry;
+  final KeychainManifestFileCodec _codec;
+  final Bip85RegistryFacade _bip85Registry;
 
   const ParseKeychainManifestFileUsecase({
-    this.registry = const Bip85RegistryFacade(),
+    required this._codec,
+    required this._bip85Registry,
   });
 
-  KeychainManifestImportPlan execute(KeychainManifestFile manifestFile) {
+
+  KeychainManifestImportPlan execute(
+    String payload, {
+    required String expectedParentFingerprint,
+  }) {
+    final manifestFile = _codec.decode(payload);
+    // The fingerprint gate runs before any registry validation: a manifest
+    // for another parent seed must be refused regardless of its contents.
+    final normalizedExpectedParentFingerprint =
+        KeychainManifestFingerprint.normalize(expectedParentFingerprint);
+    if (manifestFile.parentFingerprint != normalizedExpectedParentFingerprint) {
+      throw KeychainManifestFileParseException(
+        reason: KeychainManifestFileParseFailureReason.wrongParentFingerprint,
+      );
+    }
     // Every valid entry maps to a distinct registry reservation, so a file
     // with more entries than reservations can never validate; bound the
     // work before per-entry validation.
-    if (manifestFile.entries.length > registry.reservations.length) {
+    if (manifestFile.entries.length > _bip85Registry.reservations.length) {
       throw KeychainManifestFileParseException(
         reason: KeychainManifestFileParseFailureReason.invalidMetadata,
       );
@@ -31,7 +49,7 @@ class ParseKeychainManifestFileUsecase {
   KeychainManifestImportEntryIntent _entryIntent(
     KeychainManifestFileEntry entry,
   ) {
-    final reservation = registry.reservationById(entry.reservationId);
+    final reservation = _bip85Registry.reservationById(entry.reservationId);
     if (reservation == null) {
       throw KeychainManifestFileParseException(
         reason: KeychainManifestFileParseFailureReason.unknownReservation,

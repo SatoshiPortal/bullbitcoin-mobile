@@ -1,19 +1,51 @@
+import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_file_model.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const usecase = ParseKeychainManifestFileUsecase();
   const codec = KeychainManifestFileCodec();
+  const usecase = ParseKeychainManifestFileUsecase(
+    codec: codec,
+    bip85Registry: Bip85RegistryFacade(),
+  );
 
   test('validates registered reservation metadata', () {
-    final plan = usecase.execute(codec.decode(_manifestPayload));
+    final plan = usecase.execute(
+      _manifestPayload,
+      expectedParentFingerprint: 'fedcba98',
+    );
 
     expect(plan.parentFingerprint, 'fedcba98');
     expect(plan.entries.single.reservationId, 'btcpay_wallet_seed');
     expect(plan.entries.single.bip85DerivationPath, "39'/0'/12'/100'");
     expect(plan.walletMaterializations, hasLength(2));
+  });
+
+  test('normalizes the expected parent fingerprint before comparing', () {
+    final plan = usecase.execute(
+      _manifestPayload,
+      expectedParentFingerprint: ' FEDCBA98 ',
+    );
+
+    expect(plan.parentFingerprint, 'fedcba98');
+  });
+
+  test('refuses manifest files for another parent fingerprint', () {
+    expect(
+      () => usecase.execute(
+        _manifestPayload,
+        expectedParentFingerprint: '0123abcd',
+      ),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.wrongParentFingerprint,
+        ),
+      ),
+    );
   });
 
   test('rejects unknown reservations', () {
@@ -23,7 +55,7 @@ void main() {
     );
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -42,7 +74,7 @@ void main() {
         .replaceFirst('"bip85Index":100', '"bip85Index":77');
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -60,7 +92,7 @@ void main() {
     );
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -149,7 +181,7 @@ void main() {
         .replaceFirst('"materializationCount":2', '"materializationCount":3');
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -167,7 +199,7 @@ void main() {
     );
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -185,7 +217,7 @@ void main() {
     );
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -205,7 +237,7 @@ void main() {
     );
 
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -229,7 +261,7 @@ void main() {
 
     // The file entity rejects duplicate wallet ids at decode time.
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,
@@ -257,7 +289,7 @@ void main() {
 
     // The file entity rejects duplicate entry ids at decode time.
     expect(
-      () => usecase.execute(codec.decode(payload)),
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
       throwsA(
         isA<KeychainManifestFileParseException>().having(
           (error) => error.reason,

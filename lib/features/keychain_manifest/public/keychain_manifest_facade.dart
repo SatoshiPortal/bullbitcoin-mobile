@@ -22,7 +22,6 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_re
 
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_file_model.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
@@ -91,16 +90,10 @@ class KeychainManifestFacade {
     required String expectedParentFingerprint,
   }) {
     try {
-      final manifestFile = _manifestFileCodec.decode(payload);
-      final normalizedExpectedParentFingerprint =
-          KeychainManifestFingerprint.normalize(expectedParentFingerprint);
-      if (manifestFile.parentFingerprint !=
-          normalizedExpectedParentFingerprint) {
-        throw KeychainManifestFileParseException(
-          reason: KeychainManifestFileParseFailureReason.wrongParentFingerprint,
-        );
-      }
-      return _parseManifestFile.execute(manifestFile);
+      return _parseManifestFile.execute(
+        payload,
+        expectedParentFingerprint: expectedParentFingerprint,
+      );
     } catch (e, stack) {
       if (e is! KeychainManifestException) {
         log.warning(
