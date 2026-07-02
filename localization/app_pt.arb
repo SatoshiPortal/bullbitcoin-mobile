@@ -3597,6 +3597,8 @@
   "importQrDevicePassportStep12": "Configuração completa.",
   "fundExchangeLabelIbanUsdOnly": "Número da conta IBAN (apenas para dólares americanos)",
   "payRecipientDetails": "Detalhes do destinatário",
+  "fundExchangeRestrictedTitle": "Financiamento indisponível",
+  "fundExchangeRestrictedMessage": "O financiamento não está disponível na sua conta. Contacte o suporte para mais informações.",
   "fundExchangeWarningTitle": "Cuidado com os scammers",
   "receiveError": "Erro: {error}",
   "@receiveError": {

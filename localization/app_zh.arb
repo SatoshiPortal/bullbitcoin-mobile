@@ -3621,6 +3621,8 @@
   "importQrDevicePassportStep12": "组建工作已经完成.",
   "fundExchangeLabelIbanUsdOnly": "IBAN账户编号(仅美元)",
   "payRecipientDetails": "收款人详细情况",
+  "fundExchangeRestrictedTitle": "无法充值",
+  "fundExchangeRestrictedMessage": "您的账户无法充值。请联系客服了解更多信息。",
   "fundExchangeWarningTitle": "for监测",
   "receiveError": "Rror: {error}",
   "@receiveError": {

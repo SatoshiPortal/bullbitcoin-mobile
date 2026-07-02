@@ -10611,6 +10611,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Financování není k dispozici",
+  "fundExchangeRestrictedMessage": "Financování není pro váš účet k dispozici. Pro více informací kontaktujte podporu.",
   "fundExchangeWarningTitle": "Podívejte se na podvodníky",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

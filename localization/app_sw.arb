@@ -1,4 +1,6 @@
 {
+  "fundExchangeRestrictedTitle": "Ufadhili haupatikani",
+  "fundExchangeRestrictedMessage": "Ufadhili haupatikani kwenye akaunti yako. Tafadhali wasiliana na usaidizi kwa maelezo zaidi.",
   "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",
   "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
   "exchangeTestnetBasicAuthTitle": "Kitambulisho cha testnet exchange",

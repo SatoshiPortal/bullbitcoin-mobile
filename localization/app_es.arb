@@ -835,6 +835,8 @@
   "fundExchangeTitle": "Financiación",
   "fundExchangeAccountTitle": "Fondea tu cuenta",
   "fundExchangeAccountSubtitle": "Selecciona tu país y método de pago",
+  "fundExchangeRestrictedTitle": "Financiación no disponible",
+  "fundExchangeRestrictedMessage": "La financiación no está disponible en tu cuenta. Ponte en contacto con el soporte para obtener más información.",
   "fundExchangeWarningTitle": "Cuidado con los estafadores",
   "fundExchangeWarningDescription": "Si alguien te está pidiendo que compres Bitcoin o te está \"ayudando\", ten cuidado, ¡pueden estar tratando de estafarte!",
   "fundExchangeWarningTacticsTitle": "Tácticas comunes de estafadores",

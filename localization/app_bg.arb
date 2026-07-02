@@ -8289,6 +8289,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Финансирането е недостъпно",
+  "fundExchangeRestrictedMessage": "Финансирането не е достъпно за вашия акаунт. Моля, свържете се с поддръжката за повече информация.",
   "fundExchangeWarningTitle": "Внимавайте за измамници",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
