@@ -79,7 +79,11 @@ void main() {
 
   test('fetches wallet materializations by parent fingerprint', () async {
     await store.insertWalletMaterializationRecord(
-      _record(walletId: 'z-wallet', bip85DerivationPath: "39'/0'/12'/101'"),
+      _record(
+        walletId: 'z-wallet',
+        bip85DerivationPath: "39'/0'/12'/101'",
+        bip85Index: 101,
+      ),
     );
     await store.insertWalletMaterializationRecord(
       _record(walletId: 'btc-wallet', network: 'bitcoinMainnet'),

@@ -119,6 +119,25 @@ class KeychainManifestFileEntry {
         'manifest file BIP85 metadata must be non-negative',
       );
     }
+    // The path is serialized three times on the wire (path string,
+    // application, index); the numeric fields must match the path segments.
+    final segments = this.bip85DerivationPath.split('/');
+    final firstSegment = int.parse(
+      segments.first.substring(0, segments.first.length - 1),
+    );
+    final lastSegment = int.parse(
+      segments.last.substring(0, segments.last.length - 1),
+    );
+    if (bip85Application != firstSegment) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest file BIP85 application must match the first path segment',
+      );
+    }
+    if (bip85Index != lastSegment) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest file BIP85 index must match the last path segment',
+      );
+    }
     if (createdAt < 0 || updatedAt < 0) {
       throw KeychainManifestInvalidEntryException(
         'manifest file entry timestamps must be non-negative',
