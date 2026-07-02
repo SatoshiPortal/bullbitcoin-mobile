@@ -195,6 +195,7 @@ class CompleteBtcpaySamRockPairingUsecase {
     return KeychainManifestReservedDerivationRequest(
       reservationId: reservation.id,
       parentFingerprint: preparedWallets.parentFingerprint,
+      derivationPath: preparedWallets.derivationPath,
       materializations: preparedWallets.wallets
           .map((prepared) {
             final network = BtcpayWalletNetwork.fromSpecId(prepared.specId);

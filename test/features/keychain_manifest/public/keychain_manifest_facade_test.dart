@@ -22,6 +22,7 @@ void main() {
       facade.recordReservedDerivation(
         KeychainManifestReservedDerivationRequest(
           reservationId: 'unknown_feature',
+          derivationPath: "39'/0'/12'/100'",
           parentFingerprint: 'fedcba98',
           materializations: [_walletMaterialization()],
         ),
@@ -35,6 +36,7 @@ void main() {
       facade.recordReservedDerivation(
         const KeychainManifestReservedDerivationRequest(
           reservationId: 'btcpay_wallet_seed',
+          derivationPath: "39'/0'/12'/100'",
           parentFingerprint: 'fedcba98',
           materializations: [],
         ),
@@ -53,6 +55,7 @@ void main() {
     await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
+        derivationPath: "39'/0'/12'/100'",
         parentFingerprint: 'fedcba98',
         materializations: [_walletMaterialization()],
       ),
@@ -71,6 +74,7 @@ void main() {
     await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
+        derivationPath: "39'/0'/12'/100'",
         parentFingerprint: 'fedcba98',
         materializations: [_walletMaterialization()],
       ),
@@ -79,6 +83,7 @@ void main() {
     await facade.recordReservedDerivation(
       KeychainManifestReservedDerivationRequest(
         reservationId: 'btcpay_wallet_seed',
+        derivationPath: "39'/0'/12'/100'",
         parentFingerprint: 'fedcba98',
         materializations: [
           _walletMaterialization(),

@@ -24,6 +24,16 @@ class RecordKeychainManifestEntryUsecase {
         'wallet materialization does not match BIP85 reservation purpose',
       );
     }
+    // The recorded path must be derivation-proven: refuse to persist a
+    // recovery record whose reserved path was never actually derived.
+    final derivedPath = KeychainManifestBip85Path.normalize(
+      request.derivationPath,
+    );
+    if (!reservation.scope.matchesExactPath(derivedPath)) {
+      throw KeychainManifestInvalidEntryException(
+        'derived BIP85 path does not match the reservation path',
+      );
+    }
     if (request.materializations.isEmpty) {
       throw KeychainManifestEntryConflictException(
         'at least one materialization is required',

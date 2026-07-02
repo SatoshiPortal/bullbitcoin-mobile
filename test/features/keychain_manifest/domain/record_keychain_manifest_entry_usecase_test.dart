@@ -52,6 +52,7 @@ void main() {
         const KeychainManifestReservedDerivationRequest(
           reservationId: 'btcpay_wallet_seed',
           parentFingerprint: 'fedcba98',
+          derivationPath: "39'/0'/12'/100'",
           materializations: [
             KeychainManifestWalletMaterializationRequest(
               walletId: 'btc-wallet',
@@ -118,6 +119,26 @@ void main() {
     );
   });
 
+  test('records when the derived path matches the reservation path', () async {
+    await usecase.execute(_command(derivationPath: "39'/0'/12'/100'"));
+
+    expect(store.entries.single.bip85DerivationPath, "39'/0'/12'/100'");
+    expect(store.records, hasLength(1));
+  });
+
+  test(
+    'refuses to record when the derived path does not match the reservation',
+    () async {
+      await expectLater(
+        usecase.execute(_command(derivationPath: "39'/0'/12'/101'")),
+        throwsA(isA<KeychainManifestInvalidEntryException>()),
+      );
+
+      expect(store.entries, isEmpty);
+      expect(store.records, isEmpty);
+    },
+  );
+
   test('keeps inserted batch records if a later record fails', () async {
     store.failOnWalletId = 'lbtc-wallet';
 
@@ -167,6 +188,7 @@ void main() {
 KeychainManifestReservedDerivationRequest _command({
   String reservationId = 'btcpay_wallet_seed',
   String parentFingerprint = 'fedcba98',
+  String derivationPath = "39'/0'/12'/100'",
   String walletId = 'btc-wallet',
   String childSeedFingerprint = '0123abcd',
   Network network = Network.bitcoinMainnet,
@@ -179,6 +201,7 @@ KeychainManifestReservedDerivationRequest _command({
   return KeychainManifestReservedDerivationRequest(
     reservationId: reservationId,
     parentFingerprint: parentFingerprint,
+    derivationPath: derivationPath,
     materializations: [
       KeychainManifestWalletMaterializationRequest(
         walletId: walletId,

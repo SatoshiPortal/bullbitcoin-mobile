@@ -37,12 +37,19 @@ class DeterministicWalletSpec {
 
 class PreparedDeterministicWallets {
   final List<PreparedDeterministicWallet> wallets;
+
+  /// The BIP85 derivation path that was actually derived for the child seed,
+  /// as reported by the derivation layer (registry-relative, e.g.
+  /// `39'/0'/12'/100'`). Consumers that persist recovery metadata must record
+  /// this proven path rather than re-declaring the reserved path themselves.
+  final String derivationPath;
   final String parentFingerprint;
   final String childSeedFingerprint;
   final bool childSeedStoredDuringAttempt;
 
   const PreparedDeterministicWallets({
     required this.wallets,
+    required this.derivationPath,
     required this.parentFingerprint,
     required this.childSeedFingerprint,
     required this.childSeedStoredDuringAttempt,

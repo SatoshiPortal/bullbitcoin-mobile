@@ -29,6 +29,9 @@ non-wallet materialization types are out of scope.
 - `keychain_manifest` owns local keychain manifest entries, typed
   materializations, and persistence.
 - `bip85_registry` owns reserved path policy.
+- Recording is derivation-proven: callers pass the BIP85 path that was actually
+  derived during materialization, and recording refuses the request as an
+  invalid entry when that path does not match the reservation's exact path.
 - Product features, such as BTCPay, record entries through
   `keychain_manifest/public` only.
 - The public boundary records wallet materializations only. Product features do
