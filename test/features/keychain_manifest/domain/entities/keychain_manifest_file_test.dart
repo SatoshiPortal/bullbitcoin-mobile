@@ -53,6 +53,74 @@ void main() {
     expect(manifestFile.entries, hasLength(2));
   });
 
+  test('derives integrity counts from the actual entries', () {
+    final manifestFile = KeychainManifestFile(
+      parentFingerprint: 'fedcba98',
+      generatedAt: 20,
+      entries: [
+        _entry(),
+        _entry(
+          bip85DerivationPath: "39'/0'/12'/101'",
+          bip85Index: 101,
+          walletId: 'other-wallet',
+        ),
+      ],
+    );
+
+    expect(manifestFile.entryCount, 2);
+    expect(manifestFile.materializationCount, 2);
+  });
+
+  test('derives zero counts for an empty manifest file', () {
+    final manifestFile = KeychainManifestFile(
+      parentFingerprint: 'fedcba98',
+      generatedAt: 20,
+      entries: [],
+    );
+
+    expect(manifestFile.entryCount, 0);
+    expect(manifestFile.materializationCount, 0);
+  });
+
+  test('rejects an entry count that mismatches the actual entries', () {
+    expect(
+      () => KeychainManifestFile(
+        parentFingerprint: 'fedcba98',
+        generatedAt: 20,
+        entryCount: 2,
+        entries: [_entry()],
+      ),
+      throwsA(
+        isA<KeychainManifestInvalidEntryException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.invalidEntry,
+        ),
+      ),
+    );
+  });
+
+  test(
+    'rejects a materialization count that mismatches the materializations',
+    () {
+      expect(
+        () => KeychainManifestFile(
+          parentFingerprint: 'fedcba98',
+          generatedAt: 20,
+          materializationCount: 3,
+          entries: [_entry()],
+        ),
+        throwsA(
+          isA<KeychainManifestInvalidEntryException>().having(
+            (error) => error.type,
+            'type',
+            KeychainManifestExceptionType.invalidEntry,
+          ),
+        ),
+      );
+    },
+  );
+
   test('rejects duplicate entry ids across manifest file entries', () {
     expect(
       () => KeychainManifestFile(

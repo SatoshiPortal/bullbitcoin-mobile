@@ -91,6 +91,8 @@ The v1 file is deterministic JSON with this shape:
   "parentFingerprint": "fedcba98",
   "generatedAt": 20,
   "inventoryUpdatedAt": 12,
+  "entryCount": 1,
+  "materializationCount": 1,
   "entries": [
     {
       "entryId": "fedcba98:39'/0'/12'/100'",
@@ -126,6 +128,10 @@ Rules:
 - `entryId` is derived from parent fingerprint and BIP85 path.
 - Entry ids must be unique across entries, and wallet ids must be unique
   across all materializations in the file, mirroring local record uniqueness.
+- `entryCount` and `materializationCount` are integrity counts validated on
+  build: `entryCount` must equal the number of entries, and
+  `materializationCount` must equal the total number of materializations
+  across all entries.
 - `inventoryUpdatedAt` is the data-recency timestamp: the latest `updatedAt`
   among included entries and materializations. An empty manifest serializes
   `inventoryUpdatedAt` as `0`.

@@ -157,6 +157,8 @@ void main() {
       );
 
       expect(payload.payload, contains('"inventoryUpdatedAt":0'));
+      expect(payload.payload, contains('"entryCount":0'));
+      expect(payload.payload, contains('"materializationCount":0'));
       expect(payload.payload, contains('"entries":[]'));
       expect(payload.entryCount, 0);
       expect(payload.materializationCount, 0);
@@ -169,7 +171,8 @@ void main() {
 
 const _manifestPayload =
     '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'
-    '"inventoryUpdatedAt":10,"entries":[{"entryId":"fedcba98:39\'/0\'/12\'/100\'",'
+    '"inventoryUpdatedAt":10,"entryCount":1,"materializationCount":2,'
+    '"entries":[{"entryId":"fedcba98:39\'/0\'/12\'/100\'",'
     '"bip85DerivationPath":"39\'/0\'/12\'/100\'",'
     '"reservationId":"btcpay_wallet_seed","entryType":"walletSeed",'
     '"ownerFeature":"btcpay","bip85Application":39,"bip85Index":100,'

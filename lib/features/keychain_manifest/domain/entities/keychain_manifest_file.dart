@@ -13,17 +13,28 @@ class KeychainManifestFile {
   /// inventory, so it derives to `0` and sorts oldest in any cross-manifest
   /// recency ordering; it can never outrank a populated manifest.
   final int inventoryUpdatedAt;
+
+  /// Integrity counts serialized into the v1 payload. They are derived from
+  /// the actual entries on build; when a caller supplies them explicitly they
+  /// must equal the actual counts.
+  final int entryCount;
+  final int materializationCount;
   final List<KeychainManifestFileEntry> entries;
 
   KeychainManifestFile({
     this.version = currentVersion,
     required String parentFingerprint,
     required this.generatedAt,
+    int? entryCount,
+    int? materializationCount,
     required List<KeychainManifestFileEntry> entries,
   }) : parentFingerprint = KeychainManifestFingerprint.normalize(
          parentFingerprint,
        ),
        inventoryUpdatedAt = _deriveInventoryUpdatedAt(entries),
+       entryCount = entryCount ?? entries.length,
+       materializationCount =
+           materializationCount ?? _deriveMaterializationCount(entries),
        entries = List.unmodifiable(entries) {
     if (version != currentVersion) {
       throw KeychainManifestInvalidEntryException(
@@ -33,6 +44,18 @@ class KeychainManifestFile {
     if (generatedAt < 0) {
       throw KeychainManifestInvalidEntryException(
         'manifest file timestamps must be non-negative',
+      );
+    }
+    if (this.entryCount != this.entries.length) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest file entry count must match the actual entry count',
+      );
+    }
+    if (this.materializationCount !=
+        _deriveMaterializationCount(this.entries)) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest file materialization count must match the actual '
+        'materialization count',
       );
     }
     final entryIds = <String>{};
@@ -56,6 +79,16 @@ class KeychainManifestFile {
         }
       }
     }
+  }
+
+  static int _deriveMaterializationCount(
+    List<KeychainManifestFileEntry> entries,
+  ) {
+    var count = 0;
+    for (final entry in entries) {
+      count += entry.materializations.length;
+    }
+    return count;
   }
 
   static int _deriveInventoryUpdatedAt(
