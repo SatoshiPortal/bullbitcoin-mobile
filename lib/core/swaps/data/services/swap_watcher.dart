@@ -273,11 +273,20 @@ class SwapWatcherService {
     }
 
     final isLiquid = swap.type == SwapType.lightningToLiquid;
-    final absoluteFees = await _claimFees(
-      swap: swap,
-      isLiquid: isLiquid,
-      amountSat: _amountSatOrNull(swap),
-    );
+    // Pin the claim fee to the stored creation-time claimFee, mirroring
+    // _claimChain: the receive screen promises invoice minus the quoted fees,
+    // so a live fee here changes the amount the user actually receives.
+    // Recovered/rescued swaps carry no trustworthy stored claimFee and fall
+    // back to live estimation. Same accepted trade-off as the chain pin: a
+    // mempool spike above the quote can leave the pinned claim underpriced.
+    final storedClaimFee = swap.fees?.claimFee;
+    final absoluteFees = (storedClaimFee != null && storedClaimFee > 0)
+        ? storedClaimFee
+        : await _claimFees(
+            swap: swap,
+            isLiquid: isLiquid,
+            amountSat: _amountSatOrNull(swap),
+          );
     // Unsubscribe before broadcasting so a status replay can't race the
     // local state write; we re-subscribe on failure.
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
