@@ -43,7 +43,6 @@ void main() {
             entryId: "fedcba98:39'/0'/12'/100'",
             childSeedFingerprint: '0123abcd',
             network: 'bitcoinMainnet',
-            walletPurpose: 'bitcoin',
             scriptType: 'bip84',
             createdAt: 1,
             updatedAt: 1,

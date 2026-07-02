@@ -81,12 +81,14 @@ class KeychainManifestEntry {
   }
 }
 
+/// A wallet binding deliberately carries no wallet-purpose field: the network
+/// family is derivable from [network], and feature ownership lives on the
+/// entry's `ownerFeature`.
 class KeychainManifestWalletMaterialization {
   final String walletId;
   final String entryId;
   final String childSeedFingerprint;
   final String network;
-  final String walletPurpose;
   final String scriptType;
   final int createdAt;
   final int updatedAt;
@@ -96,7 +98,6 @@ class KeychainManifestWalletMaterialization {
     required this.entryId,
     required String childSeedFingerprint,
     required this.network,
-    required this.walletPurpose,
     required this.scriptType,
     required this.createdAt,
     required this.updatedAt,
@@ -111,9 +112,6 @@ class KeychainManifestWalletMaterialization {
     }
     if (network.trim().isEmpty) {
       throw KeychainManifestInvalidEntryException('network is required');
-    }
-    if (walletPurpose.trim().isEmpty) {
-      throw KeychainManifestInvalidEntryException('wallet purpose is required');
     }
     if (scriptType.trim().isEmpty) {
       throw KeychainManifestInvalidEntryException('script type is required');

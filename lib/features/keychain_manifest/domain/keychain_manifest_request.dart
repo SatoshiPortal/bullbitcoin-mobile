@@ -22,14 +22,12 @@ class KeychainManifestWalletMaterializationRequest {
   final String walletId;
   final String childSeedFingerprint;
   final Network network;
-  final String walletPurpose;
   final ScriptType scriptType;
 
   const KeychainManifestWalletMaterializationRequest({
     required this.walletId,
     required this.childSeedFingerprint,
     required this.network,
-    required this.walletPurpose,
     required this.scriptType,
   });
 }

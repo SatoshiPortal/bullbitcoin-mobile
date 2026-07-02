@@ -56,3 +56,9 @@ are identified by:
 The child seed fingerprint is stored on each wallet materialization, because it
 is wallet materialization metadata. Non-wallet BIP85 entries must not need a
 dummy seed fingerprint.
+
+Wallet materializations store no wallet-purpose value. The network family is
+derivable from the stored `network`, and feature ownership already lives on the
+entry's `ownerFeature`, so a purpose column would duplicate both and freeze a
+redundant string into the persisted schema and the future manifest file
+contract.

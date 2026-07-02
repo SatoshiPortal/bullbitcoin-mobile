@@ -62,7 +62,6 @@ class RecordKeychainManifestEntryUsecase {
               entryId: entry.entryId,
               childSeedFingerprint: materialization.childSeedFingerprint,
               network: materialization.network.name,
-              walletPurpose: materialization.walletPurpose,
               scriptType: materialization.scriptType.name,
               createdAt: timestamp,
               updatedAt: timestamp,

@@ -37,7 +37,6 @@ class DriftKeychainManifestEntryRepository
                 childSeedFingerprint:
                     record.walletMaterialization.childSeedFingerprint,
                 network: record.walletMaterialization.network,
-                walletPurpose: record.walletMaterialization.walletPurpose,
                 scriptType: record.walletMaterialization.scriptType,
                 createdAt: record.walletMaterialization.createdAt,
                 updatedAt: record.walletMaterialization.updatedAt,
@@ -119,7 +118,6 @@ class DriftKeychainManifestEntryRepository
       entryId: row.entryId,
       childSeedFingerprint: row.childSeedFingerprint,
       network: row.network,
-      walletPurpose: row.walletPurpose,
       scriptType: row.scriptType,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,

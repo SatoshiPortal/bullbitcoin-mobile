@@ -90,7 +90,6 @@ void main() {
           _walletMaterialization(
             walletId: 'lbtc-wallet',
             network: Network.liquidMainnet,
-            walletPurpose: 'liquid',
           ),
         ],
       ),
@@ -107,14 +106,12 @@ KeychainManifestWalletMaterializationRequest _walletMaterialization({
   String walletId = 'btc-wallet',
   String childSeedFingerprint = '0123abcd',
   Network network = Network.bitcoinMainnet,
-  String walletPurpose = 'bitcoin',
   ScriptType scriptType = ScriptType.bip84,
 }) {
   return KeychainManifestWalletMaterializationRequest(
     walletId: walletId,
     childSeedFingerprint: childSeedFingerprint,
     network: network,
-    walletPurpose: walletPurpose,
     scriptType: scriptType,
   );
 }

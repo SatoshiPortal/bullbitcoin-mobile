@@ -7445,14 +7445,6 @@ class KeychainManifestWalletBindings extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> walletPurpose = GeneratedColumn<String>(
-    'wallet_purpose',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
   late final GeneratedColumn<String> scriptType = GeneratedColumn<String>(
     'script_type',
     aliasedName,
@@ -7483,7 +7475,6 @@ class KeychainManifestWalletBindings extends Table
     entryId,
     childSeedFingerprint,
     network,
-    walletPurpose,
     scriptType,
     createdAt,
     updatedAt,
@@ -7518,10 +7509,6 @@ class KeychainManifestWalletBindings extends Table
         DriftSqlType.string,
         data['${effectivePrefix}network'],
       )!,
-      walletPurpose: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}wallet_purpose'],
-      )!,
       scriptType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}script_type'],
@@ -7554,7 +7541,6 @@ class KeychainManifestWalletBindingsData extends DataClass
   final String entryId;
   final String childSeedFingerprint;
   final String network;
-  final String walletPurpose;
   final String scriptType;
   final int createdAt;
   final int updatedAt;
@@ -7563,7 +7549,6 @@ class KeychainManifestWalletBindingsData extends DataClass
     required this.entryId,
     required this.childSeedFingerprint,
     required this.network,
-    required this.walletPurpose,
     required this.scriptType,
     required this.createdAt,
     required this.updatedAt,
@@ -7575,7 +7560,6 @@ class KeychainManifestWalletBindingsData extends DataClass
     map['entry_id'] = Variable<String>(entryId);
     map['child_seed_fingerprint'] = Variable<String>(childSeedFingerprint);
     map['network'] = Variable<String>(network);
-    map['wallet_purpose'] = Variable<String>(walletPurpose);
     map['script_type'] = Variable<String>(scriptType);
     map['created_at'] = Variable<int>(createdAt);
     map['updated_at'] = Variable<int>(updatedAt);
@@ -7588,7 +7572,6 @@ class KeychainManifestWalletBindingsData extends DataClass
       entryId: Value(entryId),
       childSeedFingerprint: Value(childSeedFingerprint),
       network: Value(network),
-      walletPurpose: Value(walletPurpose),
       scriptType: Value(scriptType),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -7607,7 +7590,6 @@ class KeychainManifestWalletBindingsData extends DataClass
         json['childSeedFingerprint'],
       ),
       network: serializer.fromJson<String>(json['network']),
-      walletPurpose: serializer.fromJson<String>(json['walletPurpose']),
       scriptType: serializer.fromJson<String>(json['scriptType']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
@@ -7621,7 +7603,6 @@ class KeychainManifestWalletBindingsData extends DataClass
       'entryId': serializer.toJson<String>(entryId),
       'childSeedFingerprint': serializer.toJson<String>(childSeedFingerprint),
       'network': serializer.toJson<String>(network),
-      'walletPurpose': serializer.toJson<String>(walletPurpose),
       'scriptType': serializer.toJson<String>(scriptType),
       'createdAt': serializer.toJson<int>(createdAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
@@ -7633,7 +7614,6 @@ class KeychainManifestWalletBindingsData extends DataClass
     String? entryId,
     String? childSeedFingerprint,
     String? network,
-    String? walletPurpose,
     String? scriptType,
     int? createdAt,
     int? updatedAt,
@@ -7642,7 +7622,6 @@ class KeychainManifestWalletBindingsData extends DataClass
     entryId: entryId ?? this.entryId,
     childSeedFingerprint: childSeedFingerprint ?? this.childSeedFingerprint,
     network: network ?? this.network,
-    walletPurpose: walletPurpose ?? this.walletPurpose,
     scriptType: scriptType ?? this.scriptType,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -7657,9 +7636,6 @@ class KeychainManifestWalletBindingsData extends DataClass
           ? data.childSeedFingerprint.value
           : this.childSeedFingerprint,
       network: data.network.present ? data.network.value : this.network,
-      walletPurpose: data.walletPurpose.present
-          ? data.walletPurpose.value
-          : this.walletPurpose,
       scriptType: data.scriptType.present
           ? data.scriptType.value
           : this.scriptType,
@@ -7675,7 +7651,6 @@ class KeychainManifestWalletBindingsData extends DataClass
           ..write('entryId: $entryId, ')
           ..write('childSeedFingerprint: $childSeedFingerprint, ')
           ..write('network: $network, ')
-          ..write('walletPurpose: $walletPurpose, ')
           ..write('scriptType: $scriptType, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -7689,7 +7664,6 @@ class KeychainManifestWalletBindingsData extends DataClass
     entryId,
     childSeedFingerprint,
     network,
-    walletPurpose,
     scriptType,
     createdAt,
     updatedAt,
@@ -7702,7 +7676,6 @@ class KeychainManifestWalletBindingsData extends DataClass
           other.entryId == this.entryId &&
           other.childSeedFingerprint == this.childSeedFingerprint &&
           other.network == this.network &&
-          other.walletPurpose == this.walletPurpose &&
           other.scriptType == this.scriptType &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -7714,7 +7687,6 @@ class KeychainManifestWalletBindingsCompanion
   final Value<String> entryId;
   final Value<String> childSeedFingerprint;
   final Value<String> network;
-  final Value<String> walletPurpose;
   final Value<String> scriptType;
   final Value<int> createdAt;
   final Value<int> updatedAt;
@@ -7724,7 +7696,6 @@ class KeychainManifestWalletBindingsCompanion
     this.entryId = const Value.absent(),
     this.childSeedFingerprint = const Value.absent(),
     this.network = const Value.absent(),
-    this.walletPurpose = const Value.absent(),
     this.scriptType = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -7735,7 +7706,6 @@ class KeychainManifestWalletBindingsCompanion
     required String entryId,
     required String childSeedFingerprint,
     required String network,
-    required String walletPurpose,
     required String scriptType,
     required int createdAt,
     required int updatedAt,
@@ -7744,7 +7714,6 @@ class KeychainManifestWalletBindingsCompanion
        entryId = Value(entryId),
        childSeedFingerprint = Value(childSeedFingerprint),
        network = Value(network),
-       walletPurpose = Value(walletPurpose),
        scriptType = Value(scriptType),
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
@@ -7753,7 +7722,6 @@ class KeychainManifestWalletBindingsCompanion
     Expression<String>? entryId,
     Expression<String>? childSeedFingerprint,
     Expression<String>? network,
-    Expression<String>? walletPurpose,
     Expression<String>? scriptType,
     Expression<int>? createdAt,
     Expression<int>? updatedAt,
@@ -7765,7 +7733,6 @@ class KeychainManifestWalletBindingsCompanion
       if (childSeedFingerprint != null)
         'child_seed_fingerprint': childSeedFingerprint,
       if (network != null) 'network': network,
-      if (walletPurpose != null) 'wallet_purpose': walletPurpose,
       if (scriptType != null) 'script_type': scriptType,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -7778,7 +7745,6 @@ class KeychainManifestWalletBindingsCompanion
     Value<String>? entryId,
     Value<String>? childSeedFingerprint,
     Value<String>? network,
-    Value<String>? walletPurpose,
     Value<String>? scriptType,
     Value<int>? createdAt,
     Value<int>? updatedAt,
@@ -7789,7 +7755,6 @@ class KeychainManifestWalletBindingsCompanion
       entryId: entryId ?? this.entryId,
       childSeedFingerprint: childSeedFingerprint ?? this.childSeedFingerprint,
       network: network ?? this.network,
-      walletPurpose: walletPurpose ?? this.walletPurpose,
       scriptType: scriptType ?? this.scriptType,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -7814,9 +7779,6 @@ class KeychainManifestWalletBindingsCompanion
     if (network.present) {
       map['network'] = Variable<String>(network.value);
     }
-    if (walletPurpose.present) {
-      map['wallet_purpose'] = Variable<String>(walletPurpose.value);
-    }
     if (scriptType.present) {
       map['script_type'] = Variable<String>(scriptType.value);
     }
@@ -7839,7 +7801,6 @@ class KeychainManifestWalletBindingsCompanion
           ..write('entryId: $entryId, ')
           ..write('childSeedFingerprint: $childSeedFingerprint, ')
           ..write('network: $network, ')
-          ..write('walletPurpose: $walletPurpose, ')
           ..write('scriptType: $scriptType, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')

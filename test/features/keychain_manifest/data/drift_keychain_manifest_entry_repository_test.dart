@@ -89,7 +89,6 @@ KeychainManifestWalletMaterializationRecord _record({
   String ownerFeature = 'btcpay',
   int bip85Application = 39,
   int bip85Index = 100,
-  String walletPurpose = 'bitcoin',
   String scriptType = 'bip84',
 }) {
   final entry = KeychainManifestEntry(
@@ -110,7 +109,6 @@ KeychainManifestWalletMaterializationRecord _record({
       entryId: entry.entryId,
       childSeedFingerprint: childSeedFingerprint,
       network: network,
-      walletPurpose: walletPurpose,
       scriptType: scriptType,
       createdAt: 1,
       updatedAt: 1,

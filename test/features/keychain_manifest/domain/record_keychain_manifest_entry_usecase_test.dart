@@ -58,7 +58,6 @@ void main() {
               walletId: 'btc-wallet',
               childSeedFingerprint: '0123abcd',
               network: Network.bitcoinMainnet,
-              walletPurpose: 'bitcoin',
               scriptType: ScriptType.bip84,
             ),
           ],
@@ -237,7 +236,6 @@ void main() {
               walletId: 'lbtc-wallet',
               childSeedFingerprint: '0123abcd',
               network: Network.liquidMainnet,
-              walletPurpose: 'liquid',
               scriptType: ScriptType.bip84,
             ),
           ],
@@ -257,7 +255,6 @@ void main() {
             walletId: 'lbtc-wallet',
             childSeedFingerprint: '0123abcd',
             network: Network.liquidMainnet,
-            walletPurpose: 'liquid',
             scriptType: ScriptType.bip84,
           ),
         ],
@@ -279,7 +276,6 @@ KeychainManifestReservedDerivationRequest _command({
   String walletId = 'btc-wallet',
   String childSeedFingerprint = '0123abcd',
   Network network = Network.bitcoinMainnet,
-  String walletPurpose = 'bitcoin',
   ScriptType scriptType = ScriptType.bip84,
   List<KeychainManifestWalletMaterializationRequest>
       extraWalletMaterializations =
@@ -294,7 +290,6 @@ KeychainManifestReservedDerivationRequest _command({
         walletId: walletId,
         childSeedFingerprint: childSeedFingerprint,
         network: network,
-        walletPurpose: walletPurpose,
         scriptType: scriptType,
       ),
       ...extraWalletMaterializations,
@@ -314,7 +309,6 @@ KeychainManifestWalletMaterializationRecord _record({
   String ownerFeature = 'btcpay',
   int bip85Application = 39,
   int bip85Index = 100,
-  String walletPurpose = 'bitcoin',
   String scriptType = 'bip84',
 }) {
   final entry = KeychainManifestEntry(
@@ -336,7 +330,6 @@ KeychainManifestWalletMaterializationRecord _record({
       entryId: entry.entryId,
       childSeedFingerprint: childSeedFingerprint,
       network: network,
-      walletPurpose: walletPurpose,
       scriptType: scriptType,
       createdAt: 1,
       updatedAt: 1,

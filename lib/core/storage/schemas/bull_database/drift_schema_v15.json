@@ -1920,16 +1920,6 @@
             "dsl_features": []
           },
           {
-            "name": "wallet_purpose",
-            "getter_name": "walletPurpose",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "script_type",
             "getter_name": "scriptType",
             "moor_type": "string",
@@ -2293,7 +2283,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"keychain_manifest_wallet_bindings\" (\"wallet_id\" TEXT NOT NULL, \"entry_id\" TEXT NOT NULL REFERENCES keychain_manifest_entries (entry_id), \"child_seed_fingerprint\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"wallet_purpose\" TEXT NOT NULL, \"script_type\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"keychain_manifest_wallet_bindings\" (\"wallet_id\" TEXT NOT NULL, \"entry_id\" TEXT NOT NULL REFERENCES keychain_manifest_entries (entry_id), \"child_seed_fingerprint\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"script_type\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\"));"
         }
       ]
     },

@@ -28,8 +28,9 @@ class KeychainManifestWalletBindings extends Table {
   TextColumn get entryId =>
       text().references(KeychainManifestEntries, #entryId)();
   TextColumn get childSeedFingerprint => text()();
+  // No wallet-purpose column: the network family is derivable from
+  // `network`, and feature ownership lives on the entry's `ownerFeature`.
   TextColumn get network => text()();
-  TextColumn get walletPurpose => text()();
   TextColumn get scriptType => text()();
   IntColumn get createdAt => integer()();
   IntColumn get updatedAt => integer()();
