@@ -35,10 +35,10 @@ class BullLabelChip extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.fromLTRB(6, 2, 7, 2),
         decoration: BoxDecoration(
-          color: colors.textMuted.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(BullRadius.xs),
+          color: colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(BullRadius.xxs),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -50,7 +50,11 @@ class BullLabelChip extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.textMuted),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: colors.text,
+                ),
               ),
             ),
             if (onRemove != null) ...[

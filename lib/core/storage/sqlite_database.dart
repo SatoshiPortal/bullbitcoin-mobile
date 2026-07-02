@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
+import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
@@ -47,6 +48,7 @@ part 'sqlite_database.g.dart';
     Bip85Derivations,
     Recoverbull,
     Prices,
+    FrozenUtxos,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -94,10 +96,8 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   /// Current drift schema version. Bump in lockstep with adding a new
-  /// `Schema<N-1>To<N>.migrate` step in [migration]. `Report.init`
-  /// asserts that an entry for this number exists in the
-  /// schema → app-version map so a future bump can't silently
-  /// misclassify upgrade events.
+  /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
+  /// schema snapshots (`make drift-migrations`).
   static const int currentSchemaVersion = 13;
 
   @override

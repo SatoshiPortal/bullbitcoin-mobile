@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -18,7 +16,6 @@ class AutoSwapExecutionUsecase {
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final BlockchainPort _blockchainPort;
-  final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
   final LabelsFacade _labelsFacade;
 
@@ -27,7 +24,6 @@ class AutoSwapExecutionUsecase {
     required this._walletRepository,
     required this._liquidWalletRepository,
     required this._blockchainPort,
-    required this._seedRepository,
     required this._walletTxRepository,
     required this._labelsFacade,
   });
@@ -114,10 +110,6 @@ class AutoSwapExecutionUsecase {
 
     log.fine('Balance within swap limits, preparing swap...');
 
-    final liquidWalletMnemonic =
-        await _seedRepository.get(defaultLiquidWallet.masterFingerprint)
-            as MnemonicSeed;
-
     final btcElectrumUrl = defaultBitcoinWallet.isTestnet
         ? ApiServiceConstants.publicElectrumTestUrl
         : ApiServiceConstants.bbElectrumUrl;
@@ -130,7 +122,6 @@ class AutoSwapExecutionUsecase {
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',
     );
     final swap = await swapRepository.createLiquidToBitcoinSwap(
-      sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
       sendWalletId: defaultLiquidWallet.id,
       amountSat: autoSwapSettings.swapAmount(walletBalance),
       btcElectrumUrl: btcElectrumUrl,
@@ -143,7 +134,8 @@ class AutoSwapExecutionUsecase {
       walletId: defaultLiquidWallet.id,
       address: swap.paymentAddress,
       amountSat: swap.paymentAmount,
-      networkFee: const NetworkFee.relative(0.1),
+      // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+      feeRate: const RelativeFee(25),
     );
 
     log.fine('Getting absolute fees from PSET...');

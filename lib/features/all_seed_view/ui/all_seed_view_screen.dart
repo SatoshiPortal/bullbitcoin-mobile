@@ -1,12 +1,16 @@
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
+import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +25,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
       if (cubit.state.loading &&
           cubit.state.existingWallets.isEmpty &&
           cubit.state.oldWallets.isEmpty &&
-          cubit.state.error == null) {
+          cubit.state.failure == null) {
         cubit.fetchAllSeeds();
       }
     });
@@ -31,7 +35,15 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
           disableScreenPrivacy();
         }
       },
-      child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
+      child: BlocListener<AllSeedViewCubit, AllSeedViewState>(
+        listenWhen: (p, c) => p.failure != c.failure,
+        listener: (context, state) {
+          if (state.failure case final failure?
+              when failure is! AllSeedViewFetchFailure) {
+            SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+          }
+        },
+        child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
@@ -68,10 +80,10 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                     ),
                   );
                 }
-                if (state.error != null) {
+                if (state.failure is AllSeedViewFetchFailure) {
                   return Center(
                     child: BBText(
-                      state.error!,
+                      state.failure!.toTranslated(context),
                       style: context.font.bodyLarge,
                       color: context.appColors.error,
                     ),
@@ -150,12 +162,25 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                             _buildSeedCard(context, seed, isOldWallet: true),
                       ),
                     ],
+                    if (state.swapMasterKey != null) ...[
+                      const SizedBox(height: 24),
+                      BBText(
+                        'Swap mnemonic',
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: .bold,
+                        ),
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildSwapKeyCard(context, state.swapMasterKey!),
+                    ],
                   ],
                 );
               },
             ),
           );
         },
+        ),
       ),
     );
   }
@@ -258,6 +283,110 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _showDeleteSwapWarningDialog(BuildContext context) {
+    return BlurredDialog.show<void>(
+      context: context,
+      isDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.surface,
+        title: Text(
+          'Delete swap mnemonic?',
+          style: context.font.headlineSmall?.copyWith(
+            color: context.appColors.error,
+            fontWeight: .bold,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            'This removes the swap master key from secure storage. It will be '
+            're-derived from your wallet seed the next time the app needs it, '
+            'with the same fingerprint. Ongoing swaps are unaffected.',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              context.loc.cancel,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<AllSeedViewCubit>().deleteSwapMnemonic();
+            },
+            child: Text(
+              context.loc.delete,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
+                fontWeight: .bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwapKeyCard(BuildContext context, SwapMasterKeyInfo swapKey) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.appColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: context.appColors.outline, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Row(
+              crossAxisAlignment: .start,
+              children: [
+                Expanded(
+                  child: BBText(
+                    swapKey.mnemonic,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.onSurface,
+                    maxLines: 5,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: context.appColors.error,
+                  ),
+                  onPressed: () => _showDeleteSwapWarningDialog(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            BBText(
+              'Fingerprint: ${swapKey.fingerprint} (${swapKey.network})',
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface.withValues(alpha: 0.7),
+            ),
+            BBText(
+              'Linked wallet: ${swapKey.walletFingerprint}',
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface.withValues(alpha: 0.7),
+            ),
+          ],
+        ),
       ),
     );
   }

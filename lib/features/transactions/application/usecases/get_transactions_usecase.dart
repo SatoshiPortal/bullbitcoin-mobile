@@ -158,7 +158,11 @@ class GetTransactionsUsecase {
       //  into a single list of Transaction entities.
       return [
         ...dedupedBroadcastedTransactions,
-        ...swaps.map((s) => Transaction(swap: s)),
+        // A resolved recovered swap with no wallet tx here was only associated
+        // via a default/counterpart wallet id; don't show it on that chain.
+        ...swaps
+            .where((s) => !(s.recovered && s.status.isTerminal))
+            .map((s) => Transaction(swap: s)),
         ...payjoins.map((p) => Transaction(payjoin: p)),
         // If walletId is not null, the orders should be linked to a wallet transaction.
         // TODO: We could still check on the address of the order to see if it

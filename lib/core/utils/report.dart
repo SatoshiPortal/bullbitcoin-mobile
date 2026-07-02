@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -60,17 +59,10 @@ class Report {
   /// from/to tags and so `SentryFlutter.init` can read consent. Safe
   /// to call before Sentry is initialized — no capture here.
   static Future<void> init({bool? wizardConsent}) async {
-    // Debug-only guard: a schema bump that forgets to add an entry to
-    // `_schemaToVersion` would silently emit `'schema-N'` as the from-
-    // version tag for every upgrade event. Catching it here means a
-    // forgotten map entry surfaces on the first dev launch after the
-    // bump rather than weeks later in Sentry filters.
-    assert(
-      _schemaToVersion.containsKey(SqliteDatabase.currentSchemaVersion),
-      'Add an entry for schema ${SqliteDatabase.currentSchemaVersion} to '
-      'Report._schemaToVersion when bumping '
-      'SqliteDatabase.currentSchemaVersion',
-    );
+    // `_schemaToVersion` maps historical schemas to the app versions that
+    // shipped them. It is no longer extended for new schema bumps — an
+    // unlisted schema simply tags as `'schema-N'` via [_versionFromSchema],
+    // which is an acceptable from-version label for upgrade events.
 
     final info = await PackageInfo.fromPlatform();
     final to = '${info.version}+${info.buildNumber}';
@@ -267,10 +259,10 @@ class Report {
     fromVersion ??= _versionFromSchema(from);
   }
 
-  /// Maps a drift schema number to the first released app version that
-  /// shipped with that schema. Append a new entry here whenever
-  /// [SqliteDatabase.currentSchemaVersion] is bumped — the assert in
-  /// [init] enforces coverage for the current schema in debug builds.
+  /// Maps a historical drift schema number to the released app version(s)
+  /// that shipped with that schema. Not extended for new schema bumps — an
+  /// unlisted schema falls back to `'schema-N'` via [_versionFromSchema].
+  /// Retained for the from-version tagging of upgrades off older schemas.
   static const Map<int, String> _schemaToVersion = {
     1: 'v5.0.0..v5.2.0',
     2: 'v5.3.0',

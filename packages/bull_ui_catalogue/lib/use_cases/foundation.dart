@@ -31,6 +31,7 @@ class FoundationColours extends m.StatelessWidget {
       ('tertiary', b.tertiary),
       ('onTertiary', b.onTertiary),
       ('tertiaryContainer', b.tertiaryContainer),
+      ('bitcoinOrange', b.bitcoinOrange),
       ('background', b.background),
       ('surface', b.surface),
       ('surfaceContainer', b.surfaceContainer),

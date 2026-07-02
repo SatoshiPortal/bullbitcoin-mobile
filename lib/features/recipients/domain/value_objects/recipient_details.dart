@@ -103,9 +103,6 @@ class BillPaymentCadDetails extends RecipientDetails {
     if (payeeCode.trim().isEmpty) {
       throw ArgumentError('Payee code cannot be empty');
     }
-    if (payeeAccountNumber.trim().isEmpty) {
-      throw ArgumentError('Payee account number cannot be empty');
-    }
     return BillPaymentCadDetails._(
       label: label,
       isDefault: isDefault,

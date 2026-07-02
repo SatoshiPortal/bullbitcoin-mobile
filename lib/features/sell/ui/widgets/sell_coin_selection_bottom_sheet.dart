@@ -17,11 +17,16 @@ class SellCoinSelectionBottomSheet extends StatelessWidget {
           : BitcoinUnit.btc,
     );
 
-    final utxos = context.select(
-      (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).utxos
-          : <WalletUtxo>[],
-    );
+    // D7: frozen coins are never selectable for spending — hide them so the
+    // sheet only ever offers spendable outputs (mirrors Send).
+    final utxos = context
+        .select(
+          (SellBloc bloc) => bloc.state is SellPaymentState
+              ? (bloc.state as SellPaymentState).utxos
+              : <WalletUtxo>[],
+        )
+        .where((u) => !u.isFrozen)
+        .toList();
 
     final selectedUtxos = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState

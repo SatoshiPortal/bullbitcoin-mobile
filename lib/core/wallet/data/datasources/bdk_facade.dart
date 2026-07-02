@@ -28,14 +28,17 @@ class BdkFacade {
     final network = walletModel.isTestnet
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
+    final networkKind = walletModel.isTestnet
+        ? bdk.NetworkKind.test
+        : bdk.NetworkKind.main;
 
     final external = bdk.Descriptor(
       descriptor: walletModel.externalDescriptor,
-      network: network,
+      networkKind: networkKind,
     );
     final internal = bdk.Descriptor(
       descriptor: walletModel.internalDescriptor,
-      network: network,
+      networkKind: networkKind,
     );
 
     // Get the database path based on the wallet's id for uniqueness and in hex
@@ -87,10 +90,13 @@ class BdkFacade {
     final network = walletModel.isTestnet
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
+    final networkKind = walletModel.isTestnet
+        ? bdk.NetworkKind.test
+        : bdk.NetworkKind.main;
 
     final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
     final secretKey = bdk.DescriptorSecretKey(
-      network: network,
+      networkKind: networkKind,
       mnemonic: bdkMnemonic,
       password: walletModel.passphrase,
     );
@@ -103,34 +109,34 @@ class BdkFacade {
         external = bdk.Descriptor.newBip84(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.external_,
-          network: network,
+          networkKind: networkKind,
         );
         internal = bdk.Descriptor.newBip84(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.internal,
-          network: network,
+          networkKind: networkKind,
         );
       case ScriptType.bip49:
         external = bdk.Descriptor.newBip49(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.external_,
-          network: network,
+          networkKind: networkKind,
         );
         internal = bdk.Descriptor.newBip49(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.internal,
-          network: network,
+          networkKind: networkKind,
         );
       case ScriptType.bip44:
         external = bdk.Descriptor.newBip44(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.external_,
-          network: network,
+          networkKind: networkKind,
         );
         internal = bdk.Descriptor.newBip44(
           secretKey: secretKey,
           keychainKind: bdk.KeychainKind.internal,
-          network: network,
+          networkKind: networkKind,
         );
     }
 

@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "প্ৰাপকসকল ল’ড কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
   "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
   "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
   "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
@@ -176,7 +177,7 @@
   "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
+  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
   "translationWarningDescription": "এই এপ্পৰ অধিকাংশ অনুবাদ AI ব্যৱহাৰ কৰি তৈয়াৰ কৰা হৈছে আৰু ইয়াত ভুল থাকিব পাৰে। যদি আপুনি কোনো ভুল লক্ষ্য কৰে বা অনুবাদ উন্নত কৰাত সহায় কৰিব বিচাৰে, তেন্তে আমাৰ সমাজ অনুবাদ প্লেটফৰ্মৰ জৰিয়তে অৱদান দিব পাৰে।",
@@ -189,6 +190,10 @@
         "type": "String"
       }
     }
+  },
+  "importMnemonicEmptyLabelError": "মেমোনিক আমদানি কৰিবলৈ এটা লেবেল প্ৰয়োজন",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "durationMinute": "{minutes} মিনিট",
   "@durationMinute": {
@@ -359,8 +364,8 @@
   "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
   "mempoolErrorServerError": "চাৰ্ভাৰত ভুল হৈছে। পিছত পুনৰ চেষ্টা কৰক।",
   "mempoolErrorInvalidResponse": "চাৰ্ভাৰে অবৈধ সঁহাৰি দিছে।",
-  "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
-  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorInvalidUrl": "অমান্য চাৰ্ভাৰ URL। এটা বৈধ ডমেইন বা IP ঠিকনা দিয়ক।",
+  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorSaveServerFailed": {
     "placeholders": {
       "error": {
@@ -368,7 +373,7 @@
       }
     }
   },
-  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে",
   "@mempoolErrorLoadFailed": {
     "placeholders": {
       "error": {
@@ -376,16 +381,8 @@
       }
     }
   },
-  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে: {error}",
+  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে",
   "@mempoolErrorDeleteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1584,6 +1581,7 @@
     "description": "Error message shown when the scam warning consent API call fails"
   },
   "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "bip85NoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -2102,6 +2100,8 @@
     "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "appUnlockButton": "আনলক কৰক",
+  "appUnlockPinCheckError": "সুৰক্ষা ছেটিংছ লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি এপ্‌টো পুনৰাৰম্ভ কৰক।",
+  "appUnlockPinVerifyError": "আপোনাৰ PIN যাচাই কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -3033,14 +3033,6 @@
   "replaceByFeeErrorNoFeeRateSelected": "অনুগ্ৰহ কৰি এটা ফি হাৰ নিৰ্বাচন কৰক",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "মূল লেনদেন নিশ্চিত হৈছে",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "লেনদেন প্ৰতিস্থাপন কৰিবলৈ চেষ্টা কৰোঁতে এটা ত্ৰুটি ঘটিছে",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "replaceByFeeFastestDescription": "আনুমানিক সময় ~ ১০ মিনিট",
   "@replaceByFeeFastestDescription": {
@@ -6804,7 +6796,13 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "প্ৰচাৰ হৈ আছে...",
-  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্ৰচাৰ কৰিবলৈ విఫల হ’ল",
+  "broadcastSignedTxBroadcastError": "আমি আপোনাৰ লেনদেন ব্ৰডকাষ্ট কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "importWatchOnlyErrorNoWalletSelected": "প্ৰথমে এটা পাবলিক কী বা ডেস্ক্ৰিপ্টৰ পেষ্ট বা স্কেন কৰক।",
+  "importWatchOnlyErrorLabelRequired": "ইম্প'ৰ্ট কৰাৰ আগতে আপোনাৰ ৱালেটক এটা নাম দিয়ক।",
+  "importWatchOnlyErrorInvalidFormat": "এইটো এটা বৈধ পাবলিক কী বা ডেস্ক্ৰিপ্টৰ যেন নালাগে। আপুনি যি পেষ্ট কৰিছে সেয়া পুনৰ পৰীক্ষা কৰক।",
+  "importWatchOnlyErrorImportFailed": "আমি এই ৱাচ-অনলী ৱালেটটো ইম্প'ৰ্ট কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি বিৱৰণ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "broadcastSignedTxErrorInvalidTransaction": "এইটো এটা বৈধ স্বাক্ষৰিত লেনদেন যেন নালাগে। আপুনি সম্পূৰ্ণ PSBT বা লেনদেন পেষ্ট কৰাটো নিশ্চিত কৰক।",
+  "broadcastSignedTxErrorInvalidPushTx": "আমি এই টেগৰ পৰা কোনো লেনদেন পঢ়িব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ স্কেন কৰক।",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -8211,43 +8209,24 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে{reason}",
+  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "এই চাৰ্ভাৰ ইতিমধ্যে আছে",
+  "electrumServerUnreachable": "ছাৰ্ভাৰটো নাগাল পোৱা নগ’ল। ঠিকনাটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -8542,7 +8521,6 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -9200,6 +9178,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "ছীড লোড কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "ছীড মচিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "বাতিল কৰক",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -9553,37 +9539,6 @@
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
   },
-  "labelErrorNotFound": "লেবেল \"{label}\" পোৱা নগ'ল।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "এই ধৰণ {type} সমৰ্থিত নহয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "চিস্টেম লেবেলসমূহ মচিব নোৱাৰি।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "labelDeleteFailed": "\"{label}\" মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@labelDeleteFailed": {
     "description": "Error message when label deletion fails",
@@ -9725,7 +9680,6 @@
   "@transactionStatusPayjoinCompleted": {
     "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -9734,7 +9688,6 @@
   "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
   "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "addressViewerTitle": "ঠিকনা",
   "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
@@ -9789,6 +9742,306 @@
   "onboardingAdvancedOptionsDone": "সম্পূৰ্ণ",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
   "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত",
+  "pinCodeSaveError": "Could not save your PIN. Please try again.",
+  "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
+  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
+  "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
+  "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
+  "labelErrorNotFound": "লেবেল \"{label}\" পোৱা নগ'ল।",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "এই ধৰণ {type} সমৰ্থিত নহয়",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "চিস্টেম লেবেলসমূহ মচিব নোৱাৰি।",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "walletButtonCoins": "কইন পৰিচালনা কৰক",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "কইন",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, one{১ টা কইন} other{{count} টা কইন}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "ফ্ৰীজ কৰা",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "খৰচযোগ্য",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "একোৱে ফ্ৰীজ কৰা নাই",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "সজোৱা আৰু ফিল্টাৰ",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{total} টাৰ ভিতৰত {visible} টা দেখুৱাইছে",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, one{১ টা খৰচ নকৰা আউটপুট} other{{count} টা খৰচ নকৰা আউটপুট}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "ছিংক",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "সকলো পৰিষ্কাৰ কৰক",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "পৰিমাণ: ওপৰৰ পৰা তললৈ",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "পৰিমাণ: তলৰ পৰা ওপৰলৈ",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "তাৰিখ: নতুন",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "তাৰিখ: পুৰণি",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "কীচেইন",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "সকলো",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "গ্ৰহণ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "চেঞ্জ",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "ফ্ৰীজ স্থিতি",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "সকলো",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "ফ্ৰীজ কৰা",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "ফ্ৰীজ নকৰা",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "লেবেল",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "ৰিছেট",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "প্ৰয়োগ কৰক",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, one{১ টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "সকলো বাছনি কৰক",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "ফ্ৰীজ",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "আনফ্ৰীজ",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "আনডু",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰিবনে?} other{{count} টা কইন ফ্ৰীজ কৰিবনে?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "ফ্ৰীজ কৰা কইনবোৰ আপোনাৰ ৱালেটত থাকে কিন্তু আপুনি আনফ্ৰীজ নকৰালৈকে খৰচৰ পৰা বাদ দিয়া হয়।",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "এই কইনবোৰ ফ্ৰীজ কৰিলে আপোনাৰ ওচৰত কোনো খৰচযোগ্য বেলেন্স নাথাকিব।",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে} other{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, one{১ টা কইন আনফ্ৰীজ কৰা হৈছে} other{{count} টা কইন আনফ্ৰীজ কৰা হৈছে}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, one{১ টা নিশ্চিতি} other{{count} টা নিশ্চিতি}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "বিচাৰাধীন",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "এতিয়ালৈকে কোনো কইন নাই",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "আপুনি বিটকইন গ্ৰহণ কৰাৰ পিছত কইনবোৰ ইয়াত দেখা যাব।",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "কোনো কইন মিল নাখায়",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "ফিল্টাৰ পৰিষ্কাৰ কৰক",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "পুনৰ চেষ্টা কৰক",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "ফ্ৰীজ কৰিবলৈ কইন শ্বাইপ কৰক · বাছনি কৰিবলৈ দীঘলীয়াকৈ টিপক",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "আপোনাৰ কইন লোড কৰিব নোৱাৰিলে। পুনৰ চেষ্টা কৰিবলৈ টানি ৰিফ্ৰেছ কৰক।",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "বাছনি কৰা কইনবোৰ ফ্ৰীজ কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "বাছনি কৰা কইনবোৰ আনফ্ৰীজ কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "কিবা ভুল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} জমা কৰা",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "তাৰিখ অনুযায়ী ফিল্টাৰ কৰক",
   "logsViewerShowingCount": "{total} টা লগৰ ভিতৰত {shown} টা দেখুওৱা হৈছে",
   "logsViewerClearFilter": "ফিল্টাৰ মচক",

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -8,12 +6,10 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateChainSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
 
   CreateChainSwapUsecase({
     required this._walletRepository,
     required this._swapRepository,
-    required this._seedRepository,
   });
 
   Future<ChainSwap> execute({
@@ -62,15 +58,7 @@ class CreateChainSwapUsecase {
 
       switch (type) {
         case SwapType.bitcoinToLiquid:
-          final bitcoinMnemonicSeed = await _seedRepository.get(
-            bitcoinWallet.masterFingerprint,
-          );
-          if (bitcoinMnemonicSeed is! MnemonicSeed) {
-            throw Exception('Bitcoin wallet seed not found');
-          }
-
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: bitcoinMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
@@ -78,15 +66,7 @@ class CreateChainSwapUsecase {
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
         case SwapType.liquidToBitcoin:
-          final liquidMnemonicSeed = await _seedRepository.get(
-            liquidWallet.masterFingerprint,
-          );
-          if (liquidMnemonicSeed is! MnemonicSeed) {
-            throw Exception('Liquid wallet seed not found');
-          }
-
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: liquidMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,

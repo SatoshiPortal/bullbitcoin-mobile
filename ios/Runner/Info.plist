@@ -24,6 +24,12 @@
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
+		<key>NFCReaderUsageDescription</key>
+		<string>Connect with your hardware wallet over NFC</string>
+		<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+		<array/>
+		<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+		<array/>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>

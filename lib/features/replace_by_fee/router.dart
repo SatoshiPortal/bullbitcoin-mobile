@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
@@ -30,9 +28,6 @@ class ReplaceByFeeRouter {
             (_) => ReplaceByFeeCubit(
               originalTransaction: tx,
               bumpFeeUsecase: locator<BumpFeeUsecase>(),
-              broadcastBitcoinTransactionUsecase:
-                  locator<BroadcastBitcoinTransactionUsecase>(),
-              getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
             ),
         child: BlocListener<ReplaceByFeeCubit, ReplaceByFeeState>(
           listenWhen:

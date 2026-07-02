@@ -13,7 +13,7 @@ void main() {
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  group('v12 to v13: swaps refund columns and status backfill', () {
+  group('v12 to v13: swaps refund columns, status backfill, frozen_utxos', () {
     test('completed swap with refund txid is backfilled to refunded',
         () async {
       final schema = await verifier.schemaAt(12);
@@ -68,6 +68,19 @@ void main() {
 
       final completed = swaps.singleWhere((s) => s.id == 'normalswap12');
       expect(completed.status, 'completed');
+
+      // The collapsed step also creates the frozen_utxos table (issue #760,
+      // formerly the separate v13→v14 hop). Confirm it exists and is writable.
+      await migratedDb.into(migratedDb.frozenUtxos).insert(
+            v13.FrozenUtxosCompanion.insert(
+              walletId: 'w1',
+              txId: 'tx1',
+              vout: 0,
+            ),
+          );
+      final frozen = await migratedDb.select(migratedDb.frozenUtxos).get();
+      expect(frozen, hasLength(1));
+      expect(frozen.single.walletId, 'w1');
 
       await migratedDb.close();
     });

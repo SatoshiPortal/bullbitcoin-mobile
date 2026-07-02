@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_tx_outspend_model.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_status_mapper.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -13,7 +15,8 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
-import 'package:bull_sdk/boltz.dart';
+import 'package:bull_sdk/boltz.dart' hide Network;
+import 'package:bull_sdk/boltz.dart' as boltz;
 
 class BoltzDatasource {
   final String _baseUrl;
@@ -22,6 +25,12 @@ class BoltzDatasource {
 
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
+
+  /// Default-wallet fingerprint the swap master key is keyed under, bound by
+  /// [swapMasterKeyReady] / [deriveSwapMasterKey] when wallets become ready.
+  /// Public (non-secret) id only; the key material itself lives in secure
+  /// storage and is read on demand.
+  String? _swapMasterKeyWalletFingerprint;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -121,26 +130,183 @@ class BoltzDatasource {
       case swap_entity.SwapType.bitcoinToLiquid:
         final fees = _chainFeesAndLimits!;
         return swap_entity.SwapFees(
-          boltzPercent: fees.lbtcFees.percentage as double?,
-          lockupFee: fees.lbtcFees.userLockup.toInt() as int?,
-          claimFee: ((fees.lbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
-          serverNetworkFees: fees.lbtcFees.server.toInt() as int?,
+          boltzPercent: fees.btcToLbtcFees.percentage as double?,
+          lockupFee: fees.btcToLbtcFees.userLockup.toInt() as int?,
+          claimFee: ((fees.btcToLbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
+          serverNetworkFees: fees.btcToLbtcFees.server.toInt() as int?,
         );
       case swap_entity.SwapType.liquidToBitcoin:
         final fees = _chainFeesAndLimits!;
         return swap_entity.SwapFees(
-          boltzPercent: fees.btcFees.percentage as double?,
-          lockupFee: fees.btcFees.userLockup.toInt() as int?,
-          claimFee: fees.btcFees.userClaim.toInt() as int?,
-          serverNetworkFees: fees.btcFees.server.toInt() as int?,
+          boltzPercent: fees.lbtcToBtcFees.percentage as double?,
+          lockupFee: fees.lbtcToBtcFees.userLockup.toInt() as int?,
+          claimFee: fees.lbtcToBtcFees.userClaim.toInt() as int?,
+          serverNetworkFees: fees.lbtcToBtcFees.server.toInt() as int?,
         );
+    }
+  }
+
+  // SWAP MASTER KEY
+  //
+  // Derived (BIP85) once at app startup from the default wallet's seed and
+  // persisted in secure storage keyed by that wallet's fingerprint — never by
+  // network alone. Keying by fingerprint is what makes restore correct and
+  // stops a different default wallet (or a stale key the iOS keychain kept
+  // after the app was deleted) from ever being read for the current wallet.
+  // [deriveSwapMasterKey] is the only place that derives; every swap operation
+  // READS via [getSwapMasterKey].
+
+  /// Binds the swap master key to [walletFingerprint] for subsequent reads and
+  /// reports whether it already exists in storage. Cheap: no seed read, no
+  /// derivation — the caller decrypts the wallet seed and calls
+  /// [deriveSwapMasterKey] only on a miss. The fingerprint binding is set ONLY
+  /// when the key is confirmed present, so a read can never resolve to a
+  /// fingerprint whose key was never stored.
+  Future<bool> swapMasterKeyReady({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    final exists = await _boltzStore.swapMasterKeyExists(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (exists) _swapMasterKeyWalletFingerprint = walletFingerprint;
+    return exists;
+  }
+
+  Future<void> deriveSwapMasterKey({
+    required String mnemonic,
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final model = await SwapMasterKeyModel.create(
+      mnemonic: mnemonic,
+      isTestnet: isTestnet,
+    );
+    await _boltzStore.storeSwapMasterKey(
+      model,
+      walletFingerprint: walletFingerprint,
+    );
+    // Bind only after a successful store, so a failed derive leaves the key
+    // "not initialized" rather than bound to an absent blob.
+    _swapMasterKeyWalletFingerprint = walletFingerprint;
+  }
+
+  Future<SwapMasterKeyModel> getSwapMasterKey({required bool isTestnet}) async {
+    final walletFingerprint = _swapMasterKeyWalletFingerprint;
+    if (walletFingerprint == null) {
+      throw StateError(
+        'Swap master key not initialized — it must be derived at app startup '
+        'before any swap operation',
+      );
+    }
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    return _boltzStore.fetchSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+  }
+
+  /// Reads the swap master key for [walletFingerprint] WITHOUT requiring the
+  /// startup binding — used by the seed viewer to display/delete it. Returns
+  /// null when no key is stored for that wallet+network.
+  Future<SwapMasterKeyModel?> getSwapMasterKeyForWallet({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    final exists = await _boltzStore.swapMasterKeyExists(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (!exists) return null;
+    return _boltzStore.fetchSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+  }
+
+  /// Deletes the swap master key (and its index counter) for
+  /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
+  /// wallet so a subsequent read forces a fresh derive.
+  Future<void> deleteSwapMasterKey({
+    required String walletFingerprint,
+    required bool isTestnet,
+  }) async {
+    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    await _boltzStore.deleteSwapMasterKey(
+      network,
+      walletFingerprint: walletFingerprint,
+    );
+    if (_swapMasterKeyWalletFingerprint == walletFingerprint) {
+      _swapMasterKeyWalletFingerprint = null;
+    }
+  }
+
+  // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
+  // in a later pass.
+
+  // One restore call returning id/kind/status/amount per swap — for listing.
+  Future<List<RestoredSwapSummary>> restoreSwapSummaries({
+    required SwapMasterKeyModel swapMasterKey,
+  }) => boltz.restoreSwapSummaries(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    boltzUrl: _httpsUrl,
+  );
+
+  Future<List<BtcLnSwap>> restoreBtcLnSwaps({
+    required SwapMasterKeyModel swapMasterKey,
+    required String electrumUrl,
+  }) => boltz.restoreLnBtcSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    electrumUrl: electrumUrl,
+    boltzUrl: _httpsUrl,
+  );
+
+  Future<List<LbtcLnSwap>> restoreLbtcLnSwaps({
+    required SwapMasterKeyModel swapMasterKey,
+    required String electrumUrl,
+  }) => boltz.restoreLnLbtcSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    electrumUrl: electrumUrl,
+    boltzUrl: _httpsUrl,
+  );
+
+  Future<List<ChainSwap>> restoreChainSwaps({
+    required SwapMasterKeyModel swapMasterKey,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+  }) => boltz.restoreChainSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    btcElectrumUrl: btcElectrumUrl,
+    lbtcElectrumUrl: lbtcElectrumUrl,
+    boltzUrl: _httpsUrl,
+  );
+
+  // Highest swap-key index boltz has on record for this wallet's xpub, or -1
+  // when it knows of none.
+  Future<int> restoreSwapIndex({
+    required SwapMasterKeyModel swapMasterKey,
+  }) async {
+    final highest = await boltz.restoreSwapIndex(
+      swapMasterKey: swapMasterKey.toBoltz(),
+      boltzUrl: _httpsUrl,
+    );
+    return highest.toInt();
+  }
+
+  Future<String?> chainSwapUserLockupTxid(ChainSwap swap) async {
+    try {
+      return await swap.getUserLockup();
+    } catch (_) {
+      return null;
     }
   }
 
   // REVERSE SWAPS
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required int outAmount,
     required bool isTestnet,
@@ -154,7 +320,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newReverse(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -217,7 +383,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLBtcReverseSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required int outAmount,
     required bool isTestnet,
@@ -231,7 +396,7 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newReverse(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -338,7 +503,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createBtcSubmarineSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required String invoice,
     required bool isTestnet,
@@ -351,7 +515,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newSubmarine(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
@@ -397,7 +561,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLbtcSubmarineSwap({
     required String walletId,
-    required String mnemonic,
     required int index,
     required String invoice,
     required bool isTestnet,
@@ -410,7 +573,7 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
@@ -554,7 +717,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createBtcToLbtcChainSwap({
     required String sendWalletId,
-    required String mnemonic,
     required int index,
     required int amountSat,
     required bool isTestnet,
@@ -569,7 +731,7 @@ class BoltzDatasource {
       }
       final chainFees = _chainFeesAndLimits!;
       final chainSwap = await ChainSwap.newSwap(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.btcToLbtc,
@@ -594,10 +756,12 @@ class BoltzDatasource {
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
         boltzFees:
-            (chainFees.lbtcFees.percentage * amountSat / 100).ceil() as int?,
-        lockupFees: chainFees.lbtcFees.userLockup.toInt() as int?,
-        claimFees: ((chainFees.lbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
-        serverNetworkFees: chainFees.lbtcFees.server.toInt() as int?,
+            (chainFees.btcToLbtcFees.percentage * amountSat / 100).ceil()
+                as int?,
+        lockupFees: chainFees.btcToLbtcFees.userLockup.toInt() as int?,
+        claimFees:
+            ((chainFees.btcToLbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
+        serverNetworkFees: chainFees.btcToLbtcFees.server.toInt() as int?,
       );
       await _boltzStore.store(swapModel);
       subscribeToSwaps([swapModel.id]);
@@ -613,7 +777,6 @@ class BoltzDatasource {
 
   Future<SwapModel> createLbtcToBtcChainSwap({
     required String sendWalletId,
-    required String mnemonic,
     required int index,
     required int amountSat,
     required bool isTestnet,
@@ -629,7 +792,7 @@ class BoltzDatasource {
       final chainFees = _chainFeesAndLimits!;
 
       final chainSwap = await ChainSwap.newSwap(
-        mnemonic: mnemonic,
+        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.lbtcToBtc,
@@ -655,10 +818,11 @@ class BoltzDatasource {
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
         boltzFees:
-            (chainFees.btcFees.percentage * amountSat / 100).ceil() as int?,
-        lockupFees: chainFees.btcFees.userLockup.toInt() as int?,
-        claimFees: chainFees.btcFees.userClaim.toInt() as int?,
-        serverNetworkFees: chainFees.btcFees.server.toInt() as int?,
+            (chainFees.lbtcToBtcFees.percentage * amountSat / 100).ceil()
+                as int?,
+        lockupFees: chainFees.lbtcToBtcFees.userLockup.toInt() as int?,
+        claimFees: chainFees.lbtcToBtcFees.userClaim.toInt() as int?,
+        serverNetworkFees: chainFees.lbtcToBtcFees.server.toInt() as int?,
       );
       await _boltzStore.store(swapModel);
       subscribeToSwaps([swapModel.id]);
@@ -863,7 +1027,10 @@ class BoltzDatasource {
       await updateFees(swapType: swap_entity.SwapType.bitcoinToLiquid);
     }
     final chain = _chainFeesAndLimits!;
-    return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
+    return (
+      chain.btcToLbtcLimits.minimal.toInt(),
+      chain.btcToLbtcLimits.maximal.toInt(),
+    );
   }
 
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
@@ -871,7 +1038,10 @@ class BoltzDatasource {
       await updateFees(swapType: swap_entity.SwapType.liquidToBitcoin);
     }
     final chain = _chainFeesAndLimits!;
-    return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
+    return (
+      chain.lbtcToBtcLimits.minimal.toInt(),
+      chain.lbtcToBtcLimits.maximal.toInt(),
+    );
   }
 
   Future<int> getBtcLnClaimTxSize({
@@ -1214,14 +1384,14 @@ class BoltzDatasource {
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
 
-  Future<(int, bool, String?)> decodeInvoice(String invoice) async {
+  Future<(int, bool, String?, String?)> decodeInvoice(String invoice) async {
     try {
       final decoded = await DecodedInvoice.fromString(
         s: invoice,
         boltzUrl: _httpsUrl,
       );
       final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
-      return (sats, decoded.isExpired, decoded.bip21);
+      return (sats, decoded.isExpired, decoded.bip21, decoded.description);
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -1388,12 +1558,12 @@ class BoltzDatasource {
               ? receiveWalletId
               : null,
           boltzFees:
-              (chainFees.btcFees.percentage * swap.outAmount.toInt() / 100)
+              (chainFees.lbtcToBtcFees.percentage * swap.outAmount.toInt() / 100)
                       .ceil()
                   as int?,
-          lockupFees: chainFees.btcFees.userLockup.toInt() as int?,
-          claimFees: chainFees.btcFees.userClaim.toInt() as int?,
-          serverNetworkFees: chainFees.btcFees.server.toInt() as int?,
+          lockupFees: chainFees.lbtcToBtcFees.userLockup.toInt() as int?,
+          claimFees: chainFees.lbtcToBtcFees.userClaim.toInt() as int?,
+          serverNetworkFees: chainFees.lbtcToBtcFees.server.toInt() as int?,
         );
         await _boltzStore.storeChainSwap(swap);
         await _boltzStore.store(swapModel);
@@ -1415,12 +1585,12 @@ class BoltzDatasource {
               ? receiveWalletId
               : null,
           boltzFees:
-              (chainFees.lbtcFees.percentage * swap.outAmount.toInt() / 100)
+              (chainFees.btcToLbtcFees.percentage * swap.outAmount.toInt() / 100)
                       .ceil()
                   as int?,
-          lockupFees: chainFees.lbtcFees.userLockup.toInt() as int?,
-          claimFees: chainFees.lbtcFees.userClaim.toInt() as int?,
-          serverNetworkFees: chainFees.lbtcFees.server.toInt() as int?,
+          lockupFees: chainFees.btcToLbtcFees.userLockup.toInt() as int?,
+          claimFees: chainFees.btcToLbtcFees.userClaim.toInt() as int?,
+          serverNetworkFees: chainFees.btcToLbtcFees.server.toInt() as int?,
         );
         await _boltzStore.storeChainSwap(swap);
         await _boltzStore.store(swapModel);

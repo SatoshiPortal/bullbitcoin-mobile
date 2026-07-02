@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
+import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bull_sdk/boltz.dart';
@@ -165,6 +169,107 @@ class BoltzStorageDatasource {
     } catch (e) {
       log.fine('Error deleting swap from secure storage: $e');
     }
+  }
+
+  // SECURE STORAGE — SWAP MASTER KEY
+  //
+  // Keyed per network AND the default wallet's seed fingerprint, never by
+  // network alone: the fingerprint guarantees a different default wallet (or a
+  // stale key the iOS keychain kept after the app was deleted) can never be
+  // read for the current wallet — we'd only ever read the swap mnemonic that
+  // belongs to the current default seed.
+  String _swapMasterKeyStorageKey(BoltzNetwork network, String fingerprint) =>
+      '${SecureStorageKeyPrefixConstants.swapMasterKey}'
+      '${network.value}_$fingerprint';
+
+  Future<void> storeSwapMasterKey(
+    SwapMasterKeyModel swapMasterKey, {
+    required String walletFingerprint,
+  }) async {
+    final key = _swapMasterKeyStorageKey(
+      swapMasterKey.boltzNetwork,
+      walletFingerprint,
+    );
+    await _secureSwapStorage.saveValue(
+      key: key,
+      value: jsonEncode(swapMasterKey.toJson()),
+    );
+  }
+
+  Future<bool> swapMasterKeyExists(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
+    try {
+      final value = await _secureSwapStorage.getValue(
+        _swapMasterKeyStorageKey(network, walletFingerprint),
+      );
+      return value != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<SwapMasterKeyModel> fetchSwapMasterKey(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
+    final jsonString =
+        await _secureSwapStorage.getValue(
+              _swapMasterKeyStorageKey(network, walletFingerprint),
+            )
+            as String;
+    return SwapMasterKeyModel.fromJson(
+      jsonDecode(jsonString) as Map<String, dynamic>,
+    );
+  }
+
+  /// Deletes the swap master key blob for [walletFingerprint] and, best-effort,
+  /// its index counter (keyed by the swap master key's OWN fingerprint) so a
+  /// re-derive starts from a clean index. No-op on a missing key.
+  Future<void> deleteSwapMasterKey(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+  }) async {
+    try {
+      final existing = await fetchSwapMasterKey(
+        network,
+        walletFingerprint: walletFingerprint,
+      );
+      await _secureSwapStorage.deleteValue(
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}${existing.fingerprint}',
+      );
+    } catch (_) {
+      // No stored key (or unreadable) — nothing to clean beyond the blob below.
+    }
+    await _secureSwapStorage.deleteValue(
+      _swapMasterKeyStorageKey(network, walletFingerprint),
+    );
+  }
+
+  // Keyed by the swap master key's fingerprint, not the network: the swap key
+  // material is network-independent, so a per-network counter would reuse child
+  // keys. (This is the swap master key's own fingerprint, distinct from the
+  // wallet fingerprint that keys the master key blob.)
+  Future<int?> getSwapKeyIndex(String swapMasterKeyFingerprint) async {
+    try {
+      final key =
+          '${SecureStorageKeyPrefixConstants.swapKeyIndex}$swapMasterKeyFingerprint';
+      final value = await _secureSwapStorage.getValue(key);
+      if (value == null) return null;
+      return int.tryParse(value as String);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> setSwapKeyIndex(
+    String swapMasterKeyFingerprint,
+    int index,
+  ) async {
+    final key =
+        '${SecureStorageKeyPrefixConstants.swapKeyIndex}$swapMasterKeyFingerprint';
+    await _secureSwapStorage.saveValue(key: key, value: index.toString());
   }
 
   // SECURE STORAGE

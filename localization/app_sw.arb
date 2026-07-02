@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",
   "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
   "exchangeTestnetBasicAuthTitle": "Kitambulisho cha testnet exchange",
   "exchangeTestnetBasicAuthDescription": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za testnet exchange (kuingia na KYC).",
@@ -13,7 +14,15 @@
   "backupWarningLoseReasonCloudRestore": "Utarejesha kifaa chako kutoka kwenye nakala rudufu ya wingu",
   "backupWarningNoRecovery": "Hakuna njia ya kurejesha pochi yako bila nakala rudufu.",
   "swapInsufficientFunds": "Fedha hazitoshi",
-  "broadcastSignedTxBroadcastError": "Imeshindwa kutangaza muamala",
+  "broadcastSignedTxBroadcastError": "Hatukuweza kutangaza muamala wako. Angalia muunganisho wako wa intaneti na ujaribu tena.",
+  "importWatchOnlyErrorNoWalletSelected": "Bandika au changanua ufunguo wa umma au kielezo kwanza.",
+  "importWatchOnlyErrorLabelRequired": "Ipe pochi yako jina kabla ya kuingiza.",
+  "importWatchOnlyErrorInvalidFormat": "Hii haionekani kuwa ufunguo wa umma au kielezo halali. Angalia tena ulichobandika.",
+  "importWatchOnlyErrorImportFailed": "Hatukuweza kuingiza pochi hii ya kutazama-pekee. Tafadhali angalia maelezo na ujaribu tena.",
+  "broadcastSignedTxErrorInvalidTransaction": "Hii haionekani kuwa muamala halali uliosainiwa. Hakikisha umebandika PSBT kamili au muamala mzima.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hatukuweza kusoma muamala kutoka kwa lebo hii. Tafadhali jaribu kuchanganua tena.",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "bip85NoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
@@ -216,7 +225,6 @@
   "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
   "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "addressViewerTitle": "Anwani",
   "viewerTapToCopy": "Gusa kunakili",
@@ -253,6 +261,10 @@
   "exportTransactionsError": "Failed to export transactions",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "importMnemonicEmptyLabelError": "Lebo inahitajika ili kuingiza mnemonic",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "exportTransactionsInvalidDateRange": "Tarehe ya kuanza lazima iwe kabla ya tarehe ya kumaliza",
   "@exportTransactionsInvalidDateRange": {
@@ -309,6 +321,277 @@
   "fundExchangeErrorRcpPosinpe404": "Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye.",
   "fundExchangeMethodInstantSepa": "Uhawilishaji wa SEPA wa haraka na wa kawaida",
+  "pinCodeSaveError": "Imeshindwa kuhifadhi PIN yako. Tafadhali jaribu tena.",
+  "pinCodeDeleteError": "Imeshindwa kufuta PIN yako. Tafadhali jaribu tena.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
+  "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
+  "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "electrumServerUnreachable": "Seva haifikiki. Angalia anwani na ujaribu tena.",
+  "mempoolErrorInvalidUrl": "URL ya seva si sahihi. Weka kikoa au anwani ya IP sahihi.",
+  "allSeedViewErrorFetch": "Imeshindwa kupakia mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Imeshindwa kufuta mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "walletButtonCoins": "Dhibiti sarafu",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Sarafu",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{sarafu 1} other{sarafu {count}}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Zilizogandishwa",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Zinazoweza kutumika",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Hakuna iliyogandishwa",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Panga na Chuja",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} kati ya {total} zimeonyeshwa",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{matokeo 1 ambayo hayajatumika} other{matokeo {count} ambayo hayajatumika}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Sawazisha",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Futa zote",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Kiasi: Juu hadi Chini",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Kiasi: Chini hadi Juu",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Tarehe: Mpya zaidi",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Tarehe: Kongwe zaidi",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Mnyororo wa funguo",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Zote",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Pokea",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Chenji",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Hali ya kugandishwa",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Zote",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Zilizogandishwa",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Zisizogandishwa",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Lebo",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Weka upya",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Tumia",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 imechaguliwa} other{{count} zimechaguliwa}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Chagua zote",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Gandisha",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Ondoa kugandishwa",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Tendua",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Gandisha sarafu 1?} other{Gandisha sarafu {count}?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Sarafu zilizogandishwa hubaki kwenye pochi yako lakini hazijumuishwi katika matumizi hadi uziondoe kugandishwa.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Kugandisha sarafu hizi kutakuacha bila salio linaloweza kutumika.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{sarafu 1 imegandishwa · imeondolewa katika matumizi} other{sarafu {count} zimegandishwa · zimeondolewa katika matumizi}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{sarafu 1 imeondolewa kugandishwa} other{sarafu {count} zimeondolewa kugandishwa}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{uthibitisho 1} other{uthibitisho {count}}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Inasubiri",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Bado hakuna sarafu",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Sarafu zitaonekana hapa mara tu utakapopokea bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Hakuna sarafu inayolingana",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Futa vichujio",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Jaribu tena",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Telezesha sarafu ili kugandisha · bonyeza kwa muda mrefu ili kuchagua",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Imeshindwa kupakia sarafu zako. Vuta ili kuonyesha upya na ujaribu tena.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Imeshindwa kugandisha sarafu zilizochaguliwa. Tafadhali jaribu tena.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Imeshindwa kuondoa kugandishwa kwa sarafu zilizochaguliwa. Tafadhali jaribu tena.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Hitilafu imetokea. Tafadhali jaribu tena.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, one{UTXO 1} other{UTXO {count}}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} iliyogandishwa",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "Chuja kwa Tarehe",
   "logsViewerShowingCount": "Inaonyesha {shown} kati ya {total} kumbukumbu",
   "logsViewerClearFilter": "Futa kichujio",

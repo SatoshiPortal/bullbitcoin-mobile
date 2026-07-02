@@ -86,6 +86,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "При включении автопередачи с тарифами выше установленного лимита всегда будут заблокированы",
   "electrumServerAlreadyExists": "Этот сервер уже существует",
+  "electrumServerUnreachable": "Сервер недоступен. Проверьте адрес и попробуйте снова.",
   "sellPaymentMethod": "Способ оплаты",
   "transactionLabelPreimage": "Преимущество",
   "coreSwapsChainCanCoop": "Перенос будет завершен мгновенно.",
@@ -224,6 +225,8 @@
   "dcaWalletLiquidSubtitle": "Требуется совместимый кошелек",
   "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
   "appUnlockButton": "Разблокировка",
+  "appUnlockPinCheckError": "Не удалось загрузить настройки безопасности. Пожалуйста, перезапустите приложение.",
+  "appUnlockPinVerifyError": "Не удалось проверить ваш PIN. Пожалуйста, попробуйте снова.",
   "payServiceFee": "Сервисная плата",
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
@@ -418,7 +421,6 @@
   "sendSendAmount": "Отправить",
   "sendSelectedUtxosInsufficient": "Выбранные utxos не покрывают требуемую сумму",
   "swapErrorBalanceTooLow": "Слишком низкий баланс для минимальной суммы свопов",
-  "replaceByFeeErrorGeneric": "При попытке заменить транзакцию произошла ошибка",
   "fundExchangeWarningTactic5": "Они просят отправить биткойн на другую платформу",
   "rbfCustomFee": "Пользовательские феи",
   "importQrDeviceFingerprint": "Fingerprint",
@@ -507,14 +509,6 @@
   "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
   "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите, чтобы исправить.",
   "payPasteInvoice": "Счет-фактура",
-  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "Установлено",
   "dcaWalletBitcoinSubtitle": "Минимальный 0,001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Пожалуйста, введите свой пароль на устройстве BitBox, чтобы продолжить.",
@@ -1191,7 +1185,7 @@
   "broadcastSignedTxReviewTransaction": "Обзорная сделка",
   "walletArkExperimental": "Экспериментальный",
   "importQrDeviceKeystoneStep5": "Выберите \"BULL\" из списка кошельков",
-  "electrumLoadFailedError": "Не удалось загрузить серверы {reason}",
+  "electrumLoadFailedError": "Не удалось загрузить серверы ",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1449,7 +1443,6 @@
   "withdrawConfirmAmount": "Сумма",
   "transactionSwapDoNotUninstall": "Не удаляйте приложение до завершения обмена.",
   "payDefaultCommentHint": "Введите комментарий по умолчанию",
-  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
   "copyDialogButton": "Копировать",
   "bitboxActionImportWalletProcessing": "Импорт кошелька",
   "swapConfirmTransferTitle": "Подтверждение передачи",
@@ -1822,14 +1815,6 @@
   },
   "rbfErrorNoFeeRate": "Пожалуйста, выберите ставку сбора",
   "backupWalletGoogleDrivePrivacyMessage1": "Эта информация ",
-  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2164,7 +2149,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Жидкий Тестет",
-  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер {reason}",
+  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер ",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2272,7 +2257,6 @@
   "payDecodeFailed": "Не удалось расшифровать счет",
   "sendAbsoluteFees": "Абсолютные сборы",
   "arkSendConfirm": "Подтверждение",
-  "replaceByFeeErrorTransactionConfirmed": "Первоначальная сделка подтверждена",
   "rbfErrorFeeTooLow": "Вы должны увеличить ставку сбора как минимум на 1 атт/вбайт по сравнению с первоначальной транзакцией",
   "ledgerErrorMissingDerivationPathSign": "Путь заезда требуется для подписания",
   "backupWalletTitle": "Назад ваш кошелек",
@@ -2505,7 +2489,7 @@
   "importQrDeviceKruxInstructionsTitle": "Инструкции Krux",
   "transactionOrderLabelOriginName": "Название происхождения",
   "importQrDeviceKeystoneInstructionsTitle": "Инструкции по кистоне",
-  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3020,7 +3004,7 @@
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
   "arkSettleButton": "Настройка",
-  "electrumAddFailedError": "Не удалось добавить пользовательский сервер {reason}",
+  "electrumAddFailedError": "Не удалось добавить пользовательский сервер ",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3156,14 +3140,6 @@
   "coldcardStep10": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard.",
   "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
-  "labelErrorNotFound": "Лейбл «{label}» не найден.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Частная оплата",
   "autoswapDefaultWalletLabel": "Bitcoin Wallet",
   "recoverbullTestSuccessDescription": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
@@ -3226,6 +3202,7 @@
     }
   },
   "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "bip85NoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "pinStatusSettingUpDescription": "Настройка PIN-кода",
   "enterYourPinTitle": "Введите {pinOrPassword}",
   "@enterYourPinTitle": {
@@ -4025,7 +4002,13 @@
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
-  "broadcastSignedTxBroadcastError": "Не удалось транслировать транзакцию",
+  "broadcastSignedTxBroadcastError": "Не удалось передать вашу транзакцию. Проверьте подключение к интернету и попробуйте снова.",
+  "importWatchOnlyErrorNoWalletSelected": "Сначала вставьте или отсканируйте публичный ключ или дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте кошельку название перед импортом.",
+  "importWatchOnlyErrorInvalidFormat": "Это не похоже на действительный публичный ключ или дескриптор. Проверьте то, что вы вставили.",
+  "importWatchOnlyErrorImportFailed": "Не удалось импортировать этот кошелёк только для наблюдения. Пожалуйста, проверьте данные и попробуйте снова.",
+  "broadcastSignedTxErrorInvalidTransaction": "Это не похоже на действительную подписанную транзакцию. Убедитесь, что вы вставили полный PSBT или транзакцию.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не удалось прочитать транзакцию из этой метки. Пожалуйста, попробуйте отсканировать снова.",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",
@@ -4409,11 +4392,10 @@
   "mempoolErrorServerUnavailable": "Сервер недоступен. Попробуйте позже.",
   "mempoolErrorServerError": "На сервере произошла ошибка. Попробуйте позже.",
   "mempoolErrorInvalidResponse": "Сервер вернул неверный ответ.",
-  "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
-  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер: {error}",
-  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool: {error}",
-  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
+  "mempoolErrorInvalidUrl": "Недействительный URL-адрес сервера. Введите действительный домен или IP-адрес.",
+  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер",
+  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool",
+  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер",
   "settingsErrorReportingTitle": "Отчет об ошибках",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4638,7 +4620,6 @@
   "coreScreensFetchFailed": "Не удалось получить транзакцию {txid} из Electrum.",
   "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
   "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
-  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
   "coreScreensNoServersAvailable": "Нет доступных серверов Electrum.",
   "addressViewerTitle": "Адрес",
   "viewerTapToCopy": "Нажмите для копирования",
@@ -4661,6 +4642,7 @@
   "recipientsPayoutMethod": "Способ выплаты",
   "recipientsFilterByJurisdiction": "Фильтр по юрисдикции:",
   "recipientsListEmpty": "Получатели не найдены.",
+  "recipientsListLoadError": "Не удалось загрузить получателей. Потяните вниз, чтобы повторить.",
   "recipientsContinue": "Продолжить",
   "recipientsJurisdictionAll": "Все юрисдикции",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",
@@ -4812,6 +4794,305 @@
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Обратитесь в поддержку по адресу app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox поддерживается только на Android",
+  "pinCodeSaveError": "Не удалось сохранить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова.",
+  "allSeedViewErrorFetch": "Не удалось загрузить сид-фразы. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Для импорта мнемоники необходима метка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Не удалось удалить сид-фразу. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
+  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Лейбл «{label}» не найден.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "часы",
+  "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
+  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
+  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
+  "walletButtonCoins": "Управление монетами",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Монеты",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, one{{count} монета} few{{count} монеты} many{{count} монет} other{{count} монеты}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Заморожено",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Доступно",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Нет замороженных",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Сортировка и фильтр",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "Показано {visible} из {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, one{{count} непотраченный выход} few{{count} непотраченных выхода} many{{count} непотраченных выходов} other{{count} непотраченных выхода}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Синхронизировать",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Очистить всё",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Сумма: по убыванию",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Сумма: по возрастанию",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Дата: сначала новые",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Дата: сначала старые",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Цепочка ключей",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Все",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Получение",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Сдача",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Статус заморозки",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Все",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Замороженные",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Размороженные",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Метки",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Сбросить",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Применить",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, one{Выбрана {count}} few{Выбрано {count}} many{Выбрано {count}} other{Выбрано {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Выбрать всё",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Заморозить",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Разморозить",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Отменить",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, one{Заморозить {count} монету?} few{Заморозить {count} монеты?} many{Заморозить {count} монет?} other{Заморозить {count} монеты?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Замороженные монеты остаются в кошельке, но исключаются из расходования, пока вы их не разморозите.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Заморозка этих монет оставит вас без доступного для расходования баланса.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, one{{count} монета заморожена · исключена из расходования} few{{count} монеты заморожены · исключены из расходования} many{{count} монет заморожено · исключены из расходования} other{{count} монеты заморожено · исключены из расходования}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, one{{count} монета разморожена} few{{count} монеты разморожены} many{{count} монет разморожено} other{{count} монеты разморожено}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, one{{count} подтв.} few{{count} подтв.} many{{count} подтв.} other{{count} подтв.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "В ожидании",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Пока нет монет",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Монеты появятся здесь после получения биткоина.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Нет подходящих монет",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Очистить фильтры",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Повторить",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Проведите по монете, чтобы заморозить · удерживайте, чтобы выбрать",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Не удалось загрузить ваши монеты. Потяните вниз для обновления, чтобы повторить попытку.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Не удалось заморозить выбранные монеты. Пожалуйста, попробуйте снова.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Не удалось разморозить выбранные монеты. Пожалуйста, попробуйте снова.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Что-то пошло не так. Пожалуйста, попробуйте снова.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, one{{count} UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} заморожено",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "Фильтр по дате",
   "logsViewerShowingCount": "Показано {shown} из {total} записей",
   "logsViewerClearFilter": "Очистить фильтр",

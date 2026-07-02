@@ -71,11 +71,10 @@ class VaultSelectedPage extends StatelessWidget {
             if (provider == VaultProvider.googleDrive) ...[
               BBButton.big(
                 label: context.loc.recoverbullSeeMoreVaults,
-                onPressed:
-                    () => context.pushNamed(
-                      RecoverBullGoogleDriveRoute.listDriveVaults.name,
-                      extra: flow,
-                    ),
+                onPressed: () => context.pushNamed(
+                  RecoverBullGoogleDriveRoute.listDriveVaults.name,
+                  extra: flow,
+                ),
                 bgColor: context.appColors.transparent,
                 textColor: context.appColors.onSurface,
                 outlined: true,
@@ -88,11 +87,10 @@ class VaultSelectedPage extends StatelessWidget {
               ),
               child: BBButton.big(
                 label: context.loc.recoverbullDecryptVault,
-                onPressed:
-                    () => context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
-                    ),
+                onPressed: () => context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+                ),
                 bgColor: context.appColors.onSurface,
                 textColor: context.appColors.surface,
               ),

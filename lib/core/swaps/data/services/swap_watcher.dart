@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bb_mobile/core/fees/data/fees_repository.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
@@ -256,14 +256,15 @@ class SwapWatcherService {
     if (swap.receiveTxid != null || swap.wasDirectPayment) {
       return;
     }
-    final receiveAddress = swap.receiveAddress;
+    // Rescued swaps carry no stored claim address; derive one from the receive
+    // wallet (mirrors chain-swap claims and submarine refunds).
+    final receiveAddress = await _resolveLnReceiveClaimAddress(swap);
     if (receiveAddress == null) {
-      // Unrecoverable configuration problem: keep the swap claimable (the
-      // funds stay claimable via rescue tooling) but stop hot-looping.
+      // Keep the swap claimable (funds stay recoverable) but stop hot-looping.
       log.severe(
         message:
             '[SwapWatcher] swap ${swap.id} is claimable but has no receive '
-            'address',
+            'address and none could be derived',
         error: StateError('missing receive address'),
         trace: StackTrace.current,
       );
@@ -347,12 +348,24 @@ class SwapWatcherService {
 
     // Claim happens on the receiving chain.
     final claimOnLiquid = swap.type == SwapType.bitcoinToLiquid;
-    final absoluteFees = await _claimFees(
-      swap: swap,
-      isLiquid: claimOnLiquid,
-      amountSat: swap.paymentAmount,
-      chainClaimAddress: claimAddress,
-    );
+    // Pin the claim fee to the stored creation-time claimFee. An exact-amount
+    // external transfer inflates the lockup at creation assuming THIS exact
+    // claim fee (see SwapFees.calculateSwapAmountFromReceivableAmount), so a
+    // live fee here makes the recipient get more (live < quote) or less
+    // (live > quote) than the exact amount — the regression this fixes.
+    // Recovered/rescued swaps carry no trustworthy stored claimFee, so they
+    // fall back to live estimation (also what keeps the rescue path working).
+    // Trade-off accepted for now: a mempool spike above the quote can leave a
+    // pinned claim underpriced; revisit with a persisted exact-amount flag.
+    final storedClaimFee = swap.fees?.claimFee;
+    final absoluteFees = (storedClaimFee != null && storedClaimFee > 0)
+        ? storedClaimFee
+        : await _claimFees(
+            swap: swap,
+            isLiquid: claimOnLiquid,
+            amountSat: swap.paymentAmount,
+            chainClaimAddress: claimAddress,
+          );
     _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
     try {
@@ -653,10 +666,11 @@ class SwapWatcherService {
     required int? amountSat,
     String? chainClaimAddress,
   }) async {
-    try {
+    Future<int> estimate(bool cooperative) async {
       final txSize = await _boltzRepo.getSwapClaimTxSize(
         swapId: swap.id,
         swapType: swap.type,
+        isCooperative: cooperative,
         claimAddressForChainSwaps: chainClaimAddress,
       );
       final networkFee = await _feesRepository.getNetworkFees(
@@ -675,14 +689,25 @@ class SwapWatcherService {
         return max(floor, min(withFloor, max(1, amountSat ~/ 2)));
       }
       return withFloor;
+    }
+
+    try {
+      return await estimate(true);
     } catch (e) {
-      final fallback = swap.fees?.claimFee;
-      log.warning(
-        '[SwapWatcher] live claim fee estimation failed for ${swap.id} '
-        '($e); falling back to stored estimate $fallback',
-      );
-      if (fallback == null) rethrow;
-      return fallback;
+      // Cooperative sizing round-trips Boltz and can fail (notably for rescued
+      // swaps); the script-path size is computed locally, so try that next.
+      try {
+        return await estimate(false);
+      } catch (e2) {
+        final fallback = swap.fees?.claimFee;
+        log.warning(
+          '[SwapWatcher] live claim fee estimation failed for ${swap.id} '
+          '(coop: ${_errorMessage(e)}; script: ${_errorMessage(e2)}); '
+          'falling back to stored estimate $fallback',
+        );
+        if (fallback == null) rethrow;
+        return fallback;
+      }
     }
   }
 
@@ -698,6 +723,27 @@ class SwapWatcherService {
     required bool isLiquid,
   }) {
     return max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
+  }
+
+  Future<String?> _resolveLnReceiveClaimAddress(LnReceiveSwap swap) async {
+    final existing = swap.receiveAddress;
+    if (existing != null) return existing;
+    try {
+      final claimAddress = await _walletAddressRepository
+          .generateNewReceiveAddress(walletId: swap.receiveWalletId);
+      await _boltzRepo.updateSwapFields(
+        swap.id,
+        receiveAddress: claimAddress.address,
+      );
+      return claimAddress.address;
+    } catch (e, st) {
+      log.severe(
+        message: '[SwapWatcher] could not derive claim address for ${swap.id}',
+        error: e,
+        trace: st,
+      );
+      return null;
+    }
   }
 
   Future<String?> _resolveChainClaimAddress(ChainSwap swap) async {
@@ -773,6 +819,21 @@ class SwapWatcherService {
       error: error,
       trace: trace,
     );
+
+    // A recovered swap whose claim/refund is rejected because the lockup input
+    // is already spent ("bad-txns-inputs-missingorspent") was already
+    // claimed/refunded before we recovered it — there is nothing left to do and
+    // its funds are not at risk. It can never make progress, so delete it
+    // instead of leaving it stuck as an ongoing transfer in the list.
+    if (swap.recovered && _isAlreadySpentError(error)) {
+      log.info(
+        '[SwapWatcher] recovered swap ${swap.id} already resolved on-chain '
+        '(lockup spent) — deleting stale entry',
+      );
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+      await _boltzRepo.deleteSwap(swapId: swap.id);
+      return;
+    }
 
     final recovered = await _checkAndRecoverFromOutspend(
       swap: swap,
@@ -909,6 +970,12 @@ class SwapWatcherService {
         message.contains('non-bip68-final') ||
         message.contains('locktime');
   }
+
+  // Electrum rejects a broadcast whose inputs are already spent with
+  // "bad-txns-inputs-missingorspent" (RPC code -25). For a swap lockup that
+  // means it was already claimed or refunded.
+  bool _isAlreadySpentError(Object error) =>
+      _errorMessage(error).toLowerCase().contains('missingorspent');
 
   String _errorMessage(Object error) {
     if (error is boltz.BoltzError) {

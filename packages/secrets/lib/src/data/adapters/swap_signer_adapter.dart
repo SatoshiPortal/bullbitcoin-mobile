@@ -25,6 +25,14 @@ class SwapSignerAdapter implements SwapSignerPort {
       t ? boltz.Chain.bitcoinTestnet : boltz.Chain.bitcoin;
   static boltz.Chain _lbtcChain(bool t) =>
       t ? boltz.Chain.liquidTestnet : boltz.Chain.liquid;
+  static Future<boltz.SwapMasterKey> _swapMasterKey(
+    String walletMnemonic,
+    bool isTestnet,
+  ) =>
+      boltz.SwapMasterKey.create(
+        walletMnemonic: walletMnemonic,
+        network: isTestnet ? boltz.Network.testnet : boltz.Network.mainnet,
+      );
 
   @override
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
@@ -38,8 +46,9 @@ class SwapSignerAdapter implements SwapSignerPort {
     String? outAddress,
   }) =>
       _readMnemonic(fingerprint, (m) async {
+        final swapMasterKey = await _swapMasterKey(m, isTestnet);
         final swap = await boltz.BtcLnSwap.newReverse(
-          mnemonic: m,
+          swapMasterKey: swapMasterKey,
           index: BigInt.from(index),
           outAmount: BigInt.from(outAmountSat),
           outAddress: outAddress,
@@ -61,8 +70,9 @@ class SwapSignerAdapter implements SwapSignerPort {
     required bool isTestnet,
   }) =>
       _readMnemonic(fingerprint, (m) async {
+        final swapMasterKey = await _swapMasterKey(m, isTestnet);
         final swap = await boltz.BtcLnSwap.newSubmarine(
-          mnemonic: m,
+          swapMasterKey: swapMasterKey,
           index: BigInt.from(index),
           invoice: invoice,
           network: _btcChain(isTestnet),
@@ -84,8 +94,9 @@ class SwapSignerAdapter implements SwapSignerPort {
     String? outAddress,
   }) =>
       _readMnemonic(fingerprint, (m) async {
+        final swapMasterKey = await _swapMasterKey(m, isTestnet);
         final swap = await boltz.LbtcLnSwap.newReverse(
-          mnemonic: m,
+          swapMasterKey: swapMasterKey,
           index: BigInt.from(index),
           outAmount: BigInt.from(outAmountSat),
           outAddress: outAddress,
@@ -107,8 +118,9 @@ class SwapSignerAdapter implements SwapSignerPort {
     required bool isTestnet,
   }) =>
       _readMnemonic(fingerprint, (m) async {
+        final swapMasterKey = await _swapMasterKey(m, isTestnet);
         final swap = await boltz.LbtcLnSwap.newSubmarine(
-          mnemonic: m,
+          swapMasterKey: swapMasterKey,
           index: BigInt.from(index),
           invoice: invoice,
           network: _lbtcChain(isTestnet),
@@ -131,11 +143,12 @@ class SwapSignerAdapter implements SwapSignerPort {
     required ChainDirection direction,
   }) =>
       _readMnemonic(fingerprint, (m) async {
+        final swapMasterKey = await _swapMasterKey(m, isTestnet);
         final swap = await boltz.ChainSwap.newSwap(
           direction: direction == ChainDirection.btcToLbtc
               ? boltz.ChainSwapDirection.btcToLbtc
               : boltz.ChainSwapDirection.lbtcToBtc,
-          mnemonic: m,
+          swapMasterKey: swapMasterKey,
           index: BigInt.from(index),
           amount: BigInt.from(amountSat),
           isTestnet: isTestnet,

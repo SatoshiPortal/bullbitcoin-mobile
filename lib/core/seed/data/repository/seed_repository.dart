@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 class SeedRepository {
   final SeedDatasource _source;
@@ -87,9 +90,19 @@ class SeedRepository {
     }
   }
 
-  Future<void> delete(String fingerprint) => _source.delete(fingerprint);
+  @useResult
+  Future<Result<void, SeedDeleteFailure>> delete(String fingerprint) async {
+    try {
+      await _source.delete(fingerprint);
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(message: 'Failed to delete seed', error: e, trace: st);
+      return Err(SeedDeleteFailure(e.toString()));
+    }
+  }
 
-  Future<List<MnemonicSeed>> getAllMnemonicSeeds() async {
+  @useResult
+  Future<Result<List<MnemonicSeed>, SeedFetchFailure>> getAllMnemonicSeeds() async {
     try {
       final models = await _source.getAll();
       // Top-level function for isolate processing
@@ -98,27 +111,24 @@ class SeedRepository {
         List<SeedModel> models,
       ) {
         final mnemonicSeeds = <MnemonicSeed>[];
-
         for (final model in models) {
           if (model is MnemonicSeedModel) {
-            final seed = model.toEntity() as MnemonicSeed;
-            mnemonicSeeds.add(seed);
+            mnemonicSeeds.add(model.toEntity() as MnemonicSeed);
           }
         }
-
         return mnemonicSeeds;
       }
 
       // Convert models to entities in isolate to avoid blocking UI
       // (toEntity() triggers expensive fingerprint computation)
-      return await compute(convertToMnemonicSeedsInIsolate, models);
-    } catch (e, stackTrace) {
+      return Ok(await compute(convertToMnemonicSeedsInIsolate, models));
+    } catch (e, st) {
       log.severe(
         message: 'Failed to get all mnemonic seeds',
         error: e,
-        trace: stackTrace,
+        trace: st,
       );
-      rethrow;
+      return Err(SeedFetchFailure(e.toString()));
     }
   }
 }

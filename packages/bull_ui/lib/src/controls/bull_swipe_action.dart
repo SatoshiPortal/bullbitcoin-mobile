@@ -62,6 +62,20 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
   /// Fraction of the reveal width past which the action commits.
   static const double _commitFraction = 0.6;
 
+  @override
+  void didUpdateWidget(BullSwipeAction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When the gesture is disabled (e.g. the list enters selection mode after a
+    // long-press), snap the row closed so a partially-revealed action panel
+    // can't linger over the row content.
+    if (oldWidget.enabled && !widget.enabled && _dx != 0) {
+      setState(() {
+        _dx = 0;
+        _animating = true;
+      });
+    }
+  }
+
   void _onDragUpdate(DragUpdateDetails d) {
     if (!widget.enabled) return;
     setState(() {
@@ -96,60 +110,66 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
   @override
   Widget build(BuildContext context) {
     final foreground = widget.actionForeground ?? context.bull.onPrimary;
+    // The panel only exists while the row is open or animating closed; a closed
+    // row has nothing to reveal. Painting it unconditionally let it show through
+    // a translucent row above (e.g. a selected tile's tinted background).
+    final revealing = _dx != 0 || _animating;
     return ClipRect(
       child: Stack(
         children: [
           // Action panel behind the child, revealed on the trailing edge.
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Semantics(
-                button: true,
-                label: widget.actionLabel,
-                child: GestureDetector(
-                  onTap: widget.enabled && _dx < 0 ? _fire : null,
-                  child: Container(
-                    width: widget.revealWidth,
-                    color: widget.actionColor,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: BullSpacing.xs,
-                    ),
-                    // OverflowBox gives the icon+label column unbounded height so
-                    // it lays out at its natural size and centres in the panel —
-                    // never asserting an overflow, however short the row is
-                    // (ClipRect at the root trims any excess on a tiny row).
-                    child: OverflowBox(
-                      minHeight: 0,
-                      maxHeight: double.infinity,
+          if (revealing)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Semantics(
+                  button: true,
+                  label: widget.actionLabel,
+                  child: GestureDetector(
+                    onTap: widget.enabled && _dx < 0 ? _fire : null,
+                    child: Container(
+                      width: widget.revealWidth,
+                      color: widget.actionColor,
                       alignment: Alignment.center,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          BullIcon(
-                            widget.actionIcon,
-                            size: 22,
-                            color: foreground,
-                          ),
-                          const SizedBox(height: BullSpacing.xxs),
-                          Text(
-                            widget.actionLabel,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: foreground,
-                                ),
-                          ),
-                        ],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: BullSpacing.xs,
+                      ),
+                      // OverflowBox gives the icon+label column unbounded height
+                      // so it lays out at its natural size and centres in the
+                      // panel — never asserting an overflow, however short the
+                      // row is (ClipRect at the root trims any excess).
+                      child: OverflowBox(
+                        minHeight: 0,
+                        maxHeight: double.infinity,
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            BullIcon(
+                              widget.actionIcon,
+                              size: 22,
+                              color: foreground,
+                            ),
+                            const SizedBox(height: BullSpacing.xxs),
+                            Text(
+                              widget.actionLabel,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: foreground,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
           GestureDetector(
             onHorizontalDragUpdate: _onDragUpdate,
             onHorizontalDragEnd: _onDragEnd,
@@ -159,7 +179,11 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
                   : Duration.zero,
               curve: Curves.easeOut,
               transform: Matrix4.translationValues(_dx, 0, 0),
-              onEnd: () => _animating = false,
+              // Drop the panel once the close animation lands so it stops being
+              // painted behind the at-rest row.
+              onEnd: () {
+                if (mounted && _animating) setState(() => _animating = false);
+              },
               child: widget.child,
             ),
           ),

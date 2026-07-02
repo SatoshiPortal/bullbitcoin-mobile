@@ -210,7 +210,7 @@ class BitcoinWalletRepository {
   Future<String> bumpFee({
     required String walletId,
     required String txid,
-    required double newFeeRate,
+    required RelativeFee newFeeRate,
   }) async {
     final wallet = await getPrivateWallet(walletId: walletId);
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(

@@ -378,21 +378,20 @@ class LwkWalletDatasource {
 
   Future<String> buildPset({
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      if (networkFee.isAbsolute) {
-        throw Exception('Absolute fee is not supported for liquid yet!');
-      }
-      log.info(networkFee.value.toDouble().toString());
+      // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
+      // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
+      // arithmetic promoted to double — no precision loss at the SDK boundary.
       final pset = await lwkWallet.buildLbtcTx(
         sats: BigInt.from(amountSat ?? 0),
         outAddress: address,
-        feeRate: networkFee.value.toDouble() * 1000,
+        feeRate: feeRate.satPerKvbyte,
         drain: drain,
       );
       final decoded = await lwkWallet.decodeTx(pset: pset);
@@ -414,7 +413,7 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
       final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+        network: wallet.isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
         pset: pset,
         mnemonic: wallet.mnemonic,
       );
@@ -526,12 +525,12 @@ class LwkWalletDatasource {
 }
 
 extension NetworkX on Network {
-  lwk.Network get lwkNetwork {
+  lwk.LiquidNetwork get lwkNetwork {
     switch (this) {
       case Network.liquidMainnet:
-        return lwk.Network.mainnet;
+        return lwk.LiquidNetwork.mainnet;
       case Network.liquidTestnet:
-        return lwk.Network.testnet;
+        return lwk.LiquidNetwork.testnet;
       default:
         throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }

@@ -34,12 +34,18 @@ class BullStatTile extends StatelessWidget {
       children: [
         Text(
           label.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontSize: 11,
+            letterSpacing: 0.3,
+            color: colors.textMuted,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontFeatures: const [FontFeature.tabularFigures()], 
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            fontSize: 15,
+            fontFeatures: const [FontFeature.tabularFigures()],
             color: accent ?? colors.text,
           ),
         ),
@@ -47,7 +53,10 @@ class BullStatTile extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             sub!,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontSize: 11,
+              color: colors.textMuted,
+            ),
           ),
         ],
       ],

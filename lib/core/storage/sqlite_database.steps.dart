@@ -5750,6 +5750,7 @@ final class Schema13 extends i0.VersionedSchema {
     bip85Derivations,
     recoverbull,
     prices,
+    frozenUtxos,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -5994,6 +5995,7 @@ final class Schema13 extends i0.VersionedSchema {
         _column_237,
         _column_208,
         _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6069,6 +6071,17 @@ final class Schema13 extends i0.VersionedSchema {
         _column_230,
         _column_231,
       ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape39 frozenUtxos = Shape39(
+    source: i0.VersionedTable(
+      entityName: 'frozen_utxos',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
+      columns: [_column_161, _column_240, _column_241],
       attachedDatabase: database,
     ),
     alias: null,
@@ -6178,6 +6191,8 @@ class Shape38 extends i0.VersionedTable {
       columnsByName['server_network_fees']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get wasDirectPayment =>
       columnsByName['was_direct_payment']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recovered =>
+      columnsByName['recovered']! as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<int> _column_237(String aliasedName) =>
@@ -6197,6 +6212,42 @@ i1.GeneratedColumn<int> _column_238(String aliasedName) =>
       $customConstraints:
           'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_239(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'recovered',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (recovered IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape39 extends i0.VersionedTable {
+  Shape39({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get txId =>
+      columnsByName['tx_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get vout =>
+      columnsByName['vout']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_240(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'tx_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_241(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'vout',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

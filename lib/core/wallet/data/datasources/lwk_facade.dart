@@ -42,8 +42,8 @@ class LwkFacade {
         throw Exception('Wallet is not an LWK wallet');
       }
       final network = walletModel.isTestnet
-          ? lwk.Network.testnet
-          : lwk.Network.mainnet;
+          ? lwk.LiquidNetwork.testnet
+          : lwk.LiquidNetwork.mainnet;
       final descriptor = lwk.Descriptor(
         ctDescriptor: walletModel.combinedCtDescriptor,
       );
@@ -69,8 +69,8 @@ class LwkFacade {
         throw Exception('Wallet is not an LWK wallet');
       }
       final network = walletModel.isTestnet
-          ? lwk.Network.testnet
-          : lwk.Network.mainnet;
+          ? lwk.LiquidNetwork.testnet
+          : lwk.LiquidNetwork.mainnet;
       final descriptor = await lwk.Descriptor.newConfidential(
         mnemonic: walletModel.mnemonic,
         network: network,

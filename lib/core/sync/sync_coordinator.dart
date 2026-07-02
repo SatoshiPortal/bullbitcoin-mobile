@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -26,8 +27,9 @@ import 'package:flutter/widgets.dart'
 ///    sync that was gated off while away (tracked via a single "was away since
 ///    last resumed" flag, independent of the exact intermediate state path);
 ///  - per-kind successes are throttled: a kind that completed within
-///    [_minSyncInterval] is skipped on the next enqueue unless the caller
-///    passes `force: true` (pull-to-refresh and other explicit gestures).
+///    [_minSyncInterval] is skipped on the next enqueue for an
+///    [SyncTrigger.automatic] request; [SyncTrigger.user] requests
+///    (pull-to-refresh and other explicit gestures) bypass the throttle.
 ///
 /// Background tasks (`lib/core/background_tasks/handler.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
@@ -46,14 +48,15 @@ class SyncCoordinator {
     // the brief startup window before the first lifecycle event arrives
     // (lifecycleState is null then) so the cold-start sync isn't gated off.
     _isAppResumed =
-        lifecycleState == null ||
-        lifecycleState == AppLifecycleState.resumed;
-    _lifecycleListener = AppLifecycleListener(onStateChange: _onLifecycleChange);
+        lifecycleState == null || lifecycleState == AppLifecycleState.resumed;
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: _onLifecycleChange,
+    );
   }
 
   /// Minimum time between successful syncs of the same kind. A second
   /// `sync()` call within this window is a no-op for that kind unless the
-  /// caller passes `force: true`.
+  /// caller passes [SyncTrigger.user].
   static const Duration _minSyncInterval = Duration(seconds: 2);
 
   final GetWalletsUsecase _getWallets;
@@ -73,40 +76,63 @@ class SyncCoordinator {
   final Set<SyncKind> _enqueued = <SyncKind>{};
   SyncKind? _running;
   bool _draining = false;
-  Future<Map<SyncKind, Object>>? _activeDrain;
-  final Map<SyncKind, Object> _lastErrors = <SyncKind, Object>{};
+  Future<void>? _activeDrain;
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
 
-  /// Schedule `kinds` (or all kinds when `only` is null) and resolve once the
-  /// queue has drained. Iteration order follows the [SyncKind] enum
-  /// declaration (bitcoin → liquid → swaps) regardless of how callers
-  /// constructed `only`.
+  /// Per-kind waiters. A [sync] call registers a completer for each kind it
+  /// enqueues (or that is already pending) and awaits exactly those, so it
+  /// resolves when *its* kinds settle — independent of which drain ran them.
+  /// Each completer carries the kind's error (or null on success) as its
+  /// value, never via [Completer.completeError].
+  final Map<SyncKind, List<Completer<Object?>>> _waiters =
+      <SyncKind, List<Completer<Object?>>>{};
+
+  /// Schedule `kinds` (or all kinds when `only` is null) and resolve once
+  /// every requested kind that actually runs has settled. Resolution tracks
+  /// this call's own kinds (via per-kind completers), so it is correct even
+  /// when those kinds are drained by a pass another caller started. Execution
+  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps).
   ///
-  /// Pass `force: true` to bypass the per-kind throttle — reserved for
+  /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
-  /// triggers, lifecycle resumption) should leave `force` at `false`.
+  /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
   ///
   /// Returns immediately if the app is not foreground-resumed or every
   /// requested kind was deduped/throttled. Throws [SyncCoordinatorException]
   /// when any requested kind failed during the drain pass that satisfied this
   /// call.
-  Future<void> sync({Set<SyncKind>? only, bool force = false}) async {
+  Future<void> sync({
+    Set<SyncKind>? only,
+    SyncTrigger trigger = SyncTrigger.automatic,
+  }) async {
     final requested = SyncKind.values
         .where((k) => only?.contains(k) ?? true)
         .toList(growable: false);
     final started = DateTime.now();
     final dropped = <String>[];
+    final waits = <SyncKind, Future<Object?>>{};
     for (final kind in requested) {
-      final reason = _enqueue(kind, force: force);
-      if (reason != null) dropped.add('${kind.name}:$reason');
+      final reason = _enqueue(kind, trigger: trigger);
+      if (reason == null || reason == 'pending') {
+        // Will run now, or is already running/queued — wait for it to settle.
+        final completer = Completer<Object?>();
+        (_waiters[kind] ??= <Completer<Object?>>[]).add(completer);
+        waits[kind] = completer.future;
+      } else {
+        // 'gated' or 'throttled': this kind won't run, so don't await it.
+        dropped.add('${kind.name}:$reason');
+      }
     }
     if (dropped.isNotEmpty) {
       log.info('[SyncCoordinator] sync dropped (${dropped.join(', ')})');
     }
-    final settledErrors = await _drain();
+    unawaited(_drain());
+    final settled = await Future.wait(
+      waits.entries.map((e) async => MapEntry(e.key, await e.value)),
+    );
     final failures = <SyncKind, Object>{
-      for (final kind in requested)
-        if (settledErrors[kind] != null) kind: settledErrors[kind]!,
+      for (final entry in settled)
+        if (entry.value != null) entry.key: entry.value!,
     };
     final elapsedMs = DateTime.now().difference(started).inMilliseconds;
     final kinds = requested.map((k) => k.name).join(', ');
@@ -130,12 +156,11 @@ class SyncCoordinator {
   /// Returns null when the kind was enqueued, or a short reason it was dropped:
   /// 'gated' (app not resumed), 'throttled' (synced within [_minSyncInterval]),
   /// or 'pending' (already running or queued).
-  String? _enqueue(SyncKind kind, {required bool force}) {
+  String? _enqueue(SyncKind kind, {required SyncTrigger trigger}) {
     if (!_isAppResumed) return 'gated';
-    if (!force) {
+    if (trigger == SyncTrigger.automatic) {
       final last = _lastSuccessAt[kind];
-      if (last != null &&
-          DateTime.now().difference(last) < _minSyncInterval) {
+      if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
         return 'throttled';
       }
     }
@@ -145,7 +170,7 @@ class SyncCoordinator {
     return null;
   }
 
-  Future<Map<SyncKind, Object>> _drain() {
+  Future<void> _drain() {
     final inFlight = _activeDrain;
     if (inFlight != null) return inFlight;
     final future = _drainOnce();
@@ -160,9 +185,8 @@ class SyncCoordinator {
     });
   }
 
-  Future<Map<SyncKind, Object>> _drainOnce() async {
+  Future<void> _drainOnce() async {
     _draining = true;
-    _lastErrors.clear();
     try {
       while (_queue.isNotEmpty) {
         final kind = _queue.removeFirst();
@@ -171,15 +195,28 @@ class SyncCoordinator {
         try {
           await _runTask(kind);
           _lastSuccessAt[kind] = DateTime.now();
+          _settle(kind, null);
         } catch (e) {
-          // Stored for the single sanitized summary logged by sync().
-          _lastErrors[kind] = e;
+          // Delivered to any sync() awaiting this kind; the single sanitized
+          // summary is logged by sync().
+          _settle(kind, e);
+        } finally {
+          _running = null;
         }
-        _running = null;
       }
-      return Map<SyncKind, Object>.of(_lastErrors);
     } finally {
       _draining = false;
+    }
+  }
+
+  /// Completes (and clears) every waiter registered for [kind] with [error]
+  /// (null on success), waking any [sync] call awaiting that kind. The error
+  /// is delivered as the completer's value, so awaiting a waiter never throws.
+  void _settle(SyncKind kind, Object? error) {
+    final waiters = _waiters.remove(kind);
+    if (waiters == null) return;
+    for (final completer in waiters) {
+      if (!completer.isCompleted) completer.complete(error);
     }
   }
 

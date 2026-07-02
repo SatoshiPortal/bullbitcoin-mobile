@@ -57,15 +57,16 @@ class SignerAdapter implements SignerPort {
   }) =>
       _guard.read(fingerprint, (m) async {
         final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+        final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
         final bdkMnemonic =
             bdk.Mnemonic.fromString(mnemonic: m.words.join(' '));
         final secretKey = bdk.DescriptorSecretKey(
-          network: network,
+          networkKind: networkKind,
           mnemonic: bdkMnemonic,
           password: m.passphrase,
         );
         final (external, internal) =
-            _bitcoinDescriptors(secretKey, scriptType, network);
+            _bitcoinDescriptors(secretKey, scriptType, networkKind);
 
         final wallet = bdk.Wallet(
           descriptor: external,
@@ -160,15 +161,15 @@ class SignerAdapter implements SignerPort {
   (bdk.Descriptor, bdk.Descriptor) _bitcoinDescriptors(
     bdk.DescriptorSecretKey secretKey,
     ScriptType scriptType,
-    bdk.Network network,
+    bdk.NetworkKind networkKind,
   ) {
     bdk.Descriptor d(bdk.KeychainKind k) => switch (scriptType) {
           ScriptType.bip84 => bdk.Descriptor.newBip84(
-              secretKey: secretKey, keychainKind: k, network: network),
+              secretKey: secretKey, keychainKind: k, networkKind: networkKind),
           ScriptType.bip49 => bdk.Descriptor.newBip49(
-              secretKey: secretKey, keychainKind: k, network: network),
+              secretKey: secretKey, keychainKind: k, networkKind: networkKind),
           ScriptType.bip44 => bdk.Descriptor.newBip44(
-              secretKey: secretKey, keychainKind: k, network: network),
+              secretKey: secretKey, keychainKind: k, networkKind: networkKind),
         };
     return (d(bdk.KeychainKind.external_), d(bdk.KeychainKind.internal));
   }
@@ -183,7 +184,7 @@ class SignerAdapter implements SignerPort {
       _guard.read(fingerprint, (m) async {
         // LWK has no in-memory persistence (dep-audit §11): use an ephemeral
         // temp dir, deleted in `finally` (residual: a kill mid-sign leaks it).
-        final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+        final network = isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet;
         final tmpDir = await Directory.systemTemp.createTemp('secrets_lwk_');
         try {
           final mnemonic = m.words.join(' ');
