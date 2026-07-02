@@ -22,9 +22,13 @@ it is called out as **CONFIRM** with the exact check to run.
   is byte-identical. `Mnemonic.fromStorageBytes` already reads all three legacy formats.
   The package finds existing seeds unchanged — **no seed-data migration, no fund-loss in
   the seed layer**.
-- **Reads never go through the index.** Single-seed reads are keyed by `seed_<fp>` in the
-  store; the app-side index only powers *enumeration*. So an existing-but-unindexed seed
-  is never misread as "missing" by the startup wallet check.
+- **Single-seed RAW reads never go through the index.** Signing/derivation/backup reads are
+  keyed by `seed_<fp>` directly in the store; the app-side index only powers *enumeration*.
+  **Caveat:** the facade's `Secrets.fetch(fp)` / `Secrets.list()` ARE index-driven (they
+  resolve the typed handle from `SecretInfo`), so an existing-but-unindexed seed reads as
+  `SecretNotFoundFailure` through `fetch`. The startup existing-wallet check must therefore
+  use `Secrets.exists(fp)` (store-backed) or run `reconcile()` first — never `fetch` — or an
+  unindexed seed looks "missing".
 - **Three package-contract revisions are prerequisites** (sections A/B/C). They are not
   optional polish — the backup and swap slices cannot adopt correctly without them.
 - **Derivation is connective tissue.** Wallet creation, descriptors, xpubs, and
@@ -167,8 +171,12 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
   (`autoDetect`/`oublietteFirst`/`fssOnly`), and returns a `SecretsInitResult` (persist as the
   `SeedStorageLibrary` flag + `log.shout` the census). This one call replaces the old
   datasource/repository registration entirely — there is no locator and no per-port resolution.
-  On hardware-capable devices, run `Secrets.migrateToHardware()` once at startup and shout the
-  `MigrationReport` (see `OUBLIETTE_INTEGRATION_PLAN.md`).
+- **Ordering (load-bearing):** `Secrets.migrateToHardware()` is INDEX-DRIVEN, so it must run
+  **after** `Secrets.reconcile()` (Phase 1) has back-filled the index — running it in Phase 0
+  against an empty index migrates zero seeds and floods the census with
+  `fss_orphan_not_indexed` (the migrator states reconcile-first as a precondition). So although
+  `init` lands in Phase 0, the migrate call belongs with reconcile in Phase 1; wire it there,
+  not here. Shout the `MigrationReport` (see `OUBLIETTE_INTEGRATION_PLAN.md`).
 - Outcome: `Secrets`/the `Secret` handle are usable; nothing calls them yet → identical behavior.
 
 ### Phase 1 — derivation + seed read/index/reconcile (foundation)
@@ -290,6 +298,14 @@ Each phase is independently shippable and reversible. Order chosen so dependenci
 - `PrivacyScreen` mixin becomes redundant on migrated screens (PrivacyGuard is better:
   ref-counted + app-switcher cover). `MnemonicWidget` stays for **input** (typing a phrase
   is non-secret user input, not a stored secret).
+  - **BLOCKER — migrate per-flow ATOMICALLY.** `PrivacyGuard` and the legacy `PrivacyScreen`
+    mixin both write the SAME process-global `NoScreenshot`, but the guard's FLAG_SECURE
+    ref-count only counts guards. If a flow has one migrated screen (guard) and one legacy
+    screen (mixin), popping the legacy screen calls un-ref-counted `screenshotOn()` and clears
+    FLAG_SECURE while the guarded secret underneath is still visible. So migrate a whole flow's
+    screens in one step, OR make the mixin route through the guard's counter. (`PrivacyGuard`
+    now re-asserts `screenshotOff()` on lifecycle resume as defense-in-depth, but that only
+    covers a background/resume, not a same-session pop — do not rely on it.)
 - Import balance-scan (`_scanAllScriptTypes`): **no port needed** — it runs pre-import on
   user-typed words (non-secret input). Just clear the words from cubit state after import
   and route any post-import phrase display to `SecretRevealer`.

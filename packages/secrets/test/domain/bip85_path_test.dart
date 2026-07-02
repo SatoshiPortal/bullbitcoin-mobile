@@ -5,11 +5,22 @@ import 'package:secrets/src/domain/value_objects/bip85_types.dart';
 void main() {
   group('Bip85Path', () {
     test('parses hardened app number + index (with or without m/)', () {
-      final p = Bip85Path("m/83696968'/39'/0'/12'/0'");
-      expect(p.appNumber, 83696968);
-      expect(p.index, 0);
       expect(Bip85Path("128169'/64'/3'").appNumber, 128169);
       expect(Bip85Path("128169'/64'/3'").index, 3);
+      expect(Bip85Path("39'/0'/12'/0'").appNumber, 39);
+    });
+
+    test('an ABSOLUTE path strips the BIP85 root purpose (83696968\') so '
+        'appNumber is the APPLICATION, not the root', () {
+      // Previously `m/83696968'/39'/…` reported appNumber 83696968 (the root
+      // purpose) — a footgun that mislabels/derives the wrong secret. It must
+      // normalize to the app-rooted form.
+      final p = Bip85Path("m/83696968'/39'/0'/12'/0'");
+      expect(p.appNumber, 39);
+      expect(p.index, 0);
+      expect(p.path, "39'/0'/12'/0'");
+      // Same for the no-`m/` absolute form.
+      expect(Bip85Path("83696968'/128169'/64'/3'").appNumber, 128169);
     });
 
     test('rejects an empty / slash-less path at construction', () {

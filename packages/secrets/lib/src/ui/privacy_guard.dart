@@ -71,6 +71,15 @@ class _PrivacyGuardState extends State<PrivacyGuard>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final obscure = state != AppLifecycleState.resumed;
     if (obscure != _obscured) setState(() => _obscured = obscure);
+    // Defense-in-depth: on RESUME, re-assert capture-blocking. A legacy
+    // PrivacyScreen mixin writes the SAME process-global NoScreenshot without
+    // this guard's ref-count, so it can clear FLAG_SECURE (e.g. popping a
+    // legacy screen) while a guarded secret is still on screen; the ref-count
+    // won't re-trigger _set. Re-applying on resume closes the window whenever a
+    // lifecycle transition follows. (The full fix — making the mixin
+    // ref-count-aware / per-flow-atomic migration — is an app-side Phase-6
+    // task; see ADOPTION.md.)
+    if (state == AppLifecycleState.resumed) _set(enabled: true);
   }
 
   void _set({required bool enabled}) {

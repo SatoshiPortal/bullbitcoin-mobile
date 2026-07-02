@@ -20,11 +20,23 @@ enum Bip85Application {
       );
 }
 
-/// A BIP85 derivation path. Round-trips with or without a leading `m/`.
+/// A BIP85 derivation path, APP-ROOTED (first element is the application number,
+/// e.g. `39'/0'/12'/0'`). Round-trips with or without a leading `m/`, and also
+/// accepts an ABSOLUTE path — a leading `83696968'` (the reserved BIP85 root
+/// purpose) is stripped so `appNumber`/`index` read the application, not the
+/// root. Without this, `m/83696968'/39'/…` would report `appNumber == 83696968`
+/// and label/derive the wrong secret.
 @immutable
 class Bip85Path {
+  /// The reserved BIP85 root purpose (`m/83696968'`), omitted by the app-rooted
+  /// form the package uses everywhere.
+  static const _rootPurpose = "83696968'";
+
   factory Bip85Path(String path) {
-    final normalized = path.startsWith('m/') ? path.substring(2) : path;
+    var normalized = path.startsWith('m/') ? path.substring(2) : path;
+    if (normalized.startsWith('$_rootPurpose/')) {
+      normalized = normalized.substring(_rootPurpose.length + 1);
+    }
     if (normalized.isEmpty || !normalized.contains('/')) {
       throw InvalidBip85PathError('invalid BIP85 path', 'path');
     }

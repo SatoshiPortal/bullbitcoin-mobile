@@ -35,16 +35,29 @@ void main() {
       );
     });
 
-    test('unknown language falls back to english (correct wordlist)', () {
+    test('an EXPLICIT unknown language → MalformedSecretException (versioning)',
+        () {
+      // Silently defaulting an unknown language to English would derive a
+      // DIFFERENT seed (wrong wordlist) under the same fingerprint, so it must
+      // surface as malformed (a versioning/format problem), not be guessed.
       final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
         'kind': 'mnemonic',
         'words': ['zoo', 'zoo', 'wrong'],
         'passphrase': null,
         'language': 'klingon',
       })));
+      expect(() => Mnemonic.fromStorageBytes(bytes),
+          throwsA(isA<MalformedSecretException>()));
+    });
+
+    test('a MISSING language field defaults to english (legacy compat)', () {
+      // Distinct from an explicit-unknown language: legacy blobs simply omit the
+      // field, and English is the correct, fingerprint-preserving default.
+      final bytes = Uint8List.fromList(utf8.encode(jsonEncode({
+        'kind': 'mnemonic',
+        'words': ['zoo', 'zoo', 'wrong'],
+      })));
       final secret = Mnemonic.fromStorageBytes(bytes);
-      // Must be ENGLISH specifically — a fallback to any other wordlist would
-      // derive a different fingerprint and make the seed unfindable.
       expect(secret.language, bip39.Language.english);
       expect(secret.words, ['zoo', 'zoo', 'wrong']);
     });

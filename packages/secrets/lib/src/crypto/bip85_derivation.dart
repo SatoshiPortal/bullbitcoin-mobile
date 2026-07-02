@@ -25,13 +25,17 @@ class Bip85Crypto {
   static String _validatedPath(String path) =>
       bip85.Bip85HardenedPath(path).toString();
 
-  /// Strips a LEADING `m/` and a LEADING `1608'/` app-number from a recoverbull
-  /// path. `m/1608'/0'/586053381` and `1608'/0'/586053381` both → `0'/586053381`.
-  /// Anchored (not global `replaceAll`) so a `1608` appearing as a later path
-  /// element is never stripped (would derive the wrong key).
+  /// Strips a LEADING `m/`, a LEADING `83696968'/` (the BIP85 root purpose, for
+  /// an absolute path), and a LEADING `1608'/` app-number from a recoverbull
+  /// path. `m/1608'/0'/586053381`, `1608'/0'/586053381`, and
+  /// `m/83696968'/1608'/0'/586053381` all → `0'/586053381`. Anchored (not global
+  /// `replaceAll`) so a `1608` appearing as a later path element is never
+  /// stripped (would derive the wrong key).
   static String clearRecoverbullPath(String path) {
     var p = path;
     if (p.startsWith('m/')) p = p.substring(2);
+    const rootPrefix = "83696968'/";
+    if (p.startsWith(rootPrefix)) p = p.substring(rootPrefix.length);
     final appPrefix = "${recoverbullApp.number}'/";
     if (p.startsWith(appPrefix)) p = p.substring(appPrefix.length);
     return p;

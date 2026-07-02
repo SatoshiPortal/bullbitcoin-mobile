@@ -29,6 +29,11 @@ bool isKeychainLockedError(Object error) {
     // differs only in punctuation is left raw and later mis-classified.
     final code = _normalize(error.code);
     final msg = _normalize(error.message ?? '');
+    // The iOS errSecInteractionNotAllowed status (-25308 → '25308' normalized)
+    // is a bare number that could appear incidentally in an UNRELATED error's
+    // message (a byte count, an offset). So it is matched ONLY as the whole
+    // error CODE (exact), never as a substring of the free-text message.
+    if (code == '25308') return true;
     // Match ONLY signals that specifically mean "locked / not authenticated".
     // Deliberately NOT the bare substring 'keystore' — it appears in many
     // non-lock Android errors (corrupt/missing entry, decryption failure), and
@@ -36,7 +41,6 @@ bool isKeychainLockedError(Object error) {
     // "unlock and retry" (the inverse of the locked≠missing invariant). Needles
     // are stored separator-free to match the normalized input.
     const needles = [
-      '25308', // errSecInteractionNotAllowed (the leading '-' is stripped)
       'interactionnotallowed',
       'usernotauthenticated',
       'keyisnotauthenticated',

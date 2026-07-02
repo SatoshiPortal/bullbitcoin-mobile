@@ -107,6 +107,8 @@ class OublietteSecretStoreAdapter implements SecretStorePort {
       await _o.purge();
     } on OublietteException catch (e) {
       throw _translate(e, null);
+    } on PlatformException catch (e) {
+      throw _classifyRaw(e);
     }
   }
 

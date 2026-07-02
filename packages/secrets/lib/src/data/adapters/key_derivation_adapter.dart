@@ -71,6 +71,19 @@ class KeyDerivationAdapter implements KeyDerivationPort {
     required bool isTestnet,
   }) =>
       _guard.read(fingerprint, (m) async {
+        // LWK derives the confidential descriptor from the BARE mnemonic (no
+        // passphrase param), so a hasPassphrase secret would yield the
+        // bare-seed Liquid wallet under this passphrase-scoped handle — a
+        // DIFFERENT wallet the signer then refuses to sign for (signer_adapter
+        // rejects passphrase wallets for exactly this). Returning a watch-only
+        // descriptor the package can't spend from is a footgun, so reject it
+        // here too — fail closed, consistent with signing/swaps (M2/R2-H2).
+        if (m.hasPassphrase) {
+          return const Err(DerivationFailure(
+              'liquid descriptor is unsupported for passphrase wallets — lwk '
+              'derives from the bare mnemonic and would describe a different '
+              'wallet than the one this handle signs for'));
+        }
         final ct = await DescriptorDerivation.publicLiquidDescriptorFromMnemonic(
           m.words.join(' '),
           isTestnet: isTestnet,

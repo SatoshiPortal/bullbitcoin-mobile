@@ -55,7 +55,26 @@ Initial sealed-package extraction — the sole owner of user secret material
   can be extracted; `hasPassphrase` wallets are rejected on both Liquid and swap
   paths (the bare-mnemonic derivation would use a different wallet).
 - **Storage:** a persistent-null FSS read while the key still exists surfaces as
-  locked (not not-found); locked-keychain detection is separator-insensitive;
-  migration verifies by reading bytes back, re-checks the index before storing
-  (no delete-race resurrection), and reports un-indexed FSS orphans so
+  locked (not not-found); locked-keychain detection is separator-insensitive
+  (the bare `-25308` status matched only as the whole code); migration verifies
+  by reading bytes back, re-checks BOTH the FSS store and the index before
+  storing (no delete-race resurrection), and reports un-indexed FSS orphans so
   `complete` stays honest.
+- **Migration is fully distrustful of hardware presence:** an already-present HW
+  copy is byte-verified against the retained FSS copy on the skip path, and ANY
+  verify-stage failure (mismatch, corrupt ciphertext, crash-then-rerun) trashes
+  the bad HW copy and re-migrates — so an unverified/corrupt copy can never
+  count `skipped` and flip `complete` true (the gate for wholesale FSS removal),
+  nor shadow the good FSS copy.
+- **Fresh writes are verified:** `importMnemonic`/`generateMnemonic` read the
+  seed back (through the sealed guard) before indexing and fail closed if it
+  doesn't decode to the same fingerprint — a silently-dropped/corrupt write is
+  never reported as a stored seed.
+- **`liquidDescriptor` rejects passphrase wallets** (like signing/swaps), so it
+  never returns a bare-seed Liquid wallet the package can't sign for.
+- **Probe won't strand hardware seeds:** an `autoDetect` downgrade to FSS-only
+  is refused when the hardware store already holds seed keys.
+- **`Bip85Path`/recoverbull paths** strip the BIP85 root purpose (`83696968'`),
+  so an absolute path no longer misreads the root as the application number.
+- All git deps SHA-pinned in the member pubspec too (`bull_sdk` no longer tracks
+  the moving `main`).

@@ -6,7 +6,14 @@ import 'package:secrets/src/domain/secrets_error.dart';
 /// The symmetric key that encrypts/decrypts an [EncryptedVault].
 ///
 /// Unlike the mnemonic, the backup key is MEANT to leave the package — the user
-/// stores it to recover their vault — so [bytes] is accessible. It is still
+/// stores it (e.g. on the key server) to recover their vault — so [bytes] is
+/// deliberately accessible and CANNOT be sealed without breaking that flow. The
+/// package's guarantee is only that it never hands out the key and the
+/// ciphertext from the SAME call (`encryptVault` takes the key as an input and
+/// returns ciphertext only). The two-location discipline — store the key and
+/// the ciphertext apart — is therefore a CALLER responsibility, not type-
+/// enforced: a caller that derives a key ([Secret.bip85RecoverbullKey]) and then
+/// keeps it beside the ciphertext has recreated the single-holder risk. Still
 /// sensitive: `toString` never prints it. Must be >= 32 bytes.
 @immutable
 class VaultKey {

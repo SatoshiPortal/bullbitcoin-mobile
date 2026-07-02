@@ -244,6 +244,37 @@ void main() {
       expect(_err(r), isA<SigningFailure>());
     });
 
+    test('submarine: REJECTS when the sender (refund) script key is not ours',
+        () {
+      final r = IntentValidator.validateSwapCommitment(
+        weAreReceiver: false,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
+        scriptReceiverPubkey: 'boltzkey',
+        scriptSenderPubkey: 'attackerkey', // our refund side tampered
+        scriptHashlock: 'ph',
+        outAmountSat: 50500,
+        minSat: 50000,
+        maxSat: 51000,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('submarine: REJECTS a hashlock that is not our preimage', () {
+      final r = IntentValidator.validateSwapCommitment(
+        weAreReceiver: false,
+        ownPubkey: 'mykey',
+        preimageSha256: 'ph',
+        scriptReceiverPubkey: 'boltzkey',
+        scriptSenderPubkey: 'mykey',
+        scriptHashlock: 'WRONG',
+        outAmountSat: 50500,
+        minSat: 50000,
+        maxSat: 51000,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
     // Chain: commits to BOTH keys across two legs; both hashlock our preimage.
     test('chain btcToLbtc: refund on BTC lockup + claim on LBTC claim', () {
       final ok = IntentValidator.validateChainSwapCommitment(
@@ -305,6 +336,50 @@ void main() {
             receiverPubkey: 'myclaim',
             senderPubkey: 'server',
             hashlock: 'ph',
+            locktime: 999),
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('chain: REJECTS a lockup-leg hashlock that is not our preimage', () {
+      final r = IntentValidator.validateChainSwapCommitment(
+        direction: ChainDirection.btcToLbtc,
+        ownClaimPubkey: 'myclaim',
+        ownRefundPubkey: 'myrefund',
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
+        btcScript: const SwapScriptLeg(
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'WRONG', // lockup leg hashlock tampered
+            locktime: 111),
+        lbtcScript: const SwapScriptLeg(
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'ph',
+            locktime: 999),
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('chain: REJECTS a claim-leg hashlock that is not our preimage', () {
+      final r = IntentValidator.validateChainSwapCommitment(
+        direction: ChainDirection.btcToLbtc,
+        ownClaimPubkey: 'myclaim',
+        ownRefundPubkey: 'myrefund',
+        preimageSha256: 'ph',
+        outAmountSat: 1000,
+        sendAmountSat: 1000,
+        btcScript: const SwapScriptLeg(
+            receiverPubkey: 'server',
+            senderPubkey: 'myrefund',
+            hashlock: 'ph',
+            locktime: 111),
+        lbtcScript: const SwapScriptLeg(
+            receiverPubkey: 'myclaim',
+            senderPubkey: 'server',
+            hashlock: 'WRONG', // claim leg hashlock tampered
             locktime: 999),
       );
       expect(_err(r), isA<SigningFailure>());
@@ -396,6 +471,21 @@ void main() {
           feeSat: 0,
           version: 1,
           lockTime: 0,
+          inputOutpoints: ['outpoint_a'],
+        ),
+        ownsScript: _ownsMyChange,
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('REJECTS a changed locktime (version unchanged)', () {
+      final r = IntentValidator.validate(
+        pj,
+        const TxFacts(
+          outputs: [_recipient],
+          feeSat: 0,
+          version: 2,
+          lockTime: 500, // original was 0
           inputOutpoints: ['outpoint_a'],
         ),
         ownsScript: _ownsMyChange,

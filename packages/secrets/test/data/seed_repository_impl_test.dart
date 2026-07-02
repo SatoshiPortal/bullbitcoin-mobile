@@ -1,9 +1,13 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import 'dart:typed_data';
+
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
+import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/domain/ports/secret_index_port.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
@@ -84,6 +88,22 @@ void main() {
       final res = await m.repo.importMnemonic(words: zooWords);
       expect(_unwrapErr(res), isA<KeychainLockedFailure>());
     });
+
+    test('a backend that ACKS but persists CORRUPT bytes → fail, never indexed',
+        () async {
+      // store() trusts a non-throwing write; the read-back verify catches a
+      // backend that acked but dropped/corrupted the write, so a fresh seed the
+      // user may have no other copy of is never reported as stored.
+      final store = _CorruptingStore();
+      final index = _FakeSeedIndex();
+      final repo = SecretLifecycleAdapter(store: store, index: index);
+
+      final res = await repo.importMnemonic(words: zooWords);
+      expect(res, isA<Err>());
+      expect(_unwrapErr(res), isA<SecretsUnexpectedFailure>());
+      expect(await index.all(), isEmpty); // never indexed
+      expect(store.trashed, isNotEmpty); // the bad write was trashed
+    });
   });
 
   group('generateMnemonic', () {
@@ -129,4 +149,36 @@ void main() {
       expect(_unwrap(await m.repo.getInfo(fp)), isNull);
     });
   });
+}
+
+/// A store that ACKS the write but persists DIFFERENT bytes — models a backend
+/// that silently drops/corrupts (the reason the migrator and _persist byte-verify).
+class _CorruptingStore implements SecretStorePort {
+  final Map<String, Uint8List> _m = {};
+  final List<String> trashed = [];
+  @override
+  Future<void> init() async {}
+  @override
+  StoreCapabilities capabilities() => const StoreCapabilities(
+      hardwareBacked: false, thisDeviceOnly: true, syncable: false);
+  @override
+  Future<void> store(String key, Uint8List value) async =>
+      _m[key] = Uint8List.fromList([value.isEmpty ? 0 : value.first ^ 0xFF]);
+  @override
+  Future<bool> exists(String key) async => _m.containsKey(key);
+  @override
+  Future<R> useAndForget<R>(String key, Future<R> Function(Uint8List) use) async {
+    final v = _m[key];
+    if (v == null) throw SecretNotFoundException(key);
+    return use(Uint8List.fromList(v));
+  }
+  @override
+  Future<void> trash(String key) async {
+    trashed.add(key);
+    _m.remove(key);
+  }
+  @override
+  Future<void> purge() async => _m.clear();
+  @override
+  Future<List<String>> keys() async => _m.keys.toList();
 }

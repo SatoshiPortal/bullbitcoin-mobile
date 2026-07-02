@@ -6,7 +6,9 @@ import 'package:secrets/src/data/adapters/dual_read_store.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/oubliette_secret_store_adapter.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
+import 'package:secrets/src/data/migration/secret_migrator.dart';
 import 'package:secrets/src/domain/ports/secret_index_port.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
 import 'package:secrets/src/domain/value_objects/secret_info.dart';
 
 import 'fake_oubliette.dart';
@@ -168,19 +170,135 @@ void main() {
       );
     });
 
-    test('a delete racing the pass does NOT resurrect the seed in hardware',
+    test('a delete racing the pass (index removed) does NOT resurrect the seed',
         () async {
       const hex = 'deadbeef';
       final key = SecretStoreKeys.seedKey(hex);
       await fss.store(key, b([4, 5, 6]));
-      // The index reports the seed in all() (the pass snapshot) but get()
-      // returns null — modelling a delete that completed after the snapshot.
+      // index.get() returns null — a delete whose index.remove already ran.
       final report = await dual.migratePending(_RacingDeleteIndex(_info(hex)));
       expect(report.migrated, 0);
-      // The re-check before store saw the deletion → hardware stays clean.
       expect(await hw.exists(key), isFalse);
     });
+
+    test('a delete racing the pass (FSS trashed, index still present) does NOT '
+        'resurrect the seed', () async {
+      // The REAL interleaving: delete trashes the FSS store BEFORE removing the
+      // index, so the migrator reads the FSS bytes, then the FSS copy vanishes
+      // while the index snapshot still lists the seed. The FSS-existence
+      // re-check must catch it and refuse to write hardware.
+      const hex = 'deadbeef';
+      final key = SecretStoreKeys.seedKey(hex);
+      final racingFss = _ReadOnceThenGoneFss(key, b([4, 5, 6]));
+      final migrator = SecretMigrator(
+        hardware: hw,
+        fallback: racingFss,
+        index: _FakeIndex()..upsert(_info(hex)), // index still has it
+      );
+      final report = await migrator.run();
+      expect(report.migrated, 0);
+      expect(await hw.exists(key), isFalse); // no resurrection
+    });
+
+    test('a WRONG hardware copy shadowing a good FSS copy is detected, trashed, '
+        'and re-migrated (skip path byte-verifies)', () async {
+      const hex = 'deadbeef';
+      final key = SecretStoreKeys.seedKey(hex);
+      await fss.store(key, b([4, 5, 6])); // the GOOD copy
+      await hw.store(key, b([9, 9, 9])); // a corrupt/wrong HW copy
+      final index = _FakeIndex()..upsert(_info(hex));
+
+      final report = await dual.migratePending(index);
+
+      // Presence-only would have counted this `skipped` (poisoning `complete`);
+      // the byte-verify catches the mismatch, trashes it, and re-migrates.
+      expect(report.migrated, 1);
+      expect(report.complete, isTrue);
+      final got = await hw.useAndForget(key, (x) async => x.toList());
+      expect(got, [4, 5, 6]); // hardware now holds the GOOD bytes
+    });
+
+    test('a backend that persists CORRUPT bytes fails verify, trashes the copy, '
+        'and keeps complete=false', () async {
+      const hex = 'deadbeef';
+      final key = SecretStoreKeys.seedKey(hex);
+      await fss.store(key, b([4, 5, 6]));
+      final corrupting = _CorruptingHwStore();
+      final migrator = SecretMigrator(
+        hardware: corrupting,
+        fallback: fss,
+        index: _FakeIndex()..upsert(_info(hex)),
+      );
+
+      final report = await migrator.run();
+
+      expect(report.migrated, 0);
+      expect(report.complete, isFalse); // never authorizes FSS removal
+      expect(report.failures.single.errorType, 'verify_mismatch');
+      expect(corrupting.trashed, contains(key)); // bad copy removed for re-run
+    });
   });
+}
+
+/// FSS whose `useAndForget` serves the seed ONCE, then reports it gone (models a
+/// delete trashing the FSS copy between the migrator's read and its store).
+class _ReadOnceThenGoneFss implements SecretStorePort {
+  _ReadOnceThenGoneFss(this._key, this._bytes);
+  final String _key;
+  final Uint8List _bytes;
+  bool _read = false;
+  @override
+  Future<void> init() async {}
+  @override
+  StoreCapabilities capabilities() => const StoreCapabilities(
+      hardwareBacked: false, thisDeviceOnly: true, syncable: false);
+  @override
+  Future<R> useAndForget<R>(String key, Future<R> Function(Uint8List) use) async {
+    _read = true;
+    return use(Uint8List.fromList(_bytes));
+  }
+  @override
+  Future<bool> exists(String key) async => !_read; // gone after the read
+  @override
+  Future<void> store(String key, Uint8List value) async {}
+  @override
+  Future<void> trash(String key) async {}
+  @override
+  Future<void> purge() async {}
+  @override
+  Future<List<String>> keys() async => _read ? [] : [_key];
+}
+
+/// A hardware store that ACKS the write but persists DIFFERENT bytes — the
+/// OEM-keystore failure class the byte-verify exists to catch.
+class _CorruptingHwStore implements SecretStorePort {
+  final Map<String, Uint8List> _m = {};
+  final List<String> trashed = [];
+  @override
+  Future<void> init() async {}
+  @override
+  StoreCapabilities capabilities() => const StoreCapabilities(
+      hardwareBacked: true, thisDeviceOnly: true, syncable: false);
+  @override
+  Future<void> store(String key, Uint8List value) async =>
+      _m[key] = Uint8List.fromList([value.isEmpty ? 0 : value.first ^ 0xFF]);
+  @override
+  Future<bool> exists(String key) async => _m.containsKey(key);
+  @override
+  Future<R> useAndForget<R>(String key, Future<R> Function(Uint8List) use) async {
+    final v = _m[key];
+    if (v == null) throw SecretNotFoundException(key);
+    return use(Uint8List.fromList(v));
+  }
+  @override
+  Future<void> trash(String key) async {
+    trashed.add(key);
+    _m.remove(key);
+  }
+  @override
+  Future<void> purge() async => _m.clear();
+  @override
+  Future<List<String>> keys() async => _m.keys.toList();
 }
 
 /// An index whose `all()` still lists the seed (the migrator's snapshot) but

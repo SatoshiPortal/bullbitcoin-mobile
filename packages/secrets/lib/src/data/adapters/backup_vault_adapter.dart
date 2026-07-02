@@ -35,12 +35,19 @@ class BackupVaultAdapter implements BackupVaultPort {
       _guard.read(fingerprint, (m) async {
         // The key is caller-supplied — the package encrypts with it and returns
         // ONLY the ciphertext, never the key. A `VaultKey.bytes` getter defends
-        // its buffer with a copy, so read it once here.
-        final backup = rb.RecoverBull.createBackup(
-          secret: m.toStorageBytes(),
-          backupKey: vaultKey.bytes,
-        );
-        return Ok(EncryptedVault(backup.toJson()));
+        // its buffer with a copy, so read it once here. Zero the plaintext
+        // storage buffer afterwards (even on the createBackup throw path),
+        // matching the package's buffer-hygiene standard.
+        final secret = m.toStorageBytes();
+        try {
+          final backup = rb.RecoverBull.createBackup(
+            secret: secret,
+            backupKey: vaultKey.bytes,
+          );
+          return Ok(EncryptedVault(backup.toJson()));
+        } finally {
+          secret.fillRange(0, secret.length, 0);
+        }
       }, onError: VaultFailure.new);
 
   @override
@@ -50,25 +57,31 @@ class BackupVaultAdapter implements BackupVaultPort {
   }) =>
       _guard.run(() async {
         final backup = rb.BullBackup.fromJson(vault.ciphertextJson);
-        final plaintext = rb.RecoverBull.restoreBackup(
+        final plaintext = Uint8List.fromList(rb.RecoverBull.restoreBackup(
           backup: backup,
           backupKey: vaultKey.bytes,
-        );
-        final mnemonic = Mnemonic.fromStorageBytes(Uint8List.fromList(plaintext));
+        ));
+        // Zero the decrypted plaintext once we've parsed it (even on a
+        // fromStorageBytes/import throw), matching the package hygiene standard.
+        try {
+          final mnemonic = Mnemonic.fromStorageBytes(plaintext);
 
-        final imported = await _repo.importMnemonic(
-          words: mnemonic.words,
-          passphrase: mnemonic.passphrase,
-          language: MnemonicLanguage.fromName(mnemonic.language.name) ??
-              MnemonicLanguage.english,
-        );
+          final imported = await _repo.importMnemonic(
+            words: mnemonic.words,
+            passphrase: mnemonic.passphrase,
+            language: MnemonicLanguage.fromName(mnemonic.language.name) ??
+                MnemonicLanguage.english,
+          );
 
-        return switch (imported) {
-          Ok(:final value) => Ok([value]),
-          // A duplicate on restore is benign — the seed is already present.
-          Err(failure: DuplicateSecretFailure(:final fingerprint)) =>
-            Ok([fingerprint]),
-          Err(:final failure) => Err(failure),
-        };
+          return switch (imported) {
+            Ok(:final value) => Ok([value]),
+            // A duplicate on restore is benign — the seed is already present.
+            Err(failure: DuplicateSecretFailure(:final fingerprint)) =>
+              Ok([fingerprint]),
+            Err(:final failure) => Err(failure),
+          };
+        } finally {
+          plaintext.fillRange(0, plaintext.length, 0);
+        }
       }, onError: VaultFailure.new);
 }

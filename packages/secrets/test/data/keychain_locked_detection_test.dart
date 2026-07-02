@@ -30,8 +30,8 @@ void main() {
   group('isKeychainLockedError', () {
     // Table-driven over EVERY needle the matcher recognizes, asserting each
     // (matched in either the code or the message field) classifies as locked.
+    // Text needles match in EITHER the code or the message (after normalization).
     const needles = [
-      '-25308',
       'interactionnotallowed',
       'interaction_not_allowed',
       'usernotauthenticated',
@@ -56,11 +56,23 @@ void main() {
       });
     }
 
-    test('detects iOS errSecInteractionNotAllowed', () {
+    test('detects iOS errSecInteractionNotAllowed (-25308) as the CODE', () {
       expect(
         isKeychainLockedError(
             PlatformException(code: '-25308', message: 'interactionNotAllowed')),
         isTrue,
+      );
+      // The bare status code alone (normalized) is enough.
+      expect(isKeychainLockedError(PlatformException(code: '-25308')), isTrue);
+    });
+
+    test('does NOT match the number 25308 incidentally in a MESSAGE', () {
+      // The bare numeric status is matched only as the whole error code, never
+      // as a substring of free text (where it could be a byte count/offset).
+      expect(
+        isKeychainLockedError(PlatformException(
+            code: 'IOError', message: 'wrote 25308 bytes then failed')),
+        isFalse,
       );
     });
 

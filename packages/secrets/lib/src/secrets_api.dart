@@ -299,10 +299,34 @@ abstract final class Secrets {
       );
     }
     final probe = await _probe(o); // autoDetect
+    if (probe.outcome != SecretsBackendOutcome.oubliette &&
+        await _hwHoldsSeeds(o)) {
+      // The probe says downgrade to FSS-only, but hardware ALREADY holds
+      // seed(s) (a prior migration / oublietteFirst session). An FSS-only wiring
+      // reads only FSS, so those HW-resident seeds would become unreadable —
+      // and `fssIncompatible` is persisted+permanent. A device that demonstrably
+      // holds seeds in hardware is not incompatible; keep the dual wiring (HW
+      // read, FSS fallback) so nothing is stranded. Report `oubliette` (it works
+      // enough to hold seeds) while preserving the probe error for telemetry.
+      return (
+        dual,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: probe.probeError),
+      );
+    }
     return switch (probe.outcome) {
       SecretsBackendOutcome.oubliette => (dual, probe),
       _ => (fss, probe), // incompatible | deferred → FSS-only
     };
+  }
+
+  /// Whether the hardware store already holds any SEED key (not the probe
+  /// sentinel). Best-effort: any error → false (fall back to the probe verdict).
+  static Future<bool> _hwHoldsSeeds(OublietteSecretStoreAdapter o) async {
+    try {
+      return (await o.keys()).any(SecretStoreKeys.isSeedKey);
+    } on Exception {
+      return false;
+    }
   }
 
   /// Builds the oubliette-backed adapter for this device, or null where

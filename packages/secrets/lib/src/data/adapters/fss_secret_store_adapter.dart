@@ -158,6 +158,13 @@ class FssSecretStoreAdapter implements SecretStorePort {
     }
   }
 
+  /// NOTE (plaintext residency): `flutter_secure_storage` offers no keys-only
+  /// enumeration, so `readAll()` decrypts EVERY stored value into unwipeable
+  /// heap `String`s just to read the key names — on each startup reconcile and
+  /// migration census. We discard the values immediately (return only the keys),
+  /// but the plaintext transits the moving-GC heap and cannot be zeroed (the
+  /// same String-vs-bytes limit the hardware backend exists to fix). Shrinking
+  /// this awaits a keys-only platform API; documented, not yet avoidable.
   @override
   Future<List<String>> keys() async {
     final all = await _kv.readAll();

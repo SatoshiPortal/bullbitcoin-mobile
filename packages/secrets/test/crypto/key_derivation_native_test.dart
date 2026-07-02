@@ -95,4 +95,17 @@ void main() {
     );
     expect((res as Err).failure, isA<SecretNotFoundFailure>());
   });
+
+  test('liquidDescriptor REJECTS a passphrase wallet (would derive a wallet it '
+      'cannot sign for)', () async {
+    // LWK derives from the bare mnemonic, so a hasPassphrase seed would yield
+    // the bare-seed Liquid wallet under this passphrase-scoped handle — a
+    // wallet the signer then refuses to sign for. The check fails closed BEFORE
+    // any native LWK call, so this is sound even on the pure path.
+    final withPass =
+        _unwrap(await repo.importMnemonic(words: zooWords, passphrase: 'trezor'));
+    expect(withPass, isNot(zooFp)); // distinct fingerprint from the bare seed
+    final res = await kd.liquidDescriptor(fingerprint: withPass, isTestnet: true);
+    expect((res as Err).failure, isA<DerivationFailure>());
+  });
 }

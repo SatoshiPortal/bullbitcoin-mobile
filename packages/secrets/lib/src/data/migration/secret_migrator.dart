@@ -73,56 +73,63 @@ class SecretMigrator {
     final indexedHexes = {for (final i in indexed) i.fingerprint.hex};
 
     for (final info in indexed) {
-      final key = SecretStoreKeys.seedKey(info.fingerprint.hex);
+      final fp = info.fingerprint;
+      final key = SecretStoreKeys.seedKey(fp.hex);
+      Uint8List? original;
       try {
+        // ── Already in hardware: DON'T trust presence. A crash between a prior
+        //    store and its verify, or a backend that acked a corrupt write,
+        //    leaves an unverified HW copy that oubliette (write-once) can't
+        //    repair — and it SHADOWS the good FSS copy (DualReadStore falls back
+        //    only on miss, not read-failure). So while an FSS copy still exists,
+        //    byte-verify HW against it; a mismatch/unreadable HW copy is trashed
+        //    and re-migrated below, never counted `skipped`. ────────────────────
         if (await _hw.exists(key)) {
-          skipped++;
-          continue;
+          final verdict = await _verifyHwAgainstFss(key);
+          if (verdict != _HwCheck.mismatch) {
+            skipped++; // matches, or no FSS copy left to compare against
+            continue;
+          }
+          await _tryTrash(key); // bad HW copy → fall through to re-migrate
         }
-        // Read the FSS bytes OUT of the callback first (FSS zeroes `bytes`, not
-        // our copy). We store to HW only AFTER re-checking the seed wasn't
-        // deleted meanwhile — a delete (index.remove + trash) that races this
-        // pass must never resurrect the seed in hardware. This narrows the
-        // exists→read→store window that the migration-in-flight guard (which
-        // only serializes migrations) leaves open against delete.
-        Uint8List? original;
+
+        // Read the FSS bytes OUT of the callback (FSS zeroes `bytes`, not our
+        // copy). Store to HW only AFTER re-checking the seed wasn't deleted
+        // meanwhile: a delete trashes the FSS copy (and HW) BEFORE removing the
+        // index, so we re-check BOTH the FSS store and the index — either one
+        // gone means a delete is in flight and we must NOT resurrect the seed.
         await _fss.useAndForget(key, (bytes) async {
           original = Uint8List.fromList(bytes);
         });
         if (original == null) {
-          failures.add((fingerprint: info.fingerprint, errorType: 'fss_empty'));
+          failures.add((fingerprint: fp, errorType: 'fss_empty'));
           continue;
         }
-        if (await _index.get(info.fingerprint) == null) {
-          // Deleted while we read it — do NOT re-create in hardware.
-          original!.fillRange(0, original!.length, 0);
-          continue;
+        if (!await _fss.exists(key) || await _index.get(fp) == null) {
+          continue; // deleted while we read it — `finally` zeroes `original`
         }
+
         await _hw.store(key, original!);
-        // Verify by reading bytes back and comparing — a backend that acks
-        // exists() but persists corrupt ciphertext passes a presence-only check.
-        final originalBytes = original!;
+        // Verify by reading bytes back — a backend that acks the write but
+        // persists corrupt/truncated ciphertext passes a presence-only check.
+        // ANY failure here (mismatch, not-found, corrupt-ciphertext decode)
+        // trashes the just-written HW copy so a re-run retries cleanly instead
+        // of counting the poison `skipped`.
         try {
-          final verified = await _hw.useAndForget(key, (stored) async {
-            if (stored.length != originalBytes.length) return false;
-            for (var i = 0; i < stored.length; i++) {
-              if (stored[i] != originalBytes[i]) return false;
-            }
-            return true;
-          });
-          if (verified) {
+          if (await _readBackMatches(key, original!)) {
             migrated++;
           } else {
-            failures.add((fingerprint: info.fingerprint, errorType: 'verify_mismatch'));
+            await _tryTrash(key);
+            failures.add((fingerprint: fp, errorType: 'verify_mismatch'));
           }
-        } on SecretNotFoundException {
-          failures.add((fingerprint: info.fingerprint, errorType: 'verify_failed'));
-        } finally {
-          original!.fillRange(0, original!.length, 0);
+        } on Exception catch (e) {
+          await _tryTrash(key);
+          failures.add((fingerprint: fp, errorType: 'verify_failed:${e.runtimeType}'));
         }
       } on Exception catch (e) {
-        failures
-            .add((fingerprint: info.fingerprint, errorType: e.runtimeType.toString()));
+        failures.add((fingerprint: fp, errorType: e.runtimeType.toString()));
+      } finally {
+        if (original != null) original!.fillRange(0, original!.length, 0);
       }
     }
 
@@ -159,4 +166,51 @@ class SecretMigrator {
       failures: failures,
     );
   }
+
+  /// Verifies an already-present HW copy against the retained FSS copy.
+  /// `match` = bytes agree; `noFss` = no FSS copy to compare (trust HW —
+  /// nothing better to do, and never destroy the only copy); `mismatch` = HW is
+  /// wrong/unreadable and must be re-migrated.
+  Future<_HwCheck> _verifyHwAgainstFss(String key) async {
+    Uint8List? fssCopy;
+    try {
+      await _fss.useAndForget(key, (b) async {
+        fssCopy = Uint8List.fromList(b);
+      });
+    } on SecretNotFoundException {
+      return _HwCheck.noFss; // FSS already removed — can't compare, trust HW
+    }
+    if (fssCopy == null) return _HwCheck.noFss;
+    try {
+      return await _readBackMatches(key, fssCopy!)
+          ? _HwCheck.match
+          : _HwCheck.mismatch;
+    } on Exception {
+      return _HwCheck.mismatch; // HW copy unreadable/corrupt → re-migrate
+    } finally {
+      fssCopy!.fillRange(0, fssCopy!.length, 0);
+    }
+  }
+
+  /// Reads [key] back from hardware and byte-compares against [expected].
+  Future<bool> _readBackMatches(String key, Uint8List expected) =>
+      _hw.useAndForget(key, (stored) async {
+        if (stored.length != expected.length) return false;
+        for (var i = 0; i < stored.length; i++) {
+          if (stored[i] != expected[i]) return false;
+        }
+        return true;
+      });
+
+  /// Best-effort HW trash of a bad/unverified copy — never throws (a trash
+  /// failure must not abort the whole pass; the next re-run retries).
+  Future<void> _tryTrash(String key) async {
+    try {
+      await _hw.trash(key);
+    } on Exception {
+      // ignore — re-run will re-attempt; the failure is already recorded.
+    }
+  }
 }
+
+enum _HwCheck { match, mismatch, noFss }

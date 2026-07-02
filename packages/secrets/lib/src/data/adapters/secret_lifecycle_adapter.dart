@@ -36,16 +36,37 @@ class SecretLifecycleAdapter implements SecretLifecyclePort {
     if (await _store.exists(_key(fp))) {
       return Err(DuplicateSecretFailure(fp));
     }
-    // Zero the JSON-encoded write buffer after the store, matching the package's
-    // own hygiene standard (the migrator and FSS reads zero their buffers; the
-    // main write site must too). The FSS adapter base64-copies before persisting,
-    // so this buffer is ours to wipe.
+    // Zero the JSON-encoded write buffer after use, matching the package's own
+    // hygiene standard (the migrator and FSS reads zero their buffers; the main
+    // write site must too). The FSS adapter base64-copies before persisting, so
+    // this buffer is ours to wipe.
     final bytes = m.toStorageBytes();
     try {
-      await _store.store(_key(fp), bytes);
-    } on SecretAlreadyExistsException {
-      // A concurrent import won the race between exists() and store().
-      return Err(DuplicateSecretFailure(fp));
+      try {
+        await _store.store(_key(fp), bytes);
+      } on SecretAlreadyExistsException {
+        // A concurrent import won the race between exists() and store().
+        return Err(DuplicateSecretFailure(fp));
+      }
+      // Verify persistence by reading the seed back BEFORE indexing — through
+      // the sanctioned [SecretGuard] reader (NOT a raw useAndForget, which the
+      // seal confines to the guard + UI reader + store impls). `store` trusts a
+      // non-throwing write, but the package distrusts these backends everywhere
+      // else (5-attempt read backoff; the migrator byte-verifies). A fresh
+      // generate is the one moment the user may have no other copy, so a
+      // silently-dropped/corrupted write must NOT be reported as a stored seed:
+      // if the read-back doesn't decode to the SAME fingerprint, trash it and
+      // fail rather than index an unverifiable seed.
+      final verify = await _guard.read<bool>(
+        fp,
+        (m) async => Ok(m.fingerprint == fp),
+        onError: SecretsUnexpectedFailure.new,
+      );
+      final verified = verify is Ok<bool, SecretsFailure> && verify.value;
+      if (!verified) {
+        await _store.trash(_key(fp));
+        return const Err(SecretsUnexpectedFailure('store_verify_failed'));
+      }
     } finally {
       bytes.fillRange(0, bytes.length, 0);
     }

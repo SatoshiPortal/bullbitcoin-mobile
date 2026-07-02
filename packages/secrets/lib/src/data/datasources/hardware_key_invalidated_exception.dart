@@ -6,8 +6,17 @@
 /// The stored ciphertext exists but is unreadable forever.
 ///
 /// Distinct from [KeychainLockedException] (transient, retryable) and
-/// [SecretNotFoundException] (the key was never stored). This is permanent:
-/// recovery is `purge()` + the user re-entering the secret from their backup.
+/// [SecretNotFoundException] (the key was never stored). This is permanent for
+/// the HARDWARE copy.
+///
+/// Recovery is NOT a blanket `purge()` — during the dual period an intact FSS
+/// copy of the SAME seed may still exist, and `purge()` deletes seed keys from
+/// BOTH backends (`DualReadStore.purge`), destroying that recoverable copy. The
+/// correct policy is: read via `DualReadStore` (which surfaces this rather than
+/// masking it), and if the seed still exists in FSS the app can keep using it;
+/// only when NO copy is readable does the app fall back to re-entry from the
+/// user's own backup. Trash the single invalidated HARDWARE key (not a global
+/// purge) if it must be cleared.
 class HardwareKeyInvalidatedException implements Exception {
   const HardwareKeyInvalidatedException({this.key});
 

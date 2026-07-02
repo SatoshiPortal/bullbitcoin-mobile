@@ -21,12 +21,6 @@ class Seed {
   @internal
   Uint8List get bytes => Uint8List.fromList(_bytes);
 
-  /// Hex representation (the only "view" of a seed — there are no words).
-  @internal
-  String get hex => _bytes
-      .map((b) => b.toRadixString(16).padLeft(2, '0'))
-      .join();
-
   @override
   String toString() => 'Seed(${_bytes.length} bytes)'; // redacted
 }
@@ -128,7 +122,12 @@ class Mnemonic {
   static Mnemonic _fromMap(Map<String, dynamic> m) {
     bip39.Language lang(Object? name) => bip39.Language.values.firstWhere(
           (l) => l.name == (name ?? 'english'),
-          orElse: () => bip39.Language.english,
+          // An UNKNOWN stored language is a format/versioning problem, not
+          // English — silently defaulting would derive a DIFFERENT seed (wrong
+          // wordlist) under the same fingerprint. Surface it as malformed so the
+          // guard maps it to InvalidMnemonicFailure rather than mis-deriving.
+          orElse: () => throw MalformedSecretException(
+              'unknown stored mnemonic language: $name'),
         );
 
     // 1. This package's native format.
