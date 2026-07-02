@@ -5,14 +5,18 @@ same environment and network family.
 
 ## Boundaries
 
-- `application/` owns sweep orchestration and fee policy.
+- `domain/` owns the fee policy, the sealed `AutosweepError` family, and the
+  `AutosweepWalletPort` capability abstraction for default wallet lookup,
+  current receive address selection, and drain transaction
+  construction/signing.
+- `domain/usecases/run_auto_sweep_usecase.dart` owns sweep orchestration. It is
+  registered as a lazySingleton on purpose so its in-flight wallet id set can
+  deduplicate sweeps across concurrent sync triggers.
+- `data/autosweep_wallet_adapter.dart` is the only AutoSweep class that imports
+  concrete wallet repositories. It implements the domain port and maps raw
+  repository exceptions to the sealed `AutosweepError` family.
 - `public/autosweep_facade.dart` is the only AutoSweep entry point for other
   features.
-- `application/ports/autosweep_wallet_port.dart` is the application boundary for
-  default wallet lookup, current receive address selection, and drain
-  transaction construction/signing.
-- `frameworks/autosweep_wallet_adapter.dart` is the only AutoSweep class that
-  imports concrete wallet repositories.
 - `autosweep_locator.dart` wires the facade, use case, port adapter, and policy
   into the app locator.
 - Broadcasting is delegated to core blockchain use cases. Labels are delegated

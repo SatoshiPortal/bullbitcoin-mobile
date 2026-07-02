@@ -4,10 +4,14 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/autosweep/application/autosweep_fee_policy.dart';
-import 'package:bb_mobile/features/autosweep/application/ports/autosweep_wallet_port.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_error.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_fee_policy.dart';
+import 'package:bb_mobile/features/autosweep/domain/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
+/// Registered as a lazySingleton on purpose: the in-flight wallet id set
+/// deduplicates sweeps triggered by concurrent wallet syncs, which only
+/// works when every caller shares the same instance.
 class RunAutoSweepUsecase {
   static const int _dustThresholdSat = 100;
 
@@ -46,6 +50,10 @@ class RunAutoSweepUsecase {
         origin: syncedWallet.id,
       );
       return txid;
+    } on AutosweepError {
+      rethrow;
+    } catch (e) {
+      throw AutosweepUnexpectedException('Autosweep failed: $e');
     } finally {
       _inFlightWalletIds.remove(syncedWallet.id);
     }

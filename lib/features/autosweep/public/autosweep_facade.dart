@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/autosweep/application/run_auto_sweep_usecase.dart';
+import 'package:bb_mobile/features/autosweep/domain/usecases/run_auto_sweep_usecase.dart';
 
 class AutosweepFacade {
   final RunAutoSweepUsecase _runAutoSweep;
