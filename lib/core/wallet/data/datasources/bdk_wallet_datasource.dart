@@ -261,6 +261,65 @@ class BdkWalletDatasource {
     return psbt.serialize();
   }
 
+  Future<String> buildMultiRecipientPsbt({
+    required List<({String address, int amountSat})> recipients,
+    required NetworkFee networkFee,
+    required List<WalletUtxoModel> inputs,
+    bool replaceByFee = true,
+    required WalletModel wallet,
+  }) async {
+    if (inputs.isEmpty) {
+      throw ArgumentError('inputs must not be empty');
+    }
+    if (recipients.isEmpty) {
+      throw ArgumentError('recipients must not be empty');
+    }
+
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    var txBuilder = bdk.TxBuilder();
+
+    for (final recipient in recipients) {
+      final bdkAddress = bdk.Address(
+        address: recipient.address,
+        network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      );
+      txBuilder = txBuilder.addRecipient(
+        script: bdkAddress.scriptPubkey(),
+        amount: bdk.Amount.fromSat(satoshi: recipient.amountSat),
+      );
+    }
+
+    final outPoints = inputs
+        .map(
+          (utxo) => bdk.OutPoint(
+            txid: bdk.Txid.fromString(hex: utxo.txId),
+            vout: utxo.vout,
+          ),
+        )
+        .toList();
+    txBuilder = txBuilder.addUtxos(outpoints: outPoints);
+    txBuilder = txBuilder.manuallySelectedOnly();
+
+    if (!replaceByFee) {
+      txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
+
+    switch (networkFee) {
+      case AbsoluteFee(:final sats):
+        txBuilder = txBuilder.feeAbsolute(
+          feeAmount: bdk.Amount.fromSat(satoshi: sats),
+        );
+      case RelativeFee(:final satPerKwu):
+        txBuilder = txBuilder.feeRate(
+          feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: satPerKwu),
+        );
+    }
+
+    final psbt = txBuilder.finish(wallet: bdkWallet);
+
+    return psbt.serialize();
+  }
+
   Future<int> decodeTxSize(String psbtString) async {
     final psbt = bdk.Psbt(psbtBase64: psbtString);
     final size = psbt.extractTx().vsize();

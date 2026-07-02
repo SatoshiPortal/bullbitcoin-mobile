@@ -68,6 +68,43 @@ class BitcoinWalletRepository {
     return psbt;
   }
 
+  Future<String> buildMultiRecipientPsbt({
+    required String walletId,
+    required List<({String address, int amountSat})> recipients,
+    required NetworkFee networkFee,
+    required List<WalletUtxo> inputs,
+    bool replaceByFee = true,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    final wallet =
+        WalletModel.publicBdk(
+              externalDescriptor: metadata.externalPublicDescriptor,
+              internalDescriptor: metadata.internalPublicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
+
+    return await _bdkWallet.buildMultiRecipientPsbt(
+      wallet: wallet,
+      recipients: recipients,
+      networkFee: networkFee,
+      inputs: inputs
+          .map((utxo) => WalletUtxoMapper.fromEntity(utxo))
+          .toList(),
+      replaceByFee: replaceByFee,
+    );
+  }
+
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final wallet = await getPrivateWallet(walletId: walletId);
     final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
