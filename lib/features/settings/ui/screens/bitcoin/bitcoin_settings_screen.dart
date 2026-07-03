@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_routes.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
+import 'package:bb_mobile/features/lightning_address/public/lightning_address_routes.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -59,6 +60,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   title: context.loc.bitcoinSettingsBtcpayTitle,
                   onTap: () =>
                       context.pushNamed(BtcpayRoute.btcpaySettings.name),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.alternate_email,
+                  title: context.loc.bitcoinSettingsLightningAddressTitle,
+                  onTap: () => context.pushNamed(
+                    LightningAddressRoute.lightningAddressSettings.name,
+                  ),
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,

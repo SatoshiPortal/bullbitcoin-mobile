@@ -14571,6 +14571,92 @@
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
   },
+  "bitcoinSettingsLightningAddressTitle": "Lightning Address",
+  "@bitcoinSettingsLightningAddressTitle": {
+  },
+  "lightningAddressTitle": "Lightning Address",
+  "@lightningAddressTitle": {
+  },
+  "lightningAddressInactiveTitle": "Register a Lightning Address",
+  "@lightningAddressInactiveTitle": {
+  },
+  "lightningAddressInactiveBody": "Choose a name for receiving Lightning payments through your wallet-owned Liquid address.",
+  "@lightningAddressInactiveBody": {
+  },
+  "lightningAddressInactiveKnownTitle": "Lightning Address is inactive",
+  "@lightningAddressInactiveKnownTitle": {
+  },
+  "lightningAddressInactiveKnownBody": "Status lookup found this name, but it is not active.",
+  "@lightningAddressInactiveKnownBody": {
+  },
+  "lightningAddressNymLabel": "Name",
+  "@lightningAddressNymLabel": {
+  },
+  "lightningAddressNymHelper": "Use only the name part before @.",
+  "@lightningAddressNymHelper": {
+  },
+  "lightningAddressRegisterButton": "Register",
+  "@lightningAddressRegisterButton": {
+  },
+  "lightningAddressSubmitting": "Registering...",
+  "@lightningAddressSubmitting": {
+  },
+  "lightningAddressConfirmTitle": "Register Lightning Address?",
+  "@lightningAddressConfirmTitle": {
+  },
+  "lightningAddressConfirmBody": "Bull Wallet will create or reuse a dedicated Lightning Address Liquid wallet, derive wallet-owned server authentication internally, and submit your selected name plus a confidential descriptor to the configured Bullnym server.",
+  "@lightningAddressConfirmBody": {
+  },
+  "lightningAddressConfirmCancel": "Cancel",
+  "@lightningAddressConfirmCancel": {
+  },
+  "lightningAddressConfirmSubmit": "Register",
+  "@lightningAddressConfirmSubmit": {
+  },
+  "lightningAddressOperationInProgress": "Lightning Address registration is still in progress.",
+  "@lightningAddressOperationInProgress": {
+  },
+  "lightningAddressActiveTitle": "Lightning Address is active",
+  "@lightningAddressActiveTitle": {
+  },
+  "lightningAddressSuccessTitle": "Lightning Address registered",
+  "@lightningAddressSuccessTitle": {
+  },
+  "lightningAddressSuccessBody": "This address was returned by the server after registration.",
+  "@lightningAddressSuccessBody": {
+  },
+  "lightningAddressNoCopyableAddressAfterLookup": "Status lookup confirms the name is active. The full address is only shown immediately after a new registration.",
+  "@lightningAddressNoCopyableAddressAfterLookup": {
+  },
+  "lightningAddressCheckStatusButton": "Check Status",
+  "@lightningAddressCheckStatusButton": {
+  },
+  "lightningAddressUncertainTitle": "Status Unknown",
+  "@lightningAddressUncertainTitle": {
+  },
+  "lightningAddressUncertainBody": "Registration may have succeeded. Check status before trying again.",
+  "@lightningAddressUncertainBody": {
+  },
+  "lightningAddressLookupFailedTitle": "Status Check Failed",
+  "@lightningAddressLookupFailedTitle": {
+  },
+  "lightningAddressLookupFailedBody": "Status could not be checked. Try again before registering.",
+  "@lightningAddressLookupFailedBody": {
+  },
+  "lightningAddressInvalidNym": "Use a valid name.",
+  "@lightningAddressInvalidNym": {
+  },
+  "lightningAddressSetupFailed": "Setup failed before anything was submitted. Please try again.",
+  "@lightningAddressSetupFailed": {
+  },
+  "lightningAddressRejected": "The server rejected this name.",
+  "@lightningAddressRejected": {
+  },
+  "lightningAddressNetworkError": "Network error. Please try again.",
+  "@lightningAddressNetworkError": {
+  },
+  "lightningAddressGenericError": "Lightning Address setup failed. Please try again.",
+  "@lightningAddressGenericError": {
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"

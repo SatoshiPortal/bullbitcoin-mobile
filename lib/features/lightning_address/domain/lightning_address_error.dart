@@ -18,6 +18,11 @@ enum WalletOwnedLightningAddressRegistrationFailurePhase {
   registrationSubmission,
 }
 
+enum WalletOwnedLightningAddressActivationFailurePhase {
+  localPreparation,
+  registrationSubmission,
+}
+
 sealed class LightningAddressException implements Exception {
   final LightningAddressErrorKind kind;
   final String code;
@@ -220,6 +225,40 @@ final class WalletOwnedLightningAddressRegistrationException
   @override
   String toString() {
     return 'WalletOwnedLightningAddressRegistrationException('
+        'phase: $phase, cause: $cause)';
+  }
+}
+
+final class WalletOwnedLightningAddressActivationException
+    extends LightningAddressException {
+  final WalletOwnedLightningAddressActivationFailurePhase phase;
+  final LightningAddressException cause;
+  final bool submissionMayBeUncertain;
+
+  WalletOwnedLightningAddressActivationException.fromRegistration(
+    WalletOwnedLightningAddressRegistrationException error,
+  ) : phase = switch (error.phase) {
+        WalletOwnedLightningAddressRegistrationFailurePhase.localPreparation =>
+          WalletOwnedLightningAddressActivationFailurePhase.localPreparation,
+        WalletOwnedLightningAddressRegistrationFailurePhase
+            .registrationSubmission =>
+          WalletOwnedLightningAddressActivationFailurePhase
+              .registrationSubmission,
+      },
+      cause = error.cause,
+      submissionMayBeUncertain = error.submissionMayBeUncertain,
+      super._(
+        kind: error.cause.kind,
+        code: error.cause.code,
+        retryable: error.cause.retryable,
+      );
+
+  @override
+  String toTranslated(BuildContext context) => cause.toTranslated(context);
+
+  @override
+  String toString() {
+    return 'WalletOwnedLightningAddressActivationException('
         'phase: $phase, cause: $cause)';
   }
 }

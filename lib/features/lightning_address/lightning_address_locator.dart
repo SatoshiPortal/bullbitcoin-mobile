@@ -7,11 +7,13 @@ import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wa
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/lightning_address/data/default_wallet_xprv_adapter.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_default_wallet_xprv_port.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/activate_wallet_owned_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_registration_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_wallet_owned_lightning_address_registration_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/prepare_lightning_address_wallet_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/register_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/register_wallet_owned_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_cubit.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:get_it/get_it.dart';
@@ -76,5 +78,16 @@ class LightningAddressLocator {
         lookupWalletOwnedRegistration: lookupWalletOwnedRegistration.execute,
       );
     });
+    locator.registerFactory<ActivateWalletOwnedLightningAddressUsecase>(
+      () => ActivateWalletOwnedLightningAddressUsecase(
+        locator<RegisterWalletOwnedLightningAddressUsecase>(),
+      ),
+    );
+    locator.registerFactory<LightningAddressActivationCubit>(
+      () => LightningAddressActivationCubit(
+        locator<ActivateWalletOwnedLightningAddressUsecase>(),
+        locator<LookupWalletOwnedLightningAddressRegistrationUsecase>(),
+      ),
+    );
   }
 }

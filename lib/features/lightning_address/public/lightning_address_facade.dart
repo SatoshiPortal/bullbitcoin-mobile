@@ -2,7 +2,10 @@ import 'package:bb_mobile/features/lightning_address/domain/lightning_address_re
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet_registration.dart';
 
-export 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
+export 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart'
+    hide
+        WalletOwnedLightningAddressActivationException,
+        WalletOwnedLightningAddressActivationFailurePhase;
 export 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
 export 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet_registration.dart'
     show WalletOwnedLightningAddressRegistration;
