@@ -11,6 +11,11 @@ class BullnymRegisterResult {
 class BullnymLookupResult {
   final String nym;
   final bool active;
+  final String? lightningAddress;
 
-  const BullnymLookupResult({required this.nym, required this.active});
+  const BullnymLookupResult({
+    required this.nym,
+    required this.active,
+    this.lightningAddress,
+  });
 }

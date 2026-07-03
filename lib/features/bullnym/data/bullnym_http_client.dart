@@ -227,6 +227,7 @@ class BullnymHttpClient implements BullnymClientPort {
     return BullnymLookupResult(
       nym: _requiredString(json, 'nym'),
       active: _requiredBool(json, 'active'),
+      lightningAddress: _optionalString(json, 'lightning_address'),
     );
   }
 
@@ -243,6 +244,15 @@ class BullnymHttpClient implements BullnymClientPort {
     if (value is bool) return value;
     throw BullnymException.invalidServerResponse(
       diagnosticReason: 'Server response is missing bool field $key',
+    );
+  }
+
+  String? _optionalString(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value == null) return null;
+    if (value is String) return value;
+    throw BullnymException.invalidServerResponse(
+      diagnosticReason: 'Server response field $key is not a string',
     );
   }
 }

@@ -2,6 +2,7 @@ enum LightningAddressActivationStatus {
   loading,
   idle,
   active,
+  activeLocalSetupFailed,
   inactive,
   submitting,
   registered,
@@ -15,6 +16,7 @@ enum LightningAddressActivationFailure {
   setupFailed,
   submissionUncertain,
   rejected,
+  serverTemporary,
   network,
   generic,
 }
@@ -24,12 +26,14 @@ class LightningAddressActivationState {
   final LightningAddressActivationFailure? failure;
   final String nym;
   final String? registeredAddress;
+  final bool localSetupRetryable;
 
   const LightningAddressActivationState({
     this.status = LightningAddressActivationStatus.loading,
     this.failure,
     this.nym = '',
     this.registeredAddress,
+    this.localSetupRetryable = false,
   });
 
   bool get isLoading => status == LightningAddressActivationStatus.loading;
@@ -38,13 +42,19 @@ class LightningAddressActivationState {
   bool get isRegistered =>
       status == LightningAddressActivationStatus.registered;
   bool get isActive => status == LightningAddressActivationStatus.active;
+  bool get isActiveLocalSetupFailed =>
+      status == LightningAddressActivationStatus.activeLocalSetupFailed;
   bool get isInactive => status == LightningAddressActivationStatus.inactive;
+  bool get receiveReady =>
+      status == LightningAddressActivationStatus.active ||
+      status == LightningAddressActivationStatus.registered;
 
   LightningAddressActivationState copyWith({
     LightningAddressActivationStatus? status,
     LightningAddressActivationFailure? failure,
     String? nym,
     String? registeredAddress,
+    bool? localSetupRetryable,
     bool clearFailure = false,
     bool clearRegisteredAddress = false,
   }) {
@@ -52,9 +62,10 @@ class LightningAddressActivationState {
       status: status ?? this.status,
       failure: clearFailure ? null : failure ?? this.failure,
       nym: nym ?? this.nym,
-      registeredAddress: clearRegisteredAddress
+      registeredAddress: clearRegisteredAddress && registeredAddress == null
           ? null
           : registeredAddress ?? this.registeredAddress,
+      localSetupRetryable: localSetupRetryable ?? this.localSetupRetryable,
     );
   }
 }

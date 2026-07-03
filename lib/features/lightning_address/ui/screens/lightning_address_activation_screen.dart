@@ -69,9 +69,23 @@ class _LightningAddressActivationScreenState
                   ? _RegisteredView(
                       nym: state.nym,
                       lightningAddress: state.registeredAddress!,
+                      receiveReady: state.receiveReady,
                     )
                   : state.isActive
-                  ? _ActiveView(nym: state.nym)
+                  ? _ActiveView(
+                      nym: state.nym,
+                      lightningAddress: state.registeredAddress,
+                      receiveReady: state.receiveReady,
+                    )
+                  : state.isActiveLocalSetupFailed
+                  ? _ActiveLocalSetupFailedView(
+                      nym: state.nym,
+                      lightningAddress: state.registeredAddress,
+                      localSetupRetryable: state.localSetupRetryable,
+                      onCheckStatus: context
+                          .read<LightningAddressActivationCubit>()
+                          .load,
+                    )
                   : state.isInactive
                   ? _InactiveKnownView(
                       nym: state.nym,
@@ -122,26 +136,24 @@ class _LightningAddressActivationScreenState
     if (!_formKey.currentState!.validate()) return;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        scrollable: true,
-        title: Text(context.loc.lightningAddressConfirmTitle),
-        content: Text(context.loc.lightningAddressConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(context.loc.lightningAddressConfirmCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              context.loc.lightningAddressConfirmSubmit,
-              textAlign: TextAlign.end,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(dialogContext.loc.lightningAddressConfirmTitle),
+          content: Text(dialogContext.loc.lightningAddressConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(dialogContext.loc.lightningAddressConfirmCancel),
             ),
-          ),
-        ],
-      ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(dialogContext.loc.lightningAddressConfirmSubmit),
+            ),
+          ],
+        );
+      },
     );
-    if (confirmed != true || !mounted) return;
+    if (!mounted || confirmed != true) return;
     await context.read<LightningAddressActivationCubit>().submit();
   }
 
@@ -162,6 +174,8 @@ class _LightningAddressActivationScreenState
         context.loc.lightningAddressUncertainBody,
       LightningAddressActivationFailure.rejected =>
         context.loc.lightningAddressRejected,
+      LightningAddressActivationFailure.serverTemporary =>
+        context.loc.lightningAddressServerTemporary,
       LightningAddressActivationFailure.network =>
         context.loc.lightningAddressNetworkError,
       LightningAddressActivationFailure.generic =>
@@ -383,8 +397,14 @@ class _InactiveKnownView extends StatelessWidget {
 
 class _ActiveView extends StatelessWidget {
   final String nym;
+  final String? lightningAddress;
+  final bool receiveReady;
 
-  const _ActiveView({required this.nym});
+  const _ActiveView({
+    required this.nym,
+    required this.lightningAddress,
+    required this.receiveReady,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -394,10 +414,78 @@ class _ActiveView extends StatelessWidget {
         _StatusNotice(
           icon: Icons.check_circle,
           title: context.loc.lightningAddressActiveTitle,
-          body: context.loc.lightningAddressNoCopyableAddressAfterLookup,
+          body: lightningAddress == null
+              ? context.loc.lightningAddressNoCopyableAddressAfterLookup
+              : context.loc.lightningAddressCopyableAddressAfterLookup,
         ),
         const Gap(24),
         _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
+        if (lightningAddress != null) ...[
+          const Gap(16),
+          CopyInput(
+            text: lightningAddress!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        const Gap(16),
+        _InfoRow(
+          label: context.loc.lightningAddressReceiveReadinessLabel,
+          value: receiveReady
+              ? context.loc.lightningAddressReceiveReady
+              : context.loc.lightningAddressReceiveNotReady,
+        ),
+      ],
+    );
+  }
+}
+
+class _ActiveLocalSetupFailedView extends StatelessWidget {
+  final String nym;
+  final String? lightningAddress;
+  final bool localSetupRetryable;
+  final VoidCallback onCheckStatus;
+
+  const _ActiveLocalSetupFailedView({
+    required this.nym,
+    required this.lightningAddress,
+    required this.localSetupRetryable,
+    required this.onCheckStatus,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _StatusNotice(
+          icon: Icons.warning_amber_outlined,
+          title: context.loc.lightningAddressLocalSetupFailedTitle,
+          body: localSetupRetryable
+              ? context.loc.lightningAddressLocalSetupFailedBody
+              : context.loc.lightningAddressLocalSetupNotRetryableBody,
+        ),
+        const Gap(24),
+        _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
+        if (lightningAddress != null) ...[
+          const Gap(16),
+          CopyInput(
+            text: lightningAddress!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        if (localSetupRetryable) ...[
+          const Gap(24),
+          BBButton.big(
+            label: context.loc.lightningAddressRetrySetupButton,
+            iconData: Icons.refresh,
+            iconFirst: true,
+            onPressed: onCheckStatus,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          ),
+        ],
       ],
     );
   }
@@ -406,8 +494,13 @@ class _ActiveView extends StatelessWidget {
 class _RegisteredView extends StatelessWidget {
   final String nym;
   final String lightningAddress;
+  final bool receiveReady;
 
-  const _RegisteredView({required this.nym, required this.lightningAddress});
+  const _RegisteredView({
+    required this.nym,
+    required this.lightningAddress,
+    required this.receiveReady,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -426,6 +519,13 @@ class _RegisteredView extends StatelessWidget {
           text: lightningAddress,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+        ),
+        const Gap(16),
+        _InfoRow(
+          label: context.loc.lightningAddressReceiveReadinessLabel,
+          value: receiveReady
+              ? context.loc.lightningAddressReceiveReady
+              : context.loc.lightningAddressReceiveNotReady,
         ),
       ],
     );

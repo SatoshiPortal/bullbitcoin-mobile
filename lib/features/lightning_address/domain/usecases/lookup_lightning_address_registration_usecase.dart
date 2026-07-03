@@ -11,7 +11,11 @@ class LookupLightningAddressRegistrationUsecase {
   Future<LightningAddressStatus> execute({required String npubHex}) async {
     try {
       final result = await _bullnym.lookupRegistration(npubHex: npubHex);
-      return LightningAddressStatus(nym: result.nym, active: result.active);
+      return LightningAddressStatus(
+        nym: result.nym,
+        active: result.active,
+        lightningAddress: result.lightningAddress,
+      );
     } on BullnymException catch (e) {
       throw mapBullnymToLightningAddressException(e);
     } catch (_) {

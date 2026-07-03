@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/activate_wallet_owned_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_wallet_owned_lightning_address_registration_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_receive_readiness_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_cubit.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_state.dart';
 import 'package:test/test.dart';
@@ -11,19 +11,22 @@ import 'package:test/test.dart';
 void main() {
   group('LightningAddressActivationCubit', () {
     late _FakeActivateWalletOwnedLightningAddressUsecase activate;
-    late _FakeLookupWalletOwnedLightningAddressRegistrationUsecase lookup;
+    late _FakeLookupLightningAddressReceiveReadinessUsecase lookup;
     late LightningAddressActivationCubit cubit;
 
     setUp(() {
       activate = _FakeActivateWalletOwnedLightningAddressUsecase();
-      lookup = _FakeLookupWalletOwnedLightningAddressRegistrationUsecase();
+      lookup = _FakeLookupLightningAddressReceiveReadinessUsecase();
       cubit = LightningAddressActivationCubit(activate, lookup);
     });
 
     tearDown(() => cubit.close());
 
     test('load active status without a copyable address', () async {
-      lookup.result = const LightningAddressStatus(nym: 'alice', active: true);
+      lookup.registration = const LightningAddressStatus(
+        nym: 'alice',
+        active: true,
+      );
 
       await cubit.load();
 
@@ -31,6 +34,22 @@ void main() {
       expect(cubit.state.status, LightningAddressActivationStatus.active);
       expect(cubit.state.nym, 'alice');
       expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, true);
+    });
+
+    test('load active status stores canonical address when returned', () async {
+      lookup.registration = const LightningAddressStatus(
+        nym: 'alice',
+        active: true,
+        lightningAddress: 'alice@example.invalid',
+      );
+
+      await cubit.load();
+
+      expect(cubit.state.status, LightningAddressActivationStatus.active);
+      expect(cubit.state.nym, 'alice');
+      expect(cubit.state.registeredAddress, 'alice@example.invalid');
+      expect(cubit.state.receiveReady, true);
     });
 
     test('a failed lookup still lets a first-time user register', () async {
@@ -56,7 +75,7 @@ void main() {
     test(
       'load inactive known status keeps it distinct from first run',
       () async {
-        lookup.result = const LightningAddressStatus(
+        lookup.registration = const LightningAddressStatus(
           nym: 'alice',
           active: false,
         );
@@ -66,6 +85,7 @@ void main() {
         expect(cubit.state.status, LightningAddressActivationStatus.inactive);
         expect(cubit.state.nym, 'alice');
         expect(cubit.state.registeredAddress, isNull);
+        expect(cubit.state.receiveReady, false);
       },
     );
 
@@ -98,6 +118,7 @@ void main() {
       expect(cubit.state.status, LightningAddressActivationStatus.registered);
       expect(cubit.state.nym, 'alice');
       expect(cubit.state.registeredAddress, 'alice@example.invalid');
+      expect(cubit.state.receiveReady, true);
     });
 
     test('missing default wallet maps to actionable setup failure', () async {
@@ -120,6 +141,7 @@ void main() {
         LightningAddressActivationFailure.noDefaultBitcoinWallet,
       );
       expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, false);
     });
 
     test('uncertain submission maps to check-status state', () async {
@@ -144,6 +166,7 @@ void main() {
         LightningAddressActivationFailure.submissionUncertain,
       );
       expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, false);
     });
 
     test('server rejection maps to rejected failure', () async {
@@ -164,6 +187,30 @@ void main() {
 
       expect(cubit.state.status, LightningAddressActivationStatus.failure);
       expect(cubit.state.failure, LightningAddressActivationFailure.rejected);
+      expect(cubit.state.receiveReady, false);
+    });
+
+    test('retryable server rejection maps to temporary failure', () async {
+      cubit.nymChanged('alice');
+      activate
+          .error = WalletOwnedLightningAddressActivationException.fromRegistration(
+        WalletOwnedLightningAddressRegistrationException.registrationSubmission(
+          cause: const LightningAddressServerRejectedRequestException(
+            code: 'TemporarilyUnavailable',
+            retryable: true,
+          ),
+          walletId: 'wallet-id',
+          walletCreated: true,
+        ),
+      );
+
+      await cubit.submit();
+
+      expect(cubit.state.status, LightningAddressActivationStatus.failure);
+      expect(
+        cubit.state.failure,
+        LightningAddressActivationFailure.serverTemporary,
+      );
     });
 
     test('load failure keeps status distinct from inactive', () async {
@@ -180,6 +227,7 @@ void main() {
         LightningAddressActivationFailure.lookupFailed,
       );
       expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, false);
     });
 
     test('missing default wallet lookup maps to actionable failure', () async {
@@ -196,7 +244,47 @@ void main() {
         LightningAddressActivationFailure.noDefaultBitcoinWallet,
       );
       expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, false);
     });
+
+    test('active lookup with local setup failure keeps active state', () async {
+      lookup.result = const LightningAddressReceiveReadiness(
+        registration: LightningAddressStatus(nym: 'alice', active: true),
+        localSetupFailed: true,
+        localSetupRetryable: true,
+      );
+
+      await cubit.load();
+
+      expect(
+        cubit.state.status,
+        LightningAddressActivationStatus.activeLocalSetupFailed,
+      );
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.nym, 'alice');
+      expect(cubit.state.receiveReady, false);
+      expect(cubit.state.localSetupRetryable, true);
+    });
+
+    test(
+      'active lookup with non-retryable setup failure disables retry',
+      () async {
+        lookup.result = const LightningAddressReceiveReadiness(
+          registration: LightningAddressStatus(nym: 'alice', active: true),
+          localSetupFailed: true,
+          localSetupRetryable: false,
+        );
+
+        await cubit.load();
+
+        expect(
+          cubit.state.status,
+          LightningAddressActivationStatus.activeLocalSetupFailed,
+        );
+        expect(cubit.state.localSetupRetryable, false);
+        expect(cubit.state.receiveReady, false);
+      },
+    );
 
     test('failed status check preserves uncertain submission state', () async {
       cubit.nymChanged('alice');
@@ -227,14 +315,16 @@ void main() {
     });
 
     test('stale lookup result does not overwrite active submission', () async {
-      final pendingLookup = Completer<LightningAddressStatus>();
+      final pendingLookup = Completer<LightningAddressReceiveReadiness>();
       lookup.pendingResult = pendingLookup.future;
 
       final loadFuture = cubit.load();
       cubit.nymChanged('alice');
       final submitFuture = cubit.submit();
       pendingLookup.complete(
-        const LightningAddressStatus(nym: 'old', active: false),
+        const LightningAddressReceiveReadiness(
+          registration: LightningAddressStatus(nym: 'old', active: false),
+        ),
       );
       await loadFuture;
       await submitFuture;
@@ -263,18 +353,22 @@ class _FakeActivateWalletOwnedLightningAddressUsecase
   }
 }
 
-class _FakeLookupWalletOwnedLightningAddressRegistrationUsecase
-    implements LookupWalletOwnedLightningAddressRegistrationUsecase {
+class _FakeLookupLightningAddressReceiveReadinessUsecase
+    implements LookupLightningAddressReceiveReadinessUsecase {
   int executeCalls = 0;
-  LightningAddressStatus result = const LightningAddressStatus(
-    nym: '',
-    active: false,
-  );
-  Future<LightningAddressStatus>? pendingResult;
+  LightningAddressReceiveReadiness result =
+      const LightningAddressReceiveReadiness(
+        registration: LightningAddressStatus(nym: '', active: false),
+      );
+  Future<LightningAddressReceiveReadiness>? pendingResult;
   Object? error;
 
+  set registration(LightningAddressStatus status) {
+    result = LightningAddressReceiveReadiness(registration: status);
+  }
+
   @override
-  Future<LightningAddressStatus> execute() async {
+  Future<LightningAddressReceiveReadiness> execute() async {
     executeCalls += 1;
     final error = this.error;
     if (error != null) throw error;

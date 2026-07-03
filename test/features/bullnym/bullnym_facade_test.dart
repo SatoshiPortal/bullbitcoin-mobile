@@ -223,6 +223,7 @@ void main() {
 
     expect(response.nym, 'alice');
     expect(response.active, isFalse);
+    expect(response.lightningAddress, isNull);
     final request = stub.captured.requests.single;
     expect(request.method, 'GET');
     expect(request.path, '/register/lookup');
@@ -244,6 +245,19 @@ void main() {
       ),
     );
     expect(stub.captured.requests, isEmpty);
+  });
+
+  test('parses canonical lookup Lightning Address when returned', () async {
+    final stub = _stubDio([
+      {'nym': 'alice', 'active': true, 'lightning_address': 'alice@bullpay.ca'},
+    ]);
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+    final response = await facade.lookupRegistration(npubHex: 'aa' * 32);
+
+    expect(response.nym, 'alice');
+    expect(response.active, isTrue);
+    expect(response.lightningAddress, 'alice@bullpay.ca');
   });
 
   test('maps backend error responses with diagnostics', () async {

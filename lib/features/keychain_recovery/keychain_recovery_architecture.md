@@ -68,6 +68,9 @@ Unsupported wallet networks do not invalidate the whole manifest file or the who
 Invalid manifest file structure, duplicate wallet materializations, and reservation mismatches are rejected before recovery by `keychain_manifest`.
 Because import-plan DTOs cross a public facade boundary, `keychain_recovery` also revalidates reservation identity, derivation path, entry identity, and wallet membership before materializing wallets.
 
+`requiresProductReactivation` is a successful local wallet restore with a required follow-up product activation step.
+Lightning Address uses this status because manifest recovery restores the wallet materialization but not Bullnym registration state.
+
 Once a wallet materialization is returned as `created`, `alreadyPresent`, or `requiresProductReactivation`, it is treated as current local wallet inventory.
 If manifest recording then fails, recovery returns `failedManifestRecord` for those wallets and rolls back newly created deterministic wallets best-effort when the materializer supplies a rollback callback.
 Rollback is only allowed inside the deterministic wallet materializer or through its explicit rollback callback; keychain recovery never edits manifest files directly.

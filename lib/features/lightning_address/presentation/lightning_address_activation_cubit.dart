@@ -2,17 +2,17 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_nym_validation.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/activate_wallet_owned_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_wallet_owned_lightning_address_registration_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_receive_readiness_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LightningAddressActivationCubit
     extends Cubit<LightningAddressActivationState> {
   final ActivateWalletOwnedLightningAddressUsecase _activate;
-  final LookupWalletOwnedLightningAddressRegistrationUsecase _lookupStatus;
+  final LookupLightningAddressReceiveReadinessUsecase _lookupReadiness;
   int _operationId = 0;
 
-  LightningAddressActivationCubit(this._activate, this._lookupStatus)
+  LightningAddressActivationCubit(this._activate, this._lookupReadiness)
     : super(const LightningAddressActivationState());
 
   Future<void> load() async {
@@ -23,22 +23,30 @@ class LightningAddressActivationCubit
     emit(
       state.copyWith(
         status: LightningAddressActivationStatus.loading,
+        localSetupRetryable: false,
         clearFailure: !wasSubmissionUncertain,
         clearRegisteredAddress: true,
       ),
     );
 
     try {
-      final status = await _lookupStatus.execute();
+      final readiness = await _lookupReadiness.execute();
       if (isClosed || operationId != _operationId || state.isSubmitting) return;
+      final registration = readiness.registration;
       emit(
         state.copyWith(
-          status: status.active
+          status: readiness.localSetupFailed
+              ? LightningAddressActivationStatus.activeLocalSetupFailed
+              : registration.active
               ? LightningAddressActivationStatus.active
               : LightningAddressActivationStatus.inactive,
-          nym: status.active || state.nym.trim().isEmpty ? status.nym : null,
+          nym: registration.active || state.nym.trim().isEmpty
+              ? registration.nym
+              : null,
+          registeredAddress: registration.lightningAddress,
+          localSetupRetryable: readiness.localSetupRetryable,
           clearFailure: true,
-          clearRegisteredAddress: true,
+          clearRegisteredAddress: registration.lightningAddress == null,
         ),
       );
     } catch (e, stack) {
@@ -58,6 +66,7 @@ class LightningAddressActivationCubit
         state.copyWith(
           status: LightningAddressActivationStatus.failure,
           failure: failure,
+          localSetupRetryable: false,
           clearRegisteredAddress: true,
         ),
       );
@@ -81,6 +90,7 @@ class LightningAddressActivationCubit
     emit(
       state.copyWith(
         status: LightningAddressActivationStatus.idle,
+        localSetupRetryable: false,
         clearFailure: true,
         clearRegisteredAddress: true,
       ),
@@ -115,6 +125,7 @@ class LightningAddressActivationCubit
       state.copyWith(
         status: LightningAddressActivationStatus.submitting,
         nym: nym,
+        localSetupRetryable: false,
         clearFailure: true,
         clearRegisteredAddress: true,
       ),
@@ -128,6 +139,7 @@ class LightningAddressActivationCubit
           status: LightningAddressActivationStatus.registered,
           nym: result.nym,
           registeredAddress: result.lightningAddress,
+          localSetupRetryable: false,
           clearFailure: true,
         ),
       );
@@ -142,6 +154,7 @@ class LightningAddressActivationCubit
         state.copyWith(
           status: LightningAddressActivationStatus.failure,
           failure: _registrationFailureFor(e),
+          localSetupRetryable: false,
           clearRegisteredAddress: true,
         ),
       );
@@ -174,6 +187,13 @@ class LightningAddressActivationCubit
       WalletOwnedLightningAddressActivationException(
         cause: LightningAddressException(
           kind: LightningAddressErrorKind.serverRejectedRequest,
+          retryable: true,
+        ),
+      ) =>
+        LightningAddressActivationFailure.serverTemporary,
+      WalletOwnedLightningAddressActivationException(
+        cause: LightningAddressException(
+          kind: LightningAddressErrorKind.serverRejectedRequest,
         ),
       ) =>
         LightningAddressActivationFailure.rejected,
@@ -185,6 +205,11 @@ class LightningAddressActivationCubit
         LightningAddressActivationFailure.network,
       LightningAddressException(kind: LightningAddressErrorKind.invalidNym) =>
         LightningAddressActivationFailure.invalidNym,
+      LightningAddressException(
+        kind: LightningAddressErrorKind.serverRejectedRequest,
+        retryable: true,
+      ) =>
+        LightningAddressActivationFailure.serverTemporary,
       LightningAddressException(
         kind: LightningAddressErrorKind.serverRejectedRequest,
       ) =>
@@ -199,6 +224,10 @@ class LightningAddressActivationCubit
     return switch (error) {
       LightningAddressException(code: 'NoDefaultBitcoinWallet') =>
         LightningAddressActivationFailure.noDefaultBitcoinWallet,
+      LightningAddressException(
+        kind: LightningAddressErrorKind.localPreparationFailed,
+      ) =>
+        LightningAddressActivationFailure.setupFailed,
       _ => LightningAddressActivationFailure.lookupFailed,
     };
   }

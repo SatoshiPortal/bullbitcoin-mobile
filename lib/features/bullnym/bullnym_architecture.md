@@ -19,23 +19,24 @@ pages, DMs, local storage, or autosweep behavior.
 
 ## PR9 Protocol Subset
 
-The current PR9 subset is grounded in the sibling Bullnym harness at
-`bullnym-tests@c784058` and captured by the local Bullnym unit tests in
-`test/features/bullnym/`.
+The current protocol subset reflects the mobile Bullnym client contract. The
+mobile adapter accepts optional fields only when the server returns them; product
+code must not assume fields beyond this documented subset.
 
-PR9 implements only the fields needed by this foundation slice:
+The foundation contract implements only these fields:
 
 - `POST /register` with `nym`, `ct_descriptor`, `npub`, `signature`, and
   `timestamp`;
 - register response fields `nym` and `lightning_address`;
 - `DELETE /register` with `nym`, `npub`, `signature`, and `timestamp`;
-- `GET /register/lookup?npub=:hex` with response fields `nym` and `active`;
+- `GET /register/lookup?npub=:hex` with response fields `nym`, `active`, and
+  optional `lightning_address`;
 - Bullpay LA v2 signing layout:
   `bullpay-la-v2\0action\0npub_hex\0nym\0(payload\0)*timestamp`.
 
-This PR intentionally does not send an extra public verification key field or
-expose derived Lightning Address behavior beyond returning the server's register
-response field. Server quota/history fields are not part of this minimal public
+This feature intentionally does not send an extra public verification key field or
+expose derived Lightning Address behavior beyond returning server-supplied
+address fields. Server quota/history fields are not part of this minimal public
 facade yet; they need an owning follow-up before product UI consumes Bullnym.
 
 ## Signing

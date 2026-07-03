@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -13,16 +14,19 @@ void main() {
   late _FakeGetSettingsUsecase getSettings;
   late _FakeDeterministicWalletsFacade deterministicWallets;
   late _FakeKeychainManifestFacade keychainManifest;
+  late _FakeApplyWalletBehaviorDefaultsUsecase applyWalletBehaviorDefaults;
   late PrepareLightningAddressWalletUsecase usecase;
 
   setUp(() {
     getSettings = _FakeGetSettingsUsecase();
     deterministicWallets = _FakeDeterministicWalletsFacade();
     keychainManifest = _FakeKeychainManifestFacade();
+    applyWalletBehaviorDefaults = _FakeApplyWalletBehaviorDefaultsUsecase();
     usecase = PrepareLightningAddressWalletUsecase(
       getSettings: getSettings,
       deterministicWallets: deterministicWallets,
       keychainManifest: keychainManifest,
+      applyWalletBehaviorDefaults: applyWalletBehaviorDefaults,
       bip85Registry: const Bip85RegistryFacade(),
     );
   });
@@ -74,6 +78,15 @@ void main() {
     expect(materialization.scriptType, ScriptType.bip84);
   });
 
+  test('applies Lightning Address wallet behavior defaults', () async {
+    await usecase.execute();
+
+    final request = applyWalletBehaviorDefaults.requests.single;
+    expect(request.walletId, 'la-wallet');
+    expect(request.hideOnHome, true);
+    expect(request.autoSweepEnabled, true);
+  });
+
   test('reuses existing wallet materializations idempotently', () async {
     deterministicWallets.prepared = _prepared(created: false);
 
@@ -106,6 +119,27 @@ void main() {
       'la-wallet',
     );
   });
+
+  test(
+    'keeps prepared wallets when behavior defaults fail after manifest',
+    () async {
+      applyWalletBehaviorDefaults.error = StateError('metadata failed');
+
+      await expectLater(
+        usecase.execute(),
+        throwsA(
+          isA<LightningAddressException>().having(
+            (error) => error.kind,
+            'kind',
+            LightningAddressErrorKind.localPreparationFailed,
+          ),
+        ),
+      );
+
+      expect(keychainManifest.recordRequests, hasLength(1));
+      expect(deterministicWallets.rollbackRequests, isEmpty);
+    },
+  );
 
   test('reports durable manifest failures as non-retryable', () async {
     keychainManifest.recordError = KeychainManifestEntryConflictException(
@@ -219,6 +253,41 @@ class _FakeKeychainManifestFacade implements KeychainManifestFacade {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _ApplyWalletBehaviorRequest {
+  final String walletId;
+  final bool? hideOnHome;
+  final bool? autoSweepEnabled;
+
+  const _ApplyWalletBehaviorRequest({
+    required this.walletId,
+    required this.hideOnHome,
+    required this.autoSweepEnabled,
+  });
+}
+
+class _FakeApplyWalletBehaviorDefaultsUsecase
+    implements ApplyWalletBehaviorDefaultsUsecase {
+  final requests = <_ApplyWalletBehaviorRequest>[];
+  Object? error;
+
+  @override
+  Future<void> execute({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {
+    final error = this.error;
+    if (error != null) throw error;
+    requests.add(
+      _ApplyWalletBehaviorRequest(
+        walletId: walletId,
+        hideOnHome: hideOnHome,
+        autoSweepEnabled: autoSweepEnabled,
+      ),
+    );
+  }
 }
 
 PreparedDeterministicWallets _prepared({bool created = true}) {

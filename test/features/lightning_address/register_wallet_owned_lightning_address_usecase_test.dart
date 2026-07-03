@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/bullnym/bullnym_locator.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
@@ -198,6 +199,37 @@ void main() {
       );
     });
 
+    test(
+      'keeps retryable server rejection distinct from uncertainty',
+      () async {
+        register.error = const LightningAddressServerRejectedRequestException(
+          code: 'TemporarilyUnavailable',
+          retryable: true,
+        );
+
+        await expectLater(
+          usecase.execute(nym: 'alice'),
+          throwsA(
+            isA<WalletOwnedLightningAddressRegistrationException>()
+                .having(
+                  (e) => e.phase,
+                  'phase',
+                  WalletOwnedLightningAddressRegistrationFailurePhase
+                      .registrationSubmission,
+                )
+                .having(
+                  (e) => e.submissionMayBeUncertain,
+                  'submissionMayBeUncertain',
+                  false,
+                )
+                .having((e) => e.cause.retryable, 'retryable', true),
+          ),
+        );
+        expect(prepareWallet.executeCalls, 1);
+        expect(register.commands.single.ctDescriptor, 'ct-desc');
+      },
+    );
+
     test('reports reused wallet metadata for idempotent retry', () async {
       prepareWallet.prepared = _prepared(created: false);
 
@@ -364,6 +396,9 @@ void main() {
     );
     getIt.registerLazySingleton<Bip85RegistryFacade>(
       () => const Bip85RegistryFacade(),
+    );
+    getIt.registerFactory<ApplyWalletBehaviorDefaultsUsecase>(
+      () => _FakeApplyWalletBehaviorDefaultsUsecase(),
     );
 
     BullnymLocator.setup(getIt);
@@ -561,6 +596,16 @@ class _FakeDeterministicWalletsFacade implements DeterministicWalletsFacade {
 class _FakeKeychainManifestFacade implements KeychainManifestFacade {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeApplyWalletBehaviorDefaultsUsecase
+    implements ApplyWalletBehaviorDefaultsUsecase {
+  @override
+  Future<void> execute({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {}
 }
 
 PreparedLightningAddressWallet _prepared({bool created = true}) {

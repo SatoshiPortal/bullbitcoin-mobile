@@ -11,6 +11,11 @@ class LightningAddressRegistration {
 class LightningAddressStatus {
   final String nym;
   final bool active;
+  final String? lightningAddress;
 
-  const LightningAddressStatus({required this.nym, required this.active});
+  const LightningAddressStatus({
+    required this.nym,
+    required this.active,
+    this.lightningAddress,
+  });
 }
