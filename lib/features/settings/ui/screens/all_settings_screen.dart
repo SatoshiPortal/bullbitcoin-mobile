@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/samrock/samrock_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
@@ -124,6 +125,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
 
+                SettingsEntryItem(
+                  icon: Icons.link,
+                  title: 'SamRock',
+                  onTap: () {
+                    context.pushNamed(SamrockRoute.samrockSetup.name);
+                  },
+                ),
                 SettingsEntryItem(
                   icon: Icons.description,
                   title: context.loc.settingsTermsOfServiceTitle,
