@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/bip85_registry/bip85_registry_locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
+import 'package:bb_mobile/features/bullnym/bullnym_locator.dart';
 import 'package:bb_mobile/features/btcpay/btcpay_locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
@@ -31,6 +32,7 @@ import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.d
 import 'package:bb_mobile/features/keychain_recovery/keychain_recovery_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
+import 'package:bb_mobile/features/lightning_address/lightning_address_locator.dart';
 import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
@@ -94,6 +96,9 @@ class AppLocator {
     DeterministicWalletsLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
     KeychainRecoveryLocator.setup(locator);
+    BullnymLocator.setup(locator);
+    NostrIdentityLocator.setup(locator);
+    LightningAddressLocator.setup(locator);
     BtcpayLocator.setup(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);

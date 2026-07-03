@@ -13,6 +13,11 @@ enum LightningAddressErrorKind {
   unexpected,
 }
 
+enum WalletOwnedLightningAddressRegistrationFailurePhase {
+  localPreparation,
+  registrationSubmission,
+}
+
 sealed class LightningAddressException implements Exception {
   final LightningAddressErrorKind kind;
   final String code;
@@ -45,6 +50,9 @@ sealed class LightningAddressException implements Exception {
       context.loc.lightningAddressInvalidNymError,
     LightningAddressErrorKind.invalidRegistrationInput =>
       context.loc.lightningAddressInvalidRegistrationInputError,
+    LightningAddressErrorKind.localPreparationFailed
+        when code == 'NoDefaultBitcoinWallet' =>
+      context.loc.lightningAddressNoDefaultBitcoinWalletError,
     LightningAddressErrorKind.localPreparationFailed when retryable =>
       context.loc.lightningAddressLocalPreparationFailedError,
     LightningAddressErrorKind.localPreparationFailed =>
@@ -139,4 +147,79 @@ final class LightningAddressUnexpectedException
         code: 'Unexpected',
         retryable: false,
       );
+}
+
+bool _isLightningAddressRegistrationSubmissionUncertain(
+  LightningAddressException error,
+) {
+  return switch (error.kind) {
+    LightningAddressErrorKind.network ||
+    LightningAddressErrorKind.timeout ||
+    LightningAddressErrorKind.invalidServerResponse => true,
+    LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.invalidRegistrationInput ||
+    LightningAddressErrorKind.serverRejectedRequest ||
+    LightningAddressErrorKind.signingFailed ||
+    LightningAddressErrorKind.localPreparationFailed ||
+    LightningAddressErrorKind.unexpected => false,
+  };
+}
+
+bool _canLightningAddressDescriptorHaveReachedServer(
+  LightningAddressException error,
+) {
+  return switch (error.kind) {
+    LightningAddressErrorKind.network ||
+    LightningAddressErrorKind.timeout ||
+    LightningAddressErrorKind.serverRejectedRequest ||
+    LightningAddressErrorKind.invalidServerResponse => true,
+    LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.invalidRegistrationInput ||
+    LightningAddressErrorKind.signingFailed ||
+    LightningAddressErrorKind.localPreparationFailed ||
+    LightningAddressErrorKind.unexpected => false,
+  };
+}
+
+final class WalletOwnedLightningAddressRegistrationException
+    extends LightningAddressException {
+  final WalletOwnedLightningAddressRegistrationFailurePhase phase;
+  final LightningAddressException cause;
+  final String? walletId;
+  final bool walletCreated;
+  final bool submissionMayBeUncertain;
+
+  WalletOwnedLightningAddressRegistrationException.localPreparation({
+    required this.cause,
+  }) : phase =
+           WalletOwnedLightningAddressRegistrationFailurePhase.localPreparation,
+       walletId = null,
+       walletCreated = false,
+       submissionMayBeUncertain = false,
+       super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+
+  WalletOwnedLightningAddressRegistrationException.registrationSubmission({
+    required this.cause,
+    required this.walletId,
+    required this.walletCreated,
+  }) : phase = WalletOwnedLightningAddressRegistrationFailurePhase
+           .registrationSubmission,
+       submissionMayBeUncertain =
+           _isLightningAddressRegistrationSubmissionUncertain(cause),
+       super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+
+  bool get descriptorMayHaveBeenSubmitted =>
+      phase ==
+          WalletOwnedLightningAddressRegistrationFailurePhase
+              .registrationSubmission &&
+      _canLightningAddressDescriptorHaveReachedServer(cause);
+
+  @override
+  String toTranslated(BuildContext context) => cause.toTranslated(context);
+
+  @override
+  String toString() {
+    return 'WalletOwnedLightningAddressRegistrationException('
+        'phase: $phase, cause: $cause)';
+  }
 }

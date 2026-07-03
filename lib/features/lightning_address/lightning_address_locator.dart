@@ -1,0 +1,80 @@
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
+import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
+import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/features/lightning_address/data/default_wallet_xprv_adapter.dart';
+import 'package:bb_mobile/features/lightning_address/domain/lightning_address_default_wallet_xprv_port.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_registration_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_wallet_owned_lightning_address_registration_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/prepare_lightning_address_wallet_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/register_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/register_wallet_owned_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
+import 'package:get_it/get_it.dart';
+
+class LightningAddressLocator {
+  static void setup(GetIt locator) {
+    locator.registerFactory<LightningAddressDefaultWalletXprvPort>(
+      () => DefaultWalletXprvAdapter(
+        getSettings: locator<GetSettingsUsecase>(),
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerFactory<PrepareLightningAddressWalletUsecase>(
+      () => PrepareLightningAddressWalletUsecase(
+        getSettings: locator<GetSettingsUsecase>(),
+        deterministicWallets: locator<DeterministicWalletsFacade>(),
+        keychainManifest: locator<KeychainManifestFacade>(),
+        bip85Registry: locator<Bip85RegistryFacade>(),
+      ),
+    );
+    locator.registerFactory<RegisterLightningAddressUsecase>(
+      () => RegisterLightningAddressUsecase(
+        locator<BullnymFacade>(),
+        locator<NostrIdentityFacade>(),
+      ),
+    );
+    locator.registerFactory<LookupLightningAddressRegistrationUsecase>(
+      () => LookupLightningAddressRegistrationUsecase(locator<BullnymFacade>()),
+    );
+    locator.registerFactory<RegisterWalletOwnedLightningAddressUsecase>(
+      () => RegisterWalletOwnedLightningAddressUsecase(
+        defaultWalletXprv: locator<LightningAddressDefaultWalletXprvPort>(),
+        prepareWallet: locator<PrepareLightningAddressWalletUsecase>(),
+        register: locator<RegisterLightningAddressUsecase>(),
+      ),
+    );
+    locator
+        .registerFactory<LookupWalletOwnedLightningAddressRegistrationUsecase>(
+          () => LookupWalletOwnedLightningAddressRegistrationUsecase(
+            defaultWalletXprv: locator<LightningAddressDefaultWalletXprvPort>(),
+            lookupRegistration:
+                locator<LookupLightningAddressRegistrationUsecase>(),
+            nostrIdentity: locator<NostrIdentityFacade>(),
+          ),
+        );
+    locator.registerFactory<LightningAddressFacade>(() {
+      final prepareWallet = locator<PrepareLightningAddressWalletUsecase>();
+      final lookupRegistration =
+          locator<LookupLightningAddressRegistrationUsecase>();
+      final registerWalletOwned =
+          locator<RegisterWalletOwnedLightningAddressUsecase>();
+      final lookupWalletOwnedRegistration =
+          locator<LookupWalletOwnedLightningAddressRegistrationUsecase>();
+
+      return LightningAddressFacade(
+        prepareWallet: prepareWallet.execute,
+        lookupRegistration: ({required npubHex}) =>
+            lookupRegistration.execute(npubHex: npubHex),
+        registerWalletOwned: ({required nym}) =>
+            registerWalletOwned.execute(nym: nym),
+        lookupWalletOwnedRegistration: lookupWalletOwnedRegistration.execute,
+      );
+    });
+  }
+}

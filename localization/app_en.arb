@@ -13467,6 +13467,10 @@
   "@lightningAddressLocalPreparationNotRetryableError": {
     "description": "Error shown when the app cannot prepare the dedicated Lightning Address receive wallet because local recovery metadata has a durable conflict"
   },
+  "lightningAddressNoDefaultBitcoinWalletError": "Set up a Bitcoin wallet before registering a Lightning Address.",
+  "@lightningAddressNoDefaultBitcoinWalletError": {
+    "description": "Error shown when Lightning Address registration cannot derive the default Bitcoin wallet key because no default Bitcoin wallet exists"
+  },
   "btcpayPairingRejectedError": "BTCPay Server rejected the pairing request. Dedicated BTCPay wallets were kept. Check the pairing URL or create a new pairing request in BTCPay, then retry.",
   "@btcpayPairingRejectedError": {
     "description": "Error shown when BTCPay Server rejects the SamRock pairing setup"
