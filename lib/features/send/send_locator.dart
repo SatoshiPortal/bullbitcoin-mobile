@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
@@ -26,9 +27,13 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/data/datasources/liquid_direct_pay_datasource.dart';
+import 'package:bb_mobile/features/send/domain/ports/liquid_direct_pay_port.dart';
+import 'package:bb_mobile/features/send/domain/usecases/build_bullpay_proof_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/try_liquid_direct_pay_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -142,6 +147,22 @@ class SendLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
+    locator.registerFactory<LiquidDirectPayPort>(
+      () => DioLiquidDirectPayDatasource(),
+    );
+    locator.registerFactory<BuildBullpayProofUsecase>(
+      () => BuildBullpayProofUsecase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
+      ),
+    );
+    locator.registerFactory<TryLiquidDirectPayUsecase>(
+      () => TryLiquidDirectPayUsecase(
+        buildProof: locator<BuildBullpayProofUsecase>(),
+        liquidDirectPay: locator<LiquidDirectPayPort>(),
+      ),
+    );
   }
 
   static void registerBlocs(GetIt locator) {
@@ -188,6 +209,7 @@ class SendLocator {
             locator<UpdateSendSwapLockupFeesUsecase>(),
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
+        tryLiquidDirectPayUsecase: locator<TryLiquidDirectPayUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),

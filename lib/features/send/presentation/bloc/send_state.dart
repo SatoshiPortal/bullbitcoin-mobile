@@ -133,6 +133,10 @@ abstract class SendState with _$SendState {
     WalletTransaction? walletTransaction,
     Object? error,
     @Default(false) bool sendMax,
+    // True when this send was routed as a LUD-22 direct Liquid pay (no swap,
+    // no swap fee) rather than a Lightning swap. Drives the small success
+    // annotation; never blocks the flow.
+    @Default(false) bool paidViaLiquidDirect,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
     @Default(false) bool creatingSwap,

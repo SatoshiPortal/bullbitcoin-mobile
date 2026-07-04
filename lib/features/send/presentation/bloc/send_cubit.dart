@@ -45,6 +45,8 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/errors/bullpay_proof_error.dart';
+import 'package:bb_mobile/features/send/domain/usecases/try_liquid_direct_pay_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
@@ -86,6 +88,7 @@ class SendCubit extends Cubit<SendState>
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._updateSendSwapLockupFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
+    required this._tryLiquidDirectPayUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
   }) : super(const SendState());
@@ -133,6 +136,7 @@ class SendCubit extends Cubit<SendState>
   _calculateBitcoinAbsoluteFeesUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
+  final TryLiquidDirectPayUsecase _tryLiquidDirectPayUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
 
@@ -1015,6 +1019,14 @@ class SendCubit extends Cubit<SendState>
     );
 
     if (state.sendType == SendType.lightning) {
+      // LUD-22: for a Bull Lightning address paid from a Liquid wallet, try a
+      // direct L-BTC pay (no swap, no swap fee) before the Lightning swap. Any
+      // failure falls through to the existing swap path below (DG-8), which is
+      // left untouched as the fallback rail.
+      if (await _tryLud22DirectPay()) {
+        return;
+      }
+
       if (state.selectedSwapLimits == null) {
         await loadSwapLimits();
         setSelectedSwapLimits();
@@ -1143,6 +1155,83 @@ class SendCubit extends Cubit<SendState>
     } else {
       emit(state.copyWith(amountConfirmedClicked: false));
     }
+  }
+
+  /// LUD-22 direct-pay attempt for a Bull Lightning address paid from a Liquid
+  /// wallet. Returns `true` when it committed the Liquid direct-pay rail (state
+  /// is now at the confirm step); returns `false` to fall through to the normal
+  /// Lightning swap. Every declined/failed outcome is quiet (DG-8): no error is
+  /// surfaced and nothing changes visibly except that the normal swap-confirm
+  /// screen is shown instead. The feature is inert against a server without the
+  /// LUD-22 handler (DG-9) — that path returns `false` too.
+  Future<bool> _tryLud22DirectPay() async {
+    final wallet = state.selectedWallet;
+    final request = state.paymentRequest;
+    final amountSat = state.confirmedAmountSat;
+    if (wallet == null ||
+        !wallet.isLiquid ||
+        state.sendMax ||
+        amountSat == null ||
+        amountSat <= 0 ||
+        request is! LnAddressPaymentRequest) {
+      return false;
+    }
+
+    final String liquidAddress;
+    try {
+      emit(state.copyWith(creatingSwap: true));
+      liquidAddress = await _tryLiquidDirectPayUsecase.execute(
+        lnAddress: request.address,
+        amountSat: amountSat,
+        walletId: wallet.id,
+      );
+    } on LiquidDirectPayUnavailable {
+      log.info('LUD-22 direct pay unavailable; falling back to Lightning swap');
+      emit(state.copyWith(creatingSwap: false));
+      return false;
+    } on BullpayProofError {
+      log.info('LUD-22 direct pay declined; falling back to Lightning swap');
+      emit(state.copyWith(creatingSwap: false));
+      return false;
+    }
+
+    // Direct pay accepted: switch this send to a plain Liquid payment to the
+    // address the recipient's server returned, then build the Liquid tx.
+    emit(
+      state.copyWith(
+        creatingSwap: false,
+        sendType: SendType.liquid,
+        paymentRequest: PaymentRequest.liquid(
+          address: liquidAddress,
+          isTestnet: wallet.network.isTestnet,
+        ),
+        paidViaLiquidDirect: true,
+      ),
+    );
+    await createTransaction();
+    if (state.buildTransactionException != null ||
+        state.unsignedPsbt == null ||
+        !await hasBalance()) {
+      // Building the Liquid tx failed — revert to the LN address and fall back.
+      emit(
+        state.copyWith(
+          sendType: SendType.lightning,
+          paymentRequest: request,
+          paidViaLiquidDirect: false,
+          buildTransactionException: null,
+        ),
+      );
+      return false;
+    }
+
+    emit(
+      state.copyWith(
+        step: SendStep.confirm,
+        confirmedAmountSat: amountSat,
+        amountConfirmedClicked: false,
+      ),
+    );
+    return true;
   }
 
   Future<void> loadUtxos() async {

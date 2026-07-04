@@ -14898,6 +14898,8 @@
       }
     }
   },
+  "sendLud22PaidDirectly": "Paid directly on Liquid (no swap fee)",
+  "@sendLud22PaidDirectly": {
   "logsViewerClearFilter": "Clear filter",
   "@logsViewerClearFilter": {
     "description": "Tooltip for the button that clears the date filter"
