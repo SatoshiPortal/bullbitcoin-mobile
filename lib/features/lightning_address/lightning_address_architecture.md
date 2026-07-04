@@ -1,13 +1,13 @@
 # Lightning Address
 
-Lightning Address owns app-side orchestration for registering, deleting, and checking the active Bullnym registration for a wallet identity.
+Lightning Address owns app-side orchestration for registering and checking the active Bullnym registration for a wallet identity. A delete use case exists internally for a future consumer but is not exposed on the public facade.
 
 ## Scope
 
 This PR owns:
 
 - a public Lightning Address facade;
-- domain use cases for prepare wallet, register, delete, lookup/status, and wallet-owned register/status composition;
+- domain use cases for prepare wallet, register, lookup/status, and wallet-owned register/status composition (plus an internal, non-facade-exposed delete use case);
 - deterministic Liquid receive wallet materialization through the Deterministic Wallets facade;
 - keychain manifest metadata recording through the Keychain Manifest facade;
 - mapping Bullnym failures into Lightning Address domain errors;

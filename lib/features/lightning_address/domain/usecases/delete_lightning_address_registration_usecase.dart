@@ -4,6 +4,10 @@ import 'package:bb_mobile/features/lightning_address/domain/lightning_address_ny
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lightning_address_error_mapping.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 
+/// Internal, not exposed by [LightningAddressFacade]: the public surface has no
+/// delete affordance yet. Kept (and tested) for a future consumer that wires a
+/// delete/deactivate flow; do not treat its existence as a facade capability
+/// (R2-P12a).
 class DeleteLightningAddressRegistrationUsecase {
   final BullnymFacade _bullnym;
   final NostrIdentityFacade _nostrIdentity;
