@@ -180,6 +180,13 @@ void main() {
       expect(result.hasProductReactivationRequired, true);
       expect(result.productReactivationRequiredOutcomes, hasLength(1));
       expect(result.walletOutcomes.single.status, _requiresReactivation);
+
+      // KC-6/R2-KC6b: a recovered Lightning Address wallet also comes back
+      // hidden + autosweep-enabled (the same posture pr06 applies to BTCPay),
+      // even while it is flagged as requiring product reactivation.
+      expect(applyDefaults.calls.single.walletId, 'lightning-address-wallet');
+      expect(applyDefaults.calls.single.hideOnHome, true);
+      expect(applyDefaults.calls.single.autoSweepEnabled, true);
     },
   );
 
