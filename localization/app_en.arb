@@ -14718,6 +14718,31 @@
   "lightningAddressGenericError": "Lightning Address setup failed. Please try again.",
   "@lightningAddressGenericError": {
   },
+  "sendLud22DirectPayFailed": "Direct Liquid payment could not be completed.",
+  "@sendLud22DirectPayFailed": {
+    "description": "Generic failure message for a committed LUD-22 direct-pay rail."
+  },
+  "sendLud22InvalidProof": "This payment could not be verified. Please try again.",
+  "@sendLud22InvalidProof": {
+    "description": "Shown when the recipient server rejected the LUD-22 proof of funds."
+  },
+  "sendLud22UtxoUnavailable": "The coins used for this payment are no longer available.",
+  "@sendLud22UtxoUnavailable": {
+    "description": "Shown when the proof outpoint is unknown or already spent server-side."
+  },
+  "sendLud22NymNotFound": "This Lightning address could not be found.",
+  "@sendLud22NymNotFound": {
+    "description": "Shown when the recipient nym is not registered on the server."
+  },
+  "sendLud22MinValue": "This payment needs a Liquid coin worth at least {minSat} sats.",
+  "@sendLud22MinValue": {
+    "description": "Shown when a LUD-22 proof of funds is required and none met the value floor.",
+    "placeholders": {
+      "minSat": {
+        "type": "int"
+      }
+    }
+  },
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"
