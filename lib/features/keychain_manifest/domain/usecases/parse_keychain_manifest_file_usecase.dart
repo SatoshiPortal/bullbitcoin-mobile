@@ -91,9 +91,10 @@ class ParseKeychainManifestFileUsecase {
   }
 
   bool _supportsWalletManifestImport(Bip85Reservation reservation) {
-    return KeychainManifestReservationSupport.supportsV1WalletManifestFile(
-      reservation,
-    );
+    // Import plans cover every EXPORTABLE product (100/101/102) so the frozen
+    // v1 format can round-trip all of them; recovery separately decides which
+    // are materialized (R2-KC3/F1b, ruling A/B).
+    return KeychainManifestReservationSupport.supportsV1Export(reservation);
   }
 
   List<KeychainManifestWalletMaterializationIntent> _walletMaterializations(

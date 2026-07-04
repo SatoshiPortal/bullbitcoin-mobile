@@ -17,6 +17,16 @@ manifest-enabled. Lightning Address, Payment Page, and Nostr reservations are
 not recovered or activated by this feature until their owning flows explicitly
 add support.
 
+Which reserved seeds are exportable vs recoverable at this stack level is the
+`KeychainManifestReservationSupport` classification (`supportsV1Export` vs
+`supportsV1Recovery`): 100/101/102 are exported into the backup, but only
+BTCPay (100) is recovered here because remote recovery is dormant/unwired.
+PR23 FORWARD-OBLIGATION (DG-3): when PR23 wires the recovery UI it must flip
+`recoverableV1` for the bullnym-backed products (101/102, and 103/POS once
+reserved), implement the DG-3 auto-heal (seed-npub lookup + reregister-if-
+missing) for them, and re-apply the KC-6 hidden+autosweep posture to those
+newly recoverable products. See the classification file for details.
+
 ## Boundaries
 
 - `keychain_manifest` owns manifest records, file encode/decode validation, and

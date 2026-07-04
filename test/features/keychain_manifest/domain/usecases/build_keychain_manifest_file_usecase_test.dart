@@ -65,33 +65,64 @@ void main() {
     );
   });
 
-  test('excludes unsupported wallet reservations from v1 export', () async {
-    store.records.addAll([
-      _record(walletId: 'btc-wallet', network: 'bitcoinMainnet', updatedAt: 10),
-      _record(
-        reservationId: 'lightning_address_wallet_seed',
-        ownerFeature: 'lightningAddress',
-        bip85DerivationPath: "39'/0'/12'/101'",
-        bip85Index: 101,
-        walletId: 'lightning-address-wallet',
-        network: 'liquidMainnet',
-        updatedAt: 13,
-      ),
-    ]);
+  test(
+    'exports every classified Get Paid seed and drops unclassified',
+    () async {
+      store.records.addAll([
+        _record(
+          walletId: 'btc-wallet',
+          network: 'bitcoinMainnet',
+          updatedAt: 10,
+        ),
+        _record(
+          reservationId: 'lightning_address_wallet_seed',
+          ownerFeature: 'lightningAddress',
+          bip85DerivationPath: "39'/0'/12'/101'",
+          bip85Index: 101,
+          walletId: 'lightning-address-wallet',
+          network: 'liquidMainnet',
+          updatedAt: 13,
+        ),
+        _record(
+          reservationId: 'payment_page_wallet_seed',
+          ownerFeature: 'paymentPage',
+          bip85DerivationPath: "39'/0'/12'/102'",
+          bip85Index: 102,
+          walletId: 'payment-page-wallet',
+          network: 'liquidMainnet',
+          updatedAt: 14,
+        ),
+        // Unclassified/unknown reservation: dropped from the backup and logged
+        // (KC-3/R2-KC3b tripwire; dead code once AD-4 classifies everything).
+        _record(
+          reservationId: 'unknown_wallet_seed',
+          ownerFeature: 'unknown',
+          bip85DerivationPath: "39'/0'/12'/200'",
+          bip85Index: 200,
+          walletId: 'unknown-wallet',
+          network: 'liquidMainnet',
+          updatedAt: 15,
+        ),
+      ]);
 
-    final manifestFile = await usecase.execute(
-      'fedcba98',
-      now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
-    );
+      final manifestFile = await usecase.execute(
+        'fedcba98',
+        now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+      );
 
-    expect(manifestFile.entries, hasLength(1));
-    expect(manifestFile.entries.single.reservationId, 'btcpay_wallet_seed');
-    expect(
-      manifestFile.entries.single.materializations.single.walletId,
-      'btc-wallet',
-    );
-    expect(manifestFile.inventoryUpdatedAt, 12);
-  });
+      // BTCPay (100), Lightning Address (101), and Payment Page (102) are all
+      // exportable now (R2-KC3); the unknown reservation is dropped.
+      expect(manifestFile.entries.map((entry) => entry.reservationId), [
+        'btcpay_wallet_seed',
+        'lightning_address_wallet_seed',
+        'payment_page_wallet_seed',
+      ]);
+      final exportedWalletIds = manifestFile.entries
+          .expand((entry) => entry.materializations)
+          .map((materialization) => materialization.walletId);
+      expect(exportedWalletIds, isNot(contains('unknown-wallet')));
+    },
+  );
 }
 
 KeychainManifestWalletMaterializationRecord _record({

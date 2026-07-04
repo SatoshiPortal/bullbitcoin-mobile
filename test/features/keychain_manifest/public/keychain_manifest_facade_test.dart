@@ -318,6 +318,70 @@ void main() {
       ),
     );
   });
+
+  test(
+    'the frozen v1 format round-trips every exportable Get Paid seed',
+    () async {
+      // R2-F1b completeness ([F]): record BTCPay(100) + Lightning Address(101) +
+      // Payment Page(102), export to the frozen format, and parse it back - the
+      // import plan must carry all three, proving the frozen v1 format represents
+      // the whole Get Paid family. Recovery/materialization of 101/102 is PR23;
+      // this proves export + parse coverage only (ruling A/B).
+      await facade.recordReservedDerivation(
+        KeychainManifestReservedDerivationRequest(
+          reservationId: 'btcpay_wallet_seed',
+          derivationPath: "39'/0'/12'/100'",
+          parentFingerprint: 'fedcba98',
+          materializations: [_walletMaterialization()],
+        ),
+        now: DateTime.fromMillisecondsSinceEpoch(10000, isUtc: true),
+      );
+      await facade.recordReservedDerivation(
+        KeychainManifestReservedDerivationRequest(
+          reservationId: 'lightning_address_wallet_seed',
+          derivationPath: "39'/0'/12'/101'",
+          parentFingerprint: 'fedcba98',
+          materializations: [
+            _walletMaterialization(
+              walletId: 'ln-wallet',
+              network: Network.liquidMainnet,
+            ),
+          ],
+        ),
+        now: DateTime.fromMillisecondsSinceEpoch(11000, isUtc: true),
+      );
+      await facade.recordReservedDerivation(
+        KeychainManifestReservedDerivationRequest(
+          reservationId: 'payment_page_wallet_seed',
+          derivationPath: "39'/0'/12'/102'",
+          parentFingerprint: 'fedcba98',
+          materializations: [
+            _walletMaterialization(
+              walletId: 'page-wallet',
+              network: Network.liquidMainnet,
+            ),
+          ],
+        ),
+        now: DateTime.fromMillisecondsSinceEpoch(12000, isUtc: true),
+      );
+
+      final payload = await facade.buildManifestFilePayload(
+        'fedcba98',
+        now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+      );
+      final plan = facade.parseManifestFilePayload(
+        payload.payload,
+        expectedParentFingerprint: 'fedcba98',
+      );
+
+      expect(payload.entryCount, 3);
+      expect(plan.entries.map((entry) => entry.reservationId), [
+        'btcpay_wallet_seed',
+        'lightning_address_wallet_seed',
+        'payment_page_wallet_seed',
+      ]);
+    },
+  );
 }
 
 const _manifestPayload =

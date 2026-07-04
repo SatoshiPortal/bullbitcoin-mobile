@@ -96,9 +96,10 @@ class RestoreKeychainManifestWalletsUsecase {
   }
 
   bool _supportsWalletManifestRecovery(Bip85Reservation reservation) {
-    return KeychainManifestReservationSupport.supportsV1WalletManifestFile(
-      reservation,
-    );
+    // Only locally-materializable products recover at this stack level; the
+    // bullnym-backed products (LN/page) are exportable but their recovery +
+    // DG-3 auto-heal are wired in PR23 (ruling A/C).
+    return KeychainManifestReservationSupport.supportsV1Recovery(reservation);
   }
 
   KeychainRecoveryWalletMaterializationBatch _materializationBatch({

@@ -216,10 +216,7 @@ void main() {
     }
     final payload = _manifestPayload
         .replaceFirst(']}]}', ']}$extraEntries]}')
-        .replaceFirst(
-          '"entryCount":1',
-          '"entryCount":${1 + reservationCount}',
-        )
+        .replaceFirst('"entryCount":1', '"entryCount":${1 + reservationCount}')
         .replaceFirst(
           '"materializationCount":2',
           '"materializationCount":${2 + reservationCount}',
@@ -314,7 +311,7 @@ void main() {
     );
   });
 
-  test('rejects Lightning Address wallet manifests until activation', () {
+  test('parses Lightning Address wallet manifests into import plans', () {
     final payload = _manifestPayloadForReservation(
       reservationId: 'lightning_address_wallet_seed',
       path: "39'/0'/12'/101'",
@@ -323,19 +320,19 @@ void main() {
       bip85Index: 101,
     );
 
-    expect(
-      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
-      throwsA(
-        isA<KeychainManifestFileParseException>().having(
-          (error) => error.reason,
-          'reason',
-          KeychainManifestFileParseFailureReason.invalidMetadata,
-        ),
-      ),
+    // Exportable products round-trip through the frozen v1 format; the import
+    // plan carries them even though their RECOVERY (materialization) is
+    // deferred to PR23. Parse covers export; restore gates recovery
+    // (ruling A/B, R2-KC3/F1b).
+    final plan = usecase.execute(
+      payload,
+      expectedParentFingerprint: 'fedcba98',
     );
+    expect(plan.entries.single.reservationId, 'lightning_address_wallet_seed');
+    expect(plan.entries.single.bip85DerivationPath, "39'/0'/12'/101'");
   });
 
-  test('rejects Payment Page wallet manifests until activation', () {
+  test('parses Payment Page wallet manifests into import plans', () {
     final payload = _manifestPayloadForReservation(
       reservationId: 'payment_page_wallet_seed',
       path: "39'/0'/12'/102'",
@@ -344,16 +341,12 @@ void main() {
       bip85Index: 102,
     );
 
-    expect(
-      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
-      throwsA(
-        isA<KeychainManifestFileParseException>().having(
-          (error) => error.reason,
-          'reason',
-          KeychainManifestFileParseFailureReason.invalidMetadata,
-        ),
-      ),
+    final plan = usecase.execute(
+      payload,
+      expectedParentFingerprint: 'fedcba98',
     );
+    expect(plan.entries.single.reservationId, 'payment_page_wallet_seed');
+    expect(plan.entries.single.bip85DerivationPath, "39'/0'/12'/102'");
   });
 
   test('rejects duplicate wallet materializations in the same entry', () {
