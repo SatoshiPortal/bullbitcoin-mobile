@@ -1,19 +1,18 @@
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_file_model.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_file_decoder.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart';
 
 class ParseKeychainManifestFileUsecase {
-  final KeychainManifestFileCodec _codec;
+  final KeychainManifestFileDecoder _codec;
   final Bip85RegistryFacade _bip85Registry;
 
   const ParseKeychainManifestFileUsecase({
     required this._codec,
     required this._bip85Registry,
   });
-
 
   KeychainManifestImportPlan execute(
     String payload, {

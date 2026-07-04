@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_file_decoder.dart';
 
-class KeychainManifestFileCodec {
+class KeychainManifestFileCodec implements KeychainManifestFileDecoder {
   /// Upper bound on an accepted payload size in UTF-8 bytes. A v1 manifest
   /// covering every reserved path fits far below this.
   static const maxPayloadSizeBytes = 1024 * 1024;
@@ -24,6 +25,7 @@ class KeychainManifestFileCodec {
     );
   }
 
+  @override
   KeychainManifestFile decode(String payload) {
     // A UTF-8 encoding is never shorter than the UTF-16 code-unit count, so
     // the cheap length check short-circuits before encoding huge payloads.
