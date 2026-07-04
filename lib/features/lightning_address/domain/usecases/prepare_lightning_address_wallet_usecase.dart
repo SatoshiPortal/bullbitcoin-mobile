@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -126,7 +127,12 @@ class PrepareLightningAddressWalletUsecase {
         hideOnHome: true,
         autoSweepEnabled: true,
       );
-    } catch (e) {
+    } catch (e, stack) {
+      log.warning(
+        'Lightning Address wallet defaults failed',
+        error: e,
+        trace: stack,
+      );
       throw const LightningAddressException.localPreparationFailed(
         code: 'WalletDefaultsFailed',
         retryable: true,
