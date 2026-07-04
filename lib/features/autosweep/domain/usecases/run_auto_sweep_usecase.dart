@@ -87,7 +87,7 @@ class RunAutoSweepUsecase {
     final pset = await _wallets.buildLiquidDrainPset(
       walletId: sourceWallet.id,
       address: destinationAddress,
-      networkFee: const NetworkFee.relative(0.1),
+      feeRate: NetworkFee.relativeFromSatPerVbyte(0.1),
     );
 
     final signedPset = await _wallets.signLiquidPset(

@@ -13,7 +13,7 @@ abstract class AutosweepWalletPort {
   Future<String> buildLiquidDrainPset({
     required String walletId,
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
   });
 
   Future<String> signLiquidPset({

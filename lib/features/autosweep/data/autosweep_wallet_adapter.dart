@@ -56,13 +56,13 @@ class AutosweepWalletAdapter implements AutosweepWalletPort {
   Future<String> buildLiquidDrainPset({
     required String walletId,
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
   }) {
     return _guard('Liquid drain construction', () {
       return _liquidWalletRepository.buildPset(
         walletId: walletId,
         address: address,
-        networkFee: networkFee,
+        feeRate: feeRate,
         drain: true,
       );
     });

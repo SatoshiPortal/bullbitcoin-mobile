@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_error.dart';
 import 'package:bb_mobile/features/autosweep/domain/autosweep_fee_policy.dart';
@@ -28,7 +29,7 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const NetworkFee.relative(0.1));
+    registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(0.1));
     registerFallbackValue(NewLabel.tx(transactionId: 'txid', label: 'label'));
     registerFallbackValue(
       _wallet(id: 'fallback', network: Network.liquidMainnet),
@@ -58,7 +59,7 @@ void main() {
     );
 
     when(() => labelsFacade.store(any())).thenAnswer(
-      (_) async => Label.tx(id: 1, transactionId: 'txid', label: ''),
+      (_) async => Ok(Label.tx(id: 1, transactionId: 'txid', label: '')),
     );
   });
 
@@ -89,7 +90,7 @@ void main() {
       () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
         address: 'lq1destination',
-        networkFee: const NetworkFee.relative(0.1),
+        feeRate: NetworkFee.relativeFromSatPerVbyte(0.1),
       ),
     ).thenAnswer((_) async => 'pset');
     when(
@@ -107,7 +108,7 @@ void main() {
       () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
         address: 'lq1destination',
-        networkFee: const NetworkFee.relative(0.1),
+        feeRate: NetworkFee.relativeFromSatPerVbyte(0.1),
       ),
     ).called(1);
     verify(() => labelsFacade.store(any())).called(1);
@@ -137,17 +138,18 @@ void main() {
       () => wallets.getCurrentReceiveAddress(walletId: 'default-bitcoin'),
     ).thenAnswer((_) async => 'bc1destination');
     when(() => getNetworkFees.execute(isLiquid: false)).thenAnswer(
-      (_) async => const FeeOptions(
-        fastest: NetworkFee.relative(10),
-        economic: NetworkFee.relative(2),
-        slow: NetworkFee.relative(1),
+      (_) async => FeeOptions(
+        fastest: NetworkFee.relativeFromSatPerVbyte(10),
+        economic: NetworkFee.relativeFromSatPerVbyte(2),
+        slow: NetworkFee.relativeFromSatPerVbyte(1),
+        minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
       ),
     );
     when(
       () => wallets.buildBitcoinDrainPsbt(
         walletId: 'btcpay-bitcoin',
         address: 'bc1destination',
-        networkFee: const NetworkFee.relative(2),
+        networkFee: NetworkFee.relativeFromSatPerVbyte(2),
       ),
     ).thenAnswer((_) async => 'psbt');
     when(
@@ -199,10 +201,7 @@ void main() {
 
     final result = await usecase.execute(source);
 
-    expect(
-      result,
-      const AutosweepSkipped(AutosweepSkipReason.noDefaultWallet),
-    );
+    expect(result, const AutosweepSkipped(AutosweepSkipReason.noDefaultWallet));
   });
 
   test('reports a failed outcome when a wallet operation throws', () async {
@@ -261,7 +260,7 @@ void main() {
       () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
         address: 'lq1destination',
-        networkFee: const NetworkFee.relative(0.1),
+        feeRate: NetworkFee.relativeFromSatPerVbyte(0.1),
       ),
     ).thenAnswer((_) async => 'pset');
     when(
