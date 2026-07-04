@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.d
 import 'package:bb_mobile/features/nostr_identity/domain/derive_nostr_identity_handle_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
+import 'package:bip340/bip340.dart' as bip340;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:bitcoin_base/bitcoin_base.dart';
@@ -13,7 +14,9 @@ import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
 const _facade = NostrIdentityFacade(
-  deriveHandle: DeriveNostrIdentityHandleUsecase(registry: Bip85RegistryFacade()),
+  deriveHandle: DeriveNostrIdentityHandleUsecase(
+    registry: Bip85RegistryFacade(),
+  ),
 );
 
 const _zeroMnemonic =
@@ -105,6 +108,20 @@ void main() {
         digest: digest,
         signature: hex.decode(signatureHex),
         tweak: false,
+      ),
+      isTrue,
+    );
+
+    // Independent cross-check with the bip340 package (not bitcoin_base), so a
+    // bitcoin_base sign/verify self-consistency bug alone cannot make this pass
+    // (AD-6). After the pr20 backend swap, bitcoin_base above remains the
+    // independent verifier for dart-nostr/bip340 signing - both directions
+    // covered across the stack.
+    expect(
+      bip340.verify(
+        facade.deriveWalletManifestPublicKeyFromXprv(xprv),
+        hex.encode(digest),
+        signatureHex,
       ),
       isTrue,
     );
