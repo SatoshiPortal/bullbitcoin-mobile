@@ -1197,6 +1197,12 @@ class SendCubit extends Cubit<SendState>
 
     // Direct pay accepted: switch this send to a plain Liquid payment to the
     // address the recipient's server returned, then build the Liquid tx.
+    // Clear any swap left over from a previous fallback attempt on this same
+    // flow (e.g. direct-pay failed once -> swap created -> user went back ->
+    // re-confirm now succeeds): createTransaction() prioritizes a non-null
+    // lightningSwap/chainSwap address+amount over the paymentRequest, so a stale
+    // swap would silently hijack the direct rail and build against the wrong
+    // address/amount. Clearing both here guarantees the direct address is used.
     emit(
       state.copyWith(
         creatingSwap: false,
@@ -1205,6 +1211,8 @@ class SendCubit extends Cubit<SendState>
           address: liquidAddress,
           isTestnet: wallet.network.isTestnet,
         ),
+        lightningSwap: null,
+        chainSwap: null,
         paidViaLiquidDirect: true,
       ),
     );

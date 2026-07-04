@@ -78,6 +78,11 @@ class BuildBullpayProofUsecase {
             .whereType<LiquidWalletUtxo>()
             .where(
               (u) =>
+                  // A user-frozen coin is off-limits to every flow: never
+                  // reveal its outpoint + blinding factors to the recipient
+                  // server as proof-of-funds (honors the coin-control freeze
+                  // contract).
+                  !u.isFrozen &&
                   u.assetIdHex == lbtcAssetId &&
                   u.amountSat >= minSat &&
                   u.addressIndex != null,

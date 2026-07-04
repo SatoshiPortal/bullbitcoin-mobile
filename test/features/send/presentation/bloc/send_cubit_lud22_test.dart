@@ -34,16 +34,18 @@ void main() {
       () => harness.prepareLiquidSend.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
-        networkFee: any(named: 'networkFee'),
+        feeRate: any(named: 'feeRate'),
         amountSat: any(named: 'amountSat'),
         drain: any(named: 'drain'),
       ),
     ).thenAnswer((_) async => 'pset');
     when(
-      () => harness.calculateLiquidAbsoluteFees.execute(
-        pset: any(named: 'pset'),
-      ),
+      () =>
+          harness.calculateLiquidAbsoluteFees.execute(pset: any(named: 'pset')),
     ).thenAnswer((_) async => 1);
+    when(
+      () => harness.calculateLiquidPsetSize.execute(pset: any(named: 'pset')),
+    ).thenAnswer((_) async => 1000);
   }
 
   void stubSwapFallback(SendCubitHarness harness, Wallet wallet) {
@@ -59,16 +61,18 @@ void main() {
       () => harness.prepareLiquidSend.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
-        networkFee: any(named: 'networkFee'),
+        feeRate: any(named: 'feeRate'),
         amountSat: any(named: 'amountSat'),
         drain: any(named: 'drain'),
       ),
     ).thenAnswer((_) async => 'pset');
     when(
-      () => harness.calculateLiquidAbsoluteFees.execute(
-        pset: any(named: 'pset'),
-      ),
+      () =>
+          harness.calculateLiquidAbsoluteFees.execute(pset: any(named: 'pset')),
     ).thenAnswer((_) async => 1);
+    when(
+      () => harness.calculateLiquidPsetSize.execute(pset: any(named: 'pset')),
+    ).thenAnswer((_) async => 1000);
     when(
       () => harness.updateSendSwapLockupFees.execute(
         swapId: any(named: 'swapId'),
@@ -107,15 +111,17 @@ void main() {
         amountSat: any(named: 'amountSat'),
       ),
     );
+    // Twice: a placeholder pset for absolute→relative fee-rate resolution
+    // (_resolveLiquidFeeRate), then the real build — both against lq1direct.
     verify(
       () => harness.prepareLiquidSend.execute(
         walletId: wallet.id,
         address: 'lq1direct',
-        networkFee: any(named: 'networkFee'),
+        feeRate: any(named: 'feeRate'),
         amountSat: 1000,
         drain: false,
       ),
-    ).called(1);
+    ).called(2);
     expect(cubit.state.step, SendStep.confirm);
     expect(cubit.state.sendType, SendType.liquid);
     expect(cubit.state.paidViaLiquidDirect, isTrue);
@@ -235,6 +241,83 @@ void main() {
       ),
     ).called(1);
   });
+
+  test(
+    'a stale swap fallback does not hijack a later direct-pay rail',
+    () async {
+      // Regression for the MEDIUM stale-swap coupling: direct-pay fails once (a
+      // swap fallback is created and left in state), the user goes back, then a
+      // retry succeeds. createTransaction() prioritizes a non-null swap
+      // address+amount over the paymentRequest, so without clearing the stale
+      // swap the direct rail would silently build against the swap address.
+      final harness = SendCubitHarness();
+      final wallet = sendCubitWallet(
+        id: 'liquid-wallet',
+        label: 'Instant Payments',
+        balanceSat: BigInt.from(100000),
+      );
+      var attempt = 0;
+      when(
+        () => harness.tryLiquidDirectPay.execute(
+          lnAddress: any(named: 'lnAddress'),
+          amountSat: any(named: 'amountSat'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) async {
+        attempt++;
+        if (attempt == 1) throw const LiquidDirectPayUnavailable();
+        return 'lq1direct';
+      });
+      stubSwapFallback(harness, wallet); // swap paymentAddress == 'lq1swap'
+
+      final cubit = harness.createCubit();
+      addTearDown(cubit.close);
+      harness.seed(cubit, lnAddressAmountState(wallet));
+
+      // 1) First confirm: direct-pay fails -> Lightning swap fallback created.
+      await cubit.onAmountConfirmed();
+      expect(
+        cubit.state.lightningSwap,
+        isNotNull,
+        reason: 'precondition: swap fallback must be set',
+      );
+      expect(cubit.state.step, SendStep.confirm);
+
+      // 2) User taps back (confirm -> amount); this does NOT clear the swap.
+      cubit.backClicked();
+      expect(cubit.state.lightningSwap, isNotNull);
+
+      // From here we only care about the tx-build calls.
+      clearInteractions(harness.prepareLiquidSend);
+
+      // 3) Re-confirm: direct-pay now succeeds and must commit the DIRECT rail.
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.paidViaLiquidDirect, isTrue);
+      expect(cubit.state.lightningSwap, isNull);
+      expect(cubit.state.chainSwap, isNull);
+      // The tx is built against the direct address/amount, never the stale
+      // swap. Twice: placeholder pset for fee-rate resolution + the real build.
+      verify(
+        () => harness.prepareLiquidSend.execute(
+          walletId: wallet.id,
+          address: 'lq1direct',
+          feeRate: any(named: 'feeRate'),
+          amountSat: 1000,
+          drain: false,
+        ),
+      ).called(2);
+      verifyNever(
+        () => harness.prepareLiquidSend.execute(
+          walletId: any(named: 'walletId'),
+          address: 'lq1swap',
+          feeRate: any(named: 'feeRate'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+        ),
+      );
+    },
+  );
 
   test('sendMax never attempts direct pay', () async {
     final harness = SendCubitHarness();

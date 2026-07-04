@@ -23,12 +23,15 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -119,9 +122,19 @@ class _MockVerifyChainSwapAmountSendUsecase extends Mock
 class _MockTryLiquidDirectPayUsecase extends Mock
     implements TryLiquidDirectPayUsecase {}
 
+class _MockPreviewBitcoinFeeUsecase extends Mock
+    implements PreviewBitcoinFeeUsecase {}
+
+class _MockPreviewBitcoinFeePresetsUsecase extends Mock
+    implements PreviewBitcoinFeePresetsUsecase {}
+
+class _MockCalculateLiquidPsetSizeUsecase extends Mock
+    implements CalculateLiquidPsetSizeUsecase {}
+
 void registerSendCubitHarnessFallbacks() {
   registerFallbackValue(SwapType.liquidToLightning);
   registerFallbackValue(const NetworkFee.absolute(1));
+  registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
   registerFallbackValue(
     const PaymentRequest.liquid(address: 'lq1fallback', isTestnet: false),
   );
@@ -174,6 +187,12 @@ class SendCubitHarness {
       _MockVerifyChainSwapAmountSendUsecase();
   final TryLiquidDirectPayUsecase tryLiquidDirectPay =
       _MockTryLiquidDirectPayUsecase();
+  final PreviewBitcoinFeeUsecase previewBitcoinFee =
+      _MockPreviewBitcoinFeeUsecase();
+  final PreviewBitcoinFeePresetsUsecase previewBitcoinFeePresets =
+      _MockPreviewBitcoinFeePresetsUsecase();
+  final CalculateLiquidPsetSizeUsecase calculateLiquidPsetSize =
+      _MockCalculateLiquidPsetSizeUsecase();
 
   SendCubitHarness() {
     when(() => _getSettings.execute()).thenAnswer(
@@ -242,6 +261,9 @@ class SendCubitHarness {
       updateSendSwapLockupFeesUsecase: updateSendSwapLockupFees,
       verifyChainSwapAmountSendUsecase: _verifyChainSwapAmountSend,
       tryLiquidDirectPayUsecase: tryLiquidDirectPay,
+      calculateLiquidPsetSizeUsecase: calculateLiquidPsetSize,
+      previewBitcoinFeeUsecase: previewBitcoinFee,
+      previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
     );
   }
 
@@ -293,9 +315,10 @@ LnSendSwap sendCubitLnSendSwap({
 }
 
 FeeOptions sendCubitFeeOptions() {
-  return const FeeOptions(
-    fastest: NetworkFee.absolute(1),
-    economic: NetworkFee.absolute(1),
-    slow: NetworkFee.absolute(1),
+  return FeeOptions(
+    fastest: const NetworkFee.absolute(1),
+    economic: const NetworkFee.absolute(1),
+    slow: const NetworkFee.absolute(1),
+    minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
   );
 }
