@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_er
 /// (asserted by the file only — the consumer must verify before acting). See
 /// "Consumer obligations" in `keychain_manifest_architecture.md`.
 class KeychainManifestImportPlan {
-  /// VERIFIED: matched against the caller-supplied expected fingerprint,
+  /// Matched against the caller-supplied expected fingerprint,
   /// which must come from local seed storage.
   final String parentFingerprint;
 
@@ -32,29 +32,29 @@ class KeychainManifestImportPlan {
 }
 
 class KeychainManifestImportEntryIntent {
-  /// VERIFIED: derived from the verified parent fingerprint and the
+  /// Derived from the verified parent fingerprint and the
   /// registry-validated BIP85 path.
   final String entryId;
 
-  /// VERIFIED: matched against the caller-supplied expected fingerprint.
+  /// Matched against the caller-supplied expected fingerprint.
   final String parentFingerprint;
 
-  /// VERIFIED: matched against the registry reservation's exact path.
+  /// Matched against the registry reservation's exact path.
   final String bip85DerivationPath;
 
-  /// VERIFIED: resolved against the local BIP85 registry.
+  /// Resolved against the local BIP85 registry.
   final String reservationId;
 
-  /// VERIFIED: matched against the registry reservation's purpose name.
+  /// Matched against the registry reservation's purpose name.
   final String entryType;
 
-  /// VERIFIED: matched against the registry reservation's owner name.
+  /// Matched against the registry reservation's owner name.
   final String ownerFeature;
 
-  /// VERIFIED: matched against the registry reservation's application number.
+  /// Matched against the registry reservation's application number.
   final int bip85Application;
 
-  /// VERIFIED: matched against the registry reservation's wallet seed index.
+  /// Matched against the registry reservation's wallet seed index.
   final int bip85Index;
 
   final List<KeychainManifestWalletMaterializationIntent>
@@ -115,14 +115,14 @@ class KeychainManifestImportEntryIntent {
 }
 
 class KeychainManifestWalletMaterializationIntent {
-  /// VERIFIED: derived from the verified parent fingerprint and the
+  /// Derived from the verified parent fingerprint and the
   /// registry-validated BIP85 path.
   final String entryId;
 
-  /// VERIFIED: resolved against the local BIP85 registry.
+  /// Resolved against the local BIP85 registry.
   final String reservationId;
 
-  /// VERIFIED: matched against the registry reservation's exact path.
+  /// Matched against the registry reservation's exact path.
   final String bip85DerivationPath;
 
   /// CLAIMED: asserted by the file only. Consumers MUST recompute the wallet
