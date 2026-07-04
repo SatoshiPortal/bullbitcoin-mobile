@@ -71,8 +71,11 @@ class TryLiquidDirectPayUsecase {
     final proof = await _buildProof.execute(walletId: walletId, nym: username);
 
     final msats = amountSat * 1000;
-    // Approach-B payload: the ownership proof plus the output's opening
-    // (value + factors + asset id) straight from TxOutSecrets. No blinding key.
+    // Approach-B payload (server contract, bullnym 851ae57): the ownership proof
+    // plus the output's opening — the unblinded value (sat) and the value/asset
+    // blinding factors straight from TxOutSecrets. NO asset id is sent: the
+    // server rebinds the asset to its own L-BTC generator, folding asset==L-BTC
+    // into the commitment binding. NO blinding key.
     final query = {
       'amount': msats.toString(),
       'payment_method': 'L-BTC',
@@ -81,7 +84,6 @@ class TryLiquidDirectPayUsecase {
       'sig': proof.sigDerHex,
       'value': proof.valueSat.toString(),
       'value_bf': proof.valueBfHex,
-      'asset': proof.assetIdHex,
       'asset_bf': proof.assetBfHex,
     };
 

@@ -6,10 +6,11 @@
 /// PR24 dossier §8.4).
 ///
 /// The recipient's server reconstructs the on-chain Pedersen value commitment
-/// and asset generator from [valueSat]/[valueBfHex] and [assetIdHex]/
-/// [assetBfHex], compares them to the confidential outpoint on chain, then
-/// enforces `asset == L-BTC` and `value >= floor`. No blinding key is sent, so
-/// the recipient cannot unblind any other output of the payer's wallet.
+/// from [valueSat]/[valueBfHex] and rebinds the asset generator to its OWN
+/// L-BTC id using [assetBfHex], comparing both to the confidential outpoint on
+/// chain, then enforces `value >= floor`. The client sends NO asset id (the
+/// server owns the asset binding) and NO blinding key (so the recipient cannot
+/// unblind any other output of the payer's wallet).
 class BullpayProof {
   /// `"{txId}:{vout}"` of the proof output.
   final String outpoint;
@@ -24,13 +25,13 @@ class BullpayProof {
   /// Unblinded value of the output, in satoshis.
   final BigInt valueSat;
 
-  /// SLIP-77 value blinding factor (hex) for the output.
+  /// Value blinding factor for the output, as elements display-order hex —
+  /// the verbatim `TxOutSecrets.valueBf` string from LWK. Never re-hexed from
+  /// raw bytes (that would reverse the byte order and fail the server rebind).
   final String valueBfHex;
 
-  /// Unblinded asset id (hex) of the output.
-  final String assetIdHex;
-
-  /// SLIP-77 asset blinding factor (hex) for the output.
+  /// Asset blinding factor for the output, as elements display-order hex —
+  /// the verbatim `TxOutSecrets.assetBf` string from LWK.
   final String assetBfHex;
 
   const BullpayProof({
@@ -39,7 +40,6 @@ class BullpayProof {
     required this.sigDerHex,
     required this.valueSat,
     required this.valueBfHex,
-    required this.assetIdHex,
     required this.assetBfHex,
   });
 }

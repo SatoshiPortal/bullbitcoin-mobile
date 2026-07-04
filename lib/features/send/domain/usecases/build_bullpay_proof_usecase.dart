@@ -140,8 +140,9 @@ class BuildBullpayProofUsecase {
       pubkeyHex: pubkeyHex,
       sigDerHex: sigDerHex,
       valueSat: utxo.amountSat,
+      // Elements display-order hex straight from TxOutSecrets — passed verbatim,
+      // never re-hexed from raw bytes.
       valueBfHex: utxo.valueBf,
-      assetIdHex: utxo.assetIdHex,
       assetBfHex: utxo.assetBf,
     );
   }

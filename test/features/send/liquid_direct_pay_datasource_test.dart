@@ -77,7 +77,6 @@ void main() {
       'sig': '3044',
       'value': '1500',
       'value_bf': 'c0ffee',
-      'asset': 'a' * 64,
       'asset_bf': 'facade',
     };
 
@@ -94,8 +93,8 @@ void main() {
       expect(req.followRedirects, isFalse);
       // The proof + Approach-B payload rides in the query string, not a body.
       expect(req.uri.queryParameters['payment_method'], 'L-BTC');
+      expect(req.uri.queryParameters['value'], '1500');
       expect(req.uri.queryParameters['value_bf'], 'c0ffee');
-      expect(req.uri.queryParameters['asset'], 'a' * 64);
       expect(req.uri.queryParameters['asset_bf'], 'facade');
       expect(req.uri.queryParameters['sig'], '3044');
     });

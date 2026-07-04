@@ -299,11 +299,11 @@ void main() {
       expect(proof.sigDerHex.length, greaterThan(120));
       expect(proof.sigDerHex.startsWith('30'), isTrue);
 
-      // Approach B: the unblinding material is carried verbatim from the
-      // selected output's TxOutSecrets — no blinding key anywhere.
+      // Approach B: the unblinding factors are carried verbatim from the
+      // selected output's TxOutSecrets — no blinding key, and no asset id
+      // (the server rebinds the asset to its own L-BTC generator).
       expect(proof.valueSat, BigInt.from(1500));
       expect(proof.valueBfHex, 'c0ffee');
-      expect(proof.assetIdHex, AssetConstants.lbtcMainnet);
       expect(proof.assetBfHex, 'facade');
     });
 

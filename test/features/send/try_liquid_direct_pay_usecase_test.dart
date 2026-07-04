@@ -16,7 +16,6 @@ final _proof = BullpayProof(
   sigDerHex: 'cc' * 64,
   valueSat: BigInt.from(1500),
   valueBfHex: 'c0ffee',
-  assetIdHex: 'dd' * 32,
   assetBfHex: 'facade',
 );
 
@@ -190,11 +189,12 @@ void main() {
         'sig': _proof.sigDerHex,
         'value': '1500',
         'value_bf': 'c0ffee',
-        'asset': _proof.assetIdHex,
         'asset_bf': 'facade',
       });
-      // No blinding key is ever present on the wire.
+      // No blinding key and no asset id are ever present on the wire — the
+      // server owns the asset binding (bullnym 851ae57).
       expect(capturedQuery.containsKey('blinding_key'), isFalse);
+      expect(capturedQuery.containsKey('asset'), isFalse);
     });
 
     test('server ERROR with code maps to BullpayProofError', () async {
