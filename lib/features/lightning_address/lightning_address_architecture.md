@@ -39,6 +39,11 @@ It delegates local wallet creation/reuse to Deterministic Wallets, records recov
 `prepareWallet()` creates or reuses the dedicated Liquid receive wallet from the `lightning_address_wallet_seed` BIP85 reservation, records the resulting wallet materialization in the keychain manifest, and applies product defaults through the generic wallet behavior use case: `hideOnHome: true` and `autoSweepEnabled: true`.
 Lightning Address applies those defaults because it owns the product policy, but it does not run sweeps itself.
 Actual drain execution remains in `features/autosweep` and is triggered by the wallet sync flow when the synced wallet has autosweep enabled.
+
+Applying `autoSweepEnabled` here opts the Lightning Address receive wallet into the single, locked autosweep policy owned by `features/autosweep`: a 100-sat dust floor, a 3% maximum fee-to-balance ceiling, and a 0.1 sat/vB relative fee rate.
+This extends the sweep policy that originally shipped for the BTCPay receive wallet to a second Get Paid product without changing any of its values.
+That extension is a deliberate product decision (Get Paid decision [1]), generalized to the whole Get Paid family rather than tuned per product, and is recorded here (and in issue #3) so it is explicit rather than an implicit side effect of enabling autosweep.
+Because the policy is shared and unversioned per product, the readiness UI must not assert the drain outcome; it reads back the wallet's actual autosweep metadata before claiming autosweep is enabled.
 This follows the canonical rollback-timing rule in `ARCHITECTURE.md` (Error handling): the durable manifest record is the commitment point.
 If local wallet creation fails before manifest recording, the use case rolls back newly created deterministic wallets best-effort and returns a local preparation error.
 Once manifest recording succeeds, defaults failures return a local preparation error without rolling back the wallet, so durable recovery metadata never points at a removed wallet.
