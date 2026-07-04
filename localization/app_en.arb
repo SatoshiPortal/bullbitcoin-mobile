@@ -763,6 +763,22 @@
   "@bullnymErrorUnexpected": {
     "description": "Bullnym generic error for invalid input, unexpected responses, or a local signing failure"
   },
+  "lightningAddressErrorConnectionFailed": "Unable to reach the server. Check your network connection and try again.",
+  "@lightningAddressErrorConnectionFailed": {
+    "description": "Lightning Address error when the request cannot reach the server (network down or timed out)"
+  },
+  "lightningAddressErrorServerUnavailable": "The server is temporarily unavailable. Please try again later.",
+  "@lightningAddressErrorServerUnavailable": {
+    "description": "Lightning Address error when the server rejects a request but it can be retried"
+  },
+  "lightningAddressErrorServerError": "The server could not complete the request. Please try again later.",
+  "@lightningAddressErrorServerError": {
+    "description": "Lightning Address error when the server rejects a request and it should not be retried as-is"
+  },
+  "lightningAddressErrorUnexpected": "Something went wrong. Please try again.",
+  "@lightningAddressErrorUnexpected": {
+    "description": "Lightning Address generic error for unexpected responses or a local signing failure"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

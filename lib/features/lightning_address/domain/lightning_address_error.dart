@@ -40,16 +40,17 @@ sealed class LightningAddressException implements Exception {
     LightningAddressErrorKind.invalidRegistrationInput =>
       context.loc.lightningAddressInvalidRegistrationInputError,
     LightningAddressErrorKind.network =>
-      context.loc.mempoolErrorConnectionFailed,
+      context.loc.lightningAddressErrorConnectionFailed,
     LightningAddressErrorKind.timeout =>
-      context.loc.mempoolErrorConnectionFailed,
+      context.loc.lightningAddressErrorConnectionFailed,
     LightningAddressErrorKind.serverRejectedRequest when retryable =>
-      context.loc.mempoolErrorServerUnavailable,
+      context.loc.lightningAddressErrorServerUnavailable,
     LightningAddressErrorKind.serverRejectedRequest =>
-      context.loc.mempoolErrorServerError,
+      context.loc.lightningAddressErrorServerError,
     LightningAddressErrorKind.invalidServerResponse ||
     LightningAddressErrorKind.signingFailed ||
-    LightningAddressErrorKind.unexpected => context.loc.mempoolErrorUnexpected,
+    LightningAddressErrorKind.unexpected =>
+      context.loc.lightningAddressErrorUnexpected,
   };
 
   @override
