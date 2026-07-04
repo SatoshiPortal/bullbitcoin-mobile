@@ -88,6 +88,9 @@ class _LightningAddressActivationScreenState
                       onCheckStatus: context
                           .read<LightningAddressActivationCubit>()
                           .load,
+                      onRegister: context
+                          .read<LightningAddressActivationCubit>()
+                          .showRegistrationForm,
                     )
                   : state.failure ==
                         LightningAddressActivationFailure.noDefaultBitcoinWallet
@@ -264,8 +267,12 @@ class _NoDefaultBitcoinWalletView extends StatelessWidget {
 
 class _LookupFailureView extends StatelessWidget {
   final VoidCallback onCheckStatus;
+  final VoidCallback onRegister;
 
-  const _LookupFailureView({required this.onCheckStatus});
+  const _LookupFailureView({
+    required this.onCheckStatus,
+    required this.onRegister,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -285,6 +292,16 @@ class _LookupFailureView extends StatelessWidget {
           onPressed: onCheckStatus,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,
+        ),
+        const Gap(12),
+        // Registration is independent of the status lookup, so a first-time
+        // user whose lookup failed must still be able to start registration
+        // instead of being stuck on retry-only (I10).
+        BBButton.big(
+          label: context.loc.lightningAddressRegisterButton,
+          onPressed: onRegister,
+          bgColor: context.appColors.primary,
+          textColor: context.appColors.onPrimary,
         ),
       ],
     );

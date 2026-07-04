@@ -33,6 +33,26 @@ void main() {
       expect(cubit.state.registeredAddress, isNull);
     });
 
+    test('a failed lookup still lets a first-time user register', () async {
+      // I10: registration is independent of the status lookup, so after a
+      // lookup failure the user must be able to start registration (the
+      // failure view is no longer retry-only) - showing the form moves to an
+      // idle, form-ready state with the failure cleared.
+      lookup.error = Exception('lookup offline');
+
+      await cubit.load();
+      expect(cubit.state.status, LightningAddressActivationStatus.failure);
+      expect(
+        cubit.state.failure,
+        LightningAddressActivationFailure.lookupFailed,
+      );
+
+      cubit.showRegistrationForm();
+
+      expect(cubit.state.status, LightningAddressActivationStatus.idle);
+      expect(cubit.state.failure, isNull);
+    });
+
     test(
       'load inactive known status keeps it distinct from first run',
       () async {
