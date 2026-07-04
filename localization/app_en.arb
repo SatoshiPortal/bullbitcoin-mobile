@@ -747,6 +747,22 @@
   "@mempoolErrorInvalidUrl": {
     "description": "Error when the custom mempool server URL is malformed"
   },
+  "bullnymErrorConnectionFailed": "Unable to reach the server. Check your network connection and try again.",
+  "@bullnymErrorConnectionFailed": {
+    "description": "Bullnym error when the request cannot reach the server (network down or timed out)"
+  },
+  "bullnymErrorServerUnavailable": "The server is temporarily unavailable. Please try again later.",
+  "@bullnymErrorServerUnavailable": {
+    "description": "Bullnym error when the server rejects a request but the operation can be retried"
+  },
+  "bullnymErrorServerError": "The server could not complete the request. Please try again later.",
+  "@bullnymErrorServerError": {
+    "description": "Bullnym error when the server rejects a request and it should not be retried as-is"
+  },
+  "bullnymErrorUnexpected": "Something went wrong. Please try again.",
+  "@bullnymErrorUnexpected": {
+    "description": "Bullnym generic error for invalid input, unexpected responses, or a local signing failure"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

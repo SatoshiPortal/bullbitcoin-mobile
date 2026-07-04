@@ -58,17 +58,17 @@ sealed class BullnymException implements Exception {
       BullnymSigningFailedException;
 
   String toTranslated(BuildContext context) => switch (kind) {
-    BullnymErrorKind.network => context.loc.mempoolErrorConnectionFailed,
-    BullnymErrorKind.timeout => context.loc.mempoolErrorConnectionFailed,
+    BullnymErrorKind.network => context.loc.bullnymErrorConnectionFailed,
+    BullnymErrorKind.timeout => context.loc.bullnymErrorConnectionFailed,
     BullnymErrorKind.serverRejectedRequest when retryable =>
-      context.loc.mempoolErrorServerUnavailable,
+      context.loc.bullnymErrorServerUnavailable,
     BullnymErrorKind.serverRejectedRequest =>
-      context.loc.mempoolErrorServerError,
+      context.loc.bullnymErrorServerError,
     BullnymErrorKind.invalidInput ||
     BullnymErrorKind.unexpectedHttpStatus ||
     BullnymErrorKind.emptyResponse ||
     BullnymErrorKind.invalidServerResponse ||
-    BullnymErrorKind.signingFailed => context.loc.mempoolErrorUnexpected,
+    BullnymErrorKind.signingFailed => context.loc.bullnymErrorUnexpected,
   };
 
   @override
