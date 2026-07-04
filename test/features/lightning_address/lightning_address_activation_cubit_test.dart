@@ -37,6 +37,37 @@ void main() {
       expect(cubit.state.receiveReady, true);
     });
 
+    test('active status reflects confirmed autosweep metadata', () async {
+      // R2-D1b: the readiness usecase reports the wallet's actual autosweep
+      // metadata; the cubit must thread it so the copy can only claim
+      // autosweep when it is truly enabled.
+      lookup.result = const LightningAddressReceiveReadiness(
+        registration: LightningAddressStatus(nym: 'alice', active: true),
+        autoSweepEnabled: true,
+      );
+
+      await cubit.load();
+
+      expect(cubit.state.status, LightningAddressActivationStatus.active);
+      expect(cubit.state.autoSweepConfirmed, true);
+    });
+
+    test(
+      'active status does not confirm autosweep when metadata is off',
+      () async {
+        lookup.result = const LightningAddressReceiveReadiness(
+          registration: LightningAddressStatus(nym: 'alice', active: true),
+          autoSweepEnabled: false,
+        );
+
+        await cubit.load();
+
+        expect(cubit.state.status, LightningAddressActivationStatus.active);
+        expect(cubit.state.receiveReady, true);
+        expect(cubit.state.autoSweepConfirmed, false);
+      },
+    );
+
     test('load active status stores canonical address when returned', () async {
       lookup.registration = const LightningAddressStatus(
         nym: 'alice',

@@ -14654,7 +14654,11 @@
   },
   "lightningAddressReceiveReady": "Ready to receive; autosweep enabled",
   "@lightningAddressReceiveReady": {
-    "description": "Value shown when the Lightning Address receive wallet exists and autosweep defaults are applied."
+    "description": "Value shown when the Lightning Address receive wallet exists and its autosweep behavior is confirmed enabled."
+  },
+  "lightningAddressReceiveReadyNoAutosweep": "Ready to receive",
+  "@lightningAddressReceiveReadyNoAutosweep": {
+    "description": "Value shown when the Lightning Address receive wallet exists but autosweep is not confirmed enabled, so the copy does not claim autosweep."
   },
   "lightningAddressReceiveNotReady": "Needs local wallet setup",
   "@lightningAddressReceiveNotReady": {

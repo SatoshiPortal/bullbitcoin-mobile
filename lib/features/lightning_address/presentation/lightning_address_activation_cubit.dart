@@ -24,6 +24,7 @@ class LightningAddressActivationCubit
       state.copyWith(
         status: LightningAddressActivationStatus.loading,
         localSetupRetryable: false,
+        autoSweepConfirmed: false,
         clearFailure: !wasSubmissionUncertain,
         clearRegisteredAddress: true,
       ),
@@ -45,6 +46,7 @@ class LightningAddressActivationCubit
               : null,
           registeredAddress: registration.lightningAddress,
           localSetupRetryable: readiness.localSetupRetryable,
+          autoSweepConfirmed: readiness.autoSweepEnabled,
           clearFailure: true,
           clearRegisteredAddress: registration.lightningAddress == null,
         ),
@@ -140,6 +142,7 @@ class LightningAddressActivationCubit
           nym: result.nym,
           registeredAddress: result.lightningAddress,
           localSetupRetryable: false,
+          autoSweepConfirmed: false,
           clearFailure: true,
         ),
       );

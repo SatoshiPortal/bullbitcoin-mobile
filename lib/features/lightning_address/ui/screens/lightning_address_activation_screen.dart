@@ -70,12 +70,14 @@ class _LightningAddressActivationScreenState
                       nym: state.nym,
                       lightningAddress: state.registeredAddress!,
                       receiveReady: state.receiveReady,
+                      autoSweepConfirmed: state.autoSweepConfirmed,
                     )
                   : state.isActive
                   ? _ActiveView(
                       nym: state.nym,
                       lightningAddress: state.registeredAddress,
                       receiveReady: state.receiveReady,
+                      autoSweepConfirmed: state.autoSweepConfirmed,
                     )
                   : state.isActiveLocalSetupFailed
                   ? _ActiveLocalSetupFailedView(
@@ -399,11 +401,13 @@ class _ActiveView extends StatelessWidget {
   final String nym;
   final String? lightningAddress;
   final bool receiveReady;
+  final bool autoSweepConfirmed;
 
   const _ActiveView({
     required this.nym,
     required this.lightningAddress,
     required this.receiveReady,
+    required this.autoSweepConfirmed,
   });
 
   @override
@@ -431,9 +435,11 @@ class _ActiveView extends StatelessWidget {
         const Gap(16),
         _InfoRow(
           label: context.loc.lightningAddressReceiveReadinessLabel,
-          value: receiveReady
-              ? context.loc.lightningAddressReceiveReady
-              : context.loc.lightningAddressReceiveNotReady,
+          value: _receiveReadinessCopy(
+            context,
+            receiveReady: receiveReady,
+            autoSweepConfirmed: autoSweepConfirmed,
+          ),
         ),
       ],
     );
@@ -495,11 +501,13 @@ class _RegisteredView extends StatelessWidget {
   final String nym;
   final String lightningAddress;
   final bool receiveReady;
+  final bool autoSweepConfirmed;
 
   const _RegisteredView({
     required this.nym,
     required this.lightningAddress,
     required this.receiveReady,
+    required this.autoSweepConfirmed,
   });
 
   @override
@@ -523,13 +531,31 @@ class _RegisteredView extends StatelessWidget {
         const Gap(16),
         _InfoRow(
           label: context.loc.lightningAddressReceiveReadinessLabel,
-          value: receiveReady
-              ? context.loc.lightningAddressReceiveReady
-              : context.loc.lightningAddressReceiveNotReady,
+          value: _receiveReadinessCopy(
+            context,
+            receiveReady: receiveReady,
+            autoSweepConfirmed: autoSweepConfirmed,
+          ),
         ),
       ],
     );
   }
+}
+
+// R2-D1b: only claim autosweep is enabled when the wallet's actual behavior
+// metadata has confirmed it; otherwise soften to a plain ready state so the UI
+// never over-reassures a user whose funds could stay put.
+String _receiveReadinessCopy(
+  BuildContext context, {
+  required bool receiveReady,
+  required bool autoSweepConfirmed,
+}) {
+  if (!receiveReady) {
+    return context.loc.lightningAddressReceiveNotReady;
+  }
+  return autoSweepConfirmed
+      ? context.loc.lightningAddressReceiveReady
+      : context.loc.lightningAddressReceiveReadyNoAutosweep;
 }
 
 class _StatusNotice extends StatelessWidget {

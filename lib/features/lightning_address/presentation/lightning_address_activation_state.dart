@@ -28,12 +28,18 @@ class LightningAddressActivationState {
   final String? registeredAddress;
   final bool localSetupRetryable;
 
+  /// Whether the receive wallet's persisted autosweep behavior is confirmed
+  /// enabled. Only true when a readiness lookup has read the actual metadata
+  /// back (R2-D1b); the copy claims autosweep only on this positive signal.
+  final bool autoSweepConfirmed;
+
   const LightningAddressActivationState({
     this.status = LightningAddressActivationStatus.loading,
     this.failure,
     this.nym = '',
     this.registeredAddress,
     this.localSetupRetryable = false,
+    this.autoSweepConfirmed = false,
   });
 
   bool get isLoading => status == LightningAddressActivationStatus.loading;
@@ -55,6 +61,7 @@ class LightningAddressActivationState {
     String? nym,
     String? registeredAddress,
     bool? localSetupRetryable,
+    bool? autoSweepConfirmed,
     bool clearFailure = false,
     bool clearRegisteredAddress = false,
   }) {
@@ -66,6 +73,7 @@ class LightningAddressActivationState {
           ? null
           : registeredAddress ?? this.registeredAddress,
       localSetupRetryable: localSetupRetryable ?? this.localSetupRetryable,
+      autoSweepConfirmed: autoSweepConfirmed ?? this.autoSweepConfirmed,
     );
   }
 }
