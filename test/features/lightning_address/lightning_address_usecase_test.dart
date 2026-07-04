@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/lightning_address/public/lightning_address_fa
 import 'package:bb_mobile/features/nostr_identity/domain/derive_nostr_identity_handle_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
+import 'package:bip340/bip340.dart' as bip340;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:test/test.dart';
 
@@ -48,12 +49,15 @@ void main() {
       bullnym.registerNpubHex,
       nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(xprv),
     );
-    expect(
-      bullnym.registerSignatureHex,
-      nostrIdentity.signBullnymServerAuthHashFromXprv(
-        xprvBase58: xprv,
-        messageHashHex: _messageHashHex,
-      ),
+    // Validity form, not byte-equality: BIP340 signatures are non-deterministic
+    // under aux randomness, so assert the captured signature VERIFIES under the
+    // bullnym-auth key over the signed hash rather than equals a re-signed one
+    // (AD-6). This stays green when signing becomes randomized (pr20's later
+    // conversion becomes an empty diff).
+    _expectValidBullnymAuthSignature(
+      signatureHex: bullnym.registerSignatureHex,
+      xprv: xprv,
+      nostrIdentity: nostrIdentity,
     );
   });
 
@@ -70,12 +74,10 @@ void main() {
       bullnym.deleteNpubHex,
       nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(xprv),
     );
-    expect(
-      bullnym.deleteSignatureHex,
-      nostrIdentity.signBullnymServerAuthHashFromXprv(
-        xprvBase58: xprv,
-        messageHashHex: _messageHashHex,
-      ),
+    _expectValidBullnymAuthSignature(
+      signatureHex: bullnym.deleteSignatureHex,
+      xprv: xprv,
+      nostrIdentity: nostrIdentity,
     );
   });
 
@@ -262,4 +264,25 @@ String _zeroMnemonicXprv() {
     bip39.Language.english,
   );
   return bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed)).toBase58();
+}
+
+/// Asserts the captured bullnym-auth signature is a well-formed BIP340
+/// signature that verifies under the bullnym server-auth key over the signed
+/// hash - validity, not byte-equality (AD-6). Uses the independent bip340
+/// package as the verifier.
+void _expectValidBullnymAuthSignature({
+  required String? signatureHex,
+  required String xprv,
+  required NostrIdentityFacade nostrIdentity,
+}) {
+  expect(signatureHex, isNotNull);
+  expect(signatureHex!.length, 128, reason: '64-byte BIP340 signature');
+  expect(
+    bip340.verify(
+      nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(xprv),
+      _messageHashHex,
+      signatureHex,
+    ),
+    isTrue,
+  );
 }
