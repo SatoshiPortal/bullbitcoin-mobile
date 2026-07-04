@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 abstract interface class BullnymClientPort {
   Future<BullnymRegisterResult> register(BullnymRegisterRequest request);

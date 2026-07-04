@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/delete_bullnym_registration_usecase.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/lookup_bullnym_registration_usecase.dart';
@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/bullnym/domain/usecases/register_bullnym_usec
 
 export 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
-export 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 class BullnymFacade {
   final RegisterBullnymUsecase _register;

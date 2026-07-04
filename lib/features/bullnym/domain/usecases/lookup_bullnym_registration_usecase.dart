@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 
 class LookupBullnymRegistrationUsecase {
