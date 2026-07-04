@@ -85,6 +85,13 @@ class KeychainManifestFacade {
     }
   }
 
+  /// Parses a serialized manifest file into an import plan.
+  ///
+  /// Throws a [KeychainManifestException]. Consumers MUST distinguish the
+  /// unsupported-version case: [KeychainManifestExceptionType.unsupportedFileVersion]
+  /// means the backup exists but was written by a newer app version and MUST be
+  /// shown as "update the app", never as "no backup found" (KC-2). Use
+  /// `toTranslated` for the user-facing copy.
   KeychainManifestImportPlan parseManifestFilePayload(
     String payload, {
     required String expectedParentFingerprint,

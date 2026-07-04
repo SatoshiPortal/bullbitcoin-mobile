@@ -80,6 +80,13 @@ final class KeychainManifestFileParseException
       );
 }
 
+/// A well-formed manifest written by a NEWER format version than this app
+/// understands. Consumers MUST present this as "this backup needs a newer app
+/// version - update the app", never as "no backup found": the backup exists and
+/// is intact, the app simply cannot read it yet. Surfacing it as "no backup"
+/// would steer a user with a real backup toward creating a new one and losing
+/// recovery of the old funds (KC-2). `toTranslated` maps it to the
+/// update-the-app copy.
 final class KeychainManifestUnsupportedVersionException
     extends KeychainManifestException {
   final int version;

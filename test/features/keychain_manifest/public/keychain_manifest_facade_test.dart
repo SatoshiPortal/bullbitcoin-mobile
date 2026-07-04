@@ -294,6 +294,27 @@ void main() {
 
     expect(plan.entries, isEmpty);
   });
+
+  test('surfaces a newer-version manifest file as unsupported, not missing', () {
+    // KC-2: a well-formed backup written by a newer app version must reach the
+    // consumer as the unsupported-version type ("update the app"), never as a
+    // generic invalid file or a "no backup found" signal.
+    final payload = _manifestPayload.replaceFirst('"version":1', '"version":2');
+
+    expect(
+      () => facade.parseManifestFilePayload(
+        payload,
+        expectedParentFingerprint: 'fedcba98',
+      ),
+      throwsA(
+        isA<KeychainManifestException>().having(
+          (error) => error.type,
+          'type',
+          KeychainManifestExceptionType.unsupportedFileVersion,
+        ),
+      ),
+    );
+  });
 }
 
 const _manifestPayload =

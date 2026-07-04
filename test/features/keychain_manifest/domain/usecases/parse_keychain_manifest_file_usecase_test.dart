@@ -173,7 +173,8 @@ void main() {
   });
 
   test('rejects oversized string fields', () {
-    final oversized = 'a' * (KeychainManifestFileCodec.maxStringFieldLength + 1);
+    final oversized =
+        'a' * (KeychainManifestFileCodec.maxStringFieldLength + 1);
     final payload = _manifestPayload.replaceFirst(
       '"walletId":"btc-wallet"',
       '"walletId":"$oversized"',
@@ -257,9 +258,9 @@ void main() {
   test('rejects unknown script type wire values as invalid files', () {
     final payload = _manifestPayload.replaceFirst(
       '"scriptType":"bip84",'
-      '"createdAt":11',
+          '"createdAt":11',
       '"scriptType":"bip86",'
-      '"createdAt":11',
+          '"createdAt":11',
     );
 
     expect(
@@ -341,6 +342,18 @@ void main() {
     );
   });
 
+  test('surfaces a newer-version file as unsupported through execute', () {
+    // The typed unsupported-version signal must survive the use-case, not be
+    // remapped to the generic invalid-file path: PR23 renders "update the app",
+    // never "no backup found" (KC-2).
+    final payload = _manifestPayload.replaceFirst('"version":1', '"version":2');
+
+    expect(
+      () => usecase.execute(payload, expectedParentFingerprint: 'fedcba98'),
+      throwsA(isA<KeychainManifestUnsupportedVersionException>()),
+    );
+  });
+
   test('classifies a non-integer version as malformed', () {
     final payload = _manifestPayload.replaceFirst(
       '"version":1',
@@ -392,27 +405,24 @@ void main() {
     );
   });
 
-  test(
-    'rejects a declared materialization count that mismatches the '
-    'materializations',
-    () {
-      final payload = _manifestPayload.replaceFirst(
-        '"materializationCount":2',
-        '"materializationCount":3',
-      );
+  test('rejects a declared materialization count that mismatches the '
+      'materializations', () {
+    final payload = _manifestPayload.replaceFirst(
+      '"materializationCount":2',
+      '"materializationCount":3',
+    );
 
-      expect(
-        () => codec.decode(payload),
-        throwsA(
-          isA<KeychainManifestFileParseException>().having(
-            (error) => error.reason,
-            'reason',
-            KeychainManifestFileParseFailureReason.invalidMetadata,
-          ),
+    expect(
+      () => codec.decode(payload),
+      throwsA(
+        isA<KeychainManifestFileParseException>().having(
+          (error) => error.reason,
+          'reason',
+          KeychainManifestFileParseFailureReason.invalidMetadata,
         ),
-      );
-    },
-  );
+      ),
+    );
+  });
 
   test('rejects stale inventory timestamps', () {
     final payload = _manifestPayload.replaceFirst(
