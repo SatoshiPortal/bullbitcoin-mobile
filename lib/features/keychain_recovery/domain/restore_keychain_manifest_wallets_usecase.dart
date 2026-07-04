@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
@@ -6,11 +8,13 @@ import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wa
 class RestoreKeychainManifestWalletsUsecase {
   final KeychainRecoveryWalletMaterializerPort _walletMaterializer;
   final KeychainManifestFacade _keychainManifest;
+  final ApplyWalletBehaviorDefaultsUsecase _applyWalletBehaviorDefaults;
   final Bip85RegistryFacade _registry;
 
   const RestoreKeychainManifestWalletsUsecase({
     required this._walletMaterializer,
     required this._keychainManifest,
+    required this._applyWalletBehaviorDefaults,
     required Bip85RegistryFacade bip85Registry,
   }) : _registry = bip85Registry;
 
@@ -168,6 +172,13 @@ class RestoreKeychainManifestWalletsUsecase {
               .toList(growable: false),
         ),
       );
+      // Re-apply the locked Get Paid posture (decision [1]/[C]/KC-6): every
+      // restored wallet-seed wallet must come back hidden + autosweep-enabled,
+      // matching pairing/activation, so recovered funds don't silently surface
+      // as spendable and are swept as configured. Post-commitment per AD-3: the
+      // manifest record above is the commitment point, so a defaults failure is
+      // logged and never fails the restore.
+      await _applyGetPaidPostureBestEffort(wallets);
       return wallets
           .map((wallet) {
             return KeychainRecoveryWalletRestoreOutcome(
@@ -185,6 +196,29 @@ class RestoreKeychainManifestWalletsUsecase {
             );
           })
           .toList(growable: false);
+    }
+  }
+
+  Future<void> _applyGetPaidPostureBestEffort(
+    List<KeychainRecoveryMaterializedWallet> wallets,
+  ) async {
+    for (final wallet in wallets) {
+      try {
+        await _applyWalletBehaviorDefaults.execute(
+          walletId: wallet.intent.walletId,
+          hideOnHome: true,
+          autoSweepEnabled: true,
+        );
+      } catch (e, stack) {
+        // Log the fingerprint/id, never the material; the restore still
+        // succeeds (post-commitment best effort, AD-3).
+        log.warning(
+          'Get Paid posture defaults failed for restored wallet '
+          '${wallet.intent.walletId}',
+          error: e,
+          trace: stack,
+        );
+      }
     }
   }
 

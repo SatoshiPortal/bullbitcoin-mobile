@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
@@ -9,14 +10,17 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late _FakeWalletMaterializer materializer;
   late _FakeKeychainManifestFacade keychainManifest;
+  late _FakeApplyWalletBehaviorDefaults applyDefaults;
   late RestoreKeychainManifestWalletsUsecase usecase;
 
   setUp(() {
     materializer = _FakeWalletMaterializer();
     keychainManifest = _FakeKeychainManifestFacade();
+    applyDefaults = _FakeApplyWalletBehaviorDefaults();
     usecase = RestoreKeychainManifestWalletsUsecase(
       walletMaterializer: materializer,
       keychainManifest: keychainManifest,
+      applyWalletBehaviorDefaults: applyDefaults,
       bip85Registry: const Bip85RegistryFacade(),
     );
   });
@@ -157,6 +161,109 @@ void main() {
     expect(materializer.batches, isEmpty);
     expect(keychainManifest.recordRequests, isEmpty);
   });
+
+  test(
+    're-applies the hidden + autosweep Get Paid posture to each wallet',
+    () async {
+      final intent = _intent();
+      materializer.result = KeychainRecoveryWalletMaterializationResult(
+        materializedWallets: [
+          KeychainRecoveryMaterializedWallet(
+            intent: intent,
+            childSeedFingerprint: intent.childSeedFingerprint,
+            created: true,
+          ),
+        ],
+        failedOutcomes: const [],
+        derivationPath: "39'/0'/12'/100'",
+      );
+
+      await usecase.execute(_plan(intent));
+
+      expect(applyDefaults.calls.single.walletId, intent.walletId);
+      expect(applyDefaults.calls.single.hideOnHome, true);
+      expect(applyDefaults.calls.single.autoSweepEnabled, true);
+    },
+  );
+
+  test('a posture-defaults failure does not fail the restore', () async {
+    final intent = _intent();
+    applyDefaults.throwOnExecute = true;
+    materializer.result = KeychainRecoveryWalletMaterializationResult(
+      materializedWallets: [
+        KeychainRecoveryMaterializedWallet(
+          intent: intent,
+          childSeedFingerprint: intent.childSeedFingerprint,
+          created: true,
+        ),
+      ],
+      failedOutcomes: const [],
+      derivationPath: "39'/0'/12'/100'",
+    );
+
+    final result = await usecase.execute(_plan(intent));
+
+    // Post-commitment (manifest already recorded): the wallet is restored even
+    // though re-applying the posture threw.
+    expect(result.hasFailures, false);
+    expect(result.walletOutcomes.single.status, _created);
+  });
+
+  test('an empty import plan reports nothing restored, not success', () async {
+    final emptyPlan = KeychainManifestImportPlan(
+      parentFingerprint: 'fedcba98',
+      entries: const [],
+    );
+
+    final result = await usecase.execute(emptyPlan);
+
+    expect(result.walletOutcomes, isEmpty);
+    expect(result.hasFailures, false);
+    expect(result.restoredCount, 0);
+    expect(result.restoredNothing, true);
+  });
+
+  test('refuses an entry whose reservation id is unknown', () async {
+    final intent = _intent();
+    final plan = KeychainManifestImportPlan(
+      parentFingerprint: 'fedcba98',
+      entries: [
+        KeychainManifestImportEntryIntent(
+          entryId: "fedcba98:39'/0'/12'/100'",
+          parentFingerprint: 'fedcba98',
+          bip85DerivationPath: "39'/0'/12'/100'",
+          reservationId: 'unknown_wallet_seed',
+          walletMaterializations: [intent],
+        ),
+      ],
+    );
+
+    final result = await usecase.execute(plan);
+
+    expect(result.walletOutcomes.single.status, _invalidImportPlan);
+    expect(materializer.batches, isEmpty);
+  });
+
+  test('refuses an entry whose path is not the reservation path', () async {
+    final intent = _intent();
+    final plan = KeychainManifestImportPlan(
+      parentFingerprint: 'fedcba98',
+      entries: [
+        KeychainManifestImportEntryIntent(
+          entryId: "fedcba98:39'/0'/12'/77'",
+          parentFingerprint: 'fedcba98',
+          bip85DerivationPath: "39'/0'/12'/77'",
+          reservationId: 'btcpay_wallet_seed',
+          walletMaterializations: [intent],
+        ),
+      ],
+    );
+
+    final result = await usecase.execute(plan);
+
+    expect(result.walletOutcomes.single.status, _invalidImportPlan);
+    expect(materializer.batches, isEmpty);
+  });
 }
 
 KeychainManifestImportPlan _plan(
@@ -222,6 +329,27 @@ class _FakeKeychainManifestFacade implements KeychainManifestFacade {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeApplyWalletBehaviorDefaults
+    implements ApplyWalletBehaviorDefaultsUsecase {
+  final calls =
+      <({String walletId, bool? hideOnHome, bool? autoSweepEnabled})>[];
+  bool throwOnExecute = false;
+
+  @override
+  Future<void> execute({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {
+    calls.add((
+      walletId: walletId,
+      hideOnHome: hideOnHome,
+      autoSweepEnabled: autoSweepEnabled,
+    ));
+    if (throwOnExecute) throw StateError('defaults failed');
+  }
 }
 
 const _created = KeychainRecoveryWalletRestoreStatus.created;

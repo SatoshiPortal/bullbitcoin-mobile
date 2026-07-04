@@ -29,6 +29,9 @@ Allowed dependencies:
 - `keychain_recovery -> bip85_registry/public`
 - `keychain_recovery -> deterministic_wallets/public`
 - `keychain_recovery -> core/settings`
+- `keychain_recovery -> core/wallet` (re-applies the locked hidden + autosweep
+  Get Paid posture to restored wallets via ApplyWalletBehaviorDefaultsUsecase -
+  decision [1]/[C]/KC-6)
 
 Forbidden dependencies:
 

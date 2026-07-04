@@ -38,4 +38,13 @@ class KeychainRecoveryResult {
   const KeychainRecoveryResult({required this.walletOutcomes});
 
   bool get hasFailures => walletOutcomes.any((outcome) => !outcome.succeeded);
+
+  /// Number of wallets actually restored (created or already present).
+  int get restoredCount => walletOutcomes.where((o) => o.succeeded).length;
+
+  /// True when nothing was restored - an empty import plan or an all-failed
+  /// run. Consumers MUST NOT treat this as a plain success: `hasFailures` is
+  /// false for an empty plan, so a "restored" screen with zero wallets would
+  /// otherwise be shown (PR06 I-A; the sink is closed at PR22, R2-P22a).
+  bool get restoredNothing => restoredCount == 0;
 }

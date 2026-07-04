@@ -58,6 +58,39 @@ void main() {
   );
 
   test(
+    'rolls back and fails the batch on parent fingerprint mismatch',
+    () async {
+      // The primary anti-wrong-wallet defense: the seed the app derived from
+      // must be the seed the manifest was built under, or nothing is restored.
+      final intent = _intent();
+      deterministicWallets.result = _prepared(
+        parentFingerprint: 'deadbeef',
+        childSeedFingerprint: '0123abcd',
+        wallets: [
+          PreparedDeterministicWallet(
+            specId: _materializationKey(intent),
+            walletId: intent.walletId,
+            network: intent.network,
+            scriptType: intent.scriptType,
+            externalPublicDescriptor: 'external',
+            internalPublicDescriptor: 'internal',
+            created: true,
+          ),
+        ],
+      );
+
+      final result = await materializer.materialize(_batch(intents: [intent]));
+
+      expect(result.materializedWallets, isEmpty);
+      expect(
+        result.failedOutcomes.single.status,
+        KeychainRecoveryWalletRestoreStatus.failedParentFingerprintMismatch,
+      );
+      expect(deterministicWallets.rollbackCalls, 1);
+    },
+  );
+
+  test(
     'rolls back and fails supported batch on child fingerprint mismatch',
     () async {
       final intent = _intent();
@@ -167,11 +200,12 @@ String _materializationKey(KeychainManifestWalletMaterializationIntent intent) {
 PreparedDeterministicWallets _prepared({
   required String childSeedFingerprint,
   required List<PreparedDeterministicWallet> wallets,
+  String parentFingerprint = 'fedcba98',
 }) {
   return PreparedDeterministicWallets(
     wallets: wallets,
     derivationPath: "39'/0'/12'/100'",
-    parentFingerprint: 'fedcba98',
+    parentFingerprint: parentFingerprint,
     childSeedFingerprint: childSeedFingerprint,
     childSeedStoredDuringAttempt: true,
   );
