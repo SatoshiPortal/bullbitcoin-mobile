@@ -39,6 +39,10 @@ class WalletUtxoMapper {
           scriptPubkey: model.scriptPubkey,
           standardAddress: model.standardAddress,
           confidentialAddress: model.confidentialAddress,
+          assetIdHex: model.assetIdHex,
+          addressIndex: model.addressIndex,
+          valueBf: model.valueBf,
+          assetBf: model.assetBf,
           labels: labels,
           txLabels: txLabels,
           addressLabels: addressLabels,
@@ -69,6 +73,10 @@ class WalletUtxoMapper {
           scriptPubkey: entity.scriptPubkey,
           standardAddress: entity.standardAddress,
           confidentialAddress: entity.confidentialAddress,
+          assetIdHex: entity.assetIdHex,
+          addressIndex: entity.addressIndex,
+          valueBf: entity.valueBf,
+          assetBf: entity.assetBf,
         );
     }
   }

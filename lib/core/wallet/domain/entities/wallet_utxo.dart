@@ -32,6 +32,17 @@ sealed class WalletUtxo with _$WalletUtxo {
     required BigInt amountSat,
     required String standardAddress,
     required String confidentialAddress,
+    // Unblinded asset id (hex) of this output, from LWK's TxOutSecrets. For
+    // L-BTC this equals the network's L-BTC asset id.
+    required String assetIdHex,
+    // The wallet address index this output was received at. Nullable because
+    // it is unknown for watch-only / foreign outputs.
+    required int? addressIndex,
+    // SLIP-77 value blinding factor (hex) for this output, from TxOutSecrets.
+    // Used by the LUD-22 proof-of-funds factor-reconstruction contract.
+    required String valueBf,
+    // SLIP-77 asset blinding factor (hex) for this output, from TxOutSecrets.
+    required String assetBf,
     @Default(WalletAddressKeyChain.external)
     WalletAddressKeyChain addressKeyChain,
     @Default([]) List<Label> labels,

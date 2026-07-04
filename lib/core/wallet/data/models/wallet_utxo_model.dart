@@ -23,6 +23,10 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String scriptPubkey,
     required String standardAddress,
     required String confidentialAddress,
+    required String assetIdHex,
+    required int? addressIndex,
+    required String valueBf,
+    required String assetBf,
     @Default(0) int confirmations,
   }) = LiquidWalletUtxoModel;
 
