@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
@@ -167,6 +169,82 @@ void main() {
       expect(payload.isEmpty, isTrue);
     },
   );
+
+  // Decision [F] v1 format freeze (schema-lock leg). The byte-exact golden above
+  // freezes the serialized value; this freezes the SHAPE: the exact key set at
+  // each level. Adding, renaming, retyping, or removing a field flips this red
+  // with a message telling the author the frozen v1 contract requires a human
+  // decision (additive-only evolution). Companion decode/forward-compat checks
+  // land at pr05 where the decoder exists (R2-F1).
+  test('v1 manifest key sets are frozen at every level', () async {
+    await facade.recordReservedDerivation(
+      KeychainManifestReservedDerivationRequest(
+        reservationId: 'btcpay_wallet_seed',
+        derivationPath: "39'/0'/12'/100'",
+        parentFingerprint: 'fedcba98',
+        materializations: [_walletMaterialization()],
+      ),
+      now: DateTime.fromMillisecondsSinceEpoch(10000, isUtc: true),
+    );
+    final payload = await facade.buildManifestFilePayload(
+      'fedcba98',
+      now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+    );
+
+    final decoded = jsonDecode(payload.payload) as Map<String, Object?>;
+    expect(
+      decoded.keys.toSet(),
+      {
+        'version',
+        'parentFingerprint',
+        'generatedAt',
+        'inventoryUpdatedAt',
+        'entryCount',
+        'materializationCount',
+        'entries',
+      },
+      reason:
+          'Frozen v1 manifest file-level key set changed. Do not rename, remove, '
+          'or retype a field; add a new golden vector and update the frozen '
+          'contract deliberately (decision [F]).',
+    );
+
+    final entry = (decoded['entries']! as List).single as Map<String, Object?>;
+    expect(
+      entry.keys.toSet(),
+      {
+        'entryId',
+        'bip85DerivationPath',
+        'reservationId',
+        'entryType',
+        'ownerFeature',
+        'bip85Application',
+        'bip85Index',
+        'createdAt',
+        'updatedAt',
+        'materializations',
+      },
+      reason: 'Frozen v1 manifest entry-level key set changed (decision [F]).',
+    );
+
+    final materialization =
+        (entry['materializations']! as List).single as Map<String, Object?>;
+    expect(
+      materialization.keys.toSet(),
+      {
+        'type',
+        'walletId',
+        'childSeedFingerprint',
+        'network',
+        'scriptType',
+        'createdAt',
+        'updatedAt',
+      },
+      reason:
+          'Frozen v1 manifest materialization-level key set changed '
+          '(decision [F]).',
+    );
+  });
 }
 
 const _manifestPayload =
