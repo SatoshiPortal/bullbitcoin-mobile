@@ -36,6 +36,7 @@ A later wallet-owning application flow should avoid storing xprv-bearing request
 
 `prepareWallet()` creates or reuses the dedicated Liquid receive wallet from the `lightning_address_wallet_seed` BIP85 reservation and records the resulting wallet materialization in the keychain manifest.
 If manifest recording fails after local wallet creation, the use case rolls back newly created deterministic wallets best-effort and returns a local preparation error.
+This applies the canonical rollback-timing rule in `ARCHITECTURE.md` (Error handling): the durable manifest record is the commitment point — a failure before it is fatal/retryable and rolls the local wallet back, a failure after it is best-effort (logged, never un-done).
 Recovered Lightning Address wallets require product reactivation because the manifest can restore wallet materialization metadata but cannot prove an active Bullnym server registration.
 
 Lookup currently reflects the Bullnym public lookup contract: it reports the registered nym and whether it is active.
