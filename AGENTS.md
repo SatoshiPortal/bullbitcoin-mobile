@@ -32,7 +32,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 ## Monorepo / melos
 
-The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. Today the Flutter app is a single package at the repo root, kept there via `useRootAsPackage: true` in the `melos:` block of [`pubspec.yaml`](pubspec.yaml). There are no workspace members yet, so melos is a skeleton — the makefile and build chain behave exactly as before.
+The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains a package at the repo root (`useRootAsPackage: true` in the `melos:` block of [`pubspec.yaml`](pubspec.yaml)) and now has workspace MEMBERS listed under the `workspace:` key — `packages/primitives`, `packages/secrets`, `packages/bull_ui` (plus the dev-only `bull_ui_catalogue`). The makefile and reproducible build chain still behave as before (melos is a `dev_dependency`, never compiled into the app).
 
 - **Run melos through the makefile** (`make bootstrap`), which wraps `fvm dart run melos` so the pinned SDK ([`.fvmrc`](.fvmrc)) is used. Never type bare `melos` (wrong SDK). For melos subcommands without a make target yet, use `fvm dart run melos <cmd>` — and add a make wrapper if it becomes routine.
 - **The makefile stays canonical** for daily commands. melos does not replace it: `make deps` is still `fvm flutter pub get --enforce-lockfile`, and the reproducible build chain ([Containerfile.app](Containerfile.app), [build-android.yml](.github/workflows/build-android.yml)) does not run melos. melos is a `dev_dependency` only — never compiled into the app, so the reproducible APK is unaffected.

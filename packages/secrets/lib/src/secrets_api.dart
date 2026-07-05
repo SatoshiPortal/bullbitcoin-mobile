@@ -1,0 +1,505 @@
+import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart' show useResult;
+import 'package:oubliette/oubliette.dart';
+import 'package:primitives/primitives.dart';
+
+import 'package:secrets/src/data/adapters/backup_vault_adapter.dart';
+import 'package:secrets/src/data/adapters/bip85_adapter.dart';
+import 'package:secrets/src/data/adapters/dual_read_store.dart';
+import 'package:secrets/src/data/adapters/flutter_secure_storage_adapter.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/oubliette_secret_store_adapter.dart';
+import 'package:secrets/src/data/datasources/hardware_key_invalidated_exception.dart';
+import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
+import 'package:secrets/src/data/migration/reconcile_report.dart';
+import 'package:secrets/src/data/migration/secret_migrator.dart';
+import 'package:secrets/src/data/adapters/key_derivation_adapter.dart';
+import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
+import 'package:secrets/src/data/adapters/signer_adapter.dart';
+import 'package:secrets/src/data/adapters/swap_signer_adapter.dart';
+import 'package:secrets/src/domain/ports/backup_vault_port.dart';
+import 'package:secrets/src/domain/ports/bip85_port.dart';
+import 'package:secrets/src/domain/ports/key_derivation_port.dart';
+import 'package:secrets/src/domain/ports/secret_index_port.dart';
+import 'package:secrets/src/domain/ports/secret_lifecycle_port.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
+import 'package:secrets/src/domain/ports/signer_port.dart';
+import 'package:secrets/src/domain/ports/swap_signer_port.dart';
+import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/ark_secret.dart';
+import 'package:secrets/src/domain/value_objects/backup.dart';
+import 'package:secrets/src/domain/value_objects/bip85_types.dart';
+import 'package:secrets/src/domain/value_objects/created_swap.dart';
+import 'package:secrets/src/domain/value_objects/descriptors.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_language.dart';
+import 'package:secrets/src/domain/value_objects/mnemonic_length.dart';
+import 'package:secrets/src/domain/value_objects/psbt.dart';
+import 'package:secrets/src/domain/value_objects/secret_info.dart';
+import 'package:secrets/src/domain/value_objects/signing_intent.dart';
+import 'package:secrets/src/domain/value_objects/swap_request.dart';
+import 'package:secrets/src/ui/mnemonic_reader.dart';
+part 'secret.dart';
+
+/// What the app asks [Secrets.init] for (computed app-side from the persisted
+/// backend flag). `autoDetect` runs the capability probe; `oublietteFirst`
+/// trusts a prior "capable" determination and skips the probe; `fssOnly` stays
+/// on FSS.
+enum SecretsStorageMode { autoDetect, oublietteFirst, fssOnly }
+
+/// What a probe / init resolved to — the app persists this as its backend flag
+/// and telemeters it. `oubliette` = hardware-backed wired; `fssIncompatible` =
+/// permanently FSS-only; `fssDeferred` = capability unknown (e.g. device locked
+/// at probe time) → FSS this session, re-probe next launch, do NOT persist.
+enum SecretsBackendOutcome { oubliette, fssIncompatible, fssDeferred }
+
+/// The non-secret result of [Secrets.init] / [Secrets.probeBackend]: the
+/// resolved [SecretsBackendOutcome] plus the probe error (if any) for the app to
+/// log. Never carries secret material — the probe uses a fixed sentinel.
+typedef SecretsInitResult = ({
+  SecretsBackendOutcome outcome,
+  Object? probeError,
+});
+
+/// The static entry point to the `secrets` package — wiring, creation, and the
+/// cross-kind registry. Operations on an existing secret live on the [Secret]
+/// handle returned by [fetch]/[importMnemonic]/[generateMnemonic].
+///
+/// Call [init] exactly once (at app start) with the app's [SecretIndexPort];
+/// any use before [init] throws a [StateError].
+abstract final class Secrets {
+  // ── private process-global state (resolved lazily via [_w]) ───────────────
+
+  static _Wiring? _instance;
+
+  /// One-shot guard: makes the now-async [init] idempotent (concurrent or
+  /// duplicate calls share a single in-flight future; a failed init clears it so
+  /// a retry re-runs). Cleared by [reset].
+  static Future<SecretsInitResult>? _initInFlight;
+
+  /// The args from the first [init] call — a second call with DIFFERENT args
+  /// is a programmer error (silent ignore would mask a wiring bug).
+  static ({SecretIndexPort index, SecretsStorageMode mode, SecretStorePort? store})?
+      _initArgs;
+
+  /// Guards the migration against an accidental concurrent second pass — see
+  /// [migrateToHardware]. Cleared on completion and by [reset].
+  static Future<MigrationReport?>? _migrationInFlight;
+
+  /// Bumped by every [reset]. An in-flight [_doInit] captures it before its
+  /// awaits and refuses to publish its wiring if it changed meanwhile — so a
+  /// stale init completing after a `reset()` (or after a newer init started)
+  /// can't resurrect old wiring over the current state. Test-only concern, but
+  /// tests are exactly where this interleaving happens.
+  static int _epoch = 0;
+
+  // ── wiring / maintenance ────────────────────────────────────────────────────
+
+  /// Builds the internal graph once, choosing the storage backend per [mode].
+  ///
+  /// [index] is the app's (Drift-backed) non-secret index. [mode] is computed
+  /// app-side from the persisted backend flag (see the integration plan):
+  /// `autoDetect` runs the §capability probe; `oublietteFirst` trusts a prior
+  /// "capable" determination and skips it; `fssOnly` stays on FSS. [store] is
+  /// the test seam — when supplied it is used verbatim and the probe/mode are
+  /// bypassed.
+  ///
+  /// Returns a [SecretsInitResult] (outcome + probe error) — non-secret data the
+  /// app persists and `log.shout`s. The package itself never logs.
+  static Future<SecretsInitResult> init({
+    required SecretIndexPort index,
+    SecretsStorageMode mode = SecretsStorageMode.autoDetect,
+    SecretStorePort? store,
+  }) {
+    if (_initInFlight != null) {
+      // A second call with the SAME args is idempotent (concurrent duplicate).
+      // A second call with DIFFERENT args is a wiring bug — fail loudly.
+      final prev = _initArgs!;
+      if (prev.index != index || prev.mode != mode || prev.store != store) {
+        throw StateError(
+            'Secrets.init called twice with different arguments — '
+            'use Secrets.reset() first or pass the same args.');
+      }
+      return _initInFlight!;
+    }
+    _initArgs = (index: index, mode: mode, store: store);
+    return _initInFlight ??= _doInit(index: index, mode: mode, store: store);
+  }
+
+  /// Probes device capability WITHOUT wiring the package as the seed layer, so a
+  /// standalone census can run before any adoption. The probe round-trip, the
+  /// backend choice, and the adapters all stay sealed in the package; this
+  /// returns only non-secret data (outcome + probe error). The `oubliette:`
+  /// param is the test seam — the only way to drive the probe outcomes from a
+  /// unit test, since `_buildOubliette` otherwise constructs the real platform
+  /// `Oubliette`.
+  static Future<SecretsInitResult> probeBackend({Oubliette? oubliette}) async {
+    final o = _buildOubliette(injected: oubliette);
+    if (o == null) {
+      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: null);
+    }
+    return _probe(o);
+  }
+
+  /// Runs the one-time FSS→hardware migration when a hardware backend is active;
+  /// returns null on an FSS-only device. The app `log.shout`s the report.
+  ///
+  /// The pass is meant to be quiesced (once, at startup). A re-entrant call
+  /// would race the same index and trip oubliette's write-once `StateError`,
+  /// polluting the `MigrationReport` census; overlapping callers therefore share
+  /// one in-flight pass. The guard clears on completion, so a later retry (to
+  /// re-attempt previously failed seeds) still re-runs.
+  static Future<MigrationReport?> migrateToHardware() async {
+    final store = _w.store;
+    if (store is! DualReadStore) return null;
+    return _migrationInFlight ??= store
+        .migratePending(_w.index)
+        .whenComplete(() => _migrationInFlight = null);
+  }
+
+  /// Heals any drift between the secret store and the non-secret index, then
+  /// reports it (the app `log.shout`s the report, like [migrateToHardware]).
+  ///
+  /// A secret present in the store but missing from the index is invisible to
+  /// [fetch]/[list] (both index-driven) — an orphan left by a non-atomic import,
+  /// or EVERY secret at once if the index database was lost/rebuilt. This
+  /// re-indexes them from the store. Meant to run ONCE at startup, before the
+  /// first [fetch]/[list]. A total failure (e.g. the keychain is locked at
+  /// startup) returns `Err` so the app can defer and retry next launch; per-seed
+  /// heal failures are collected in the report, never thrown.
+  @useResult
+  static Future<Result<ReconcileReport, SecretsFailure>> reconcile() =>
+      _w.lifecycle.reconcile();
+
+  /// Drops the wired graph — test isolation only.
+  @visibleForTesting
+  static void reset() {
+    _epoch++; // invalidate any in-flight _doInit so it won't publish stale wiring
+    _instance = null;
+    _initInFlight = null;
+    _initArgs = null;
+    _migrationInFlight = null;
+  }
+
+  /// In-package seam for the sealed display widgets ([SecretRevealer],
+  /// [VerifyBackupView]) to read a stored mnemonic for rendering. NOT exported.
+  @internal
+  static MnemonicReader get mnemonicReader => _w.mnemonicReader;
+
+  // ── create → a TYPED handle (operate immediately, no second fetch) ────────
+
+  /// Imports an existing mnemonic, stores it, and returns its handle.
+  @useResult
+  static Future<Result<MnemonicSecret, SecretsFailure>> importMnemonic(
+    List<String> words, {
+    String? passphrase,
+    MnemonicLanguage language = MnemonicLanguage.english,
+  }) async {
+    final r = await _w.lifecycle.importMnemonic(
+      words: words,
+      passphrase: passphrase,
+      language: language,
+    );
+    return _hydrateMnemonic(r);
+  }
+
+  /// Generates a fresh mnemonic, stores it, and returns its handle.
+  @useResult
+  static Future<Result<MnemonicSecret, SecretsFailure>> generateMnemonic({
+    MnemonicLength length = MnemonicLength.words12,
+  }) async {
+    final r = await _w.lifecycle.generateMnemonic(length: length);
+    return _hydrateMnemonic(r);
+  }
+
+  /// Derives a mnemonic's fingerprint WITHOUT storing (duplicate pre-check).
+  @useResult
+  static Future<Result<Fingerprint, SecretsFailure>> fingerprintOfMnemonic(
+    List<String> words, {
+    String? passphrase,
+    MnemonicLanguage language = MnemonicLanguage.english,
+  }) => _w.lifecycle.fingerprintOf(
+    words: words,
+    passphrase: passphrase,
+    language: language,
+  );
+
+  // ── operate on an existing secret → resolves kind from the index ──────────
+
+  /// Reads the index and returns the typed handle, or
+  /// [SecretNotFoundFailure] if absent. Never touches the secret store.
+  @useResult
+  static Future<Result<Secret, SecretsFailure>> fetch(Fingerprint fp) async {
+    final r = await _w.lifecycle.getInfo(fp);
+    return switch (r) {
+      Ok(:final value) =>
+        value == null ? Err(SecretNotFoundFailure(fp)) : Ok(_build(value)),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  // ── registry / umbrella (cross-kind) ──────────────────────────────────────
+
+  /// All stored secrets, as handles.
+  @useResult
+  static Future<Result<List<Secret>, SecretsFailure>> list() async {
+    final r = await _w.lifecycle.listSeeds();
+    return r.map((infos) => infos.map(_build).toList());
+  }
+
+  /// Whether a secret with [fp] is stored.
+  @useResult
+  static Future<Result<bool, SecretsFailure>> exists(Fingerprint fp) =>
+      _w.lifecycle.exists(fp);
+
+  /// Decrypts [vault] in-package, writes the recovered secret(s) to the store,
+  /// and returns their fingerprints. A static create/add op (no pre-existing
+  /// handle to hang it on).
+  @useResult
+  static Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
+    required EncryptedVault vault,
+    required VaultKey vaultKey,
+  }) => _w.backup.restoreVault(vault: vault, vaultKey: vaultKey);
+
+  // ── private helpers ────────────────────────────────────────────────────────
+
+  static _Wiring get _w =>
+      _instance ??
+      (throw StateError('Secrets.init() must be called before use.'));
+
+  static Future<SecretsInitResult> _doInit({
+    required SecretIndexPort index,
+    required SecretsStorageMode mode,
+    SecretStorePort? store,
+  }) async {
+    final epoch = _epoch; // snapshot before any await
+    try {
+      final (SecretStorePort s, SecretsInitResult result) = await _resolveStore(
+        mode,
+        store,
+      );
+      await s.init();
+      if (epoch != _epoch) {
+        // reset() (or a newer init) ran while we were initializing — do NOT
+        // publish this now-stale wiring over the current state. The in-flight
+        // guard/args were already cleared by reset(), so leave them be.
+        return result;
+      }
+      _instance = _Wiring(store: s, index: index);
+      return result;
+    } catch (_) {
+      if (epoch == _epoch) {
+        _initInFlight = null; // allow a retry after a failed init
+        _initArgs = null;
+      }
+      rethrow;
+    }
+  }
+
+  /// Builds the store for [mode] and reports the outcome. Only `autoDetect` runs
+  /// the probe. [injected] (the test seam) bypasses everything.
+  static Future<(SecretStorePort, SecretsInitResult)> _resolveStore(
+    SecretsStorageMode mode,
+    SecretStorePort? injected,
+  ) async {
+    if (injected != null) {
+      return (
+        injected,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: null),
+      );
+    }
+    // Built only on the real path — keep the injected-store seam hermetic (no
+    // FlutterSecureStorage plugin touch in a unit test that supplied its own store).
+    final fss = FssSecretStoreAdapter(FlutterSecureStorageAdapter.standard());
+    final o = _buildOubliette(); // null where oubliette isn't wired
+    if (o == null || mode == SecretsStorageMode.fssOnly) {
+      return (
+        fss,
+        (outcome: SecretsBackendOutcome.fssIncompatible, probeError: null),
+      );
+    }
+    final dual = DualReadStore(hardware: o, fallback: fss);
+    if (mode == SecretsStorageMode.oublietteFirst) {
+      // Flag already says capable — trust it, skip the probe.
+      return (
+        dual,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: null),
+      );
+    }
+    final probe = await _probe(o); // autoDetect
+    if (probe.outcome != SecretsBackendOutcome.oubliette &&
+        await _hwHoldsSeeds(o)) {
+      // The probe says downgrade to FSS-only, but hardware ALREADY holds
+      // seed(s) (a prior migration / oublietteFirst session). An FSS-only wiring
+      // reads only FSS, so those HW-resident seeds would become unreadable —
+      // and `fssIncompatible` is persisted+permanent. A device that demonstrably
+      // holds seeds in hardware is not incompatible; keep the dual wiring (HW
+      // read, FSS fallback) so nothing is stranded. Report `oubliette` (it works
+      // enough to hold seeds) while preserving the probe error for telemetry.
+      return (
+        dual,
+        (outcome: SecretsBackendOutcome.oubliette, probeError: probe.probeError),
+      );
+    }
+    return switch (probe.outcome) {
+      SecretsBackendOutcome.oubliette => (dual, probe),
+      // A DEFERRED probe means capability is UNKNOWN this session (keychain
+      // locked at probe time), NOT incompatible. New seeds are hardware-only
+      // (DualReadStore writes HW), and an FSS-only wiring reads only FSS — so a
+      // HW-resident seed would read as SecretNotFound, the recovery-triggering
+      // misclassification this package works to avoid. Wire the DUAL store so a
+      // still-locked HW read surfaces KeychainLockedFailure (retryable) and any
+      // FSS-resident seed still falls back. The deferred outcome is returned
+      // UNCHANGED (not persisted → re-probe next launch).
+      SecretsBackendOutcome.fssDeferred => (dual, probe),
+      // Permanent structural incompatibility — FSS-only is correct.
+      SecretsBackendOutcome.fssIncompatible => (fss, probe),
+    };
+  }
+
+  /// Whether the hardware store already holds any SEED key (not the probe
+  /// sentinel). Best-effort: any error → false (fall back to the probe verdict).
+  static Future<bool> _hwHoldsSeeds(OublietteSecretStoreAdapter o) async {
+    try {
+      return (await o.keys()).any(SecretStoreKeys.isSeedKey);
+    } on Exception {
+      return false;
+    }
+  }
+
+  /// Builds the oubliette-backed adapter for this device, or null where
+  /// oubliette is not wired (macOS/Linux/Windows/Web — it gives no hardware
+  /// benefit there). [injected] is the test seam (a `FakeOubliette`), which also
+  /// bypasses the platform gate.
+  static OublietteSecretStoreAdapter? _buildOubliette({Oubliette? injected}) {
+    final supported =
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+    if (injected == null && !supported) return null;
+    return OublietteSecretStoreAdapter(
+      injected ??
+          Oubliette(
+            android: AndroidSecretAccess.evenLocked(
+              strongBox: false,
+              requireHardwareBacking: false,
+            ),
+            darwin: DarwinSecretAccess.evenLocked(secureEnclave: false),
+          ),
+    );
+  }
+
+  /// Runs the adapter's sentinel round-trip and classifies the outcome:
+  /// distinguishes a permanent incompatibility (record FSS) from a transient
+  /// lock (defer, re-probe later) by the kind of failure — a recoverable lock
+  /// surfaces as [KeychainLockedException]. The round-trip itself (incl. the raw
+  /// `useAndForget` on the sentinel) is sealed inside [OublietteSecretStoreAdapter].
+  static Future<SecretsInitResult> _probe(OublietteSecretStoreAdapter o) async {
+    try {
+      final ok = await o.probeRoundTrip();
+      final outcome = ok
+          ? SecretsBackendOutcome.oubliette
+          : SecretsBackendOutcome.fssIncompatible;
+      return (outcome: outcome, probeError: null);
+    } on KeychainLockedException catch (e) {
+      // Recoverable (device locked / keyring unavailable): capability unknown.
+      return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
+    } on HardwareKeyInvalidatedException catch (e) {
+      // KNOWN-structural (oubliette `recoverable == false`): the hardware key is
+      // permanently gone. A real, definite incompatibility — persist FSS.
+      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
+    } on MalformedSecretException catch (e) {
+      // KNOWN-structural (oubliette `recoverable == false`): a decryption /
+      // payload-corrupt / tamper failure. Definite incompatibility — persist FSS.
+      // (Pinned by recoverable_translation_test.dart — the probe's defer-vs-
+      // incompatible line must track each subtype's `recoverable` flag.)
+      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
+    } on Exception catch (e) {
+      // UNKNOWN / UNCLASSIFIED error only. `fssIncompatible` is PERSISTED and
+      // PERMANENT, so mapping an UNRECOGNIZED error here (e.g. an iOS lock-window
+      // status like errSecNotAvailable/-25291 whose spelling isn't in the
+      // locked-error needle list — `_classifyRaw` rethrows such raw errors as-is)
+      // would strand the device on FSS forever. The safe default for an ambiguous
+      // throw is to DEFER (retryable): FSS this session, re-probe next launch,
+      // never persisted. Definite incompatibilities are handled above (the
+      // `ok == false` sentinel-mismatch path, HardwareKeyInvalidated, and
+      // MalformedSecret — every oubliette `recoverable == false` subtype).
+      return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
+    }
+  }
+
+  static Secret _build(SecretInfo i) => switch (i.kind) {
+    SecretKind.mnemonic => MnemonicSecret._(i),
+    SecretKind.seed => SeedSecret._(i),
+  };
+
+  /// On `Ok(fp)`: reads the (just-stored) [SecretInfo] back and wraps it as a
+  /// [MnemonicSecret]; on `Err`: passes the failure through.
+  static Future<Result<MnemonicSecret, SecretsFailure>> _hydrateMnemonic(
+    Result<Fingerprint, SecretsFailure> r,
+  ) async {
+    switch (r) {
+      case Ok(:final value):
+        final info = await _w.lifecycle.getInfo(value);
+        return switch (info) {
+          Ok(value: final i) =>
+            i == null
+                ? Err(SecretNotFoundFailure(value))
+                : Ok(MnemonicSecret._(i)),
+          Err(:final failure) => Err(failure),
+        };
+      case Err(:final failure):
+        return Err(failure);
+    }
+  }
+}
+
+/// The internal object graph built once by [Secrets.init]. Holds the injected
+/// [SecretIndexPort] plus the six adapters, all wired against a single
+/// [SecretStorePort]. Process-global; resolved lazily per call so static-field
+/// initializers never touch it before [Secrets.init].
+class _Wiring {
+  _Wiring._({
+    required this.store,
+    required this.index,
+    required this.lifecycle,
+    required this.keyDerivation,
+    required this.signer,
+    required this.swap,
+    required this.bip85,
+    required this.mnemonicReader,
+    required this.backup,
+  });
+
+  factory _Wiring({
+    required SecretStorePort store,
+    required SecretIndexPort index,
+  }) {
+    // One lifecycle adapter, shared with the backup adapter (which re-imports
+    // restored secrets through it). They are stateless, but build it once.
+    final lifecycle = SecretLifecycleAdapter(store: store, index: index);
+    return _Wiring._(
+      store: store,
+      index: index,
+      lifecycle: lifecycle,
+      keyDerivation: KeyDerivationAdapter(store),
+      signer: SignerAdapter(store),
+      swap: SwapSignerAdapter(store),
+      bip85: Bip85Adapter(store),
+      mnemonicReader: MnemonicReader(store),
+      backup: BackupVaultAdapter(store: store, repository: lifecycle),
+    );
+  }
+
+  final SecretStorePort store;
+  final SecretIndexPort index;
+  final SecretLifecyclePort lifecycle;
+  final KeyDerivationPort keyDerivation;
+  final SignerPort signer;
+  final SwapSignerPort swap;
+  final Bip85Port bip85;
+  final BackupVaultPort backup;
+
+  /// In-package seam letting the sealed display widgets read a stored mnemonic
+  /// for rendering — never exported.
+  final MnemonicReader mnemonicReader;
+}

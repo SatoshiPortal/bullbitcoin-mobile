@@ -76,9 +76,24 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
+    show
+        CircularProgressIndicator,
+        DropdownMenuItem,
+        FormFieldValidator,
+        RefreshCallback,
+        TextTheme,
+        Theme;
 export 'package:flutter/services.dart' show TextInputFormatter;
-export 'package:flutter/widgets.dart' show FocusNode;
+export 'package:flutter/widgets.dart'
+    show AsyncSnapshot, ConnectionState, FocusNode, FutureBuilder;
+// Diagnostics + test annotations for component `debugFillProperties` overrides.
+export 'package:flutter/foundation.dart'
+    show
+        DiagnosticPropertiesBuilder,
+        DiagnosticsProperty,
+        FlagProperty,
+        StringProperty,
+        visibleForTesting;
 
 export 'package:gap/gap.dart' show Gap;
 
@@ -136,8 +151,10 @@ export 'src/data_display/bull_details_table.dart';
 export 'src/data_display/bull_info_bar.dart';
 export 'src/data_display/bull_info_card.dart';
 export 'src/data_display/bull_label_chip.dart';
+export 'src/data_display/bull_mnemonic_grid.dart';
 export 'src/data_display/bull_options_tag.dart';
 export 'src/data_display/bull_price_card.dart';
+export 'src/data_display/bull_seed_warning_card.dart';
 export 'src/data_display/bull_settings_entry_item.dart';
 export 'src/data_display/bull_stat_tile.dart';
 export 'src/data_display/bull_text.dart';

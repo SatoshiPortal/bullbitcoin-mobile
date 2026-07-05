@@ -88,6 +88,8 @@ jobs:
       - name: Linter shouldn't raise errors, warnings or infos
         run: make analyze
 
+      - name: secrets package seal must hold
+        run: make seal-check
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         run: |
           if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then

@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check seal-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -43,6 +43,10 @@ bootstrap:
 analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
+
+seal-check:
+	@echo "🔒 Verify the secrets package seal (no external src/ imports, no internal exports)"
+	@bash tool/seal_check.sh
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -249,12 +253,12 @@ test: unit-test integration-test
 unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
-	@for p in packages/*/; do \
+	@rc=0; for p in packages/*/; do \
 		if [ -d "$${p}test" ]; then \
 			echo "🏃‍ running $${p}test"; \
-			( cd "$$p" && fvm flutter test --reporter=compact ); \
+			( cd "$$p" && fvm flutter test --reporter=compact ) || rc=1; \
 		fi; \
-	done
+	done; exit $$rc
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
