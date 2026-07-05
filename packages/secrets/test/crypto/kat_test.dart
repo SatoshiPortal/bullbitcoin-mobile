@@ -67,6 +67,43 @@ void main() {
       expect(noPass, zooFingerprint);
       expect(withPass, isNot(zooFingerprint));
     });
+
+    test('testnet xprvFromSeed emits tprv version bytes (deterministic)', () {
+      // The tprv version bytes were correct only by inspection before; pin them.
+      // BIP32 vector-1 seed → a `tprv` on testnet, a distinct `xprv` on mainnet.
+      final seed = Uint8List.fromList(List.generate(16, (i) => i));
+      final tprv = Bip32Derivation.xprvFromSeed(seed, BitcoinNetwork.testnet);
+      final xprv = Bip32Derivation.xprvFromSeed(seed, BitcoinNetwork.mainnet);
+      expect(tprv, startsWith('tprv')); // testnet version bytes
+      expect(xprv, startsWith('xprv')); // mainnet version bytes
+      expect(tprv, isNot(xprv)); // version bytes actually differ
+      // Deterministic (no RNG in derivation).
+      expect(Bip32Derivation.xprvFromSeed(seed, BitcoinNetwork.testnet), tprv);
+    });
+  });
+
+  group('BIP39 passphrase NFKD normalization (restore-elsewhere conformance)',
+      () {
+    test('a composed and decomposed passphrase derive the SAME seed', () {
+      // BIP39 mandates NFKD-normalizing the passphrase before PBKDF2. If the
+      // library did NOT normalize, a non-ASCII passphrase would derive a
+      // different seed than a conformant wallet → funds "lost" on restore
+      // elsewhere. Composed "é" (U+00E9) and decomposed "e"+U+0301 are the same
+      // string after NFKD, so they MUST yield an identical seed.
+      final composed = bip39.Mnemonic.fromWords(
+        words: zooWrongWords,
+        passphrase: 'café', // café (precomposed)
+      ).seed;
+      final decomposed = bip39.Mnemonic.fromWords(
+        words: zooWrongWords,
+        passphrase: 'café', // cafe + combining acute
+      ).seed;
+      expect(composed, decomposed);
+      // And a non-ASCII passphrase actually changes the seed vs no passphrase
+      // (guards against the library silently dropping the passphrase).
+      final noPass = bip39.Mnemonic.fromWords(words: zooWrongWords).seed;
+      expect(composed, isNot(noPass));
+    });
   });
 
   group('BIP39/BIP32 independent published vectors (cross-check, not frozen)', () {
@@ -143,6 +180,28 @@ void main() {
         hexOut,
         '492db4698cf3b73a5a24998aa3e9d7fa96275d85724a91e71aa2d645442f8785'
         '55d078fd1f1f67e368976f04137b1f7a0d19232136ca50c44614af72b5582a5c',
+      );
+    });
+
+    test('BIP39 app 24 words (m/83696968\'/39\'/0\'/24\'/0\') → spec mnemonic',
+        () {
+      // The published 24-WORD vector. A 24-word child truncates the BIP85
+      // entropy to 32 bytes (vs 16 for 12 words) — exactly the "correct
+      // byte-truncation per application" path a 12-word-only vector can't pin.
+      expect(
+        Bip85Crypto.childMnemonicPath(length: MnemonicLength.words24, index: 0),
+        "39'/0'/24'/0'",
+      );
+      final child = Bip85Crypto.deriveChildMnemonic(
+        xprvBase58: bip85MasterXprv,
+        length: MnemonicLength.words24,
+        index: 0,
+      );
+      expect(
+        child.words.join(' '),
+        'puppy ocean match cereal symbol another shed magic wrap hammer bulb '
+        'intact gadget divorce twin tonight reason outdoor destroy simple '
+        'truth cigar social volcano',
       );
     });
   });

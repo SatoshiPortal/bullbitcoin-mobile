@@ -56,6 +56,11 @@ class BullMnemonicWord extends StatelessWidget {
 }
 
 /// A two-column numbered grid of mnemonic words. **Dumb / presentational.**
+///
+/// The grid always displays secret material (a recovery phrase), so it wraps
+/// itself in [ExcludeSemantics] as defense-in-depth: even if a caller forgets
+/// the surrounding privacy guard, the words never reach the accessibility tree
+/// or a screen reader.
 class BullMnemonicGrid extends StatelessWidget {
   const BullMnemonicGrid({super.key, required this.words});
 
@@ -64,28 +69,30 @@ class BullMnemonicGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final half = (words.length + 1) ~/ 2;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < half; i++) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: BullMnemonicWord(number: i + 1, word: words[i]),
-              ),
-              const Gap(BullSpacing.sm),
-              Expanded(
-                child: i + half < words.length
-                    ? BullMnemonicWord(
-                        number: i + half + 1, word: words[i + half])
-                    : const SizedBox(),
-              ),
-            ],
-          ),
-          const Gap(BullSpacing.sm),
+    return ExcludeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < half; i++) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: BullMnemonicWord(number: i + 1, word: words[i]),
+                ),
+                const Gap(BullSpacing.sm),
+                Expanded(
+                  child: i + half < words.length
+                      ? BullMnemonicWord(
+                          number: i + half + 1, word: words[i + half])
+                      : const SizedBox(),
+                ),
+              ],
+            ),
+            const Gap(BullSpacing.sm),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

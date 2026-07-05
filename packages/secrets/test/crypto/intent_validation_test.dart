@@ -46,9 +46,17 @@ void main() {
     });
 
     test('REJECTS fee above the cap (closes trustWitnessUtxo inflation)', () {
+      // Inputs are valid + owned and outputs are all accounted for, so the ONLY
+      // thing wrong is the fee — deleting the fee-cap check makes this go red
+      // (previously an empty inputScriptPubKeys made it green via the
+      // empty-inputs guard, so it did not uniquely pin the cap).
       final r = IntentValidator.validate(
         _send,
-        const TxFacts(outputs: [_recipient, _change], feeSat: 5000),
+        const TxFacts(
+          outputs: [_recipient, _change],
+          feeSat: 5000,
+          inputScriptPubKeys: ['my_change_spk'],
+        ),
         ownsScript: _ownsMyChange,
       );
       expect(_err(r), isA<SigningFailure>());
@@ -68,15 +76,19 @@ void main() {
       expect(_err(r), isA<SigningFailure>());
     });
 
-    test('REJECTS change that the wallet does not own', () {
+    test('REJECTS change that the wallet does not own (change branch)', () {
+      // The INPUT is owned (so the input-ownership loop passes) but the change
+      // output is NOT owned — this must trip the OUTPUT branch specifically, not
+      // the input check. `_change` is not a declared recipient and not owned →
+      // "unexpected output not owned".
       final r = IntentValidator.validate(
         _send,
         const TxFacts(
           outputs: [_recipient, _change],
           feeSat: 500,
-          inputScriptPubKeys: ['some_input'],
+          inputScriptPubKeys: ['my_input_spk'],
         ),
-        ownsScript: (_) => false, // owns nothing
+        ownsScript: (spk) => spk == 'my_input_spk', // owns the input, NOT change
       );
       expect(_err(r), isA<SigningFailure>());
     });
@@ -437,9 +449,23 @@ void main() {
               outAmountSat: 2100000000000001)),
           isA<SigningFailure>());
     });
+
+    test('checkSwapAmount: FAILS CLOSED with NO bound (exact/min/max all null)',
+        () {
+      // An all-null call would otherwise vacuously pass and green-light any
+      // in-range amount — contradicting the fail-closed doctrine.
+      final r = IntentValidator.checkSwapAmount(outAmountSat: 50000);
+      expect(_err(r), isA<SigningFailure>());
+    });
   });
 
-  group('PayjoinIntent validation (BIP78 sender checklist)', () {
+  group('PayjoinIntent is HARD-REJECTED until payjoin is wired', () {
+    // The full BIP78 sender checklist is subtle (reject wallet-owned
+    // receiver-added inputs, gate every extra output, allow the receiver's own
+    // output amount increase) and is not exercisable today — the signer never
+    // populates inputOutpoints and no caller constructs a PayjoinIntent. A
+    // PARTIAL validator is itself a theft vector (the audit merge-blocker), so
+    // BOTH signing entry points refuse a PayjoinIntent outright (fail-closed).
     final pj = PayjoinIntent(
       originalInputs: const ['outpoint_a'],
       originalOutputs: const [_recipient],
@@ -448,7 +474,10 @@ void main() {
       maxFeeContributionSat: 1000,
     );
 
-    test('accepts when originals preserved and extra fee bounded', () {
+    test('validate() refuses to sign a PayjoinIntent (even a well-formed one)',
+        () {
+      // Every fact here would satisfy a naive checklist (originals present,
+      // version/locktime unchanged, fee bounded) — it is refused anyway.
       final r = IntentValidator.validate(
         pj,
         const TxFacts(
@@ -457,124 +486,21 @@ void main() {
           version: 2,
           lockTime: 0,
           inputOutpoints: ['outpoint_a', 'outpoint_b'],
+          inputScriptPubKeys: ['my_change_spk'],
         ),
         ownsScript: _ownsMyChange,
       );
-      expect(_isOk(r), isTrue);
+      expect(_err(r), isA<SigningFailure>());
     });
 
-    test('REJECTS a changed version', () {
-      final r = IntentValidator.validate(
+    test('validateLiquid() refuses to sign a PayjoinIntent', () {
+      final r = IntentValidator.validateLiquid(
         pj,
-        const TxFacts(
-          outputs: [_recipient],
-          feeSat: 0,
-          version: 1,
+        const LiquidFacts(
+          feeSat: 100,
+          outputScriptPubKeys: ['recipient_spk', ''],
           lockTime: 0,
-          inputOutpoints: ['outpoint_a'],
         ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('REJECTS a changed locktime (version unchanged)', () {
-      final r = IntentValidator.validate(
-        pj,
-        const TxFacts(
-          outputs: [_recipient],
-          feeSat: 0,
-          version: 2,
-          lockTime: 500, // original was 0
-          inputOutpoints: ['outpoint_a'],
-        ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('FAILS CLOSED when version/locktime facts are missing (null)', () {
-      final r = IntentValidator.validate(
-        pj,
-        const TxFacts(
-          outputs: [_recipient],
-          feeSat: 0,
-          // version & lockTime intentionally null (extractor couldn't confirm)
-          inputOutpoints: ['outpoint_a'],
-        ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('REJECTS a dropped original input', () {
-      final r = IntentValidator.validate(
-        pj,
-        const TxFacts(
-          outputs: [_recipient],
-          feeSat: 0,
-          version: 2,
-          lockTime: 0,
-          inputOutpoints: ['outpoint_b'], // original 'outpoint_a' gone
-        ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('REJECTS an altered original output', () {
-      final r = IntentValidator.validate(
-        pj,
-        const TxFacts(
-          outputs: [_attacker],
-          feeSat: 0,
-          version: 2,
-          lockTime: 0,
-          inputOutpoints: ['outpoint_a'],
-        ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('REJECTS excess fee contribution', () {
-      final r = IntentValidator.validate(
-        pj,
-        const TxFacts(
-          outputs: [_recipient],
-          feeSat: 5000,
-          version: 2,
-          lockTime: 0,
-          inputOutpoints: ['outpoint_a'],
-        ),
-        ownsScript: _ownsMyChange,
-      );
-      expect(_err(r), isA<SigningFailure>());
-    });
-
-    test('REJECTS dropping one of two identical original outputs (multiset)',
-        () {
-      // A batched double-payment: the sender declared the SAME output twice. A
-      // Set-based check would let the receiver drop one copy and redirect its
-      // value — the single survivor would satisfy both membership tests. The
-      // multiset check requires BOTH copies to survive.
-      final batched = PayjoinIntent(
-        originalInputs: const ['outpoint_a'],
-        originalOutputs: const [_recipient, _recipient], // pay twice
-        originalVersion: 2,
-        originalLockTime: 0,
-        maxFeeContributionSat: 1000,
-      );
-      final r = IntentValidator.validate(
-        batched,
-        const TxFacts(
-          outputs: [_recipient, _change], // only ONE copy survived
-          feeSat: 0,
-          version: 2,
-          lockTime: 0,
-          inputOutpoints: ['outpoint_a'],
-        ),
-        ownsScript: _ownsMyChange,
       );
       expect(_err(r), isA<SigningFailure>());
     });
@@ -629,6 +555,30 @@ void main() {
         const LiquidFacts(feeSat: -1, outputScriptPubKeys: ['recipient_spk']),
       );
       expect(_err(r), isA<SigningFailure>());
+    });
+
+    test('SendIntent: FAILS CLOSED when the intent declares NO outputs', () {
+      // With no declared recipients the multiset loop is vacuous — on Liquid
+      // (blinded amounts, no ownership check) that would let ALL value leave
+      // within the fee cap. The Bitcoin path fails closed via input ownership;
+      // Liquid must reject an empty-outputs intent outright.
+      const emptySend = SendIntent(outputs: [], maxFeeSat: 2000);
+      final r = IntentValidator.validateLiquid(
+        emptySend,
+        const LiquidFacts(
+            feeSat: 100, outputScriptPubKeys: ['attacker_spk', '']),
+      );
+      expect(_err(r), isA<SigningFailure>());
+    });
+  });
+
+  group('Output construction guard', () {
+    test('REJECTS an empty scriptPubKey (would match the Liquid fee output)',
+        () {
+      expect(
+        () => Output(scriptPubKey: '', amountSat: 1),
+        throwsA(isA<AssertionError>()),
+      );
     });
   });
 }

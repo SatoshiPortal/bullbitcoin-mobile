@@ -17,6 +17,24 @@ import 'package:secrets/src/domain/value_objects/swap_request.dart';
 /// Boltz-chosen locktime are generated during creation, so the caller supplies
 /// none of them — only amounts/invoice/direction. Boltz parameters are passed as
 /// primitives (urls/isTestnet) so this contract carries no Boltz/native types.
+///
+/// INVARIANT — [index] uniqueness (CALLER'S BURDEN): the per-swap keys AND the
+/// preimage are derived deterministically from the master seed at [index]. The
+/// caller MUST pass a fresh, monotonically-unique [index] for every swap it
+/// creates. Reusing an [index] re-derives the SAME preimage/hashlock, which
+/// (depending on Boltz preimage semantics) risks a race-claimable or
+/// permanently-unclaimable swap. This package cannot enforce it — the swap
+/// index counter lives app-side and `CreatedSwap` deliberately omits the
+/// preimage — so the caller owns this invariant.
+///
+/// RESIDUAL — `scriptAddress` provenance: the implementation asserts the
+/// returned swap SCRIPT commits to our key(s) + our preimage hashlock, but it
+/// does NOT derive the lockup ADDRESS from that script (the SDK exposes no
+/// script→address function, and re-implementing Boltz's HTLC address template
+/// here would be error-prone). So `CreatedSwap.scriptAddress` is trusted from
+/// the SDK; its binding to the validated script rests on the SDK's provenance.
+/// Matters most for submarine/chain lockups (we PAY the address): a mismatched
+/// address could strand our refund. See `SwapSignerAdapter` docs.
 abstract interface class SwapSignerPort {
   @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({

@@ -26,7 +26,21 @@ class DescriptorDerivation {
       ScriptType.bip44 => bdk.Descriptor.newBip44(
           secretKey: secretKey, keychainKind: keychain, networkKind: networkKind),
     };
-    return descriptor.toString();
+    final str = descriptor.toString();
+    // Defense-in-depth: this MUST be a PUBLIC (watch-only) descriptor. bdk's
+    // `toString()` is assumed to emit the xpub/tpub form, but that is a property
+    // of the pinned `bdk_dart` ref — a future bump that flips it to the secret
+    // form would flow the root xprv into wallet metadata / logs / Sentry. The
+    // only "prv" a descriptor string can carry is an x/tprv; a public descriptor
+    // never contains it. Assert in debug and hard-fail in release rather than
+    // ever return a private descriptor. (Caller maps the throw to a Failure.)
+    assert(!str.contains('prv'),
+        'public descriptor unexpectedly contains a private key');
+    if (str.contains('prv')) {
+      throw const FormatException(
+          'derived descriptor unexpectedly contains a private key');
+    }
+    return str;
   }
 
   /// Confidential Liquid descriptor from the [mnemonic].

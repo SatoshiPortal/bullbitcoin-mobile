@@ -83,6 +83,15 @@ void main() {
     expect(d.external, contains('wpkh'));
     expect(d.internal, contains('wpkh'));
     expect(d.external, isNot(d.internal)); // external (0/*) != change (1/*)
+    // SEAL: the descriptor is built from an xprv but MUST stringify to the
+    // PUBLIC (watch-only) form — the root xprv must never leak into wallet
+    // metadata/logs. A bdk_dart bump that flips toString() to the secret form
+    // (or the guard failing to fire) turns these red. tprv/xprv are the only
+    // "prv" a descriptor can carry; testnet uses tpub.
+    expect(d.external, isNot(contains('prv')));
+    expect(d.internal, isNot(contains('prv')));
+    expect(d.external, contains('tpub')); // testnet public key material
+    expect(d.internal, contains('tpub'));
   });
 
   test('missing seed → SecretNotFoundFailure (native path still typed)',

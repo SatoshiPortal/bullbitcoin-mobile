@@ -1,8 +1,18 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/intent_validation.dart';
+import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/adapters/signer_adapter.dart';
+import 'package:secrets/src/data/adapters/swap_signer_adapter.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
+import 'package:secrets/src/domain/value_objects/psbt.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
+import 'package:secrets/src/domain/value_objects/swap_request.dart';
+
+import 'fake_secure_key_value_store.dart';
 
 // COVERAGE NOTE (audit item: SignerAdapter PSBT/PSET fact-extraction).
 //
@@ -141,6 +151,69 @@ void main() {
             const LiquidFacts(feeSat: 10, outputScriptPubKeys: ['attacker_spk', '']))),
         isA<SigningFailure>(),
       );
+    });
+  });
+
+  // These construct the REAL adapters and exercise the passphrase-rejection
+  // branch, which returns BEFORE any lwk/boltz FFI call (the mnemonic decode +
+  // `hasPassphrase` check are pure Dart). This pins the M2 fix — a passphrase
+  // wallet must be refused, never silently signed/derived under the DIFFERENT
+  // bare-seed wallet — so deleting the guard makes these go red.
+  group('adapter passphrase rejection (real adapter; returns before FFI)', () {
+    const fpHex = 'deadbeef';
+
+    // A stored mnemonic WITH a passphrase (words need not be a valid checksum —
+    // `hasPassphrase` does not derive a seed).
+    Uint8List passphraseBlob() => Uint8List.fromList(utf8.encode(jsonEncode({
+          'kind': 'mnemonic',
+          'words': const [
+            'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', //
+            'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
+          ],
+          'passphrase': 'trezor',
+          'language': 'english',
+        })));
+
+    Future<FssSecretStoreAdapter> storeWithPassphraseSeed() async {
+      final store = FssSecretStoreAdapter(FakeSecureKeyValueStore(),
+          initialRetryDelay: Duration.zero);
+      await store.store(SecretStoreKeys.seedKey(fpHex), passphraseBlob());
+      return store;
+    }
+
+    void expectSigningErr<T>(Result<T, SecretsFailure> r) {
+      switch (r) {
+        case Err(:final failure):
+          expect(failure, isA<SigningFailure>());
+        case Ok():
+          fail('expected Err(SigningFailure), got Ok');
+      }
+    }
+
+    test('signLiquidPset REFUSES a passphrase wallet (lwk uses the bare seed)',
+        () async {
+      final adapter = SignerAdapter(await storeWithPassphraseSeed());
+      final r = await adapter.signLiquidPset(
+        fingerprint: Fingerprint(fpHex),
+        pset: Psbt('cHNldA=='),
+        intent: _send,
+        isTestnet: true,
+      );
+      expectSigningErr(r);
+    });
+
+    test('createBtcReverse REFUSES a passphrase wallet (boltz uses the bare seed)',
+        () async {
+      final adapter = SwapSignerAdapter(await storeWithPassphraseSeed());
+      final r = await adapter.createBtcReverse(
+        fingerprint: Fingerprint(fpHex),
+        index: 0,
+        request: const ReverseSwapRequest(requestedReceiveSat: 50000),
+        electrumUrl: 'electrum.example',
+        boltzUrl: 'boltz.example',
+        isTestnet: true,
+      );
+      expectSigningErr(r);
     });
   });
 }

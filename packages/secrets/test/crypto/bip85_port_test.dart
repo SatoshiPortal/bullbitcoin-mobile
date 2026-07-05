@@ -59,6 +59,19 @@ void main() {
     expect(conv.hex.encode(key.bytes), recoverbullKeyForPath);
   });
 
+  test('deriveRecoverbullKey REJECTS a non-1608-rooted path (interop guard)',
+      () async {
+    // A path rooted at a DIFFERENT application would otherwise be silently
+    // re-rooted under 1608' and derive a key an offline recovery tool (deriving
+    // at the literal path) could never reproduce → an undecryptable vault. Fail
+    // closed instead of deriving the wrong key.
+    final res = await bip85.deriveRecoverbullKey(
+      fingerprint: zooFp,
+      path: Bip85Path("39'/0'/586053381'"), // BIP39 app, not recoverbull
+    );
+    expect((res as Err).failure, isA<DerivationFailure>());
+  });
+
   test('deriveChildMnemonic returns the right path + 12 words', () async {
     final d = _unwrap(await bip85.deriveChildMnemonic(
       fingerprint: zooFp,

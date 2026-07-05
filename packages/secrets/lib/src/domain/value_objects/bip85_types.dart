@@ -40,6 +40,13 @@ class Bip85Path {
     if (normalized.isEmpty || !normalized.contains('/')) {
       throw InvalidBip85PathError('invalid BIP85 path', 'path');
     }
+    // Validate EVERY segment eagerly (the value-object precondition model): a
+    // malformed persisted path fails HERE, at construction, instead of parsing
+    // fine and detonating later in a display/derivation getter. `_segmentInt`
+    // rejects a non-numeric/negative/over-2^31 segment (e.g. `"5'8'"`, `" -39'"`).
+    for (final seg in normalized.split('/')) {
+      _segmentInt(seg);
+    }
     return Bip85Path._(normalized);
   }
   const Bip85Path._(this.path);
@@ -56,10 +63,17 @@ class Bip85Path {
   /// Parses a hardened path segment (`"128169'"` → `128169`) into an int,
   /// surfacing a malformed stored path as the typed [InvalidBip85PathError]
   /// rather than a raw `FormatException` a caller can't distinguish.
+  ///
+  /// Strict per-segment shape: digits with an OPTIONAL single trailing hardened
+  /// marker. A blanket `replaceAll("'", "")` + `int.tryParse` would accept
+  /// `"'12'"` → 12 and `"-1'"` → -1, silently constructing a DIFFERENT path
+  /// identity (breaking `==`/dedup and mislabeling the derived secret). Every
+  /// BIP85 element is hardened, so the value is also bounded to [0, 2^31).
   static int _segmentInt(String segment) {
-    final n = int.tryParse(segment.replaceAll("'", ''));
-    if (n == null) {
-      throw InvalidBip85PathError('non-numeric BIP85 path segment', 'path');
+    final m = RegExp(r"^(\d+)'?$").firstMatch(segment);
+    final n = m == null ? null : int.tryParse(m.group(1)!);
+    if (n == null || n >= 0x80000000) {
+      throw InvalidBip85PathError('invalid BIP85 path segment', 'path');
     }
     return n;
   }

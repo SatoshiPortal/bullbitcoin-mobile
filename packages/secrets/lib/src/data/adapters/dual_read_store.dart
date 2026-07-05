@@ -87,10 +87,16 @@ class DualReadStore implements SecretStorePort {
     await _hw.trash(key);
   }
 
+  /// Wipe both, FSS (the migration source) FIRST — same ordering rationale as
+  /// [trash]: if FSS purge fails we have not touched hardware (state stays
+  /// consistent, the purge reports failed, the caller retries); if FSS succeeds,
+  /// no later read can re-migrate, so a subsequent hardware-purge failure cannot
+  /// be undone by a resurrection. The inverse (HW-first) would leave the FSS
+  /// copies readable/re-migratable if the FSS purge then failed.
   @override
   Future<void> purge() async {
-    await _hw.purge();
     await _fss.purge();
+    await _hw.purge();
   }
 
   @override

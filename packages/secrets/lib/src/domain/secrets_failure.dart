@@ -50,6 +50,12 @@ final class DuplicateSecretFailure extends SecretsFailure {
 }
 
 /// A mnemonic-only action was attempted on a bytes-only seed.
+///
+/// RESERVED / DORMANT: constructed nowhere today — it is the failure counterpart
+/// of the dormant `SeedSecret` (there is no bytes-seed import path yet). It is
+/// kept in this sealed family so handlers already account for it when that seam
+/// lands; a `default`/`_` arm covers it until then. Do not treat its presence in
+/// an exhaustive switch as evidence the case is currently reachable.
 final class NotAMnemonicFailure extends SecretsFailure {
   const NotAMnemonicFailure([super.logMessage]);
 }

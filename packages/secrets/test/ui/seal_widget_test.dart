@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bull_ui/bull_ui.dart' show BullSeedWarningCard;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
+import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
+import 'package:secrets/src/domain/ports/secret_store_port.dart';
 import 'package:secrets/src/ui/mnemonic_reader.dart';
 
 import '../data/fake_secure_key_value_store.dart';
@@ -118,6 +124,24 @@ void main() {
       expect(find.byType(BullSeedWarningCard), findsOneWidget);
       expect(called, isFalse);
     });
+
+    testWidgets('degrades (no red screen) when mounted BEFORE Secrets.init',
+        (tester) async {
+      // Reset so `Secrets.mnemonicReader` throws a StateError SYNCHRONOUSLY when
+      // the view resolves its reader in initState. That throw must be caught and
+      // routed to the warning card, never escape initState (a deep-link/resumed
+      // route could mount this before init completes).
+      Secrets.reset();
+      await tester.pumpWidget(_wrap(VerifyBackupView(
+        fingerprint: Fingerprint('3f635a63'),
+        onResult: (_) {},
+        unavailableMessage: 'unavailable',
+      )));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull); // did NOT crash initState
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(BullSeedWarningCard), findsOneWidget);
+    });
   });
 
   group('Bip85MnemonicView (sealed)', () {
@@ -226,5 +250,96 @@ void main() {
       }
       expect(outcome, isFalse);
     });
+
+    testWidgets('generation guard: a STALE read for the previous fingerprint '
+        'never overwrites the current one (out-of-order completion)',
+        (tester) async {
+      // Model a rapid fingerprint swap where the FIRST read is slow: it must not
+      // display the PREVIOUS seed's words against the NEW fingerprint (which
+      // would let the user "verify" the wrong seed). The generation counter drops
+      // the stale completion.
+      const wordsA = [
+        'a00', 'a01', 'a02', 'a03', 'a04', 'a05', //
+        'a06', 'a07', 'a08', 'a09', 'a10', 'a11',
+      ];
+      const wordsB = [
+        'b00', 'b01', 'b02', 'b03', 'b04', 'b05', //
+        'b06', 'b07', 'b08', 'b09', 'b10', 'b11',
+      ];
+      final store = _ControlledStore()
+        ..put(SecretStoreKeys.seedKey('aaaaaaaa'), _blob(wordsA), gated: true)
+        ..put(SecretStoreKeys.seedKey('bbbbbbbb'), _blob(wordsB));
+      final reader = MnemonicReader(store);
+
+      // Mount for fp A — its read is GATED (still pending).
+      await tester.pumpWidget(_wrap(VerifyBackupView(
+        fingerprint: Fingerprint('aaaaaaaa'),
+        reader: reader,
+        onResult: (_) {},
+        unavailableMessage: 'unavailable',
+      )));
+      await tester.pump(); // read A blocked → spinner, no words yet
+      expect(find.text('a00'), findsNothing);
+
+      // Swap to fp B (same widget position → didUpdateWidget) — read B completes.
+      await tester.pumpWidget(_wrap(VerifyBackupView(
+        fingerprint: Fingerprint('bbbbbbbb'),
+        reader: reader,
+        onResult: (_) {},
+        unavailableMessage: 'unavailable',
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('b00'), findsOneWidget); // B's words shown
+
+      // Now the STALE read A completes out of order.
+      store.release(SecretStoreKeys.seedKey('aaaaaaaa'));
+      await tester.pumpAndSettle();
+
+      // B's words remain; A's never appear (the generation guard dropped read A).
+      expect(find.text('b00'), findsOneWidget);
+      expect(find.text('a00'), findsNothing);
+    });
   });
 }
+
+/// A store whose read for a "gated" key blocks until [release] is called — lets
+/// a widget test force an OUT-OF-ORDER read completion.
+class _ControlledStore implements SecretStorePort {
+  final Map<String, Uint8List> _m = {};
+  final Map<String, Completer<void>> _gates = {};
+
+  void put(String key, Uint8List bytes, {bool gated = false}) {
+    _m[key] = bytes;
+    if (gated) _gates[key] = Completer<void>();
+  }
+
+  void release(String key) => _gates[key]?.complete();
+
+  @override
+  Future<void> init() async {}
+  @override
+  StoreCapabilities capabilities() => const StoreCapabilities(
+      hardwareBacked: false, thisDeviceOnly: true, syncable: false);
+  @override
+  Future<R> useAndForget<R>(String key, Future<R> Function(Uint8List) use) async {
+    final gate = _gates[key];
+    if (gate != null) await gate.future; // block until released
+    final v = _m[key];
+    if (v == null) throw SecretNotFoundException(key);
+    return use(Uint8List.fromList(v));
+  }
+  @override
+  Future<bool> exists(String key) async => _m.containsKey(key);
+  @override
+  Future<void> store(String key, Uint8List value) async => _m[key] = value;
+  @override
+  Future<void> trash(String key) async => _m.remove(key);
+  @override
+  Future<void> purge() async => _m.clear();
+  @override
+  Future<List<String>> keys() async => _m.keys.toList();
+}
+
+/// The package's native mnemonic storage encoding (matches Mnemonic.toStorageBytes).
+Uint8List _blob(List<String> words) => Uint8List.fromList(utf8.encode(
+    jsonEncode({'kind': 'mnemonic', 'words': words, 'language': 'english'})));

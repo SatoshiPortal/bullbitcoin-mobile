@@ -90,38 +90,76 @@ class SignerAdapter implements SignerPort {
           if (wallet.isMine(script: out.scriptPubkey)) owned.add(spkHex);
         }
 
-        // Resolve each input's prev-out script (witness or non-witness) so the
-        // validator can require every send input to be wallet-owned. Fail
-        // CLOSED if any input script can't be resolved.
+        // Resolve each input's AUTHENTIC prev-out (script + amount). Both BDK's
+        // `fee()` and `isMine` PREFER `witnessUtxo` over `nonWitnessUtxo`. For a
+        // LEGACY (bip44) input the sighash does NOT commit to the input amount,
+        // so a compromised PSBT layer (#1703 — the exact threat this gate exists
+        // for) could attach the genuine `nonWitnessUtxo` PLUS a FABRICATED
+        // low-value `witnessUtxo`: `fee()` would then under-report, slip under
+        // `maxFeeSat`, and still sign a broadcastable tx that burns the
+        // difference in fees. `trustWitnessUtxo: false` closes this for segwit
+        // SIGNING but not for the fee/ownership FACT. So we do NOT trust
+        // `witnessUtxo`: when a `nonWitnessUtxo` is present we verify it hashes
+        // to the input's prev-out txid and read amount/script from that
+        // txid-verified prev tx; a co-present `witnessUtxo` must match it
+        // exactly. The fee is then computed HERE from verified amounts, never
+        // from `bdkPsbt.fee()`. Fail CLOSED on any unresolved/inconsistent input.
         final txInputs = tx.input();
         final psbtInputs = bdkPsbt.input();
         final inputScriptPubKeys = <String>[];
-        for (var i = 0; i < psbtInputs.length; i++) {
+        var totalInSat = 0;
+        for (var i = 0; i < psbtInputs.length && i < txInputs.length; i++) {
           final inp = psbtInputs[i];
-          bdk.Script? script = inp.witnessUtxo?.scriptPubkey;
-          if (script == null &&
-              inp.nonWitnessUtxo != null &&
-              i < txInputs.length) {
-            final vout = txInputs[i].previousOutput.vout;
-            final prevOuts = inp.nonWitnessUtxo!.output();
-            if (vout < prevOuts.length) {
-              script = prevOuts[vout].scriptPubkey;
+          final prevOut = txInputs[i].previousOutput;
+          final w = inp.witnessUtxo;
+          final nw = inp.nonWitnessUtxo;
+          bdk.TxOut? authentic;
+          if (nw != null) {
+            // The non-witness UTXO is the FULL prev tx — require it to actually
+            // be the tx this input spends, or its amount/script are attacker-set.
+            if (!_txidMatches(nw.computeTxid(), prevOut.txid)) {
+              return const Err(SigningFailure(
+                  'input non-witness utxo does not match its prev-out txid'));
             }
+            final prevOuts = nw.output();
+            if (prevOut.vout >= prevOuts.length) {
+              return const Err(SigningFailure(
+                  'input prev-out vout out of range in non-witness utxo'));
+            }
+            authentic = prevOuts[prevOut.vout];
+            // A witness UTXO alongside the verified prev-out must be IDENTICAL —
+            // a divergent one is a fee/ownership spoof against fee()'s witness
+            // preference. Refuse rather than pick one.
+            if (w != null && !_sameTxOut(w, authentic)) {
+              return const Err(SigningFailure(
+                  'input witness/non-witness utxo mismatch — refusing to sign'));
+            }
+          } else if (w != null) {
+            // SegWit-only input: no full prev tx supplied. The v0/v1 sighash
+            // COMMITS to this amount, so a wrong value invalidates the signature
+            // (won't broadcast) — safe to take the amount/script here.
+            authentic = w;
           }
-          if (script == null) continue; // unresolved → caught by the count check
-          final spkHex = conv.hex.encode(script.toBytes());
+          if (authentic == null) continue; // unresolved → count check refuses
+          final spkHex = conv.hex.encode(authentic.scriptPubkey.toBytes());
           inputScriptPubKeys.add(spkHex);
-          if (wallet.isMine(script: script)) owned.add(spkHex);
+          totalInSat += authentic.value.toSat();
+          if (wallet.isMine(script: authentic.scriptPubkey)) owned.add(spkHex);
         }
         if (inputScriptPubKeys.length != txInputs.length) {
           return const Err(SigningFailure(
-              'cannot resolve every input prev-out script — refusing to sign'));
+              'cannot resolve every input prev-out — refusing to sign'));
         }
 
-        // `fee()` lifts a u64; a value >= 2^63 wraps to a negative Dart int,
-        // which would slip under any positive cap. Reject a non-positive /
-        // absurd fee outright (BDK normally throws first, but guard anyway).
-        final feeSat = bdkPsbt.fee();
+        // Compute the fee from the txid-VERIFIED input amounts minus the tx
+        // outputs — NOT from `bdkPsbt.fee()`, which prefers the (spoofable)
+        // witnessUtxo. Guard the range: a wrap or absurd value must never slip
+        // under a positive cap.
+        var totalOutSat = 0;
+        for (final o in outputs) {
+          totalOutSat += o.amountSat;
+        }
+        final feeSat = totalInSat - totalOutSat;
         if (feeSat < 0 || feeSat > 2100000000000000) {
           return const Err(SigningFailure('bitcoin fee out of range'));
         }
@@ -237,6 +275,16 @@ class SignerAdapter implements SignerPort {
             pset: pset.base64,
             mnemonic: mnemonic,
           );
+          // LWK's signTx returns a PSET even when NO owned input signed (wrong
+          // wallet / out-of-window) — there is no `finalized` bool as on the
+          // Bitcoin path. A real single-sig signing finalizes each owned input
+          // with a witness, so require the signed tx to carry at least one input
+          // witness before returning it; otherwise a no-op "signed" PSET is
+          // mislabeled SignedPsbt and only fails later at broadcast.
+          if (!_liquidTxHasWitness(signed)) {
+            return const Err(SigningFailure(
+                'liquid pset produced no input witness — no owned input signed'));
+          }
           return Ok(SignedPsbt(signed));
         } finally {
           if (tmpDir.existsSync()) {
@@ -244,4 +292,35 @@ class SignerAdapter implements SignerPort {
           }
         }
       }, onError: SigningFailure.new);
+
+  /// Byte-equal comparison of two txids (the u64-handle `==` would compare
+  /// object identity, not the hash).
+  static bool _txidMatches(bdk.Txid a, bdk.Txid b) =>
+      _sameBytes(a.serialize(), b.serialize());
+
+  /// Two prev-outs are the SAME output iff their amount AND scriptPubKey agree.
+  static bool _sameTxOut(bdk.TxOut a, bdk.TxOut b) =>
+      a.value.toSat() == b.value.toSat() &&
+      _sameBytes(a.scriptPubkey.toBytes(), b.scriptPubkey.toBytes());
+
+  static bool _sameBytes(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  /// True iff the signed Liquid [pset] extracts to a tx with at least one input
+  /// carrying a non-empty witness — the lwk analogue of BDK's `finalized` flag.
+  /// Any extraction/parse failure counts as "not signed" (fail closed). Verified
+  /// on-device (host `flutter test` can't load the lwk FFI).
+  bool _liquidTxHasWitness(String pset) {
+    try {
+      final tx = lwk.LiquidTransaction.fromPset(psetString: pset);
+      return tx.getInputs().any((i) => i.witness.isNotEmpty);
+    } catch (_) {
+      return false;
+    }
+  }
 }

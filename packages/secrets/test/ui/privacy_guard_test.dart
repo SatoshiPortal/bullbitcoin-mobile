@@ -83,4 +83,23 @@ void main() {
     await tester.pump();
     expect(find.byKey(PrivacyGuard.coverKey), findsNothing);
   });
+
+  testWidgets('covers the child until capture-blocking is confirmed '
+      '(first-frame gap)', (tester) async {
+    // With NO test seam the real async screenshotOff() path runs: capture is not
+    // confirmed synchronously, so the first frame(s) MUST be covered — a capture
+    // already in progress catches only the opaque cover, never the secret. This
+    // closes the audit's async-first-frame window.
+    PrivacyGuard.debugSetCapture = null;
+    const secretKey = Key('secret');
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: PrivacyGuard(child: Text('shh', key: secretKey)),
+      ),
+    );
+    await tester.pump(); // first frame — block not yet confirmed
+    expect(find.byKey(PrivacyGuard.coverKey), findsOneWidget);
+    // The child stays mounted under the cover (state/identity preserved).
+    expect(find.byKey(secretKey), findsOneWidget);
+  });
 }

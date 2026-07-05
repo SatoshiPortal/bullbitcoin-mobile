@@ -26,6 +26,7 @@ sealed class Secret {
   //    testnet coin type + version bytes); distinguishing them at the bdk/lwk
   //    signing layer is a documented later concern (the ports stay boolean). ──
 
+  @useResult
   Future<Result<Xpub, SecretsFailure>> xpub({
     required ScriptType scriptType,
     required BitcoinNetwork network,
@@ -38,6 +39,7 @@ sealed class Secret {
         account: account,
       );
 
+  @useResult
   Future<Result<BitcoinDescriptor, SecretsFailure>> bitcoinDescriptor({
     required ScriptType scriptType,
     required BitcoinNetwork network,
@@ -48,6 +50,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<LiquidDescriptor, SecretsFailure>> liquidDescriptor({
     required LiquidNetwork network,
   }) =>
@@ -58,6 +61,7 @@ sealed class Secret {
 
   // ── signing ────────────────────────────────────────────────────────────────
 
+  @useResult
   Future<Result<SignedPsbt, SecretsFailure>> signBitcoin({
     required Psbt psbt,
     required SigningIntent intent,
@@ -72,6 +76,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<SignedPsbt, SecretsFailure>> signLiquid({
     required Psbt pset,
     required SigningIntent intent,
@@ -86,6 +91,7 @@ sealed class Secret {
 
   // ── swaps (commitment-asserted; caller-knowable SwapRequest) ───────────────
 
+  @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createBtcReverse({
     required int index,
     required ReverseSwapRequest request,
@@ -102,6 +108,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createBtcSubmarine({
     required int index,
     required SubmarineSwapRequest request,
@@ -118,6 +125,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcReverse({
     required int index,
     required ReverseSwapRequest request,
@@ -134,6 +142,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createLbtcSubmarine({
     required int index,
     required SubmarineSwapRequest request,
@@ -150,6 +159,7 @@ sealed class Secret {
         isTestnet: !network.isMainnet,
       );
 
+  @useResult
   Future<Result<CreatedSwap, SecretsFailure>> createChainSwap({
     required int index,
     required ChainSwapRequest request,
@@ -175,6 +185,7 @@ sealed class Secret {
   /// separate step ([bip85RecoverbullKey] or the key server) and store it apart
   /// from the ciphertext, or the two-location recoverbull model collapses to one
   /// caller-held plaintext (offline seed extraction).
+  @useResult
   Future<Result<EncryptedVault, SecretsFailure>> encryptVault({
     required VaultKey vaultKey,
   }) =>
@@ -182,6 +193,7 @@ sealed class Secret {
 
   // ── BIP85 child derivation ─────────────────────────────────────────────────
 
+  @useResult
   Future<Result<Bip85Derivation, SecretsFailure>> bip85ChildMnemonic({
     required MnemonicLength length,
     required int index,
@@ -192,6 +204,7 @@ sealed class Secret {
         index: index,
       );
 
+  @useResult
   Future<Result<Bip85Derivation, SecretsFailure>> bip85Bip39Child({
     required Bip85Application app,
     required int index,
@@ -204,6 +217,7 @@ sealed class Secret {
         length: length,
       );
 
+  @useResult
   Future<Result<Bip85HexResult, SecretsFailure>> bip85Hex({
     required int numBytes,
     required int index,
@@ -214,6 +228,7 @@ sealed class Secret {
         index: index,
       );
 
+  @useResult
   Future<Result<VaultKey, SecretsFailure>> bip85RecoverbullKey({
     required Bip85Path path,
   }) =>
@@ -222,11 +237,19 @@ sealed class Secret {
         path: path,
       );
 
+  @useResult
   Future<Result<ArkSecret, SecretsFailure>> bip85Ark() =>
       Secrets._w.bip85.deriveArkSecret(fingerprint: fingerprint);
 
   // ── lifecycle ──────────────────────────────────────────────────────────────
 
+  /// Permanently removes this secret from the store and index. IDEMPOTENT:
+  /// returns `Ok` even if the key was already absent (a no-op trash), so a retry
+  /// after a partial failure is safe. DESTRUCTIVE and keyed on the public
+  /// [fingerprint] — per [Fingerprint]'s contract the CALLER must gate this
+  /// behind a confirmed use-case; the package intentionally carries no
+  /// confirmation token.
+  @useResult
   Future<Result<void, SecretsFailure>> delete() =>
       Secrets._w.lifecycle.delete(fingerprint);
 }

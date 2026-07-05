@@ -62,10 +62,24 @@ class SecretLifecycleAdapter implements SecretLifecyclePort {
         (m) async => Ok(m.fingerprint == fp),
         onError: SecretsUnexpectedFailure.new,
       );
-      final verified = verify is Ok<bool, SecretsFailure> && verify.value;
-      if (!verified) {
-        await _store.trash(_key(fp));
-        return const Err(SecretsUnexpectedFailure('store_verify_failed'));
+      switch (verify) {
+        case Ok(value: true):
+          break; // verified — fall through to index below
+        case Err(failure: KeychainLockedFailure()):
+          // The keychain locked BETWEEN store() and the read-back. The write may
+          // be perfectly good, so do NOT flatten this to Unexpected and trash it:
+          // that would strip the caller's "unlock and retry" routing AND could
+          // destroy the only copy of a just-generated seed. Propagate the typed
+          // (transient) failure and leave the write in place for a retry.
+          return const Err(KeychainLockedFailure());
+        case Ok(value: false):
+        case Err():
+          // A decoded MISMATCH, or a DEFINITIVE verify failure (corrupt/
+          // undecodable bytes → InvalidMnemonicFailure, a dropped write, etc.).
+          // The write is unusable, so trash it so a retry is clean and never
+          // index an unverifiable seed.
+          await _store.trash(_key(fp));
+          return const Err(SecretsUnexpectedFailure('store_verify_failed'));
       }
     } finally {
       bytes.fillRange(0, bytes.length, 0);

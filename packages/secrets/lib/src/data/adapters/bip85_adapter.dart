@@ -89,11 +89,23 @@ class Bip85Adapter implements Bip85Port {
   Future<Result<VaultKey, SecretsFailure>> deriveRecoverbullKey({
     required Fingerprint fingerprint,
     required Bip85Path path,
-  }) =>
-      _guard.read(fingerprint, (m) async {
+  }) {
+    // The path MUST be app-rooted under recoverbull (1608'). A path rooted at a
+    // DIFFERENT application would otherwise be silently re-rooted under 1608 by
+    // `clearRecoverbullPath` (which only strips a LEADING `1608'/`) and derive a
+    // key a standards-conformant offline recovery tool — deriving at the literal
+    // stored path — would never reproduce, leaving the vault undecryptable. Fail
+    // closed on an interop-breaking path rather than derive the wrong key.
+    if (path.appNumber != Bip85Application.recoverbull.number) {
+      return Future.value(Err(DerivationFailure(
+          "recoverbull key requires a 1608'-rooted path, got app "
+          '${path.appNumber}')));
+    }
+    return _guard.read(fingerprint, (m) async {
         final keyHex = Bip85Crypto.deriveBackupKeyHex(_xprv(m), path.path);
         return Ok(VaultKey(Uint8List.fromList(conv.hex.decode(keyHex))));
       }, onError: DerivationFailure.new);
+  }
 
   @override
   Future<Result<ArkSecret, SecretsFailure>> deriveArkSecret({

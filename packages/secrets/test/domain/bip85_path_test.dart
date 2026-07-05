@@ -29,13 +29,35 @@ void main() {
       expect(() => Bip85Path('noslash'), throwsA(isA<InvalidBip85PathError>()));
     });
 
-    test('a non-numeric segment throws the typed error, not FormatException', () {
+    test('a non-numeric segment throws the typed error AT CONSTRUCTION, not '
+        'FormatException', () {
       // A malformed persisted path must surface as the package's typed error so
-      // a caller can distinguish it — never a raw dart:core FormatException.
-      final bad = Bip85Path("abc'/0'");
-      expect(() => bad.appNumber, throwsA(isA<InvalidBip85PathError>()));
-      final bad2 = Bip85Path("39'/xyz'");
-      expect(() => bad2.index, throwsA(isA<InvalidBip85PathError>()));
+      // a caller can distinguish it — never a raw dart:core FormatException —
+      // and it must fail EAGERLY at construction, not later in a getter.
+      expect(() => Bip85Path("abc'/0'"),
+          throwsA(isA<InvalidBip85PathError>()));
+      expect(() => Bip85Path("39'/xyz'"),
+          throwsA(isA<InvalidBip85PathError>()));
+    });
+
+    test('a MALFORMED segment (stray apostrophe / negative) is rejected at '
+        'construction, not silently coerced', () {
+      // A blanket apostrophe-strip + int.tryParse would accept "'12'" → 12 and
+      // "-1'" → -1, constructing a DIFFERENT path identity (breaking ==/dedup and
+      // mislabeling the secret). The strict per-segment shape rejects both — and
+      // it does so when the value object is built (precondition model).
+      expect(() => Bip85Path("'12'/0'"),
+          throwsA(isA<InvalidBip85PathError>()));
+      expect(() => Bip85Path("39'/-1'"),
+          throwsA(isA<InvalidBip85PathError>()));
+    });
+
+    test('a segment at or beyond 2^31 (not hardened-representable) is rejected '
+        'at construction', () {
+      // Every BIP85 element is hardened, so a value >= 2^31 cannot be a valid
+      // segment — it would overflow / collide with a different hardened index.
+      expect(() => Bip85Path("39'/2147483648'"),
+          throwsA(isA<InvalidBip85PathError>()));
     });
   });
 }

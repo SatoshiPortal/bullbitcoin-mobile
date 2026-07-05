@@ -1,10 +1,12 @@
 # `secrets`
 
-The **sole owner of user secrets** (mnemonics, seed bytes, xprv) for the Bull wallet. Nothing outside this package can read raw secret material — callers get non-secret metadata, operation results, or sealed display widgets.
+The **sole owner of user secrets** (mnemonics, seed bytes, xprv) for the Bull wallet. Nothing outside this package can read raw secret material **through its public (exported) API** — callers get non-secret metadata, operation results, or sealed display widgets.
 
 ## The rule
 
-> Raw secret material has **no path out** of the package. You hold a `Secret` handle (identified by a `Fingerprint`) and call methods on it; you get back an `Xpub`, a `SignedPsbt`, an `EncryptedVault`, a `CreatedSwap`, a `Bip85Derivation`, or a sealed widget — never the words or the bytes.
+> Raw secret material has **no path out** through the package's **public API**. You hold a `Secret` handle (identified by a `Fingerprint`) and call methods on it; you get back an `Xpub`, a `SignedPsbt`, an `EncryptedVault`, a `CreatedSwap`, a `Bip85Derivation`, or a sealed widget — never the words or the bytes.
+>
+> The few raw-secret seams that must exist for the sealed display widgets (e.g. the `@internal` `Secrets.mnemonicReader`) are **not** part of that public API: reaching them from outside the package is blocked by library-privacy + the `@internal` lint (`--fatal-infos`) + `make seal-check`. That is a **compile/CI-time** wall enforced by convention and tooling, **not** an absolute type-system guarantee — see the threat-model note below.
 
 ## Using the package
 
@@ -18,7 +20,7 @@ import 'package:secrets/secrets.dart';
 await Secrets.init(index: DriftSecretIndex());
 ```
 
-`init` is **async** and returns a `SecretsInitResult` (`{outcome, probeError}`) describing which storage backend was wired; it also accepts an optional `mode` (`SecretsStorageMode.autoDetect` | `oublietteFirst` | `fssOnly`, default `autoDetect`) — see [Storage](#storage). Calling any `Secrets` member before `init` throws a `StateError`. The single re-exported import (`package:secrets/secrets.dart`) also brings in the `primitives` types used in signatures (`Fingerprint`, `BitcoinNetwork` / `LiquidNetwork` / `NetworkEnv`, `ScriptType`, `XpubType`, `Result` / `Ok` / `Err`) — a consumer never imports `primitives`, `src/`, or any DI library directly.
+`init` is **async** and returns a `SecretsInitResult` (`{outcome, probeError}`) describing which storage backend was wired; it also accepts an optional `mode` (`SecretsStorageMode.autoDetect` | `oublietteFirst` | `fssOnly`, default `autoDetect`) — see [Storage](#storage). Calling a `Secret`-operating member before `init` throws a `StateError` (the sole exception is `Secrets.probeBackend`, which deliberately runs a standalone capability probe *without* wiring the package). The single re-exported import (`package:secrets/secrets.dart`) also brings in the `primitives` types used in signatures (`Fingerprint`, `BitcoinNetwork` / `LiquidNetwork` / `NetworkEnv`, `ScriptType`, `XpubType`, `Result` / `Ok` / `Err`) — a consumer never imports `primitives`, `src/`, or any DI library directly.
 
 ### Entry points — the static `Secrets` API
 

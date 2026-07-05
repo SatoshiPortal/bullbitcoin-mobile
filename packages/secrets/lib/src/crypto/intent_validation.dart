@@ -2,9 +2,11 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/secrets_failure.dart';
 import 'package:secrets/src/domain/value_objects/signing_intent.dart';
 
-/// The largest plausible amount (21M BTC in sats). Any fee/amount at or beyond
-/// this — or negative — is treated as out-of-range and rejected (fail closed),
-/// so a u64→signed-int wrap can never slip under a positive cap.
+/// The largest plausible amount (21M BTC in sats, the exact total supply). Any
+/// fee/amount ABOVE this — or negative — is treated as out-of-range and rejected
+/// (fail closed), so a u64→signed-int wrap can never slip under a positive cap.
+/// The comparison is strict `>`, so exactly `_maxMoneySat` passes THIS range gate
+/// (it is a valid value); the per-intent fee/amount cap still applies on top.
 const int _maxMoneySat = 2100000000000000;
 
 /// The facts a signer extracts from the decoded PSBT (via BDK) and feeds to the
@@ -86,7 +88,19 @@ class IntentValidator {
   }) {
     return switch (intent) {
       SendIntent() => _validateSend(intent, facts, ownsScript),
-      PayjoinIntent() => _validatePayjoin(intent, facts),
+      // PAYJOIN IS NOT WIRED. The full BIP78 sender checklist is subtle — it
+      // must reject receiver-added inputs that are wallet-owned, gate every
+      // extra output with `ownsScript`, require non-empty originals, AND allow
+      // the receiver's legitimate own-output amount increase — and none of it
+      // is exercisable today (the signer never populates `facts.inputOutpoints`
+      // and no caller constructs a `PayjoinIntent`). A PARTIAL validator here is
+      // itself a latent theft vector (the audit's merge-blocker), so refuse to
+      // sign any payjoin outright until it is wired WITH a complete, tested
+      // checklist. Re-enabling this means implementing `_validatePayjoin`
+      // against a real payjoin extractor and re-deriving the tests below.
+      PayjoinIntent() => const Err(SigningFailure(
+          'payjoin signing is not enabled — the BIP78 sender checklist is not '
+          'yet implemented; refusing to sign (fail-closed)')),
     };
   }
 
@@ -152,66 +166,6 @@ class IntentValidator {
     return const Ok(null);
   }
 
-  /// NOTE (integration): the only Bitcoin signer does not yet populate
-  /// `facts.inputOutpoints`, so any non-empty `originalInputs` fails CLOSED here
-  /// — payjoin is unusable until the extractor supplies outpoints in the same
-  /// format the [PayjoinIntent] uses. Finalize before wiring payjoin.
-  static Result<void, SecretsFailure> _validatePayjoin(
-    PayjoinIntent intent,
-    TxFacts facts,
-  ) {
-    if (facts.feeSat < 0 || facts.feeSat > _maxMoneySat) {
-      return Err(SigningFailure('payjoin fee ${facts.feeSat} out of range'));
-    }
-    // Fail CLOSED: missing version/locktime facts mean the extractor couldn't
-    // confirm they are unchanged, so we must refuse rather than skip the check.
-    if (facts.version != intent.originalVersion) {
-      return const Err(SigningFailure('payjoin version changed or unknown'));
-    }
-    if (facts.lockTime != intent.originalLockTime) {
-      return const Err(SigningFailure('payjoin locktime changed or unknown'));
-    }
-    // Every original input the sender contributed must still be present.
-    for (final inp in intent.originalInputs) {
-      if (!facts.inputOutpoints.contains(inp)) {
-        return const Err(SigningFailure('payjoin dropped an original input'));
-      }
-    }
-    // Every original output the sender declared must still be present — as a
-    // MULTISET (matching count), not a Set. A Set would let a receiver drop one
-    // of two identical batched outputs (double-payment) and redirect its value:
-    // the single remaining copy would satisfy both membership tests. `_validateSend`
-    // was hardened to a multiset for exactly this; payjoin must match.
-    final remaining = <String, int>{};
-    for (final o in intent.originalOutputs) {
-      final key = '${o.scriptPubKey}:${o.amountSat}';
-      remaining[key] = (remaining[key] ?? 0) + 1;
-    }
-    for (final out in facts.outputs) {
-      final key = '${out.scriptPubKey}:${out.amountSat}';
-      final left = remaining[key] ?? 0;
-      if (left > 0) remaining[key] = left - 1; // consume one original output
-    }
-    if (remaining.values.any((c) => c > 0)) {
-      return const Err(SigningFailure('payjoin altered an original output'));
-    }
-    // BIP78: maxFeeContributionSat bounds the RECEIVER's additional fee, not
-    // the total tx fee. The original tx already paid a fee; the receiver may
-    // add up to maxFeeContributionSat MORE. Without the original fee amount
-    // (not currently in TxFacts) we cannot bound the additional contribution
-    // precisely — so we fail CLOSED (reject any total fee exceeding the cap)
-    // until the extractor supplies the original fee. This is intentionally
-    // stricter than BIP78: it never overpays, but may reject a legitimate
-    // payjoin whose original fee alone exceeds maxFeeContributionSat. Fix by
-    // carrying originalFeeSat in PayjoinIntent/TxFacts before wiring payjoin.
-    if (facts.feeSat > intent.maxFeeContributionSat) {
-      return Err(SigningFailure(
-          'payjoin total fee ${facts.feeSat} exceeds contribution cap '
-          '${intent.maxFeeContributionSat} (conservative bound — see comment)'));
-    }
-    return const Ok(null);
-  }
-
   // ── Liquid PSET signing ───────────────────────────────────────────────────
 
   /// Validates a Liquid send on the UNBLINDABLE facts only. Amounts/assets are
@@ -221,8 +175,8 @@ class IntentValidator {
   /// address substitution — the classic "sign my PSET, get your L-BTC" theft),
   /// and it FAILS CLOSED when no output scripts can be extracted.
   ///
-  /// For a [PayjoinIntent] on Liquid (not currently wired) only the fee cap is
-  /// enforced.
+  /// A [PayjoinIntent] on Liquid is refused outright (not wired, and the BIP78
+  /// checklist is unenforceable on blinded amounts).
   static Result<void, SecretsFailure> validateLiquid(
     SigningIntent intent,
     LiquidFacts facts,
@@ -235,6 +189,16 @@ class IntentValidator {
         if (facts.feeSat > maxFeeSat) {
           return Err(SigningFailure(
               'liquid fee ${facts.feeSat} exceeds cap $maxFeeSat'));
+        }
+        // Fail CLOSED on an intent that declares NO recipient outputs: the
+        // multiset loop below would be vacuous, so any PSET within the fee cap
+        // would sign — and because Liquid amounts are blinded and ownership is
+        // not provable, ALL value could leave to any address. The Bitcoin path
+        // fails closed in this situation via its per-input ownership check;
+        // Liquid has no equivalent, so require at least one declared recipient.
+        if (outputs.isEmpty) {
+          return const Err(SigningFailure(
+              'liquid send declares no recipient outputs to validate'));
         }
         // Fail CLOSED: if the extractor could not read any output script we
         // cannot vouch for the recipients — refuse rather than sign blind.
@@ -250,6 +214,14 @@ class IntentValidator {
           present[s] = (present[s] ?? 0) + 1;
         }
         for (final o in outputs) {
+          // A recipient script is NEVER empty. The explicit Liquid fee output
+          // carries an EMPTY script, so an empty declared script would match it
+          // and let a real recipient be swapped out while this check still
+          // "passes". Reject fail-closed. (Also enforced at Output construction.)
+          if (o.scriptPubKey.isEmpty) {
+            return const Err(
+                SigningFailure('liquid send has an empty recipient script'));
+          }
           final left = present[o.scriptPubKey] ?? 0;
           if (left <= 0) {
             return const Err(SigningFailure(
@@ -258,11 +230,14 @@ class IntentValidator {
           present[o.scriptPubKey] = left - 1;
         }
         return const Ok(null);
-      case PayjoinIntent(:final maxFeeContributionSat):
-        return facts.feeSat > maxFeeContributionSat
-            ? Err(SigningFailure(
-                'liquid fee ${facts.feeSat} exceeds cap $maxFeeContributionSat'))
-            : const Ok(null);
+      case PayjoinIntent():
+        // Liquid payjoin is NOT wired and — because Liquid amounts/ownership are
+        // blinded — the BIP78 sender checklist cannot be enforced soundly here
+        // at all (only the fee is visible). Refuse outright rather than sign a
+        // payjoin on facts we cannot validate (fail-closed).
+        return const Err(SigningFailure(
+            'liquid payjoin signing is not enabled — the BIP78 sender checklist '
+            'cannot be validated on blinded amounts; refusing to sign'));
     }
   }
 
@@ -280,6 +255,13 @@ class IntentValidator {
   }) {
     if (outAmountSat < 0 || outAmountSat > _maxMoneySat) {
       return Err(SigningFailure('swap amount $outAmountSat out of range'));
+    }
+    // Fail CLOSED with NO bound: an all-null call would vacuously pass and green-
+    // light any in-range amount — contradicting this file's doctrine. Every real
+    // caller supplies exactSat (reverse/chain) or a min/max (submarine).
+    if (exactSat == null && minSat == null && maxSat == null) {
+      return const Err(SigningFailure(
+          'swap amount check requires at least one bound (exact/min/max)'));
     }
     if (exactSat != null && outAmountSat != exactSat) {
       return Err(SigningFailure(

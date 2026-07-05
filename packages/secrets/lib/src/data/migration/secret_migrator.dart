@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart'
     show SecretStoreKeys;
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
+import 'package:secrets/src/data/models/mnemonic.dart';
 import 'package:secrets/src/domain/ports/secret_index_port.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
 
@@ -82,15 +83,30 @@ class SecretMigrator {
         //    leaves an unverified HW copy that oubliette (write-once) can't
         //    repair — and it SHADOWS the good FSS copy (DualReadStore falls back
         //    only on miss, not read-failure). So while an FSS copy still exists,
-        //    byte-verify HW against it; a mismatch/unreadable HW copy is trashed
-        //    and re-migrated below, never counted `skipped`. ────────────────────
+        //    byte-verify HW against it. On a mismatch we must NOT assume the
+        //    (weaker, more corruptible) FSS copy is authoritative — the master
+        //    fingerprint (== the storage key) arbitrates which side is the real
+        //    seed. Only the mis-fingerprinted side is ever trashed/re-migrated;
+        //    a fingerprint-verified copy is never destroyed. ────────────────────
         if (await _hw.exists(key)) {
-          final verdict = await _verifyHwAgainstFss(key);
-          if (verdict != _HwCheck.mismatch) {
-            skipped++; // matches, or no FSS copy left to compare against
-            continue;
+          final verdict = await _verifyHwAgainstFss(key, fp);
+          switch (verdict) {
+            case _HwCheck.match:
+            case _HwCheck.noFss:
+            case _HwCheck.hwAuthentic:
+              skipped++; // matches, no FSS to compare, or HW is the real copy
+              continue;
+            case _HwCheck.unverifiable:
+              // Bytes differ and NEITHER copy fingerprint-matches the key (or HW
+              // is only unreadable, possibly locked). We cannot tell which is
+              // real, so DESTROY NOTHING and keep `complete` false.
+              failures.add((fingerprint: fp, errorType: 'hw_fss_unverifiable'));
+              continue;
+            case _HwCheck.reMigrate:
+              // HW is definitively corrupt (decoded to the wrong fingerprint)
+              // and FSS is fingerprint-verified → trash HW, re-migrate FSS.
+              await _tryTrash(key);
           }
-          await _tryTrash(key); // bad HW copy → fall through to re-migrate
         }
 
         // Read the FSS bytes OUT of the callback (FSS zeroes `bytes`, not our
@@ -117,6 +133,20 @@ class SecretMigrator {
         // of counting the poison `skipped`.
         try {
           if (await _readBackMatches(key, original!)) {
+            // POST-STORE TOCTOU guard: the pre-store re-check (above) does not
+            // serialize against a concurrent delete(), which trashes FSS+HW and
+            // THEN removes the index. A delete completing in the store/verify
+            // window means `_hw.store` just RESURRECTED a seed the user deleted —
+            // with no index entry, so the next reconcile() would re-index it and
+            // the deleted seed returns. Re-check the delete markers now; if the
+            // seed is gone from FSS or the index, trash the copy we just wrote
+            // instead of counting it migrated. (The residual race — a delete
+            // interleaving right after this re-check — needs a lock shared with
+            // the delete path; this closes the common ordering.)
+            if (!await _fss.exists(key) || await _index.get(fp) == null) {
+              await _tryTrash(key);
+              continue; // deleted during migration — do not resurrect
+            }
             migrated++;
           } else {
             await _tryTrash(key);
@@ -167,11 +197,19 @@ class SecretMigrator {
     );
   }
 
-  /// Verifies an already-present HW copy against the retained FSS copy.
-  /// `match` = bytes agree; `noFss` = no FSS copy to compare (trust HW —
-  /// nothing better to do, and never destroy the only copy); `mismatch` = HW is
-  /// wrong/unreadable and must be re-migrated.
-  Future<_HwCheck> _verifyHwAgainstFss(String key) async {
+  /// Verifies an already-present HW copy against the retained FSS copy, using
+  /// the master fingerprint [expected] (== the storage key) to arbitrate a
+  /// mismatch so the weaker FSS store is never trusted as ground truth:
+  ///   `match`       = bytes agree;
+  ///   `noFss`       = no FSS copy to compare (trust HW — never destroy the only
+  ///                   copy);
+  ///   `hwAuthentic` = bytes differ but HW decodes to [expected] — HW is the real
+  ///                   seed; FSS is the corrupt/variant copy, so keep HW as-is;
+  ///   `reMigrate`   = HW decodes to the WRONG fingerprint and FSS decodes to
+  ///                   [expected] — HW is corrupt, FSS is authentic → re-migrate;
+  ///   `unverifiable`= HW unreadable, or neither copy fingerprint-matches — we
+  ///                   can't tell which is real, so destroy nothing.
+  Future<_HwCheck> _verifyHwAgainstFss(String key, Fingerprint expected) async {
     Uint8List? fssCopy;
     try {
       await _fss.useAndForget(key, (b) async {
@@ -182,13 +220,42 @@ class SecretMigrator {
     }
     if (fssCopy == null) return _HwCheck.noFss;
     try {
-      return await _readBackMatches(key, fssCopy!)
-          ? _HwCheck.match
-          : _HwCheck.mismatch;
+      if (await _readBackMatches(key, fssCopy!)) return _HwCheck.match;
     } on Exception {
-      return _HwCheck.mismatch; // HW copy unreadable/corrupt → re-migrate
+      // HW copy unreadable — do NOT conclude "HW is bad, FSS wins"; fall through
+      // to fingerprint arbitration below.
     } finally {
       fssCopy!.fillRange(0, fssCopy!.length, 0);
+    }
+    // Bytes differ (or HW was unreadable). Let the fingerprint decide which copy
+    // is the authentic seed — never re-migrate an FSS copy that fails to derive
+    // `expected` (that would overwrite a good HW seed with corruption and still
+    // pass the byte-for-byte read-back check).
+    final hwOk = await _decodesToFingerprint(_hw, key, expected);
+    if (hwOk == true) return _HwCheck.hwAuthentic; // HW is real; FSS is the bad copy
+    final fssOk = await _decodesToFingerprint(_fss, key, expected);
+    if (hwOk == false && fssOk == true) return _HwCheck.reMigrate;
+    return _HwCheck.unverifiable; // HW unreadable, or neither fingerprint-matches
+  }
+
+  /// Reads [key] from [store] and reports whether it decodes to a mnemonic whose
+  /// master fingerprint equals [expected]: `true` = authentic, `false` = decodes
+  /// to the wrong fingerprint (or undecodable garbage — fail closed, not
+  /// authentic), `null` = unreadable (locked/absent) so it is not a verdict.
+  Future<bool?> _decodesToFingerprint(
+      SecretStorePort store, String key, Fingerprint expected) async {
+    try {
+      return await store.useAndForget(key, (bytes) async {
+        try {
+          return Mnemonic.fromStorageBytes(Uint8List.fromList(bytes))
+                  .fingerprint ==
+              expected;
+        } catch (_) {
+          return false; // undecodable / underivable → not the authentic copy
+        }
+      });
+    } on Exception {
+      return null; // unreadable (locked / not found) — not a verdict
     }
   }
 
@@ -213,4 +280,4 @@ class SecretMigrator {
   }
 }
 
-enum _HwCheck { match, mismatch, noFss }
+enum _HwCheck { match, noFss, hwAuthentic, reMigrate, unverifiable }

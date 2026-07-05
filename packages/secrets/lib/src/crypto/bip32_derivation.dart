@@ -23,6 +23,13 @@ class Bip32Derivation {
     required BitcoinNetwork network,
     int account = 0,
   }) {
+    // `$account'` is a HARDENED component. A value outside [0, 2^31) either
+    // overflows the hardened index or collides with a different hardened index
+    // depending on how the pub-dep parses the path string — silently deriving
+    // the WRONG account key. Reject it here before it reaches the dep.
+    if (account < 0 || account >= 0x80000000) {
+      throw ArgumentError.value(account, 'account', 'must be in [0, 2^31)');
+    }
     final root = bip32.Bip32Keys.fromSeed(seedBytes);
     final path = "m/${scriptType.purpose}'/${network.coinType}'/$account'";
     return root.derivePath(path).neutered;

@@ -25,6 +25,15 @@ class Bip85Crypto {
   static String _validatedPath(String path) =>
       bip85.Bip85HardenedPath(path).toString();
 
+  /// BIP85 path components are HARDENED, so an [index] outside [0, 2^31) either
+  /// overflows or collides with a different hardened index in the pub-dep —
+  /// silently deriving the WRONG child. Reject it before it reaches the dep.
+  static void _checkIndex(int index) {
+    if (index < 0 || index >= 0x80000000) {
+      throw ArgumentError.value(index, 'index', 'BIP85 index must be in [0, 2^31)');
+    }
+  }
+
   /// Strips a LEADING `m/`, a LEADING `83696968'/` (the BIP85 root purpose, for
   /// an absolute path), and a LEADING `1608'/` app-number from a recoverbull
   /// path. `m/1608'/0'/586053381`, `1608'/0'/586053381`, and
@@ -59,6 +68,7 @@ class Bip85Crypto {
     required int index,
     bip39.Language language = bip39.Language.english,
   }) {
+    _checkIndex(index);
     return bip85.Bip85Entropy.deriveMnemonic(
       xprvBase58: xprvBase58,
       language: language,
@@ -72,20 +82,24 @@ class Bip85Crypto {
   static String childMnemonicPath({
     required vo.MnemonicLength length,
     required int index,
-  }) =>
-      _validatedPath("39'/0'/${length.words}'/$index'");
+  }) {
+    _checkIndex(index);
+    return _validatedPath("39'/0'/${length.words}'/$index'");
+  }
 
   /// Raw hex entropy of [numBytes] bytes at the hex application, given [index].
   static String deriveHex({
     required String xprvBase58,
     required int numBytes,
     required int index,
-  }) =>
-      bip85.Bip85Entropy.deriveHex(
-        xprvBase58: xprvBase58,
-        numBytes: numBytes,
-        index: index,
-      );
+  }) {
+    _checkIndex(index);
+    return bip85.Bip85Entropy.deriveHex(
+      xprvBase58: xprvBase58,
+      numBytes: numBytes,
+      index: index,
+    );
+  }
 
   /// The ARK secret bytes (32) at index 11811.
   static Uint8List deriveArk(String xprvBase58) {

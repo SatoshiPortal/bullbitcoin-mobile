@@ -62,6 +62,13 @@ class KeyDerivationAdapter implements KeyDerivationPort {
           isTestnet: isTestnet,
           internalKeychain: true,
         );
+        // Defense-in-depth (release path — the derivation's assert is stripped):
+        // never hand back a descriptor carrying private key material, whatever a
+        // future bdk_dart bump does to toString(). Fail closed instead.
+        if (external.contains('prv') || internal.contains('prv')) {
+          return const Err(DerivationFailure(
+              'derived descriptor unexpectedly contains a private key'));
+        }
         return Ok(BitcoinDescriptor(external: external, internal: internal));
       }, onError: DerivationFailure.new);
 

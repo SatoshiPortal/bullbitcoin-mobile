@@ -66,11 +66,23 @@ class BackupVaultAdapter implements BackupVaultPort {
         try {
           final mnemonic = Mnemonic.fromStorageBytes(plaintext);
 
+          // Map the decoded language to the package enum. A null here means the
+          // stored blob names a language this package does not mirror — defaulting
+          // to English would re-derive a DIFFERENT seed (wrong wordlist) under a
+          // mismatched fingerprint, the exact silent-guessing the storage decoder
+          // forbids. Fail closed instead. (Dead today — the decoder only ever
+          // yields a mirrored language — but the guess-vs-fail decision is pinned.)
+          final language = MnemonicLanguage.fromName(mnemonic.language.name);
+          if (language == null) {
+            return const Err(VaultFailure(
+                'restored mnemonic uses an unsupported language — refusing to '
+                'guess the wordlist'));
+          }
+
           final imported = await _repo.importMnemonic(
             words: mnemonic.words,
             passphrase: mnemonic.passphrase,
-            language: MnemonicLanguage.fromName(mnemonic.language.name) ??
-                MnemonicLanguage.english,
+            language: language,
           );
 
           return switch (imported) {

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/secret_lifecycle_adapter.dart';
+import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
 import 'package:secrets/src/data/datasources/secret_not_found_exception.dart';
 import 'package:secrets/src/domain/ports/secret_index_port.dart';
 import 'package:secrets/src/domain/ports/secret_store_port.dart';
@@ -104,6 +105,26 @@ void main() {
       expect(await index.all(), isEmpty); // never indexed
       expect(store.trashed, isNotEmpty); // the bad write was trashed
     });
+
+    test('a keychain lock DURING read-back verify propagates as '
+        'KeychainLockedFailure and does NOT trash the (possibly good) write',
+        () async {
+      // If the keychain locks between store() and the verify read-back, the
+      // write may be perfectly good. Flattening that to Unexpected + trashing it
+      // would strip the caller's "unlock and retry" routing and can lose the
+      // only copy of a just-generated seed. The typed failure must propagate and
+      // the write must survive.
+      final store = _LockOnReadbackStore();
+      final index = _FakeSeedIndex();
+      final repo = SecretLifecycleAdapter(store: store, index: index);
+
+      final res = await repo.importMnemonic(words: zooWords);
+
+      expect(_unwrapErr(res), isA<KeychainLockedFailure>());
+      expect(await index.all(), isEmpty); // not indexed (unverified)
+      expect(store.trashed, isEmpty); // write NOT destroyed on a transient lock
+      expect(store._m, isNotEmpty); // the stored bytes survive for a retry
+    });
   });
 
   group('generateMnemonic', () {
@@ -171,6 +192,36 @@ class _CorruptingStore implements SecretStorePort {
     final v = _m[key];
     if (v == null) throw SecretNotFoundException(key);
     return use(Uint8List.fromList(v));
+  }
+  @override
+  Future<void> trash(String key) async {
+    trashed.add(key);
+    _m.remove(key);
+  }
+  @override
+  Future<void> purge() async => _m.clear();
+  @override
+  Future<List<String>> keys() async => _m.keys.toList();
+}
+
+/// A store that persists the write CORRECTLY but is LOCKED on read-back — models
+/// a keychain that locks between store() and the fresh-write verify.
+class _LockOnReadbackStore implements SecretStorePort {
+  final Map<String, Uint8List> _m = {};
+  final List<String> trashed = [];
+  @override
+  Future<void> init() async {}
+  @override
+  StoreCapabilities capabilities() => const StoreCapabilities(
+      hardwareBacked: false, thisDeviceOnly: true, syncable: false);
+  @override
+  Future<void> store(String key, Uint8List value) async =>
+      _m[key] = Uint8List.fromList(value);
+  @override
+  Future<bool> exists(String key) async => _m.containsKey(key);
+  @override
+  Future<R> useAndForget<R>(String key, Future<R> Function(Uint8List) use) async {
+    throw const KeychainLockedException(); // locked during the verify read
   }
   @override
   Future<void> trash(String key) async {

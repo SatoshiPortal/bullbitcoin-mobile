@@ -47,6 +47,14 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
   bool _unavailable = false;
   bool _done = false;
 
+  /// Monotonic request id. Each [_load] bumps it; an async read applies its
+  /// result only if it is still the LATEST request. Without this, a rapid
+  /// fingerprint swap can let a slow first read complete AFTER the second and
+  /// display the PREVIOUS seed's words against the new fingerprint — the user
+  /// would then "verify" (onResult(true)) the wrong seed. (`mounted` alone does
+  /// not catch this: both reads are on the same mounted State.)
+  int _generation = 0;
+
   @override
   void initState() {
     super.initState();
@@ -72,9 +80,21 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
     _loading = true;
     _unavailable = false;
     _done = false;
-    final reader = widget.reader ?? Secrets.mnemonicReader;
+    final gen = ++_generation; // this read supersedes any in-flight one
+    // Resolving the reader can THROW synchronously (e.g. `Secrets.init()` was
+    // never called → StateError from the wiring getter). That would escape
+    // `initState` and red-screen a deep-link/resumed route, so catch it and
+    // route to the unavailable card — the same degrade SecretRevealer does.
+    final MnemonicReader reader;
+    try {
+      reader = widget.reader ?? Secrets.mnemonicReader;
+    } catch (_) {
+      _loading = false;
+      _unavailable = true;
+      return;
+    }
     reader.read(widget.fingerprint).then((data) {
-      if (!mounted) return;
+      if (!mounted || gen != _generation) return; // stale/out-of-order — drop
       setState(() {
         _loading = false;
         // A locked keychain / missing seed, or a bytes-only seed (no words to
@@ -87,7 +107,7 @@ class _VerifyBackupViewState extends State<VerifyBackupView> {
         _shuffled = [...data.words]..shuffle();
       });
     }).catchError((Object _) {
-      if (!mounted) return;
+      if (!mounted || gen != _generation) return; // stale/out-of-order — drop
       setState(() {
         _loading = false;
         _unavailable = true;

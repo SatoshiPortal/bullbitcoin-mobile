@@ -7,7 +7,12 @@ enum ChainDirection { btcToLbtc, lbtcToBtc }
 /// A transaction output the user intends to create.
 @immutable
 class Output {
-  const Output({required this.scriptPubKey, required this.amountSat});
+  const Output({required this.scriptPubKey, required this.amountSat})
+      // A recipient scriptPubKey is never empty. On Liquid an empty script is
+      // the EXPLICIT FEE output, so an empty declared script would match the fee
+      // leg and defeat the recipient-presence check (address-substitution). Guard
+      // it at the source. (validateLiquid also rejects this at run time.)
+      : assert(scriptPubKey.length > 0, 'Output.scriptPubKey must be non-empty');
 
   /// The output's scriptPubKey as LOWERCASE HEX of the raw script bytes — NOT a
   /// bech32/base58 address. The validator matches it byte-for-byte against the

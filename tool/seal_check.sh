@@ -12,14 +12,21 @@ set -euo pipefail
 fail=0
 note() { echo "❌ SEAL VIOLATION: $*"; fail=1; }
 
-# Directories scanned for external (non-package) seal violations.
-SCAN_DIRS="lib features packages test integration_test"
+# Directories scanned for external (non-package) seal violations. `tool` is
+# included because it holds Dart code (e.g. tool/gen_all_test.dart): a file there
+# could `import 'package:secrets/src/...'` with an internal-member suppression
+# and read raw words+passphrase, and the greps below are the only defense — they
+# must look there too.
+SCAN_DIRS="lib features packages test integration_test tool"
 
-# 1) Nothing OUTSIDE packages/secrets may import the package's src/.
-hits=$(grep -rnE "import\s+['\"]package:secrets/src/" \
+# 1) Nothing OUTSIDE packages/secrets may import OR RE-EXPORT the package's src/.
+#    An app-side `export 'package:secrets/src/...';` would re-expose an internal
+#    (e.g. FssSecretStoreAdapter's public ctor + raw useAndForget) just as an
+#    import would, so both keywords are matched here.
+hits=$(grep -rnE "(import|export)\s+['\"]package:secrets/src/" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
   | grep -v 'packages/secrets/' || true)
-[ -n "$hits" ] && note "external import of package:secrets/src/:
+[ -n "$hits" ] && note "external import/export of package:secrets/src/:
 $hits"
 
 # 2) The barrel is the ENTIRE public surface. DEFAULT-DENY: every `export
@@ -84,7 +91,10 @@ other_lib_files=$(find packages/secrets/lib -maxdepth 1 -name '*.dart' \
 $other_lib_files"
 
 # 3) No one may suppress the internal-member lint to reach a @internal secret
-#    accessor (Bip85Derivation.words / Bip85HexResult.hexForView / ArkSecret.bytes).
+#    accessor: Bip85Derivation.words / Bip85HexResult.hexForView / ArkSecret.bytes
+#    AND `Secrets.mnemonicReader` (the raw root {words, passphrase} reader for the
+#    sealed display widgets) — the most sensitive of the set, so it is called out
+#    explicitly even though the grep matches any @internal member.
 sup=$(grep -rnE "//\s*ignore.*invalid_use_of_internal_member" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
   | grep -v 'packages/secrets/' || true)
@@ -157,6 +167,20 @@ fss=$(grep -rlE "import\s+['\"]package:flutter_secure_storage(_legacy)?/" \
   || true)
 [ -n "$fss" ] && note "flutter_secure_storage imported outside the secrets adapter / live storage layer (raw keychain must stay sealed):
 $fss"
+
+# 7) `package:oubliette` (the NEW hardware seed-at-rest backend) is, like the FSS
+#    backend, a raw store that keys seeds under `seed_<fp>`. It must stay
+#    confined to the secrets package: app code constructing an `Oubliette`
+#    directly could read `seed_<fp>` and bypass every gate. UNLIKE FSS, NO app
+#    file legitimately needs it (it is purely the secrets hardware backend), so
+#    the rule is simply "no import outside packages/secrets/" — mirroring check 1.
+oub=$(grep -rlE "import\s+['\"]package:oubliette/" \
+  --include='*.dart' $SCAN_DIRS 2>/dev/null \
+  | grep -v 'packages/secrets/' \
+  | grep -v '/.dart_tool/' \
+  || true)
+[ -n "$oub" ] && note "package:oubliette imported outside packages/secrets (raw hardware seed store must stay sealed):
+$oub"
 
 if [ "$fail" -ne 0 ]; then
   echo "🔒 Seal check FAILED."

@@ -51,6 +51,31 @@ void main() {
       );
     });
 
+    test('accountXpub REJECTS an account outside [0, 2^31) (hardened-index guard)',
+        () {
+      // A hardened component >= 2^31 (or negative) would overflow / collide with
+      // a different hardened index in the pub-dep — silently deriving the WRONG
+      // account key. It must be rejected before reaching the dep.
+      expect(
+        () => Bip32Derivation.accountXpub(
+          seedBytes: _zooSeed(),
+          scriptType: ScriptType.bip84,
+          network: BitcoinNetwork.mainnet,
+          account: 0x80000000, // 2^31
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => Bip32Derivation.accountXpub(
+          seedBytes: _zooSeed(),
+          scriptType: ScriptType.bip84,
+          network: BitcoinNetwork.mainnet,
+          account: -1,
+        ),
+        throwsArgumentError,
+      );
+    });
+
     test('THROWS on a non-neutered (private) key — never emits a key-leaking xpub',
         () {
       // A private (xprv) key's data starts with 0x00, not 0x02/0x03; re-versioning

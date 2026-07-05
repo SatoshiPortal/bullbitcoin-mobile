@@ -12,10 +12,19 @@ import 'package:secrets/src/domain/value_objects/swap_request.dart';
 /// Creates Boltz swaps from the master seed (read internally; the mnemonic is
 /// handed to the Boltz SDK from inside the package and never escapes). After
 /// creation, the returned swap script is asserted to commit to OUR derived
-/// key(s) and OUR generated preimage — the Boltz-supplied `scriptAddress` is
-/// untrusted (`IntentValidator.validateSwapCommitment`). The caller supplies a
-/// [SwapRequest] (caller-knowable inputs only); the commitment is built
-/// internally from the SDK-returned swap.
+/// key(s) and OUR generated preimage (`IntentValidator.validateSwapCommitment`).
+/// The caller supplies a [SwapRequest] (caller-knowable inputs only); the
+/// commitment is built internally from the SDK-returned swap.
+///
+/// RESIDUAL (documented, not closed here): the commitment check proves the
+/// SCRIPT commits to our key/hashlock, but `scriptAddress` — where funds are
+/// locked — is NOT re-derived from that script and compared. The boltz binding
+/// exposes no script→address function, and re-implementing Boltz's HTLC address
+/// template in-package would be error-prone; so `scriptAddress` is trusted from
+/// the SDK and its binding to the validated script rests on SDK provenance.
+/// A mismatch matters most for submarine/chain lockups (we PAY the address),
+/// where it could strand our refund. Close by adding an SDK script→address API
+/// (then assert here) or by pinning the SDK to a provenance-verified commit.
 ///
 /// Claim/refund of an existing swap stay app-side (the per-swap KeyPair is
 /// re-derived at the same index). Native (Boltz/electrum) execution is

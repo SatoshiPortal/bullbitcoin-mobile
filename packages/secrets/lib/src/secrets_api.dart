@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart' show useResult;
 import 'package:oubliette/oubliette.dart';
 import 'package:primitives/primitives.dart';
 
@@ -8,7 +9,9 @@ import 'package:secrets/src/data/adapters/dual_read_store.dart';
 import 'package:secrets/src/data/adapters/flutter_secure_storage_adapter.dart';
 import 'package:secrets/src/data/adapters/fss_secret_store_adapter.dart';
 import 'package:secrets/src/data/adapters/oubliette_secret_store_adapter.dart';
+import 'package:secrets/src/data/datasources/hardware_key_invalidated_exception.dart';
 import 'package:secrets/src/data/datasources/keychain_locked_exception.dart';
+import 'package:secrets/src/data/datasources/malformed_secret_exception.dart';
 import 'package:secrets/src/data/migration/reconcile_report.dart';
 import 'package:secrets/src/data/migration/secret_migrator.dart';
 import 'package:secrets/src/data/adapters/key_derivation_adapter.dart';
@@ -82,6 +85,13 @@ abstract final class Secrets {
   /// Guards the migration against an accidental concurrent second pass — see
   /// [migrateToHardware]. Cleared on completion and by [reset].
   static Future<MigrationReport?>? _migrationInFlight;
+
+  /// Bumped by every [reset]. An in-flight [_doInit] captures it before its
+  /// awaits and refuses to publish its wiring if it changed meanwhile — so a
+  /// stale init completing after a `reset()` (or after a newer init started)
+  /// can't resurrect old wiring over the current state. Test-only concern, but
+  /// tests are exactly where this interleaving happens.
+  static int _epoch = 0;
 
   // ── wiring / maintenance ────────────────────────────────────────────────────
 
@@ -157,12 +167,14 @@ abstract final class Secrets {
   /// first [fetch]/[list]. A total failure (e.g. the keychain is locked at
   /// startup) returns `Err` so the app can defer and retry next launch; per-seed
   /// heal failures are collected in the report, never thrown.
+  @useResult
   static Future<Result<ReconcileReport, SecretsFailure>> reconcile() =>
       _w.lifecycle.reconcile();
 
   /// Drops the wired graph — test isolation only.
   @visibleForTesting
   static void reset() {
+    _epoch++; // invalidate any in-flight _doInit so it won't publish stale wiring
     _instance = null;
     _initInFlight = null;
     _initArgs = null;
@@ -177,6 +189,7 @@ abstract final class Secrets {
   // ── create → a TYPED handle (operate immediately, no second fetch) ────────
 
   /// Imports an existing mnemonic, stores it, and returns its handle.
+  @useResult
   static Future<Result<MnemonicSecret, SecretsFailure>> importMnemonic(
     List<String> words, {
     String? passphrase,
@@ -191,6 +204,7 @@ abstract final class Secrets {
   }
 
   /// Generates a fresh mnemonic, stores it, and returns its handle.
+  @useResult
   static Future<Result<MnemonicSecret, SecretsFailure>> generateMnemonic({
     MnemonicLength length = MnemonicLength.words12,
   }) async {
@@ -199,6 +213,7 @@ abstract final class Secrets {
   }
 
   /// Derives a mnemonic's fingerprint WITHOUT storing (duplicate pre-check).
+  @useResult
   static Future<Result<Fingerprint, SecretsFailure>> fingerprintOfMnemonic(
     List<String> words, {
     String? passphrase,
@@ -213,6 +228,7 @@ abstract final class Secrets {
 
   /// Reads the index and returns the typed handle, or
   /// [SecretNotFoundFailure] if absent. Never touches the secret store.
+  @useResult
   static Future<Result<Secret, SecretsFailure>> fetch(Fingerprint fp) async {
     final r = await _w.lifecycle.getInfo(fp);
     return switch (r) {
@@ -225,18 +241,21 @@ abstract final class Secrets {
   // ── registry / umbrella (cross-kind) ──────────────────────────────────────
 
   /// All stored secrets, as handles.
+  @useResult
   static Future<Result<List<Secret>, SecretsFailure>> list() async {
     final r = await _w.lifecycle.listSeeds();
     return r.map((infos) => infos.map(_build).toList());
   }
 
   /// Whether a secret with [fp] is stored.
+  @useResult
   static Future<Result<bool, SecretsFailure>> exists(Fingerprint fp) =>
       _w.lifecycle.exists(fp);
 
   /// Decrypts [vault] in-package, writes the recovered secret(s) to the store,
   /// and returns their fingerprints. A static create/add op (no pre-existing
   /// handle to hang it on).
+  @useResult
   static Future<Result<List<Fingerprint>, SecretsFailure>> restoreVault({
     required EncryptedVault vault,
     required VaultKey vaultKey,
@@ -253,17 +272,26 @@ abstract final class Secrets {
     required SecretsStorageMode mode,
     SecretStorePort? store,
   }) async {
+    final epoch = _epoch; // snapshot before any await
     try {
       final (SecretStorePort s, SecretsInitResult result) = await _resolveStore(
         mode,
         store,
       );
       await s.init();
+      if (epoch != _epoch) {
+        // reset() (or a newer init) ran while we were initializing — do NOT
+        // publish this now-stale wiring over the current state. The in-flight
+        // guard/args were already cleared by reset(), so leave them be.
+        return result;
+      }
       _instance = _Wiring(store: s, index: index);
       return result;
     } catch (_) {
-      _initInFlight = null; // allow a retry after a failed init
-      _initArgs = null;
+      if (epoch == _epoch) {
+        _initInFlight = null; // allow a retry after a failed init
+        _initArgs = null;
+      }
       rethrow;
     }
   }
@@ -315,7 +343,17 @@ abstract final class Secrets {
     }
     return switch (probe.outcome) {
       SecretsBackendOutcome.oubliette => (dual, probe),
-      _ => (fss, probe), // incompatible | deferred → FSS-only
+      // A DEFERRED probe means capability is UNKNOWN this session (keychain
+      // locked at probe time), NOT incompatible. New seeds are hardware-only
+      // (DualReadStore writes HW), and an FSS-only wiring reads only FSS — so a
+      // HW-resident seed would read as SecretNotFound, the recovery-triggering
+      // misclassification this package works to avoid. Wire the DUAL store so a
+      // still-locked HW read surfaces KeychainLockedFailure (retryable) and any
+      // FSS-resident seed still falls back. The deferred outcome is returned
+      // UNCHANGED (not persisted → re-probe next launch).
+      SecretsBackendOutcome.fssDeferred => (dual, probe),
+      // Permanent structural incompatibility — FSS-only is correct.
+      SecretsBackendOutcome.fssIncompatible => (fss, probe),
     };
   }
 
@@ -365,9 +403,27 @@ abstract final class Secrets {
     } on KeychainLockedException catch (e) {
       // Recoverable (device locked / keyring unavailable): capability unknown.
       return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
-    } on Exception catch (e) {
-      // Structural (no plugin, hardware/config error, decrypt mismatch): FSS.
+    } on HardwareKeyInvalidatedException catch (e) {
+      // KNOWN-structural (oubliette `recoverable == false`): the hardware key is
+      // permanently gone. A real, definite incompatibility — persist FSS.
       return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
+    } on MalformedSecretException catch (e) {
+      // KNOWN-structural (oubliette `recoverable == false`): a decryption /
+      // payload-corrupt / tamper failure. Definite incompatibility — persist FSS.
+      // (Pinned by recoverable_translation_test.dart — the probe's defer-vs-
+      // incompatible line must track each subtype's `recoverable` flag.)
+      return (outcome: SecretsBackendOutcome.fssIncompatible, probeError: e);
+    } on Exception catch (e) {
+      // UNKNOWN / UNCLASSIFIED error only. `fssIncompatible` is PERSISTED and
+      // PERMANENT, so mapping an UNRECOGNIZED error here (e.g. an iOS lock-window
+      // status like errSecNotAvailable/-25291 whose spelling isn't in the
+      // locked-error needle list — `_classifyRaw` rethrows such raw errors as-is)
+      // would strand the device on FSS forever. The safe default for an ambiguous
+      // throw is to DEFER (retryable): FSS this session, re-probe next launch,
+      // never persisted. Definite incompatibilities are handled above (the
+      // `ok == false` sentinel-mismatch path, HardwareKeyInvalidated, and
+      // MalformedSecret — every oubliette `recoverable == false` subtype).
+      return (outcome: SecretsBackendOutcome.fssDeferred, probeError: e);
     }
   }
 
