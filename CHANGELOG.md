@@ -6,9 +6,78 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
+_Nothing yet._
+
+---
+
+## [6.12.0] - 2026-07-05
+
+_This release corresponds to the "Rolling Elephant" development cycle ([#2388](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2388))._
+
 ### New Features
 
-- **Coins (UTXO) view**: See every unspent output in a Bitcoin wallet — amount, label, keychain, and confirmation status — from a new "Coins" entry on the wallet screen. Sort and filter your coins, then freeze any you don't want to spend; frozen coins are excluded from every transaction until you unfreeze them, and the freeze survives app restarts. ([#760](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/760))
+- **Coins (UTXO) view**: See every unspent output in a Bitcoin wallet — amount, label, keychain, and confirmation status — from a new "Coins" entry on the wallet screen. Sort and filter your coins, then freeze any you don't want to spend; frozen coins are excluded from every transaction until you unfreeze them, and the freeze survives app restarts. Built on the new `bull_ui` design system. ([#760](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/760), [#2304](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2304))
+- **Coldcard NFC**: Import a Coldcard Q or Mk4 wallet and sign transactions over NFC — a tap instead of finicky QR scanning. ([#1544](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1544), [#2224](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2224))
+- **BitBox02 Nova over Bluetooth**: The BitBox02 Nova now works on iOS via BLE, lifting the previous Android-only restriction. Pairing, import, signing, and address verification are shared across USB (Android) and Bluetooth (iOS), with clear handling of Bluetooth permission and availability errors. ([#2323](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2323))
+- **Sub-1 sat/vByte fees**: You can now set fee rates below 1 sat/vByte (e.g. 0.5) to take advantage of low-mempool conditions. Fractional rates are stored losslessly in BDK's native unit, Bitcoin fee presets are sourced from mempool's precise endpoint (with a fallback for self-hosted servers), and the fee shown in the preview is now the exact fee of the transaction that gets broadcast. A live relay-minimum floor prevents building a transaction the network won't accept. ([#2133](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2133), [#2199](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2199))
+- **Swap recovery via mnemonic**: Swap secrets (including the preimage) are now derived deterministically from a standardized path, so stuck or orphaned swaps can be restored through Boltz's `restore` endpoint by sharing the master xpub. This aligns Bull with the new Boltz swap-mnemonic standard and lays the groundwork for reliable swap recovery. ([#2282](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2282), [#2138](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2138), [#2316](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2316))
+- **Export logs as a file**: Share app logs as a file attachment instead of copy-pasting, making it practical to send large logs to support. ([#2194](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2194), [#2317](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2317))
+
+### Exchange & Payouts
+
+- **Funding blocked for restricted users**: Users in the `RESTRICTED_FULL` or `RISK_PROHIBITED_COUNTRY` groups can no longer proceed through the funding flow in the app, matching the gating already enforced by the web exchange (BBX). Part of the wider effort to align mobile KYC gating with BBX across all jurisdictions. ([#2385](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2385), [#2393](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2393), see [#2262](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2262))
+- **Staging exchange access restored (dev/testnet)**: The staging exchange basic-auth credentials are now stored and read from the database, so testnet mode can reach the exchange again under dev mode. ([#2291](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2291), [#2310](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2310))
+- **Clearer funding option label**: Updated a funding option label for clarity. ([#2298](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2298))
+
+### Bug Fixes
+
+#### Sending & Receiving
+- Lightning invoice memos are now displayed on the send confirmation screen instead of being parsed and dropped. ([#2189](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2189), [#2309](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2309))
+- Sending a BOLT11 invoice below the Boltz swap minimum now shows a specific, actionable error on the address screen instead of the generic "Something went wrong". ([#2321](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2321), [#2322](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2322))
+- Fixed the recipients page getting stuck on an infinite loading spinner. ([#2305](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2305), [#2336](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2336))
+- The QR scanner now handles non-standard BIP21 and donation URIs: `%40`-encoded Lightning addresses are decoded, LNURLs are extracted from non-standard URIs, and unrecognized QR codes now show a clear "unsupported format" error and dismiss the scanner instead of hanging. ([#2202](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2202), [#2300](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2300))
+
+#### Swaps
+- Reverse-swap claim fees are now pinned, and stored claim fees are always used for send-exact-amount, so preview and broadcast stay consistent. ([#2388](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2388), [#2400](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2400))
+- Swap-review pass: the send flow's swap status watcher now uses a live database watch, Lightning receive shows a loading shimmer during load, and the confirmation screen aligns the invoice with a copy button and a copyable swap ID. Also floors the claim fee at the relay minimum, adds proper watcher teardown, and fixes several send-flow fee edge cases (preserving lockup fee, tx-fee fallback, confirm-amount flash). ([#2290](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2290))
+
+#### Wallet Sync
+- The pull-to-refresh spinner now stays visible until every chain (Bitcoin, Liquid, swaps) has finished syncing, instead of releasing after Bitcoin alone. ([#2386](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2386))
+- The wallet-card sync bar is now visible in light theme. ([#2387](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2387))
+
+#### UI & Layout
+- Added missing back arrows to the RecoverBull "connecting" and vault-selection screens. ([#2335](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2335))
+- Fixed invisible snackbar text in dark mode. ([#2329](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2329), [#2343](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2343))
+- Fixed unreadable colors in the encrypted-vault (Google Drive) delete confirmation dialog in dark theme. ([#2257](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2257), [#2260](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2260))
+- Enabled BitBox02 access for all users. ([#2388](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2388))
+
+#### Stability
+- Fixed a startup crash — `Bad state: Content hash on Dart side ... is different from Rust side` — caused by a stale prebuilt native library. `bull_sdk` now pins Boltz and LWK to their reproducible v0.5.0 tags instead of moving branches to prevent recurrence. ([#2401](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2401))
+
+#### Error Messages
+- **User-facing error sanitization**: Established a repo-wide pattern that keeps raw exception text, node rejection reasons, and BDK/Electrum/NFC internals out of the UI — replacing them with clear, localized messages. Rolled out across backup settings, RecoverBull, Bitcoin price, seed view, Electrum settings, mempool settings, BIP85 entropy, replace-by-fee, and mnemonic import. ([#1895](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1895), [#2293](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2293), [#2328](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2328), [#2330](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2330), [#2331](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2331), [#2332](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2332), [#2334](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2334), [#2339](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2339), [#2342](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2342), [#2344](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2344), [#2346](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2346))
+
+#### Translations
+- Simplified Chinese: word fixes. ([#2308](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2308))
+- German: translation updates. ([#2263](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2263), [#2345](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2345))
+- Spanish: shortened the auto-transfer settings label so it fits. ([#2278](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2278), [#2284](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2284))
+
+### Under the Hood
+
+_Developer-facing changes with no direct user impact._
+
+- **Back to official bdk-dart**: Switched the `bdk_dart` dependency from the `i5hi/bdk-dart` fork back to the official `bitcoindevkit/bdk-dart` (`1.0.0-rc.2`), updated call sites to the upstream `NetworkKind` API, and removed the now-obsolete `dependency_overrides`. ([#2389](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2389))
+- **Migrations collapsed**: Folded the accumulated database migrations into a single 12→13 step. ([#2338](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2338), [#2383](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2383))
+- **`bull_ui` design-system package**: Introduced a standalone `bull_ui` package with official-theme foundation tokens and duplicated core widgets, plus a Widgetbook v3 component catalogue in CI. This is the foundation the new Coins view is built on. ([#2302](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2302))
+- **Flutter 3.44 migration**: Migrated to Flutter 3.44.1 / Dart 3.12.1 (FVM 4.1.0, Android Kotlin/DSL compat flags, `font_awesome_flutter` 11.0.0), then bumped to Flutter 3.44.2 with FVM versions aligned across CI and images and more robust devcontainer/reproducible-build tooling. ([#2271](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2271), [#2318](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2318))
+- **Architecture docs & Melos skeleton**: Consolidated architecture documentation (datasource→repository→usecase→bloc layering, contributor onboarding) and a Melos monorepo skeleton, routing analysis through a single `make analyze` entry point. ([#2276](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2276))
+- **Localization cleanup**: Removed dead localization keys from non-English ARB files. ([#2285](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2285))
+- **Devcontainer Wayland forwarding**: Fixed Wayland socket forwarding via the host `XDG_RUNTIME_DIR`. ([#2303](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2303))
+- **GitHub Actions modernization**: Version bumps, supply-chain and least-privilege hardening, SHA-pinned third-party actions, faster pre-commit hook (runs analysis only on staged Dart files), and commit-SHA-tagged build artifacts. ([#2395](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2395), [#2392](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2392))
+- **Per-OS devcontainers**: Split `.devcontainer` into self-contained `linux/` and `macos/` configs so it can start on Apple Silicon (via Rosetta) as well as Linux. ([#2307](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2307))
+- **Crash-cache → issues sync**: New manually-dispatched workflow that turns the latest app version's reported crashes into GitHub issues, deduplicated by fingerprint. ([#2347](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2347))
+- **CI reliability**: Free disk space before analyze/test to avoid "No space left on device" ([#2311](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2311)), and fixed intermittent libgit2 SSL failures during container cargo fetches ([#2320](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2320)).
+- Version bumps to 6.12.0. ([#2382](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2382), [#2390](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2390))
 
 ---
 
