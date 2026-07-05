@@ -10890,6 +10890,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "फंडिंग उपलब्ध नहीं है",
+  "fundExchangeRestrictedMessage": "आपके खाते पर फंडिंग उपलब्ध नहीं है। अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।",
   "fundExchangeWarningTitle": "धोखेबाजों से सावधान रहें",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

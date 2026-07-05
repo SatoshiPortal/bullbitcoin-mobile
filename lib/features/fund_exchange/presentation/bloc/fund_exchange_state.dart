@@ -21,6 +21,8 @@ sealed class FundExchangeState with _$FundExchangeState {
   bool get failedToLoadFundingDetails =>
       getExchangeFundingDetailsException != null;
 
+  bool get isFundingRestricted => userSummary?.isFundingRestricted ?? false;
+
   FundingJurisdiction get initialFundingJurisdiction {
     // Map preffered currency to jurisdiction
     final currency = userSummary?.currency;

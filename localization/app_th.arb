@@ -10882,6 +10882,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "ไม่สามารถเติมเงินได้",
+  "fundExchangeRestrictedMessage": "ไม่สามารถเติมเงินในบัญชีของคุณได้ โปรดติดต่อฝ่ายสนับสนุนเพื่อขอข้อมูลเพิ่มเติม",
   "fundExchangeWarningTitle": "ดูวิดีโอ",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

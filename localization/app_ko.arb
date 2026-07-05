@@ -10890,6 +10890,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "입금을 사용할 수 없음",
+  "fundExchangeRestrictedMessage": "귀하의 계정에서 입금을 사용할 수 없습니다. 자세한 내용은 고객 지원에 문의하세요.",
   "fundExchangeWarningTitle": "사기꾼에 대한 조심",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

@@ -3621,6 +3621,8 @@
   "importQrDevicePassportStep12": "Setup completo.",
   "fundExchangeLabelIbanUsdOnly": "IBAN numero di conto (solo per dollari USA)",
   "payRecipientDetails": "Dettagli importanti",
+  "fundExchangeRestrictedTitle": "Finanziamento non disponibile",
+  "fundExchangeRestrictedMessage": "Il finanziamento non è disponibile sul tuo account. Contatta l'assistenza per maggiori informazioni.",
   "fundExchangeWarningTitle": "Attenzione per truffatori",
   "receiveError": "Errore: {error}",
   "@receiveError": {

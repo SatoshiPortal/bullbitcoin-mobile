@@ -6,19 +6,32 @@ on:
       - main
       - develop
 
+# Checkout + tests only; no writes to the repo via the token.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same PR — this build is heavy (Rust FRB crates +
+# Flutter SDK + Linux GTK app + integration tests), so don't run stale commits to
+# completion when newer ones are pushed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze_and_test:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # The job builds the FRB Rust crates, the Flutter SDK toolchain, the
       # Linux desktop app and runs integration tests on one runner; the stock
       # ubuntu-24.04 image fills up and the runner dies with "No space left on
       # device". Reclaim the unused pre-installed toolchains first.
       - name: Free disk space
-        uses: jlumbroso/free-disk-space@v1.3.1
+        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
+        # on a runner that can hold PR test secrets — a retag must not run here.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         with:
           tool-cache: true
           android: true
@@ -35,7 +48,7 @@ jobs:
       # when deps change. pubspec.lock pins the bull_sdk commit, so it is
       # the right key for the Cargo cache (there is no repo-root Cargo.lock).
       - name: Cache Flutter SDK (FVM)
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/fvm/versions
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
@@ -48,13 +61,13 @@ jobs:
       # pubspec.lock, so an unchanged lock still hits; a changed lock does one
       # clean fetch and re-caches.
       - name: Cache pub (hosted + git deps)
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
       - name: Cache Cargo (FRB native crates)
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry

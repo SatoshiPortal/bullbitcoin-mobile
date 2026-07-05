@@ -3589,6 +3589,8 @@
   "importQrDevicePassportStep12": "Einrichtung abgeschlossen",
   "fundExchangeLabelIbanUsdOnly": "IBAN (nur für US-Dollar)",
   "payRecipientDetails": "Angaben zum Empfänger",
+  "fundExchangeRestrictedTitle": "Einzahlung nicht verfügbar",
+  "fundExchangeRestrictedMessage": "Einzahlungen sind für Ihr Konto nicht verfügbar. Bitte kontaktieren Sie den Support für weitere Informationen.",
   "fundExchangeWarningTitle": "Achtung: Betrugsrisiko",
   "receiveError": "Fehler: {error}",
   "@receiveError": {

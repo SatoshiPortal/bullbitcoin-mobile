@@ -10807,6 +10807,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Para yatırma kullanılamıyor",
+  "fundExchangeRestrictedMessage": "Hesabınızda para yatırma kullanılamıyor. Daha fazla bilgi için lütfen destek ile iletişime geçin.",
   "fundExchangeWarningTitle": "Dolandırıcılar için dikkat edin",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

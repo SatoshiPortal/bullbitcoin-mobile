@@ -2928,6 +2928,8 @@
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
+  "fundExchangeRestrictedTitle": "Funding uplabdh nahi hai",
+  "fundExchangeRestrictedMessage": "Aapke account par funding uplabdh nahi hai. Adhik jaankari ke liye kripya support se sampark karein.",
   "fundExchangeWarningTitle": "Thagoon se bachke raho",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

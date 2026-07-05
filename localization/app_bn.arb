@@ -10631,6 +10631,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "তহবিল যোগ করা যাচ্ছে না",
+  "fundExchangeRestrictedMessage": "আপনার অ্যাকাউন্টে তহবিল যোগ করা উপলব্ধ নয়। আরও তথ্যের জন্য অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
   "fundExchangeWarningTitle": "স্ক্যামারদের থেকে সতর্ক থাকুন",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

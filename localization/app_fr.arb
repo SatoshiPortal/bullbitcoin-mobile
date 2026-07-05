@@ -833,6 +833,8 @@
   "fundExchangeTitle": "Financement",
   "fundExchangeAccountTitle": "Approvisionner votre compte",
   "fundExchangeAccountSubtitle": "Sélectionnez votre pays et votre mode de paiement",
+  "fundExchangeRestrictedTitle": "Financement indisponible",
+  "fundExchangeRestrictedMessage": "Le financement n'est pas disponible sur votre compte. Veuillez contacter le support pour plus d'informations.",
   "fundExchangeWarningTitle": "Attention aux escrocs",
   "fundExchangeWarningDescription": "Si quelqu'un vous demande d'acheter du Bitcoin ou vous « aide », soyez prudent, il pourrait essayer de vous escroquer !",
   "fundExchangeWarningTacticsTitle": "Tactiques courantes des escrocs",

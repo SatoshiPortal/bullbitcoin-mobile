@@ -1142,6 +1142,8 @@
   "fundExchangeTitle": "ফান্ডিং",
   "fundExchangeAccountTitle": "আপোনাৰ একাউন্ট ফান্ড কৰক",
   "fundExchangeAccountSubtitle": "আপোনাৰ দেশ আৰু পৰিশোধৰ পদ্ধতি বাছক",
+  "fundExchangeRestrictedTitle": "পুঁজি যোগান উপলব্ধ নহয়",
+  "fundExchangeRestrictedMessage": "আপোনাৰ একাউণ্টত পুঁজি যোগান উপলব্ধ নহয়। অধিক তথ্যৰ বাবে অনুগ্ৰহ কৰি সহায়ৰ সৈতে যোগাযোগ কৰক।",
   "fundExchangeWarningTitle": "প্ৰতাৰকসকলৰ বিষয়ে সচেতন থাকক",
   "fundExchangeWarningDescription": "যদি কোনোবাই আপোনাক Bitcoin কিনিবলৈ বা \"সহায় কৰিবলৈ\" কৈছে, সাৱধান হওক, তেওঁলোকে আপোনাক প্ৰতাৰণা কৰিবলৈ চেষ্টা কৰিব পাৰে!",
   "fundExchangeWarningTacticsTitle": "সাধাৰণ প্ৰতাৰণাৰ কৌশল",

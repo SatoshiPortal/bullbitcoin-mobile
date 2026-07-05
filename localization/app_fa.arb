@@ -10234,6 +10234,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "تأمین وجه در دسترس نیست",
+  "fundExchangeRestrictedMessage": "تأمین وجه برای حساب شما در دسترس نیست. لطفاً برای کسب اطلاعات بیشتر با پشتیبانی تماس بگیرید.",
   "fundExchangeWarningTitle": "مراقب کلاهبرداران باشید",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

@@ -727,6 +727,8 @@
   "fundExchangeTitle": "Фінансування",
   "fundExchangeAccountTitle": "Оберіть Ваш рахунок",
   "fundExchangeAccountSubtitle": "Оберіть країну та спосіб оплати",
+  "fundExchangeRestrictedTitle": "Поповнення недоступне",
+  "fundExchangeRestrictedMessage": "Поповнення недоступне для вашого облікового запису. Будь ласка, зверніться до служби підтримки для отримання додаткової інформації.",
   "fundExchangeWarningTitle": "Дивитися для шампанів",
   "fundExchangeWarningTactic2": "Ми пропонуємо Вам кредит",
   "fundExchangeWarningTactic3": "Повідомляємо, що вони працюють за боргу або податкову збірку",

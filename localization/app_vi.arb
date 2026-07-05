@@ -1,4 +1,6 @@
 {
+  "fundExchangeRestrictedTitle": "Nạp tiền không khả dụng",
+  "fundExchangeRestrictedMessage": "Nạp tiền không khả dụng trên tài khoản của bạn. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm thông tin.",
   "recipientsListLoadError": "Không thể tải danh sách người nhận. Kéo xuống để thử lại.",
   "backupWarningDescription": "Nếu không có bản sao lưu, bạn sẽ mất quyền truy cập vào bitcoin của mình nếu:",
   "exchangeTestnetBasicAuthTitle": "Thông tin đăng nhập sàn testnet",

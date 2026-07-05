@@ -8949,6 +8949,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Η χρηματοδότηση δεν είναι διαθέσιμη",
+  "fundExchangeRestrictedMessage": "Η χρηματοδότηση δεν είναι διαθέσιμη στον λογαριασμό σας. Επικοινωνήστε με την υποστήριξη για περισσότερες πληροφορίες.",
   "fundExchangeWarningTitle": "Παρακολουθήστε τους απατεώνες",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

@@ -3525,6 +3525,14 @@
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
+  "fundExchangeRestrictedTitle": "Funding unavailable",
+  "@fundExchangeRestrictedTitle": {
+    "description": "Title shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeRestrictedMessage": "Funding is not available on your account. Please contact support for more information.",
+  "@fundExchangeRestrictedMessage": {
+    "description": "Message shown when a restricted or prohibited user is blocked from funding"
+  },
   "fundExchangeWarningTitle": "Watch out for scammers",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"

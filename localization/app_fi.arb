@@ -795,6 +795,8 @@
   "fundExchangeTitle": "Talleta varoja tilillesi",
   "fundExchangeAccountTitle": "Talletus",
   "fundExchangeAccountSubtitle": "Valitse maa ja talletustapa",
+  "fundExchangeRestrictedTitle": "Rahoitus ei ole käytettävissä",
+  "fundExchangeRestrictedMessage": "Rahoitus ei ole käytettävissä tililläsi. Ota yhteyttä tukeen saadaksesi lisätietoja.",
   "fundExchangeWarningTitle": "Varo huijareita",
   "fundExchangeWarningDescription": "Jos joku pyytää sinua ostamaan Bitcoinia tai \"auttaa\" sinua, ole varovainen — he saattavat yrittää huijata sinua!",
   "fundExchangeWarningTacticsTitle": "Yleisimmät huijaritekniikat",
