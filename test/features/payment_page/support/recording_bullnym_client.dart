@@ -1,8 +1,10 @@
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 /// A hand fake [BullnymClientPort] for payment_page unit tests: it records the
@@ -171,6 +173,33 @@ class RecordingBullnymClient implements BullnymClientPort {
     if (error != null) throw error;
     return BullnymSupportedCurrencies(currencies: currencies);
   }
+
+  // Invoice surface — not exercised by the payment_page donation-page tests.
+  @override
+  Future<BullnymCreateInvoiceResponse> createInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required BullnymCreateInvoiceFields fields,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required String invoiceId,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymListInvoicesResponse> listInvoices({
+    required BullnymAuthSigner signer,
+    required int page,
+    required int pageSize,
+    String? status,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId}) =>
+      throw UnimplementedError();
 
   BullnymDonationPage _viewFromSave(BullnymSaveDonationPageRequest request) {
     return BullnymDonationPage(
