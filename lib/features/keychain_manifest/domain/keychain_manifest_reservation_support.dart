@@ -5,7 +5,7 @@ enum KeychainManifestReactivationOnRecovery {
   /// Local materialization is sufficient; nothing to re-activate.
   none,
 
-  /// A Bullnym-backed product whose registration is checked and silently
+  /// A bullnym-backed product whose registration is checked and silently
   /// repaired after recovery. The value name is frozen manifest-era API.
   autoHealOnRecoveryPr23,
 }
@@ -38,9 +38,10 @@ class KeychainManifestReservationClassification {
 /// recovery decision on any newly reserved product seed rather than silently
 /// dropping it from backups (KC-3) or from recovery.
 ///
-/// BTCPay, Lightning Address, and Payment Page are recoverable in v1. POS is a
-/// future reservation. Bullnym-backed products expose an automatic heal signal
-/// rather than an unconditional reactivation prompt.
+/// Recoverability lands per owning PR: BTCPay at pr06, Lightning Address at
+/// pr11, Payment Page (102) at pr26 in this GETPAID-2 replay, and POS (103) at
+/// pr27. Bullnym-backed products carry the DG-3 auto-heal intent and receive the
+/// KC-6 hidden + autosweep posture when restored.
 class KeychainManifestReservationSupport {
   const KeychainManifestReservationSupport._();
 
@@ -51,7 +52,6 @@ class KeychainManifestReservationSupport {
           recoverableV1: true,
           reactivationOnRecovery: KeychainManifestReactivationOnRecovery.none,
         ),
-        // Registration is checked and silently repaired after local recovery.
         'lightning_address_wallet_seed':
             KeychainManifestReservationClassification(
               exportableV1: true,
@@ -60,6 +60,12 @@ class KeychainManifestReservationSupport {
                   KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23,
             ),
         'payment_page_wallet_seed': KeychainManifestReservationClassification(
+          exportableV1: true,
+          recoverableV1: true,
+          reactivationOnRecovery:
+              KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23,
+        ),
+        'pos_wallet_seed': KeychainManifestReservationClassification(
           exportableV1: true,
           recoverableV1: true,
           reactivationOnRecovery:
@@ -86,12 +92,13 @@ class KeychainManifestReservationSupport {
   }
 
   /// Whether the reserved seed is written into the v1 manifest backup
-  /// (btcpay + lightning_address + payment_page - R2-KC3, decision [B]).
+  /// (btcpay + lightning_address + payment_page + pos - R2-KC3, decision [B]).
   static bool supportsV1Export(Bip85Reservation reservation) =>
       classificationFor(reservation)?.exportableV1 ?? false;
 
   /// Whether the reserved seed is materialized when restoring from a v1
-  /// manifest at this stack level (BTCPay, Lightning Address, Payment Page).
+  /// manifest at this stack level (btcpay + lightning_address + payment_page +
+  /// pos).
   static bool supportsV1Recovery(Bip85Reservation reservation) =>
       classificationFor(reservation)?.recoverableV1 ?? false;
 

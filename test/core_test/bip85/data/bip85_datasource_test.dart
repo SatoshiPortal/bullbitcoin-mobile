@@ -82,9 +82,9 @@ void main() {
     expect(
       await datasource.fetchNextIndexForApplication(
         Bip85ApplicationColumn.bip39,
-        excludedIndices: const {100, 101},
+        excludedIndices: const {100, 101, 102, 103},
       ),
-      102,
+      104,
     );
   });
 

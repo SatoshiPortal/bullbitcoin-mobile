@@ -39,6 +39,18 @@ class Bip85Reservations {
     ],
   );
 
+  static final posWalletSeed = Bip85WalletSeedReservation(
+    id: 'pos_wallet_seed',
+    deterministicAlias: 'Point of Sale',
+    owner: Bip85ReservationOwner.pos,
+    application: const Bip85ApplicationSpec(number: 39),
+    segments: const [
+      Bip85PathSegment(name: 'language', value: 0),
+      Bip85PathSegment(name: 'words', value: 12),
+      Bip85PathSegment(name: 'index', value: 103),
+    ],
+  );
+
   static final nostrWalletManifestKey = Bip85KeyReservation(
     id: 'nostr_wallet_manifest_key',
     deterministicAlias: 'Nostr Wallet Manifest',
@@ -91,6 +103,7 @@ class Bip85Reservations {
     btcpayWalletSeed,
     lightningAddressWalletSeed,
     paymentPageWalletSeed,
+    posWalletSeed,
     nostrWalletManifestKey,
     nostrBullnymServerAuthKey,
     nostrNip05PublicNymVerificationKey,

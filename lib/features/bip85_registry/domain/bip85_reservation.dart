@@ -2,6 +2,7 @@ enum Bip85ReservationOwner {
   btcpay,
   lightningAddress,
   paymentPage,
+  pos,
   nostr,
   keychainManifest,
 }

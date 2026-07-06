@@ -18,6 +18,7 @@ void main() {
       'btcpay_wallet_seed',
       'lightning_address_wallet_seed',
       'payment_page_wallet_seed',
+      'pos_wallet_seed',
       'nostr_wallet_manifest_key',
       'nostr_bullnym_server_auth_key',
       'nostr_nip05_public_nym_verification_key',
@@ -44,17 +45,20 @@ void main() {
       _walletSeedReservation('btcpay_wallet_seed'),
       _walletSeedReservation('lightning_address_wallet_seed'),
       _walletSeedReservation('payment_page_wallet_seed'),
+      _walletSeedReservation('pos_wallet_seed'),
     ];
 
     expect(reservations.map((reservation) => reservation.scope.exactPath), [
       "39'/0'/12'/100'",
       "39'/0'/12'/101'",
       "39'/0'/12'/102'",
+      "39'/0'/12'/103'",
     ]);
     expect(reservations.map((reservation) => reservation.walletIndex), [
       100,
       101,
       102,
+      103,
     ]);
     for (final reservation in reservations) {
       expect(reservation.application.number, 39);
@@ -166,15 +170,21 @@ void main() {
   test('exposes the reserved wallet-seed exclusion sets for the allocator', () {
     // The dev screen and the next-index allocator consume these to never
     // allocate, re-derive, or expose a product spend seed (KI-1/KI-2). The set
-    // is registry-driven: adding the LN (101) and Payment Page (102) wallet
-    // seeds must extend it automatically, with no allocator change (R2-KI1b).
+    // is registry-driven: adding the LN (101), Payment Page (102), and POS
+    // (103) wallet seeds must extend it automatically, with no allocator
+    // change (R2-KI1b).
     final indices = registry.reservedWalletSeedIndices;
     final paths = registry.reservedWalletSeedPaths;
-    expect(indices, {100, 101, 102});
-    expect(paths, {"39'/0'/12'/100'", "39'/0'/12'/101'", "39'/0'/12'/102'"});
-    expect(() => indices.add(103), throwsA(isA<UnsupportedError>()));
+    expect(indices, {100, 101, 102, 103});
+    expect(paths, {
+      "39'/0'/12'/100'",
+      "39'/0'/12'/101'",
+      "39'/0'/12'/102'",
+      "39'/0'/12'/103'",
+    });
+    expect(() => indices.add(104), throwsA(isA<UnsupportedError>()));
     expect(
-      () => paths.add("39'/0'/12'/103'"),
+      () => paths.add("39'/0'/12'/104'"),
       throwsA(isA<UnsupportedError>()),
     );
   });
@@ -209,6 +219,7 @@ void main() {
       _walletSeedReservation('btcpay_wallet_seed'),
       _walletSeedReservation('lightning_address_wallet_seed'),
       _walletSeedReservation('payment_page_wallet_seed'),
+      _walletSeedReservation('pos_wallet_seed'),
     ]) {
       final preview = await datasource.deriveMnemonicPreview(
         xprvBase58: _masterXprv,

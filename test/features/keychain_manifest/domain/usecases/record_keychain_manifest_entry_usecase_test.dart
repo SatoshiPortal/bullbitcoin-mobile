@@ -251,6 +251,7 @@ void main() {
           'btcpay_wallet_seed',
           'lightning_address_wallet_seed',
           'payment_page_wallet_seed',
+          'pos_wallet_seed',
           'nostr_wallet_manifest_key',
           'nostr_bullnym_server_auth_key',
           'nostr_nip05_public_nym_verification_key',
@@ -289,12 +290,14 @@ void main() {
         Bip85ReservationOwner.btcpay,
         Bip85ReservationOwner.lightningAddress,
         Bip85ReservationOwner.paymentPage,
+        Bip85ReservationOwner.pos,
         Bip85ReservationOwner.nostr,
         Bip85ReservationOwner.keychainManifest,
       ]);
       expect(Bip85ReservationOwner.btcpay.name, 'btcpay');
       expect(Bip85ReservationOwner.lightningAddress.name, 'lightningAddress');
       expect(Bip85ReservationOwner.paymentPage.name, 'paymentPage');
+      expect(Bip85ReservationOwner.pos.name, 'pos');
       expect(Bip85ReservationOwner.nostr.name, 'nostr');
       expect(Bip85ReservationOwner.keychainManifest.name, 'keychainManifest');
     });

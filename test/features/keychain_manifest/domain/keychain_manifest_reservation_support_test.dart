@@ -28,19 +28,23 @@ void main() {
     final btcpay = registry.reservationById('btcpay_wallet_seed')!;
     final ln = registry.reservationById('lightning_address_wallet_seed')!;
     final page = registry.reservationById('payment_page_wallet_seed')!;
+    final pos = registry.reservationById('pos_wallet_seed')!;
 
-    // Exportable: all three Get Paid seeds go into the backup (R2-KC3, [B]).
+    // Exportable: all four Get Paid seeds go into the backup (R2-KC3, [B]).
     expect(KeychainManifestReservationSupport.supportsV1Export(btcpay), true);
     expect(KeychainManifestReservationSupport.supportsV1Export(ln), true);
     expect(KeychainManifestReservationSupport.supportsV1Export(page), true);
+    expect(KeychainManifestReservationSupport.supportsV1Export(pos), true);
 
-    // All three currently reserved Get Paid wallet seeds recover from v1.
+    // Recoverable at this stack level: BTCPay, Lightning Address, Payment Page,
+    // and POS.
     expect(KeychainManifestReservationSupport.supportsV1Recovery(btcpay), true);
     expect(KeychainManifestReservationSupport.supportsV1Recovery(ln), true);
     expect(KeychainManifestReservationSupport.supportsV1Recovery(page), true);
+    expect(KeychainManifestReservationSupport.supportsV1Recovery(pos), true);
 
     // The reactivation-on-recovery intent is recorded for the bullnym-backed
-    // products: LN and Payment Page carry the auto-heal intent.
+    // products: LN, Payment Page and POS carry the DG-3 auto-heal intent.
     expect(
       KeychainManifestReservationSupport.classificationFor(
         ln,
@@ -50,6 +54,12 @@ void main() {
     expect(
       KeychainManifestReservationSupport.classificationFor(
         page,
+      )!.reactivationOnRecovery,
+      KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23,
+    );
+    expect(
+      KeychainManifestReservationSupport.classificationFor(
+        pos,
       )!.reactivationOnRecovery,
       KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23,
     );
