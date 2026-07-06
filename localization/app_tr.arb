@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "Alıcılar yüklenemedi. Yeniden denemek için aşağı çekin.",
   "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
   "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
   "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
@@ -218,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Bu sunucu zaten var",
+  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "Güvenlik ayarları yüklenemedi. Lütfen uygulamayı yeniden başlatın.",
+  "appUnlockPinVerifyError": "PIN'iniz doğrulanamadı. Lütfen tekrar deneyin.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1201,10 +1205,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Bir hata, işlemin yerini almaya çalışırken meydana geldi",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Bitcoin’i başka bir platformda göndermek istiyorlar",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1491,15 +1491,6 @@
   "payPasteInvoice": "Paste In bill",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "Beklenmeyen hata: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "Settled",
   "@arkStatusSettled": {
@@ -2491,6 +2482,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "Desteklenmeyen QR kodu formatı",
   "transactionLabelAmountReceived": "$ aldı",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
@@ -3313,10 +3305,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "0.02 BTC'nin maksimum dengesi",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -3544,14 +3532,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu {reason}",
+  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Doğrulama Adresi:",
   "@ledgerVerifyAddressLabel": {
@@ -4099,6 +4082,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Tohumlar yüklenemedi. Lütfen tekrar deneyin.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Tohum silinemedi. Lütfen tekrar deneyin.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4410,10 +4401,6 @@
   "payDefaultCommentHint": "Varsayılan yorum girin",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "Sistem etiketleri silinemez.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "Kopya kopya",
   "@copyDialogButton": {
@@ -5556,15 +5543,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "Bu tip {type} desteklenmez",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} oturdu/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6586,14 +6564,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu {reason}",
+  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -6895,6 +6868,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Testnet borsa kimlik bilgileri",
+  "exchangeTestnetBasicAuthDescription": "Testnet borsa web sayfaları için HTTP basic auth (giriş ve KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Kullanıcı adı",
+  "exchangeTestnetBasicAuthPasswordLabel": "Parola",
+  "exchangeTestnetBasicAuthClearButton": "Temizle",
+  "exchangeTestnetBasicAuthSaveButton": "Kaydet",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -6909,10 +6888,6 @@
   "arkSendConfirm": "Onay Onay Onay Onaylandı",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Orijinal işlem onaylandı",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@rbfErrorFeeTooLow": {
@@ -7656,14 +7631,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu {reason}",
+  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Anında ödeme",
   "@globalDefaultLiquidWalletLabel": {
@@ -7689,7 +7659,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Anında ve standart SEPA transferi",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8453,7 +8423,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
-    "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
+  "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
   "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Kullanılamıyor",
   "fundExchangeErrorTitleOrdKyc400": "KYC Gereksinimleri Eksik",
@@ -8464,7 +8434,7 @@
   "fundExchangeErrorOrdCsrcp400": "Lütfen şu IBAN'a sahip SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin: {iban}",
   "fundExchangeErrorTitleRcp400": "Geçersiz İstek",
   "fundExchangeErrorRcp400": "Geçersiz istek",
-"fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
+  "fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
   "fundExchangeErrorRcpPo404": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
   "fundExchangeErrorRcpPosinpe404": "Bu fonlama seçeneğine erişmek için telefon numaranız Kostarika'daki SINPE ağına kayıtlı olmalıdır.",
   "fundExchangeErrorFetchingBankCodes": "Banka kodları alınırken hata oluştu. Lütfen daha sonra tekrar deneyin.",
@@ -9083,14 +9053,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu {reason}",
+  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Transfer ücretleri",
   "@transactionDetailLabelTransferFees": {
@@ -9461,15 +9426,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Etiket \"{label} bulunamadı.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Özel Ödeme",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9640,10 +9596,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "Hedef Denge 0.0 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "Payout amount",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -9674,6 +9626,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "bip85NoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10854,6 +10807,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Para yatırma kullanılamıyor",
+  "fundExchangeRestrictedMessage": "Hesabınızda para yatırma kullanılamıyor. Daha fazla bilgi için lütfen destek ile iletişime geçin.",
   "fundExchangeWarningTitle": "Dolandırıcılar için dikkat edin",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -11918,7 +11873,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
-  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
+  "broadcastSignedTxBroadcastError": "İşleminizi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "importWatchOnlyErrorNoWalletSelected": "Önce bir genel anahtar veya tanımlayıcı yapıştırın ya da tarayın.",
+  "importWatchOnlyErrorLabelRequired": "İçe aktarmadan önce cüzdanınıza bir ad verin.",
+  "importWatchOnlyErrorInvalidFormat": "Bu, geçerli bir genel anahtar veya tanımlayıcı gibi görünmüyor. Yapıştırdığınızı tekrar kontrol edin.",
+  "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
+  "broadcastSignedTxErrorInvalidTransaction": "Bu, geçerli bir imzalı işlem gibi görünmüyor. PSBT'nin ya da işlemin tamamını yapıştırdığınızdan emin olun.",
+  "broadcastSignedTxErrorInvalidPushTx": "Bu etiketten bir işlem okuyamadık. Lütfen tekrar taramayı deneyin.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12487,30 +12448,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Acil: Yedekleme ve Yeniden Kurulum Gerekli",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "İşlem Gerekli: Uygulamayı Yeniden Yükleyin",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Şimdi yedekle",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Daha sonra",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Geri",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12479,6 @@
   "errorReportingStandardLogsTitle": "Standart günlükler",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12563,6 @@
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
@@ -12641,7 +12573,6 @@
   "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
   "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
   "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
-  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
   "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
   "addressViewerTitle": "Adres",
   "viewerTapToCopy": "Kopyalamak için dokunun",
@@ -12695,5 +12626,312 @@
   "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
   "onboardingAdvancedOptionsDone": "Tamam",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
-  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir"
+  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
+  "pinCodeSaveError": "PIN kodunuz kaydedilemedi. Lütfen tekrar deneyin.",
+  "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
+  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
+  "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin.",
+  "labelErrorUnexpected": "Beklenmeyen hata: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "Sistem etiketleri silinemez.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "Bu tip {type} desteklenmez",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Etiket \"{label} bulunamadı.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "saatler",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
+  "walletButtonCoins": "Coin'leri yönet",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Coin'ler",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 coin} other{{count} coin}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Donduruldu",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Harcanabilir",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Dondurulan yok",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Sırala ve Filtrele",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{total} öğeden {visible} tanesi gösteriliyor",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 harcanmamış çıktı} other{{count} harcanmamış çıktı}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Senkronize et",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Tümünü temizle",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Tutar: Yüksekten Düşüğe",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Tutar: Düşükten Yükseğe",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Tarih: En Yeni",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Tarih: En Eski",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Anahtar zinciri",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Tümü",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Alma",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Para üstü",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Dondurma durumu",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Tümü",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Dondurulmuş",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Dondurulmamış",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Etiketler",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Sıfırla",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Uygula",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 seçildi} other{{count} seçildi}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Tümünü seç",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Dondur",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Çöz",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Geri al",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{1 coin dondurulsun mu?} other{{count} coin dondurulsun mu?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Dondurulan coin'ler cüzdanınızda kalır ancak siz çözene kadar harcamanın dışında tutulur.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Bu coin'leri dondurmak harcanabilir bakiyenizi sıfırda bırakacaktır.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 coin donduruldu · harcamanın dışında tutuldu} other{{count} coin donduruldu · harcamanın dışında tutuldu}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 coin çözüldü} other{{count} coin çözüldü}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 onay} other{{count} onay}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Beklemede",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Henüz coin yok",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Bitcoin aldığınızda coin'ler burada görünecek.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Eşleşen coin yok",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Filtreleri temizle",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Yeniden dene",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Dondurmak için bir coin'i kaydırın · seçmek için uzun basın",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Coin'leriniz yüklenemedi. Yeniden denemek için aşağı çekip yenileyin.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Seçilen coin'ler dondurulamadı. Lütfen yeniden deneyin.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Seçilen coin'lerin dondurması çözülemedi. Lütfen yeniden deneyin.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Bir şeyler ters gitti. Lütfen yeniden deneyin.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} donduruldu",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Tarihe Göre Filtrele",
+  "logsViewerShowingCount": "{total} kayıttan {shown} tanesi gösteriliyor",
+  "logsViewerClearFilter": "Filtreyi Temizle",
+  "logsViewerShareButton": "Paylaş",
+  "logsShareOptionShare": "Paylaş",
+  "logsShareOptionExport": "Dışa Aktar",
+  "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı"
 }

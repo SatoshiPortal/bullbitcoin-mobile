@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
@@ -22,31 +23,20 @@ part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
-    required GetSettingsUsecase getSettingsUsecase,
-    required SetEnvironmentUsecase setEnvironmentUsecase,
-    required SetBitcoinUnitUsecase setBitcoinUnitUsecase,
-    required SetLanguageUsecase setLanguageUsecase,
-    required SetCurrencyUsecase setCurrencyUsecase,
-    required SetHideAmountsUsecase setHideAmountsUsecase,
-    required SetIsSuperuserUsecase setIsSuperuserUsecase,
-    required SetIsDevModeUsecase setIsDevModeUsecase,
-    required SetThemeModeUsecase setThemeModeUsecase,
-    required GetOldSeedsUsecase getOldSeedsUsecase,
-    required RevokeArkUsecase revokeArkUsecase,
-    required SetErrorReportingUsecase setErrorReportingUsecase,
-  }) : _setEnvironmentUsecase = setEnvironmentUsecase,
-       _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _setLanguageUsecase = setLanguageUsecase,
-       _setCurrencyUsecase = setCurrencyUsecase,
-       _setHideAmountsUsecase = setHideAmountsUsecase,
-       _setIsSuperuserUsecase = setIsSuperuserUsecase,
-       _setThemeModeUsecase = setThemeModeUsecase,
-       _getOldSeedsUsecase = getOldSeedsUsecase,
-       _setIsDevModeUsecase = setIsDevModeUsecase,
-       _revokeArkUsecase = revokeArkUsecase,
-       _setErrorReportingUsecase = setErrorReportingUsecase,
-       super(const SettingsState());
+    required this._getSettingsUsecase,
+    required this._setEnvironmentUsecase,
+    required this._setBitcoinUnitUsecase,
+    required this._setLanguageUsecase,
+    required this._setCurrencyUsecase,
+    required this._setHideAmountsUsecase,
+    required this._setIsSuperuserUsecase,
+    required this._setIsDevModeUsecase,
+    required this._setThemeModeUsecase,
+    required this._getOldSeedsUsecase,
+    required this._revokeArkUsecase,
+    required this._setErrorReportingUsecase,
+    required this._setExchangeTestnetBasicAuthUsecase,
+  }) : super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
@@ -60,6 +50,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
+  final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -176,6 +167,29 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
+  }
+
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    final settings = state.storedSettings;
+    final trimmedUsername = username?.trim();
+    final trimmedPassword = password?.trim();
+    final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
+    final pass = (trimmedPassword?.isEmpty ?? true) ? null : trimmedPassword;
+    await _setExchangeTestnetBasicAuthUsecase.execute(
+      username: user,
+      password: pass,
+    );
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(
+          exchangeTestnetBasicAuthUsername: user,
+          exchangeTestnetBasicAuthPassword: pass,
+        ),
       ),
     );
   }

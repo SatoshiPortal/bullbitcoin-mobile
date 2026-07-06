@@ -5,23 +5,19 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
-import 'package:bb_mobile/core/electrum/application/errors/electrum_servers_exception.dart'
-    as electrum_servers_application_errors;
-import 'package:bb_mobile/core/electrum/application/errors/set_advanced_electrum_options_exception.dart'
-    as advanced_options_application_errors;
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart'
-    as advanced_options_domain_errors;
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart'
+    as core;
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,18 +36,12 @@ class ElectrumSettingsBloc
   final SetAdvancedElectrumOptionsUsecase _setAdvancedElectrumOptionsUsecase;
 
   ElectrumSettingsBloc({
-    required LoadElectrumServerDataUsecase loadElectrumServerDataUsecase,
-    required AddCustomServerUsecase addCustomServerUsecase,
-    required SetCustomServersPriorityUsecase setCustomServersPriorityUsecase,
-    required DeleteCustomServerUsecase deleteCustomServerUsecase,
-    required SetAdvancedElectrumOptionsUsecase
-    setAdvancedElectrumOptionsUsecase,
-  }) : _loadElectrumServerDataUsecase = loadElectrumServerDataUsecase,
-       _addCustomServerUsecase = addCustomServerUsecase,
-       _setCustomServersPriorityUsecase = setCustomServersPriorityUsecase,
-       _deleteCustomServerUsecase = deleteCustomServerUsecase,
-       _setAdvancedElectrumOptionsUsecase = setAdvancedElectrumOptionsUsecase,
-       super(const ElectrumSettingsState()) {
+    required this._loadElectrumServerDataUsecase,
+    required this._addCustomServerUsecase,
+    required this._setCustomServersPriorityUsecase,
+    required this._deleteCustomServerUsecase,
+    required this._setAdvancedElectrumOptionsUsecase,
+  }) : super(const ElectrumSettingsState()) {
     on<ElectrumSettingsLoaded>(_onLoaded);
     on<ElectrumCustomServerAdded>(_onCustomServerAdded);
     on<ElectrumCustomServersPrioritized>(_onCustomServersPrioritized);
@@ -72,53 +62,58 @@ class ElectrumSettingsBloc
         advancedOptionsError: null,
       ),
     );
-    try {
-      final data = await _loadElectrumServerDataUsecase.execute(
-        LoadElectrumServerDataRequest(isLiquid: event.isLiquid),
-      );
-      final statuses = data.serverStatuses;
-      final servers = data.servers;
-      final settings = data.settings;
-      emit(
-        state.copyWith(
-          environment: settings.network.isTestnet
-              ? ElectrumEnvironment.testnet
-              : ElectrumEnvironment.mainnet,
-          defaultServers: servers
-              .where((s) => !s.isCustom)
-              .map(
-                (s) => ElectrumServerViewModel(
-                  url: s.url,
-                  status: statuses[s.url]!,
-                  priority: s.priority,
-                ),
-              )
-              .toList(),
-          customServers: servers
-              .where((s) => s.isCustom)
-              .map(
-                (s) => ElectrumServerViewModel(
-                  url: s.url,
-                  status: statuses[s.url]!,
-                  priority: s.priority,
-                ),
-              )
-              .toList(),
-          advancedOptions: ElectrumAdvancedOptionsViewModel(
-            retry: settings.retry,
-            timeout: settings.timeout,
-            stopGap: settings.stopGap,
-            validateDomain: settings.validateDomain,
-            socks5: settings.socks5,
+
+    switch (await _loadElectrumServerDataUsecase.execute(
+      LoadElectrumServerDataRequest(isLiquid: event.isLiquid),
+    )) {
+      case Ok(:final value):
+        final statuses = value.serverStatuses;
+        final servers = value.servers;
+        final settings = value.settings;
+        emit(
+          state.copyWith(
+            environment: settings.network.isTestnet
+                ? ElectrumEnvironment.testnet
+                : ElectrumEnvironment.mainnet,
+            defaultServers: servers
+                .where((s) => !s.isCustom)
+                .map(
+                  (s) => ElectrumServerViewModel(
+                    url: s.url,
+                    status: statuses[s.url]!,
+                    priority: s.priority,
+                  ),
+                )
+                .toList(),
+            customServers: servers
+                .where((s) => s.isCustom)
+                .map(
+                  (s) => ElectrumServerViewModel(
+                    url: s.url,
+                    status: statuses[s.url]!,
+                    priority: s.priority,
+                  ),
+                )
+                .toList(),
+            advancedOptions: ElectrumAdvancedOptionsViewModel(
+              retry: settings.retry,
+              timeout: settings.timeout,
+              stopGap: settings.stopGap,
+              validateDomain: settings.validateDomain,
+              socks5: settings.socks5,
+            ),
+            isLoadingData: false,
           ),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(electrumServersError: LoadFailedException(e.toString())),
-      );
-    } finally {
-      emit(state.copyWith(isLoadingData: false));
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isLoadingData: false,
+            electrumServersError: ElectrumServersLoadFailure(
+              failure.logMessage,
+            ),
+          ),
+        );
     }
   }
 
@@ -138,57 +133,40 @@ class ElectrumSettingsBloc
     final currentLastPriority = sortedServers.lastOrNull?.priority;
     final priority = currentLastPriority == null ? 0 : currentLastPriority + 1;
 
-    try {
-      // Parse the URL to extract the clean URL (without :s or :t suffix)
-      final parsedUrl = ElectrumUrlParser.tryParse(event.url);
-      final cleanUrl = parsedUrl?.cleanUrl ?? event.url;
+    // Parse the URL to extract the clean URL (without :s or :t suffix)
+    final parsedUrl = ElectrumUrlParser.tryParse(event.url);
+    final cleanUrl = parsedUrl?.cleanUrl ?? event.url;
 
-      final request = AddCustomServerRequest(
-        server: ElectrumServerDto(
-          url: cleanUrl,
-          network: network,
-          isCustom: true,
+    final request = AddCustomServerRequest(
+      server: ElectrumServerDto(
+        url: cleanUrl,
+        network: network,
+        isCustom: true,
+        priority: priority,
+        enableSsl: event.enableSsl,
+      ),
+    );
+
+    switch (await _addCustomServerUsecase.execute(request)) {
+      case Ok(:final value):
+        final newServer = ElectrumServerViewModel(
+          url: event.enableSsl ? 'ssl://$cleanUrl' : 'tcp://$cleanUrl',
+          status: value,
           priority: priority,
-          enableSsl: event.enableSsl,
-        ),
-      );
-      final status = await _addCustomServerUsecase.execute(request);
-
-      // Only add to state if both connectivity checks passed
-      if (status == ElectrumServerStatus.offline) {
+        );
         emit(
           state.copyWith(
-            electrumServersError: AddFailedException(
-              'Socket or deamon not available',
-            ),
+            customServers: [...state.customServers, newServer],
+            isAddingCustomServer: false,
           ),
         );
-        return;
-      }
-
-      // Add the new server to the list in the state
-      //  with the returned status so the UI can reflect it immediately
-      final newServer = ElectrumServerViewModel(
-        url: event.enableSsl ? 'ssl://$cleanUrl' : 'tcp://$cleanUrl',
-        status: status,
-        priority: priority,
-      );
-      final updatedCustomServers = [...state.customServers, newServer];
-      emit(state.copyWith(customServers: updatedCustomServers));
-    } on electrum_servers_application_errors.ElectrumServerAlreadyExistsException {
-      emit(
-        state.copyWith(
-          electrumServersError: ElectrumServerAlreadyExistsException(),
-        ),
-      );
-    } catch (e) {
-      // If there's an error, emit the error state
-      emit(
-        state.copyWith(electrumServersError: AddFailedException(e.toString())),
-      );
-    } finally {
-      // Ensure we reset the adding state
-      emit(state.copyWith(isAddingCustomServer: false));
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isAddingCustomServer: false,
+            electrumServersError: _toAddFailure(failure),
+          ),
+        );
     }
   }
 
@@ -206,56 +184,57 @@ class ElectrumSettingsBloc
     final oldIndex = event.movedFromListIndex;
     final newIndex = event.movedToListIndex;
 
-    try {
-      final reorderedServers = List<ElectrumServerViewModel>.from(
-        currentServers,
-      );
-      if (oldIndex < newIndex) {
-        reorderedServers.insert(
-          newIndex - 1,
-          reorderedServers.removeAt(oldIndex),
-        );
-      } else {
-        reorderedServers.insert(newIndex, reorderedServers.removeAt(oldIndex));
-      }
+    final reorderedServers = List<ElectrumServerViewModel>.from(currentServers);
+    if (oldIndex < newIndex) {
+      reorderedServers.insert(newIndex - 1, reorderedServers.removeAt(oldIndex));
+    } else {
+      reorderedServers.insert(newIndex, reorderedServers.removeAt(oldIndex));
+    }
 
-      final response = await _setCustomServersPriorityUsecase.execute(
-        SetCustomServersPriorityRequest(
-          servers: reorderedServers
-              .map(
-                (e) => ElectrumServerDto(
-                  isCustom: true,
-                  url: e.url,
-                  network: ElectrumServerNetwork.fromEnvironment(
-                    isTestnet: state.environment == ElectrumEnvironment.testnet,
-                    isLiquid: state.isLiquid,
-                  ),
-                  priority: e.priority,
-                ),
-              )
-              .toList(),
-        ),
-      );
-      final updatedServers = response.servers
+    final request = SetCustomServersPriorityRequest(
+      servers: reorderedServers
           .map(
-            (dto) => ElectrumServerViewModel(
-              url: dto.url,
-              status: currentServers
-                  .firstWhere((s) => s.url == dto.url)
-                  .status, // Preserve existing status
-              priority: dto.priority,
+            (e) => ElectrumServerDto(
+              isCustom: true,
+              url: e.url,
+              network: ElectrumServerNetwork.fromEnvironment(
+                isTestnet: state.environment == ElectrumEnvironment.testnet,
+                isLiquid: state.isLiquid,
+              ),
+              priority: e.priority,
             ),
           )
-          .toList();
-      emit(state.copyWith(customServers: updatedServers));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          electrumServersError: SavePriorityFailedException(e.toString()),
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isPrioritizingCustomServer: false));
+          .toList(),
+    );
+
+    switch (await _setCustomServersPriorityUsecase.execute(request)) {
+      case Ok(:final value):
+        final updatedServers = value.servers
+            .map(
+              (dto) => ElectrumServerViewModel(
+                url: dto.url,
+                status: currentServers
+                    .firstWhere((s) => s.url == dto.url)
+                    .status, // Preserve existing status
+                priority: dto.priority,
+              ),
+            )
+            .toList();
+        emit(
+          state.copyWith(
+            customServers: updatedServers,
+            isPrioritizingCustomServer: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isPrioritizingCustomServer: false,
+            electrumServersError: ElectrumServersSavePriorityFailure(
+              failure.logMessage,
+            ),
+          ),
+        );
     }
   }
 
@@ -268,22 +247,29 @@ class ElectrumSettingsBloc
     );
 
     final sortedServers = state.getServersSortedByPriority(isCustom: true);
-    try {
-      final request = DeleteCustomServerRequest(url: event.server.url);
-      await _deleteCustomServerUsecase.execute(request);
-      // Remove the server from the list in the state
-      final updatedCustomServers = sortedServers
-          .where((s) => s.url != event.server.url)
-          .toList();
-      emit(state.copyWith(customServers: updatedCustomServers));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          electrumServersError: DeleteFailedException(e.toString()),
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isDeletingCustomServer: false));
+
+    switch (await _deleteCustomServerUsecase.execute(
+      DeleteCustomServerRequest(url: event.server.url),
+    )) {
+      case Ok():
+        final updatedCustomServers = sortedServers
+            .where((s) => s.url != event.server.url)
+            .toList();
+        emit(
+          state.copyWith(
+            customServers: updatedCustomServers,
+            isDeletingCustomServer: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isDeletingCustomServer: false,
+            electrumServersError: ElectrumServersDeleteFailure(
+              failure.logMessage,
+            ),
+          ),
+        );
     }
   }
 
@@ -301,69 +287,76 @@ class ElectrumSettingsBloc
       isLiquid: state.isLiquid,
     );
 
+    // Parse the raw text inputs. Non-numeric input is a presentation-level
+    // validation failure echoing what the user typed (sanitized, not raw
+    // exception text).
     final stopGap = int.tryParse(event.stopGap);
     if (stopGap == null) {
-      throw InvalidStopGapException(event.stopGap);
+      emit(
+        state.copyWith(
+          isSavingAdvancedOptions: false,
+          advancedOptionsError: AdvancedOptionsInvalidStopGapFailure(
+            event.stopGap,
+          ),
+        ),
+      );
+      return;
     }
     final timeout = int.tryParse(event.timeout);
     if (timeout == null) {
-      throw InvalidTimeoutException(event.timeout);
+      emit(
+        state.copyWith(
+          isSavingAdvancedOptions: false,
+          advancedOptionsError: AdvancedOptionsInvalidTimeoutFailure(
+            event.timeout,
+          ),
+        ),
+      );
+      return;
     }
     final retry = int.tryParse(event.retry);
     if (retry == null) {
-      throw InvalidRetryException(event.retry);
+      emit(
+        state.copyWith(
+          isSavingAdvancedOptions: false,
+          advancedOptionsError: AdvancedOptionsInvalidRetryFailure(event.retry),
+        ),
+      );
+      return;
     }
 
-    try {
-      final request = SetAdvancedElectrumOptionsRequest(
-        options: ElectrumSettingsDto(
-          stopGap: stopGap,
-          timeout: timeout,
-          retry: retry,
-          validateDomain: event.validateDomain,
-          socks5: event.socks5,
-          network: network,
-        ),
-      );
-      await _setAdvancedElectrumOptionsUsecase.execute(request);
-
-      // Update the state with the new values
-      final updatedOptions = ElectrumAdvancedOptionsViewModel(
-        retry: retry,
-        timeout: timeout,
+    final request = SetAdvancedElectrumOptionsRequest(
+      options: ElectrumSettingsDto(
         stopGap: stopGap,
+        timeout: timeout,
+        retry: retry,
         validateDomain: event.validateDomain,
         socks5: event.socks5,
-      );
-      emit(state.copyWith(advancedOptions: updatedOptions));
-    } on advanced_options_domain_errors.InvalidStopGapException catch (e) {
-      emit(
-        state.copyWith(
-          advancedOptionsError: InvalidStopGapException(e.value.toString()),
-        ),
-      );
-    } on advanced_options_domain_errors.InvalidTimeoutException catch (e) {
-      emit(
-        state.copyWith(
-          advancedOptionsError: InvalidTimeoutException(e.value.toString()),
-        ),
-      );
-    } on advanced_options_domain_errors.InvalidRetryException catch (e) {
-      emit(
-        state.copyWith(
-          advancedOptionsError: InvalidRetryException(e.value.toString()),
-        ),
-      );
-    } on advanced_options_application_errors.SaveFailedException catch (e) {
-      emit(
-        state.copyWith(advancedOptionsError: SaveFailedException(e.toString())),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(advancedOptionsError: UnknownException(e.toString())),
-      );
-    } finally {
-      emit(state.copyWith(isSavingAdvancedOptions: false));
+        network: network,
+      ),
+    );
+
+    switch (await _setAdvancedElectrumOptionsUsecase.execute(request)) {
+      case Ok():
+        emit(
+          state.copyWith(
+            advancedOptions: ElectrumAdvancedOptionsViewModel(
+              retry: retry,
+              timeout: timeout,
+              stopGap: stopGap,
+              validateDomain: event.validateDomain,
+              socks5: event.socks5,
+            ),
+            isSavingAdvancedOptions: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isSavingAdvancedOptions: false,
+            advancedOptionsError: _toAdvancedFailure(failure),
+          ),
+        );
     }
   }
 
@@ -374,4 +367,42 @@ class ElectrumSettingsBloc
     // Just remove the state error here, the UI will reset the fields itself
     emit(state.copyWith(advancedOptionsError: null));
   }
+
+  // Lift a core failure into the server-list feature failure for the add flow.
+  ElectrumServersFailure _toAddFailure(core.ElectrumFailure failure) =>
+      switch (failure) {
+        core.ElectrumServerAlreadyExistsFailure() =>
+          ElectrumServersAlreadyExistsFailure(failure.logMessage),
+        core.ElectrumServerUnreachableFailure() =>
+          ElectrumServersUnreachableFailure(failure.logMessage),
+        core.ElectrumUnexpectedFailure() =>
+          ElectrumServersUnexpectedFailure(failure.logMessage),
+        // Any other add-flow failure shares the "failed to add" message; the
+        // precise core variant is preserved in logs.
+        _ => ElectrumServersAddFailure(failure.logMessage),
+      };
+
+  // Lift a core failure into the advanced-options feature failure.
+  AdvancedOptionsFailure _toAdvancedFailure(core.ElectrumFailure failure) =>
+      switch (failure) {
+        core.ElectrumInvalidStopGapFailure(:final value) =>
+          AdvancedOptionsInvalidStopGapFailure(
+            value.toString(),
+            failure.logMessage,
+          ),
+        core.ElectrumInvalidTimeoutFailure(:final value) =>
+          AdvancedOptionsInvalidTimeoutFailure(
+            value.toString(),
+            failure.logMessage,
+          ),
+        core.ElectrumInvalidRetryFailure(:final value) =>
+          AdvancedOptionsInvalidRetryFailure(
+            value.toString(),
+            failure.logMessage,
+          ),
+        core.ElectrumSaveFailure() =>
+          AdvancedOptionsSaveFailure(failure.logMessage),
+        // Load failure (fetch before save) + anything else → generic message.
+        _ => AdvancedOptionsUnexpectedFailure(failure.logMessage),
+      };
 }

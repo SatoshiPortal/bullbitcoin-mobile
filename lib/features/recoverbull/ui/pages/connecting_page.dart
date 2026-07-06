@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
+import 'package:go_router/go_router.dart';
 
 class ConnectingPage extends StatelessWidget {
   const ConnectingPage({super.key});
@@ -18,10 +20,9 @@ class ConnectingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<RecoverBullBloc, RecoverBullState>(
-      listenWhen:
-          (previous, current) =>
-              previous.torStatus != current.torStatus ||
-              previous.keyServerStatus != current.keyServerStatus,
+      listenWhen: (previous, current) =>
+          previous.torStatus != current.torStatus ||
+          previous.keyServerStatus != current.keyServerStatus,
       listener: (context, state) {
         if (state.torStatus == TorStatus.online &&
             state.keyServerStatus == KeyServerStatus.online) {
@@ -42,6 +43,13 @@ class ConnectingPage extends StatelessWidget {
         }
       },
       child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.arrow_back),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
@@ -89,7 +97,7 @@ class ConnectingPage extends StatelessWidget {
                   const Gap(40),
                   if (hasError) ...[
                     BBText(
-                      state.error?.toTranslated(context) ??
+                      state.failure?.toTranslated(context) ??
                           context.loc.recoverbullConnectionFailed,
                       textAlign: .center,
                       style: context.font.bodyMedium?.copyWith(
@@ -195,8 +203,9 @@ class _StatusRow extends StatelessWidget {
   }
 
   Color _getStatusColor(BuildContext context) {
-    final statusEnum =
-        isKeyServer ? (status as KeyServerStatus) : (status as TorStatus);
+    final statusEnum = isKeyServer
+        ? (status as KeyServerStatus)
+        : (status as TorStatus);
 
     return switch (statusEnum.toString().split('.').last) {
       'online' => context.appColors.success,
@@ -207,8 +216,9 @@ class _StatusRow extends StatelessWidget {
   }
 
   IconData _getIcon() {
-    final statusEnum =
-        isKeyServer ? (status as KeyServerStatus) : (status as TorStatus);
+    final statusEnum = isKeyServer
+        ? (status as KeyServerStatus)
+        : (status as TorStatus);
 
     return switch (statusEnum.toString().split('.').last) {
       'online' => Icons.check_circle,

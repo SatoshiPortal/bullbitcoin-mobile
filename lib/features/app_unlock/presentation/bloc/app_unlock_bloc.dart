@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
@@ -13,15 +15,12 @@ part 'app_unlock_state.dart';
 
 class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
   AppUnlockBloc({
-    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
-    required GetLatestUnlockAttemptUsecase getLatestUnlockAttemptUsecase,
-    required AttemptUnlockWithPinCodeUsecase attemptUnlockWithPinCodeUsecase,
+    required this._checkPinCodeExistsUsecase,
+    required this._getLatestUnlockAttemptUsecase,
+    required this._attemptUnlockWithPinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  }) : _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
-       _getLatestUnlockAttemptUsecase = getLatestUnlockAttemptUsecase,
-       _attemptUnlockWithPinCodeUsecase = attemptUnlockWithPinCodeUsecase,
-       super(
+  }) : super(
          AppUnlockState(
            keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
            minPinCodeLength: minPinCodeLength,
@@ -44,25 +43,30 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockStarted event,
     Emitter<AppUnlockState> emit,
   ) async {
-    try {
-      final isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
-
-      if (!isPinCodeSet) {
+    switch (await _checkPinCodeExistsUsecase.execute()) {
+      case Err(:final failure):
+        emit(state.copyWith(status: AppUnlockStatus.failure, failure: failure));
+      case Ok(:final value) when !value:
         // No pin code exists, go directly to success state since no pin is required
         emit(state.copyWith(status: AppUnlockStatus.success));
-      } else {
-        final latestAttempt = await _getLatestUnlockAttemptUsecase.execute();
-
+      case Ok():
+        final int failedAttempts;
+        final int timeoutSeconds;
+        switch (await _getLatestUnlockAttemptUsecase.execute()) {
+          case Ok(:final value):
+            failedAttempts = value.failedAttempts;
+            timeoutSeconds = value.timeout;
+          case Err():
+            failedAttempts = 0;
+            timeoutSeconds = 0;
+        }
         emit(
           state.copyWith(
             status: AppUnlockStatus.inProgress,
-            failedAttempts: latestAttempt.failedAttempts,
-            timeoutSeconds: latestAttempt.timeout,
+            failedAttempts: failedAttempts,
+            timeoutSeconds: timeoutSeconds,
           ),
         );
-      }
-    } catch (e) {
-      emit(state.copyWith(status: AppUnlockStatus.failure, error: e));
     }
   }
 
@@ -102,26 +106,29 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     Emitter<AppUnlockState> emit,
   ) async {
     emit(state.copyWith(isVerifying: true));
-    try {
-      final attemptResult = await _attemptUnlockWithPinCodeUsecase.execute(
-        state.pinCode,
-      );
-
-      emit(
-        state.copyWith(
-          status:
-              attemptResult.success
-                  ? AppUnlockStatus.success
-                  : AppUnlockStatus.inProgress,
-          isVerifying: false,
-          failedAttempts: attemptResult.failedAttempts,
-          timeoutSeconds: attemptResult.timeout,
-          pinCode: attemptResult.success ? state.pinCode : '',
-          showError: !attemptResult.success,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(status: AppUnlockStatus.failure, error: e));
+    switch (await _attemptUnlockWithPinCodeUsecase.execute(state.pinCode)) {
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: AppUnlockStatus.failure,
+            isVerifying: false,
+            failure: failure,
+          ),
+        );
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            status:
+                value.success
+                    ? AppUnlockStatus.success
+                    : AppUnlockStatus.inProgress,
+            isVerifying: false,
+            failedAttempts: value.failedAttempts,
+            timeoutSeconds: value.timeout,
+            pinCode: value.success ? state.pinCode : '',
+            showError: !value.success,
+          ),
+        );
     }
   }
 

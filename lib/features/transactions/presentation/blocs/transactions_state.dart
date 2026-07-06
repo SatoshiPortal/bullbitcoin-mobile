@@ -144,46 +144,24 @@ abstract class TransactionsState with _$TransactionsState {
           return false;
         }
 
-        // We also only want to show the incoming side of a chain swap,
-        // unless in specific sending wallet overview or with the 'send'
-        // filter selected.
-        // Exclude external swaps (receiveWalletId == null) as they should always be shown
-        final isExternalSwap =
-            tx.isChainSwap && (tx.swap as ChainSwap?)?.receiveWalletId == null;
-
-        final isLockupChainSwap =
-            !isExternalSwap &&
-            tx.isChainSwap &&
-            tx.walletTransaction?.isOutgoing == true &&
-            tx.swap?.receiveTxId != null;
-
-        // For swap-only chain swap transactions (no walletTransaction),
-        // we need to determine direction based on the current wallet context
-        final isSwapOnlyLockupChainSwap =
-            !isExternalSwap &&
-            tx.isChainSwap &&
-            tx.walletTransaction == null &&
-            tx.swap?.receiveTxId != null &&
-            walletId == (tx.swap as ChainSwap?)?.sendWalletId;
-
-        final shouldFilterOutgoingChainSwap =
-            (isLockupChainSwap || isSwapOnlyLockupChainSwap) &&
-            walletId != tx.walletTransaction?.walletId &&
-            walletId != (tx.swap as ChainSwap?)?.sendWalletId;
-
         if (exchangeOnly && !tx.isOrder) {
           return false;
         }
 
+        // A chain swap is already deduped to a single row upstream (its lockup
+        // leg). An internal chain swap (receiveWalletId set) moves funds between
+        // the user's own wallets, so it belongs under Transfer only — not Send
+        // or Receive. An external chain swap (receiveWalletId == null) leaves the
+        // wallet, so it counts as a Send.
+        final isInternalChainSwap =
+            tx.isChainSwap && tx.swap!.isChainSwapInternal;
+
         return switch (filter) {
-          TransactionsFilter.all =>
-            exchangeOnly ? tx.isOrder : !shouldFilterOutgoingChainSwap,
-          TransactionsFilter.send => tx.isOutgoing,
-          TransactionsFilter.receive => tx.isIncoming,
-          TransactionsFilter.swap =>
-            tx.isSwap && !tx.isPayjoin && !shouldFilterOutgoingChainSwap,
-          TransactionsFilter.payjoin =>
-            tx.isPayjoin && !tx.isSwap && !shouldFilterOutgoingChainSwap,
+          TransactionsFilter.all => exchangeOnly ? tx.isOrder : true,
+          TransactionsFilter.send => tx.isOutgoing && !isInternalChainSwap,
+          TransactionsFilter.receive => tx.isIncoming && !isInternalChainSwap,
+          TransactionsFilter.swap => tx.isChainSwap && !tx.isPayjoin,
+          TransactionsFilter.payjoin => tx.isPayjoin && !tx.isSwap,
           TransactionsFilter.sell => tx.isSellOrder,
           TransactionsFilter.buy => tx.isBuyOrder,
           TransactionsFilter.withdraw => tx.isWithdrawOrder,

@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "수신자를 불러올 수 없습니다. 아래로 당겨 다시 시도하세요.",
   "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
   "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
   "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
@@ -218,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
+  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "다운로드",
+  "appUnlockPinCheckError": "보안 설정을 불러올 수 없습니다. 앱을 다시 시작해 주세요.",
+  "appUnlockPinVerifyError": "PIN을 확인할 수 없습니다. 다시 시도해 주세요.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1205,10 +1209,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "오류가 발생했습니다",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "그들은 다른 플랫폼에 Bitcoin을 보낼 것을 요청",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1495,15 +1495,6 @@
   "payPasteInvoice": "페이스 북",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "오류: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "옵션 정보",
   "@arkStatusSettled": {
@@ -2499,6 +2490,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "지원되지 않는 QR 코드 형식",
   "transactionLabelAmountReceived": "지불 방법",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
@@ -3321,10 +3313,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "최대 0.02 BTC의 균형",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "레거시 씨앗",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -3556,14 +3544,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "로드 서버에 실패{reason}",
+  "electrumLoadFailedError": "로드 서버에 실패",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "인증:",
   "@ledgerVerifyAddressLabel": {
@@ -4111,6 +4094,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "시드를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "시드를 삭제하지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "{amount} 모든 {frequency}를 구입하고 있습니다. {network} 귀하의 계정에 자금이 있습니다.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4430,10 +4421,6 @@
   "payDefaultCommentHint": "자주 묻는 질문",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "관련 기사",
   "@copyDialogButton": {
@@ -5580,15 +5567,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "이 유형 {type}는 지원되지 않습니다",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6614,14 +6592,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패{reason}",
+  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
@@ -6923,6 +6896,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev 모드",
+  "exchangeTestnetBasicAuthTitle": "Testnet 거래소 자격 증명",
+  "exchangeTestnetBasicAuthDescription": "Testnet 거래소 웹 페이지(로그인 및 KYC)를 위한 HTTP 기본 인증.",
+  "exchangeTestnetBasicAuthUsernameLabel": "사용자 이름",
+  "exchangeTestnetBasicAuthPasswordLabel": "비밀번호",
+  "exchangeTestnetBasicAuthClearButton": "지우기",
+  "exchangeTestnetBasicAuthSaveButton": "저장",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -6937,10 +6916,6 @@
   "arkSendConfirm": "제품정보",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "원래 거래가 확인되었습니다",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@rbfErrorFeeTooLow": {
@@ -7701,14 +7676,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "서버 우선순위{reason} 저장 실패",
+  "electrumSavePriorityFailedError": "서버 우선순위 저장 실패",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "즉시 결제",
   "@globalDefaultLiquidWalletLabel": {
@@ -7734,7 +7704,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "즉시 SEPA",
+  "fundExchangeMethodInstantSepa": "즉시 및 일반 SEPA 송금",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8524,7 +8494,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "지불 세부사항은 이 순간에 적재될 수 없습니다. 다시 가서 다시 시도, 다른 지불 방법을 선택하거나 나중에 다시 온다.",
-    "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
+  "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
   "fundExchangeErrorTitleRcpPo404": "결제 옵션을 사용할 수 없음",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE 사용 불가",
   "fundExchangeErrorTitleOrdKyc400": "KYC 요건 미충족",
@@ -8535,7 +8505,7 @@
   "fundExchangeErrorOrdCsrcp400": "IBAN이 {iban}인 SEPA 수취인에 대해 가상 결제 옵션을 활성화해 주세요.",
   "fundExchangeErrorTitleRcp400": "잘못된 요청",
   "fundExchangeErrorRcp400": "잘못된 요청",
-"fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
+  "fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
   "fundExchangeErrorRcpPo404": "이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다",
   "fundExchangeErrorRcpPosinpe404": "이 자금 조달 옵션에 액세스하려면 전화번호가 코스타리카 SINPE 네트워크에 등록되어 있어야 합니다.",
   "fundExchangeErrorFetchingBankCodes": "은행 코드를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
@@ -9162,14 +9132,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "사용자 정의 서버 추가 실패{reason}",
+  "electrumAddFailedError": "사용자 정의 서버 추가 실패",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "송금 수수료",
   "@transactionDetailLabelTransferFees": {
@@ -9540,15 +9505,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "레이블 \"{label}\"을 찾을 수 없습니다.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "지불 방법",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9719,10 +9675,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "목표 균형 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "결제 금액",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -9753,6 +9705,7 @@
     }
   },
   "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "bip85NoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10937,6 +10890,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "입금을 사용할 수 없음",
+  "fundExchangeRestrictedMessage": "귀하의 계정에서 입금을 사용할 수 없습니다. 자세한 내용은 고객 지원에 문의하세요.",
   "fundExchangeWarningTitle": "사기꾼에 대한 조심",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -12027,7 +11982,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
-  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
+  "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
+  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
+  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
+  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
+  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
+  "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
+  "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12487,30 +12448,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "긴급: 백업 및 재설치 필요",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "조치 필요: 앱 재설치",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "지금 백업",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "나중에",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "뒤로",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12479,6 @@
   "errorReportingStandardLogsTitle": "기본 로그",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "항상 켜짐 — 앱 버전 간에 지갑이 안전하게 마이그레이션되는지 확인할 수 있게 해줍니다.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "백업을 사용하세요",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12563,6 @@
   "legacyStorageHasBackupImportantBody": "지갑을 긴급하게 사용해야 하거나 스왑이 완료되기를 기다리는 경우가 아니라면 이 과정을 건너뛰지 마세요.",
   "legacyStorageRiskAckButtonHasBackup": "위험을 이해합니다",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "스왑을 완료하려면 24시간 이내에 앱을 여세요.",
   "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
   "transactionStatusPayjoinCompleted": "Payjoin 완료됨",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
@@ -12641,7 +12573,6 @@
   "coreScreensFetchFailed": "Electrum에서 거래 {txid}를 가져올 수 없습니다.",
   "coreScreensInputResolutionFailed": "입력을 찾을 수 없음: {parentTxId}의 출력 {vout}이 존재하지 않습니다.",
   "coreScreensParseFailed": "거래 분석 실패: {message}.",
-  "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
   "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다.",
   "addressViewerTitle": "주소",
   "viewerTapToCopy": "복사하려면 탭하세요",
@@ -12695,5 +12626,312 @@
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
-  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다"
+  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
+  "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "mempoolErrorInvalidUrl": "잘못된 서버 URL입니다. 유효한 도메인 또는 IP 주소를 입력하세요.",
+  "labelErrorUnexpected": "오류: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "시스템 라벨은 삭제할 수 없습니다.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "이 유형 {type}는 지원되지 않습니다",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "레이블 \"{label}\"을 찾을 수 없습니다.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "시간",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
+  "walletButtonCoins": "코인 관리",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "코인",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, other{코인 {count}개}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "동결됨",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "사용 가능",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "동결된 코인 없음",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "정렬 및 필터",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{total}개 중 {visible}개 표시",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, other{미사용 출력 {count}개}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "동기화",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "모두 지우기",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "금액: 높은순",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "금액: 낮은순",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "날짜: 최신순",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "날짜: 오래된순",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "키체인",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "전체",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "받기",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "잔돈",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "동결 상태",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "전체",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "동결됨",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "동결 해제됨",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "라벨",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "초기화",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "적용",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, other{{count}개 선택됨}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "모두 선택",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "동결",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "동결 해제",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "실행 취소",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, other{코인 {count}개를 동결하시겠습니까?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "동결된 코인은 지갑에 그대로 남아 있지만, 동결을 해제하기 전까지 사용에서 제외됩니다.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "이 코인들을 동결하면 사용 가능한 잔액이 남지 않습니다.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, other{코인 {count}개 동결됨 · 사용에서 제외됨}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, other{코인 {count}개 동결 해제됨}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, other{{count} confs}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "대기 중",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "아직 코인이 없습니다",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "비트코인을 받으면 여기에 코인이 표시됩니다.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "일치하는 코인 없음",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "필터 지우기",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "다시 시도",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "코인을 밀어 동결 · 길게 눌러 선택",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "코인을 불러올 수 없습니다. 아래로 당겨 새로고침하여 다시 시도하세요.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "선택한 코인을 동결할 수 없습니다. 다시 시도하세요.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "선택한 코인의 동결을 해제할 수 없습니다. 다시 시도하세요.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "문제가 발생했습니다. 다시 시도하세요.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, other{UTXO {count}개}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} 동결됨",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "날짜별 필터",
+  "logsViewerShowingCount": "{total}개 중 {shown}개 로그 표시",
+  "logsViewerClearFilter": "필터 지우기",
+  "logsViewerShareButton": "공유",
+  "logsShareOptionShare": "공유",
+  "logsShareOptionExport": "내보내기",
+  "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다"
 }

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -10,21 +8,15 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final LabelsFacade _labelsFacade;
 
   CreateReceiveSwapUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-    required SeedRepository seedRepository,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required LabelsFacade labelsFacade,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository,
-       _seedRepository = seedRepository,
-       _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _labelsFacade = labelsFacade;
+    required this._walletRepository,
+    required this._swapRepository,
+    required this._getReceiveAddressUsecase,
+    required this._labelsFacade,
+  });
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -48,9 +40,9 @@ class CreateReceiveSwapUsecase {
         throw Exception('Maximum Swap Amount: $limits.max sats');
       }
 
-      final mnemonicSeed =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
-      final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
+      if (wallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(
@@ -89,7 +81,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
             description: description,
@@ -99,7 +90,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,
             description: description,

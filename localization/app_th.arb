@@ -1,4 +1,5 @@
 {
+  "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
@@ -218,6 +219,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "เซิร์ฟเวอร์นี้พร้อมใช้งาน",
+  "electrumServerUnreachable": "ไม่สามารถเข้าถึงเซิร์ฟเวอร์ได้ ตรวจสอบที่อยู่แล้วลองอีกครั้ง",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -609,6 +611,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "ปลดล็อค",
+  "appUnlockPinCheckError": "ไม่สามารถโหลดการตั้งค่าความปลอดภัยได้ กรุณาเปิดแอปใหม่",
+  "appUnlockPinVerifyError": "ไม่สามารถยืนยัน PIN ของคุณได้ กรุณาลองอีกครั้ง",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1205,10 +1209,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "ข้อผิดพลาดที่เกิดขึ้นในขณะที่พยายามที่จะแทนที่การทําธุรกรรม",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "พวกเขาขอให้ส่ง Bitcoin บนแพลตฟอร์มอื่น ๆ",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1495,15 +1495,6 @@
   "payPasteInvoice": "พิธีการศุลกากร",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "ชุด",
   "@arkStatusSettled": {
@@ -2499,6 +2490,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "รูปแบบรหัส QR ที่ไม่รองรับ",
   "transactionLabelAmountReceived": "จํานวน",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
@@ -3321,10 +3313,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "สมดุลสูงสุด 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "เมล็ด",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -3556,14 +3544,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ {reason}",
+  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "ที่อยู่:",
   "@ledgerVerifyAddressLabel": {
@@ -4111,6 +4094,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "โหลดซีดไม่สำเร็จ โปรดลองอีกครั้ง",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "ลบซีดไม่สำเร็จ โปรดลองอีกครั้ง",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4430,10 +4421,6 @@
   "payDefaultCommentHint": "ใส่เวลาเริ่มต้น",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "คัดลอก",
   "@copyDialogButton": {
@@ -5580,15 +5567,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} นั่ง/VB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6614,14 +6592,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "กลอง",
   "@receiveBoltzSwapFee": {
@@ -6923,6 +6896,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "หน่วยความจํา",
+  "exchangeTestnetBasicAuthTitle": "ข้อมูลรับรองการแลกเปลี่ยน testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth สำหรับหน้าเว็บการแลกเปลี่ยน testnet (เข้าสู่ระบบและ KYC)",
+  "exchangeTestnetBasicAuthUsernameLabel": "ชื่อผู้ใช้",
+  "exchangeTestnetBasicAuthPasswordLabel": "รหัสผ่าน",
+  "exchangeTestnetBasicAuthClearButton": "ล้าง",
+  "exchangeTestnetBasicAuthSaveButton": "บันทึก",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -6937,10 +6916,6 @@
   "arkSendConfirm": "ยืนยัน",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "การทําธุรกรรมเดิมจะถูกได้รับการยืนยัน",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@rbfErrorFeeTooLow": {
@@ -7697,14 +7672,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
   "@globalDefaultLiquidWalletLabel": {
@@ -7730,7 +7700,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "ทันที",
+  "fundExchangeMethodInstantSepa": "โอน SEPA แบบทันทีและปกติ",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -8516,7 +8486,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "รายละเอียดการชําระเงินไม่สามารถโหลดได้ โปรดกลับไปและลองอีกครั้งเลือกวิธีการชําระเงินอื่น ๆ หรือกลับมา.",
-    "fundExchangeErrorTitleOrdPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
+  "fundExchangeErrorTitleOrdPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleOrdKyc400": "ขาดข้อกำหนด KYC",
@@ -8527,7 +8497,7 @@
   "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA ที่มี IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "คำขอไม่ถูกต้อง",
   "fundExchangeErrorRcp400": "คำขอไม่ถูกต้อง",
-"fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
+  "fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
   "fundExchangeErrorRcpPo404": "คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ",
   "fundExchangeErrorRcpPosinpe404": "หากต้องการเข้าถึงตัวเลือกการเติมเงินนี้ หมายเลขโทรศัพท์ของคุณต้องลงทะเบียนในเครือข่าย SINPE ในCosta Rica",
   "fundExchangeErrorFetchingBankCodes": "เกิดข้อผิดพลาดในการดึงรหัสธนาคาร โปรดลองอีกครั้งในภายหลัง",
@@ -9154,14 +9124,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "ค่าธรรมเนียม",
   "@transactionDetailLabelTransferFees": {
@@ -9532,15 +9497,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "ป้ายชื่อ \"X7X].",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "ชําระเงิน",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9711,10 +9667,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "ตัวชี้วัดพื้นฐาน 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "จํานวนเงิน",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -9745,6 +9697,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "bip85NoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10929,6 +10882,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "ไม่สามารถเติมเงินได้",
+  "fundExchangeRestrictedMessage": "ไม่สามารถเติมเงินในบัญชีของคุณได้ โปรดติดต่อฝ่ายสนับสนุนเพื่อขอข้อมูลเพิ่มเติม",
   "fundExchangeWarningTitle": "ดูวิดีโอ",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -12019,7 +11974,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ออกอากาศ ...",
-  "broadcastSignedTxBroadcastError": "ไม่สามารถบรอดแคสต์ธุรกรรมได้",
+  "broadcastSignedTxBroadcastError": "เราไม่สามารถเผยแพร่ธุรกรรมของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+  "importWatchOnlyErrorNoWalletSelected": "กรุณาวางหรือสแกนกุญแจสาธารณะหรือดิสคริปเตอร์ก่อน",
+  "importWatchOnlyErrorLabelRequired": "ตั้งชื่อกระเป๋าเงินของคุณก่อนนำเข้า",
+  "importWatchOnlyErrorInvalidFormat": "นี่ดูเหมือนจะไม่ใช่กุญแจสาธารณะหรือดิสคริปเตอร์ที่ถูกต้อง กรุณาตรวจสอบสิ่งที่คุณวางอีกครั้ง",
+  "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
+  "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
+  "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12487,30 +12448,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "เร่งด่วน: จำเป็นต้องสำรองข้อมูลและติดตั้งแอปใหม่",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "จำเป็นต้องดำเนินการ: ติดตั้งแอปใหม่",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "สำรองข้อมูลตอนนี้",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "ภายหลัง",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "ย้อนกลับ",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12479,6 @@
   "errorReportingStandardLogsTitle": "บันทึกทั่วไป",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12563,6 @@
   "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
   "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
   "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
   "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
@@ -12641,7 +12573,6 @@
   "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
   "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
   "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
-  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
   "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
   "addressViewerTitle": "ที่อยู่",
   "viewerTapToCopy": "แตะเพื่อคัดลอก",
@@ -12695,5 +12626,312 @@
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น"
+  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
+  "pinCodeSaveError": "ไม่สามารถบันทึก PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
+  "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง",
+  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "ป้ายชื่อ \"X7X].",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ชั่วโมง",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
+  "walletButtonCoins": "จัดการเหรียญ",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "เหรียญ",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 เหรียญ} other{{count} เหรียญ}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "ถูกแช่แข็ง",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "ใช้ได้",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "ไม่มีที่ถูกแช่แข็ง",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "จัดเรียงและกรอง",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "แสดง {visible} จาก {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 เอาต์พุตที่ยังไม่ถูกใช้} other{{count} เอาต์พุตที่ยังไม่ถูกใช้}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "ซิงค์",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "ล้างทั้งหมด",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "จำนวน: มากไปน้อย",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "จำนวน: น้อยไปมาก",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "วันที่: ใหม่สุด",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "วันที่: เก่าสุด",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "พวงกุญแจ",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "ทั้งหมด",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "รับ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "เงินทอน",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "สถานะการแช่แข็ง",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "ทั้งหมด",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "ถูกแช่แข็ง",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "ไม่ถูกแช่แข็ง",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "ป้ายกำกับ",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "รีเซ็ต",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "นำไปใช้",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{เลือกแล้ว 1} other{เลือกแล้ว {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "เลือกทั้งหมด",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "แช่แข็ง",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "ยกเลิกการแช่แข็ง",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "เลิกทำ",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{แช่แข็ง 1 เหรียญหรือไม่?} other{แช่แข็ง {count} เหรียญหรือไม่?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "เหรียญที่ถูกแช่แข็งจะยังอยู่ในกระเป๋าเงินของคุณ แต่จะถูกกันออกจากการใช้จ่ายจนกว่าคุณจะยกเลิกการแช่แข็ง",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "การแช่แข็งเหรียญเหล่านี้จะทำให้คุณไม่มียอดคงเหลือที่ใช้ได้",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{แช่แข็ง 1 เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย} other{แช่แข็ง {count} เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{ยกเลิกการแช่แข็ง 1 เหรียญแล้ว} other{ยกเลิกการแช่แข็ง {count} เหรียญแล้ว}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 การยืนยัน} other{{count} การยืนยัน}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "รอดำเนินการ",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "ยังไม่มีเหรียญ",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "เหรียญจะปรากฏที่นี่เมื่อคุณได้รับบิตคอยน์",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "ไม่มีเหรียญที่ตรงกัน",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "ล้างตัวกรอง",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "ลองอีกครั้ง",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "ปัดที่เหรียญเพื่อแช่แข็ง · กดค้างเพื่อเลือก",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "ไม่สามารถโหลดเหรียญของคุณได้ ดึงลงเพื่อรีเฟรชและลองอีกครั้ง",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "ไม่สามารถแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "ไม่สามารถยกเลิกการแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} ถูกแช่แข็ง",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "กรองตามวันที่",
+  "logsViewerShowingCount": "กำลังแสดง {shown} จาก {total} รายการบันทึก",
+  "logsViewerClearFilter": "ล้างตัวกรอง",
+  "logsViewerShareButton": "แชร์",
+  "logsShareOptionShare": "แชร์",
+  "logsShareOptionExport": "ส่งออก",
+  "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ"
 }

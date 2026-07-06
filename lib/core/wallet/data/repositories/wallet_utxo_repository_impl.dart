@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -18,16 +19,12 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelsFacade labelsFacade,
-    required BdkWalletDatasource bdkWalletDatasource,
-    required LwkWalletDatasource lwkWalletDatasource,
-    required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _labelsFacade = labelsFacade,
-       _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWalletDatasource = bdkWalletDatasource,
-       _lwkWalletDatasource = lwkWalletDatasource,
-       _frozenWalletUtxoDatasource = frozenWalletUtxoDatasource;
+    required this._walletMetadataDatasource,
+    required this._labelsFacade,
+    required this._bdkWalletDatasource,
+    required this._lwkWalletDatasource,
+    required this._frozenWalletUtxoDatasource,
+  });
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
@@ -53,9 +50,14 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     final utxoModels = metadata.isBitcoin
         ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
         : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
-    final frozenUtxos = await _frozenWalletUtxoDatasource.getFrozenWalletUtxos(
-      walletId: walletId,
-    );
+    // `isFrozen` is matched by outpoint against the global frozen set (an
+    // outpoint is globally unique, so it belongs to one wallet anyway). Frozen
+    // rows for coins this wallet doesn't hold simply never match. Materialise
+    // as a Set for O(1) membership — Outpoint is a record, so it has structural
+    // equality/hashCode and keys the set directly.
+    final frozenOutpoints = (await _frozenWalletUtxoDatasource.getAllFrozen())
+        .map((row) => (txId: row.txId, vout: row.vout))
+        .toSet();
 
     final utxos = await Future.wait(
       utxoModels.map((model) async {
@@ -65,10 +67,10 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         );
         final txLabels = await _labelsFacade.fetchByReference(model.txId);
         // Check if the UTXO is frozen
-        final isFrozen = frozenUtxos.any(
-          (frozenUtxo) =>
-              frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
-        );
+        final isFrozen = frozenOutpoints.contains((
+          txId: model.txId,
+          vout: model.vout,
+        ));
         // Get the possible address labels for the UTXO
         List<Label> addressLabels;
         switch (model) {
@@ -99,5 +101,33 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     );
 
     return utxos;
+  }
+
+  @override
+  Future<void> freezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) {
+    return _frozenWalletUtxoDatasource.freezeOutpoints(
+      walletId: walletId,
+      outpoints: outpoints,
+    );
+  }
+
+  @override
+  Future<void> unfreezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) {
+    return _frozenWalletUtxoDatasource.unfreezeOutpoints(
+      walletId: walletId,
+      outpoints: outpoints,
+    );
+  }
+
+  @override
+  Future<List<Outpoint>> getAllFrozenOutpoints() async {
+    final rows = await _frozenWalletUtxoDatasource.getAllFrozen();
+    return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
   }
 }

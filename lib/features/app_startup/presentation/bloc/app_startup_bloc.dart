@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -25,26 +26,17 @@ part 'app_startup_state.dart';
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     with WidgetsBindingObserver {
   AppStartupBloc({
-    required ResetAppDataUsecase resetAppDataUsecase,
-    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
-    required CheckForExistingDefaultWalletsUsecase
-    checkForExistingDefaultWalletsUsecase,
+    required this._resetAppDataUsecase,
+    required this._checkPinCodeExistsUsecase,
+    required this._checkForExistingDefaultWalletsUsecase,
     required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
-    required RequiresMigrationUsecase requiresMigrationUsecase,
-    required CheckBackupUsecase checkBackupUsecase,
-    required IsTorRequiredUsecase isTorRequiredUsecase,
-    required InitTorUsecase initTorUsecase,
-  }) : _resetAppDataUsecase = resetAppDataUsecase,
-       _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
-       _checkForExistingDefaultWalletsUsecase =
-           checkForExistingDefaultWalletsUsecase,
-       _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
+    required this._requiresMigrationUsecase,
+    required this._checkBackupUsecase,
+    required this._isTorRequiredUsecase,
+    required this._initTorUsecase,
+  }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
-       _requiresMigrationUsecase = requiresMigrationUsecase,
-       _checkBackupUsecase = checkBackupUsecase,
-       _isTorRequiredUsecase = isTorRequiredUsecase,
-       _initTorUsecase = initTorUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -145,7 +137,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
-        isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
+        isPinCodeSet = switch (await _checkPinCodeExistsUsecase.execute()) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw failure,
+        };
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be

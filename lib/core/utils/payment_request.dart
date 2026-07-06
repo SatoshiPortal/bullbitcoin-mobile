@@ -78,6 +78,25 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (result != null) return result;
       }
 
+      final re = RegExp(r'lnurl[0-9a-z]+', caseSensitive: false);
+      final m = re.firstMatch(trimmed);
+
+      if (m != null) {
+        final result = await _tryParseLnAddress(m.group(0)!);
+        if (result != null) return result;
+      }
+
+      final lnAddressRe = RegExp(
+        r'[a-zA-Z0-9._%+\-]+(?:@|%40)[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}',
+      );
+      final lnAddressMatch = lnAddressRe.firstMatch(trimmed);
+
+      if (lnAddressMatch != null) {
+        final decoded = Uri.decodeComponent(lnAddressMatch.group(0)!);
+        final result = await _tryParseLnAddress(decoded);
+        if (result != null) return result;
+      }
+
       if (trimmed.toLowerCase().startsWith('lnbc') ||
           trimmed.toLowerCase().startsWith('lntb') ||
           trimmed.toLowerCase().startsWith('lightning:')) {
@@ -191,7 +210,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         final networkValidation = await lwk.Address.validate(
           addressString: address,
         );
-        if (networkValidation != lwk.Network.mainnet) {
+        if (networkValidation != lwk.LiquidNetwork.mainnet) {
           throw 'Invalid liquid mainnet address';
         }
       } else if (uri.scheme == 'liquidtestnet') {
@@ -199,7 +218,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         final networkValidation = await lwk.Address.validate(
           addressString: address,
         );
-        if (networkValidation != lwk.Network.testnet) {
+        if (networkValidation != lwk.LiquidNetwork.testnet) {
           throw 'Invalid liquid testnet address';
         }
       } else {
@@ -246,7 +265,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       final network = await lwk.Address.validate(addressString: data);
       return PaymentRequest.liquid(
         address: data,
-        isTestnet: network == lwk.Network.testnet,
+        isTestnet: network == lwk.LiquidNetwork.testnet,
       );
     } catch (e) {
       log.warning(e.toString());

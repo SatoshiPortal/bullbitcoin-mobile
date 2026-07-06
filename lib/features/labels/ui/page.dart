@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/presentation/cubit.dart';
+import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:file_picker/file_picker.dart';
@@ -73,8 +74,11 @@ class Bip329LabelsPage extends StatelessWidget {
                           ),
                   );
                 },
-                error: (message) {
-                  SnackBarUtils.showSnackBar(context, message);
+                error: (failure) {
+                  SnackBarUtils.showSnackBar(
+                    context,
+                    failure.toTranslated(context),
+                  );
                 },
               );
             },

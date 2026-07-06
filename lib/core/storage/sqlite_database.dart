@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
+import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
@@ -47,6 +48,7 @@ part 'sqlite_database.g.dart';
     Bip85Derivations,
     Recoverbull,
     Prices,
+    FrozenUtxos,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -94,11 +96,9 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   /// Current drift schema version. Bump in lockstep with adding a new
-  /// `Schema<N-1>To<N>.migrate` step in [migration]. `Report.init`
-  /// asserts that an entry for this number exists in the
-  /// schema → app-version map so a future bump can't silently
-  /// misclassify upgrade events.
-  static const int currentSchemaVersion = 12;
+  /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
+  /// schema snapshots (`make drift-migrations`).
+  static const int currentSchemaVersion = 13;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -153,6 +153,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from9To10: _reportingMigration('from9To10', Schema9To10.migrate),
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
+        from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

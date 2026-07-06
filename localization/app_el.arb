@@ -185,6 +185,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Αυτός ο server υπάρχει ήδη",
+  "electrumServerUnreachable": "Ο διακομιστής δεν είναι προσβάσιμος. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -527,6 +528,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "Αδυναμία φόρτωσης ρυθμίσεων ασφαλείας. Επανεκκινήστε την εφαρμογή.",
+  "appUnlockPinVerifyError": "Αδυναμία επαλήθευσης του PIN σας. Παρακαλώ δοκιμάστε ξανά.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1052,10 +1055,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Ένα λάθος συνέβη ενώ επιχειρεί να αντικαταστήσει τη συναλλαγή",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Ζητούν να στείλουν Bitcoin σε άλλη πλατφόρμα",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1306,15 +1305,6 @@
   "payPasteInvoice": "Paste Invoice",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "Ανεπιθύμητο λάθος: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "Settled",
   "@arkStatusSettled": {
@@ -2088,6 +2078,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "Μη υποστηριζόμενη μορφή κωδικού QR",
   "transactionLabelAmountReceived": "Ποσό που λαμβάνεται",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
@@ -2784,10 +2775,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "Μέγιστη ισορροπία 0,02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "backupWalletPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -3007,14 +2994,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές {reason}",
+  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές ",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Διεύθυνση επαλήθευσης:",
   "@ledgerVerifyAddressLabel": {
@@ -3440,6 +3422,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Αποτυχία φόρτωσης των seeds. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Αποτυχία διαγραφής του seed. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -3713,10 +3703,6 @@
   "payDefaultCommentHint": "Εισάγετε προεπιλεγμένο σχόλιο",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "Οι ετικέτες συστήματος δεν μπορούν να διαγραφούν.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "Αντιγραφή",
   "@copyDialogButton": {
@@ -4664,15 +4650,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "Αυτός ο τύπος {type} δεν υποστηρίζεται",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vBB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -5521,12 +5498,7 @@
   },
   "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -5763,6 +5735,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Διαπιστευτήρια ανταλλακτηρίου testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth για τις ιστοσελίδες του ανταλλακτηρίου testnet (σύνδεση και KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Όνομα χρήστη",
+  "exchangeTestnetBasicAuthPasswordLabel": "Κωδικός πρόσβασης",
+  "exchangeTestnetBasicAuthClearButton": "Εκκαθάριση",
+  "exchangeTestnetBasicAuthSaveButton": "Αποθήκευση",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -5777,10 +5755,6 @@
   "arkSendConfirm": "Επιβεβαίωση",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Η αρχική συναλλαγή έχει επιβεβαιωθεί",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@rbfErrorFeeTooLow": {
@@ -6406,14 +6380,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή {reason}",
+  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή ",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
   "@globalDefaultLiquidWalletLabel": {
@@ -6439,7 +6408,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Άμεση και κανονική μεταφορά SEPA",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -7068,7 +7037,7 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
-    "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
   "fundExchangeErrorTitleRcpPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
   "fundExchangeErrorTitleRcpPosinpe404": "Το SINPE δεν είναι διαθέσιμο",
   "fundExchangeErrorTitleOrdKyc400": "Λείπουν απαιτήσεις KYC",
@@ -7079,7 +7048,7 @@
   "fundExchangeErrorOrdCsrcp400": "Ενεργοποιήστε την επιλογή εικονικής πληρωμής για τον παραλήπτη SEPA με IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Μη έγκυρο αίτημα",
   "fundExchangeErrorRcp400": "Μη έγκυρο αίτημα",
-"fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
+  "fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
   "fundExchangeErrorRcpPo404": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
   "fundExchangeErrorRcpPosinpe404": "Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.",
   "fundExchangeErrorFetchingBankCodes": "Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.",
@@ -7603,14 +7572,9 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή {reason}",
+  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Τέλη μεταφοράς",
   "@transactionDetailLabelTransferFees": {
@@ -7910,15 +7874,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Το Label \"{label}\" δεν βρέθηκε.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Ιδιωτική πληρωμή",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -8042,10 +7997,6 @@
   "buyEnterBitcoinAddress": "Εισάγετε διεύθυνση bitcoin",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "Target Balance 0,01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "importQrDeviceSpecterStep6": "Επιλέξτε \"Single key\"",
   "@importQrDeviceSpecterStep6": {
@@ -8998,6 +8949,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Η χρηματοδότηση δεν είναι διαθέσιμη",
+  "fundExchangeRestrictedMessage": "Η χρηματοδότηση δεν είναι διαθέσιμη στον λογαριασμό σας. Επικοινωνήστε με την υποστήριξη για περισσότερες πληροφορίες.",
   "fundExchangeWarningTitle": "Παρακολουθήστε τους απατεώνες",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -9950,7 +9903,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Broadcasting...",
-  "broadcastSignedTxBroadcastError": "Αποτυχία μετάδοσης της συναλλαγής",
+  "broadcastSignedTxBroadcastError": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή σας. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "importWatchOnlyErrorNoWalletSelected": "Επικολλήστε ή σαρώστε πρώτα ένα δημόσιο κλειδί ή έναν descriptor.",
+  "importWatchOnlyErrorLabelRequired": "Δώστε ένα όνομα στο πορτοφόλι σας πριν την εισαγωγή.",
+  "importWatchOnlyErrorInvalidFormat": "Αυτό δεν μοιάζει με έγκυρο δημόσιο κλειδί ή descriptor. Ελέγξτε ξανά αυτό που επικολλήσατε.",
+  "importWatchOnlyErrorImportFailed": "Δεν μπορέσαμε να εισαγάγουμε αυτό το πορτοφόλι μόνο για παρακολούθηση. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
+  "broadcastSignedTxErrorInvalidTransaction": "Αυτό δεν μοιάζει με έγκυρη υπογεγραμμένη συναλλαγή. Βεβαιωθείτε ότι επικολλήσατε ολόκληρο το PSBT ή τη συναλλαγή.",
+  "broadcastSignedTxErrorInvalidPushTx": "Δεν μπορέσαμε να διαβάσουμε συναλλαγή από αυτή την ετικέτα. Δοκιμάστε να σαρώσετε ξανά.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -11963,6 +11922,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "bip85NoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -12487,30 +12447,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Επείγον: Απαιτείται αντίγραφο ασφαλείας και επανεγκατάσταση",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Απαιτείται ενέργεια: Επανεγκατάσταση εφαρμογής",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Δημιουργία αντιγράφου τώρα",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Αργότερα",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Πίσω",
   "@backButton": {
     "description": "Generic back button label"
@@ -12542,10 +12478,6 @@
   "errorReportingStandardLogsTitle": "Τυπικά αρχεία καταγραφής",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Πάντα ενεργό — μας επιτρέπει να βλέπουμε αν το πορτοφόλι σας μεταφέρεται με ασφάλεια μεταξύ εκδόσεων της εφαρμογής.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Χρησιμοποιήστε το αντίγραφο ασφαλείας σας",
   "@appInitErrorHasBackupTitle": {
@@ -12630,7 +12562,6 @@
   "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
   "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Ανοίξτε την εφαρμογή μέσα σε 24 ώρες για να ολοκληρώσετε το swap σας.",
   "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
@@ -12640,7 +12571,6 @@
   "coreScreensFetchFailed": "Αδυναμία ανάκτησης συναλλαγής {txid} από το Electrum.",
   "coreScreensInputResolutionFailed": "Η είσοδος δεν βρέθηκε: η έξοδος {vout} του {parentTxId} δεν υπάρχει.",
   "coreScreensParseFailed": "Αποτυχία ανάλυσης συναλλαγής: {message}.",
-  "coreScreensUnexpectedError": "Μη αναμενόμενο σφάλμα: {message}.",
   "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές.",
   "addressViewerTitle": "Διεύθυνση",
   "viewerTapToCopy": "Πατήστε για αντιγραφή",
@@ -12663,6 +12593,7 @@
   "recipientsPayoutMethod": "Μέθοδος πληρωμής",
   "recipientsFilterByJurisdiction": "Φιλτράρισμα ανά δικαιοδοσία:",
   "recipientsListEmpty": "Δεν βρέθηκαν παραλήπτες.",
+  "recipientsListLoadError": "Δεν ήταν δυνατή η φόρτωση των παραληπτών. Τραβήξτε προς τα κάτω για επανάληψη.",
   "recipientsContinue": "Συνέχεια",
   "recipientsJurisdictionAll": "Όλες οι δικαιοδοσίες",
   "recipientsJurisdictionCanada": "🇨🇦 Καναδάς",
@@ -12813,5 +12744,312 @@
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "onboardingAdvancedOptionsDone": "Τέλος",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android"
+  "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
+  "pinCodeSaveError": "Αδυναμία αποθήκευσης PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
+  "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
+  "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP.",
+  "labelErrorUnexpected": "Ανεπιθύμητο λάθος: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "Οι ετικέτες συστήματος δεν μπορούν να διαγραφούν.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "Αυτός ο τύπος {type} δεν υποστηρίζεται",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Το Label \"{label}\" δεν βρέθηκε.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ώρες",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "Μη αναμενόμενο σφάλμα: {message}.",
+  "walletButtonCoins": "Διαχείριση νομισμάτων",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Νομίσματα",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 νόμισμα} other{{count} νομίσματα}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Παγωμένα",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Διαθέσιμα",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Κανένα παγωμένο",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Ταξινόμηση & Φίλτρο",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} από {total} εμφανίζονται",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 μη ξοδεμένη έξοδος} other{{count} μη ξοδεμένες έξοδοι}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Συγχρονισμός",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Εκκαθάριση όλων",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Ποσό: Υψηλό προς Χαμηλό",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Ποσό: Χαμηλό προς Υψηλό",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Ημερομηνία: Νεότερα",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Ημερομηνία: Παλαιότερα",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Μπρελόκ κλειδιών",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Όλα",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Λήψη",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Ρέστα",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Κατάσταση παγώματος",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Όλα",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Παγωμένα",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Μη παγωμένα",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Ετικέτες",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Επαναφορά",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Εφαρμογή",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 επιλεγμένο} other{{count} επιλεγμένα}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Επιλογή όλων",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Πάγωμα",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Ξεπάγωμα",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Αναίρεση",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Πάγωμα 1 νομίσματος;} other{Πάγωμα {count} νομισμάτων;}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Τα παγωμένα νομίσματα παραμένουν στο πορτοφόλι σας αλλά εξαιρούνται από τις δαπάνες μέχρι να τα ξεπαγώσετε.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Το πάγωμα αυτών των νομισμάτων θα σας αφήσει χωρίς διαθέσιμο υπόλοιπο.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 νόμισμα παγωμένο · εξαιρείται από τις δαπάνες} other{{count} νομίσματα παγωμένα · εξαιρούνται από τις δαπάνες}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 νόμισμα ξεπαγωμένο} other{{count} νομίσματα ξεπαγωμένα}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 επιβ.} other{{count} επιβ.}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Σε εκκρεμότητα",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Δεν υπάρχουν νομίσματα ακόμη",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Τα νομίσματα θα εμφανιστούν εδώ μόλις λάβετε bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Κανένα νόμισμα δεν ταιριάζει",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Εκκαθάριση φίλτρων",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Επανάληψη",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Σύρετε ένα νόμισμα για πάγωμα · παρατεταμένο πάτημα για επιλογή",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των νομισμάτων σας. Τραβήξτε για ανανέωση για να δοκιμάσετε ξανά.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Δεν ήταν δυνατό το πάγωμα των επιλεγμένων νομισμάτων. Δοκιμάστε ξανά.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Δεν ήταν δυνατό το ξεπάγωμα των επιλεγμένων νομισμάτων. Δοκιμάστε ξανά.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Κάτι πήγε στραβά. Δοκιμάστε ξανά.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} παγωμένα",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
+  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
+  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
+  "logsViewerShareButton": "Κοινοποίηση",
+  "logsShareOptionShare": "Κοινοποίηση",
+  "logsShareOptionExport": "Εξαγωγή",
+  "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
 }

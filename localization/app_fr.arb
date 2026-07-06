@@ -180,6 +180,12 @@
   "logSettingsLogsTitle": "Journaux",
   "logSettingsErrorLoadingMessage": "Erreur lors du chargement des journaux : ",
   "appSettingsDevModeTitle": "Mode développeur",
+  "exchangeTestnetBasicAuthTitle": "Identifiants de l'échange testnet",
+  "exchangeTestnetBasicAuthDescription": "Authentification HTTP basic pour les pages web de l'échange testnet (connexion et KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Nom d'utilisateur",
+  "exchangeTestnetBasicAuthPasswordLabel": "Mot de passe",
+  "exchangeTestnetBasicAuthClearButton": "Effacer",
+  "exchangeTestnetBasicAuthSaveButton": "Enregistrer",
   "currencySettingsDefaultFiatCurrencyLabel": "Devise fiduciaire par défaut",
   "exchangeSettingsAccountInformationTitle": "Informations du compte",
   "exchangeSettingsSecuritySettingsTitle": "Paramètres de sécurité",
@@ -827,6 +833,8 @@
   "fundExchangeTitle": "Financement",
   "fundExchangeAccountTitle": "Approvisionner votre compte",
   "fundExchangeAccountSubtitle": "Sélectionnez votre pays et votre mode de paiement",
+  "fundExchangeRestrictedTitle": "Financement indisponible",
+  "fundExchangeRestrictedMessage": "Le financement n'est pas disponible sur votre compte. Veuillez contacter le support pour plus d'informations.",
   "fundExchangeWarningTitle": "Attention aux escrocs",
   "fundExchangeWarningDescription": "Si quelqu'un vous demande d'acheter du Bitcoin ou vous « aide », soyez prudent, il pourrait essayer de vous escroquer !",
   "fundExchangeWarningTacticsTitle": "Tactiques courantes des escrocs",
@@ -855,7 +863,7 @@
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Option la plus lente, mais peut être effectuée via les services bancaires en ligne (3-4 jours ouvrables)",
   "fundExchangeMethodCanadaPost": "Espèces ou débit en personne à Postes Canada",
   "fundExchangeMethodCanadaPostSubtitle": "Idéal pour ceux qui préfèrent payer en personne",
-  "fundExchangeMethodInstantSepa": "SEPA instantané",
+  "fundExchangeMethodInstantSepa": "SEPA régulier et instantané",
   "fundExchangeMethodInstantSepaSubtitle": "Le plus rapide - Uniquement pour les transactions inférieures à 30 000 €",
   "fundExchangeMethodRegularSepa": "SEPA régulier",
   "fundExchangeMethodRegularSepaSubtitle": "À utiliser uniquement pour les transactions supérieures à 30 000 €",
@@ -944,7 +952,7 @@
   "fundExchangeLabelRecipientNameArs": "Nom du destinataire",
   "fundExchangeLabelCvu": "CVU",
   "fundExchangeErrorLoadingDetails": "Les détails du paiement n'ont pas pu être chargés pour le moment. Veuillez revenir en arrière et réessayer, choisir un autre mode de paiement ou revenir plus tard.",
-    "fundExchangeErrorTitleOrdPo404": "Option de paiement indisponible",
+  "fundExchangeErrorTitleOrdPo404": "Option de paiement indisponible",
   "fundExchangeErrorTitleRcpPo404": "Option de paiement non disponible",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponible",
   "fundExchangeErrorTitleOrdKyc400": "Exigences KYC manquantes",
@@ -955,7 +963,7 @@
   "fundExchangeErrorOrdCsrcp400": "Veuillez activer l'option de paiement virtuel pour le destinataire SEPA avec IBAN : {iban}",
   "fundExchangeErrorTitleRcp400": "Requête invalide",
   "fundExchangeErrorRcp400": "Requête invalide",
-"fundExchangeErrorOrdPo404": "Aucune option de paiement disponible",
+  "fundExchangeErrorOrdPo404": "Aucune option de paiement disponible",
   "fundExchangeErrorRcpPo404": "Vous n'avez pas les autorisations requises pour accéder à cette option de financement. Soit votre KYC est insuffisant, soit cette option n'est pas disponible pour votre compte",
   "fundExchangeErrorRcpPosinpe404": "Pour accéder à cette option de financement, votre numéro de téléphone doit être enregistré auprès du réseau SINPE au Costa Rica.",
   "fundExchangeErrorFetchingBankCodes": "Erreur lors de la récupération des codes bancaires. Veuillez réessayer plus tard.",
@@ -1249,6 +1257,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "bip85NoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "connectingToKeyServer": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
   "anErrorOccurred": "Une erreur s'est produite",
   "dcaSetRecurringBuyTitle": "Configurer un achat récurrent",
@@ -1455,6 +1464,8 @@
   "appUnlockAttemptSingular": "tentative échouée",
   "appUnlockAttemptPlural": "tentatives échouées",
   "appUnlockButton": "Déverrouiller",
+  "appUnlockPinCheckError": "Impossible de charger les paramètres de sécurité. Veuillez redémarrer l'application.",
+  "appUnlockPinVerifyError": "Impossible de vérifier votre code PIN. Veuillez réessayer.",
   "pinStatusLoading": "Chargement",
   "pinStatusCheckingDescription": "Vérification du statut du code PIN",
   "pinStatusProcessing": "Traitement en cours",
@@ -1489,8 +1500,6 @@
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
   "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
-  "autoswapWarningBaseBalance": "Solde cible 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Solde maximal de 0,02 BTC",
   "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximal, un échange sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
   "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
@@ -1765,8 +1774,6 @@
   "replaceByFeeCustomFeeTitle": "Frais personnalisés",
   "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
   "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
-  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
-  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
   "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
   "replaceByFeeFastestTitle": "Le plus rapide",
   "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
@@ -2168,6 +2175,7 @@
   "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
+  "sendErrorUnsupportedQrCodeFormat": "Format de code QR non pris en charge",
   "sendErrorBuildFailed": "Échec de la construction",
   "sendErrorConfirmationFailed": "Échec de la confirmation",
   "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
@@ -3089,6 +3097,10 @@
   },
   "importWatchOnlyTitle": "Importer en lecture seule",
   "importWatchOnlyPasteHint": "Coller xpub, ypub, zpub ou descripteur",
+  "importWatchOnlyErrorNoWalletSelected": "Collez ou scannez d'abord une clé publique ou un descripteur.",
+  "importWatchOnlyErrorLabelRequired": "Nommez votre portefeuille avant de l'importer.",
+  "importWatchOnlyErrorInvalidFormat": "Cela ne ressemble pas à une clé publique ou un descripteur valide. Vérifiez ce que vous avez collé.",
+  "importWatchOnlyErrorImportFailed": "Impossible d'importer ce portefeuille en lecture seule. Vérifiez les informations et réessayez.",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
@@ -3166,7 +3178,9 @@
   "broadcastSignedTxTo": "À",
   "broadcastSignedTxBroadcast": "Diffuser",
   "broadcastSignedTxBroadcasting": "Diffusion en cours...",
-  "broadcastSignedTxBroadcastError": "Échec de la diffusion de la transaction",
+  "broadcastSignedTxBroadcastError": "Impossible de diffuser votre transaction. Vérifiez votre connexion Internet et réessayez.",
+  "broadcastSignedTxErrorInvalidTransaction": "Cela ne ressemble pas à une transaction signée valide. Assurez-vous d'avoir collé le PSBT ou la transaction en entier.",
+  "broadcastSignedTxErrorInvalidPushTx": "Impossible de lire une transaction depuis ce tag. Veuillez réessayer de scanner.",
   "broadcastSignedTxPageTitle": "Diffuser une transaction signée",
   "broadcastSignedTxPasteHint": "Coller un PSBT ou un HEX de transaction",
   "broadcastSignedTxCameraButton": "Caméra",
@@ -3613,7 +3627,7 @@
   "electrumDefaultServersInfo": "Pour protéger votre vie privée, les serveurs par défaut ne sont pas utilisés lorsque des serveurs personnalisés sont configurés.",
   "electrumCustomServers": "Serveurs personnalisés",
   "electrumDragToReorder": "(Appuyez longuement pour faire glisser et changer la priorité)",
-  "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
+  "electrumLoadFailedError": "Échec du chargement des serveurs",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -3621,7 +3635,7 @@
       }
     }
   },
-  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur{reason}",
+  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -3629,7 +3643,7 @@
       }
     }
   },
-  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé{reason}",
+  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3637,7 +3651,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé{reason}",
+  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -3646,6 +3660,7 @@
     }
   },
   "electrumServerAlreadyExists": "Ce serveur existe déjà",
+  "electrumServerUnreachable": "Le serveur est injoignable. Vérifiez l'adresse et réessayez.",
   "electrumPrivacyNoticeTitle": "Avis de confidentialité",
   "electrumPrivacyNoticeContent1": "Avis de confidentialité : L'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions.",
   "electrumPrivacyNoticeContent2": "Cependant, si vous consultez les transactions via mempool en cliquant sur votre ID de transaction ou la page Détails du destinataire, ces informations seront connues de BullBitcoin.",
@@ -4116,31 +4131,6 @@
   "systemLabelSelfSpend": "Auto transfert",
   "systemLabelExchangeBuy": "Achat",
   "systemLabelExchangeSell": "Vente",
-  "labelErrorNotFound": "Label \"{label}\" introuvable.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Erreur inattendue : {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
   "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
   "@labelDeleteFailed": {
     "placeholders": {
@@ -4374,11 +4364,10 @@
   "mempoolErrorServerUnavailable": "Serveur indisponible. Veuillez réessayer plus tard.",
   "mempoolErrorServerError": "Le serveur a rencontré une erreur. Veuillez réessayer plus tard.",
   "mempoolErrorInvalidResponse": "Le serveur a renvoyé une réponse invalide.",
-  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
-  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur : {error}",
-  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool : {error}",
-  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé : {error}",
-  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "mempoolErrorInvalidUrl": "URL du serveur invalide. Saisissez un domaine ou une adresse IP valide.",
+  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur",
+  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool",
+  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé",
   "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningExplanationBold": "automatiquement",
   "deleteLogsTitle": "Supprimer les journaux",
@@ -4489,30 +4478,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Sauvegarder maintenant",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Plus tard",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Retour",
   "@backButton": {
     "description": "Generic back button label"
@@ -4544,10 +4509,6 @@
   "errorReportingStandardLogsTitle": "Journaux standard",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",
   "@appInitErrorHasBackupTitle": {
@@ -4632,7 +4593,6 @@
   "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
   "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Ouvrez l'application dans les 24 heures pour terminer votre swap.",
   "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
   "coreScreensFeeRateLabel": "Taux de frais",
@@ -4642,7 +4602,6 @@
   "coreScreensFetchFailed": "Impossible de récupérer la transaction {txid} depuis Electrum.",
   "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
   "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
-  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
   "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
   "addressViewerTitle": "Adresse",
   "viewerTapToCopy": "Appuyez pour copier",
@@ -4665,6 +4624,7 @@
   "recipientsPayoutMethod": "Méthode de paiement",
   "recipientsFilterByJurisdiction": "Filtrer par juridiction :",
   "recipientsListEmpty": "Aucun destinataire trouvé.",
+  "recipientsListLoadError": "Impossible de charger les destinataires. Tirez vers le bas pour réessayer.",
   "recipientsContinue": "Continuer",
   "recipientsJurisdictionAll": "Toutes les juridictions",
   "recipientsJurisdictionCanada": "🇨🇦 Canada",
@@ -4815,5 +4775,312 @@
   "onboardingAdvancedOptionsFooter": "Vous pourrez modifier ces paramètres plus tard dans les paramètres de l'application",
   "onboardingAdvancedOptionsDone": "Terminé",
   "appStartupContactSupportMessage": "Contactez le support sur app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android"
+  "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android",
+  "pinCodeSaveError": "Impossible d'enregistrer votre code PIN. Veuillez réessayer.",
+  "pinCodeDeleteError": "Impossible de supprimer votre code PIN. Veuillez réessayer.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Taux de change indisponible. Veuillez réessayer plus tard.",
+  "priceChartLoadFailed": "Les données du graphique de prix n'ont pas pu être chargées. Veuillez réessayer.",
+  "allSeedViewErrorFetch": "Échec du chargement des mnémoniques. Veuillez réessayer.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Une étiquette est requise pour importer un mnémonique",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Échec de la suppression de la mnémonique. Veuillez réessayer.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "sendEstimatedDeliveryHours": "heures",
+  "labelErrorNotFound": "Label \"{label}\" introuvable.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Erreur inattendue : {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
+  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
+  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
+  "walletButtonCoins": "Gérer les pièces",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Pièces",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 pièce} other{{count} pièces}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Gelées",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Disponible",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Aucune gelée",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Trier et filtrer",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} sur {total} affichées",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 sortie non dépensée} other{{count} sorties non dépensées}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Synchroniser",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Tout effacer",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Montant : décroissant",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Montant : croissant",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Date : plus récentes",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Date : plus anciennes",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Trousseau",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Tous",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Réception",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Monnaie",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Statut de gel",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Tous",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Gelées",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Dégelées",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Étiquettes",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Réinitialiser",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Appliquer",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 sélectionnée} other{{count} sélectionnées}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Tout sélectionner",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Geler",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Dégeler",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Annuler",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Geler 1 pièce ?} other{Geler {count} pièces ?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Les pièces gelées restent dans votre portefeuille mais sont exclues des dépenses jusqu'à ce que vous les dégeliez.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Geler ces pièces vous laissera sans solde disponible.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 pièce gelée · exclue des dépenses} other{{count} pièces gelées · exclues des dépenses}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 pièce dégelée} other{{count} pièces dégelées}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "En attente",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Aucune pièce pour l'instant",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Les pièces apparaîtront ici une fois que vous aurez reçu des bitcoins.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Aucune pièce correspondante",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Effacer les filtres",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Réessayer",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Balayez une pièce pour la geler · appuyez longuement pour sélectionner",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Impossible de charger vos pièces. Tirez pour actualiser et réessayer.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Impossible de geler les pièces sélectionnées. Veuillez réessayer.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Impossible de dégeler les pièces sélectionnées. Veuillez réessayer.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Une erreur s'est produite. Veuillez réessayer.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} gelé",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Filtrer par date",
+  "logsViewerShowingCount": "Affichage de {shown} sur {total} journaux",
+  "logsViewerClearFilter": "Effacer le filtre",
+  "logsViewerShareButton": "Partager",
+  "logsShareOptionShare": "Partager",
+  "logsShareOptionExport": "Exporter",
+  "logsExportedMessage": "Journaux exportés avec succès",
+  "logsExportFailedMessage": "Échec de l'exportation des journaux"
 }

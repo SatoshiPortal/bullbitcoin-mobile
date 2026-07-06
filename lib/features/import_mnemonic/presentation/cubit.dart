@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,38 +14,32 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
 
   ImportMnemonicCubit({
-    required ImportWalletUsecase importWalletUsecase,
-    required CheckWalletStatusUsecase checkWalletUsecase,
-    required CheckDuplicateMnemonicUsecase checkDuplicateMnemonicUsecase,
-  }) : _importWalletUsecase = importWalletUsecase,
-       _checkWalletUsecase = checkWalletUsecase,
-       _checkDuplicateMnemonicUsecase = checkDuplicateMnemonicUsecase,
-       super(const ImportMnemonicState());
+    required this._importWalletUsecase,
+    required this._checkWalletUsecase,
+    required this._checkDuplicateMnemonicUsecase,
+  }) : super(const ImportMnemonicState());
 
-  void clearError() => emit(state.copyWith(error: null));
+  void clearFailure() => emit(state.copyWith(failure: null));
 
   void reset() => emit(const ImportMnemonicState());
 
   Future<void> updateMnemonic(Mnemonic mnemonic) async {
-    try {
-      if (mnemonic.label.isEmpty) throw EmptyMnemonicLabelError();
+    if (mnemonic.label.isEmpty) {
+      emit(state.copyWith(failure: const ImportMnemonicEmptyLabelFailure()));
+      return;
+    }
 
-      emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-      await _checkDuplicateMnemonicUsecase.execute(
-        mnemonicWords: mnemonic.words,
-        passphrase: mnemonic.passphrase,
-      );
-
-      emit(state.copyWith(mnemonic: mnemonic, isLoading: false));
-      _scanAllScriptTypes(mnemonic);
-    } catch (e) {
-      emit(
-        state.copyWith(
-          error: e is Exception ? e : ImportMnemonicError(e.toString()),
-          isLoading: false,
-        ),
-      );
+    switch (await _checkDuplicateMnemonicUsecase.execute(
+      mnemonicWords: mnemonic.words,
+      passphrase: mnemonic.passphrase,
+    )) {
+      case Ok():
+        emit(state.copyWith(mnemonic: mnemonic, isLoading: false));
+        _scanAllScriptTypes(mnemonic);
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, isLoading: false));
     }
   }
 
@@ -89,28 +84,24 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       emit(state.copyWith(scriptType: scriptType));
 
   Future<void> import() async {
-    try {
-      if (state.mnemonic == null) throw MnemonicIsNullError();
+    if (state.mnemonic == null) {
+      emit(state.copyWith(failure: const ImportMnemonicNullMnemonicFailure()));
+      return;
+    }
 
-      emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-      final mnemonic = state.mnemonic!;
-      final wallet = await _importWalletUsecase.execute(
-        mnemonicWords: mnemonic.words,
-        label: mnemonic.label,
-        passphrase: mnemonic.passphrase,
-        scriptType: state.scriptType,
-      );
-      emit(state.copyWith(wallet: wallet, isLoading: false));
-    } on DuplicateMnemonicException catch (e) {
-      emit(state.copyWith(error: e, isLoading: false));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          error: ImportMnemonicError(e.toString()),
-          isLoading: false,
-        ),
-      );
+    final mnemonic = state.mnemonic!;
+    switch (await _importWalletUsecase.execute(
+      mnemonicWords: mnemonic.words,
+      label: mnemonic.label,
+      passphrase: mnemonic.passphrase,
+      scriptType: state.scriptType,
+    )) {
+      case Ok(:final value):
+        emit(state.copyWith(wallet: value, isLoading: false));
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, isLoading: false));
     }
   }
 }

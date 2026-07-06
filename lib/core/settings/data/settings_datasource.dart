@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 class SettingsDatasource {
   final SqliteDatabase _sqlite;
 
-  SettingsDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  SettingsDatasource({required this._sqlite});
 
   Future<void> store(SettingsModel model) async {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
@@ -81,6 +81,19 @@ class SettingsDatasource {
   Future<void> setErrorReportingEnabled(bool enabled) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), isErrorReportingEnabled: Value(enabled)),
+    );
+  }
+
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(
+        id: const Value(1),
+        exchangeTestnetBasicAuthUsername: Value(username),
+        exchangeTestnetBasicAuthPassword: Value(password),
+      ),
     );
   }
 }

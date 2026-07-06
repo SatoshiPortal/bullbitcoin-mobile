@@ -7,15 +7,23 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<SwapRestoreCubit>(
+      () => SwapRestoreCubit(
+        restoreSwapsUsecase: locator<RestoreSwapsUsecase>(),
+      ),
+    );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
@@ -64,6 +72,12 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetExchangeTestnetBasicAuthUsecase>(
+      () => SetExchangeTestnetBasicAuthUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
@@ -79,6 +93,8 @@ class SettingsLocator {
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
+        setExchangeTestnetBasicAuthUsecase:
+            locator<SetExchangeTestnetBasicAuthUsecase>(),
       ),
     );
   }

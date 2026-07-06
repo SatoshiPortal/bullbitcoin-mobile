@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -24,7 +26,14 @@ class PinCodeUnlockScreen extends StatelessWidget {
       create: (_) => locator<AppUnlockBloc>()..add(const AppUnlockStarted()),
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
-          if (state.status == AppUnlockStatus.success) {
+          if (state.status == AppUnlockStatus.failure) {
+            if (state.failure case final failure?) {
+              SnackBarUtils.showSnackBar(
+                context,
+                failure.toTranslated(context),
+              );
+            }
+          } else if (state.status == AppUnlockStatus.success) {
             // If onSuccess is provided, call it, otherwise go to home as default.
             // WalletHomeScreen syncs itself when it mounts / the router lands
             // on the home location, so no explicit refresh dispatch is needed here.

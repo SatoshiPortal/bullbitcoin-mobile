@@ -9,10 +9,9 @@ class VerifyPhysicalBackupUsecase {
   final WalletRepository _walletRepository;
   final SeedRepository _seedRepository;
   VerifyPhysicalBackupUsecase({
-    required WalletRepository walletRepository,
-    required SeedRepository seedRepository,
-  }) : _walletRepository = walletRepository,
-       _seedRepository = seedRepository;
+    required this._walletRepository,
+    required this._seedRepository,
+  });
 
   Future<bool> execute(List<String> mnemonic) async {
     try {

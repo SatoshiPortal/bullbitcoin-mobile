@@ -15,7 +15,7 @@ sealed class AppUnlockState with _$AppUnlockState {
     @Default(0) int timeoutSeconds,
     @Default(true) bool obscurePinCode,
     @Default(false) bool showError,
-    Object? error,
+    AppUnlockFailure? failure,
   }) = _AppUnlockState;
   const AppUnlockState._();
 

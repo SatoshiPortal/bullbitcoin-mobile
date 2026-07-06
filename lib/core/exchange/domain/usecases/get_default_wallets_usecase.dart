@@ -8,12 +8,10 @@ class GetDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
 
   GetDefaultWalletsUsecase({
-    required ExchangeRecipientRepository mainnetRepository,
-    required ExchangeRecipientRepository testnetRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetRepository,
+    required this._testnetRepository,
+    required this._settingsRepository,
+  });
 
   Future<DefaultWallets> execute() async {
     final settings = await _settingsRepository.fetch();

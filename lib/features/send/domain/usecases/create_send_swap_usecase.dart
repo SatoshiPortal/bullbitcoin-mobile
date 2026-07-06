@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -9,15 +7,11 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateSendSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-    required SeedRepository seedRepository,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository,
-       _seedRepository = seedRepository;
+    required this._walletRepository,
+    required this._swapRepository,
+  });
 
   Future<LnSendSwap> execute({
     required String walletId,
@@ -50,8 +44,9 @@ class CreateSendSwapUsecase {
       );
       if (existingSwap != null) return existingSwap;
 
-      final mnemonic =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
+      if (wallet.network.isTestnet) {
+        throw Exception('Swaps are not supported on testnet');
+      }
 
       if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
         throw Exception(
@@ -79,7 +74,6 @@ class CreateSendSwapUsecase {
           return await _swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
           );
 
@@ -87,7 +81,6 @@ class CreateSendSwapUsecase {
           return await _swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
           );
         default:

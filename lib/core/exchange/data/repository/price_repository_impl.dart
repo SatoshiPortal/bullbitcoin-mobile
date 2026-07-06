@@ -8,10 +8,9 @@ class PriceRepositoryImpl implements PriceRepository {
   final PriceLocalDatasource _localDatasource;
 
   PriceRepositoryImpl({
-    required PriceRemoteDatasource remoteDatasource,
-    required PriceLocalDatasource localDatasource,
-  }) : _remoteDatasource = remoteDatasource,
-       _localDatasource = localDatasource;
+    required this._remoteDatasource,
+    required this._localDatasource,
+  });
 
   @override
   Future<List<Rate>> getPriceHistory({

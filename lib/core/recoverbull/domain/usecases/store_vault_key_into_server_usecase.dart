@@ -1,35 +1,24 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/errors.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 /// Stores a backup key on the server with password protection
 class StoreVaultKeyIntoServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  StoreVaultKeyIntoServerUsecase({
-    required RecoverBullRepository recoverBullRepository,
-  }) : _recoverBullRepository = recoverBullRepository;
+  StoreVaultKeyIntoServerUsecase({required this._recoverBullRepository});
 
-  Future<void> execute({
+  Future<Result<Null, RecoverBullCoreFailure>> execute({
     required String password,
     required EncryptedVault vault,
     required String vaultKey,
-  }) async {
-    try {
-      await _recoverBullRepository.storeVaultKey(
-        vault.id,
-        password,
-        vault.salt,
-        vaultKey,
-      );
-    } on recoverbull.KeyServerException catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw ServerError.fromException(e);
-    } catch (e) {
-      if (e is! ServerError) log.severe(error: e, trace: StackTrace.current);
-      throw ServerError(e.toString());
-    }
+  }) {
+    return _recoverBullRepository.storeVaultKey(
+      vault.id,
+      password,
+      vault.salt,
+      vaultKey,
+    );
   }
 }

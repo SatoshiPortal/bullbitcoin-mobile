@@ -13,19 +13,18 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   final ConnectBitBoxDeviceUsecase _connectBitBoxDeviceUsecase;
   final BitBoxDeviceRepository _repository;
   bool _isDisposed = false;
+  bool _isExecuting = false;
 
   BitBoxOperationCubit({
-    required ScanBitBoxDevicesUsecase scanBitBoxDevicesUsecase,
-    required ConnectBitBoxDeviceUsecase connectBitBoxDeviceUsecase,
-  }) : _scanBitBoxDevicesUsecase = scanBitBoxDevicesUsecase,
-       _connectBitBoxDeviceUsecase = connectBitBoxDeviceUsecase,
-       _repository = locator<BitBoxDeviceRepository>(),
+    required this._scanBitBoxDevicesUsecase,
+    required this._connectBitBoxDeviceUsecase,
+  }) : _repository = locator<BitBoxDeviceRepository>(),
        super(const BitBoxOperationState());
 
   BitBoxDeviceEntity? get connectedDevice => state.connectedDevice;
 
   void showPairingCode(String pairingCode) {
-    emit(
+    _emitIfActive(
       state.copyWith(
         status: BitBoxOperationStatus.showingPairingCode,
         result: 'Pairing code:\n$pairingCode',
@@ -34,7 +33,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   }
 
   void showAddressVerification(String address) {
-    emit(
+    _emitIfActive(
       state.copyWith(
         status: BitBoxOperationStatus.showingAddressVerification,
         result: address,
@@ -43,7 +42,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   }
 
   void showWaitingForPassword() {
-    emit(
+    _emitIfActive(
       state.copyWith(
         status: BitBoxOperationStatus.waitingForPassword,
         error: null,
@@ -52,18 +51,15 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   }
 
   void showProcessing() {
-    emit(
-      state.copyWith(
-        status: BitBoxOperationStatus.processing,
-        error: null,
-      ),
+    _emitIfActive(
+      state.copyWith(status: BitBoxOperationStatus.processing, error: null),
     );
   }
 
   @override
   Future<void> close() async {
     _isDisposed = true;
-    
+
     try {
       await _repository.dispose();
     } catch (e) {
@@ -74,18 +70,23 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   }
 
   Future<void> executeOperation(Future<dynamic> Function() operation) async {
+    if (_isDisposed || _isExecuting) return;
+    _isExecuting = true;
+
     try {
       if (state.connectedDevice == null) {
-        emit(
-          state.copyWith(
-            status: BitBoxOperationStatus.scanning,
-            error: null,
-          ),
+        _emitIfActive(
+          state.copyWith(status: BitBoxOperationStatus.scanning, error: null),
         );
 
-        final BitBoxDeviceEntity device = await _pollForFirstDevice();
+        final devices = await _scanBitBoxDevicesUsecase.execute();
+        if (_isDisposed) return;
+        if (devices.isEmpty) {
+          throw const BitBoxError.noDevicesFound();
+        }
+        final BitBoxDeviceEntity device = devices.first;
 
-        emit(
+        _emitIfActive(
           state.copyWith(
             status: BitBoxOperationStatus.connecting,
             connectedDevice: device,
@@ -93,56 +94,78 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
         );
 
         await _connectBitBoxDeviceUsecase.execute(device);
+        if (_isDisposed) {
+          await _disconnectDevice(device);
+          return;
+        }
       }
 
       try {
         final result = await operation();
-        emit(
+        if (_isDisposed) return;
+
+        _emitIfActive(
           state.copyWith(status: BitBoxOperationStatus.success, result: result),
         );
       } catch (e) {
-        final interpretedMessage = _interpretErrorCode(e.toString());
-        if (interpretedMessage != null) {
-          throw BitBoxError.operationFailed(message: interpretedMessage);
-        }
+        if (e is BitBoxError) rethrow;
         throw BitBoxError.operationFailed(message: e.toString());
       }
     } on BitBoxError catch (e) {
-      log.warning('BitBox operation failed: $e');
-      emit(
+      final error = e is OperationFailedBitBoxError
+          ? _interpretError(e.message) ?? e
+          : e;
+      if (_isDisposed) return;
+
+      await _disconnectIfConnected();
+      if (_isDisposed) return;
+
+      _emitIfActive(
         state.copyWith(
           status: BitBoxOperationStatus.error,
-          error: e,
+          connectedDevice: null,
+          error: error,
         ),
       );
-      rethrow;
+      throw error;
     } on Exception catch (e) {
-      final interpretedMessage = _interpretErrorCode(e.toString());
-      if (interpretedMessage != null) {
-        log.warning('BitBox operation failed: $interpretedMessage');
-        emit(
+      if (_isDisposed) return;
+
+      await _disconnectIfConnected();
+      if (_isDisposed) return;
+
+      final interpretedError = _interpretError(e.toString());
+      if (interpretedError != null) {
+        _emitIfActive(
           state.copyWith(
             status: BitBoxOperationStatus.error,
-            error: BitBoxError.operationFailed(message: interpretedMessage),
+            connectedDevice: null,
+            error: interpretedError,
           ),
         );
       } else {
-        log.warning('BitBox operation failed: $e');
-        emit(
+        _emitIfActive(
           state.copyWith(
             status: BitBoxOperationStatus.error,
+            connectedDevice: null,
             error: BitBoxError.operationFailed(message: e.toString()),
           ),
         );
       }
 
       rethrow;
+    } finally {
+      _isExecuting = false;
     }
   }
 
-  Future<void> disconnectIfConnected() async {
+  Future<void> _disconnectIfConnected() async {
     final BitBoxDeviceEntity? device = state.connectedDevice;
     if (device == null) return;
+    await _disconnectDevice(device);
+  }
+
+  Future<void> _disconnectDevice(BitBoxDeviceEntity device) async {
     try {
       await _repository.disconnectConnection(device);
     } catch (_) {
@@ -150,85 +173,55 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
     }
   }
 
-  Future<BitBoxDeviceEntity> _pollForFirstDevice({
-    Duration timeout = const Duration(seconds: 20),
-    Duration interval = const Duration(milliseconds: 750),
-  }) async {
-    final DateTime start = DateTime.now();
-
-    while (DateTime.now().difference(start) < timeout) {
-      if (_isDisposed) {
-        throw const BitBoxError.noDevicesFound();
-      }
-
-      try {
-        final devices = await _scanBitBoxDevicesUsecase.execute();
-        if (devices.isNotEmpty) {
-          return devices.first;
-        }
-      } catch (_) {
-        // Ignore transient scan errors and keep polling
-      }
-      
-      if (_isDisposed) {
-        throw const BitBoxError.noDevicesFound();
-      }
-      
-      await Future.delayed(interval);
-    }
-
-    throw const BitBoxError.noDevicesFound();
+  void reset() {
+    _emitIfActive(const BitBoxOperationState());
   }
 
-  void reset() {
-    emit(const BitBoxOperationState());
+  void _emitIfActive(BitBoxOperationState nextState) {
+    if (_isDisposed || isClosed) return;
+    emit(nextState);
   }
 }
 
-String? _interpretErrorCode(String error) {
-  if (error.contains('permission denied') || error.contains('Permission denied')) {
-    return 'USB permission denied. Please grant permission to access your BitBox device.';
+BitBoxError? _interpretError(String error) {
+  final normalized = error.toLowerCase();
+
+  if (normalized.contains('permission denied')) {
+    return const BitBoxError.permissionDenied();
   }
-  
-  if (error.contains('device not found') || error.contains('No devices found')) {
-    return 'No BitBox device found. Please connect your device and try again.';
+
+  if (normalized.contains('no devices found')) {
+    return const BitBoxError.noDevicesFound();
   }
-  
-  if (error.contains('device not paired') || error.contains('not paired')) {
-    return 'Device not paired. Please complete the pairing process first.';
+
+  if (normalized.contains('device not found')) {
+    return const BitBoxError.deviceNotFound();
   }
-  
-  if (error.contains('handshake') || error.contains('Handshake')) {
-    return 'Failed to establish secure connection. Please try again.';
+
+  if (normalized.contains('device not paired') ||
+      normalized.contains('not paired')) {
+    return const BitBoxError.deviceNotPaired();
   }
-  
-  if (error.contains('timeout') || error.contains('Timeout')) {
-    return 'Operation timed out. Please try again.';
+
+  if (normalized.contains('handshake')) {
+    return const BitBoxError.handshakeFailed();
   }
-  
-  if (error.contains('connection failed') || error.contains('Connection failed')) {
-    return 'Failed to connect to BitBox device. Please check your connection.';
+
+  if (normalized.contains('timeout')) {
+    return const BitBoxError.operationTimeout();
   }
-  
-  if (error.contains('invalid response') || error.contains('Invalid response')) {
-    return 'Invalid response from BitBox device. Please try again.';
+
+  if (normalized.contains('connection failed')) {
+    return const BitBoxError.connectionFailed();
   }
-  
-  if (error.contains('operation cancelled') || error.contains('Operation cancelled')) {
-    return 'Operation was cancelled. Please try again.';
+
+  if (normalized.contains('invalid response')) {
+    return const BitBoxError.invalidResponse();
   }
-  
-  final lines = error.split('\n');
-  if (lines.isNotEmpty) {
-    final firstLine = lines.first.trim();
-    if (firstLine.isNotEmpty && 
-        !firstLine.startsWith('Exception:') && 
-        !firstLine.contains('at ') &&
-        !firstLine.startsWith('Error:') &&
-        !firstLine.startsWith('Failed assertion:')) {
-      return firstLine;
-    }
+
+  if (normalized.contains('operation cancelled')) {
+    return const BitBoxError.operationCancelled();
   }
-  
+
   return null;
 }

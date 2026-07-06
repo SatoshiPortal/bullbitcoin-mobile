@@ -26,7 +26,15 @@ class Swaps extends Table {
   IntColumn get boltzFees => integer().nullable()();
   IntColumn get lockupFees => integer().nullable()();
   IntColumn get claimFees => integer().nullable()();
+  IntColumn get refundFees => integer().nullable()();
   IntColumn get serverNetworkFees => integer().nullable()();
+  BoolColumn get wasDirectPayment =>
+      boolean().withDefault(const Constant(false))();
+  // Reconstructed by the swap-restore/rescue flow rather than created in-app, so
+  // fields not derivable from the Boltz restore response + on-chain data are not
+  // trustworthy and are hidden in the UI (see RescueSwapUsecase / the swap
+  // entity's `recovered` doc for the exact list of uncertain fields).
+  BoolColumn get recovered => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

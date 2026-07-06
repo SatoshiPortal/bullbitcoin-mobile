@@ -16,12 +16,10 @@ enum SendType { send, swap }
 class CommonSendConfirmTopArea extends StatelessWidget {
   const CommonSendConfirmTopArea({
     super.key,
-    required String formattedConfirmedAmountBitcoin,
-    required SendType sendType,
-    bool? sendToExternal,
-  }) : _formattedConfirmedAmountBitcoin = formattedConfirmedAmountBitcoin,
-       _sendType = sendType,
-       _sendToExternal = sendToExternal;
+    required this._formattedConfirmedAmountBitcoin,
+    required this._sendType,
+    this._sendToExternal,
+  });
   final String _formattedConfirmedAmountBitcoin;
   final SendType _sendType;
   final bool? _sendToExternal;
@@ -111,22 +109,16 @@ class CommonInfoRow extends StatelessWidget {
 
 class CommonOnchainSendInfoSection extends StatelessWidget {
   const CommonOnchainSendInfoSection({
-    required String sendWalletLabel,
-    required String receiveWalletLabel,
-    required String formattedBitcoinAmount,
-    required String formattedFiatEquivalent,
-    required String absoluteFees,
-    required String selectedFeeOptionTitle,
-    VoidCallback? onFeePriorityTap,
-    bool isToSelf = false,
-  }) : _sendWalletLabel = sendWalletLabel,
-       _receiveWalletLabel = receiveWalletLabel,
-       _formattedBitcoinAmount = formattedBitcoinAmount,
-       _formattedFiatEquivalent = formattedFiatEquivalent,
-       _absoluteFees = absoluteFees,
-       _selectedFeeOptionTitle = selectedFeeOptionTitle,
-       _onFeePriorityTap = onFeePriorityTap,
-       _isToSelf = isToSelf;
+    required this._sendWalletLabel,
+    required this._receiveWalletLabel,
+    required this._formattedBitcoinAmount,
+    required this._formattedFiatEquivalent,
+    required this._absoluteFees,
+    required this._selectedFeeOptionTitle,
+    this._onFeePriorityTap,
+    this._isToSelf = false,
+    this._note = '',
+  });
   final String _sendWalletLabel;
   final String _receiveWalletLabel;
   final String _formattedBitcoinAmount;
@@ -135,6 +127,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final String _selectedFeeOptionTitle;
   final VoidCallback? _onFeePriorityTap;
   final bool _isToSelf;
+  final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
@@ -176,6 +169,19 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                   color: context.appColors.secondary,
                   size: 20,
                 ),
+              ),
+            ),
+          ],
+          if (_note.isNotEmpty) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.receiveNote,
+              details: BBText(
+                _note,
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.appColors.secondary,
+                ),
+                textAlign: .end,
               ),
             ),
           ],
@@ -247,18 +253,13 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
 
 class CommonLnSwapSendInfoSection extends StatelessWidget {
   const CommonLnSwapSendInfoSection({
-    required String sendWalletLabel,
-    required String paymentRequestAddress,
-    required String formattedBitcoinAmount,
-    required String formattedFiatEquivalent,
-    required String swapId,
-    required String totalSwapFees,
-  }) : _sendWalletLabel = sendWalletLabel,
-       _paymentRequestAddress = paymentRequestAddress,
-       _formattedBitcoinAmount = formattedBitcoinAmount,
-       _formattedFiatEquivalent = formattedFiatEquivalent,
-       _swapId = swapId,
-       _totalSwapFees = totalSwapFees;
+    required this._sendWalletLabel,
+    required this._paymentRequestAddress,
+    required this._formattedBitcoinAmount,
+    required this._formattedFiatEquivalent,
+    required this._swapId,
+    required this._totalSwapFees,
+  });
   final String _sendWalletLabel;
   final String _paymentRequestAddress;
   final String _formattedBitcoinAmount;
@@ -674,10 +675,9 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
 
 class CommonSendBottomButtons extends StatelessWidget {
   const CommonSendBottomButtons({
-    required bool disableSendButton,
-    required Function onSendPressed,
-  }) : _disableSendButton = disableSendButton,
-       _onSendPressed = onSendPressed;
+    required this._disableSendButton,
+    required this._onSendPressed,
+  });
 
   final bool _disableSendButton;
   final Function _onSendPressed;
@@ -697,10 +697,9 @@ class CommonSendBottomButtons extends StatelessWidget {
 class CommonConfirmSendButton extends StatelessWidget {
   const CommonConfirmSendButton({
     super.key,
-    required bool disableSendButton,
-    required Function onPressed,
-  }) : _disableSendButton = disableSendButton,
-       _onPressed = onPressed;
+    required this._disableSendButton,
+    required this._onPressed,
+  });
   final bool _disableSendButton;
   final Function _onPressed;
 
@@ -720,10 +719,9 @@ class CommonConfirmSendButton extends StatelessWidget {
 
 class CommonConfirmSendErrorSection extends StatelessWidget {
   const CommonConfirmSendErrorSection({
-    required BuildTransactionException? buildError,
-    required ConfirmTransactionException? confirmError,
-  }) : _buildError = buildError,
-       _confirmError = confirmError;
+    required this._buildError,
+    required this._confirmError,
+  });
 
   final BuildTransactionException? _buildError;
   final ConfirmTransactionException? _confirmError;

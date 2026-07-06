@@ -9,10 +9,9 @@ class SendWithPayjoinUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
   const SendWithPayjoinUsecase({
-    required PayjoinRepository payjoinRepository,
-    required BitcoinWalletRepository bitcoinWalletRepository,
-  }) : _payjoinRepository = payjoinRepository,
-       _bitcoinWalletRepository = bitcoinWalletRepository;
+    required this._payjoinRepository,
+    required this._bitcoinWalletRepository,
+  });
 
   Future<PayjoinSender> execute({
     required String walletId,

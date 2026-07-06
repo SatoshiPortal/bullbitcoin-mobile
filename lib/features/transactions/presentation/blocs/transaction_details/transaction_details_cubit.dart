@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -26,33 +27,18 @@ part 'transaction_details_state.dart';
 
 class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
-    required GetWalletUsecase getWalletUsecase,
-    required GetTransactionsByTxIdUsecase getTransactionsByTxIdUsecase,
-    required WatchWalletTransactionByTxIdUsecase
-    watchWalletTransactionByTxIdUsecase,
-    required GetSwapUsecase getSwapUsecase,
-    required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
-    required GetOrderUsecase getOrderUsecase,
-    required WatchSwapUsecase watchSwapUsecase,
-    required WatchPayjoinUsecase watchPayjoinUsecase,
-    required LabelsFacade labelsFacade,
-    required BroadcastOriginalTransactionUsecase
-    broadcastOriginalTransactionUsecase,
-    required ProcessSwapUsecase processSwapUsecase,
-  }) : _getWalletUsecase = getWalletUsecase,
-       _getTransactionsByTxIdUsecase = getTransactionsByTxIdUsecase,
-       _watchWalletTransactionByTxIdUsecase =
-           watchWalletTransactionByTxIdUsecase,
-       _getSwapUsecase = getSwapUsecase,
-       _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
-       _getOrderUsecase = getOrderUsecase,
-       _watchSwapUsecase = watchSwapUsecase,
-       _watchPayjoinUsecase = watchPayjoinUsecase,
-       _labelsFacade = labelsFacade,
-       _broadcastOriginalTransactionUsecase =
-           broadcastOriginalTransactionUsecase,
-       _processSwapUsecase = processSwapUsecase,
-       super(const TransactionDetailsState());
+    required this._getWalletUsecase,
+    required this._getTransactionsByTxIdUsecase,
+    required this._watchWalletTransactionByTxIdUsecase,
+    required this._getSwapUsecase,
+    required this._getPayjoinByIdUsecase,
+    required this._getOrderUsecase,
+    required this._watchSwapUsecase,
+    required this._watchPayjoinUsecase,
+    required this._labelsFacade,
+    required this._broadcastOriginalTransactionUsecase,
+    required this._processSwapUsecase,
+  }) : super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
   final GetTransactionsByTxIdUsecase _getTransactionsByTxIdUsecase;
@@ -144,12 +130,57 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           wallet: wallet,
           counterpartWallet: counterpartWallet,
           swapCounterpartTxId: swapCounterpartTxId,
+          swapClaimedAmountSat: await _counterpartAmountForSwap(swap),
         ),
       );
     } on TransactionNotFoundError catch (e) {
       emit(state.copyWith(notFoundError: e));
     } catch (e) {
       emit(state.copyWith(err: e));
+    }
+  }
+
+  /// The exact amount returned on the recovered chain swap's *counterpart* leg —
+  /// what the user actually received. The canonical tx shown from the send
+  /// wallet is the lockup leg (its amount is what was SENT), so the received
+  /// figure comes from the other leg: the claim tx on a forward swap, or the
+  /// refund tx on a refunded swap. Returns null when not a recovered chain swap
+  /// or that leg isn't available yet.
+  Future<int?> _counterpartAmountForSwap(Swap? swap) async {
+    return await _claimedAmountForSwap(swap) ??
+        await _refundedAmountForSwap(swap);
+  }
+
+  /// Forward (claim) leg: `receiveTxId` in the receive wallet.
+  Future<int?> _claimedAmountForSwap(Swap? swap) async {
+    if (swap is! ChainSwap || !swap.recovered) return null;
+    final receiveTxId = swap.receiveTxId;
+    final receiveWalletId = swap.receiveWalletId;
+    if (receiveTxId == null || receiveWalletId == null) return null;
+    return _amountForTxInWallet(receiveTxId, receiveWalletId);
+  }
+
+  /// Refund leg: the refund spends the lockup back to the SOURCE (send) chain,
+  /// so the returned amount is the refund tx's incoming amount in the send
+  /// wallet (lockup minus the refund tx fee).
+  Future<int?> _refundedAmountForSwap(Swap? swap) async {
+    if (swap is! ChainSwap || !swap.recovered) return null;
+    final refundTxId = swap.refundTxId;
+    if (refundTxId == null) return null;
+    return _amountForTxInWallet(refundTxId, swap.sendWalletId);
+  }
+
+  Future<int?> _amountForTxInWallet(String txId, String walletId) async {
+    try {
+      final txs = await _getTransactionsByTxIdUsecase.execute(txId);
+      for (final t in txs) {
+        if (t.walletId == walletId) {
+          return t.walletTransaction?.amountSat;
+        }
+      }
+      return txs.isEmpty ? null : txs.first.walletTransaction?.amountSat;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -311,7 +342,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       label: label.label,
       origin: state.walletTransaction!.walletId,
     );
-    final storedLabel = await _labelsFacade.store(txLabel);
+    final Label storedLabel;
+    switch (await _labelsFacade.store(txLabel)) {
+      case Ok(:final value):
+        storedLabel = value;
+      case Err():
+        // Persisting the note failed (logged at the boundary); leave the UI
+        // unchanged rather than render an unsaved label as saved.
+        return;
+    }
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
@@ -349,13 +388,14 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> deleteTransactionNote(Label note) async {
+  /// Deletes a transaction note. Returns the [Result] so the caller can give
+  /// the user feedback on failure; on success the note is dropped from state.
+  Future<Result<Null, LabelFailure>> deleteTransactionNote(Label note) async {
     final walletTransaction = state.walletTransaction;
-    if (walletTransaction == null) return;
+    if (walletTransaction == null) return const Ok(null);
 
-    try {
-      await _labelsFacade.trash(note.id);
-
+    final result = await _labelsFacade.trash(note.id);
+    if (result case Ok()) {
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
       updatedLabels.remove(note);
 
@@ -368,9 +408,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           ),
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(err: e));
     }
+    // On Err the note is kept in state; the caller surfaces the failure.
+    return result;
   }
 
   Future<void> processSwap(Swap swap) async {

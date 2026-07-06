@@ -5,8 +5,8 @@ class RestartSwapWatcherUsecase {
   final SwapWatcherService? _swapWatcherService;
 
   const RestartSwapWatcherUsecase({
-    required SwapWatcherService swapWatcherService,
-  }) : _swapWatcherService = swapWatcherService;
+    required SwapWatcherService this._swapWatcherService,
+  });
 
   Future<void> execute() async {
     if (_swapWatcherService != null) {

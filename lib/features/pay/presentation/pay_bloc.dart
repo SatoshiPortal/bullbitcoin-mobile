@@ -20,9 +20,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -36,45 +36,23 @@ part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState> {
   PayBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required PlacePayOrderUsecase placePayOrderUsecase,
-    required RefreshPayOrderUsecase refreshPayOrderUsecase,
-    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required SignBitcoinTxUsecase signBitcoinTxUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastBitcoinTransactionUsecase
-    broadcastBitcoinTransactionUsecase,
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required CalculateLiquidAbsoluteFeesUsecase
-    calculateLiquidAbsoluteFeesUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
-    required GetOrderUsecase getOrderUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _placePayOrderUsecase = placePayOrderUsecase,
-       _refreshPayOrderUsecase = refreshPayOrderUsecase,
-       _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _signBitcoinTxUsecase = signBitcoinTxUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
-       _getOrderUsecase = getOrderUsecase,
-       super(PayRecipientSelectionState()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._placePayOrderUsecase,
+    required this._refreshPayOrderUsecase,
+    required this._prepareBitcoinSendUsecase,
+    required this._prepareLiquidSendUsecase,
+    required this._signBitcoinTxUsecase,
+    required this._signLiquidTxUsecase,
+    required this._broadcastBitcoinTransactionUsecase,
+    required this._broadcastLiquidTransactionUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculateBitcoinAbsoluteFeesUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getAddressAtIndexUsecase,
+    required this._getWalletUtxosUsecase,
+    required this._getOrderUsecase,
+  }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -232,7 +210,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: event.wallet.id,
           address: dummyAddressForFeeCalculation.address,
           amountSat: requiredAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,
@@ -430,7 +409,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: wallet.id,
           address: payPaymentState.payOrder.liquidAddress!,
           amountSat: payinAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         final signedPset = await _signLiquidTxUsecase.execute(
           pset: pset,
@@ -656,7 +636,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           walletId: wallet.id,
           address: dummyAddressForFeeCalculation.address,
           amountSat: payinAmountSat,
-          networkFee: const NetworkFee.relative(0.1),
+          // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+          feeRate: const RelativeFee(25),
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,

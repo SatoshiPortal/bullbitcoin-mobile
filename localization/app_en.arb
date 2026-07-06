@@ -55,6 +55,93 @@
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
   },
+  "coreSwapsStatusRefunded": "Refunded",
+  "@coreSwapsStatusRefunded": {
+    "description": "Display name for refunded swap status (payment failed, funds returned)"
+  },
+  "swapRestoreTitle": "Swap restore",
+  "@swapRestoreTitle": {
+    "description": "Title for the swap restore settings page"
+  },
+  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{You can attempt recovering 1 swap. It may already be in a terminal status.} other{You can attempt recovering {count} swaps. Note, some of them may already be in a terminal status.}}",
+  "@swapRestoreActionable": {
+    "description": "Header count of restorable swaps with locked, unresolved funds",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "swapRestoreNoSwaps": "No swaps found to restore",
+  "@swapRestoreNoSwaps": {
+    "description": "Empty state when the restore endpoint returns no swaps"
+  },
+  "swapRestoreRecoverableSection": "Recoverable",
+  "@swapRestoreRecoverableSection": {
+    "description": "Section header for swaps that can be recovered (tappable)"
+  },
+  "swapRestoreAllSection": "All swaps",
+  "@swapRestoreAllSection": {
+    "description": "Section header for the remaining (non-recoverable) swaps"
+  },
+  "swapRestoreFailed": "Couldn't restore swaps",
+  "@swapRestoreFailed": {
+    "description": "Error message when restoring swaps fails"
+  },
+  "swapRestoreKindLightningSend": "Lightning Send",
+  "@swapRestoreKindLightningSend": {
+    "description": "Label for a submarine (on-chain to Lightning) swap in the restore list"
+  },
+  "swapRestoreKindLightningReceive": "Lightning Receive",
+  "@swapRestoreKindLightningReceive": {
+    "description": "Label for a reverse (Lightning to on-chain) swap in the restore list"
+  },
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "@swapRestoreKindCrossChain": {
+    "description": "Label for a chain swap in the restore list"
+  },
+  "swapRescueTitle": "Rescue swap",
+  "@swapRescueTitle": {
+    "description": "Title of the swap rescue details page"
+  },
+  "swapRescueTypeLabel": "Type",
+  "@swapRescueTypeLabel": {
+    "description": "Detail row label for the swap type"
+  },
+  "swapRescueStatusLabel": "Status",
+  "@swapRescueStatusLabel": {
+    "description": "Detail row label for the swap status"
+  },
+  "swapRescueAmountLabel": "Amount",
+  "@swapRescueAmountLabel": {
+    "description": "Detail row label for the swap amount"
+  },
+  "swapRescueRouteLabel": "Route",
+  "@swapRescueRouteLabel": {
+    "description": "Detail row label for the swap from/to assets"
+  },
+  "swapRescueCreatedLabel": "Created",
+  "@swapRescueCreatedLabel": {
+    "description": "Detail row label for when the swap was created"
+  },
+  "swapRescueIdLabel": "Swap ID",
+  "@swapRescueIdLabel": {
+    "description": "Detail row label for the swap id"
+  },
+  "swapRescueWalletLabel": "Restore to wallet",
+  "@swapRescueWalletLabel": {
+    "description": "Label above the wallet picker on the rescue page"
+  },
+  "swapRescueWalletHint": "Select a wallet",
+  "@swapRescueWalletHint": {
+    "description": "Placeholder for the rescue wallet picker"
+  },
+  "swapRescueButton": "Restore",
+  "@swapRescueButton": {
+    "description": "Button that re-imports the swap and resumes it"
+  },
+  "swapRescueSuccess": "Swap restored — it will now resume",
+  "@swapRescueSuccess": {
+    "description": "Confirmation shown after a swap is rescued"
+  },
   "coreSwapsStatusExpired": "Expired",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
@@ -339,6 +426,18 @@
   "pinCodeBackupRequiredWarning": "Please complete a wallet backup before setting a PIN",
   "@pinCodeBackupRequiredWarning": {
     "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "pinCodeSaveError": "Could not save your PIN. Please try again.",
+  "@pinCodeSaveError": {
+    "description": "Error shown when the PIN code cannot be saved"
+  },
+  "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
+  "@pinCodeDeleteError": {
+    "description": "Error shown when the PIN code cannot be deleted"
+  },
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "@pinCodeNotSetError": {
+    "description": "Error shown when a PIN code operation is attempted but no PIN has been set"
   },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
@@ -640,49 +739,21 @@
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
-  "mempoolErrorUnexpected": "An unexpected error occurred",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
+  "mempoolErrorInvalidUrl": "Invalid server URL. Enter a valid domain or IP address.",
+  "@mempoolErrorInvalidUrl": {
+    "description": "Error when the custom mempool server URL is malformed"
   },
-  "mempoolErrorSaveServerFailed": "Failed to save server: {error}",
+  "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Failed to load mempool server data: {error}",
+  "mempoolErrorLoadFailed": "Failed to load mempool server data",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "Failed to delete custom server: {error}",
+  "mempoolErrorDeleteFailed": "Failed to delete custom server",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
@@ -719,6 +790,30 @@
   "appSettingsDevModeTitle": "Dev Mode",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
+  },
+  "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
+  "@exchangeTestnetBasicAuthTitle": {
+    "description": "Title for the testnet exchange basic auth credentials tile and dialog"
+  },
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth for the testnet exchange web pages (login and KYC).",
+  "@exchangeTestnetBasicAuthDescription": {
+    "description": "Explanation of what the testnet exchange basic auth credentials are used for"
+  },
+  "exchangeTestnetBasicAuthUsernameLabel": "Username",
+  "@exchangeTestnetBasicAuthUsernameLabel": {
+    "description": "Label for the username field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthPasswordLabel": "Password",
+  "@exchangeTestnetBasicAuthPasswordLabel": {
+    "description": "Label for the password field in the testnet exchange credentials dialog"
+  },
+  "exchangeTestnetBasicAuthClearButton": "Clear",
+  "@exchangeTestnetBasicAuthClearButton": {
+    "description": "Button that clears the saved testnet exchange credentials"
+  },
+  "exchangeTestnetBasicAuthSaveButton": "Save",
+  "@exchangeTestnetBasicAuthSaveButton": {
+    "description": "Button that saves the entered testnet exchange credentials"
   },
   "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
   "@currencySettingsDefaultFiatCurrencyLabel": {
@@ -3162,6 +3257,10 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
+  "transactionLabelNetworkFees": "Network fees",
+  "@transactionLabelNetworkFees": {
+    "description": "Combined on-chain network fees shown for a recovered swap, derived from the actual sent and received amounts"
+  },
   "transactionLabelPreimage": "Preimage",
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"
@@ -3426,6 +3525,14 @@
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
+  "fundExchangeRestrictedTitle": "Funding unavailable",
+  "@fundExchangeRestrictedTitle": {
+    "description": "Title shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeRestrictedMessage": "Funding is not available on your account. Please contact support for more information.",
+  "@fundExchangeRestrictedMessage": {
+    "description": "Message shown when a restricted or prohibited user is blocked from funding"
+  },
   "fundExchangeWarningTitle": "Watch out for scammers",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -3542,9 +3649,9 @@
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
   },
-  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "fundExchangeMethodInstantSepa": "Instant & Regular SEPA",
   "@fundExchangeMethodInstantSepa": {
-    "description": "Payment method: Instant SEPA (Europe)"
+    "description": "Payment method: Instant & Regular SEPA (Europe)"
   },
   "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
@@ -4717,6 +4824,10 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
+  "bip85NoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@bip85NoDefaultWalletError": {
+    "description": "Error shown when BIP85 derivation fails because no default wallet is configured"
+  },
   "connectingToKeyServer": "Connecting to Key Server over Tor.\nThis can take upto a minute.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
@@ -5237,6 +5348,14 @@
   "appUnlockButton": "Unlock",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
+  },
+  "appUnlockPinCheckError": "Unable to load security settings. Please restart the app.",
+  "@appUnlockPinCheckError": {
+    "description": "Error shown when the app cannot load PIN security settings during unlock"
+  },
+  "appUnlockPinVerifyError": "Unable to verify your PIN. Please try again.",
+  "@appUnlockPinVerifyError": {
+    "description": "Error shown when PIN verification fails due to a system error during unlock"
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
@@ -6167,14 +6286,6 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "replaceByFeeErrorTransactionConfirmed": "The original transaction has been confirmed",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -6322,6 +6433,35 @@
   "scanNfcButton": "Scan NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
+  },
+  "nfcNotAvailable": "NFC is not supported on this device",
+  "@nfcNotAvailable": {
+    "description": "Error message shown when NFC is not available on the current device"
+  },
+  "nfcDisabled": "NFC is disabled. Enable it in settings.",
+  "@nfcDisabled": {
+    "description": "Error message shown when NFC is disabled on the current device"
+  },
+  "nfcInvalidData": "No supported NFC data was found",
+  "@nfcInvalidData": {
+    "description": "Error message shown when an NFC tag is read but no supported payload can be parsed"
+  },
+  "nfcConnectionLost": "NFC connection lost. Hold your device near the NFC tag and try again.",
+  "@nfcConnectionLost": {
+    "description": "Error message shown when an NFC tag connection is lost before the read or write completes"
+  },
+  "nfcWriteFailed": "NFC transfer failed. Please try again.",
+  "@nfcWriteFailed": {
+    "description": "Error message shown when an NFC write to a hardware wallet fails"
+  },
+  "nfcError": "NFC error: {error}",
+  "@nfcError": {
+    "description": "Error message shown when an NFC operation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "shareLogsLabel": "Share logs",
   "@shareLogsLabel": {
@@ -7315,6 +7455,10 @@
   "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "Unsupported QR code format",
+  "@sendErrorUnsupportedQrCodeFormat": {
+    "description": "Error shown when a scanned QR code does not contain a recognisable Bitcoin payment request"
   },
   "sendErrorBuildFailed": "Build Failed",
   "@sendErrorBuildFailed": {
@@ -8956,6 +9100,19 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
+  "psbtFlowSignViaNfc": "Sign via NFC",
+  "@psbtFlowSignViaNfc": {
+    "description": "Button to send a PSBT to a hardware signer over NFC"
+  },
+  "psbtFlowSignViaNfcSheetTitle": "Tap your {deviceName} to send the PSBT via NFC",
+  "@psbtFlowSignViaNfcSheetTitle": {
+    "description": "NFC write sheet title for sending a PSBT to a hardware signer",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
   "psbtFlowError": "Error: {error}",
   "@psbtFlowError": {
     "description": "Error message in psbt flow",
@@ -9001,9 +9158,157 @@
   "@psbtFlowSpecterTitle": {
     "description": "Title for Specter device signing instructions"
   },
-  "psbtFlowColdcardTitle": "Coldcard Q Instructions",
-  "@psbtFlowColdcardTitle": {
-    "description": "Title for Coldcard Q device signing instructions"
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "@psbtFlowColdcardQInstructionsTitle": {
+    "description": "Title for Coldcard Q PSBT signing instructions"
+  },
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "@psbtFlowColdcardMk4InstructionsTitle": {
+    "description": "Title for Coldcard Mk4 PSBT signing instructions"
+  },
+  "psbtFlowColdcardQStep1": "Login to your Coldcard Q device",
+  "@psbtFlowColdcardQStep1": {
+    "description": "Coldcard Q PSBT signing instruction step 1"
+  },
+  "psbtFlowColdcardQStep2": "Add a passphrase if you have one (optional)",
+  "@psbtFlowColdcardQStep2": {
+    "description": "Coldcard Q PSBT signing instruction step 2"
+  },
+  "psbtFlowColdcardQStep3": "Choose your preferred signing method:",
+  "@psbtFlowColdcardQStep3": {
+    "description": "Coldcard Q PSBT signing instruction step 3"
+  },
+  "psbtFlowColdcardQStep4": "For QR code:",
+  "@psbtFlowColdcardQStep4": {
+    "description": "Coldcard Q PSBT signing instruction step 4"
+  },
+  "psbtFlowColdcardQStep5": "   - Select \"Scan any QR code\" on your Coldcard Q",
+  "@psbtFlowColdcardQStep5": {
+    "description": "Coldcard Q PSBT signing instruction step 5"
+  },
+  "psbtFlowColdcardQStep6": "   - Scan the QR code shown in the Bull wallet",
+  "@psbtFlowColdcardQStep6": {
+    "description": "Coldcard Q PSBT signing instruction step 6"
+  },
+  "psbtFlowColdcardQStep7": "   - If you have trouble scanning:",
+  "@psbtFlowColdcardQStep7": {
+    "description": "Coldcard Q PSBT signing instruction step 7"
+  },
+  "psbtFlowColdcardQStep8": "     - Increase screen brightness on your device",
+  "@psbtFlowColdcardQStep8": {
+    "description": "Coldcard Q PSBT signing instruction step 8"
+  },
+  "psbtFlowColdcardQStep9": "     - Move the red laser up and down over QR code",
+  "@psbtFlowColdcardQStep9": {
+    "description": "Coldcard Q PSBT signing instruction step 9"
+  },
+  "psbtFlowColdcardQStep10": "     - Try moving your device back a little bit",
+  "@psbtFlowColdcardQStep10": {
+    "description": "Coldcard Q PSBT signing instruction step 10"
+  },
+  "psbtFlowColdcardQStep11": "For NFC:",
+  "@psbtFlowColdcardQStep11": {
+    "description": "Coldcard Q PSBT signing instruction step 11"
+  },
+  "psbtFlowColdcardQStep12": "   - Select \"Ready to Sign\" on your Coldcard Q, then tap the NFC button",
+  "@psbtFlowColdcardQStep12": {
+    "description": "Coldcard Q PSBT signing instruction step 12"
+  },
+  "psbtFlowColdcardQStep13": "   - Tap your phone to the Coldcard Q",
+  "@psbtFlowColdcardQStep13": {
+    "description": "Coldcard Q PSBT signing instruction step 13"
+  },
+  "psbtFlowColdcardQStep14": "   - Wait for the PSBT to transfer",
+  "@psbtFlowColdcardQStep14": {
+    "description": "Coldcard Q PSBT signing instruction step 14"
+  },
+  "psbtFlowColdcardQStep15": "Once the transaction is imported in your Coldcard Q, review the destination address and amount.",
+  "@psbtFlowColdcardQStep15": {
+    "description": "Coldcard Q PSBT signing instruction step 15"
+  },
+  "psbtFlowColdcardQStep16": "Click the buttons to sign the transaction on your Coldcard Q.",
+  "@psbtFlowColdcardQStep16": {
+    "description": "Coldcard Q PSBT signing instruction step 16"
+  },
+  "psbtFlowColdcardQStep17": "The Coldcard Q will then show a signed transaction QR code or prepare NFC transfer.",
+  "@psbtFlowColdcardQStep17": {
+    "description": "Coldcard Q PSBT signing instruction step 17"
+  },
+  "psbtFlowColdcardQStep18": "If you signed with QR, click \"I'm done\" in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardQStep18": {
+    "description": "Coldcard Q PSBT signing instruction step 18"
+  },
+  "psbtFlowColdcardQStep19": "The Bull Bitcoin wallet will ask you to scan the signed transaction QR code or use NFC to receive it.",
+  "@psbtFlowColdcardQStep19": {
+    "description": "Coldcard Q PSBT signing instruction step 19"
+  },
+  "psbtFlowColdcardQStep20": "   - For QR: scan the QR code on the Coldcard Q",
+  "@psbtFlowColdcardQStep20": {
+    "description": "Coldcard Q PSBT signing instruction step 20"
+  },
+  "psbtFlowColdcardQStep21": "   - For NFC: tap your phone to the Coldcard Q",
+  "@psbtFlowColdcardQStep21": {
+    "description": "Coldcard Q PSBT signing instruction step 21"
+  },
+  "psbtFlowColdcardQStep22": "The signed transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardQStep22": {
+    "description": "Coldcard Q PSBT signing instruction step 22"
+  },
+  "psbtFlowColdcardQStep23": "It's now ready to broadcast. As soon as you click broadcast, the transaction will be published on the Bitcoin network.",
+  "@psbtFlowColdcardQStep23": {
+    "description": "Coldcard Q PSBT signing instruction step 23"
+  },
+  "psbtFlowColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "@psbtFlowColdcardMk4Step1": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 1"
+  },
+  "psbtFlowColdcardMk4Step2": "Add a passphrase if you have one (optional)",
+  "@psbtFlowColdcardMk4Step2": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 2"
+  },
+  "psbtFlowColdcardMk4Step3": "Select \"Ready to Sign\" on your Coldcard Mk4, then tap the number 3 button",
+  "@psbtFlowColdcardMk4Step3": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 3"
+  },
+  "psbtFlowColdcardMk4Step4": "Tap your phone to the Coldcard Mk4",
+  "@psbtFlowColdcardMk4Step4": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 4"
+  },
+  "psbtFlowColdcardMk4Step5": "Wait for the PSBT to transfer",
+  "@psbtFlowColdcardMk4Step5": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 5"
+  },
+  "psbtFlowColdcardMk4Step6": "Once the transaction is imported in your Coldcard Mk4, review the destination address and amount.",
+  "@psbtFlowColdcardMk4Step6": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 6"
+  },
+  "psbtFlowColdcardMk4Step7": "Click the buttons to sign the transaction on your Coldcard Mk4.",
+  "@psbtFlowColdcardMk4Step7": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 7"
+  },
+  "psbtFlowColdcardMk4Step8": "The Coldcard Mk4 will then prepare the signed transaction for NFC transfer.",
+  "@psbtFlowColdcardMk4Step8": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 8"
+  },
+  "psbtFlowColdcardMk4Step9": "In the Bull Bitcoin wallet, tap NFC on the broadcast screen.",
+  "@psbtFlowColdcardMk4Step9": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 9"
+  },
+  "psbtFlowColdcardMk4Step10": "Tap your phone to the Coldcard Mk4 to receive the signed transaction.",
+  "@psbtFlowColdcardMk4Step10": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 10"
+  },
+  "psbtFlowColdcardMk4Step11": "The signed transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardMk4Step11": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 11"
+  },
+  "psbtFlowColdcardMk4Step12": "Review the transaction details in the Bull Bitcoin wallet.",
+  "@psbtFlowColdcardMk4Step12": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 12"
+  },
+  "psbtFlowColdcardMk4Step13": "It's now ready to broadcast. As soon as you click broadcast, the transaction will be published on the Bitcoin network.",
+  "@psbtFlowColdcardMk4Step13": {
+    "description": "Coldcard Mk4 PSBT signing instruction step 13"
   },
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
   "@psbtFlowJadeTitle": {
@@ -9464,70 +9769,6 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "coldcardInstructionsTitle": "Coldcard Q Instructions",
-  "@coldcardInstructionsTitle": {
-    "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "coldcardStep1": "Login to your Coldcard Q device",
-  "@coldcardStep1": {
-    "description": "Coldcard instruction step 1"
-  },
-  "coldcardStep2": "Add a passphrase if you have one (optional)",
-  "@coldcardStep2": {
-    "description": "Coldcard instruction step 2"
-  },
-  "coldcardStep3": "Select \"Scan any QR code\" option",
-  "@coldcardStep3": {
-    "description": "Coldcard instruction step 3"
-  },
-  "coldcardStep4": "Scan the QR code shown in the Bull wallet",
-  "@coldcardStep4": {
-    "description": "Coldcard instruction step 4"
-  },
-  "coldcardStep5": "If you have trouble scanning:",
-  "@coldcardStep5": {
-    "description": "Coldcard troubleshooting header"
-  },
-  "coldcardStep6": "   - Increase screen brightness on your device",
-  "@coldcardStep6": {
-    "description": "Coldcard troubleshooting tip 1"
-  },
-  "coldcardStep7": "   - Move the red laser up and down over QR code",
-  "@coldcardStep7": {
-    "description": "Coldcard troubleshooting tip 2"
-  },
-  "coldcardStep8": "   - Try moving your device back a little bit",
-  "@coldcardStep8": {
-    "description": "Coldcard troubleshooting tip 3"
-  },
-  "coldcardStep9": "Once the transaction is imported in your Coldcard, review the destination address and the amount.",
-  "@coldcardStep9": {
-    "description": "Coldcard instruction for reviewing transaction"
-  },
-  "coldcardStep10": "Click the buttons to sign the transaction on your Coldcard.",
-  "@coldcardStep10": {
-    "description": "Coldcard instruction for signing"
-  },
-  "coldcardStep11": "The Coldcard Q will then show you its own QR code.",
-  "@coldcardStep11": {
-    "description": "Coldcard instruction about signed PSBT QR"
-  },
-  "coldcardStep12": "Click \"I'm done\" in the Bull Bitcoin wallet.",
-  "@coldcardStep12": {
-    "description": "Coldcard instruction to return to app"
-  },
-  "coldcardStep13": "The Bull Bitcoin wallet will ask you to scan the QR code on the Coldcard. Scan it.",
-  "@coldcardStep13": {
-    "description": "Coldcard instruction for scanning signed PSBT"
-  },
-  "coldcardStep14": "The transaction will be imported in the Bull Bitcoin wallet.",
-  "@coldcardStep14": {
-    "description": "Coldcard instruction about import completion"
-  },
-  "coldcardStep15": "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
-  "@coldcardStep15": {
-    "description": "Coldcard final instruction about broadcasting"
-  },
   "jadeInstructionsTitle": "Blockstream Jade PSBT Instructions",
   "@jadeInstructionsTitle": {
     "description": "Title for Jade signing instructions modal"
@@ -9619,6 +9860,10 @@
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "@importWalletColdcardMk4": {
+    "description": "Button label for Coldcard Mk4 hardware wallet"
   },
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
@@ -9739,6 +9984,22 @@
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
   "@importWatchOnlyPasteHint": {
     "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyErrorNoWalletSelected": "Paste or scan a public key or descriptor first.",
+  "@importWatchOnlyErrorNoWalletSelected": {
+    "description": "Shown when import is attempted before a wallet has been provided"
+  },
+  "importWatchOnlyErrorLabelRequired": "Give your wallet a name before importing.",
+  "@importWatchOnlyErrorLabelRequired": {
+    "description": "Shown when the wallet label is empty on import"
+  },
+  "importWatchOnlyErrorInvalidFormat": "This doesn't look like a valid public key or descriptor. Double-check what you pasted.",
+  "@importWatchOnlyErrorInvalidFormat": {
+    "description": "Shown when the pasted/scanned watch-only input cannot be parsed"
+  },
+  "importWatchOnlyErrorImportFailed": "We couldn't import this watch-only wallet. Please check the details and try again.",
+  "@importWatchOnlyErrorImportFailed": {
+    "description": "Shown when the wallet layer rejects the descriptor or xpub"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -9978,9 +10239,17 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "broadcastSignedTxBroadcastError": "We couldn't broadcast your transaction. Check your internet connection and try again.",
   "@broadcastSignedTxBroadcastError": {
     "description": "Headline shown when broadcasting a signed transaction fails"
+  },
+  "broadcastSignedTxErrorInvalidTransaction": "This doesn't look like a valid signed transaction. Make sure you pasted the full PSBT or transaction.",
+  "@broadcastSignedTxErrorInvalidTransaction": {
+    "description": "Shown when pasted/scanned input is not a valid PSBT or raw transaction"
+  },
+  "broadcastSignedTxErrorInvalidPushTx": "We couldn't read a transaction from this tag. Please try scanning again.",
+  "@broadcastSignedTxErrorInvalidPushTx": {
+    "description": "Shown when an NFC PushTx tag cannot be parsed into a transaction"
   },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
@@ -9997,6 +10266,14 @@
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
+  },
+  "broadcastSignedTxNfcButton": "NFC",
+  "@broadcastSignedTxNfcButton": {
+    "description": "Button to receive a signed transaction over NFC"
+  },
+  "broadcastSignedTxColdcardNfcSheetTitle": "Tap your Coldcard to receive the signed transaction via NFC",
+  "@broadcastSignedTxColdcardNfcSheetTitle": {
+    "description": "NFC read sheet title for receiving a signed transaction from Coldcard"
   },
   "broadcastSignedTxDoneButton": "Done",
   "@broadcastSignedTxDoneButton": {
@@ -10376,10 +10653,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "importColdcardTitle": "Connect Coldcard Q",
-  "@importColdcardTitle": {
-    "description": "AppBar title for Coldcard Q import"
-  },
   "importColdcardScanPrompt": "Scan the QR code from your Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
@@ -10404,13 +10677,36 @@
   "@importColdcardError": {
     "description": "Error message"
   },
-  "importColdcardInvalidQR": "Invalid Coldcard QR code",
-  "@importColdcardInvalidQR": {
-    "description": "Error for invalid QR format"
+  "importColdcardInvalidWalletData": "Invalid Coldcard wallet data",
+  "@importColdcardInvalidWalletData": {
+    "description": "Error for invalid Coldcard wallet import data"
   },
-  "importColdcardDescription": "Import the wallet descriptor QR code from your Coldcard Q",
-  "@importColdcardDescription": {
-    "description": "ImportColdcardQ: Main instruction text on import page"
+  "importColdcardConnectTitle": "Connect {deviceName}",
+  "@importColdcardConnectTitle": {
+    "description": "AppBar title for Coldcard import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importColdcardConnectDescription": "Import the wallet descriptor from your {deviceName}",
+  "@importColdcardConnectDescription": {
+    "description": "Main instruction text on Coldcard import page",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importColdcardScanNfcSheetTitle": "Tap your {deviceName} to import wallet descriptor via NFC",
+  "@importColdcardScanNfcSheetTitle": {
+    "description": "NFC scan sheet title for Coldcard wallet import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
   },
   "importColdcardButtonOpenCamera": "Open the camera",
   "@importColdcardButtonOpenCamera": {
@@ -10424,49 +10720,113 @@
   "@importColdcardButtonPurchase": {
     "description": "ImportColdcardQ: Button to navigate to Coinkite store"
   },
-  "importColdcardInstructionsTitle": "Coldcard Q Instructions",
-  "@importColdcardInstructionsTitle": {
-    "description": "ImportColdcardQ: Title of instructions bottom sheet"
+  "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "@importColdcardQInstructionsTitle": {
+    "description": "Title for Coldcard Q import instructions"
   },
-  "importColdcardInstructionsStep1": "Log in to your Coldcard Q device",
-  "@importColdcardInstructionsStep1": {
-    "description": "ImportColdcardQ: First instruction step"
+  "importColdcardQStep1": "Login to your Coldcard Q device",
+  "@importColdcardQStep1": {
+    "description": "Coldcard Q import instruction step 1"
   },
-  "importColdcardInstructionsStep2": "Enter a passphrase if applicable",
-  "@importColdcardInstructionsStep2": {
-    "description": "ImportColdcardQ: Second instruction step"
+  "importColdcardQStep2": "Add a passphrase if you have one (optional)",
+  "@importColdcardQStep2": {
+    "description": "Coldcard Q import instruction step 2"
   },
-  "importColdcardInstructionsStep3": "Navigate to \"Advanced/Tools\"",
-  "@importColdcardInstructionsStep3": {
-    "description": "ImportColdcardQ: Third instruction step"
+  "importColdcardQStep3": "Select the advanced/settings menu",
+  "@importColdcardQStep3": {
+    "description": "Coldcard Q import instruction step 3"
   },
-  "importColdcardInstructionsStep4": "Verify that your firmware is updated to version 1.3.4Q",
-  "@importColdcardInstructionsStep4": {
-    "description": "ImportColdcardQ: Fourth instruction step"
+  "importColdcardQStep4": "Click \"export wallet\"",
+  "@importColdcardQStep4": {
+    "description": "Coldcard Q import instruction step 4"
   },
-  "importColdcardInstructionsStep5": "Select \"Export Wallet\"",
-  "@importColdcardInstructionsStep5": {
-    "description": "ImportColdcardQ: Fifth instruction step"
+  "importColdcardQStep5": "Select \"descriptor\" as export type",
+  "@importColdcardQStep5": {
+    "description": "Coldcard Q import instruction step 5"
   },
-  "importColdcardInstructionsStep6": "Choose \"Bull Bitcoin\" as the export option",
-  "@importColdcardInstructionsStep6": {
-    "description": "ImportColdcardQ: Sixth instruction step"
+  "importColdcardQStep6": "Press \"Enter\" on first screen",
+  "@importColdcardQStep6": {
+    "description": "Coldcard Q import instruction step 6"
   },
-  "importColdcardInstructionsStep7": "On your mobile device, tap \"open camera\"",
-  "@importColdcardInstructionsStep7": {
-    "description": "ImportColdcardQ: Seventh instruction step"
+  "importColdcardQStep7": "Press \"Enter\" on second screen",
+  "@importColdcardQStep7": {
+    "description": "Coldcard Q import instruction step 7"
   },
-  "importColdcardInstructionsStep8": "Scan the QR code displayed on your Coldcard Q",
-  "@importColdcardInstructionsStep8": {
-    "description": "ImportColdcardQ: Eighth instruction step"
+  "importColdcardQStep8": "Select your address type (use Segwit if unsure)",
+  "@importColdcardQStep8": {
+    "description": "Coldcard Q import instruction step 8"
   },
-  "importColdcardInstructionsStep9": "Enter a 'Label' for your Coldcard Q wallet and tap \"Import\"",
-  "@importColdcardInstructionsStep9": {
-    "description": "ImportColdcardQ: Ninth instruction step"
+  "importColdcardQStep9": "For QR, click the QR code button on the device. It will show you a QR code on the device",
+  "@importColdcardQStep9": {
+    "description": "Coldcard Q import instruction step 9"
   },
-  "importColdcardInstructionsStep10": "Setup complete",
-  "@importColdcardInstructionsStep10": {
-    "description": "ImportColdcardQ: Final instruction step"
+  "importColdcardQStep10": "For NFC, click the NFC button on the device",
+  "@importColdcardQStep10": {
+    "description": "Coldcard Q import instruction step 10"
+  },
+  "importColdcardQStep11": "Click the \"Open the camera\" / \"Scan NFC\" button",
+  "@importColdcardQStep11": {
+    "description": "Coldcard Q import instruction step 11"
+  },
+  "importColdcardQStep12": "Scan the QR code you see on your device or put the phone NFC on top of the Coldcard NFC",
+  "@importColdcardQStep12": {
+    "description": "Coldcard Q import instruction step 12"
+  },
+  "importColdcardQStep13": "That's it!",
+  "@importColdcardQStep13": {
+    "description": "Coldcard Q import instruction step 13"
+  },
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "@importColdcardMk4InstructionsTitle": {
+    "description": "Title for Coldcard Mk4 import instructions"
+  },
+  "importColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "@importColdcardMk4Step1": {
+    "description": "Coldcard Mk4 import instruction step 1"
+  },
+  "importColdcardMk4Step2": "Add a passphrase if you have one (optional)",
+  "@importColdcardMk4Step2": {
+    "description": "Coldcard Mk4 import instruction step 2"
+  },
+  "importColdcardMk4Step3": "Select the advanced/settings menu",
+  "@importColdcardMk4Step3": {
+    "description": "Coldcard Mk4 import instruction step 3"
+  },
+  "importColdcardMk4Step4": "Click \"export wallet\"",
+  "@importColdcardMk4Step4": {
+    "description": "Coldcard Mk4 import instruction step 4"
+  },
+  "importColdcardMk4Step5": "Select \"descriptor\" as export type",
+  "@importColdcardMk4Step5": {
+    "description": "Coldcard Mk4 import instruction step 5"
+  },
+  "importColdcardMk4Step6": "Press \"Enter\" on first screen",
+  "@importColdcardMk4Step6": {
+    "description": "Coldcard Mk4 import instruction step 6"
+  },
+  "importColdcardMk4Step7": "Press \"Enter\" on second screen",
+  "@importColdcardMk4Step7": {
+    "description": "Coldcard Mk4 import instruction step 7"
+  },
+  "importColdcardMk4Step8": "Select your address type (use Segwit if unsure)",
+  "@importColdcardMk4Step8": {
+    "description": "Coldcard Mk4 import instruction step 8"
+  },
+  "importColdcardMk4Step9": "Click the number 3 to start the Coldcard NFC",
+  "@importColdcardMk4Step9": {
+    "description": "Coldcard Mk4 import instruction step 9"
+  },
+  "importColdcardMk4Step10": "Click \"Scan NFC\" button",
+  "@importColdcardMk4Step10": {
+    "description": "Coldcard Mk4 import instruction step 10"
+  },
+  "importColdcardMk4Step11": "Put the phone NFC on top of the Coldcard NFC",
+  "@importColdcardMk4Step11": {
+    "description": "Coldcard Mk4 import instruction step 11"
+  },
+  "importColdcardMk4Step12": "That's it!",
+  "@importColdcardMk4Step12": {
+    "description": "Coldcard Mk4 import instruction step 12"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -11437,43 +11797,27 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "This server already exists",
+  "electrumServerUnreachable": "Server is unreachable. Check the address and try again.",
+  "@electrumServerUnreachable": {
+    "description": "Error shown when a custom server cannot be reached"
+  },
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -12426,6 +12770,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Failed to load seeds. Please try again.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Failed to delete seed. Please try again.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -12798,15 +13150,6 @@
       }
     }
   },
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
-  "@coreScreensUnexpectedError": {
-    "description": "Generic unexpected error",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "coreScreensNoServersAvailable": "No Electrum servers available.",
   "@coreScreensNoServersAvailable": {
     "description": "Error when no Electrum servers are available"
@@ -12882,37 +13225,6 @@
   "systemLabelExchangeSell": "Sell",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "Label \"{label}\" not found.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "Unable to delete \"{label}\". Please try again.",
   "@labelDeleteFailed": {
@@ -13354,6 +13666,10 @@
   "recipientsListEmpty": "No recipients found.",
   "@recipientsListEmpty": {
     "description": "Empty state message when no recipients match the current filters."
+  },
+  "recipientsListLoadError": "Could not load recipients. Pull down to retry.",
+  "@recipientsListLoadError": {
+    "description": "Shown when loading the recipients list fails. Prompts the user to pull to refresh."
   },
   "recipientsContinue": "Continue",
   "@recipientsContinue": {
@@ -13828,6 +14144,10 @@
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
   },
+  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "transactionStatusPayjoinCompleted": "Payjoin completed",
   "@transactionStatusPayjoinCompleted": {
     "description": "Shown when a Payjoin transaction has been successfully completed"
@@ -13995,5 +14315,437 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "priceChartLoadFailed": "Price chart data could not be loaded. Please try again.",
+  "@priceChartLoadFailed": {
+    "description": "Error shown when price chart data fails to load"
+  },
+  "mempoolErrorUnexpected": "An unexpected error occurred",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
+  "@sendSubSatVbyteWarning": {
+    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
+  },
+  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
+  "@sendBelowMinFeeRateError": {
+    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
+  },
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
+  },
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
+  "@bitboxErrorBluetoothPermissionDenied": {
+    "description": "Error when Bluetooth permissions are not granted for BitBox"
+  },
+  "bitboxErrorBluetoothUnavailable": "Bluetooth is unavailable. Turn on Bluetooth and try again.",
+  "@bitboxErrorBluetoothUnavailable": {
+    "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
+  },
+  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
+  "@bitboxErrorNoBleDevicesFound": {
+    "description": "Error when no BitBox02 Nova BLE devices are detected"
+  },
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
+  "@bitboxErrorMultipleBleDevicesFound": {
+    "description": "Error when multiple BitBox02 Nova BLE devices are detected"
+  },
+  "bitboxErrorOperationFailed": "BitBox operation failed. Please try again.",
+  "@bitboxErrorOperationFailed": {
+    "description": "Generic error when a BitBox operation fails"
+  },
+  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
+  "@bitboxScreenConnectSubtextBluetooth": {
+    "description": "Subtext for initial Bluetooth state"
+  },
+  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
+  "@bitboxScreenScanningSubtextBluetooth": {
+    "description": "Subtext when scanning over Bluetooth"
+  },
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "@bitboxScreenTroubleshootingBluetoothTitle": {
+    "description": "Title for Bluetooth troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "If your device still doesn't connect with the app, try the following:",
+  "@bitboxScreenTroubleshootingBluetoothSubtitle": {
+    "description": "Subtitle for Bluetooth troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep1": "Make sure Bluetooth is turned on and permitted for this app.",
+  "@bitboxScreenTroubleshootingBluetoothStep1": {
+    "description": "Bluetooth troubleshooting step 1"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
+  "@bitboxScreenTroubleshootingBluetoothStep2": {
+    "description": "Bluetooth troubleshooting step 2"
+  },
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
+  "@bitboxScreenTroubleshootingBluetoothStep3": {
+    "description": "Bluetooth troubleshooting step 3"
+  },
+  "sendErrorInsufficientBalanceFrozenHint": "Not enough spendable balance — {amount} is frozen. Unfreeze coins in Manage coins to use it.",
+  "@sendErrorInsufficientBalanceFrozenHint": {
+    "description": "Shown instead of the plain insufficient-balance error when the wallet has frozen coins that could cover the payment, pointing the user to unfreeze them (#2337)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "@importWalletBitBox": {
+    "description": "Button label for BitBox02 hardware wallet"
+  },
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "@importWalletBitBoxNova": {
+    "description": "Button label for BitBox02 Nova hardware wallet"
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "@coreScreensUnexpectedError": {
+    "description": "Generic unexpected error",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Label \"{label}\" not found.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "This type {type} is not supported",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Unexpected error: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "logsViewerFilterByDate": "Filter by Date",
+  "@logsViewerFilterByDate": {
+    "description": "Button label to filter logs by date range"
+  },
+  "logsViewerShowingCount": "Showing {shown} of {total} logs",
+  "@logsViewerShowingCount": {
+    "description": "Counter showing filtered vs total log entries",
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logsViewerClearFilter": "Clear filter",
+  "@logsViewerClearFilter": {
+    "description": "Tooltip for the button that clears the date filter"
+  },
+  "logsViewerShareButton": "Share",
+  "@logsViewerShareButton": {
+    "description": "Button to open the share/export options for logs"
+  },
+  "logsShareOptionShare": "Share",
+  "@logsShareOptionShare": {
+    "description": "Option in the bottom sheet to share logs as text"
+  },
+  "logsShareOptionExport": "Export",
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "logsExportedMessage": "Logs exported successfully",
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "logsExportFailedMessage": "Failed to export logs",
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
+  },
+  "walletButtonCoins": "Manage coins",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} frozen",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsTitle": "Coins",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, =1{1 coin} other{{count} coins}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Frozen",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Spendable",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "None frozen",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Sort & Filter",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "{visible} of {total} shown",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, =1{1 unspent output} other{{count} unspent outputs}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Sync",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Clear all",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Amount: High to Low",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Amount: Low to High",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Date: Newest",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Date: Oldest",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Keychain",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "All",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Frozen status",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "All",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Frozen",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Unfrozen",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Labels",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Reset",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Apply",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Select all",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Freeze",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Unfreeze",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Undo",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Freeze 1 coin?} other{Freeze {count} coins?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Frozen coins stay in your wallet but are excluded from spending until you unfreeze them.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Freezing these coins will leave you with no spendable balance.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, =1{1 coin frozen · excluded from spending} other{{count} coins frozen · excluded from spending}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen} other{{count} coins unfrozen}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Pending",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "No coins yet",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Coins will appear here once you receive bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "No coins match",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Clear filters",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Retry",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Swipe a coin to freeze · long-press to select",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Couldn't load your coins. Pull to refresh to try again.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Couldn't freeze the selected coins. Please try again.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Couldn't unfreeze the selected coins. Please try again.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Something went wrong. Please try again.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
   }
 }

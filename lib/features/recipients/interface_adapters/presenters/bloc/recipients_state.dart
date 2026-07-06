@@ -4,11 +4,14 @@ part of 'recipients_bloc.dart';
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     String? preferredJurisdiction,
+    String? jurisdictionFilter,
+    @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,
     Exception? failedToLoadRecipients,
     required RecipientFilterCriteria allowedRecipientFilters,
     List<RecipientViewModel>? recipients,
     int? totalRecipients,
+    @Default(0) int loadedPages,
     @Default(false) bool isSearchingCadBillers,
     Exception? failedToSearchCadBillers,
     List<CadBillerViewModel>? cadBillers,
@@ -31,7 +34,7 @@ sealed class RecipientsState with _$RecipientsState {
     if (recipients == null || totalRecipients == null) {
       return false;
     }
-    return recipients!.length < totalRecipients!;
+    return loadedPages * RecipientsBloc.pageSize < totalRecipients!;
   }
 
   Set<RecipientType> get selectableRecipientTypes =>
@@ -68,32 +71,8 @@ sealed class RecipientsState with _$RecipientsState {
   }
 
   List<RecipientViewModel>? get selectableRecipients {
-    // Apply filters to the full recipient list based on the allowed recipient types
-    // and ownership criteria.
-    final filtered = recipients
-        ?.where(
-          (recipient) =>
-              selectableRecipientTypes.any((type) => type == recipient.type) &&
-              !(onlyOwnerRecipients && !(recipient.isOwner == true) ||
-                  onlyNonOwnerRecipients && !(recipient.isOwner == false)),
-        )
-        .toList();
-
-    // Remove duplicates based on recipient ID
-    if (filtered == null) return null;
+    if (recipients == null) return null;
     final seen = <String>{};
-    return filtered.where((recipient) => seen.add(recipient.id)).toList();
-  }
-
-  List<RecipientViewModel>? filteredRecipientsByJurisdiction(
-    String? jurisdiction,
-  ) {
-    if (jurisdiction == null) {
-      return selectableRecipients;
-    }
-
-    return selectableRecipients
-        ?.where((recipient) => recipient.jurisdictionCode == jurisdiction)
-        .toList();
+    return recipients!.where((recipient) => seen.add(recipient.id)).toList();
   }
 }

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
@@ -17,6 +18,10 @@ class ShowPsbtScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canSignViaNfc =
+        signerDevice == SignerDeviceEntity.coldcardQ ||
+        signerDevice == SignerDeviceEntity.coldcardMk4;
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.psbtFlowSignTransaction)),
       body: Padding(
@@ -39,7 +44,33 @@ class ShowPsbtScreen extends StatelessWidget {
                   const Gap(16),
                 ],
 
+                if (canSignViaNfc) ...[
+                  BBButton.small(
+                    label: context.loc.psbtFlowSignViaNfc,
+                    onPressed: () => NfcBottomSheet.showWriteNfc(
+                      context: context,
+                      title: context.loc.psbtFlowSignViaNfcSheetTitle(
+                        signerDevice!.displayName,
+                      ),
+                      data: psbt,
+                      onSuccess: () async {
+                        if (!context.mounted) return;
+                        await context.pushNamed(
+                          BroadcastSignedTxRoute.broadcastHome.name,
+                          extra: psbt,
+                        );
+                      },
+                    ),
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                    outlined: true,
+                  ),
+                  const Gap(16),
+                ],
+
                 if ([
+                  SignerDeviceEntity.coldcardQ,
+                  SignerDeviceEntity.coldcardMk4,
                   SignerDeviceEntity.jade,
                   SignerDeviceEntity.krux,
                   SignerDeviceEntity.keystone,
@@ -51,6 +82,14 @@ class ShowPsbtScreen extends StatelessWidget {
                     label: context.loc.psbtFlowInstructions,
                     onPressed: () {
                       switch (signerDevice) {
+                        case SignerDeviceEntity.coldcardQ:
+                          QrDeviceInstructions.showColdcardQInstructions(
+                            context,
+                          );
+                        case SignerDeviceEntity.coldcardMk4:
+                          QrDeviceInstructions.showColdcardMk4Instructions(
+                            context,
+                          );
                         case SignerDeviceEntity.jade:
                           QrDeviceInstructions.showJadeInstructions(context);
                         case SignerDeviceEntity.krux:

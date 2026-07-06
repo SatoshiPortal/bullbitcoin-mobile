@@ -25,18 +25,13 @@ class GetTransactionsByTxIdUsecase {
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
 
   GetTransactionsByTxIdUsecase({
-    required SettingsRepository settingsRepository,
-    required WalletTransactionRepository walletTransactionRepository,
-    required BoltzSwapRepository boltzSwapRepository,
-    required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-  }) : _settingsRepository = settingsRepository,
-       _walletTransactionRepository = walletTransactionRepository,
-       _boltzSwapRepository = boltzSwapRepository,
-       _payjoinRepository = payjoinRepository,
-       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository;
+    required this._settingsRepository,
+    required this._walletTransactionRepository,
+    required this._boltzSwapRepository,
+    required this._payjoinRepository,
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+  });
 
   Future<List<Transaction>> execute(String txId) async {
     try {

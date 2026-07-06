@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_server_exception.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 class MempoolServer {
   final String _url;
@@ -9,26 +10,30 @@ class MempoolServer {
   final bool _enableSsl;
 
   MempoolServer._({
-    required String url,
-    required MempoolServerNetwork network,
-    required bool isCustom,
-    required bool enableSsl,
-  }) : _url = url,
-       _network = network,
-       _isCustom = isCustom,
-       _enableSsl = enableSsl;
+    required this._url,
+    required this._network,
+    required this._isCustom,
+    required this._enableSsl,
+  });
 
-  factory MempoolServer.createCustom({
+  /// Validates [url] and builds a custom server, returning a typed failure
+  /// (never throwing) when the URL is malformed.
+  static Result<MempoolServer, MempoolFailure> tryCreateCustom({
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
   }) {
-    final cleanedUrl = _validateAndCleanUrl(url);
-    return MempoolServer._(
-      url: cleanedUrl,
-      network: network,
-      isCustom: true,
-      enableSsl: enableSsl,
+    final parsed = MempoolUrlParser.tryParse(url);
+    if (parsed == null) {
+      return const Err(MempoolInvalidUrlFailure());
+    }
+    return Ok(
+      MempoolServer._(
+        url: parsed.cleanUrl,
+        network: network,
+        isCustom: true,
+        enableSsl: enableSsl,
+      ),
     );
   }
 
@@ -44,28 +49,6 @@ class MempoolServer {
       isCustom: isCustom,
       enableSsl: enableSsl,
     );
-  }
-
-  static String _validateAndCleanUrl(String url) {
-    try {
-      final result = MempoolUrlParser.parse(url);
-      return result.cleanUrl;
-    } on MempoolUrlValidationError catch (e) {
-      switch (e) {
-        case MempoolUrlValidationError.empty:
-          throw InvalidMempoolUrlException('URL cannot be empty');
-        case MempoolUrlValidationError.hasPath:
-          throw InvalidMempoolUrlException(
-            'URL should not contain paths. Enter only the domain or IP address',
-          );
-        case MempoolUrlValidationError.invalidDomain:
-          throw InvalidMempoolUrlException(
-            'Invalid URL format: must be a valid domain',
-          );
-        case MempoolUrlValidationError.invalidFormat:
-          throw InvalidMempoolUrlException('Invalid URL format');
-      }
-    }
   }
 
   String get url => _url;

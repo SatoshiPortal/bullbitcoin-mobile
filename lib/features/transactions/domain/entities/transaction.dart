@@ -44,7 +44,8 @@ sealed class Transaction with _$Transaction {
 
   bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null;
-  bool get isOngoingSwap => isSwap && swap?.status != SwapStatus.completed;
+  bool get isOngoingSwap =>
+      isSwap && swap != null && !swap!.status.isTerminal;
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
@@ -76,6 +77,10 @@ sealed class Transaction with _$Transaction {
   bool get isChainSwap => isSwap && swap!.isChainSwap;
 
   DateTime? get timestamp =>
+      // Completed swaps are displayed (and should sort) by when they finished,
+      // not when they were created — otherwise a just-claimed rescued swap
+      // (created long ago) lands far down the list under its old creation time.
+      swap?.completionTime ??
       swap?.creationTime ??
       payjoin?.createdAt ??
       order?.createdAt ??
@@ -86,6 +91,28 @@ sealed class Transaction with _$Transaction {
       (swap != null
           ? swap!.amountSat - (swap!.fees?.totalFees(swap!.amountSat) ?? 0)
           : payjoin?.amountSat ?? 0);
+
+  /// Headline amount for a swap on the transaction-details screen. A recovered
+  /// swap shows the net on-chain [amountSat]; otherwise the directional figure
+  /// (amount sent for outgoing, received for incoming; an external chain swap
+  /// shows the received amount). Returns [amountSat] when this isn't a swap.
+  int get swapDisplayAmountSat {
+    final s = swap;
+    if (s == null || s.recovered) return amountSat;
+    if (s is ChainSwap && s.receiveWalletId == null) return s.receieveAmount ?? 0;
+    return isOutgoing ? s.amountSat : (s.receieveAmount ?? 0);
+  }
+
+  /// Headline amount for a swap in the transaction list. NOTE: intentionally
+  /// differs from [swapDisplayAmountSat] for non-recovered swaps — the list
+  /// shows the gross swap amount, the details screen the directional net. Kept
+  /// separate to preserve existing display; converge if product wants them
+  /// identical.
+  int get swapListAmountSat {
+    final s = swap;
+    if (s == null) return amountSat;
+    return s.recovered ? amountSat : s.amountSat;
+  }
 
   String get walletId =>
       walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;

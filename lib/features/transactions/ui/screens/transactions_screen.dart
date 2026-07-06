@@ -30,9 +30,8 @@ class TransactionsScreen extends StatelessWidget {
             context.pop();
           },
           actionIcon: Icons.file_download,
-          onAction: () => context.pushNamed(
-            TransactionsRoute.exportTransactions.name,
-          ),
+          onAction: () =>
+              context.pushNamed(TransactionsRoute.exportTransactions.name),
         ),
         backgroundColor: context.appColors.onPrimary,
         elevation: 0,
@@ -50,10 +49,9 @@ class _Screen extends StatelessWidget {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return BBPullableBody(
       onRefresh: () async {
-        // User gesture — bypass the coordinator throttle.
-        final bloc = context.read<WalletBloc>();
-        bloc.add(const WalletRefreshed(force: true));
-        await bloc.stream.firstWhere((state) => !state.isRefreshing);
+        // Wait for the chain sync (bitcoin + liquid + swaps) to actually
+        // finish before reloading the local tx list.
+        await context.read<WalletBloc>().refresh();
         if (!context.mounted) return;
         await context.read<TransactionsCubit>().loadTxs();
       },

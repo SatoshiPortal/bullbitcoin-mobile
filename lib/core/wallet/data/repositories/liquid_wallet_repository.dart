@@ -12,18 +12,17 @@ class LiquidWalletRepository {
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _seed = seedDatasource,
+  }) : _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 
   Future<String> buildPset({
     required String walletId,
     required String address,
     int? amountSat,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     bool? drain,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -45,7 +44,7 @@ class LiquidWalletRepository {
       wallet: wallet,
       address: address,
       amountSat: amountSat,
-      networkFee: networkFee,
+      feeRate: feeRate,
       drain: drain ?? false,
     );
 

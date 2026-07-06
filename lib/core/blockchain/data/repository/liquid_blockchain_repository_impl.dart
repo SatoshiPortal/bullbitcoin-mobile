@@ -9,9 +9,8 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
 
   const LiquidBlockchainRepositoryImpl({
     required LwkLiquidBlockchainDatasource blockchainDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _blockchain = blockchainDatasource,
-       _serversPort = serversPort;
+    required this._serversPort,
+  }) : _blockchain = blockchainDatasource;
 
   @override
   Future<String> broadcastTransaction({

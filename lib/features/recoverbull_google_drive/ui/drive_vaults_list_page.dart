@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/event.dart';
+import 'package:bb_mobile/features/recoverbull_google_drive/presentation/recoverbull_google_drive_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +26,7 @@ class DriveVaultsListPage extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    final error = state.error;
+    final failure = state.failure;
     final driveMetadata = state.driveMetadata;
 
     return Scaffold(
@@ -46,32 +47,35 @@ class DriveVaultsListPage extends StatelessWidget {
             height: 2.0,
           ),
           Expanded(
-            child:
-                error != null
-                    ? Center(child: Text(error.toTranslated(context)))
-                    : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            if (!state.isLoading && driveMetadata.isEmpty)
-                              Center(child: Text(context.loc.recoverbullGoogleDriveNoBackupsFound)),
+            child: failure != null
+                ? Center(child: Text(failure.toTranslated(context)))
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          if (!state.isLoading && driveMetadata.isEmpty)
+                            Center(
+                              child: Text(
+                                context
+                                    .loc
+                                    .recoverbullGoogleDriveNoBackupsFound,
+                              ),
+                            ),
 
-                            ...List.generate(driveMetadata.length, (index) {
-                              final driveBackupMetadata = driveMetadata[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                                child: _DriveFileMetadataItem(
-                                  driveFileMetadata: driveBackupMetadata,
-                                ),
-                              );
-                            }),
-                          ],
-                        ),
+                          ...List.generate(driveMetadata.length, (index) {
+                            final driveBackupMetadata = driveMetadata[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: _DriveFileMetadataItem(
+                                driveFileMetadata: driveBackupMetadata,
+                              ),
+                            );
+                          }),
+                        ],
                       ),
                     ),
+                  ),
           ),
         ],
       ),
@@ -93,8 +97,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.4,
         ),
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          color: context.appColors.onSecondary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -142,15 +146,18 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          color: context.appColors.onSecondary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
             mainAxisSize: .min,
             children: [
-              BBText(context.loc.recoverbullGoogleDriveDeleteVaultTitle, style: context.font.headlineMedium),
+              BBText(
+                context.loc.recoverbullGoogleDriveDeleteVaultTitle,
+                style: context.font.headlineMedium,
+              ),
               const Gap(16),
               BBText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
@@ -201,10 +208,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
         maxLines: 2,
         overflow: .ellipsis,
       ),
-      onTap:
-          () => bloc.add(
-            OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata),
-          ),
+      onTap: () =>
+          bloc.add(OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata)),
       onLongPress: () => _showActionsBottomSheet(context),
       enabled: !state.isLoading,
     );

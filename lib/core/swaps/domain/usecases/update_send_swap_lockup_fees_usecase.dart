@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 class UpdateSendSwapLockupFeesUsecase {
   final BoltzSwapRepository _swapRepository;
 
-  UpdateSendSwapLockupFeesUsecase({required BoltzSwapRepository swapRepository})
-    : _swapRepository = swapRepository;
+  UpdateSendSwapLockupFeesUsecase({required this._swapRepository});
 
   Future<Swap> execute({
     required String swapId,

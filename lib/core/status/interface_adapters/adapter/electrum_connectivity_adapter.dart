@@ -12,12 +12,10 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
   final SettingsRepository _settingsRepository;
 
   ElectrumConnectivityAdapter({
-    required ElectrumServerRepository electrumServerRepository,
-    required ServerStatusPort serverStatusPort,
-    required SettingsRepository settingsRepository,
-  }) : _electrumServerRepository = electrumServerRepository,
-       _serverStatusPort = serverStatusPort,
-       _settingsRepository = settingsRepository;
+    required this._electrumServerRepository,
+    required this._serverStatusPort,
+    required this._settingsRepository,
+  });
 
   @override
   Future<bool> checkServersInUseAreOnlineForNetwork(Network network) async {
@@ -26,13 +24,20 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
       isLiquid: network.isLiquid,
     );
 
-    final (servers, _) = await (
+    final (serversResult, _) = await (
       _electrumServerRepository.fetchAll(
         isTestnet: serverNetwork.isTestnet,
         isLiquid: serverNetwork.isLiquid,
       ),
       _settingsRepository.fetch(),
     ).wait;
+
+    final servers = serversResult.fold(
+      (value) => value,
+      (failure) => throw Exception(
+        failure.logMessage ?? 'Failed to fetch electrum servers',
+      ),
+    );
 
     if (servers.isEmpty) return false;
 

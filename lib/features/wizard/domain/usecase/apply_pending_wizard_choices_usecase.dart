@@ -9,10 +9,9 @@ import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.da
 /// to call when nothing is staged — short-circuits.
 class ApplyPendingWizardChoicesUsecase {
   ApplyPendingWizardChoicesUsecase({
-    required WizardRepository wizardRepository,
-    required SettingsRepository settingsRepository,
-  }) : _wizardRepository = wizardRepository,
-       _settingsRepository = settingsRepository;
+    required this._wizardRepository,
+    required this._settingsRepository,
+  });
 
   final WizardRepository _wizardRepository;
   final SettingsRepository _settingsRepository;

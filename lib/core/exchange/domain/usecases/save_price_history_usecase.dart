@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dar
 class SavePriceHistoryUsecase {
   final PriceRepository _priceRepository;
 
-  SavePriceHistoryUsecase({required PriceRepository priceRepository})
-    : _priceRepository = priceRepository;
+  SavePriceHistoryUsecase({required this._priceRepository});
 
   Future<void> execute(List<Rate> prices) async {
     await _priceRepository.savePriceHistory(prices);

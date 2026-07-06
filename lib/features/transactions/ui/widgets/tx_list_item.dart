@@ -137,9 +137,7 @@ class TxListItem extends StatelessWidget {
                             !showOrderInFiat &&
                             orderAmountAndCurrency != null
                         ? orderAmountAndCurrency.$1.toInt()
-                        : tx.isSwap && tx.swap != null
-                        ? (tx.swap!.amountSat)
-                        : tx.amountSat,
+                        : tx.swapListAmountSat,
                     showFiat: false,
                     style: context.font.bodyLarge,
                     fiatAmount:

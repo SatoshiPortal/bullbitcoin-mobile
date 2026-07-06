@@ -11,10 +11,9 @@ class GetLedgerWatchOnlyWalletUsecase {
   final SettingsRepository _settingsRepository;
 
   GetLedgerWatchOnlyWalletUsecase({
-    required LedgerDeviceRepository repository,
-    required SettingsRepository settingsRepository,
-  }) : _repository = repository,
-       _settingsRepository = settingsRepository;
+    required this._repository,
+    required this._settingsRepository,
+  });
 
   Future<WatchOnlyWalletEntity> execute({
     required String label,

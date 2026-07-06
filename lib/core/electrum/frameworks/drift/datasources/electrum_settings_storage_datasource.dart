@@ -8,8 +8,7 @@ import 'package:drift/drift.dart';
 class ElectrumSettingsStorageDatasource {
   final SqliteDatabase _sqlite;
 
-  const ElectrumSettingsStorageDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  const ElectrumSettingsStorageDatasource({required this._sqlite});
 
   Future<void> store(ElectrumSettingsModel settings) async {
     try {

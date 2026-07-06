@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 class WatchPayjoinUsecase {
   final PayjoinRepository _payjoinRepository;
 
-  const WatchPayjoinUsecase({required PayjoinRepository payjoinRepository})
-    : _payjoinRepository = payjoinRepository;
+  const WatchPayjoinUsecase({required this._payjoinRepository});
 
   Stream<PayjoinReceiver> execute({List<String>? ids}) {
     try {

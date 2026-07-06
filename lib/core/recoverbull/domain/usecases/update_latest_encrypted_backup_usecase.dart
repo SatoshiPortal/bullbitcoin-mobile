@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -14,12 +16,15 @@ class UpdateLatestEncryptedVaultTestUsecase {
   final SettingsRepository _settingsRepository;
 
   UpdateLatestEncryptedVaultTestUsecase({
-    required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
-  }) : _walletRepository = walletRepository,
-       _settingsRepository = settingsRepository;
+    required this._walletRepository,
+    required this._settingsRepository,
+  });
 
-  Future<void> execute({required DecryptedVault decryptedVault}) async {
+  // Orchestrates the still-throwing wallet/settings core repos; the local
+  // try/catch is the boundary, mapping any failure to a sanitized core failure.
+  Future<Result<Null, RecoverBullCoreFailure>> execute({
+    required DecryptedVault decryptedVault,
+  }) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
         words: decryptedVault.mnemonic,
@@ -52,9 +57,14 @@ class UpdateLatestEncryptedVaultTestUsecase {
           );
         }
       }
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      rethrow;
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(
+        message: 'updateLatestEncryptedVault failed',
+        error: e,
+        trace: st,
+      );
+      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
     }
   }
 }

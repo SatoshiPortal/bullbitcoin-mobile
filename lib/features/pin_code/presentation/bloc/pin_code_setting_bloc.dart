@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
@@ -15,17 +17,13 @@ part 'pin_code_setting_state.dart';
 class PinCodeSettingBloc
     extends Bloc<PinCodeSettingEvent, PinCodeSettingState> {
   PinCodeSettingBloc({
-    required SetPinCodeUsecase setPinCodeUsecase,
-    required DeletePinCodeUsecase deletePinCodeUsecase,
-    required IsPinCodeSetUsecase isPinCodeSetUsecase,
-    required CheckBackupUsecase checkBackupUsecase,
+    required this._setPinCodeUsecase,
+    required this._deletePinCodeUsecase,
+    required this._isPinCodeSetUsecase,
+    required this._checkBackupUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  }) : _setPinCodeUsecase = setPinCodeUsecase,
-       _deletePinCodeUsecase = deletePinCodeUsecase,
-       _isPinCodeSetUsecase = isPinCodeSetUsecase,
-       _checkBackupUsecase = checkBackupUsecase,
-       super(
+  }) : super(
          PinCodeSettingState(
            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
            confirmPinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
@@ -58,18 +56,30 @@ class PinCodeSettingBloc
     PinCodeSettingInitialized event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    final isPinCodeSet = await _isPinCodeSetUsecase.execute();
-    if (!isPinCodeSet) {
-      var status = PinCodeSettingStatus.choose;
-
-      final hasBackup = await _checkBackupUsecase.execute();
-      if (!hasBackup) status = PinCodeSettingStatus.backupRequired;
-
-      emit(state.copyWith(status: status, isPinCodeSet: false));
-    } else {
-      emit(
-        state.copyWith(status: PinCodeSettingStatus.unlock, isPinCodeSet: true),
-      );
+    final result = await _isPinCodeSetUsecase.execute();
+    switch (result) {
+      case Ok(:final value):
+        if (!value) {
+          final hasBackup = await _checkBackupUsecase.execute();
+          final status = hasBackup
+              ? PinCodeSettingStatus.choose
+              : PinCodeSettingStatus.backupRequired;
+          emit(state.copyWith(status: status, isPinCodeSet: false));
+        } else {
+          emit(
+            state.copyWith(
+              status: PinCodeSettingStatus.unlock,
+              isPinCodeSet: true,
+            ),
+          );
+        }
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.failure,
+            failure: failure,
+          ),
+        );
     }
   }
 
@@ -82,13 +92,23 @@ class PinCodeSettingBloc
     PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    final isPinCodeSet = await _isPinCodeSetUsecase.execute();
-    emit(
-      state.copyWith(
-        status: PinCodeSettingStatus.settings,
-        isPinCodeSet: isPinCodeSet,
-      ),
-    );
+    final result = await _isPinCodeSetUsecase.execute();
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.settings,
+            isPinCodeSet: value,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.failure,
+            failure: failure,
+          ),
+        );
+    }
   }
 
   Future<void> _onCreatePin(
@@ -105,10 +125,23 @@ class PinCodeSettingBloc
     PinCodeDelete event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    await _deletePinCodeUsecase.execute();
-    emit(
-      state.copyWith(status: PinCodeSettingStatus.deleted, isPinCodeSet: false),
-    );
+    final result = await _deletePinCodeUsecase.execute();
+    switch (result) {
+      case Ok():
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.deleted,
+            isPinCodeSet: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.failure,
+            failure: failure,
+          ),
+        );
+    }
   }
 
   Future<void> _onPinCodeNumberAdded(
@@ -195,12 +228,18 @@ class PinCodeSettingBloc
     }
 
     emit(state.copyWith(isConfirming: true));
-    try {
-      await _setPinCodeUsecase.execute(state.pinCode);
-
-      emit(state.copyWith(status: PinCodeSettingStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: PinCodeSettingStatus.failure, error: e));
+    final result = await _setPinCodeUsecase.execute(state.pinCode);
+    switch (result) {
+      case Ok():
+        emit(state.copyWith(status: PinCodeSettingStatus.success));
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: PinCodeSettingStatus.failure,
+            failure: failure,
+            isConfirming: false,
+          ),
+        );
     }
   }
 

@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'dart:convert';
+
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
@@ -9,68 +12,109 @@ class FeesDatasource {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
   final MempoolSettingsRepository _mempoolSettingsRepository;
 
-  FeesDatasource({
-    required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
-    required MempoolSettingsRepository mempoolSettingsRepository,
-  })  : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase,
-        _mempoolSettingsRepository = mempoolSettingsRepository;
+  /// Builds the HTTP client for a resolved base URL. Injected so tests can
+  /// supply a mock; defaults to a real Dio. The base URL is only known at
+  /// call time (custom server vs BB, mainnet vs testnet), so this is a
+  /// builder rather than a pre-built client.
+  final Dio Function(String baseUrl) _dioBuilder;
 
-  Future<FeeOptions> getBitcoinNetworkFeeOptions({
+  FeesDatasource({
+    required this._getActiveMempoolServerUsecase,
+    required this._mempoolSettingsRepository,
+    Dio Function(String baseUrl)? dioBuilder,
+  }) : _dioBuilder = dioBuilder ?? _defaultDioBuilder;
+
+  static Dio _defaultDioBuilder(String baseUrl) =>
+      Dio(BaseOptions(baseUrl: baseUrl));
+
+  /// Fetches precise (sub-1 sat/vByte) fee rates from the mempool API.
+  ///
+  /// Tries `/api/v1/fees/precise` first. If it fails for any reason — a
+  /// server too old to expose it (404), a transient error, or a malformed
+  /// body — falls back to the rounded `/api/v1/fees/recommended` so a
+  /// custom/self-hosted mempool keeps working. Both endpoints return the
+  /// same JSON shape, so the same model parses either. Throws only when
+  /// neither endpoint yields a usable response.
+  Future<MempoolFeesModel> fetchBitcoinNetworkFees({
     required bool isTestnet,
   }) async {
-    // Get network settings
     final network = MempoolServerNetwork.fromEnvironment(
       isTestnet: isTestnet,
       isLiquid: false,
     );
-    final settings = await _mempoolSettingsRepository.fetchByNetwork(network);
+    final settings = (await _mempoolSettingsRepository.fetchByNetwork(network))
+        .fold(
+          (value) => value,
+          (_) => throw Exception('Failed to fetch mempool settings'),
+        );
 
-    // Determine which mempool server to use
+    // Determine which mempool server to use.
     String baseUrl;
     if (settings.useForFeeEstimation) {
       // Use custom or default mempool server from settings
-      final server = await _getActiveMempoolServerUsecase.execute(
+      final server = (await _getActiveMempoolServerUsecase.execute(
         isTestnet: isTestnet,
         isLiquid: false,
+      )).fold(
+        (s) => s,
+        (_) => throw Exception('Failed to fetch active mempool server'),
       );
       baseUrl = server.fullUrl;
     } else {
-      // Fall back to BB's mempool
+      // Fall back to BB's mempool.
       baseUrl = isTestnet
           ? 'https://${ApiServiceConstants.testnetMempoolUrlPath}'
           : 'https://${ApiServiceConstants.bbMempoolUrlPath}';
     }
 
-    final http = Dio(BaseOptions(baseUrl: baseUrl));
-    const path = '/api/v1/fees/recommended';
+    final http = _dioBuilder(baseUrl);
 
-    final resp = await http.get(path);
-    if (resp.statusCode == null || resp.statusCode != 200) {
-      throw 'Error fetching fees from Mempool API (status: ${resp.statusCode})';
+    final fees =
+        await _getFees(http, ApiServiceConstants.mempoolPreciseFeesPath) ??
+        await _getFees(http, ApiServiceConstants.mempoolRecommendedFeesPath);
+    if (fees == null) {
+      throw MempoolFeesException(
+        'No mempool fee endpoint available at $baseUrl',
+      );
     }
-    final data = resp.data as Map<String, dynamic>;
-    final fastestFee = data['fastestFee'] as int;
-    final economyFee = data['economyFee'] as int;
-    final minimumFee = data['minimumFee'] as int;
 
-    final feeOptions = FeeOptions(
-      fastest: NetworkFee.relative(fastestFee.toDouble()),
-      economic: NetworkFee.relative(economyFee.toDouble()),
-      slow: NetworkFee.relative(minimumFee.toDouble()),
-    );
-
-    return feeOptions;
+    return fees;
   }
 
-  Future<FeeOptions> getLiquidNetworkFeeOptions({
-    required bool isTestnet,
-  }) async {
-    const feeOptions = FeeOptions(
-      fastest: NetworkFee.relative(0.1),
-      economic: NetworkFee.relative(0.1),
-      slow: NetworkFee.relative(0.1),
-    );
-
-    return feeOptions;
+  /// GETs a fee endpoint and parses it. Returns the model on a 200 with a
+  /// well-formed body, or `null` on any failure — non-200, network/Dio
+  /// error, non-object body, or a 200 whose body is missing or has a
+  /// non-numeric fee field — so the caller can fall back to the next path.
+  /// Parsing happens here (not at the call site) so a malformed-but-200
+  /// precise response falls back to recommended instead of throwing.
+  Future<MempoolFeesModel?> _getFees(Dio http, String path) async {
+    try {
+      final resp = await http.get<dynamic>(path);
+      if (resp.statusCode != 200) return null;
+      var data = resp.data;
+      // Dio only auto-decodes when the server sends a JSON content-type. A
+      // working-but-misconfigured self-hosted mempool returning the body as
+      // text/plain would otherwise silently drop precise → recommended,
+      // losing the sub-1 sat/vByte rates this whole path exists for. Decode
+      // a string body before the Map check; a non-JSON string throws and is
+      // caught below (→ fallback).
+      if (data is String && data.isNotEmpty) {
+        data = jsonDecode(data);
+      }
+      if (data is Map<String, dynamic>) {
+        return MempoolFeesModel.fromJson(data);
+      }
+      return null;
+    } on DioException {
+      return null;
+    } catch (_) {
+      // A 200 with a malformed/partial body — `fromJson` throws on a missing
+      // or non-numeric fee field. Fall back rather than failing the fetch.
+      return null;
+    }
   }
+}
+
+class MempoolFeesException extends BullException {
+  MempoolFeesException(super.message);
 }

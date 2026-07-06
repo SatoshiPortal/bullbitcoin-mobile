@@ -15,14 +15,13 @@ class VaultCreatedPage extends StatelessWidget {
       description: context.loc.recoverbullTestBackupDescription,
       isLoading: false,
       buttonText: context.loc.recoverbullTestRecovery,
-      onTap:
-          () => context.goNamed(
-            RecoverBullRoute.recoverbullFlows.name,
-            extra: RecoverBullFlowsExtra(
-              flow: RecoverBullFlow.testVault,
-              vault: null,
-            ),
-          ),
+      onTap: () => context.goNamed(
+        RecoverBullRoute.recoverbullFlows.name,
+        extra: RecoverBullFlowsExtra(
+          flow: RecoverBullFlow.testVault,
+          vault: null,
+        ),
+      ),
     );
   }
 }

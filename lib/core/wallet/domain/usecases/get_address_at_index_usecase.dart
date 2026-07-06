@@ -6,8 +6,8 @@ class GetAddressAtIndexUsecase {
   final WalletAddressRepository _walletAddressRepository;
 
   GetAddressAtIndexUsecase({
-    required WalletAddressRepository walletAddressRepository,
-  }) : _walletAddressRepository = walletAddressRepository;
+    required this._walletAddressRepository,
+  });
 
   Future<WalletAddress> execute({
     required String walletId,

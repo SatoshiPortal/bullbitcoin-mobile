@@ -27,28 +27,17 @@ part 'buy_state.dart';
 
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
-    required GetWalletsUsecase getWalletsUsecase,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required ConfirmBuyOrderUsecase confirmBuyOrderUsecase,
-    required CreateBuyOrderUsecase createBuyOrderUsecase,
-    required RefreshBuyOrderUsecase refreshBuyOrderUsecase,
-    required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-  }) : _getWalletsUsecase = getWalletsUsecase,
-       _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _confirmBuyOrderUsecase = confirmBuyOrderUsecase,
-       _createBuyOrderUsecase = createBuyOrderUsecase,
-       _refreshBuyOrderUsecase = refreshBuyOrderUsecase,
-       _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       super(const BuyState()) {
+    required this._getWalletsUsecase,
+    required this._getReceiveAddressUsecase,
+    required this._getExchangeUserSummaryUsecase,
+    required this._confirmBuyOrderUsecase,
+    required this._createBuyOrderUsecase,
+    required this._refreshBuyOrderUsecase,
+    required this._getNetworkFeesUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._accelerateBuyOrderUsecase,
+    required this._getSettingsUsecase,
+  }) : super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
     on<_BuyCurrencyInputChanged>(_onCurrencyInputChanged);

@@ -4,8 +4,7 @@ import 'package:drift/drift.dart';
 class RecoverbullSettingsDatasource {
   final SqliteDatabase _sqlite;
 
-  RecoverbullSettingsDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  RecoverbullSettingsDatasource({required this._sqlite});
 
   Future<void> store(Uri url) async {
     await _sqlite
@@ -20,8 +19,9 @@ class RecoverbullSettingsDatasource {
   }
 
   Future<Uri> fetch() async {
-    final row =
-        await _sqlite.managers.recoverbull.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.recoverbull
+        .filter((f) => f.id(1))
+        .getSingle();
     return Uri.parse(row.url);
   }
 
@@ -32,8 +32,9 @@ class RecoverbullSettingsDatasource {
   }
 
   Future<bool> fetchPermission() async {
-    final row =
-        await _sqlite.managers.recoverbull.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.recoverbull
+        .filter((f) => f.id(1))
+        .getSingle();
     return row.isPermissionGranted;
   }
 }

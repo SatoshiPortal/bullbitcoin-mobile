@@ -1,94 +1,136 @@
 name: Analyze and Test
 
 on:
-    pull_request:
-        branches:
-            - main
-            - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+# Checkout + tests only; no writes to the repo via the token.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same PR — this build is heavy (Rust FRB crates +
+# Flutter SDK + Linux GTK app + integration tests), so don't run stale commits to
+# completion when newer ones are pushed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    analyze_and_test:
-        runs-on: ubuntu-24.04
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v6
+  analyze_and_test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-            # Caches below are restored before any toolchain step that uses
-            # them, so the SDK download / pub resolve / crate fetch on a cold
-            # runner only pays out on a cache miss. The pub cache also holds the
-            # bull_sdk git clone; the Cargo cache holds its transitive crates.io
-            # deps. All three keys derive from lockfiles, so they self-invalidate
-            # when deps change. pubspec.lock pins the bull_sdk commit, so it is
-            # the right key for the Cargo cache (there is no repo-root Cargo.lock).
-            - name: Cache Flutter SDK (FVM)
-              uses: actions/cache@v5
-              with:
-                  path: ~/fvm/versions
-                  key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
+      # The job builds the FRB Rust crates, the Flutter SDK toolchain, the
+      # Linux desktop app and runs integration tests on one runner; the stock
+      # ubuntu-24.04 image fills up and the runner dies with "No space left on
+      # device". Reclaim the unused pre-installed toolchains first.
+      - name: Free disk space
+        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
+        # on a runner that can hold PR test secrets — a retag must not run here.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
 
-            - name: Cache pub (hosted + git deps)
-              uses: actions/cache@v5
-              with:
-                  path: ~/.pub-cache
-                  key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-                  restore-keys: pub-${{ runner.os }}-
+      # Caches below are restored before any toolchain step that uses
+      # them, so the SDK download / pub resolve / crate fetch on a cold
+      # runner only pays out on a cache miss. The pub cache also holds the
+      # bull_sdk git clone; the Cargo cache holds its transitive crates.io
+      # deps. All three keys derive from lockfiles, so they self-invalidate
+      # when deps change. pubspec.lock pins the bull_sdk commit, so it is
+      # the right key for the Cargo cache (there is no repo-root Cargo.lock).
+      - name: Cache Flutter SDK (FVM)
+        uses: actions/cache@v6
+        with:
+          path: ~/fvm/versions
+          key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
-            - name: Cache Cargo (FRB native crates)
-              uses: actions/cache@v5
-              with:
-                  path: |
-                      ~/.cargo/registry
-                      ~/.cargo/git
-                  key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-                  restore-keys: cargo-${{ runner.os }}-
+      # No restore-keys here on purpose: the pub cache holds the bull_sdk git
+      # clone, and a fuzzy fallback can restore a checkout from an OLDER lock
+      # whose pinned commit differs. pub then resolves against that stale clone,
+      # so `pub get --enforce-lockfile` sees deps the committed lock doesn't (it
+      # fails wanting to drop them). The exact key already pins the commit via
+      # pubspec.lock, so an unchanged lock still hits; a changed lock does one
+      # clean fetch and re-caches.
+      - name: Cache pub (hosted + git deps)
+        uses: actions/cache@v6
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
-            - name: Install FVM
-              run: |
-                  curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
-                  echo "$HOME/fvm/bin" >> $GITHUB_PATH
+      - name: Cache Cargo (FRB native crates)
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
 
-            - run: make fvm-check
-            - run: make deps
-            - run: make build-runner
-            - run: make translations
+      - name: Install FVM
+        run: |
+          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.1.1
+          echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
-            - name: Create .env file
-              run: |
-                  echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
-                  echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
+      - run: make fvm-check
+      - run: make deps
+      - run: make build-runner
+      - run: make translations
 
-            - name: Linter shouldn't raise errors, warnings or infos
-              run: fvm flutter analyze --fatal-warnings --fatal-infos
+      - name: Linter shouldn't raise errors, warnings or infos
+        run: make analyze
 
-            - name: dart fix should have nothing to suggest
-              run: |
-                  output=$(fvm dart fix --dry-run)
-                  echo "$output"
-                  echo "$output" | grep -q "Nothing to fix!"
+      - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
+        run: |
+          if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then
+            echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"
+            exit 1
+          fi
 
-            - name: Unit tests must pass
-              run: make unit-test
+      - name: dart fix should have nothing to suggest
+        run: |
+          output=$(fvm dart fix --dry-run)
+          echo "$output"
+          echo "$output" | grep -q "Nothing to fix!"
 
-            - name: Install Linux desktop for integration tests
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y \
-                    clang lld cmake ninja-build pkg-config \
-                    libgtk-3-dev liblzma-dev libstdc++-12-dev \
-                    libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
-                    dbus gnome-keyring \
-                    xdg-desktop-portal xdg-desktop-portal-gtk \
-                    libsqlite3-dev xvfb xauth
+      - name: Unit tests must pass
+        run: make unit-test
 
-            # The tests build and launch the real Linux GTK app, which needs a
-            # display to init even though the tests themselves render nothing —
-            # on a headless runner the app aborts at startup ("log reader
-            # stopped unexpectedly / Unable to start the app on the device").
-            # xvfb-run gives it a virtual X server. dbus-run-session + an
-            # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
-            - name: Integration tests (Linux desktop)
-              run: |
-                  xvfb-run -a dbus-run-session -- bash -c '
-                    echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
-                    make integration-test
-                  '
+      - name: Install Linux desktop for integration tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang lld cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
+            dbus gnome-keyring \
+            xdg-desktop-portal xdg-desktop-portal-gtk \
+            libsqlite3-dev xvfb xauth
+
+      # The tests build and launch the real Linux GTK app, which needs a
+      # display to init even though the tests themselves render nothing —
+      # on a headless runner the app aborts at startup ("log reader
+      # stopped unexpectedly / Unable to start the app on the device").
+      # xvfb-run gives it a virtual X server. dbus-run-session + an
+      # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
+      # Tests read the mnemonics via Platform.environment, so the secrets are
+      # exported as real env vars (not a .env file, which nothing loads). When a
+      # secret is unset (e.g. on forks) the var is empty and the funded-testnet
+      # groups skip themselves — "use the mnemonic if available".
+      - name: Integration tests (Linux desktop)
+        env:
+          TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
+          TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
+        run: |
+          xvfb-run -a dbus-run-session -- bash -c '
+            echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
+            make integration-test
+          '
