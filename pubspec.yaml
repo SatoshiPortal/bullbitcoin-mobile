@@ -19,8 +19,8 @@ dependencies:
   bull_ui:
   bdk_dart:
     git:
-      url: https://github.com/bitcoindevkit/bdk-dart
-      ref: 1377091a42743761be71ff42e01b8ff65531fbd3
+      url: https://github.com/ethicnology/bdk-dart
+      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -149,6 +149,17 @@ dependencies:
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.22.0
   keyboard_actions: ^4.2.1
+
+# Force a single bdk_dart across the whole graph onto the reproducible-build fork.
+# satoshifier (from bull_sdk) transitively pins bitcoindevkit/bdk-dart@1377091;
+# ethicnology/bdk-dart@a3873c0 is that same commit plus a committed Cargo.lock and
+# codegen-units=1 (no Dart API change, same 1.0.0-rc.2), so the override is safe and
+# makes libbdk_dart_ffi.so reproducible.
+dependency_overrides:
+  bdk_dart:
+    git:
+      url: https://github.com/ethicnology/bdk-dart
+      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
 
 dev_dependencies:
   build_runner: ^2.10.4
