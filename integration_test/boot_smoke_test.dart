@@ -3,6 +3,8 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
+import 'package:bb_mobile/features/payment_page/presentation/payment_page_cubit.dart';
+import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/send/domain/ports/liquid_direct_pay_port.dart';
 import 'package:bb_mobile/features/send/domain/usecases/build_bullpay_proof_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/try_liquid_direct_pay_usecase.dart';
@@ -39,6 +41,9 @@ Future<void> main({bool isInitialized = false}) async {
     expect(() => locator<DeterministicWalletsFacade>(), returnsNormally);
     expect(() => locator<WalletRepository>(), returnsNormally);
     expect(() => locator<SettingsCubit>(), returnsNormally);
+    // PR26 wiring (AD-10): the Payment Page facade + cubit resolve once.
+    expect(() => locator<PaymentPageFacade>(), returnsNormally);
+    expect(() => locator<PaymentPageCubit>(), returnsNormally);
     // PR25 wiring (SPEC-BOOT-01+): the LUD-22 direct-pay port + usecases
     // resolve once from the real graph (the SendCubit consumes them).
     expect(() => locator<LiquidDirectPayPort>(), returnsNormally);

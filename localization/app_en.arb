@@ -982,6 +982,18 @@
   "@paymentPageOperationInProgress": {
     "description": "Snackbar shown when the user tries to leave during a Donation Page operation"
   },
+  "paymentPageHealNeedsReactivation": "Your Donation Page needs to be set up again after recovery.",
+  "@paymentPageHealNeedsReactivation": {
+    "description": "Recovery notice when the recovered Donation Page row is missing"
+  },
+  "paymentPageHealNeedsReactivationAction": "Set up your Donation Page",
+  "@paymentPageHealNeedsReactivationAction": {
+    "description": "Button to re-create the Donation Page after recovery"
+  },
+  "paymentPageHealUnreachable": "We couldn't verify your Donation Page. Check it in Bitcoin settings.",
+  "@paymentPageHealUnreachable": {
+    "description": "Recovery notice when the Donation Page liveness check could not reach the server"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

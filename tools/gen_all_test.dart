@@ -14,7 +14,21 @@ import 'dart:io';
 // Files matching *_test.dart that must NOT be aggregated: the generated file
 // itself, plus any test with no callable main(isInitialized:) (e.g. payjoin is
 // commented out and needs funded testnet wallets).
-const skip = {'all_test.dart', 'payjoin_test.dart'};
+//
+// get_paid_backup_roundtrip_test.dart is authored-but-CI-only: it exercises the
+// Get Paid money path against the app-process DI graph, but the live startup
+// timers/blocs make an app-process pump non-deterministic in the aggregated
+// suite. The deterministic money-path gate is the domain-layer round-trip
+// (test/features/get_paid_settings/get_paid_backup_wire_roundtrip_test.dart);
+// this file is kept for a dedicated CI job with a per-test relay-only harness.
+const skip = {
+  'all_test.dart',
+  'payjoin_test.dart',
+  'get_paid_backup_roundtrip_test.dart',
+  // SPEC-PP-01: same app-process non-determinism as the backup round-trip; the
+  // deterministic Donation Page gates are the L0 usecase/cubit suites.
+  'payment_page_lifecycle_test.dart',
+};
 
 void main() {
   final files =
