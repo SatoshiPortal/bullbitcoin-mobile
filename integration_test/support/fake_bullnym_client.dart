@@ -17,7 +17,6 @@ enum FakeDonationPageMode {
   normal,
   missing,
   archived,
-  saveAuthError,
   serverUnreachable,
 }
 
@@ -173,14 +172,6 @@ class FakeBullnymClient implements BullnymClientPort {
     saveDonationPageCalls.add(request);
     if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
       throw _serverUnreachable();
-    }
-    if (donationPageMode == FakeDonationPageMode.saveAuthError) {
-      throw const BullnymException.serverRejectedRequest(
-        code: 'AuthError',
-        diagnosticReason: 'signature verification failed',
-        statusCode: 401,
-        retryable: false,
-      );
     }
     final page = BullnymDonationPage(
       nym: request.nym,

@@ -155,6 +155,32 @@ void main() {
     expect(client.saveCalls, isEmpty);
   });
 
+  test('refuses an empty descriptor before signing/wire (KR-1 guard)',
+      () async {
+    // Defense-in-depth: even if a prepared wallet somehow yields an empty
+    // descriptor, the save must fail BEFORE the wire so page funds can never
+    // route to the LA wallet via the server's empty-descriptor fallback.
+    stubPrepared(ctDescriptor: '');
+
+    await expectLater(
+      usecase.execute(
+        header: 'Tip me',
+        description: 'Support my work',
+        displayCurrency: 'CAD',
+      ),
+      throwsA(
+        isA<PaymentPageSaveException>()
+            .having(
+              (e) => e.phase,
+              'phase',
+              PaymentPageSaveFailurePhase.localPreparation,
+            )
+            .having((e) => e.code, 'code', 'EmptyPageDescriptor'),
+      ),
+    );
+    expect(client.saveCalls, isEmpty);
+  });
+
   test('wraps a preparation failure as the localPreparation phase', () async {
     when(() => prepareWallet.execute()).thenThrow(
       const PaymentPageException.localPreparationFailed(

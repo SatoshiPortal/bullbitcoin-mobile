@@ -57,8 +57,17 @@ class SavePaymentPageUsecase {
         identity = await _resolveIdentity.execute();
         final preparedWallet = await _prepareWallet.execute();
         // KR-1: the descriptor is ALWAYS the prepared wallet's non-empty
-        // external public descriptor — never empty, never absent.
+        // external public descriptor — never empty, never absent. This runtime
+        // guard makes the invariant explicit and fails BEFORE signing/wire so
+        // page funds can never route to the LA wallet (101) via the server's
+        // empty-descriptor -> NULL fallback.
         ctDescriptor = preparedWallet.ctDescriptor;
+        if (ctDescriptor.isEmpty) {
+          throw const PaymentPageException.localPreparationFailed(
+            code: 'EmptyPageDescriptor',
+            retryable: false,
+          );
+        }
         walletCreated = preparedWallet.created;
         walletPrepared = true;
       } on PaymentPageException catch (e) {
