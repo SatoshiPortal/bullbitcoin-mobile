@@ -3,8 +3,10 @@
 // generic so the future POS surface reuses the same wire methods with `pos`.
 const String bullnymDonationPageKindPaymentPage = 'payment_page';
 
-// Data-layer constant: the donation-page surface discriminator for Point of
-// Sale. POS is a kind, never a `pos_mode` wire field.
+// Data-layer constant: the donation-page surface discriminator for the Point of
+// Sale. The pos feature pins this on every save/archive/GET so POS sales settle
+// to wallet 103; it rides the SAME wire methods as the page (only `kind`
+// differs). `pos_mode` is never sent - POS is a kind, never a mode.
 const String bullnymDonationPageKindPos = 'pos';
 
 /// Mirror of the server `DonationPageView` (public read of the current row).

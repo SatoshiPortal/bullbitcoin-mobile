@@ -15,15 +15,40 @@ enum FakeBullnymMode {
 /// Donation-page fault modes for the payment-page/POS recovery matrix.
 enum FakeDonationPageMode { normal, missing, archived, serverUnreachable }
 
+/// Point-of-sale fault modes. Independent of both
+/// [FakeBullnymMode] and [FakeDonationPageMode] so a single instance can hold a
+/// live page (102) while the POS (103) surface is driven through its own
+/// heal/provision faults. Applied only to `kind='pos'` calls;
+/// `kind='payment_page'` calls stay on [donationPageMode].
+enum FakePosMode {
+  /// GET returns the stored pos row (or NotFound if none saved); writes succeed.
+  normal,
+
+  /// GET always throws DonationPageNotFound (pos row purged / never created).
+  missing,
+
+  /// GET returns the stored pos row marked archived.
+  archived,
+
+  /// A kind=pos save/archive fails with AuthError - the pre-release pay2
+  /// fail-closed emulation (KR-2/DG-P7): the old server rebuilds the signed
+  /// message without `kind`, so the signature never verifies.
+  saveAuthError,
+
+  /// Every kind=pos call fails with a retryable server error.
+  serverUnreachable,
+}
+
 /// In-memory Bullnym boundary for Get Paid lifecycle tests.
 ///
 /// The object intentionally survives local app-state wipes so tests can model
 /// automatic remote recovery. Registration and backup faults share one mode;
-/// donation-page faults are independent so product recovery cases can vary
-/// page state without changing the nym lookup state.
+/// donation-page and POS faults are independent so product recovery cases can
+/// vary one surface without changing the other.
 class FakeBullnymClient implements BullnymClientPort {
   FakeBullnymMode mode = FakeBullnymMode.live;
   FakeDonationPageMode donationPageMode = FakeDonationPageMode.normal;
+  FakePosMode posMode = FakePosMode.normal;
   String nym = 'alice';
 
   final List<String> registeredNyms = [];
@@ -146,17 +171,22 @@ class FakeBullnymClient implements BullnymClientPort {
     required String nym,
     required String kind,
   }) async {
-    if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
-      throw _serverUnreachable();
-    }
-    if (donationPageMode == FakeDonationPageMode.missing) {
-      throw _notFound();
+    final isPos = kind == bullnymDonationPageKindPos;
+    if (isPos) {
+      if (posMode == FakePosMode.serverUnreachable) throw _serverUnreachable();
+      if (posMode == FakePosMode.missing) throw _notFound();
+    } else {
+      if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
+        throw _serverUnreachable();
+      }
+      if (donationPageMode == FakeDonationPageMode.missing) throw _notFound();
     }
     final page = _pages[_pageKey(nym, kind)];
     if (page == null) throw _notFound();
-    if (donationPageMode == FakeDonationPageMode.archived) {
-      return _copyWith(page, isArchived: true);
-    }
+    final archived = isPos
+        ? posMode == FakePosMode.archived
+        : donationPageMode == FakeDonationPageMode.archived;
+    if (archived) return _copyWith(page, isArchived: true);
     return page;
   }
 
@@ -165,8 +195,18 @@ class FakeBullnymClient implements BullnymClientPort {
     BullnymSaveDonationPageRequest request,
   ) async {
     saveDonationPageCalls.add(request);
-    if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
-      throw _serverUnreachable();
+    final isPos = request.kind == bullnymDonationPageKindPos;
+    if (isPos) {
+      // KR-1 server backstop: a kind=pos save has NO LA-cursor fallback, so a
+      // descriptorless pos save is HARD-REJECTED here (never silently routed to
+      // the LA wallet 101). The client must make an empty descriptor impossible.
+      if (request.ctDescriptor.isEmpty) throw _donationPageInvalid();
+      if (posMode == FakePosMode.serverUnreachable) throw _serverUnreachable();
+      if (posMode == FakePosMode.saveAuthError) throw _authError();
+    } else {
+      if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
+        throw _serverUnreachable();
+      }
     }
     final page = BullnymDonationPage(
       nym: request.nym,
@@ -180,7 +220,9 @@ class FakeBullnymClient implements BullnymClientPort {
       posMode: request.kind == bullnymDonationPageKindPos,
       enabled: request.enabled,
       isArchived: false,
-      publicUrl: 'https://example.invalid/${request.nym}',
+      publicUrl: isPos
+          ? 'https://example.invalid/${request.nym}/pos'
+          : 'https://example.invalid/${request.nym}',
     );
     _pages[_pageKey(request.nym, request.kind)] = page;
     return page;
@@ -191,8 +233,14 @@ class FakeBullnymClient implements BullnymClientPort {
     BullnymArchiveDonationPageRequest request,
   ) async {
     archiveDonationPageCalls.add(request);
-    if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
-      throw _serverUnreachable();
+    final isPos = request.kind == bullnymDonationPageKindPos;
+    if (isPos) {
+      if (posMode == FakePosMode.serverUnreachable) throw _serverUnreachable();
+      if (posMode == FakePosMode.saveAuthError) throw _authError();
+    } else {
+      if (donationPageMode == FakeDonationPageMode.serverUnreachable) {
+        throw _serverUnreachable();
+      }
     }
     final key = _pageKey(request.nym, request.kind);
     final page = _pages[key];
@@ -246,6 +294,25 @@ class FakeBullnymClient implements BullnymClientPort {
         statusCode: 503,
         retryable: true,
       );
+
+  // The kind=pos server backstop for a descriptorless save (KR-1): the server
+  // rejects it as invalid rather than falling back to any wallet.
+  BullnymException _donationPageInvalid() =>
+      const BullnymException.serverRejectedRequest(
+        code: 'DonationPageInvalid',
+        diagnosticReason: 'kind=pos save requires a non-empty ct_descriptor',
+        statusCode: 400,
+        retryable: false,
+      );
+
+  // The pre-release-server fail-closed emulation (KR-2/DG-P7): signing over a
+  // `kind` the old server does not rebuild yields a signature mismatch.
+  BullnymException _authError() => const BullnymException.serverRejectedRequest(
+    code: 'AuthError',
+    diagnosticReason: 'signature verification failed',
+    statusCode: 401,
+    retryable: false,
+  );
 
   BullnymDonationPage _copyWith(BullnymDonationPage page, {bool? isArchived}) {
     return BullnymDonationPage(

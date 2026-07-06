@@ -490,6 +490,173 @@ void main() {
       );
     });
   });
+
+  // The POS surface uses the same donation-page save/archive wire actions as
+  // Payment Page; only the kind differs. These vectors are append-only so any
+  // shared-layout regression breaks both product contracts.
+  group('T-POS-SIGN save byte layout', () {
+    test('kind constant is the deployed wire value', () {
+      expect(bullnymDonationPageKindPos, 'pos');
+    });
+
+    test(
+      'pins label, empty socials, descriptor, and kind last without pos_mode',
+      () {
+        final oracle = _oracleMessageBytes(
+          action: 'donation-page-save',
+          npubHex: 'npub',
+          nymOrEmpty: 'alice',
+          payloadFields: const [
+            'My Till',
+            '',
+            'CAD',
+            '',
+            '',
+            '',
+            '1',
+            'ct(desc)',
+            'pos',
+          ],
+          timestampSecs: timestamp,
+        );
+
+        expect(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionDonationPageSave,
+            npubHex: 'npub',
+            nymOrEmpty: 'alice',
+            payloadFields: const [
+              'My Till',
+              '',
+              'CAD',
+              '',
+              '',
+              '',
+              '1',
+              'ct(desc)',
+              'pos',
+            ],
+            timestampSecs: timestamp,
+          ),
+          oracle,
+        );
+        expect(utf8.decode(oracle).contains('pos_mode'), isFalse);
+      },
+    );
+  });
+
+  group('T-POS-SIGN archive byte layout', () {
+    test('pins the pos archive layout to the kind field only', () {
+      final oracle = _oracleMessageBytes(
+        action: 'donation-page-archive',
+        npubHex: 'npub',
+        nymOrEmpty: 'alice',
+        payloadFields: const ['pos'],
+        timestampSecs: timestamp,
+      );
+
+      expect(
+        buildBullpaySchnorrMessage(
+          action: bullpayActionDonationPageArchive,
+          npubHex: 'npub',
+          nymOrEmpty: 'alice',
+          payloadFields: const ['pos'],
+          timestampSecs: timestamp,
+        ),
+        oracle,
+      );
+    });
+  });
+
+  group('T-POS-CLIENT save', () {
+    test('PUTs the pos body and signs its exact layout', () async {
+      final stub = _stubDio([_donationPageView(kind: 'pos')]);
+      final facade = _facadeForClient(
+        BullnymHttpClient.withDio(stub.dio),
+        nowSecs: () => timestamp,
+      );
+
+      final page = await facade.saveDonationPage(
+        signer: signer,
+        nym: 'alice',
+        ctDescriptor: 'ct(desc)',
+        header: 'My Till',
+        description: '',
+        displayCurrency: 'CAD',
+        website: '',
+        twitter: '',
+        instagram: '',
+        enabled: true,
+        kind: bullnymDonationPageKindPos,
+      );
+
+      expect(page.kind, bullnymDonationPageKindPos);
+      expect(page.posMode, isTrue);
+      final request = stub.captured.requests.single;
+      expect(request.method, 'PUT');
+      expect(request.path, '/donation-page');
+      final body = request.data as Map<String, dynamic>;
+      expect(body.containsKey('pos_mode'), isFalse);
+      expect(body['ct_descriptor'], 'ct(desc)');
+      expect(body['kind'], bullnymDonationPageKindPos);
+      expect(body['description'], '');
+      expect(body['website'], '');
+      expect(body['twitter'], '');
+      expect(body['instagram'], '');
+
+      _expectSignatureValid(
+        handle: handle,
+        signatureHex: body['signature'] as String,
+        action: bullpayActionDonationPageSave,
+        nymOrEmpty: 'alice',
+        payloadFields: const [
+          'My Till',
+          '',
+          'CAD',
+          '',
+          '',
+          '',
+          '1',
+          'ct(desc)',
+          'pos',
+        ],
+        timestampSecs: timestamp,
+      );
+    });
+  });
+
+  group('T-POS-CLIENT archive', () {
+    test('DELETEs with kind=pos and signs that kind', () async {
+      final stub = _stubDio([_donationPageView(kind: 'pos', isArchived: true)]);
+      final facade = _facadeForClient(
+        BullnymHttpClient.withDio(stub.dio),
+        nowSecs: () => timestamp,
+      );
+
+      final page = await facade.archiveDonationPage(
+        signer: signer,
+        nym: 'alice',
+        kind: bullnymDonationPageKindPos,
+      );
+
+      expect(page.isArchived, isTrue);
+      expect(page.posMode, isTrue);
+      final request = stub.captured.requests.single;
+      expect(request.method, 'DELETE');
+      final body = request.data as Map<String, dynamic>;
+      expect(body.containsKey('pos_mode'), isFalse);
+      expect(body['kind'], bullnymDonationPageKindPos);
+
+      _expectSignatureValid(
+        handle: handle,
+        signatureHex: body['signature'] as String,
+        action: bullpayActionDonationPageArchive,
+        nymOrEmpty: 'alice',
+        payloadFields: const ['pos'],
+        timestampSecs: timestamp,
+      );
+    });
+  });
 }
 
 BullnymFacade _facadeForClient(
