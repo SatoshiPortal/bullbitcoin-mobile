@@ -1058,6 +1058,141 @@
   "@paymentPageHealUnreachable": {
     "description": "Recovery notice when the Donation Page liveness check could not reach the server"
   },
+  "bitcoinSettingsPointOfSaleTitle": "Point of Sale",
+  "@bitcoinSettingsPointOfSaleTitle": {
+    "description": "Bitcoin settings tile opening the Point of Sale provisioning screen"
+  },
+  "posScreenTitle": "Point of Sale",
+  "@posScreenTitle": {
+    "description": "Title of the Point of Sale provisioning screen"
+  },
+  "posOperationInProgress": "Please wait for the current operation to finish.",
+  "@posOperationInProgress": {
+    "description": "Snackbar shown when the user tries to leave during a Point of Sale operation"
+  },
+  "posNeedsNymTitle": "Choose your name",
+  "@posNeedsNymTitle": {
+    "description": "Title of the Point of Sale nym-registration first step"
+  },
+  "posNeedsNymBody": "Your Point of Sale needs a Bull name. This also activates your Lightning address.",
+  "@posNeedsNymBody": {
+    "description": "Body explaining the nym prerequisite for the Point of Sale"
+  },
+  "posNymLabel": "Name",
+  "@posNymLabel": {
+    "description": "Label for the Point of Sale nym input"
+  },
+  "posNymHelper": "Letters and numbers only",
+  "@posNymHelper": {
+    "description": "Helper for the Point of Sale nym input"
+  },
+  "posCreateNymButton": "Continue",
+  "@posCreateNymButton": {
+    "description": "Button to register the nym and continue to the Point of Sale form"
+  },
+  "posRoutingNotice": "Your Lightning address pays into your Lightning Address wallet — even with a Point of Sale. Your Point of Sale has its own till link and its own wallet.",
+  "@posRoutingNotice": {
+    "description": "ROUTE-3W notice clarifying the Lightning address settles to wallet 101 even for a POS-only nym"
+  },
+  "posLabelFieldLabel": "Name",
+  "@posLabelFieldLabel": {
+    "description": "Label for the Point of Sale name/label field"
+  },
+  "posLabelFieldHint": "e.g. Front counter",
+  "@posLabelFieldHint": {
+    "description": "Hint for the Point of Sale name/label field"
+  },
+  "posByteCounter": "{count}/{max}",
+  "@posByteCounter": {
+    "description": "Byte counter shown under the Point of Sale name field",
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "posCurrencyLabel": "Display currency",
+  "@posCurrencyLabel": {
+    "description": "Label for the Point of Sale display-currency dropdown"
+  },
+  "posCurrenciesUnavailable": "Currency list unavailable. Using {currency}.",
+  "@posCurrenciesUnavailable": {
+    "description": "Notice shown when the live currency list could not be fetched for the Point of Sale",
+    "placeholders": {
+      "currency": {"type": "String"}
+    }
+  },
+  "posRetryCurrencies": "Retry",
+  "@posRetryCurrencies": {
+    "description": "Button to retry fetching the supported currency list for the Point of Sale"
+  },
+  "posShareLabel": "Your Point of Sale terminal link",
+  "@posShareLabel": {
+    "description": "Label above the shareable Point of Sale terminal URL"
+  },
+  "posOpenLink": "Open terminal",
+  "@posOpenLink": {
+    "description": "Button to open the Point of Sale terminal URL externally"
+  },
+  "posCreateButton": "Create Point of Sale",
+  "@posCreateButton": {
+    "description": "Primary button to create the Point of Sale"
+  },
+  "posSaveButton": "Save changes",
+  "@posSaveButton": {
+    "description": "Primary button to save Point of Sale edits"
+  },
+  "posSubmitting": "Saving…",
+  "@posSubmitting": {
+    "description": "Primary button label while a Point of Sale save is in flight"
+  },
+  "posPublishButton": "Reactivate Point of Sale",
+  "@posPublishButton": {
+    "description": "Button to reactivate (revive) an archived Point of Sale"
+  },
+  "posDeactivateButton": "Deactivate Point of Sale",
+  "@posDeactivateButton": {
+    "description": "Button to archive/deactivate the Point of Sale"
+  },
+  "posSubmissionUncertain": "Your changes may not have been saved. Reload to check.",
+  "@posSubmissionUncertain": {
+    "description": "Notice shown when a Point of Sale save timed out and may be uncertain"
+  },
+  "posArchivedTitle": "Point of Sale deactivated",
+  "@posArchivedTitle": {
+    "description": "Title of the archived Point of Sale view"
+  },
+  "posArchivedBody": "Your Point of Sale is deactivated and its terminal shows a notice. Reactivate it to accept sales again.",
+  "@posArchivedBody": {
+    "description": "Body of the archived Point of Sale view"
+  },
+  "posArchiveConfirmTitle": "Deactivate Point of Sale?",
+  "@posArchiveConfirmTitle": {
+    "description": "Title of the Point of Sale deactivate confirmation dialog"
+  },
+  "posArchiveConfirmBody": "Your terminal will show a deactivation notice. You can reactivate it later.",
+  "@posArchiveConfirmBody": {
+    "description": "Body of the Point of Sale deactivate confirmation dialog"
+  },
+  "posArchiveConfirmCancel": "Cancel",
+  "@posArchiveConfirmCancel": {
+    "description": "Cancel action of the Point of Sale deactivate dialog"
+  },
+  "posArchiveConfirmConfirm": "Deactivate",
+  "@posArchiveConfirmConfirm": {
+    "description": "Confirm action of the Point of Sale deactivate dialog"
+  },
+  "posLoadFailedTitle": "Couldn't load your Point of Sale",
+  "@posLoadFailedTitle": {
+    "description": "Title shown when the Point of Sale could not be loaded"
+  },
+  "posLoadFailedBody": "We couldn't reach the server. Check your connection and try again.",
+  "@posLoadFailedBody": {
+    "description": "Body shown when the Point of Sale could not be loaded"
+  },
+  "posRetryButton": "Try again",
+  "@posRetryButton": {
+    "description": "Retry button for the Point of Sale load-failed view"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

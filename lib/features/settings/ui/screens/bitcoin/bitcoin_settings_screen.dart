@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_routes.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_routes.dart';
+import 'package:bb_mobile/features/pos/public/pos_routes.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
@@ -75,6 +76,12 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   onTap: () => context.pushNamed(
                     PaymentPageRoute.paymentPageSettings.name,
                   ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.point_of_sale,
+                  title: context.loc.bitcoinSettingsPointOfSaleTitle,
+                  onTap: () =>
+                      context.pushNamed(PosRoute.posSettings.name),
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,
