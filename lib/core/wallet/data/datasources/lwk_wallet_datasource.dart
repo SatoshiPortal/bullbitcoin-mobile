@@ -38,8 +38,10 @@ class LwkWalletDatasource {
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final balances = await lwkWallet.balances();
+      final balances = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.balances(),
+      );
 
       final lBtcAssetBalance = balances.firstWhere((balance) {
         final assetId = _lBtcAssetId(
@@ -75,20 +77,17 @@ class LwkWalletDatasource {
     required WalletModel wallet,
     required ElectrumConnection electrumServer,
   }) {
-    // TODO: if needed, add these debugPrint to a filterable logger.debug
-    // TODO: to avoid spamming the terminal with recurring prints
-    //debugPrint('[Sync] Sync requested for wallet: ${wallet.id}');
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
-        //debugPrint('[Sync] New sync started for wallet: ${wallet.id}');
         _walletSyncStartedController.add(wallet.id);
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-        final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-        await lwkWallet.sync_(
-          electrumUrl: electrumServer.url,
-          validateDomain: electrumServer.validateDomain,
+        await LwkFacade.withPublicWallet(
+          wallet,
+          (lwkWallet) => lwkWallet.sync_(
+            electrumUrl: electrumServer.url,
+            validateDomain: electrumServer.validateDomain,
+          ),
         );
-        //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {
         if (e is lwk.LwkError) {
           if (e.msg.contains('UpdateOnDifferentStatus')) {
@@ -111,8 +110,10 @@ class LwkWalletDatasource {
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final utxos = await lwkWallet.utxos();
+      final utxos = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.utxos(),
+      );
 
       final unspent = utxos.map((utxo) {
         return WalletUtxoModel.liquid(
@@ -138,10 +139,12 @@ class LwkWalletDatasource {
   Future<({String standard, String confidential, int index})>
   getLastUnusedAddress({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       // For LWK, address reuse is taken care of by the repository and the address history database,
       //  so here we just get the last unused address.
-      final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
+      final lastUnusedAddressInfo = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.addressLastUnused(),
+      );
       final address = (
         index: lastUnusedAddressInfo.index!,
         standard: lastUnusedAddressInfo.standard,
@@ -162,13 +165,15 @@ class LwkWalletDatasource {
     bool isChange = false,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       if (isChange) {
         throw Exception(
           'Change addresses are not retrievable with LWK at the moment.',
         );
       }
-      final addressInfo = await lwkWallet.addressLastUnused();
+      final addressInfo = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.addressLastUnused(),
+      );
       return addressInfo.index!;
     } catch (e) {
       if (e is lwk.LwkError) {
@@ -184,8 +189,10 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final addressInfo = await lwkWallet.address(index: index);
+      final addressInfo = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.address(index: index),
+      );
       final address = (
         index: addressInfo.index!,
         standard: addressInfo.standard,
@@ -206,8 +213,10 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final txs = await lwkWallet.txs();
+      final txs = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.txs(),
+      );
       final txOutputLists = txs.map((tx) => tx.outputs).toList();
       final outputs = txOutputLists.expand((list) => list).toList();
       if (outputs.isEmpty) {
@@ -233,8 +242,10 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final utxos = await lwkWallet.utxos();
+      final utxos = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.utxos(),
+      );
       final addressBalances = <String, BigInt>{};
 
       for (final utxo in utxos) {
@@ -270,9 +281,15 @@ class LwkWalletDatasource {
     String? toAddress,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final transactions = await lwkWallet.txs();
-      final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
+      // One wollet session for the tx list AND the used-address scan: the
+      // address helpers used to open their own concurrent wollets on the
+      // same cache directory, which corrupts it (see LwkFacade).
+      final (transactions, usedAddressesMap) = await LwkFacade
+          .withPublicWallet(wallet, (lwkWallet) async {
+            final txs = await lwkWallet.txs();
+            final addresses = await _usedAddressesMap(lwkWallet);
+            return (txs, addresses);
+          });
       final network = wallet.isTestnet
           ? Network.liquidTestnet
           : Network.liquidMainnet;
@@ -384,19 +401,20 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
-      // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
-      // arithmetic promoted to double — no precision loss at the SDK boundary.
-      final pset = await lwkWallet.buildLbtcTx(
-        sats: BigInt.from(amountSat ?? 0),
-        outAddress: address,
-        feeRate: feeRate.satPerKvbyte,
-        drain: drain,
-      );
-      final decoded = await lwkWallet.decodeTx(pset: pset);
-      log.info(decoded.absoluteFees.toString());
-      return pset;
+      return await LwkFacade.withPublicWallet(wallet, (lwkWallet) async {
+        // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
+        // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
+        // arithmetic promoted to double — no precision loss at the SDK boundary.
+        final pset = await lwkWallet.buildLbtcTx(
+          sats: BigInt.from(amountSat ?? 0),
+          outAddress: address,
+          feeRate: feeRate.satPerKvbyte,
+          drain: drain,
+        );
+        final decoded = await lwkWallet.decodeTx(pset: pset);
+        log.info(decoded.absoluteFees.toString());
+        return pset;
+      });
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;
@@ -411,11 +429,15 @@ class LwkWalletDatasource {
     required PrivateLwkWalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
-      final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
-        pset: pset,
-        mnemonic: wallet.mnemonic,
+      final signedPset = await LwkFacade.withPrivateWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.signTx(
+          network: wallet.isTestnet
+              ? lwk.LiquidNetwork.testnet
+              : lwk.LiquidNetwork.mainnet,
+          pset: pset,
+          mnemonic: wallet.mnemonic,
+        ),
       );
       return signedPset;
     } catch (e) {
@@ -431,7 +453,6 @@ class LwkWalletDatasource {
     try {
       final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
       debugPrint(decoded.absoluteFees.toString());
-      // final decoded = await lwkWallet.decodeTx(pset: pset);
       return (
         decoded.discountedVsize.toInt(),
         decoded.absoluteFees.first.value,
@@ -451,8 +472,10 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final decoded = await lwkWallet.decodeTx(pset: pset);
+      final decoded = await LwkFacade.withPublicWallet(
+        wallet,
+        (lwkWallet) => lwkWallet.decodeTx(pset: pset),
+      );
 
       // Get the L-BTC asset ID for the network
       final network = wallet.isTestnet
@@ -483,39 +506,34 @@ class LwkWalletDatasource {
     }
   }
 
+  /// Builds the used-address lookup on an already-open wollet session.
   Future<Map<String, ({String standard, String confidential, int index})>>
-  _getUsedAddressesMap({
-    required WalletModel wallet,
-    int batchSize = 10,
-  }) async {
-    try {
-      final lastIndex = await getLastUnusedAddressIndex(wallet: wallet);
-      final addressMap =
-          <String, ({String standard, String confidential, int index})>{};
-      final List<Future<void>> currentBatch = [];
-      for (int i = 0; i <= lastIndex; i++) {
-        final future = getAddressByIndex(i, wallet: wallet).then((addr) {
-          final address = addr;
-          addressMap[address.standard] = address;
-          addressMap[address.confidential] = address;
-        });
-        currentBatch.add(future);
-        if (currentBatch.length >= batchSize) {
-          await Future.wait(currentBatch);
-          currentBatch.clear();
-        }
-      }
-      if (currentBatch.isNotEmpty) {
+  _usedAddressesMap(lwk.Wallet lwkWallet, {int batchSize = 10}) async {
+    final lastUnused = await lwkWallet.addressLastUnused();
+    final lastIndex = lastUnused.index!;
+    final addressMap =
+        <String, ({String standard, String confidential, int index})>{};
+    final List<Future<void>> currentBatch = [];
+    for (int i = 0; i <= lastIndex; i++) {
+      final future = lwkWallet.address(index: i).then((addressInfo) {
+        final address = (
+          index: addressInfo.index!,
+          standard: addressInfo.standard,
+          confidential: addressInfo.confidential,
+        );
+        addressMap[address.standard] = address;
+        addressMap[address.confidential] = address;
+      });
+      currentBatch.add(future);
+      if (currentBatch.length >= batchSize) {
         await Future.wait(currentBatch);
-      }
-      return addressMap;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
+        currentBatch.clear();
       }
     }
+    if (currentBatch.isNotEmpty) {
+      await Future.wait(currentBatch);
+    }
+    return addressMap;
   }
 
   Future<void> delete({required WalletModel wallet}) async {
