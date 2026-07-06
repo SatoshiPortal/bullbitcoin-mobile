@@ -819,6 +819,46 @@
   "@paymentPageErrorUnexpected": {
     "description": "Donation Page generic error for unexpected responses or a local signing failure"
   },
+  "posErrorInvalidInput": "Please check the highlighted fields and try again.",
+  "@posErrorInvalidInput": {
+    "description": "Point of Sale error when the entered details fail validation"
+  },
+  "posErrorNoNym": "Choose your name to create your Point of Sale.",
+  "@posErrorNoNym": {
+    "description": "Point of Sale error shown when the user has no Bull nym yet"
+  },
+  "posErrorNoDefaultWallet": "Set up a Bitcoin wallet before creating a Point of Sale.",
+  "@posErrorNoDefaultWallet": {
+    "description": "Point of Sale error when there is no default Bitcoin wallet to derive from"
+  },
+  "posErrorSetupFailed": "Could not set up your Point of Sale wallet. Please try again.",
+  "@posErrorSetupFailed": {
+    "description": "Point of Sale error for a local wallet-preparation failure"
+  },
+  "posErrorConnection": "Could not reach the server. Check your connection and try again.",
+  "@posErrorConnection": {
+    "description": "Point of Sale error for a network or timeout failure"
+  },
+  "posErrorServer": "The server could not complete the request. Please try again later.",
+  "@posErrorServer": {
+    "description": "Point of Sale error for a retryable server failure"
+  },
+  "posErrorNotFound": "No Point of Sale exists for this name yet.",
+  "@posErrorNotFound": {
+    "description": "Point of Sale error when the terminal row does not exist on the server"
+  },
+  "posErrorRejected": "The server rejected your Point of Sale. Please review your details and try again.",
+  "@posErrorRejected": {
+    "description": "Point of Sale error when the server rejects the submitted terminal"
+  },
+  "posErrorAuth": "Your Lightning address must be active to manage your Point of Sale. Reactivate it and try again.",
+  "@posErrorAuth": {
+    "description": "Point of Sale error when the server rejects the signature or the registration is inactive"
+  },
+  "posErrorUnexpected": "Something went wrong. Please try again.",
+  "@posErrorUnexpected": {
+    "description": "Point of Sale generic error for unexpected responses or a local signing failure"
+  },
   "bitcoinSettingsPaymentPageTitle": "Donation Page",
   "@bitcoinSettingsPaymentPageTitle": {
     "description": "Bitcoin settings tile opening the Donation Page editor"
