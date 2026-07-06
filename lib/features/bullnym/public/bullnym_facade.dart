@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/archive_donation_page_usecase.dart';
@@ -22,9 +23,11 @@ export 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart'
 export 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 class BullnymFacade {
+  final BullnymClientPort _client;
   final RegisterBullnymUsecase _register;
   final DeleteBullnymRegistrationUsecase _deleteRegistration;
   final LookupBullnymRegistrationUsecase _lookupRegistration;
@@ -39,7 +42,8 @@ class BullnymFacade {
   BullnymFacade({
     required BullnymClientPort client,
     int Function() nowSecs = currentBullpayTimestampSecs,
-  }) : _register = RegisterBullnymUsecase(client, nowSecs),
+  }) : _client = client,
+       _register = RegisterBullnymUsecase(client, nowSecs),
        _deleteRegistration = DeleteBullnymRegistrationUsecase(client, nowSecs),
        _lookupRegistration = LookupBullnymRegistrationUsecase(client),
        _fetchBackup = FetchBullnymBackupUsecase(client, nowSecs),
@@ -147,6 +151,47 @@ class BullnymFacade {
 
   Future<BullnymSupportedCurrencies> getSupportedCurrencies() {
     return _getSupportedCurrencies.execute();
+  }
+
+  // Invoice methods sign in the client (the `invoice-*` actions) and delegate
+  // straight through. `nym` stays nullable (default null = the unlinked v1
+  // path) so the facade is linked-capable when DG-I1 later flips it on.
+  Future<BullnymCreateInvoiceResponse> createInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required BullnymCreateInvoiceFields fields,
+  }) {
+    return _client.createInvoice(signer: signer, nym: nym, fields: fields);
+  }
+
+  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required String invoiceId,
+  }) {
+    return _client.cancelInvoice(
+      signer: signer,
+      nym: nym,
+      invoiceId: invoiceId,
+    );
+  }
+
+  Future<BullnymListInvoicesResponse> listInvoices({
+    required BullnymAuthSigner signer,
+    required int page,
+    required int pageSize,
+    String? status,
+  }) {
+    return _client.listInvoices(
+      signer: signer,
+      page: page,
+      pageSize: pageSize,
+      status: status,
+    );
+  }
+
+  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId}) {
+    return _client.getInvoiceStatus(invoiceId: invoiceId);
   }
 
   @override

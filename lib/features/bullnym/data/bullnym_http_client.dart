@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
 import 'package:dio/dio.dart';
 import 'package:crypto/crypto.dart';
@@ -15,12 +19,21 @@ const Duration bullnymConnectTimeout = Duration(seconds: 10);
 const Duration bullnymReceiveTimeout = Duration(seconds: 15);
 
 class BullnymHttpClient implements BullnymClientPort {
-  BullnymHttpClient({String baseUrl = bullnymDefaultBaseUrl})
-    : _dio = _newDio(baseUrl);
+  BullnymHttpClient({
+    String baseUrl = bullnymDefaultBaseUrl,
+    this._nowSecs = currentBullpayTimestampSecs,
+  }) : _dio = _newDio(baseUrl);
 
-  BullnymHttpClient.withDio(Dio dio) : _dio = dio;
+  BullnymHttpClient.withDio(
+    Dio dio, {
+    this._nowSecs = currentBullpayTimestampSecs,
+  }) : _dio = dio;
 
   final Dio _dio;
+  // Invoice actions are signed inside the client (unlike the donation-page
+  // actions, which are signed in their usecases), so the client owns the
+  // signing timestamp; injected for deterministic contract tests.
+  final int Function() _nowSecs;
 
   String get baseUrl => _dio.options.baseUrl;
 
@@ -214,6 +227,149 @@ class BullnymHttpClient implements BullnymClientPort {
   Future<BullnymSupportedCurrencies> getSupportedCurrencies() async {
     final response = await _getMap('/api/v1/supported-currencies');
     return _parseSupportedCurrenciesResponse(response);
+  }
+
+  @override
+  Future<BullnymCreateInvoiceResponse> createInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required BullnymCreateInvoiceFields fields,
+  }) async {
+    final timestamp = _nowSecs();
+    final signatureHex = await _signInvoiceAction(
+      signer: signer,
+      action: bullpayActionInvoiceCreate,
+      nymOrEmpty: nym ?? '',
+      payloadFields: buildInvoiceCreatePayloadFields(fields),
+      timestampSecs: timestamp,
+    );
+    final response = await _postMap(
+      _invoicesPath(nym),
+      data: {
+        'npub': signer.npubHex,
+        'amount_sat': fields.amountSat,
+        'fiat_amount_minor': fields.fiatAmountMinor,
+        'fiat_currency': fields.fiatCurrency,
+        'public_description': fields.publicDescription,
+        'recipient_name': fields.recipientName,
+        'invoice_number': fields.invoiceNumber,
+        'accept_btc': fields.acceptBtc,
+        'accept_ln': fields.acceptLn,
+        'accept_liquid': fields.acceptLiquid,
+        'bitcoin_address': fields.bitcoinAddress,
+        'liquid_address': fields.liquidAddress,
+        'liquid_blinding_key_hex': fields.liquidBlindingKeyHex,
+        'expires_at_unix': fields.expiresAtUnix,
+        'timestamp': timestamp,
+        'signature': signatureHex,
+      },
+    );
+    return BullnymCreateInvoiceResponse(
+      invoiceId: _requiredString(response, 'invoice_id'),
+      shareUrl: _requiredString(response, 'share_url'),
+    );
+  }
+
+  @override
+  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required String invoiceId,
+  }) async {
+    final timestamp = _nowSecs();
+    final signatureHex = await _signInvoiceAction(
+      signer: signer,
+      action: bullpayActionInvoiceCancel,
+      nymOrEmpty: nym ?? '',
+      payloadFields: buildInvoiceCancelPayloadFields(invoiceId),
+      timestampSecs: timestamp,
+    );
+    final response = await _deleteMap(
+      '${_invoicesPath(nym)}/${Uri.encodeComponent(invoiceId)}',
+      data: {
+        'npub': signer.npubHex,
+        'timestamp': timestamp,
+        'signature': signatureHex,
+      },
+    );
+    return BullnymCancelInvoiceResponse(
+      invoiceId: _requiredString(response, 'invoice_id'),
+      status: _requiredString(response, 'status'),
+    );
+  }
+
+  @override
+  Future<BullnymListInvoicesResponse> listInvoices({
+    required BullnymAuthSigner signer,
+    required int page,
+    required int pageSize,
+    String? status,
+  }) async {
+    final timestamp = _nowSecs();
+    // The list is npub-wide: the signed nym slot is ALWAYS empty.
+    final signatureHex = await _signInvoiceAction(
+      signer: signer,
+      action: bullpayActionInvoiceList,
+      nymOrEmpty: '',
+      payloadFields: buildInvoiceListPayloadFields(
+        page: page,
+        pageSize: pageSize,
+        status: status,
+      ),
+      timestampSecs: timestamp,
+    );
+    final response = await _getMap(
+      '/api/v1/invoices',
+      queryParameters: {
+        'npub': signer.npubHex,
+        'timestamp': timestamp,
+        'signature': signatureHex,
+        'page': page,
+        'pageSize': pageSize,
+        if (status != null && status.isNotEmpty) 'status': status,
+      },
+    );
+    return _parseListInvoicesResponse(response);
+  }
+
+  @override
+  Future<BullnymInvoiceStatus> getInvoiceStatus({
+    required String invoiceId,
+  }) async {
+    // Public, UNSIGNED: no signer, no signature — by id only.
+    final response = await _getMap(
+      '/api/v1/invoices/${Uri.encodeComponent(invoiceId)}/status',
+    );
+    return _parseInvoiceStatusResponse(response);
+  }
+
+  // `nym == null` → the unlinked collection; a nym → the linked collection.
+  String _invoicesPath(String? nym) {
+    if (nym == null) return '/api/v1/invoices';
+    return '/api/v1/${Uri.encodeComponent(nym)}/invoices';
+  }
+
+  Future<String> _signInvoiceAction({
+    required BullnymAuthSigner signer,
+    required String action,
+    required String nymOrEmpty,
+    required List<String> payloadFields,
+    required int timestampSecs,
+  }) async {
+    try {
+      validateBullnymNpubHex(signer.npubHex);
+      return await signBullpayAction(
+        signer: signer,
+        action: action,
+        nymOrEmpty: nymOrEmpty,
+        payloadFields: payloadFields,
+        timestampSecs: timestampSecs,
+      );
+    } on BullnymException {
+      rethrow;
+    } catch (_) {
+      throw const BullnymException.signingFailed();
+    }
   }
 
   Future<Map<String, dynamic>> _getMap(
@@ -477,6 +633,15 @@ class BullnymHttpClient implements BullnymClientPort {
     }
   }
 
+  int? _optionalInt(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value == null) return null;
+    if (value is int) return value;
+    throw BullnymException.invalidServerResponse(
+      diagnosticReason: 'Server response field $key is not an int',
+    );
+  }
+
   // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
   // ignored so a future server field cannot crash an older binary.
   BullnymDonationPage _parseDonationPageResponse(Map<String, dynamic> json) {
@@ -523,5 +688,88 @@ class BullnymHttpClient implements BullnymClientPort {
       );
     }
     return BullnymSupportedCurrencies(currencies: currencies);
+  }
+
+  // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
+  // ignored so a future server field cannot crash an older binary.
+  BullnymListInvoicesResponse _parseListInvoicesResponse(
+    Map<String, dynamic> json,
+  ) {
+    final rawInvoices = json['invoices'];
+    if (rawInvoices is! List) {
+      throw BullnymException.invalidServerResponse(
+        diagnosticReason: 'Server response is missing invoices list',
+      );
+    }
+    final invoices = <BullnymInvoiceListItem>[];
+    for (final raw in rawInvoices) {
+      if (raw is! Map<String, dynamic>) {
+        throw BullnymException.invalidServerResponse(
+          diagnosticReason: 'Server invoice entry has an unexpected shape',
+        );
+      }
+      invoices.add(_parseInvoiceListItem(raw));
+    }
+    return BullnymListInvoicesResponse(
+      invoices: invoices,
+      page: _requiredInt(json, 'page'),
+      pageSize: _requiredInt(json, 'pageSize'),
+      hasMore: _requiredBool(json, 'has_more'),
+    );
+  }
+
+  BullnymInvoiceListItem _parseInvoiceListItem(Map<String, dynamic> json) {
+    return BullnymInvoiceListItem(
+      id: _requiredString(json, 'id'),
+      nymOwner: _optionalString(json, 'nym_owner'),
+      origin: _requiredString(json, 'origin'),
+      status: _requiredString(json, 'status'),
+      pricingMode: _requiredString(json, 'pricing_mode'),
+      settlementStatus: _requiredString(json, 'settlement_status'),
+      amountSat: _requiredInt(json, 'amount_sat'),
+      remainingAmountSat: _requiredInt(json, 'remaining_amount_sat'),
+      fiatAmountMinor: _optionalInt(json, 'fiat_amount_minor'),
+      fiatCurrency: _optionalString(json, 'fiat_currency'),
+      publicDescription: _optionalString(json, 'public_description'),
+      recipientName: _optionalString(json, 'recipient_name'),
+      invoiceNumber: _optionalString(json, 'invoice_number'),
+      acceptBtc: _requiredBool(json, 'accept_btc'),
+      acceptLn: _requiredBool(json, 'accept_ln'),
+      acceptLiquid: _requiredBool(json, 'accept_liquid'),
+      bitcoinAddress: _optionalString(json, 'bitcoin_address'),
+      liquidAddress: _optionalString(json, 'liquid_address'),
+      createdAtUnix: _requiredInt(json, 'created_at_unix'),
+      expiresAtUnix: _requiredInt(json, 'expires_at_unix'),
+      paidVia: _optionalString(json, 'paid_via'),
+      paidAtUnix: _optionalInt(json, 'paid_at_unix'),
+      paidAmountSat: _optionalInt(json, 'paid_amount_sat'),
+    );
+  }
+
+  BullnymInvoiceStatus _parseInvoiceStatusResponse(Map<String, dynamic> json) {
+    return BullnymInvoiceStatus(
+      status: _requiredString(json, 'status'),
+      pricingMode: _requiredString(json, 'pricing_mode'),
+      settlementStatus: _requiredString(json, 'settlement_status'),
+      amountSat: _requiredInt(json, 'amount_sat'),
+      fiatAmountMinor: _optionalInt(json, 'fiat_amount_minor'),
+      fiatCurrency: _optionalString(json, 'fiat_currency'),
+      remainingAmountSat: _requiredInt(json, 'remaining_amount_sat'),
+      paymentToleranceSat: _requiredInt(json, 'payment_tolerance_sat'),
+      rateMinorPerBtc: _optionalInt(json, 'rate_minor_per_btc'),
+      rateLocksUntilUnix: _requiredInt(json, 'rate_locks_until_unix'),
+      expiresAtUnix: _requiredInt(json, 'expires_at_unix'),
+      paidVia: _optionalString(json, 'paid_via'),
+      paidAtUnix: _optionalInt(json, 'paid_at_unix'),
+      paidAmountSat: _optionalInt(json, 'paid_amount_sat'),
+      lightningPr: _optionalString(json, 'lightning_pr'),
+      liquidAddress: _optionalString(json, 'liquid_address'),
+      bitcoinAddress: _optionalString(json, 'bitcoin_address'),
+      bitcoinChainAddress: _optionalString(json, 'bitcoin_chain_address'),
+      bitcoinChainBip21: _optionalString(json, 'bitcoin_chain_bip21'),
+      acceptBtc: _requiredBool(json, 'accept_btc'),
+      acceptLn: _requiredBool(json, 'accept_ln'),
+      acceptLiquid: _requiredBool(json, 'accept_liquid'),
+    );
   }
 }

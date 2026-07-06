@@ -1,8 +1,10 @@
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 enum FakeBullnymMode {
@@ -39,22 +41,84 @@ enum FakePosMode {
   serverUnreachable,
 }
 
-/// In-memory Bullnym boundary for Get Paid lifecycle tests.
-///
-/// The object intentionally survives local app-state wipes so tests can model
-/// automatic remote recovery. Registration and backup faults share one mode;
-/// donation-page and POS faults are independent so product recovery cases can
-/// vary one surface without changing the other.
+/// Invoice fault modes for the §9/F11 matrix. Independent of the page/pos
+/// modes so a single instance drives the invoice lifecycle while the other
+/// surfaces stay live. The `*Once` reuse modes fire on the first matching
+/// create then clear themselves, so the create usecase's single
+/// regenerate-and-retry succeeds (SPEC-INV-01 PF variant).
+enum FakeInvoiceMode {
+  /// Create/list/status/cancel behave normally against the in-memory store.
+  normal,
+
+  /// Status/cancel of any id throw `InvoiceNotFound` (foreign/unknown id).
+  notFound,
+
+  /// The first create carrying a BTC rail throws `BitcoinAddressAlreadyUsed`,
+  /// then clears to [normal].
+  reusedBitcoinAddressOnce,
+
+  /// The first create carrying a Liquid rail throws
+  /// `LiquidAddressAlreadyUsed`, then clears to [normal].
+  reusedLiquidAddressOnce,
+
+  /// Every signed call fails with `AuthError` (wrong-key / clock-skew device).
+  authError,
+
+  /// Every create/list fails with a rate-limit rejection.
+  rateLimited,
+
+  /// Every call fails with a retryable server error.
+  serverUnreachable,
+
+  /// The signed routes are absent (`features.invoices=false` / pre-flag pay2):
+  /// create/cancel/list 404 so the feature fails CLOSED, never silent success.
+  featureDisabled,
+}
+
+class _FakeInvoice {
+  final String id;
+  final String ownerNpub;
+  final String? nymOwner;
+  final BullnymCreateInvoiceFields fields;
+  final int createdAtUnix;
+  String status = 'unpaid';
+
+  _FakeInvoice({
+    required this.id,
+    required this.ownerNpub,
+    required this.nymOwner,
+    required this.fields,
+    required this.createdAtUnix,
+  });
+}
+
+/// In-memory [BullnymClientPort] for L1 tests (HARNESS §2.2). It survives
+/// local app-state resets, records register and donation-page write calls, and
+/// is toggle-driven so a single instance can drive the DG-3 heal matrix (live /
+/// lapsed / missing / unreachable).
 class FakeBullnymClient implements BullnymClientPort {
   FakeBullnymMode mode = FakeBullnymMode.live;
   FakeDonationPageMode donationPageMode = FakeDonationPageMode.normal;
   FakePosMode posMode = FakePosMode.normal;
+  FakeInvoiceMode invoiceMode = FakeInvoiceMode.normal;
   String nym = 'alice';
 
   final List<String> registeredNyms = [];
   final List<BullnymSaveDonationPageRequest> saveDonationPageCalls = [];
   final List<BullnymArchiveDonationPageRequest> archiveDonationPageCalls = [];
   final Map<String, BullnymBackupHead> _backups = {};
+
+  // Server-side invoice state keyed by id; independent of the page/pos stores
+  // and survives local app-state resets. `createInvoiceCalls` records the raw
+  // create inputs (npub, nym slot, supplied addresses/blinding key) for the
+  // payout-discipline and unlinked-nym assertions.
+  final Map<String, _FakeInvoice> _invoices = {};
+  final List<({String npub, String? nym, BullnymCreateInvoiceFields fields})>
+  createInvoiceCalls = [];
+  int _nextInvoiceSeq = 1;
+
+  // Server-side donation-page state keyed `(nym, kind)`; survives local
+  // app-state resets.
   final Map<String, BullnymDonationPage> _pages = {};
 
   List<BullnymSupportedCurrency> supportedCurrencies = const [
@@ -257,6 +321,236 @@ class FakeBullnymClient implements BullnymClientPort {
     }
     return BullnymSupportedCurrencies(currencies: supportedCurrencies);
   }
+
+  @override
+  Future<BullnymCreateInvoiceResponse> createInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required BullnymCreateInvoiceFields fields,
+  }) async {
+    createInvoiceCalls.add((npub: signer.npubHex, nym: nym, fields: fields));
+    if (invoiceMode == FakeInvoiceMode.featureDisabled) {
+      throw const BullnymException.unexpectedHttpStatus(statusCode: 404);
+    }
+    if (invoiceMode == FakeInvoiceMode.serverUnreachable) {
+      throw _serverUnreachable();
+    }
+    if (invoiceMode == FakeInvoiceMode.authError) throw _authError();
+    if (invoiceMode == FakeInvoiceMode.rateLimited) throw _invoiceRateLimited();
+
+    // Server echoes (create_invoice_inner): at least one rail, rail↔address
+    // coherence, one-of amount, and the expiry window.
+    if (!fields.acceptBtc && !fields.acceptLn && !fields.acceptLiquid) {
+      throw _invalidAmount('at least one rail must be accepted');
+    }
+    if (fields.acceptBtc &&
+        (fields.bitcoinAddress == null || fields.bitcoinAddress!.isEmpty)) {
+      throw _invalidAmount('accept_btc requires a bitcoin_address');
+    }
+    if ((fields.acceptLn || fields.acceptLiquid) &&
+        (fields.liquidAddress == null || fields.liquidAddress!.isEmpty)) {
+      throw _invalidAmount('a liquid rail requires a liquid_address');
+    }
+    if (fields.acceptLiquid &&
+        (fields.liquidBlindingKeyHex == null ||
+            fields.liquidBlindingKeyHex!.isEmpty)) {
+      throw _invalidAmount('accept_liquid requires a liquid_blinding_key_hex');
+    }
+    final hasSat = fields.amountSat != null;
+    final hasFiat =
+        fields.fiatAmountMinor != null && fields.fiatCurrency != null;
+    if (hasSat == hasFiat) {
+      throw _invalidAmount('amount must be exactly one of sat or fiat');
+    }
+
+    if (invoiceMode == FakeInvoiceMode.reusedBitcoinAddressOnce &&
+        fields.acceptBtc) {
+      invoiceMode = FakeInvoiceMode.normal;
+      throw _bitcoinAddressAlreadyUsed();
+    }
+    if (invoiceMode == FakeInvoiceMode.reusedLiquidAddressOnce &&
+        (fields.acceptLn || fields.acceptLiquid)) {
+      invoiceMode = FakeInvoiceMode.normal;
+      throw _liquidAddressAlreadyUsed();
+    }
+
+    final id = 'inv-${_nextInvoiceSeq++}';
+    _invoices[id] = _FakeInvoice(
+      id: id,
+      ownerNpub: signer.npubHex,
+      nymOwner: nym,
+      fields: fields,
+      createdAtUnix: fields.expiresAtUnix != null
+          ? fields.expiresAtUnix! - 86400
+          : 0,
+    );
+    final shareUrl = nym == null
+        ? 'https://example.invalid/invoice/$id'
+        : 'https://example.invalid/$nym/i/$id';
+    return BullnymCreateInvoiceResponse(invoiceId: id, shareUrl: shareUrl);
+  }
+
+  @override
+  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+    required BullnymAuthSigner signer,
+    String? nym,
+    required String invoiceId,
+  }) async {
+    if (invoiceMode == FakeInvoiceMode.featureDisabled) {
+      throw const BullnymException.unexpectedHttpStatus(statusCode: 404);
+    }
+    if (invoiceMode == FakeInvoiceMode.serverUnreachable) {
+      throw _serverUnreachable();
+    }
+    if (invoiceMode == FakeInvoiceMode.authError) throw _authError();
+    final invoice = _invoices[invoiceId];
+    // Ownership is server-side: a non-owner (or unknown id) is InvoiceNotFound.
+    if (invoice == null ||
+        invoice.ownerNpub != signer.npubHex ||
+        invoiceMode == FakeInvoiceMode.notFound) {
+      throw _invoiceNotFound();
+    }
+    // Cancel only flips an unpaid invoice; an already-terminal invoice returns
+    // its existing status benignly.
+    if (invoice.status == 'unpaid') invoice.status = 'cancelled';
+    return BullnymCancelInvoiceResponse(
+      invoiceId: invoiceId,
+      status: invoice.status,
+    );
+  }
+
+  @override
+  Future<BullnymListInvoicesResponse> listInvoices({
+    required BullnymAuthSigner signer,
+    required int page,
+    required int pageSize,
+    String? status,
+  }) async {
+    if (invoiceMode == FakeInvoiceMode.featureDisabled) {
+      throw const BullnymException.unexpectedHttpStatus(statusCode: 404);
+    }
+    if (invoiceMode == FakeInvoiceMode.serverUnreachable) {
+      throw _serverUnreachable();
+    }
+    if (invoiceMode == FakeInvoiceMode.authError) throw _authError();
+    if (invoiceMode == FakeInvoiceMode.rateLimited) throw _invoiceRateLimited();
+
+    final owned = _invoices.values
+        .where((i) => i.ownerNpub == signer.npubHex)
+        .where(
+          (i) => status == null || status.isEmpty || i.status == status,
+        )
+        .toList()
+      ..sort((a, b) => b.createdAtUnix.compareTo(a.createdAtUnix));
+    final start = (page - 1) * pageSize;
+    final pageRows = start >= owned.length
+        ? <_FakeInvoice>[]
+        : owned.sublist(start, (start + pageSize).clamp(0, owned.length));
+    return BullnymListInvoicesResponse(
+      invoices: pageRows.map(_toListItem).toList(),
+      page: page,
+      pageSize: pageSize,
+      hasMore: start + pageSize < owned.length,
+    );
+  }
+
+  @override
+  Future<BullnymInvoiceStatus> getInvoiceStatus({
+    required String invoiceId,
+  }) async {
+    if (invoiceMode == FakeInvoiceMode.serverUnreachable) {
+      throw _serverUnreachable();
+    }
+    final invoice = _invoices[invoiceId];
+    if (invoice == null || invoiceMode == FakeInvoiceMode.notFound) {
+      throw _invoiceNotFound();
+    }
+    final f = invoice.fields;
+    return BullnymInvoiceStatus(
+      status: invoice.status,
+      pricingMode: f.amountSat != null ? 'sat' : 'fiat',
+      settlementStatus: 'none',
+      amountSat: f.amountSat ?? 0,
+      fiatAmountMinor: f.fiatAmountMinor,
+      fiatCurrency: f.fiatCurrency,
+      remainingAmountSat: f.amountSat ?? 0,
+      paymentToleranceSat: 0,
+      rateMinorPerBtc: null,
+      rateLocksUntilUnix: invoice.createdAtUnix,
+      expiresAtUnix: f.expiresAtUnix ?? 0,
+      acceptBtc: f.acceptBtc,
+      acceptLn: f.acceptLn,
+      acceptLiquid: f.acceptLiquid,
+      liquidAddress: f.liquidAddress,
+      bitcoinAddress: f.bitcoinAddress,
+    );
+  }
+
+  BullnymInvoiceListItem _toListItem(_FakeInvoice i) {
+    final f = i.fields;
+    return BullnymInvoiceListItem(
+      id: i.id,
+      nymOwner: i.nymOwner,
+      origin: 'wallet',
+      status: i.status,
+      pricingMode: f.amountSat != null ? 'sat' : 'fiat',
+      settlementStatus: 'none',
+      amountSat: f.amountSat ?? 0,
+      remainingAmountSat: f.amountSat ?? 0,
+      fiatAmountMinor: f.fiatAmountMinor,
+      fiatCurrency: f.fiatCurrency,
+      publicDescription: f.publicDescription,
+      recipientName: f.recipientName,
+      invoiceNumber: f.invoiceNumber,
+      acceptBtc: f.acceptBtc,
+      acceptLn: f.acceptLn,
+      acceptLiquid: f.acceptLiquid,
+      bitcoinAddress: f.bitcoinAddress,
+      liquidAddress: f.liquidAddress,
+      createdAtUnix: i.createdAtUnix,
+      expiresAtUnix: f.expiresAtUnix ?? 0,
+    );
+  }
+
+  BullnymException _invoiceNotFound() =>
+      const BullnymException.serverRejectedRequest(
+        code: 'InvoiceNotFound',
+        diagnosticReason: 'invoice not found',
+        statusCode: 200,
+        retryable: false,
+      );
+
+  BullnymException _invalidAmount(String reason) =>
+      BullnymException.serverRejectedRequest(
+        code: 'InvalidAmount',
+        diagnosticReason: reason,
+        statusCode: 200,
+        retryable: false,
+      );
+
+  BullnymException _bitcoinAddressAlreadyUsed() =>
+      const BullnymException.serverRejectedRequest(
+        code: 'BitcoinAddressAlreadyUsed',
+        diagnosticReason: 'bitcoin address already assigned to an invoice',
+        statusCode: 409,
+        retryable: false,
+      );
+
+  BullnymException _liquidAddressAlreadyUsed() =>
+      const BullnymException.serverRejectedRequest(
+        code: 'LiquidAddressAlreadyUsed',
+        diagnosticReason: 'liquid address already assigned to an invoice',
+        statusCode: 409,
+        retryable: false,
+      );
+
+  BullnymException _invoiceRateLimited() =>
+      const BullnymException.serverRejectedRequest(
+        code: 'RateLimitedSender',
+        diagnosticReason: 'invoice create rate limit exceeded',
+        statusCode: 200,
+        retryable: true,
+      );
 
   BullnymException _missing() => const BullnymException.serverRejectedRequest(
     code: 'NymNotFound',
