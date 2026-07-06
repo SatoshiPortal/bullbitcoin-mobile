@@ -819,6 +819,169 @@
   "@paymentPageErrorUnexpected": {
     "description": "Donation Page generic error for unexpected responses or a local signing failure"
   },
+  "bitcoinSettingsPaymentPageTitle": "Donation Page",
+  "@bitcoinSettingsPaymentPageTitle": {
+    "description": "Bitcoin settings tile opening the Donation Page editor"
+  },
+  "paymentPageScreenTitle": "Donation Page",
+  "@paymentPageScreenTitle": {
+    "description": "Title of the Donation Page editor screen"
+  },
+  "paymentPageHeaderLabel": "Title",
+  "@paymentPageHeaderLabel": {
+    "description": "Label for the Donation Page header/title field"
+  },
+  "paymentPageHeaderHint": "e.g. Support my work",
+  "@paymentPageHeaderHint": {
+    "description": "Hint for the Donation Page title field"
+  },
+  "paymentPageDescriptionLabel": "Description",
+  "@paymentPageDescriptionLabel": {
+    "description": "Label for the Donation Page description field"
+  },
+  "paymentPageDescriptionHint": "Tell visitors what their support funds",
+  "@paymentPageDescriptionHint": {
+    "description": "Hint for the Donation Page description field"
+  },
+  "paymentPageWebsiteLabel": "Website (optional)",
+  "@paymentPageWebsiteLabel": {
+    "description": "Label for the Donation Page website field"
+  },
+  "paymentPageTwitterLabel": "X / Twitter handle (optional)",
+  "@paymentPageTwitterLabel": {
+    "description": "Label for the Donation Page Twitter handle field"
+  },
+  "paymentPageInstagramLabel": "Instagram handle (optional)",
+  "@paymentPageInstagramLabel": {
+    "description": "Label for the Donation Page Instagram handle field"
+  },
+  "paymentPageCurrencyLabel": "Display currency",
+  "@paymentPageCurrencyLabel": {
+    "description": "Label for the Donation Page display-currency dropdown"
+  },
+  "paymentPageByteCounter": "{count}/{max}",
+  "@paymentPageByteCounter": {
+    "description": "Byte counter shown under a Donation Page text field",
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "paymentPageRoutingNotice": "Your Lightning address pays into your Lightning Address wallet. Your Donation Page has its own link and its own wallet.",
+  "@paymentPageRoutingNotice": {
+    "description": "ROUTE-3W notice clarifying the Donation Page settles to its own wallet"
+  },
+  "paymentPageShareLabel": "Your Donation Page link",
+  "@paymentPageShareLabel": {
+    "description": "Label above the shareable Donation Page URL"
+  },
+  "paymentPageCopyLink": "Copy link",
+  "@paymentPageCopyLink": {
+    "description": "Button to copy the Donation Page link to the clipboard"
+  },
+  "paymentPageCopiedLink": "Link copied",
+  "@paymentPageCopiedLink": {
+    "description": "Snackbar confirming the Donation Page link was copied"
+  },
+  "paymentPageOpenLink": "Open link",
+  "@paymentPageOpenLink": {
+    "description": "Button to open the Donation Page link externally"
+  },
+  "paymentPageCreateButton": "Create Donation Page",
+  "@paymentPageCreateButton": {
+    "description": "Primary button to create the Donation Page"
+  },
+  "paymentPageSaveButton": "Save changes",
+  "@paymentPageSaveButton": {
+    "description": "Primary button to save Donation Page edits"
+  },
+  "paymentPagePublishButton": "Republish Donation Page",
+  "@paymentPagePublishButton": {
+    "description": "Button to republish (revive) an archived Donation Page"
+  },
+  "paymentPageDeactivateButton": "Deactivate Donation Page",
+  "@paymentPageDeactivateButton": {
+    "description": "Button to archive/deactivate the Donation Page"
+  },
+  "paymentPageSubmitting": "Saving…",
+  "@paymentPageSubmitting": {
+    "description": "Primary button label while a Donation Page save is in flight"
+  },
+  "paymentPageArchiveConfirmTitle": "Deactivate Donation Page?",
+  "@paymentPageArchiveConfirmTitle": {
+    "description": "Title of the Donation Page deactivate confirmation dialog"
+  },
+  "paymentPageArchiveConfirmBody": "Your public page will show a deactivation notice. You can republish it later.",
+  "@paymentPageArchiveConfirmBody": {
+    "description": "Body of the Donation Page deactivate confirmation dialog"
+  },
+  "paymentPageArchiveConfirmCancel": "Cancel",
+  "@paymentPageArchiveConfirmCancel": {
+    "description": "Cancel action of the Donation Page deactivate dialog"
+  },
+  "paymentPageArchiveConfirmConfirm": "Deactivate",
+  "@paymentPageArchiveConfirmConfirm": {
+    "description": "Confirm action of the Donation Page deactivate dialog"
+  },
+  "paymentPageNeedsNymTitle": "Choose your name",
+  "@paymentPageNeedsNymTitle": {
+    "description": "Title of the Donation Page nym-registration first step"
+  },
+  "paymentPageNeedsNymBody": "Your Donation Page needs a Bull name. This also activates your Lightning address.",
+  "@paymentPageNeedsNymBody": {
+    "description": "Body explaining the nym prerequisite for the Donation Page"
+  },
+  "paymentPageNymLabel": "Name",
+  "@paymentPageNymLabel": {
+    "description": "Label for the Donation Page nym input"
+  },
+  "paymentPageNymHelper": "Letters and numbers only",
+  "@paymentPageNymHelper": {
+    "description": "Helper for the Donation Page nym input"
+  },
+  "paymentPageCreateNymButton": "Continue",
+  "@paymentPageCreateNymButton": {
+    "description": "Button to register the nym and continue to the Donation Page form"
+  },
+  "paymentPageArchivedTitle": "Donation Page deactivated",
+  "@paymentPageArchivedTitle": {
+    "description": "Title of the archived Donation Page view"
+  },
+  "paymentPageArchivedBody": "Your page is deactivated and shows a notice to visitors. Republish it to make it live again.",
+  "@paymentPageArchivedBody": {
+    "description": "Body of the archived Donation Page view"
+  },
+  "paymentPageLoadFailedTitle": "Couldn't load your Donation Page",
+  "@paymentPageLoadFailedTitle": {
+    "description": "Title shown when the Donation Page could not be loaded"
+  },
+  "paymentPageLoadFailedBody": "We couldn't reach the server. Check your connection and try again.",
+  "@paymentPageLoadFailedBody": {
+    "description": "Body shown when the Donation Page could not be loaded"
+  },
+  "paymentPageRetryButton": "Try again",
+  "@paymentPageRetryButton": {
+    "description": "Retry button for the Donation Page load-failed view"
+  },
+  "paymentPageCurrenciesUnavailable": "Currency list unavailable. Using {currency}.",
+  "@paymentPageCurrenciesUnavailable": {
+    "description": "Notice shown when the live currency list could not be fetched",
+    "placeholders": {
+      "currency": {"type": "String"}
+    }
+  },
+  "paymentPageRetryCurrencies": "Retry",
+  "@paymentPageRetryCurrencies": {
+    "description": "Button to retry fetching the supported currency list"
+  },
+  "paymentPageSubmissionUncertain": "Your changes may not have been saved. Reload to check.",
+  "@paymentPageSubmissionUncertain": {
+    "description": "Notice shown when a Donation Page save timed out and may be uncertain"
+  },
+  "paymentPageOperationInProgress": "Please wait for the current operation to finish.",
+  "@paymentPageOperationInProgress": {
+    "description": "Snackbar shown when the user tries to leave during a Donation Page operation"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"
