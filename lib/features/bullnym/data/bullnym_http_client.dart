@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:dio/dio.dart';
@@ -157,6 +158,66 @@ class BullnymHttpClient implements BullnymClientPort {
       generation: _requiredInt(response, 'generation'),
       etag: _requiredString(response, 'etag'),
     );
+  }
+
+  @override
+  Future<BullnymDonationPage> getDonationPage({
+    required String nym,
+    required String kind,
+  }) async {
+    final response = await _getMap(
+      '/donation-page/${Uri.encodeComponent(nym)}',
+      queryParameters: {'kind': kind},
+    );
+    return _parseDonationPageResponse(response);
+  }
+
+  @override
+  Future<BullnymDonationPage> saveDonationPage(
+    BullnymSaveDonationPageRequest request,
+  ) async {
+    final response = await _putMap(
+      '/donation-page',
+      data: {
+        'nym': request.nym,
+        'npub': request.npubHex,
+        'ct_descriptor': request.ctDescriptor,
+        'header': request.header,
+        'description': request.description,
+        'display_currency': request.displayCurrency,
+        'website': request.website,
+        'twitter': request.twitter,
+        'instagram': request.instagram,
+        'enabled': request.enabled,
+        'kind': request.kind,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      },
+    );
+    return _parseDonationPageResponse(response);
+  }
+
+  @override
+  Future<BullnymDonationPage> archiveDonationPage(
+    BullnymArchiveDonationPageRequest request,
+  ) async {
+    final response = await _deleteMap(
+      '/donation-page',
+      data: {
+        'nym': request.nym,
+        'npub': request.npubHex,
+        'kind': request.kind,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      },
+    );
+    return _parseDonationPageResponse(response);
+  }
+
+  @override
+  Future<BullnymSupportedCurrencies> getSupportedCurrencies() async {
+    final response = await _getMap('/api/v1/supported-currencies');
+    return _parseSupportedCurrenciesResponse(response);
   }
 
   Future<Map<String, dynamic>> _getMap(
@@ -418,5 +479,52 @@ class BullnymHttpClient implements BullnymClientPort {
         diagnosticReason: 'Unsupported backup response version',
       );
     }
+  }
+
+  // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
+  // ignored so a future server field cannot crash an older binary.
+  BullnymDonationPage _parseDonationPageResponse(Map<String, dynamic> json) {
+    return BullnymDonationPage(
+      nym: _requiredString(json, 'nym'),
+      header: _requiredString(json, 'header'),
+      description: _requiredString(json, 'description'),
+      displayCurrency: _requiredString(json, 'display_currency'),
+      website: _optionalString(json, 'website'),
+      twitter: _optionalString(json, 'twitter'),
+      instagram: _optionalString(json, 'instagram'),
+      kind: _requiredString(json, 'kind'),
+      posMode: _requiredBool(json, 'pos_mode'),
+      enabled: _requiredBool(json, 'enabled'),
+      isArchived: _requiredBool(json, 'is_archived'),
+      avatarSha256: _optionalString(json, 'avatar_sha256'),
+      ogSha256: _optionalString(json, 'og_sha256'),
+      publicUrl: _requiredString(json, 'public_url'),
+    );
+  }
+
+  BullnymSupportedCurrencies _parseSupportedCurrenciesResponse(
+    Map<String, dynamic> json,
+  ) {
+    final rawCurrencies = json['currencies'];
+    if (rawCurrencies is! List) {
+      throw BullnymException.invalidServerResponse(
+        diagnosticReason: 'Server response is missing currencies list',
+      );
+    }
+    final currencies = <BullnymSupportedCurrency>[];
+    for (final raw in rawCurrencies) {
+      if (raw is! Map<String, dynamic>) {
+        throw BullnymException.invalidServerResponse(
+          diagnosticReason: 'Server currency entry has an unexpected shape',
+        );
+      }
+      currencies.add(
+        BullnymSupportedCurrency(
+          code: _requiredString(raw, 'code'),
+          precision: _requiredInt(raw, 'precision'),
+        ),
+      );
+    }
+    return BullnymSupportedCurrencies(currencies: currencies);
   }
 }

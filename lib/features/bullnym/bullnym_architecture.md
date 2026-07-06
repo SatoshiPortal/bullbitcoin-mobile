@@ -39,6 +39,37 @@ expose derived Lightning Address behavior beyond returning server-supplied
 address fields. Server quota/history fields are not part of this minimal public
 facade yet; they need an owning follow-up before product UI consumes Bullnym.
 
+## Donation-page surface
+
+The shared client also carries the donation-page wire surface consumed by the
+`payment_page` feature (and, later, the POS surface — the same methods with
+`kind = pos`). The `kind` parameter is generic on this client; product features
+pin their own value.
+
+- `PUT /donation-page` — signed upsert (`donation-page-save`). Body:
+  `nym`, `npub`, `ct_descriptor`, `header`, `description`, `display_currency`,
+  `website`, `twitter`, `instagram`, `enabled`, `kind`, `timestamp`,
+  `signature`. `pos_mode` is never sent.
+- `DELETE /donation-page` — signed soft-archive (`donation-page-archive`). Body:
+  `nym`, `npub`, `kind`, `timestamp`, `signature`.
+- `GET /donation-page/:nym?kind=` — unsigned public read; `DonationPageNotFound`
+  when the row is absent. The view never echoes `ct_descriptor`.
+- `GET /api/v1/supported-currencies` — unsigned; `{currencies: [{code,
+  precision}]}`.
+
+### Optional-trailing signed-field rule (kind-scoping, KR-3)
+
+The save signed payload is the seven mandatory fields —
+`header, description, display_currency, website, twitter, instagram, enabled` —
+with absent optionals signed as empty strings so the NUL-separator count is
+stable, followed by the optional-trailing fields `[pos_mode?][ct_descriptor?]
+[kind?]` appended only when the client sends that JSON key, with `kind` LAST.
+This client never sends `pos_mode`, always sends a non-empty `ct_descriptor`,
+and always sends `kind`, so its save layout is the seven mandatory fields plus
+`ct_descriptor` then `kind`. Archive signs `[kind]` only. Golden byte-layout
+tests pin both layouts; reordering or omitting `kind` breaks them and (against a
+kind-aware server) fails closed with `AuthError`.
+
 ## Signing
 
 Bullnym authenticated writes are signed with the caller-supplied

@@ -11,6 +11,18 @@ const String bullpayWireDomain = 'bullpay-la-v2';
 
 const String bullpayActionRegister = 'register';
 const String bullpayActionDelete = 'delete';
+const String bullpayActionDonationPageSave = 'donation-page-save';
+const String bullpayActionDonationPageArchive = 'donation-page-archive';
+
+// Optional-trailing signed-field rule (server `save_payload_fields` in
+// `src/donation_page.rs`): the seven mandatory save fields (header, description,
+// display_currency, website, twitter, instagram, enabled) are always present —
+// absent optionals are signed as empty strings so the NUL-separator count is
+// invariant. The trailing fields `[pos_mode?][ct_descriptor?][kind?]` are each
+// appended only when the client sends that JSON key, and `kind` MUST stay last.
+// This client never sends `pos_mode`, always sends a non-empty `ct_descriptor`,
+// and always sends `kind`, so its save layout is the seven mandatory fields plus
+// `ct_descriptor` then `kind`. Archive signs `[kind]` only.
 
 Uint8List buildBullpaySchnorrMessage({
   required String action,
