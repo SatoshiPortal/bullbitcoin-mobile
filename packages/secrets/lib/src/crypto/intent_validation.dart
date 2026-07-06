@@ -24,6 +24,12 @@ class TxFacts {
 
   final List<Output> outputs;
   final int feeSat;
+
+  /// Reserved for payjoin validation (nVersion / nLockTime / the exact set of
+  /// input outpoints a payjoin proposal must preserve). Populated but NOT yet
+  /// consulted by the current send/plain-tx gate — they become live when
+  /// payjoin intent validation lands. Kept on the facts now so the extraction
+  /// path is stable ahead of that work.
   final int? version;
   final int? lockTime;
   final List<String> inputOutpoints;

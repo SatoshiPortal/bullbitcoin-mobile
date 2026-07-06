@@ -23,9 +23,13 @@ SCAN_DIRS="lib features packages test integration_test tool"
 #    An app-side `export 'package:secrets/src/...';` would re-expose an internal
 #    (e.g. FssSecretStoreAdapter's public ctor + raw useAndForget) just as an
 #    import would, so both keywords are matched here.
+#    The `grep -v` self-exclusion is ANCHORED to `^` so it only drops in-package
+#    matches by PATH — an unanchored filter would also drop a genuine external
+#    violation whose line CONTENT happened to contain `packages/secrets/` (e.g.
+#    a crafted trailing comment), letting it self-filter past the gate.
 hits=$(grep -rnE "(import|export)\s+['\"]package:secrets/src/" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
-  | grep -v 'packages/secrets/' || true)
+  | grep -v '^packages/secrets/' || true)
 [ -n "$hits" ] && note "external import/export of package:secrets/src/:
 $hits"
 
@@ -80,14 +84,19 @@ while IFS= read -r stmt; do
   fi
 done <<< "$statements"
 
-# 2b) The barrel is the ONLY .dart file that may live directly under
-#     packages/secrets/lib/ — a second file there could re-export src/ internals
-#     while sidestepping the barrel-export grep above (it checks exports IN the
-#     barrel, not other files). An import of `package:secrets/other.dart` would
-#     also bypass the `package:secrets/src/` grep in check 1.
-other_lib_files=$(find packages/secrets/lib -maxdepth 1 -name '*.dart' \
+# 2b) The barrel is the ONLY .dart file that may live under packages/secrets/lib/
+#     OUTSIDE src/ — any other file there could re-export src/ internals while
+#     sidestepping the barrel-export grep above (it checks exports IN the barrel,
+#     not other files). An import of `package:secrets/other.dart` (or
+#     `package:secrets/sub/other.dart`) would also bypass the
+#     `package:secrets/src/` grep in check 1. The old `-maxdepth 1` only saw
+#     files DIRECTLY under lib/, so a non-`src/` SUBDIRECTORY
+#     (lib/evil/leak.dart) escaped every layer — now any .dart outside src/ and
+#     not the barrel is caught, at any depth.
+other_lib_files=$(find packages/secrets/lib -name '*.dart' \
+  ! -path 'packages/secrets/lib/src/*' \
   ! -name 'secrets.dart' 2>/dev/null || true)
-[ -n "$other_lib_files" ] && note "a .dart file other than the barrel exists directly under packages/secrets/lib/:
+[ -n "$other_lib_files" ] && note "a .dart file other than the barrel exists outside packages/secrets/lib/src/:
 $other_lib_files"
 
 # 3) No one may suppress the internal-member lint to reach a @internal secret
@@ -97,7 +106,7 @@ $other_lib_files"
 #    explicitly even though the grep matches any @internal member.
 sup=$(grep -rnE "//\s*ignore.*invalid_use_of_internal_member" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
-  | grep -v 'packages/secrets/' || true)
+  | grep -v '^packages/secrets/' || true)
 [ -n "$sup" ] && note "inline suppression of invalid_use_of_internal_member outside secrets:
 $sup"
 
@@ -108,7 +117,7 @@ $sup"
 #     lib/) is checked separately since "." isn't in SCAN_DIRS.
 cfg=$(grep -rnE "invalid_use_of_internal_member" \
   --include='analysis_options.yaml' $SCAN_DIRS 2>/dev/null \
-  | grep -v 'packages/secrets/' || true)
+  | grep -v '^packages/secrets/' || true)
 root_cfg=$(grep -nE "invalid_use_of_internal_member" \
   analysis_options.yaml 2>/dev/null \
   | grep -v 'packages/secrets/' || true)
@@ -160,7 +169,7 @@ fss_allow_list='packages/secrets/lib/src/data/adapters/flutter_secure_storage_ad
 lib/core/storage/storage_locator.dart
 lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart
 lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_legacy_datasource_impl.dart'
-fss=$(grep -rlE "import\s+['\"]package:flutter_secure_storage(_legacy)?/" \
+fss=$(grep -rlE "(import|export)\s+['\"]package:flutter_secure_storage(_legacy)?/" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
   | grep -v '/.dart_tool/' \
   | grep -vxF "$fss_allow_list" \
@@ -174,13 +183,29 @@ $fss"
 #    directly could read `seed_<fp>` and bypass every gate. UNLIKE FSS, NO app
 #    file legitimately needs it (it is purely the secrets hardware backend), so
 #    the rule is simply "no import outside packages/secrets/" — mirroring check 1.
-oub=$(grep -rlE "import\s+['\"]package:oubliette/" \
+oub=$(grep -rlE "(import|export)\s+['\"]package:oubliette/" \
   --include='*.dart' $SCAN_DIRS 2>/dev/null \
-  | grep -v 'packages/secrets/' \
+  | grep -v '^packages/secrets/' \
   | grep -v '/.dart_tool/' \
   || true)
-[ -n "$oub" ] && note "package:oubliette imported outside packages/secrets (raw hardware seed store must stay sealed):
+[ -n "$oub" ] && note "package:oubliette imported/exported outside packages/secrets (raw hardware seed store must stay sealed):
 $oub"
+
+# 8) The barrel must not RE-EXPORT a raw secret backend or the recovery library.
+#    Checks 1/6/7 confine who may IMPORT these; a re-export from the barrel is a
+#    DISTINCT leak — it would hand every consumer the unguarded raw APIs
+#    (oubliette/FSS seed stores keyed on `seed_<fp>`, or `recoverbull`'s offline
+#    decrypt, which combined with the package's exported VaultKey+ciphertext
+#    could reconstruct a mnemonic). `recoverbull` is deliberately NOT confined at
+#    import-scope (the app owns a whole recoverbull subsystem for the existing
+#    backup feature), but it must never escape THROUGH the seal's front door.
+#    (M6/M7: the import greps above miss `export`; the barrel is the only file
+#    that can leak to external consumers, so it is checked explicitly here.)
+barrel_reexport=$(grep -nE \
+  "export\s+['\"]package:(oubliette|recoverbull(_dart)?|flutter_secure_storage(_legacy)?)/" \
+  "$barrel" 2>/dev/null || true)
+[ -n "$barrel_reexport" ] && note "barrel re-exports a raw secret backend / recovery package (must stay internal):
+$barrel_reexport"
 
 if [ "$fail" -ne 0 ]; then
   echo "🔒 Seal check FAILED."

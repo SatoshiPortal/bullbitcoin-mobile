@@ -5,7 +5,10 @@ import 'package:meta/meta.dart';
 /// but kept as the package's own enum so the public API never leaks the
 /// third-party type — callers use [MnemonicLanguage]; only the package's
 /// adapters map across the single [asBip39] point. `importMnemonic`/
-/// `fingerprintOf` default to [english].
+/// `fingerprintOf` default their `language` PARAMETER to [english]; the
+/// storage-decode path ([fromName]) does NOT guess a default — it fails closed
+/// on an unrecognized name (see below), because guessing the wrong wordlist
+/// derives a different seed.
 enum MnemonicLanguage {
   english,
   french,
@@ -36,8 +39,9 @@ enum MnemonicLanguage {
       };
 
   /// Tolerant lookup by enum name for the storage-decode path. Returns null on
-  /// an unrecognized name (the caller defaults to [english]) rather than
-  /// throwing — decoding stays forward-compatible.
+  /// an unrecognized name (the caller FAILS CLOSED — refusing to guess a
+  /// wordlist that would derive a different seed — rather than defaulting)
+  /// instead of throwing, so decoding stays forward-compatible.
   static MnemonicLanguage? fromName(String name) {
     for (final l in MnemonicLanguage.values) {
       if (l.name == name) return l;

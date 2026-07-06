@@ -78,9 +78,15 @@ final class VaultFailure extends SecretsFailure {
 /// The hardware key backing this secret was permanently invalidated by the OS
 /// (Android Keystore key deleted after a biometric/lock-screen change; an
 /// iOS/macOS key lost after a device restore without key material). The
-/// ciphertext exists but is unreadable forever. NOT a transient lock
+/// HARDWARE ciphertext is unreadable forever. NOT a transient lock
 /// ([KeychainLockedFailure]) and NOT a missing import ([SecretNotFoundFailure]).
-/// Recovery: purge, then have the user re-enter the secret from their backup.
+///
+/// Recovery is NOT a blanket purge. During the dual-store period an INTACT FSS
+/// copy of the same seed may still exist, and purging deletes the seed from
+/// BOTH backends — destroying that recoverable copy. The correct policy:
+///   • only when NO copy is readable does the user re-enter from their backup;
+///   • never purge on this failure alone if the seed may still live in FSS.
+/// See `HardwareKeyInvalidatedException` for the internal rationale (§2.3).
 final class KeyInvalidatedFailure extends SecretsFailure {
   const KeyInvalidatedFailure([super.logMessage]);
 }

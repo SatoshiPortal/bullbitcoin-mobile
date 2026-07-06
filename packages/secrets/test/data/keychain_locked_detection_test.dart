@@ -67,11 +67,56 @@ void main() {
     });
 
     test('does NOT match the number 25308 incidentally in a MESSAGE', () {
-      // The bare numeric status is matched only as the whole error code, never
-      // as a substring of free text (where it could be a byte count/offset).
+      // The bare numeric status is matched only as the whole error code/details,
+      // never as an unsigned substring of free text (a byte count/offset). Only
+      // the SIGNED literal `-25308` is honored inside a message.
       expect(
         isKeychainLockedError(PlatformException(
             code: 'IOError', message: 'wrote 25308 bytes then failed')),
+        isFalse,
+      );
+    });
+
+    // H2: the pinned SatoshiPortal/flutter_secure_storage fork puts the OSStatus
+    // in `details` (int), NOT `code`. Inspecting only code+message left a real
+    // lock on the current fork unrecognized — the exact production shape the
+    // app's own `_isLocked` handles. These pin the details+message coverage.
+    test('detects -25308 delivered in details as an int (pinned fork)', () {
+      expect(
+        isKeychainLockedError(
+            PlatformException(code: 'Unexpected', details: -25308)),
+        isTrue,
+      );
+    });
+
+    test('detects -25308 delivered in details as a string', () {
+      expect(
+        isKeychainLockedError(
+            PlatformException(code: 'Unexpected', details: '-25308')),
+        isTrue,
+      );
+    });
+
+    test('detects the SIGNED literal -25308 embedded in a message', () {
+      expect(
+        isKeychainLockedError(PlatformException(
+            code: 'Unexpected', message: 'OSStatus error -25308')),
+        isTrue,
+      );
+    });
+
+    test('detects a lock needle surfaced in details', () {
+      expect(
+        isKeychainLockedError(PlatformException(
+            code: 'Unexpected', details: 'interaction not allowed')),
+        isTrue,
+      );
+    });
+
+    test('does NOT match an incidental unsigned 25308 in details', () {
+      expect(
+        isKeychainLockedError(PlatformException(
+            code: 'IOError', details: 'offset 25308 out of range')),
         isFalse,
       );
     });

@@ -5,8 +5,14 @@
 /// [Secrets] statics and the sealed [Secret] handle. This barrel is the ENTIRE
 /// public surface — it never exports `src/crypto/*`, the capability adapters/ports
 /// (now internal), the `Mnemonic`/`Seed` models, `MnemonicReader`, or any `*Impl`.
-/// Raw secret material has no path out: callers get non-secret info, operation
-/// results, or sealed display widgets.
+///
+/// The seed/mnemonic itself has no path out: callers get non-secret info,
+/// operation results, or sealed display widgets. The DELIBERATE exception is the
+/// backup/recovery surface — `Secret.bip85RecoverbullKey()` returns a recovery
+/// `VaultKey` with public bytes and `Secret.encryptVault()` returns ciphertext,
+/// by design (the recovery model needs them). The package never returns key AND
+/// ciphertext from one call, but an app that already depends on `recoverbull`
+/// could combine them offline; see `backup.dart` for that documented residual.
 library;
 
 // ── Public API: statics + the sealed Secret handle hierarchy ───────────────

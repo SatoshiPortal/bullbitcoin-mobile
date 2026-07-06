@@ -64,8 +64,11 @@ class KeyDerivationAdapter implements KeyDerivationPort {
         );
         // Defense-in-depth (release path — the derivation's assert is stripped):
         // never hand back a descriptor carrying private key material, whatever a
-        // future bdk_dart bump does to toString(). Fail closed instead.
-        if (external.contains('prv') || internal.contains('prv')) {
+        // future bdk_dart bump does to toString(). Uses the same boundary-
+        // anchored check as the derivation (a bare `contains('prv')` here would
+        // brick ~1 in 1000 wallets on a benign xpub body — see H1). Fail closed.
+        if (DescriptorDerivation.descriptorContainsPrivateKey(external) ||
+            DescriptorDerivation.descriptorContainsPrivateKey(internal)) {
           return const Err(DerivationFailure(
               'derived descriptor unexpectedly contains a private key'));
         }

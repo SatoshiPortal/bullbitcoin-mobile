@@ -42,6 +42,18 @@ class PrivacyGuard extends StatefulWidget {
   @visibleForTesting
   static const coverKey = Key('privacy_guard_cover');
 
+  /// Resets the process-global capture state ([_PrivacyGuardState._mounted],
+  /// generation, and the confirmation notifier) between tests — the statics
+  /// otherwise leak across test cases and, e.g., a prior test leaving the block
+  /// confirmed would hide a later test's first-frame cover. No-op in production.
+  @visibleForTesting
+  static void debugReset() => _PrivacyGuardState._debugReset();
+
+  /// Observe the process-global capture-confirmation state (see M1/M2). Test-only.
+  @visibleForTesting
+  static bool get debugCaptureConfirmed =>
+      _PrivacyGuardState._captureConfirmed.value;
+
   @override
   State<PrivacyGuard> createState() => _PrivacyGuardState();
 }
@@ -55,21 +67,33 @@ class _PrivacyGuardState extends State<PrivacyGuard>
   /// unmounts.
   static int _mounted = 0;
 
-  /// Process-global mirror of whether screen-capture is CURRENTLY blocked (the
-  /// last confirmed `screenshotOff()` has not been undone). A guard mounted
-  /// while this is already true is protected from its first frame (an earlier
-  /// guard confirmed the block); the first guard flips it once its own
-  /// `screenshotOff()` resolves.
-  static bool _captureActive = false;
+  /// Monotonic generation stamped on every `_set` call. The async enable
+  /// completion only writes [_captureConfirmed] if its generation is still the
+  /// latest — so a disable (or a later enable) that ran while an enable was in
+  /// flight can't be clobbered by the stale completion resurrecting a `true`
+  /// (the M2 window: a stale `true` would let the NEXT guard skip its
+  /// first-frame cover while capture is actually allowed).
+  static int _generation = 0;
+
+  /// OBSERVABLE process-global: true once the platform capture-block is
+  /// CONFIRMED active. Every mounted guard listens, so a guard mounted in the
+  /// SAME frame as the one that armed the block still reveals its child when the
+  /// async `screenshotOff()` lands — previously only the guard that called
+  /// `_set(enabled: true)` learned of the confirmation, leaving any sibling
+  /// mounted that frame covered forever (the M1 defect). Until it is true, every
+  /// guard's `build` paints the opaque cover so pre-confirmation frames leak
+  /// nothing to a capture already running.
+  static final ValueNotifier<bool> _captureConfirmed = ValueNotifier(false);
+
+  static void _debugReset() {
+    _mounted = 0;
+    _generation = 0;
+    _captureConfirmed.value = false;
+  }
 
   /// True while the app is not foreground-`resumed`: cover the child so the
   /// secret is absent from the OS app-switcher snapshot.
   bool _obscured = false;
-
-  /// This guard may render its child UNCOVERED: capture-blocking is confirmed
-  /// active. Until then `build` paints the opaque cover over the child so the
-  /// pre-confirmation frames leak nothing to a capture already running.
-  bool _captureConfirmed = false;
 
   @override
   void initState() {
@@ -81,18 +105,29 @@ class _PrivacyGuardState extends State<PrivacyGuard>
     _obscured = WidgetsBinding.instance.lifecycleState != null &&
         WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed;
     if (_mounted++ == 0) _set(enabled: true);
-    // If capture is already confirmed active (this guard enabled it
-    // synchronously via the test seam, or an earlier guard already turned it
-    // on) the child is safe to render from frame one; otherwise `build` covers
-    // it until the async `screenshotOff()` lands (see `_set`).
-    _captureConfirmed = _captureActive;
+    // Rebuild this guard whenever the shared confirmation flips (see M1) — a
+    // guard mounted before the block is confirmed must uncover once it lands,
+    // even if a DIFFERENT guard is the one that armed it. Added AFTER `_set` so
+    // the synchronous test-seam path (which flips the notifier inside `_set`)
+    // can't re-enter setState during this initState — the first `build` reads
+    // the fresh value directly.
+    _captureConfirmed.addListener(_onConfirmedChanged);
+    // If capture is already confirmed active (an earlier guard turned it on, or
+    // this guard enabled it synchronously via the test seam) the child is safe
+    // to render from frame one; otherwise `build` covers it until the async
+    // `screenshotOff()` lands and flips the shared notifier (see `_set`).
   }
 
   @override
   void dispose() {
+    _captureConfirmed.removeListener(_onConfirmedChanged);
     WidgetsBinding.instance.removeObserver(this);
     if (--_mounted == 0) _set(enabled: false);
     super.dispose();
+  }
+
+  void _onConfirmedChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -111,19 +146,22 @@ class _PrivacyGuardState extends State<PrivacyGuard>
   }
 
   void _set({required bool enabled}) {
+    // Every call takes the next generation; only the latest may write the
+    // confirmed state on completion (see [_generation]).
+    final gen = ++_generation;
     // The test seam is honored ONLY in debug (kDebugMode) so it is release-inert
     // — a release build can never route through an injected spy.
     final override = kDebugMode ? PrivacyGuard.debugSetCapture : null;
     if (override != null) {
       override(enabled: enabled);
-      // Synchronous seam → the block's state is known immediately. Mark
-      // confirmed here (pre-first-build, so no setState) when enabling.
-      _captureActive = enabled;
-      if (enabled) _captureConfirmed = true;
+      // Synchronous seam → the block's state is known immediately.
+      _captureConfirmed.value = enabled;
       return;
     }
     // Decided to turn capture OFF → new guards must cover until it is re-armed.
-    if (!enabled) _captureActive = false;
+    // Set eagerly (and synchronously) so a guard mounting in this same frame
+    // sees the un-confirmed state and covers.
+    if (!enabled) _captureConfirmed.value = false;
     // Fire-and-forget in an async wrapper so async MissingPluginExceptions
     // (e.g. Linux desktop) are caught here, not escaped to the zone handler.
     Future<void> apply() async {
@@ -138,12 +176,12 @@ class _PrivacyGuardState extends State<PrivacyGuard>
     if (enabled) {
       // Reveal the child only once the platform capture-block is CONFIRMED
       // (success or a swallowed platform error — either way the async gap has
-      // closed and we should not keep the secret hidden forever).
+      // closed and we should not keep the secret hidden forever). Skip if a
+      // newer `_set` has since run (gen != _generation) — e.g. a disable landed
+      // while this enable was in flight; resurrecting `true` here would reopen
+      // the M2 window.
       f.whenComplete(() {
-        _captureActive = true;
-        if (mounted && !_captureConfirmed) {
-          setState(() => _captureConfirmed = true);
-        }
+        if (gen == _generation) _captureConfirmed.value = true;
       });
     }
   }
@@ -163,7 +201,7 @@ class _PrivacyGuardState extends State<PrivacyGuard>
             // screenshot/recording without stealing taps from the child beneath
             // (the interactive VerifyBackupView must stay usable the instant its
             // words paint, and a capture cover must never intercept input).
-            if (_obscured || !_captureConfirmed)
+            if (_obscured || !_captureConfirmed.value)
               const Positioned.fill(
                 child: IgnorePointer(
                   child: ColoredBox(

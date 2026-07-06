@@ -28,8 +28,27 @@ void main() {
   final adapter = FlutterSecureStorageAdapter.standard();
 
   group('FlutterSecureStorageAdapter raw-error → KeychainLockedException', () {
-    test('iOS errSecInteractionNotAllowed (-25308) on read', () {
+    test('iOS errSecInteractionNotAllowed (-25308) as code on read', () {
       mockThrow(PlatformException(code: '-25308'));
+      expect(adapter.read('seed_x'), throwsA(isA<KeychainLockedException>()));
+    });
+
+    // H2: the pinned SatoshiPortal/flutter_secure_storage fork delivers the
+    // OSStatus in `details` (as an int), NOT in `code`. Before this fix the lock
+    // was unrecognized on the current fork — the exact production shape.
+    test('iOS -25308 delivered in details as an int (pinned fork shape)', () {
+      mockThrow(PlatformException(code: 'Unexpected', details: -25308));
+      expect(adapter.read('seed_x'), throwsA(isA<KeychainLockedException>()));
+    });
+
+    test('iOS -25308 delivered in details as a string', () {
+      mockThrow(PlatformException(code: 'Unexpected', details: '-25308'));
+      expect(adapter.read('seed_x'), throwsA(isA<KeychainLockedException>()));
+    });
+
+    test('iOS -25308 embedded in the message', () {
+      mockThrow(PlatformException(
+          code: 'Unexpected', message: 'OSStatus error -25308 occurred'));
       expect(adapter.read('seed_x'), throwsA(isA<KeychainLockedException>()));
     });
 
