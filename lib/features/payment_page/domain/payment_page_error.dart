@@ -224,3 +224,53 @@ final class PaymentPageUnexpectedException extends PaymentPageException {
         retryable: false,
       );
 }
+
+/// Which phase of the save orchestration failed. Pre-commitment (local
+/// preparation: nym resolve, xprv derive, wallet prepare) is fatal/retryable
+/// with the wallet rollback rule; submission (the signed PUT) may have reached
+/// the server on a transport failure.
+enum PaymentPageSaveFailurePhase { localPreparation, submission }
+
+bool _isPaymentPageSubmissionUncertain(PaymentPageException cause) {
+  return switch (cause.kind) {
+    PaymentPageErrorKind.network ||
+    PaymentPageErrorKind.timeout ||
+    PaymentPageErrorKind.server ||
+    PaymentPageErrorKind.invalidServerResponse => true,
+    PaymentPageErrorKind.invalidInput ||
+    PaymentPageErrorKind.noNym ||
+    PaymentPageErrorKind.noDefaultBitcoinWallet ||
+    PaymentPageErrorKind.localPreparationFailed ||
+    PaymentPageErrorKind.notFound ||
+    PaymentPageErrorKind.rejected ||
+    PaymentPageErrorKind.authError ||
+    PaymentPageErrorKind.signingFailed ||
+    PaymentPageErrorKind.unexpected => false,
+  };
+}
+
+/// Two-phase wrapper for the save orchestration (the LA precedent). Carries the
+/// [cause] and whether a submission-phase failure might have reached the server
+/// (retry is a benign idempotent upsert — §7.4).
+final class PaymentPageSaveException extends PaymentPageException {
+  final PaymentPageSaveFailurePhase phase;
+  final PaymentPageException cause;
+  final bool submissionMayBeUncertain;
+
+  PaymentPageSaveException.localPreparation({required this.cause})
+    : phase = PaymentPageSaveFailurePhase.localPreparation,
+      submissionMayBeUncertain = false,
+      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+
+  PaymentPageSaveException.submission({required this.cause})
+    : phase = PaymentPageSaveFailurePhase.submission,
+      submissionMayBeUncertain = _isPaymentPageSubmissionUncertain(cause),
+      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+
+  @override
+  String toTranslated(BuildContext context) => cause.toTranslated(context);
+
+  @override
+  String toString() =>
+      'PaymentPageSaveException(phase: $phase, cause: $cause)';
+}
