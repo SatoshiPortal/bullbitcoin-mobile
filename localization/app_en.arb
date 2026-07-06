@@ -779,6 +779,46 @@
   "@lightningAddressErrorUnexpected": {
     "description": "Lightning Address generic error for unexpected responses or a local signing failure"
   },
+  "paymentPageErrorInvalidInput": "Please check the highlighted fields and try again.",
+  "@paymentPageErrorInvalidInput": {
+    "description": "Donation Page error when the entered details fail validation"
+  },
+  "paymentPageErrorNoNym": "Choose your name to create your Donation Page.",
+  "@paymentPageErrorNoNym": {
+    "description": "Donation Page error shown when the user has no Bull nym yet"
+  },
+  "paymentPageErrorNoDefaultWallet": "Set up a Bitcoin wallet before creating a Donation Page.",
+  "@paymentPageErrorNoDefaultWallet": {
+    "description": "Donation Page error when there is no default Bitcoin wallet to derive from"
+  },
+  "paymentPageErrorSetupFailed": "Could not set up your Donation Page wallet. Please try again.",
+  "@paymentPageErrorSetupFailed": {
+    "description": "Donation Page error for a local wallet-preparation failure"
+  },
+  "paymentPageErrorConnection": "Could not reach the server. Check your connection and try again.",
+  "@paymentPageErrorConnection": {
+    "description": "Donation Page error for a network or timeout failure"
+  },
+  "paymentPageErrorServer": "The server could not complete the request. Please try again later.",
+  "@paymentPageErrorServer": {
+    "description": "Donation Page error for a retryable server failure"
+  },
+  "paymentPageErrorNotFound": "No Donation Page exists for this name yet.",
+  "@paymentPageErrorNotFound": {
+    "description": "Donation Page error when the page row does not exist on the server"
+  },
+  "paymentPageErrorRejected": "The server rejected your Donation Page. Please review your details and try again.",
+  "@paymentPageErrorRejected": {
+    "description": "Donation Page error when the server rejects the submitted page"
+  },
+  "paymentPageErrorAuth": "Your Lightning address must be active to manage your Donation Page. Reactivate it and try again.",
+  "@paymentPageErrorAuth": {
+    "description": "Donation Page error when the server rejects the signature or the registration is inactive"
+  },
+  "paymentPageErrorUnexpected": "Something went wrong. Please try again.",
+  "@paymentPageErrorUnexpected": {
+    "description": "Donation Page generic error for unexpected responses or a local signing failure"
+  },
   "mempoolErrorSaveServerFailed": "Failed to save server",
   "@mempoolErrorSaveServerFailed": {
     "description": "Error when saving mempool server fails"

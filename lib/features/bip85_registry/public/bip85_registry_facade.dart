@@ -15,6 +15,9 @@ class Bip85RegistryFacade {
   Bip85WalletSeedReservation get lightningAddressWalletSeed =>
       Bip85Reservations.lightningAddressWalletSeed;
 
+  Bip85WalletSeedReservation get paymentPageWalletSeed =>
+      Bip85Reservations.paymentPageWalletSeed;
+
   // Registry-driven exclusion sets for the BIP85 next-index allocator and the
   // dev derivation screen: every reserved wallet-seed index/path is a product
   // spend seed that must never be allocated as a "next" dev derivation nor have
