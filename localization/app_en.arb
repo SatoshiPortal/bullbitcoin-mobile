@@ -859,6 +859,46 @@
   "@posErrorUnexpected": {
     "description": "Point of Sale generic error for unexpected responses or a local signing failure"
   },
+  "invoiceErrorNoDefaultBitcoinWallet": "Set up a Bitcoin wallet before creating an invoice that accepts Bitcoin.",
+  "@invoiceErrorNoDefaultBitcoinWallet": {
+    "description": "Invoice error when no default Bitcoin wallet exists for the BTC rail"
+  },
+  "invoiceErrorNoDefaultLiquidWallet": "Set up a Liquid wallet before creating an invoice that accepts Lightning or Liquid.",
+  "@invoiceErrorNoDefaultLiquidWallet": {
+    "description": "Invoice error when no default Liquid wallet exists for the Lightning or Liquid rail"
+  },
+  "invoiceErrorInvalidInput": "Please check the highlighted fields and try again.",
+  "@invoiceErrorInvalidInput": {
+    "description": "Invoice error when the entered details fail validation"
+  },
+  "invoiceErrorReusedAddress": "That receive address was already used. Please try again.",
+  "@invoiceErrorReusedAddress": {
+    "description": "Invoice error when the supplied Bitcoin or Liquid address is already assigned"
+  },
+  "invoiceErrorNotFound": "This invoice could not be found.",
+  "@invoiceErrorNotFound": {
+    "description": "Invoice error when the invoice does not exist or is not owned by this wallet"
+  },
+  "invoiceErrorAuth": "Your wallet signature could not be verified. Please try again.",
+  "@invoiceErrorAuth": {
+    "description": "Invoice error when the server rejects the signature"
+  },
+  "invoiceErrorRateLimited": "Too many requests. Please wait a moment and try again.",
+  "@invoiceErrorRateLimited": {
+    "description": "Invoice error when the server rate-limits the request"
+  },
+  "invoiceErrorConnection": "Could not reach the server. Check your connection and try again.",
+  "@invoiceErrorConnection": {
+    "description": "Invoice error for a network or timeout failure"
+  },
+  "invoiceErrorServer": "The server could not complete the request. Please try again later.",
+  "@invoiceErrorServer": {
+    "description": "Invoice error for a retryable server failure or an unavailable invoice service"
+  },
+  "invoiceErrorUnexpected": "Something went wrong. Please try again.",
+  "@invoiceErrorUnexpected": {
+    "description": "Invoice generic error for unexpected responses or a local signing failure"
+  },
   "bitcoinSettingsPaymentPageTitle": "Donation Page",
   "@bitcoinSettingsPaymentPageTitle": {
     "description": "Bitcoin settings tile opening the Donation Page editor"
