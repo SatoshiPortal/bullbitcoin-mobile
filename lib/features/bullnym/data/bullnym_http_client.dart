@@ -7,14 +7,10 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
+import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
 import 'package:dio/dio.dart';
 import 'package:crypto/crypto.dart';
 
-const bullnymBaseUrlEnvironmentKey = 'BULLNYM_BASE_URL';
-const bullnymDefaultBaseUrl = String.fromEnvironment(
-  bullnymBaseUrlEnvironmentKey,
-  defaultValue: 'https://bullpay.ca',
-);
 const Duration bullnymConnectTimeout = Duration(seconds: 10);
 const Duration bullnymReceiveTimeout = Duration(seconds: 15);
 

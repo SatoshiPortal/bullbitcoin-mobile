@@ -171,8 +171,8 @@ class PreparePosWalletUsecase {
       KeychainManifestExceptionType.unsupportedFileVersion ||
       KeychainManifestExceptionType.conflict ||
       KeychainManifestExceptionType.duplicate ||
-      KeychainManifestExceptionType.nostrEvent ||
-      KeychainManifestExceptionType.consentRequired => false,
+      KeychainManifestExceptionType.backupSnapshot ||
+      KeychainManifestExceptionType.remoteBackup => false,
     };
   }
 }

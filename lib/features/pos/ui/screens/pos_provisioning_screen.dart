@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/get_paid_settings/public/automated_backup_consent.dart';
 import 'package:bb_mobile/features/pos/domain/pos_validation.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_cubit.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_state.dart';
@@ -308,17 +307,10 @@ class _PosProvisioningScreenState extends State<PosProvisioningScreen> {
   }
 
   Future<void> _createNym(PosCubit cubit) async {
-    if (!await ensureAutomatedBackupConsent(context)) return;
-    if (!mounted) return;
     await cubit.createNym();
   }
 
   Future<void> _provision(PosCubit cubit) async {
-    // Creating the POS provisions wallet 103 and rides the next backup
-    // snapshot, so ensure the automated-backup disclosure is acknowledged
-    // (no-op if already consented).
-    if (!await ensureAutomatedBackupConsent(context)) return;
-    if (!mounted) return;
     await cubit.provision();
   }
 

@@ -1058,6 +1058,18 @@
   "@paymentPageHealUnreachable": {
     "description": "Recovery notice when the Donation Page liveness check could not reach the server"
   },
+  "posHealNeedsReactivation": "Your Point of Sale needs to be set up again after recovery.",
+  "@posHealNeedsReactivation": {
+    "description": "Recovery notice when the recovered Point of Sale row is missing"
+  },
+  "posHealNeedsReactivationAction": "Set up your Point of Sale again",
+  "@posHealNeedsReactivationAction": {
+    "description": "Button to re-create the Point of Sale after recovery"
+  },
+  "posHealUnreachable": "We couldn't verify your Point of Sale. Check it in Bitcoin settings.",
+  "@posHealUnreachable": {
+    "description": "Recovery notice when the Point of Sale liveness check could not reach the server"
+  },
   "bitcoinSettingsPointOfSaleTitle": "Point of Sale",
   "@bitcoinSettingsPointOfSaleTitle": {
     "description": "Bitcoin settings tile opening the Point of Sale provisioning screen"
