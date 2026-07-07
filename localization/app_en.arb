@@ -5576,6 +5576,66 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
+  "getPaidDashboardTitle": "Get Paid",
+  "@getPaidDashboardTitle": {
+    "description": "Title of the Get Paid hub screen"
+  },
+  "getPaidDashboardActive": "Active",
+  "@getPaidDashboardActive": {
+    "description": "Status chip shown when a Get Paid product is active"
+  },
+  "getPaidDashboardNotPublished": "Not published",
+  "@getPaidDashboardNotPublished": {
+    "description": "Status chip shown when a Get Paid product exists but is not published"
+  },
+  "getPaidDashboardError": "Something went wrong. Please try again.",
+  "@getPaidDashboardError": {
+    "description": "Error toast shown when the Get Paid hub fails to refresh"
+  },
+  "getPaidDashboardLightningAddressTitle": "Lightning Address",
+  "@getPaidDashboardLightningAddressTitle": {
+    "description": "Lightning Address slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardLightningAddressSubtitle": "Receive payments to a Lightning address",
+  "@getPaidDashboardLightningAddressSubtitle": {
+    "description": "Lightning Address slot card call-to-action subtitle when unset"
+  },
+  "getPaidDashboardDonationPageTitle": "Donation Page",
+  "@getPaidDashboardDonationPageTitle": {
+    "description": "Donation Page slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardDonationPageSubtitle": "Create a public page to accept donations",
+  "@getPaidDashboardDonationPageSubtitle": {
+    "description": "Donation Page slot card call-to-action subtitle when unset"
+  },
+  "getPaidDashboardPosTitle": "Point of Sale",
+  "@getPaidDashboardPosTitle": {
+    "description": "Point of Sale slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardPosSubtitle": "Accept in-person payments at your business",
+  "@getPaidDashboardPosSubtitle": {
+    "description": "Point of Sale slot card call-to-action subtitle when unset"
+  },
+  "getPaidDashboardInvoicesTitle": "Invoices",
+  "@getPaidDashboardInvoicesTitle": {
+    "description": "Invoices slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardInvoicesSubtitle": "Create and track invoices",
+  "@getPaidDashboardInvoicesSubtitle": {
+    "description": "Invoices slot card subtitle on the Get Paid hub"
+  },
+  "getPaidDashboardBtcpayTitle": "BTCPay Server",
+  "@getPaidDashboardBtcpayTitle": {
+    "description": "BTCPay/SamRock slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardBtcpaySubtitle": "Connect your BTCPay Server via SamRock",
+  "@getPaidDashboardBtcpaySubtitle": {
+    "description": "BTCPay/SamRock slot card call-to-action subtitle when unset"
+  },
+  "navigationTabGetPaid": "Get Paid",
+  "@navigationTabGetPaid": {
+    "description": "Label of the Get Paid bottom navigation tab"
+  },
   "dcaSetRecurringBuyTitle": "Set Recurring Buy",
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
