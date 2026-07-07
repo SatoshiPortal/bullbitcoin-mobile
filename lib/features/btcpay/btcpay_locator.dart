@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/btcpay/domain/usecases/get_btcpay_connection_
 import 'package:bb_mobile/features/btcpay/domain/usecases/get_btcpay_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/btcpay/domain/usecases/preview_btcpay_samrock_pairing_usecase.dart';
 import 'package:bb_mobile/features/btcpay/presentation/btcpay_pairing_cubit.dart';
+import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -42,6 +43,11 @@ class BtcpayLocator {
       () => GetBtcpayConnectionUsecase(
         getSettings: locator<GetSettingsUsecase>(),
         connectionRepository: locator<BtcpayConnectionRepository>(),
+      ),
+    );
+    locator.registerFactory<BtcpayFacade>(
+      () => BtcpayFacade(
+        connection: locator<GetBtcpayConnectionUsecase>().execute,
       ),
     );
     locator.registerFactory<GetBtcpayWalletBehaviorsUsecase>(
