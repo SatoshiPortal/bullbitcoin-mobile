@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/get_paid/ui/get_paid_router.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
@@ -67,7 +68,10 @@ class AppRouter {
         notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
-          final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
+          final tabIndex =
+              location.startsWith(GetPaidDashboardRoute.getPaidHome.path)
+              ? 2
+              : location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
           final isSupportChat =
@@ -96,7 +100,7 @@ class AppRouter {
                             onTap: (index) {
                               if (index == 0) {
                                 context.goNamed(WalletRoute.walletHome.name);
-                              } else {
+                              } else if (index == 1) {
                                 // Exchange tab
                                 if (Platform.isIOS) {
                                   final isSuperuser =
@@ -119,6 +123,12 @@ class AppRouter {
                                     ExchangeRoute.exchangeHome.name,
                                   );
                                 }
+                              } else {
+                                // Get Paid tab — available to everyone; no iOS
+                                // gate (unlike the Exchange tab above).
+                                context.goNamed(
+                                  GetPaidDashboardRoute.getPaidHome.name,
+                                );
                               }
                             },
                             items: [
@@ -132,6 +142,11 @@ class AppRouter {
                                 label: context.loc.navigationTabExchange,
                                 backgroundColor: context.appColors.background,
                               ),
+                              BottomNavigationBarItem(
+                                icon: const Icon(Icons.request_quote),
+                                label: context.loc.navigationTabGetPaid,
+                                backgroundColor: context.appColors.background,
+                              ),
                             ],
                           ),
                   ),
@@ -140,7 +155,11 @@ class AppRouter {
             ),
           );
         },
-        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
+        routes: [
+          WalletRouter.walletHomeRoute,
+          ...ExchangeRouter.routes,
+          GetPaidRouter.route,
+        ],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,
