@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -13,10 +14,8 @@ void main() {
 
   Widget buildTestWidget() {
     return const MaterialApp(
-      // AppLocalizations requires localization delegates; for a minimal test
-      // we wrap in MaterialApp which provides basic Material context.
-      // Full localization testing requires the generated delegates from
-      // flutter gen-l10n which aren't available in CI without a build step.
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: BtcMapScreen(),
     );
   }

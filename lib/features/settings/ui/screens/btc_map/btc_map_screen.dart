@@ -28,8 +28,12 @@ class _BtcMapScreenState extends State<BtcMapScreen> {
           onPageFinished: (_) {
             if (mounted) setState(() => _isLoading = false);
           },
+          onWebResourceError: (_) {
+            if (mounted) setState(() => _isLoading = false);
+          },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.contains('btcmap.org')) {
+            final host = Uri.tryParse(request.url)?.host ?? '';
+            if (host == 'btcmap.org' || host.endsWith('.btcmap.org')) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;

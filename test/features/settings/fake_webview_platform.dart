@@ -31,11 +31,6 @@ class FakePlatformWebViewController extends PlatformWebViewController {
   Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) async {}
 
   @override
-  Future<void> setNavigationDelegate(
-    PlatformNavigationDelegate handler,
-  ) async {}
-
-  @override
   Future<void> setUserAgent(String? userAgent) async {}
 
   @override
