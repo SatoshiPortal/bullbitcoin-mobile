@@ -101,9 +101,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1377091a42743761be71ff42e01b8ff65531fbd3"
-      resolved-ref: "1377091a42743761be71ff42e01b8ff65531fbd3"
-      url: "https://github.com/bitcoindevkit/bdk-dart"
+      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
+      resolved-ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
+      url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "1.0.0-rc.2"
   bech32:
