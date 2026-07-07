@@ -3,16 +3,24 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
+/// How the remaining time renders. [mmss] is the existing `M:SS` used by the
+/// buy/sell timers (default, unchanged). [dhm] renders coarse day/hour/minute
+/// (`Xd Yh Zmin` / `Xh Ymin` / `Xmin`) for long, day-scale windows like invoice
+/// expiry.
+enum CountdownFormat { mmss, dhm }
+
 class Countdown extends StatefulWidget {
   final DateTime until;
   final VoidCallback onTimeout;
   final TextStyle? textStyle;
+  final CountdownFormat format;
 
   const Countdown({
     super.key,
     required this.until,
     required this.onTimeout,
     this.textStyle,
+    this.format = CountdownFormat.mmss,
   });
 
   @override
@@ -86,7 +94,7 @@ class CountdownState extends State<Countdown> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '${remainingTime.inMinutes}:${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
+      _label(),
       style:
           widget.textStyle ??
           context.font.bodyMedium?.copyWith(
@@ -94,5 +102,20 @@ class CountdownState extends State<Countdown> {
             color: context.appColors.primary,
           ),
     );
+  }
+
+  String _label() {
+    switch (widget.format) {
+      case CountdownFormat.mmss:
+        return '${remainingTime.inMinutes}:'
+            '${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}';
+      case CountdownFormat.dhm:
+        final days = remainingTime.inDays;
+        final hours = remainingTime.inHours % 24;
+        final minutes = remainingTime.inMinutes % 60;
+        if (days > 0) return '${days}d ${hours}h ${minutes}min';
+        if (hours > 0) return '${hours}h ${minutes}min';
+        return '${minutes}min';
+    }
   }
 }

@@ -31,6 +31,9 @@ const skip = {
   // SPEC-POS-01: same app-process non-determinism; the deterministic Point of
   // Sale gates are the L0 usecase/cubit suites.
   'pos_lifecycle_test.dart',
+  // SPEC-INV-01: same app-process non-determinism; the deterministic Invoices
+  // gates are the L0 usecase/cubit suites.
+  'invoices_lifecycle_test.dart',
 };
 
 void main() {

@@ -899,6 +899,216 @@
   "@invoiceErrorUnexpected": {
     "description": "Invoice generic error for unexpected responses or a local signing failure"
   },
+  "bitcoinSettingsInvoicesTitle": "Invoices",
+  "@bitcoinSettingsInvoicesTitle": {
+    "description": "Bitcoin settings entry tile for the Invoices feature"
+  },
+  "invoicesListTitle": "Invoices",
+  "@invoicesListTitle": {
+    "description": "Title of the invoices list screen"
+  },
+  "invoicesCreateButton": "New invoice",
+  "@invoicesCreateButton": {
+    "description": "Button to start creating an invoice"
+  },
+  "invoicesRetryButton": "Retry",
+  "@invoicesRetryButton": {
+    "description": "Retry loading the invoices list"
+  },
+  "invoicesFilterAll": "All",
+  "@invoicesFilterAll": {
+    "description": "The client-side status filter chip that shows every invoice"
+  },
+  "invoicesEmptyTitle": "No invoices yet",
+  "@invoicesEmptyTitle": {
+    "description": "Empty-state title for the invoices list"
+  },
+  "invoicesEmptyBody": "Create an invoice to get paid.",
+  "@invoicesEmptyBody": {
+    "description": "Empty-state body for the invoices list"
+  },
+  "invoiceCreateTitle": "New invoice",
+  "@invoiceCreateTitle": {
+    "description": "Title of the create-invoice screen"
+  },
+  "invoiceCreatedTitle": "Invoice created",
+  "@invoiceCreatedTitle": {
+    "description": "Title of the create-invoice success view"
+  },
+  "invoiceDetailTitle": "Invoice",
+  "@invoiceDetailTitle": {
+    "description": "Title of the invoice detail screen"
+  },
+  "invoiceAmountSats": "{count} sats",
+  "@invoiceAmountSats": {
+    "description": "An invoice amount rendered in satoshis",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "invoiceAmountModeSats": "Sats",
+  "@invoiceAmountModeSats": {
+    "description": "Amount mode toggle: denominate in satoshis"
+  },
+  "invoiceAmountModeFiat": "Fiat",
+  "@invoiceAmountModeFiat": {
+    "description": "Amount mode toggle: denominate in a fiat currency"
+  },
+  "invoiceAmountSatsLabel": "Amount (sats)",
+  "@invoiceAmountSatsLabel": {
+    "description": "Label for the sat amount input"
+  },
+  "invoiceAmountFiatLabel": "Amount",
+  "@invoiceAmountFiatLabel": {
+    "description": "Label for the fiat amount input"
+  },
+  "invoiceCurrencyLabel": "Currency",
+  "@invoiceCurrencyLabel": {
+    "description": "Label for the fiat currency selector"
+  },
+  "invoiceRailsLabel": "Accepted payment methods",
+  "@invoiceRailsLabel": {
+    "description": "Section header for the invoice payment-rail toggles"
+  },
+  "invoiceAcceptLn": "Lightning",
+  "@invoiceAcceptLn": {
+    "description": "Toggle to accept Lightning payment"
+  },
+  "invoiceAcceptLiquid": "Liquid",
+  "@invoiceAcceptLiquid": {
+    "description": "Toggle to accept Liquid payment"
+  },
+  "invoiceAcceptBtc": "On-chain Bitcoin",
+  "@invoiceAcceptBtc": {
+    "description": "Toggle to accept on-chain Bitcoin payment"
+  },
+  "invoicePublicDescriptionLabel": "Description",
+  "@invoicePublicDescriptionLabel": {
+    "description": "Label for the public invoice description"
+  },
+  "invoiceNumberLabel": "Invoice number",
+  "@invoiceNumberLabel": {
+    "description": "Label for the invoice number field"
+  },
+  "invoiceRecipientNameLabel": "Recipient name",
+  "@invoiceRecipientNameLabel": {
+    "description": "Label for the recipient name field"
+  },
+  "invoiceExpiryDays": "Expires in {count} days",
+  "@invoiceExpiryDays": {
+    "description": "Label showing the selected expiry window in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "invoicePrivateMemoLabel": "Private note (only you)",
+  "@invoicePrivateMemoLabel": {
+    "description": "Label for the local-only private memo field"
+  },
+  "invoiceCreateButton": "Create invoice",
+  "@invoiceCreateButton": {
+    "description": "Button to submit the create-invoice form"
+  },
+  "invoiceCreatingButton": "Creating…",
+  "@invoiceCreatingButton": {
+    "description": "Submit button label while an invoice is being created"
+  },
+  "invoiceShareLabel": "Share this payment link",
+  "@invoiceShareLabel": {
+    "description": "Label above the created invoice share URL"
+  },
+  "invoiceOpenLink": "Open link",
+  "@invoiceOpenLink": {
+    "description": "Button to open the invoice share link externally"
+  },
+  "invoiceDoneButton": "Done",
+  "@invoiceDoneButton": {
+    "description": "Button to close the create-invoice success view"
+  },
+  "invoiceStatusLabel": "Status",
+  "@invoiceStatusLabel": {
+    "description": "Label for the invoice status row on the detail screen"
+  },
+  "invoiceAmountLabel": "Amount",
+  "@invoiceAmountLabel": {
+    "description": "Label for the invoice amount row on the detail screen"
+  },
+  "invoiceExpiresLabel": "Expires in",
+  "@invoiceExpiresLabel": {
+    "description": "Label for the invoice expiry countdown row"
+  },
+  "invoiceExpiredLabel": "Expired",
+  "@invoiceExpiredLabel": {
+    "description": "Shown when an invoice has passed its expiry"
+  },
+  "invoicePaymentLightningLabel": "Lightning invoice",
+  "@invoicePaymentLightningLabel": {
+    "description": "Label for the Lightning payment request on the detail screen"
+  },
+  "invoicePaymentLiquidLabel": "Liquid address",
+  "@invoicePaymentLiquidLabel": {
+    "description": "Label for the Liquid payment address on the detail screen"
+  },
+  "invoicePaymentBitcoinLabel": "Bitcoin address",
+  "@invoicePaymentBitcoinLabel": {
+    "description": "Label for the Bitcoin payment address on the detail screen"
+  },
+  "invoiceCancelButton": "Cancel invoice",
+  "@invoiceCancelButton": {
+    "description": "Button to cancel an unpaid invoice"
+  },
+  "invoiceCancelConfirmTitle": "Cancel this invoice?",
+  "@invoiceCancelConfirmTitle": {
+    "description": "Title of the cancel-invoice confirmation dialog"
+  },
+  "invoiceCancelConfirmBody": "The payment link will stop working. This cannot be undone.",
+  "@invoiceCancelConfirmBody": {
+    "description": "Body of the cancel-invoice confirmation dialog"
+  },
+  "invoiceCancelConfirmCancel": "Keep it",
+  "@invoiceCancelConfirmCancel": {
+    "description": "Dismiss action of the cancel-invoice confirmation dialog"
+  },
+  "invoiceCancelConfirmConfirm": "Cancel invoice",
+  "@invoiceCancelConfirmConfirm": {
+    "description": "Confirm action of the cancel-invoice confirmation dialog"
+  },
+  "invoiceStatusUnpaid": "Unpaid",
+  "@invoiceStatusUnpaid": {
+    "description": "Invoice status label: unpaid"
+  },
+  "invoiceStatusInProgress": "In progress",
+  "@invoiceStatusInProgress": {
+    "description": "Invoice status label: in progress"
+  },
+  "invoiceStatusPartiallyPaid": "Partially paid",
+  "@invoiceStatusPartiallyPaid": {
+    "description": "Invoice status label: partially paid"
+  },
+  "invoiceStatusPaid": "Paid",
+  "@invoiceStatusPaid": {
+    "description": "Invoice status label: paid"
+  },
+  "invoiceStatusUnderpaid": "Underpaid",
+  "@invoiceStatusUnderpaid": {
+    "description": "Invoice status label: underpaid"
+  },
+  "invoiceStatusOverpaid": "Overpaid",
+  "@invoiceStatusOverpaid": {
+    "description": "Invoice status label: overpaid"
+  },
+  "invoiceStatusExpired": "Expired",
+  "@invoiceStatusExpired": {
+    "description": "Invoice status label: expired"
+  },
+  "invoiceStatusCancelled": "Cancelled",
+  "@invoiceStatusCancelled": {
+    "description": "Invoice status label: cancelled"
+  },
   "bitcoinSettingsPaymentPageTitle": "Donation Page",
   "@bitcoinSettingsPaymentPageTitle": {
     "description": "Bitcoin settings tile opening the Donation Page editor"
@@ -15067,60 +15277,79 @@
   },
   "bitcoinSettingsLightningAddressTitle": "Lightning Address",
   "@bitcoinSettingsLightningAddressTitle": {
+    "description": "Title for the Lightning Address entry in Bitcoin settings."
   },
   "lightningAddressTitle": "Lightning Address",
   "@lightningAddressTitle": {
+    "description": "Title for the Lightning Address activation and status screen."
   },
   "lightningAddressInactiveTitle": "Register a Lightning Address",
   "@lightningAddressInactiveTitle": {
+    "description": "Heading shown when no active wallet-owned Lightning Address is found."
   },
   "lightningAddressInactiveBody": "Choose a name for receiving Lightning payments through your wallet-owned Liquid address.",
   "@lightningAddressInactiveBody": {
+    "description": "Body shown before registering a Lightning Address."
   },
   "lightningAddressInactiveKnownTitle": "Lightning Address is inactive",
   "@lightningAddressInactiveKnownTitle": {
+    "description": "Heading shown when Bullnym reports a known but inactive Lightning Address nym."
   },
   "lightningAddressInactiveKnownBody": "Status lookup found this name, but it is not active.",
   "@lightningAddressInactiveKnownBody": {
+    "description": "Body shown when Bullnym reports a known but inactive Lightning Address nym."
   },
   "lightningAddressNymLabel": "Name",
   "@lightningAddressNymLabel": {
+    "description": "Label for the Lightning Address nym field."
   },
   "lightningAddressNymHelper": "Use only the name part before @.",
   "@lightningAddressNymHelper": {
+    "description": "Helper text for the Lightning Address nym field."
   },
   "lightningAddressRegisterButton": "Register",
   "@lightningAddressRegisterButton": {
+    "description": "Button label to register a Lightning Address."
   },
   "lightningAddressSubmitting": "Registering...",
   "@lightningAddressSubmitting": {
+    "description": "Button label while Lightning Address registration is submitting."
   },
   "lightningAddressConfirmTitle": "Register Lightning Address?",
   "@lightningAddressConfirmTitle": {
+    "description": "Confirmation dialog title before Lightning Address registration."
   },
   "lightningAddressConfirmBody": "Bull Wallet will create or reuse a dedicated Lightning Address Liquid wallet, hide it from Home, enable autosweep, and submit your selected name plus a confidential descriptor to the configured Bullnym server.",
   "@lightningAddressConfirmBody": {
+    "description": "Confirmation dialog body before Lightning Address registration."
   },
   "lightningAddressConfirmCancel": "Cancel",
   "@lightningAddressConfirmCancel": {
+    "description": "Cancel button in the Lightning Address confirmation dialog."
   },
   "lightningAddressConfirmSubmit": "Register",
   "@lightningAddressConfirmSubmit": {
+    "description": "Confirm button in the Lightning Address confirmation dialog."
   },
   "lightningAddressOperationInProgress": "Lightning Address registration is still in progress.",
   "@lightningAddressOperationInProgress": {
+    "description": "Snackbar shown when the user tries to leave during registration."
   },
   "lightningAddressActiveTitle": "Lightning Address is active",
   "@lightningAddressActiveTitle": {
+    "description": "Heading shown for an active wallet-owned Lightning Address found by lookup."
   },
   "lightningAddressSuccessTitle": "Lightning Address registered",
   "@lightningAddressSuccessTitle": {
+    "description": "Heading shown after successful Lightning Address registration."
   },
   "lightningAddressSuccessBody": "This address was returned by the server after registration.",
   "@lightningAddressSuccessBody": {
+    "description": "Body shown after successful Lightning Address registration."
   },
   "lightningAddressNoCopyableAddressAfterLookup": "Status lookup confirms the name is active. The server did not return the full address for copying.",
   "@lightningAddressNoCopyableAddressAfterLookup": {
+    "description": "Body shown for active lookup when the full Lightning Address is not available from the status API."
   },
   "lightningAddressCopyableAddressAfterLookup": "Status lookup confirms the name is active. This address was returned by the server for copying.",
   "@lightningAddressCopyableAddressAfterLookup": {
@@ -15160,27 +15389,35 @@
   },
   "lightningAddressCheckStatusButton": "Check Status",
   "@lightningAddressCheckStatusButton": {
+    "description": "Button label to retry Lightning Address status lookup."
   },
   "lightningAddressUncertainTitle": "Status Unknown",
   "@lightningAddressUncertainTitle": {
+    "description": "Heading shown when registration submission may have succeeded but status is unknown."
   },
   "lightningAddressUncertainBody": "Registration may have succeeded. Check status before trying again.",
   "@lightningAddressUncertainBody": {
+    "description": "Failure message shown when a post-submission Lightning Address error is uncertain."
   },
   "lightningAddressLookupFailedTitle": "Status Check Failed",
   "@lightningAddressLookupFailedTitle": {
+    "description": "Heading shown when Lightning Address status lookup fails."
   },
   "lightningAddressLookupFailedBody": "Status could not be checked. Try again before registering.",
   "@lightningAddressLookupFailedBody": {
+    "description": "Body shown when Lightning Address status lookup fails."
   },
   "lightningAddressInvalidNym": "Use a valid name.",
   "@lightningAddressInvalidNym": {
+    "description": "Failure message shown when the Lightning Address nym is invalid."
   },
   "lightningAddressSetupFailed": "Setup failed before anything was submitted. Please try again.",
   "@lightningAddressSetupFailed": {
+    "description": "Failure message shown when local wallet setup failed before server submission."
   },
   "lightningAddressRejected": "The server rejected this name.",
   "@lightningAddressRejected": {
+    "description": "Failure message shown when the Bullnym server rejects registration."
   },
   "lightningAddressServerTemporary": "The server could not register this name right now. Please try again.",
   "@lightningAddressServerTemporary": {
@@ -15188,9 +15425,11 @@
   },
   "lightningAddressNetworkError": "Network error. Please try again.",
   "@lightningAddressNetworkError": {
+    "description": "Failure message shown for a retryable Lightning Address network error before uncertain submission."
   },
   "lightningAddressGenericError": "Lightning Address setup failed. Please try again.",
   "@lightningAddressGenericError": {
+    "description": "Generic Lightning Address activation failure message."
   },
   "sendLud22DirectPayFailed": "Direct Liquid payment could not be completed.",
   "@sendLud22DirectPayFailed": {

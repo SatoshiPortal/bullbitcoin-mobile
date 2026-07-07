@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoices_list_cubit.dart';
+import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/payment_page/presentation/payment_page_cubit.dart';
@@ -49,6 +52,11 @@ Future<void> main({bool isInitialized = false}) async {
     // PR27 wiring (AD-10): the Point of Sale facade + cubit resolve once.
     expect(() => locator<PosFacade>(), returnsNormally);
     expect(() => locator<PosCubit>(), returnsNormally);
+    // PR28 wiring (AD-10): the Invoices facade + list/create cubits resolve once
+    // (the detail cubit is built at the route with its invoice id).
+    expect(() => locator<InvoicesFacade>(), returnsNormally);
+    expect(() => locator<InvoicesListCubit>(), returnsNormally);
+    expect(() => locator<InvoiceCreateCubit>(), returnsNormally);
     // PR25 wiring (SPEC-BOOT-01+): the LUD-22 direct-pay port + usecases
     // resolve once from the real graph (the SendCubit consumes them).
     expect(() => locator<LiquidDirectPayPort>(), returnsNormally);

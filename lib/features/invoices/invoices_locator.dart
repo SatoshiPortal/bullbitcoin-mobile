@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_use
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_identity_datasource.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_pay_service_datasource.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoices_list_cubit.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -62,6 +64,16 @@ class InvoicesLocator {
         getStatus: locator<GetInvoiceUsecase>(),
         bullnym: locator<BullnymFacade>(),
       ),
+    );
+
+    // Presentation cubits. The list/create cubits are param-less factories; the
+    // detail cubit takes the invoice id at the route boundary, so it is built
+    // there (not registered here).
+    locator.registerFactory<InvoicesListCubit>(
+      () => InvoicesListCubit(facade: locator<InvoicesFacade>()),
+    );
+    locator.registerFactory<InvoiceCreateCubit>(
+      () => InvoiceCreateCubit(facade: locator<InvoicesFacade>()),
     );
   }
 }

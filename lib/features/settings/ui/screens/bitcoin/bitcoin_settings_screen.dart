@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_routes.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
+import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_routes.dart';
 import 'package:bb_mobile/features/pos/public/pos_routes.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -81,6 +82,11 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   icon: Icons.point_of_sale,
                   title: context.loc.bitcoinSettingsPointOfSaleTitle,
                   onTap: () => context.pushNamed(PosRoute.posSettings.name),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.receipt_long,
+                  title: context.loc.bitcoinSettingsInvoicesTitle,
+                  onTap: () => context.pushNamed(InvoicesRoute.list.name),
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,

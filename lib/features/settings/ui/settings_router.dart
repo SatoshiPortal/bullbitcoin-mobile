@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cub
 import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_routes.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
+import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_routes.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_routes.dart';
 import 'package:bb_mobile/features/pos/public/pos_routes.dart';
@@ -195,6 +196,7 @@ class SettingsRouter {
           GetPaidSettingsRoutes.route,
           PaymentPageRoutes.route,
           PosRoutes.route,
+          InvoicesRoutes.route,
         ],
       ),
       GoRoute(
