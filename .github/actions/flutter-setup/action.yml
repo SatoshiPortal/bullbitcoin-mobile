@@ -66,12 +66,19 @@ runs:
     # sha-keyed save per push would blow the 10GB repo cache quota and evict
     # the FVM/pub/cargo caches); only the cache-warmer workflow saves, on
     # develop pushes, so all PRs restore develop's latest warm snapshot.
-    # Generated source files are cached alongside .dart_tool/build so the
+    # ALL generated source files are cached alongside .dart_tool/build so the
     # restored state is self-consistent (outputs present + asset graph
     # present); build_runner hashes inputs itself and regenerates what
-    # changed. Arch is in the key defensively: the build cache holds
-    # kernel/asset hashes we don't want shared across arches. Keep path + key
-    # in sync with the save step in cache-warmer.yml.
+    # changed. This MUST include every to-source output type: build_runner
+    # trusts .dart_tool/build and will NOT regenerate an output whose file is
+    # missing from disk (it reports "N skipped"), so any output pattern left
+    # out here is silently absent after restore and breaks the build. That is
+    # why *.gen.dart (flutter_gen: assets.gen.dart / fonts.gen.dart) is listed
+    # too, not just *.g.dart / *.freezed.dart / *.mocks.dart. Arch is in the
+    # key defensively: the build cache holds kernel/asset hashes we don't want
+    # shared across arches. The -v2- token invalidates the pre-fix caches that
+    # were saved without *.gen.dart. Keep path + key in sync with the save
+    # step in cache-warmer.yml.
     - name: Restore build_runner cache
       uses: actions/cache/restore@v6
       with:
@@ -80,9 +87,10 @@ runs:
           **/*.g.dart
           **/*.freezed.dart
           **/*.mocks.dart
+          **/*.gen.dart
           !packages/bull_ui_catalogue/lib/main.directories.g.dart
-        key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
-        restore-keys: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
+        key: buildrunner-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        restore-keys: buildrunner-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
     - name: Generate code (build_runner)
       shell: bash
