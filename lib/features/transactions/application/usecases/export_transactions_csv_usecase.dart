@@ -21,9 +21,7 @@ class ExportTransactionsCsvUsecase {
 
     final transactions = await _getTransactionsUsecase.execute();
 
-    final exclusiveEnd = end == null
-        ? null
-        : DateTime(end.year, end.month, end.day + 1);
+    final exclusiveEnd = end == null ? null : _nextDayStart(end);
 
     final filtered = transactions.where((tx) {
       if (tx.isOrder) return false;
@@ -54,4 +52,8 @@ class ExportTransactionsCsvUsecase {
     if (bt == null) return 1;
     return bt.compareTo(at);
   }
+
+  DateTime _nextDayStart(DateTime date) => date.isUtc
+      ? DateTime.utc(date.year, date.month, date.day + 1)
+      : DateTime(date.year, date.month, date.day + 1);
 }
