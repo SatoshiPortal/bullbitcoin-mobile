@@ -31,6 +31,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(device.toModel());
+    registerFallbackValue(ScriptType.bip84);
   });
 
   setUp(() {
