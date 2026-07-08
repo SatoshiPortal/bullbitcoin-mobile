@@ -26,7 +26,8 @@ final class DeviceNotFoundLedgerException extends LedgerException {
   const DeviceNotFoundLedgerException();
 }
 
-final class ConnectionTypeNotInitializedLedgerException extends LedgerException {
+final class ConnectionTypeNotInitializedLedgerException
+    extends LedgerException {
   const ConnectionTypeNotInitializedLedgerException();
 }
 

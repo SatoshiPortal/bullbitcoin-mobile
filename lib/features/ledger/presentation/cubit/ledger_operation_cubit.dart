@@ -71,10 +71,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     switch (await operation()) {
       case Ok(:final value):
         emit(
-          state.copyWith(
-            status: LedgerOperationStatus.success,
-            result: value,
-          ),
+          state.copyWith(status: LedgerOperationStatus.success, result: value),
         );
       case Err(:final failure):
         _emitFailure(failure);
@@ -82,9 +79,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   }
 
   void _emitFailure(LedgerFailure failure) {
-    emit(
-      state.copyWith(status: LedgerOperationStatus.error, failure: failure),
-    );
+    emit(state.copyWith(status: LedgerOperationStatus.error, failure: failure));
   }
 
   void reset() {
