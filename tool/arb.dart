@@ -140,8 +140,9 @@ void _cmdMissing(List<String> args) {
     _requireLocale(localeFilter);
     if (localeFilter == templateLocale) {
       throw UsageException(
-          'The template locale ("$templateLocale") defines the key set; it '
-          'cannot be missing keys relative to itself.');
+        'The template locale ("$templateLocale") defines the key set; it '
+        'cannot be missing keys relative to itself.',
+      );
     }
   }
 
@@ -161,8 +162,10 @@ void _cmdMissing(List<String> args) {
     }
   }
   if (!list && locales.length > 1) {
-    print('\nPass --list to print the missing keys, or --locale <code> to '
-        'focus on one locale.');
+    print(
+      '\nPass --list to print the missing keys, or --locale <code> to '
+      'focus on one locale.',
+    );
   }
 }
 
@@ -174,10 +177,14 @@ void _cmdDead(List<String> args) {
   final dead = templateKeys.where((k) => !referenced.contains(k)).toList()
     ..sort();
 
-  print('${dead.length} of ${templateKeys.length} template keys look unused '
-      'in lib/ and test/ (excluding generated code).');
-  print('Heuristic: matches whole-token `.<key>`, `\'<key>\'` or `"<key>"`. '
-      'Verify before deleting keys used via dynamic lookup.');
+  print(
+    '${dead.length} of ${templateKeys.length} template keys look unused '
+    'in lib/ and test/ (excluding generated code).',
+  );
+  print(
+    'Heuristic: matches whole-token `.<key>`, `\'<key>\'` or `"<key>"`. '
+    'Verify before deleting keys used via dynamic lookup.',
+  );
   if (list) {
     for (final k in dead) {
       print(k);
@@ -195,16 +202,22 @@ void _cmdAdd(List<String> args) {
   final key = positional.first;
   _validateKey(key);
 
-  final translations =
-      _readJsonMapOption(args, '--translations', '--translations-file');
+  final translations = _readJsonMapOption(
+    args,
+    '--translations',
+    '--translations-file',
+  );
   if (translations == null || translations.isEmpty) {
     throw UsageException(
-        'add requires --translations \'{"en":"...","fr":"..."}\' '
-        '(or --translations-file PATH).');
+      'add requires --translations \'{"en":"...","fr":"..."}\' '
+      '(or --translations-file PATH).',
+    );
   }
   if (!translations.containsKey(templateLocale)) {
-    throw UsageException('translations must include the "$templateLocale" '
-        '(template) value.');
+    throw UsageException(
+      'translations must include the "$templateLocale" '
+      '(template) value.',
+    );
   }
   for (final locale in translations.keys) {
     _requireLocale(locale);
@@ -221,8 +234,10 @@ void _cmdAdd(List<String> args) {
   // Guard: refuse to overwrite an existing key. Use `set` or `delete` first.
   for (final locale in translations.keys) {
     if (_readMap(_fileFor(locale)).containsKey(key)) {
-      throw ArbException('Key "$key" already exists in $locale. Use `set` to '
-          'update a value, or `delete` first to replace it.');
+      throw ArbException(
+        'Key "$key" already exists in $locale. Use `set` to '
+        'update a value, or `delete` first to replace it.',
+      );
     }
   }
 
@@ -246,14 +261,16 @@ void _cmdAdd(List<String> args) {
   // Other locales: value only.
   for (final entry in translations.entries) {
     if (entry.key == templateLocale) continue;
-    _appendBlocks(
-        _fileFor(entry.key), [_valueBlock(key, entry.value as String)]);
+    _appendBlocks(_fileFor(entry.key), [
+      _valueBlock(key, entry.value as String),
+    ]);
     print('added $key to ${entry.key}');
   }
 
   final translated = translations.keys.toSet();
-  final untranslated =
-      _allLocales().where((l) => !translated.contains(l)).toList();
+  final untranslated = _allLocales()
+      .where((l) => !translated.contains(l))
+      .toList();
   if (untranslated.isNotEmpty) {
     print('\nNot translated yet in: ${untranslated.join(', ')}');
   }
@@ -274,8 +291,10 @@ void _cmdSet(List<String> args) {
   // generates getters for keys present in the template, so `context.loc.<key>`
   // would never compile. Require the key in the template first.
   if (!_readMap(_fileFor(templateLocale)).containsKey(key)) {
-    throw UsageException('Key "$key" is not in the "$templateLocale" template. '
-        'Add it first with `add` so a getter is generated.');
+    throw UsageException(
+      'Key "$key" is not in the "$templateLocale" template. '
+      'Add it first with `add` so a getter is generated.',
+    );
   }
 
   final file = _fileFor(locale);
@@ -305,8 +324,9 @@ void _cmdSetMeta(List<String> args) {
   final template = _readMap(_fileFor(templateLocale));
   if (!template.containsKey(key)) {
     throw UsageException(
-        'Key "$key" is not in the "$templateLocale" template. Add it with '
-        '`add` first.');
+      'Key "$key" is not in the "$templateLocale" template. Add it with '
+      '`add` first.',
+    );
   }
 
   // Merge over existing metadata so unspecified fields (and any custom ARB
@@ -337,7 +357,8 @@ void _cmdRename(List<String> args) {
 
   if (!_readMap(_fileFor(templateLocale)).containsKey(oldKey)) {
     throw ArbException(
-        'Key "$oldKey" not found in the "$templateLocale" template.');
+      'Key "$oldKey" not found in the "$templateLocale" template.',
+    );
   }
 
   // NEW must be free everywhere, and every file must be well-formed, before we
@@ -415,8 +436,10 @@ void _cmdValidate(List<String> args) {
 List<String> _allLocales() {
   final dir = Directory(arbDir);
   if (!dir.existsSync()) {
-    throw ArbException('Localization directory "$arbDir" not found. Run from '
-        'the repository root.');
+    throw ArbException(
+      'Localization directory "$arbDir" not found. Run from '
+      'the repository root.',
+    );
   }
   final locales = <String>[];
   for (final entity in dir.listSync()) {
@@ -434,8 +457,10 @@ String _fileFor(String locale) => '$arbDir/app_$locale.arb';
 
 void _requireLocale(String locale) {
   if (!File(_fileFor(locale)).existsSync()) {
-    throw UsageException('Unknown locale "$locale". Valid: '
-        '${_allLocales().join(', ')}');
+    throw UsageException(
+      'Unknown locale "$locale". Valid: '
+      '${_allLocales().join(', ')}',
+    );
   }
 }
 
@@ -464,8 +489,7 @@ bool _isMetaKey(String key) => key.startsWith('@');
 Set<String> _realKeys(Map<String, dynamic> map) =>
     map.keys.where((k) => !_isMetaKey(k)).toSet();
 
-String _display(Object? value) =>
-    value is String ? value : jsonEncode(value);
+String _display(Object? value) => value is String ? value : jsonEncode(value);
 
 // ---------------------------------------------------------------------------
 // Surgical line editing
@@ -480,8 +504,9 @@ void _assertInvariant(String file) {
   final topLines = lines.where((l) => _topKeyLine.hasMatch(l)).length;
   if (topLines != map.length) {
     throw ArbException(
-        '$file does not match the expected 2-space-per-top-level-key layout '
-        '($topLines key lines vs ${map.length} keys). Refusing to edit.');
+      '$file does not match the expected 2-space-per-top-level-key layout '
+      '($topLines key lines vs ${map.length} keys). Refusing to edit.',
+    );
   }
 }
 
@@ -553,28 +578,27 @@ void _appendBlocks(String file, List<List<String>> newBlocks) {
   });
 }
 
-bool _removeKeys(String file, List<String> keys) =>
-    _editLines(file, (lines) {
-      var changed = false;
-      for (final key in keys) {
-        final blocks = _blocks(lines);
-        final idx = blocks.indexWhere((b) => b.key == key);
-        if (idx == -1) continue;
-        changed = true;
-        final block = blocks[idx];
-        final wasLast = idx == blocks.length - 1;
-        lines.removeRange(block.start, block.end);
-        if (wasLast) {
-          // The new last block must not keep a trailing comma.
-          final remaining = _blocks(lines);
-          if (remaining.isNotEmpty) {
-            final lastLine = remaining.last.end - 1;
-            lines[lastLine] = _withoutComma(lines[lastLine]);
-          }
-        }
+bool _removeKeys(String file, List<String> keys) => _editLines(file, (lines) {
+  var changed = false;
+  for (final key in keys) {
+    final blocks = _blocks(lines);
+    final idx = blocks.indexWhere((b) => b.key == key);
+    if (idx == -1) continue;
+    changed = true;
+    final block = blocks[idx];
+    final wasLast = idx == blocks.length - 1;
+    lines.removeRange(block.start, block.end);
+    if (wasLast) {
+      // The new last block must not keep a trailing comma.
+      final remaining = _blocks(lines);
+      if (remaining.isNotEmpty) {
+        final lastLine = remaining.last.end - 1;
+        lines[lastLine] = _withoutComma(lines[lastLine]);
       }
-      return changed;
-    });
+    }
+  }
+  return changed;
+});
 
 /// Renames a top-level key ([oldKey] → [newKey]) in place, rewriting only the
 /// key token on the block's first line so the value/metadata is untouched.
@@ -585,7 +609,9 @@ bool _renameKey(String file, String oldKey, String newKey) =>
       final idx = blocks.indexWhere((b) => b.key == oldKey);
       if (idx == -1) return false;
       final start = blocks[idx].start;
-      final rest = lines[start].substring(_topKeyLine.firstMatch(lines[start])!.end);
+      final rest = lines[start].substring(
+        _topKeyLine.firstMatch(lines[start])!.end,
+      );
       lines[start] = '  ${_jsonString(newKey)}:$rest';
       return true;
     });
@@ -593,11 +619,15 @@ bool _renameKey(String file, String oldKey, String newKey) =>
 void _replaceValue(String file, String key, String value) {
   _editLines(file, (lines) {
     final blocks = _blocks(lines);
-    final block = blocks.firstWhere((b) => b.key == key,
-        orElse: () => throw ArbException('Key "$key" not found in $file.'));
+    final block = blocks.firstWhere(
+      (b) => b.key == key,
+      orElse: () => throw ArbException('Key "$key" not found in $file.'),
+    );
     if (block.end - block.start != 1) {
-      throw ArbException('Value for "$key" in $file spans multiple lines; '
-          'refusing to auto-replace.');
+      throw ArbException(
+        'Value for "$key" in $file spans multiple lines; '
+        'refusing to auto-replace.',
+      );
     }
     final hadComma = lines[block.start].trimRight().endsWith(',');
     var line = '  ${_jsonString(key)}: ${_jsonString(value)}';
@@ -621,18 +651,18 @@ String _withoutComma(String line) {
 // Block builders
 // ---------------------------------------------------------------------------
 
-List<String> _valueBlock(String key, String value) =>
-    ['  ${_jsonString(key)}: ${_jsonString(value)}'];
+List<String> _valueBlock(String key, String value) => [
+  '  ${_jsonString(key)}: ${_jsonString(value)}',
+];
 
 Map<String, dynamic> _metaMap(
   String? description,
   Map<String, dynamic>? placeholders,
-) =>
-    {
-      'description': ?description,
-      if (placeholders != null && placeholders.isNotEmpty)
-        'placeholders': placeholders,
-    };
+) => {
+  'description': ?description,
+  if (placeholders != null && placeholders.isNotEmpty)
+    'placeholders': placeholders,
+};
 
 /// Renders `"key": <value>` as pretty-printed lines indented one level (two
 /// spaces) into the object, matching the surrounding .arb formatting.
@@ -770,8 +800,10 @@ String? _option(List<String> args, String name) {
   }
   final value = head[idx + 1];
   if (_valueOptions.contains(value) || _booleanFlags.contains(value)) {
-    throw UsageException('$name requires a value; got the option "$value" '
-        '(value omitted?).');
+    throw UsageException(
+      '$name requires a value; got the option "$value" '
+      '(value omitted?).',
+    );
   }
   return value;
 }
@@ -784,25 +816,36 @@ final _keyPattern = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$');
 /// written (a bad key would otherwise only fail later in `make translations`).
 void _validateKey(String key) {
   if (!_keyPattern.hasMatch(key)) {
-    throw UsageException('Invalid key "$key". Must be a valid Dart identifier '
-        '(letters, digits, underscore; not starting with a digit).');
+    throw UsageException(
+      'Invalid key "$key". Must be a valid Dart identifier '
+      '(letters, digits, underscore; not starting with a digit).',
+    );
   }
 }
 
 /// Like [_readJsonOption] but guarantees the result is a JSON object, turning a
 /// non-object payload into a clean UsageException instead of a CastError.
 Map<String, dynamic>? _readJsonMapOption(
-    List<String> args, String inlineName, String? fileName) {
+  List<String> args,
+  String inlineName,
+  String? fileName,
+) {
   final decoded = _readJsonOption(args, inlineName, fileName);
   if (decoded == null) return null;
   if (decoded is! Map<String, dynamic>) {
-    throw UsageException('$inlineName must be a JSON object, got '
-        '${decoded.runtimeType}.');
+    throw UsageException(
+      '$inlineName must be a JSON object, got '
+      '${decoded.runtimeType}.',
+    );
   }
   return decoded;
 }
 
-Object? _readJsonOption(List<String> args, String inlineName, String? fileName) {
+Object? _readJsonOption(
+  List<String> args,
+  String inlineName,
+  String? fileName,
+) {
   final inline = _option(args, inlineName);
   final path = fileName != null ? _option(args, fileName) : null;
   String? raw;
