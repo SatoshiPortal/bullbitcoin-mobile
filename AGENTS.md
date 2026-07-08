@@ -16,6 +16,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **Use the makefile.** Don't reinvent commands:
   - `make deps` — `fvm flutter pub get --enforce-lockfile`
   - `make analyze` — `fvm flutter analyze --fatal-warnings --fatal-infos` (matches CI; same check the pre-commit hook runs)
+  - `make checks` — the full CI `checks` job locally: analyze + `make bull-ui-check` + `make fix-check` + `make format-check` + unit tests; CI invokes these same targets, so green here means that job is green in CI. Each sub-target also runs individually
   - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
   - `make translations` — `fvm flutter gen-l10n`
