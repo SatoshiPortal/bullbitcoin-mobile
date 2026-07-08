@@ -8,7 +8,8 @@ enum LabelSystem {
   payjoin,
   selfSpend,
   exchangeBuy,
-  exchangeSell;
+  exchangeSell,
+  invoice;
 
   const LabelSystem();
 
@@ -19,6 +20,7 @@ enum LabelSystem {
     LabelSystem.selfSpend => selfSpendLabelSystem,
     LabelSystem.exchangeBuy => exchangeBuyLabelSystem,
     LabelSystem.exchangeSell => exchangeSellLabelSystem,
+    LabelSystem.invoice => invoiceLabelSystem,
   };
 
   static LabelSystem fromLabel(String label) {
@@ -29,6 +31,7 @@ enum LabelSystem {
       selfSpendLabelSystem => LabelSystem.selfSpend,
       exchangeBuyLabelSystem => LabelSystem.exchangeBuy,
       exchangeSellLabelSystem => LabelSystem.exchangeSell,
+      invoiceLabelSystem => LabelSystem.invoice,
       _ => throw ArgumentError('Invalid $LabelSystem: $label'),
     };
   }
@@ -50,6 +53,7 @@ enum LabelSystem {
       LabelSystem.selfSpend => context.loc.systemLabelSelfSpend,
       LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
       LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,
+      LabelSystem.invoice => context.loc.systemLabelInvoice,
     };
   }
 

@@ -7,6 +7,7 @@ const payjoinLabelSystem = 'payjoin';
 const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';
+const invoiceLabelSystem = 'invoice';
 
 enum LabelTypeColumn { tx, address, pubkey, input, output, xpub }
 

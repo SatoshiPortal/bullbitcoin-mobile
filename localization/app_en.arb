@@ -13950,6 +13950,10 @@
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
   },
+  "systemLabelInvoice": "Invoice",
+  "@systemLabelInvoice": {
+    "description": "System label for invoice payout addresses"
+  },
   "labelDeleteFailed": "Unable to delete \"{label}\". Please try again.",
   "@labelDeleteFailed": {
     "description": "Error message when label deletion fails",

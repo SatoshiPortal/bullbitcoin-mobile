@@ -46,66 +46,85 @@ class CreateInvoiceUsecase {
 
     final environment = (await _getSettings.execute()).environment;
 
-    // Resolve fresh payout addresses from the DEFAULT wallets only.
-    String? bitcoinWalletId;
-    String? bitcoinAddress;
-    if (command.acceptBtc) {
-      bitcoinWalletId = await _defaultBitcoinWalletId(environment);
-      bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
-    }
-
-    String? liquidWalletId;
-    String? liquidAddress;
-    String? liquidBlindingKeyHex;
-    if (command.needsLiquidAddress) {
-      liquidWalletId = await _defaultLiquidWalletId(environment);
-      final generated = await _freshLiquidAddress(liquidWalletId);
-      liquidAddress = generated.$1;
-      // The blinding key is sent ONLY when the Liquid rail itself is accepted;
-      // an LN-only invoice supplies the address without the key (§3.5/§3.19).
-      liquidBlindingKeyHex = command.acceptLiquid ? generated.$2 : null;
-    }
-
-    CreateInvoiceResult result;
+    // System labels written to RESERVE the Liquid payout address(es) issued
+    // during THIS create (see [_freshLiquidAddress]). On total failure they are
+    // released so a repeated failed create does not burn consecutive unfunded
+    // Liquid indices.
+    final reservedLabelIds = <int>[];
     try {
-      result = await _payService.createInvoice(
-        signer: signer,
-        command: command,
-        bitcoinAddress: bitcoinAddress,
-        liquidAddress: liquidAddress,
-        liquidBlindingKeyHex: liquidBlindingKeyHex,
-      );
-    } on InvoicesException catch (e) {
-      // Single regenerate-and-retry on a used-address rejection (§7.2). A second
-      // reuse on the retry propagates as the typed reused* error.
-      if (e.kind == InvoicesErrorKind.reusedBitcoinAddress &&
-          bitcoinWalletId != null) {
+      // Resolve fresh payout addresses from the DEFAULT wallets only.
+      String? bitcoinWalletId;
+      String? bitcoinAddress;
+      if (command.acceptBtc) {
+        bitcoinWalletId = await _defaultBitcoinWalletId(environment);
         bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
-      } else if (e.kind == InvoicesErrorKind.reusedLiquidAddress &&
-          liquidWalletId != null) {
-        final regenerated = await _freshLiquidAddress(liquidWalletId);
-        liquidAddress = regenerated.$1;
-        liquidBlindingKeyHex = command.acceptLiquid ? regenerated.$2 : null;
-      } else {
-        rethrow;
       }
-      result = await _payService.createInvoice(
-        signer: signer,
+
+      String? liquidWalletId;
+      String? liquidAddress;
+      String? liquidBlindingKeyHex;
+      if (command.needsLiquidAddress) {
+        liquidWalletId = await _defaultLiquidWalletId(environment);
+        final generated = await _freshLiquidAddress(
+          liquidWalletId,
+          reservedLabelIds,
+        );
+        liquidAddress = generated.$1;
+        // The blinding key is sent ONLY when the Liquid rail itself is accepted;
+        // an LN-only invoice supplies the address without the key (§3.5/§3.19).
+        liquidBlindingKeyHex = command.acceptLiquid ? generated.$2 : null;
+      }
+
+      CreateInvoiceResult result;
+      try {
+        result = await _payService.createInvoice(
+          signer: signer,
+          command: command,
+          bitcoinAddress: bitcoinAddress,
+          liquidAddress: liquidAddress,
+          liquidBlindingKeyHex: liquidBlindingKeyHex,
+        );
+      } on InvoicesException catch (e) {
+        // Single regenerate-and-retry on a used-address rejection (§7.2). A
+        // second reuse on the retry propagates as the typed reused* error.
+        if (e.kind == InvoicesErrorKind.reusedBitcoinAddress &&
+            bitcoinWalletId != null) {
+          bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
+        } else if (e.kind == InvoicesErrorKind.reusedLiquidAddress &&
+            liquidWalletId != null) {
+          final regenerated = await _freshLiquidAddress(
+            liquidWalletId,
+            reservedLabelIds,
+          );
+          liquidAddress = regenerated.$1;
+          liquidBlindingKeyHex = command.acceptLiquid ? regenerated.$2 : null;
+        } else {
+          rethrow;
+        }
+        result = await _payService.createInvoice(
+          signer: signer,
+          command: command,
+          bitcoinAddress: bitcoinAddress,
+          liquidAddress: liquidAddress,
+          liquidBlindingKeyHex: liquidBlindingKeyHex,
+        );
+      }
+
+      await _storePrivateMemo(
         command: command,
+        invoiceId: result.invoiceId,
         bitcoinAddress: bitcoinAddress,
         liquidAddress: liquidAddress,
-        liquidBlindingKeyHex: liquidBlindingKeyHex,
       );
+
+      return result;
+    } catch (_) {
+      // The create failed for good (all attempts): release the reservations so
+      // the next attempt reuses the same unfunded indices instead of walking
+      // the gap forward on every failure. Best-effort — never mask the error.
+      await _releaseReservations(reservedLabelIds);
+      rethrow;
     }
-
-    await _storePrivateMemo(
-      command: command,
-      invoiceId: result.invoiceId,
-      bitcoinAddress: bitcoinAddress,
-      liquidAddress: liquidAddress,
-    );
-
-    return result;
   }
 
   Future<String> _defaultBitcoinWalletId(Environment environment) async {
@@ -140,10 +159,47 @@ class CreateInvoiceUsecase {
   }
 
   // (address, blindingKeyHex)
-  Future<(String, String)> _freshLiquidAddress(String walletId) async {
+  //
+  // RESERVE the issued Liquid address the same way swaps/payjoin/exchange do —
+  // by storing a system label on it. The address repository's generate loop
+  // skips any index carrying a system label, so this makes a back-to-back
+  // invoice (created before the first is funded) derive a DIFFERENT address +
+  // blinding key instead of colliding on the same unfunded index. Unlike the
+  // best-effort private memo, this reservation is correctness-critical, so a
+  // persistence failure MUST fail the create (it is caught by [execute] and the
+  // label released). The stored label id is appended to [reservedLabelIds].
+  Future<(String, String)> _freshLiquidAddress(
+    String walletId,
+    List<int> reservedLabelIds,
+  ) async {
     final generated = await _walletAddressRepository
         .generateNewLiquidReceiveAddressWithBlindingKey(walletId: walletId);
+    final reservation = await _labels.store(
+      NewLabel.addr(
+        address: generated.address,
+        label: LabelSystem.invoice.label,
+        origin: 'invoice',
+      ),
+    );
+    final reserved = reservation.fold(
+      (label) => label,
+      (_) => throw const InvoicesException.unexpected(),
+    );
+    reservedLabelIds.add(reserved.id);
     return (generated.address, generated.blindingKeyHex);
+  }
+
+  // Best-effort release of the address reservations written during a create
+  // that ultimately failed. A failed trash just leaves the index reserved,
+  // which is safe (a reserved index is never reused), so it never throws.
+  Future<void> _releaseReservations(List<int> labelIds) async {
+    for (final id in labelIds) {
+      try {
+        await _labels.trash(id);
+      } catch (_) {
+        // Best-effort cleanup only.
+      }
+    }
   }
 
   // Best-effort: the private memo is stored as a local address label after the

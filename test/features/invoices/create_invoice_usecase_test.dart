@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/liquid_receive_address_with_blinding_key.dart';
@@ -64,6 +65,7 @@ void main() {
   late _MockLabels labels;
   late _MockGetSettings getSettings;
   late CreateInvoiceUsecase usecase;
+  late int nextLabelId;
 
   final btcWallet = _MockWallet();
   final liquidWallet = _MockWallet();
@@ -163,7 +165,32 @@ void main() {
         liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
       ),
     ).thenAnswer((_) async => result);
+
+    // Labels store/trash default to success: the address reservation (system
+    // label) written at generation persists, and any release is a no-op.
+    nextLabelId = 1;
+    when(() => labels.store(any())).thenAnswer((invocation) async {
+      final newLabel = invocation.positionalArguments.first as NewLabel;
+      return Ok<Label, LabelFailure>(
+        Label.addr(
+          id: nextLabelId++,
+          address: newLabel.reference,
+          label: newLabel.label,
+          origin: newLabel.origin,
+        ),
+      );
+    });
+    when(
+      () => labels.trash(any()),
+    ).thenAnswer((_) async => const Ok<Null, LabelFailure>(null));
   });
+
+  // A NewLabel matcher for the correctness-critical Liquid address reservation
+  // (the system label), as opposed to the best-effort private-memo label.
+  Matcher isReservationLabel() =>
+      predicate<NewLabel>((l) => l.label == LabelSystem.invoice.label);
+  Matcher isMemoLabel() =>
+      predicate<NewLabel>((l) => l.label != LabelSystem.invoice.label);
 
   group('payout discipline (DG-I2 / §8.1/§8.2)', () {
     test('sources addresses ONLY from onlyDefaults wallets', () async {
@@ -422,22 +449,29 @@ void main() {
   });
 
   group('private memo (§3.14)', () {
-    test('stored as a local label AFTER a successful create', () async {
-      // A store throw is swallowed (best-effort); the call itself still happens
-      // once, keyed on the created invoice's addresses.
-      when(() => labels.store(any())).thenThrow(StateError('swallowed'));
-
+    test('stored as a local memo label AFTER a successful create', () async {
       final r = await usecase.execute(
         command(acceptLiquid: true, privateMemo: 'rent'),
       );
 
       expect(r.invoiceId.value, 'inv-1');
-      verify(() => labels.store(any())).called(1);
+      // The memo label (distinct from the reservation) is stored exactly once,
+      // keyed on the created invoice's Liquid address.
+      final memoStores = verify(() => labels.store(captureAny()))
+          .captured
+          .cast<NewLabel>()
+          .where((l) => l.label == 'rent')
+          .toList();
+      expect(memoStores, hasLength(1));
+      expect(memoStores.single.reference, 'lq1qfresh');
     });
 
-    test('a label store failure never fails the create (§3.14 / AD-3)',
+    test('a memo label store failure never fails the create (§3.14 / AD-3)',
         () async {
-      when(() => labels.store(any())).thenThrow(StateError('labels down'));
+      // ONLY the best-effort memo store throws; the reservation still succeeds.
+      when(
+        () => labels.store(any(that: isMemoLabel())),
+      ).thenThrow(StateError('labels down'));
 
       final r = await usecase.execute(
         command(acceptLiquid: true, privateMemo: 'rent'),
@@ -446,9 +480,91 @@ void main() {
       expect(r.invoiceId.value, 'inv-1');
     });
 
-    test('no memo → no label store call', () async {
+    test('no memo → only the reservation label is stored (no memo label)',
+        () async {
       await usecase.execute(command(acceptLiquid: true));
-      verifyNever(() => labels.store(any()));
+      final stored = verify(() => labels.store(captureAny()))
+          .captured
+          .cast<NewLabel>();
+      // Exactly the reservation, never a memo label.
+      expect(stored, hasLength(1));
+      expect(stored.single.label, LabelSystem.invoice.label);
+    });
+  });
+
+  group('Liquid address reservation (back-to-back collision fix)', () {
+    test('reserves the issued Liquid address with a system label at generation',
+        () async {
+      await usecase.execute(command(acceptLiquid: true));
+
+      final reservation = verify(() => labels.store(captureAny()))
+          .captured
+          .cast<NewLabel>()
+          .firstWhere((l) => l.label == LabelSystem.invoice.label);
+      expect(reservation.reference, 'lq1qfresh');
+      expect(reservation.type, LabelType.address);
+      expect(reservation.origin, 'invoice');
+    });
+
+    test('an LN-only invoice (acceptLiquid false) still reserves its address',
+        () async {
+      await usecase.execute(command(acceptLn: true, acceptLiquid: false));
+
+      final reservations = verify(() => labels.store(captureAny()))
+          .captured
+          .cast<NewLabel>()
+          .where((l) => l.label == LabelSystem.invoice.label)
+          .toList();
+      expect(reservations, hasLength(1));
+      expect(reservations.single.reference, 'lq1qfresh');
+    });
+
+    test('a reservation store FAILURE fails the create loudly (never silent)',
+        () async {
+      when(() => labels.store(any(that: isReservationLabel()))).thenAnswer(
+        (_) async =>
+            const Err<Label, LabelFailure>(LabelUnexpectedFailure('down')),
+      );
+
+      await expectLater(
+        usecase.execute(command(acceptLiquid: true)),
+        throwsA(
+          isA<InvoicesException>().having(
+            (e) => e.kind,
+            'kind',
+            InvoicesErrorKind.unexpected,
+          ),
+        ),
+      );
+      // The reservation is correctness-critical: the wire create is never made.
+      verifyNever(
+        () => payService.createInvoice(
+          signer: any(named: 'signer'),
+          command: any(named: 'command'),
+          bitcoinAddress: any(named: 'bitcoinAddress'),
+          liquidAddress: any(named: 'liquidAddress'),
+          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+        ),
+      );
+    });
+
+    test('releases the reservation when the create ultimately fails', () async {
+      when(
+        () => payService.createInvoice(
+          signer: any(named: 'signer'),
+          command: any(named: 'command'),
+          bitcoinAddress: any(named: 'bitcoinAddress'),
+          liquidAddress: any(named: 'liquidAddress'),
+          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+        ),
+      ).thenThrow(const InvoicesException.server(retryable: true));
+
+      await expectLater(
+        usecase.execute(command(acceptLiquid: true)),
+        throwsA(isA<InvoicesException>()),
+      );
+      // The index burned during this failed create is handed back.
+      verify(() => labels.trash(any())).called(1);
     });
   });
 }
