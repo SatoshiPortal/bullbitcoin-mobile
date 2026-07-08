@@ -33,9 +33,9 @@ void main() {
     });
 
     test('returns Ok with seeds on success', () async {
-      when(() => repository.getAllMnemonicSeeds()).thenAnswer(
-        (_) async => const Ok([]),
-      );
+      when(
+        () => repository.getAllMnemonicSeeds(),
+      ).thenAnswer((_) async => const Ok([]));
 
       final result = await usecase.execute();
 

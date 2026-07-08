@@ -12,6 +12,5 @@ class ActivateBip85DerivationUsecase {
   @useResult
   Future<Result<void, Bip85Failure>> execute(
     Bip85DerivationEntity derivation,
-  ) =>
-      _bip85Repository.activate(derivation);
+  ) => _bip85Repository.activate(derivation);
 }

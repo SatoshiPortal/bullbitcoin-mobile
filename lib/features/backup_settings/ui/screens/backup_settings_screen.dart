@@ -202,7 +202,6 @@ class _ViewVaultKeyButton extends StatelessWidget {
   }
 }
 
-
 class _TransactionHistoryButton extends StatelessWidget {
   const _TransactionHistoryButton();
 
@@ -211,8 +210,7 @@ class _TransactionHistoryButton extends StatelessWidget {
     return SettingsEntryItem(
       icon: Icons.file_download,
       title: context.loc.transactionHistoryTitle,
-      onTap: () =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
+      onTap: () => context.pushNamed(TransactionsRoute.exportTransactions.name),
     );
   }
 }

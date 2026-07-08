@@ -21,18 +21,14 @@ class NetworkSelector extends StatelessWidget {
         children: [
           _NetworkChip(
             label: context.loc.mempoolNetworkBitcoinMainnet,
-            isSelected:
-                selectedNetwork == MempoolServerNetwork.bitcoinMainnet,
-            onTap: () =>
-                onNetworkChanged(MempoolServerNetwork.bitcoinMainnet),
+            isSelected: selectedNetwork == MempoolServerNetwork.bitcoinMainnet,
+            onTap: () => onNetworkChanged(MempoolServerNetwork.bitcoinMainnet),
           ),
           const SizedBox(width: 8),
           _NetworkChip(
             label: context.loc.mempoolNetworkBitcoinTestnet,
-            isSelected:
-                selectedNetwork == MempoolServerNetwork.bitcoinTestnet,
-            onTap: () =>
-                onNetworkChanged(MempoolServerNetwork.bitcoinTestnet),
+            isSelected: selectedNetwork == MempoolServerNetwork.bitcoinTestnet,
+            onTap: () => onNetworkChanged(MempoolServerNetwork.bitcoinTestnet),
           ),
           const SizedBox(width: 8),
           _NetworkChip(

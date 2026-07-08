@@ -13,8 +13,9 @@ class SettingsDatasource {
   }
 
   Future<SettingsModel> fetch() async {
-    final row =
-        await _sqlite.managers.settings.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.settings
+        .filter((f) => f.id(1))
+        .getSingle();
     return SettingsModel.fromSqlite(row);
   }
 

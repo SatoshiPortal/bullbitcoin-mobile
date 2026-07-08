@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 class GetAddressListUsecase {
   final WalletAddressRepository _walletAddressRepository;
 
-  const GetAddressListUsecase({
-    required this._walletAddressRepository,
-  });
+  const GetAddressListUsecase({required this._walletAddressRepository});
 
   Future<List<WalletAddress>> execute({
     required String walletId,

@@ -23,25 +23,23 @@ class SwapRouter {
   static final route = GoRoute(
     name: SwapRoute.swap.name,
     path: SwapRoute.swap.path,
-    builder:
-        (context, state) => BlocProvider(
-          create: (_) => locator<TransferBloc>()..add(const TransferStarted()),
-          child: BlocListener<TransferBloc, TransferState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.signedPsbt.isEmpty &&
-                    current.signedPsbt.isNotEmpty &&
-                    ((current.swap != null && current.swap is ChainSwap) ||
-                        current.isSameChainTransfer),
-            listener: (context, state) {
-              context.pushNamed(
-                SwapRoute.confirmSwap.name,
-                extra: context.read<TransferBloc>(),
-              );
-            },
-            child: const SwapPage(),
-          ),
-        ),
+    builder: (context, state) => BlocProvider(
+      create: (_) => locator<TransferBloc>()..add(const TransferStarted()),
+      child: BlocListener<TransferBloc, TransferState>(
+        listenWhen: (previous, current) =>
+            previous.signedPsbt.isEmpty &&
+            current.signedPsbt.isNotEmpty &&
+            ((current.swap != null && current.swap is ChainSwap) ||
+                current.isSameChainTransfer),
+        listener: (context, state) {
+          context.pushNamed(
+            SwapRoute.confirmSwap.name,
+            extra: context.read<TransferBloc>(),
+          );
+        },
+        child: const SwapPage(),
+      ),
+    ),
     routes: [
       GoRoute(
         name: SwapRoute.confirmSwap.name,
@@ -52,9 +50,8 @@ class SwapRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<TransferBloc, TransferState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.txId.isEmpty && current.txId.isNotEmpty,
+              listenWhen: (previous, current) =>
+                  previous.txId.isEmpty && current.txId.isNotEmpty,
               listener: (context, state) {
                 context.goNamed(
                   SwapRoute.inProgressSwap.name,

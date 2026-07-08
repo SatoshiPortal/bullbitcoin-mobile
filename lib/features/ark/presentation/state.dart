@@ -44,10 +44,9 @@ sealed class ArkState with _$ArkState {
 
   bool get isFiatCurrencyInput => fiatCurrencyCodes.contains(currencyCode);
 
-  String get equivalentCurrencyCode =>
-      isFiatCurrencyInput
-          ? preferredBitcoinUnit.code
-          : preferrredFiatCurrencyCode;
+  String get equivalentCurrencyCode => isFiatCurrencyInput
+      ? preferredBitcoinUnit.code
+      : preferrredFiatCurrencyCode;
 
   bool get hasBoardingTransaction =>
       transactions.any((tx) => tx is ark_wallet.ArkTransaction_Boarding);

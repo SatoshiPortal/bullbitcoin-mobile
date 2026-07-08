@@ -16,9 +16,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TransactionReviewCubit extends Cubit<TransactionReviewState> {
   final BuildReviewableTransactionUsecase _buildReviewableTransactionUsecase;
 
-  TransactionReviewCubit({
-    required this._buildReviewableTransactionUsecase,
-  }) : super(const TransactionReviewState.initial());
+  TransactionReviewCubit({required this._buildReviewableTransactionUsecase})
+    : super(const TransactionReviewState.initial());
 
   Future<void> loadFromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {

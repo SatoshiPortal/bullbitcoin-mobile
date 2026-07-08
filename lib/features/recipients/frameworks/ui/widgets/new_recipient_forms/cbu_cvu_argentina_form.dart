@@ -13,7 +13,8 @@ class BankAccountArgentinaForm extends StatefulWidget {
   final String? hookError;
 
   @override
-  BankAccountArgentinaFormState createState() => BankAccountArgentinaFormState();
+  BankAccountArgentinaFormState createState() =>
+      BankAccountArgentinaFormState();
 }
 
 class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {

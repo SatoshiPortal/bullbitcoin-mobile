@@ -57,10 +57,9 @@ class GetRecipientsUsecase {
       search: params.search,
     );
     return GetRecipientsResult(
-      recipients:
-          recipientsResult.recipients
-              .map((e) => RecipientDto.fromDomain(e))
-              .toList(),
+      recipients: recipientsResult.recipients
+          .map((e) => RecipientDto.fromDomain(e))
+          .toList(),
       totalRecipients: recipientsResult.totalRecipients,
     );
   }

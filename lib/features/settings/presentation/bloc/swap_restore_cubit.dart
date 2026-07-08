@@ -57,7 +57,9 @@ class SwapRestoreCubit extends Cubit<SwapRestoreState> {
       emit(state.copyWith(status: SwapRestoreStatus.success, swaps: swaps));
     } catch (e) {
       if (isClosed) return;
-      emit(state.copyWith(status: SwapRestoreStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(status: SwapRestoreStatus.error, error: e.toString()),
+      );
     }
   }
 }

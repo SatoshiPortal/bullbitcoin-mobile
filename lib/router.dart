@@ -61,9 +61,7 @@ class AppRouter {
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
-    observers: [
-      SentryNavigatorObserver(enableAutoTransactions: false),
-    ],
+    observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     routes: [
       ShellRoute(
         notifyRootObserver: true,

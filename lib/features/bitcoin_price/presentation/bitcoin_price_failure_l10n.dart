@@ -4,15 +4,15 @@ import 'package:flutter/widgets.dart';
 
 extension BitcoinPriceFailureL10n on BitcoinPriceFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        BitcoinPriceInvalidRateFailure() =>
-          context.loc.bitcoinPriceExchangeRateUnavailable,
-        BitcoinPriceUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    BitcoinPriceInvalidRateFailure() =>
+      context.loc.bitcoinPriceExchangeRateUnavailable,
+    BitcoinPriceUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }
 
 extension PriceChartFailureL10n on PriceChartFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        PriceChartLoadFailure() => context.loc.priceChartLoadFailed,
-        PriceChartUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    PriceChartLoadFailure() => context.loc.priceChartLoadFailed,
+    PriceChartUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

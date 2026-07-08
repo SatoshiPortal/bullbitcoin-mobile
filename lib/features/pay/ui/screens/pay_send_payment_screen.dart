@@ -57,22 +57,19 @@ class PaySendPaymentScreen extends StatelessWidget {
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedWallet
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedWallet
+          : null,
     );
     final order = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).payOrder
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).payOrder
+          : null,
     );
     final recipient = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedRecipient
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedRecipient
+          : null,
     );
 
     return Scaffold(
@@ -136,30 +133,29 @@ class PaySendPaymentScreen extends StatelessWidget {
               ),
             _DetailRow(
               title: context.loc.payRecipientType,
-              value:
-                  recipient != null
-                      ? switch (recipient.type) {
-                        // TODO: Use localization labels instead of hardcoded strings.
-                        // CANADA types
-                        RecipientType.interacEmailCad => 'Interac e-Transfer',
-                        RecipientType.billPaymentCad => 'Bill Payment',
-                        RecipientType.bankTransferCad => 'Bank Transfer',
-                        // EUROPE types
-                        RecipientType.sepaEur => 'SEPA Transfer',
-                        // MEXICO types
-                        RecipientType.speiClabeMxn => 'SPEI CLABE',
-                        RecipientType.speiSmsMxn => 'SPEI SMS',
-                        RecipientType.speiCardMxn => 'SPEI Card',
-                        // COSTA RICA types
-                        RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-                        RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-                        RecipientType.sinpeMovilCrc => 'SINPE Móvil',
-                        // ARGENTINA types
-                        RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
-                        RecipientType.pseColombia => 'Bank Account COP',
-                        RecipientType.nequiColombia => 'Nequi',
-                      }
-                      : null,
+              value: recipient != null
+                  ? switch (recipient.type) {
+                      // TODO: Use localization labels instead of hardcoded strings.
+                      // CANADA types
+                      RecipientType.interacEmailCad => 'Interac e-Transfer',
+                      RecipientType.billPaymentCad => 'Bill Payment',
+                      RecipientType.bankTransferCad => 'Bank Transfer',
+                      // EUROPE types
+                      RecipientType.sepaEur => 'SEPA Transfer',
+                      // MEXICO types
+                      RecipientType.speiClabeMxn => 'SPEI CLABE',
+                      RecipientType.speiSmsMxn => 'SPEI SMS',
+                      RecipientType.speiCardMxn => 'SPEI Card',
+                      // COSTA RICA types
+                      RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
+                      RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
+                      RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+                      // ARGENTINA types
+                      RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
+                      RecipientType.pseColombia => 'Bank Account COP',
+                      RecipientType.nequiColombia => 'Nequi',
+                    }
+                  : null,
             ),
             _DetailRow(
               title: context.loc.payRecipientName,
@@ -167,8 +163,9 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             _DetailRow(
               title: context.loc.payRecipientDetails,
-              value:
-                  recipient != null ? _getRecipientInfoValue(recipient) : null,
+              value: recipient != null
+                  ? _getRecipientInfoValue(recipient)
+                  : null,
             ),
             const _Divider(),
             _DetailRow(
@@ -177,24 +174,19 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             _DetailRow(
               title: context.loc.payPayoutAmount,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.payoutAmount,
-                        order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
             ),
             _DetailRow(
               title: context.loc.payExchangeRate,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.exchangeRateAmount ??
-                            order.payoutAmount / order.payinAmount,
-                        order.exchangeRateCurrency ?? order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(
+                      order.exchangeRateAmount ??
+                          order.payoutAmount / order.payinAmount,
+                      order.exchangeRateCurrency ?? order.payoutCurrency,
+                    ),
             ),
             const _Divider(),
             _DetailRow(
@@ -203,8 +195,8 @@ class PaySendPaymentScreen extends StatelessWidget {
                   wallet?.label ??
                   (wallet?.isDefault == true
                       ? wallet?.isLiquid == true
-                          ? context.loc.payInstantPayments
-                          : context.loc.paySecureBitcoinWallet
+                            ? context.loc.payInstantPayments
+                            : context.loc.paySecureBitcoinWallet
                       : ''),
             ),
             if (wallet != null && !wallet.isLiquid) ...[
@@ -293,86 +285,83 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueColor =
-        onTap == null
-            ? context.appColors.secondary
-            : context.appColors.primary;
+    final valueColor = onTap == null
+        ? context.appColors.secondary
+        : context.appColors.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child:
-          value == null
-              ? const LoadingLineContent()
-              : Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
+      child: value == null
+          ? const LoadingLineContent()
+          : Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
                   ),
-                  Expanded(
-                    child:
-                        onTap == null
-                            ? Row(
-                              mainAxisAlignment: .end,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    value!,
-                                    textAlign: .end,
-                                    maxLines: 2,
-                                    style: context.font.bodyMedium?.copyWith(
-                                      color: valueColor,
-                                    ),
-                                  ),
+                ),
+                Expanded(
+                  child: onTap == null
+                      ? Row(
+                          mainAxisAlignment: .end,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                value!,
+                                textAlign: .end,
+                                maxLines: 2,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: valueColor,
                                 ),
-                                if (copyValue != null) ...[
-                                  const Gap(8),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: copyValue!),
-                                      );
-                                      SnackBarUtils.showCopiedSnackBar(context);
-                                    },
-                                    child: Icon(
-                                      Icons.copy,
-                                      color: context.appColors.primary,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            )
-                            : GestureDetector(
-                              onTap: onTap,
-                              behavior: .opaque,
-                              child: Row(
-                                mainAxisAlignment: .end,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      value!,
-                                      textAlign: .end,
-                                      maxLines: 2,
-                                      style: context.font.bodyMedium?.copyWith(
-                                        color: valueColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: valueColor,
-                                    size: 20,
-                                  ),
-                                ],
                               ),
                             ),
-                  ),
-                ],
-              ),
+                            if (copyValue != null) ...[
+                              const Gap(8),
+                              GestureDetector(
+                                onTap: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: copyValue!),
+                                  );
+                                  SnackBarUtils.showCopiedSnackBar(context);
+                                },
+                                child: Icon(
+                                  Icons.copy,
+                                  color: context.appColors.primary,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
+                          ],
+                        )
+                      : GestureDetector(
+                          onTap: onTap,
+                          behavior: .opaque,
+                          child: Row(
+                            mainAxisAlignment: .end,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  value!,
+                                  textAlign: .end,
+                                  maxLines: 2,
+                                  style: context.font.bodyMedium?.copyWith(
+                                    color: valueColor,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: valueColor,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -399,10 +388,9 @@ class _BottomButtons extends StatelessWidget {
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedWallet
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedWallet
+          : null,
     );
     return Column(
       children: [
@@ -444,10 +432,9 @@ class _PayError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final payError = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).error
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).error
+          : null,
     );
 
     if (payError == null) return const SizedBox.shrink();

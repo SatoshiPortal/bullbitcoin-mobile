@@ -20,8 +20,8 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
     final broadcastOriginalTransactionException = context.select(
       (TransactionDetailsCubit bloc) =>
           bloc.state.err is BroadcastOriginalTransactionException
-              ? bloc.state.err! as BroadcastOriginalTransactionException
-              : null,
+          ? bloc.state.err! as BroadcastOriginalTransactionException
+          : null,
     );
     return Column(
       children: [

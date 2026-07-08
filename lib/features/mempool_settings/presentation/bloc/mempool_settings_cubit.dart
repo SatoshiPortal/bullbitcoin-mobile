@@ -166,7 +166,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     )).fold((_) => true, (_) => false);
 
     final finalServer = server.copyWith(
-      status: isValid ? MempoolServerStatus.online : MempoolServerStatus.offline,
+      status: isValid
+          ? MempoolServerStatus.online
+          : MempoolServerStatus.offline,
     );
     if (server.isCustom) {
       emit(state.copyWith(customServer: finalServer));

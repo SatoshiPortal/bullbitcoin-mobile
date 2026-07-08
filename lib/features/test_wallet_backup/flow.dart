@@ -22,11 +22,10 @@ class TestPhysicalBackupFlowNavigator extends StatelessWidget {
         key: navigatorKey,
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
-            builder:
-                (context) => switch (flow) {
-                  TestPhysicalBackupFlow.backup => const ShowMnemonicScreen(),
-                  TestPhysicalBackupFlow.verify => const VerifyMnemonicScreen(),
-                },
+            builder: (context) => switch (flow) {
+              TestPhysicalBackupFlow.backup => const ShowMnemonicScreen(),
+              TestPhysicalBackupFlow.verify => const VerifyMnemonicScreen(),
+            },
           );
         },
       ),

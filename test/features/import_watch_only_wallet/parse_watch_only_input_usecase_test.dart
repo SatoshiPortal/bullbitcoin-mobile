@@ -10,24 +10,18 @@ void main() {
   setUp(() => usecase = ParseWatchOnlyInputUsecase());
 
   group('ParseWatchOnlyInputUsecase', () {
-    test(
-      'maps unparseable input to InvalidFormatFailure without leaking '
-      'the raw parser error',
-      () async {
-        final result = await usecase.execute(
-          'this is definitely not a descriptor or an extended public key',
-        );
+    test('maps unparseable input to InvalidFormatFailure without leaking '
+        'the raw parser error', () async {
+      final result = await usecase.execute(
+        'this is definitely not a descriptor or an extended public key',
+      );
 
-        expect(
-          result,
-          isA<Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>>(),
-        );
-        final failure =
-            (result as Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
-                .failure;
-        expect(failure, isA<InvalidFormatFailure>());
-        expect(failure.logMessage, isNull);
-      },
-    );
+      expect(result, isA<Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>>());
+      final failure =
+          (result as Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
+              .failure;
+      expect(failure, isA<InvalidFormatFailure>());
+      expect(failure.logMessage, isNull);
+    });
   });
 }

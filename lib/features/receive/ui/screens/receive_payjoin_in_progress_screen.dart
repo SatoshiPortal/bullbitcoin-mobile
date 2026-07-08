@@ -134,8 +134,8 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
     final broadcastOriginalTransactionException = context.select(
       (ReceiveBloc bloc) =>
           bloc.state.error is BroadcastOriginalTransactionException
-              ? bloc.state.error! as BroadcastOriginalTransactionException
-              : null,
+          ? bloc.state.error! as BroadcastOriginalTransactionException
+          : null,
     );
     return Padding(
       padding: const EdgeInsets.all(16.0),

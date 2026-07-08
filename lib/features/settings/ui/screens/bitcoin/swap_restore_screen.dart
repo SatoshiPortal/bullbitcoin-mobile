@@ -205,10 +205,8 @@ class _SwapRow extends StatelessWidget {
     return GestureDetector(
       // Make the whole row tappable, not just its painted children.
       behavior: HitTestBehavior.opaque,
-      onTap: () => context.pushNamed(
-        SettingsRoute.swapRescue.name,
-        extra: restorable,
-      ),
+      onTap: () =>
+          context.pushNamed(SettingsRoute.swapRescue.name, extra: restorable),
       child: row,
     );
   }

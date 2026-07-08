@@ -31,15 +31,13 @@ class CreateChainSwapToExternalUsecase {
 
       final swapRepository = _swapRepository;
 
-      final btcElectrumUrl =
-          sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl = sendWallet.network.isTestnet
+          ? ApiServiceConstants.publicElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl =
-          sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl = sendWallet.network.isTestnet
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.bitcoinToLiquid:

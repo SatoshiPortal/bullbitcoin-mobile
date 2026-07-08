@@ -77,8 +77,7 @@ class CheckForExistingDefaultWalletsUsecase {
         );
       } catch (e, stackTrace) {
         log.severe(
-          message:
-              'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
+          message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
           error: e,
           trace: stackTrace,
         );

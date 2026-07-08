@@ -49,9 +49,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> deriveNextMnemonic() async {
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (
-      await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()
-    ) {
+    switch (await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
@@ -61,9 +59,9 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> deriveNextHex() async {
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (
-      await _deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30)
-    ) {
+    switch (await _deriveNextBip85HexFromDefaultWalletUsecase.execute(
+      length: 30,
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
@@ -75,12 +73,10 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     Bip85DerivationEntity derivation,
     String alias,
   ) async {
-    switch (
-      await _aliasBip85DerivationUsecase.execute(
-        derivation: derivation,
-        alias: alias,
-      )
-    ) {
+    switch (await _aliasBip85DerivationUsecase.execute(
+      derivation: derivation,
+      alias: alias,
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
       case Ok():

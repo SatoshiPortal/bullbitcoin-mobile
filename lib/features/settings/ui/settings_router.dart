@@ -273,8 +273,7 @@ class SettingsRouter {
                     listener: (context, state) {
                       BlurredDialog.show(
                         context: context,
-                        builder: (_) =>
-                            const FailedWalletDeletionAlertDialog(),
+                        builder: (_) => const FailedWalletDeletionAlertDialog(),
                       );
                     },
                   ),

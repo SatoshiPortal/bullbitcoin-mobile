@@ -11,9 +11,7 @@ import 'package:flutter/foundation.dart';
 class SeedDatasource {
   final KeyValueStorageDatasource<String> _secureStorage;
 
-  const SeedDatasource({
-    required this._secureStorage,
-  });
+  const SeedDatasource({required this._secureStorage});
 
   Future<void> store({required String fingerprint, required SeedModel seed}) {
     final key = composeSeedStorageKey(fingerprint);

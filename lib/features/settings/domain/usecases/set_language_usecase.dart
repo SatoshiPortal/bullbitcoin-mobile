@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 class SetLanguageUsecase {
   final SettingsRepository _settingsRepository;
 
-  SetLanguageUsecase({
-    required this._settingsRepository,
-  });
+  SetLanguageUsecase({required this._settingsRepository});
 
   Future<void> execute(Language language) async {
     await _settingsRepository.setLanguage(language);

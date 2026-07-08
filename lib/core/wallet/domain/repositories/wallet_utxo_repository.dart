@@ -2,9 +2,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 
 abstract interface class WalletUtxoRepository {
-  Future<List<WalletUtxo>> getWalletUtxos({
-    required String walletId,
-  });
+  Future<List<WalletUtxo>> getWalletUtxos({required String walletId});
 
   /// Freezes the given outpoints, attributed to [walletId] (the wallet origin).
   Future<void> freezeUtxos({

@@ -54,10 +54,9 @@ class TransactionsRouter {
         final txId = state.pathParameters['txId']!;
         final walletId = state.uri.queryParameters['walletId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initByWalletTxId(txId, walletId: walletId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initByWalletTxId(txId, walletId: walletId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -69,10 +68,9 @@ class TransactionsRouter {
         final swapId = state.pathParameters['swapId']!;
         final walletId = state.uri.queryParameters['walletId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initBySwapId(swapId, walletId: walletId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()
+                ..initBySwapId(swapId, walletId: walletId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -83,10 +81,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final payjoinId = state.pathParameters['payjoinId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initByPayjoinId(payjoinId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
           child: const TransactionDetailsScreen(),
         );
       },
@@ -97,9 +93,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<TransactionDetailsCubit>()..initByOrderId(orderId),
+          create: (context) =>
+              locator<TransactionDetailsCubit>()..initByOrderId(orderId),
           child: const TransactionDetailsScreen(),
         );
       },

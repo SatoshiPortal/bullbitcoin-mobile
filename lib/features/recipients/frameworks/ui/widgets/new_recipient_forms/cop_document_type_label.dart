@@ -16,14 +16,13 @@ String copDocumentTypeLabel(BuildContext context, CopDocumentType type) =>
 String copDocumentTypeRecipientNumberLabel(
   BuildContext context,
   CopDocumentType type,
-) =>
-    switch (type) {
-      CopDocumentType.cc => context.loc.recipientsCopDocCcRecipientNumber,
-      CopDocumentType.ce => context.loc.recipientsCopDocCeRecipientNumber,
-      CopDocumentType.nit => context.loc.recipientsCopDocNitRecipientNumber,
-      CopDocumentType.passport =>
-        context.loc.recipientsCopDocPassportRecipientNumber,
-      CopDocumentType.ti => context.loc.recipientsCopDocTiRecipientNumber,
-      CopDocumentType.registroCivil =>
-        context.loc.recipientsCopDocRegistroCivilRecipientNumber,
-    };
+) => switch (type) {
+  CopDocumentType.cc => context.loc.recipientsCopDocCcRecipientNumber,
+  CopDocumentType.ce => context.loc.recipientsCopDocCeRecipientNumber,
+  CopDocumentType.nit => context.loc.recipientsCopDocNitRecipientNumber,
+  CopDocumentType.passport =>
+    context.loc.recipientsCopDocPassportRecipientNumber,
+  CopDocumentType.ti => context.loc.recipientsCopDocTiRecipientNumber,
+  CopDocumentType.registroCivil =>
+    context.loc.recipientsCopDocRegistroCivilRecipientNumber,
+};

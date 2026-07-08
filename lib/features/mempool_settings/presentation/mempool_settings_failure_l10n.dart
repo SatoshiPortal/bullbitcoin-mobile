@@ -11,18 +11,22 @@ extension MempoolFailureL10n on MempoolFailure {
     MempoolSaveFailure() => context.loc.mempoolErrorSaveServerFailed,
     MempoolDeleteFailure() => context.loc.mempoolErrorDeleteFailed,
     MempoolInvalidUrlFailure() => context.loc.mempoolErrorInvalidUrl,
-    MempoolServerSameAsDefaultFailure() => context.loc.mempoolErrorSameAsDefault,
+    MempoolServerSameAsDefaultFailure() =>
+      context.loc.mempoolErrorSameAsDefault,
     MempoolValidationTimeoutFailure() =>
       context.loc.mempoolErrorConnectionTimeout,
-    MempoolValidationHostNotFoundFailure() => context.loc.mempoolErrorHostNotFound,
-    MempoolValidationTorNotRunningFailure() => context.loc.mempoolErrorTorNotRunning,
+    MempoolValidationHostNotFoundFailure() =>
+      context.loc.mempoolErrorHostNotFound,
+    MempoolValidationTorNotRunningFailure() =>
+      context.loc.mempoolErrorTorNotRunning,
     MempoolValidationConnectionErrorFailure() =>
       context.loc.mempoolErrorConnectionFailed,
     MempoolValidationNotMempoolServerFailure() =>
       context.loc.mempoolErrorNotMempoolServer,
     MempoolValidationServerUnavailableFailure() =>
       context.loc.mempoolErrorServerUnavailable,
-    MempoolValidationServerErrorFailure() => context.loc.mempoolErrorServerError,
+    MempoolValidationServerErrorFailure() =>
+      context.loc.mempoolErrorServerError,
     MempoolValidationInvalidResponseFailure() =>
       context.loc.mempoolErrorInvalidResponse,
     MempoolUnexpectedFailure() => context.loc.oopsSomethingWentWrong,

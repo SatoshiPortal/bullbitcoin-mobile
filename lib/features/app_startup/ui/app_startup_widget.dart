@@ -67,9 +67,8 @@ class AppStartupListener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
-          listenWhen:
-              (previous, current) =>
-                  current is AppStartupSuccess && previous != current,
+          listenWhen: (previous, current) =>
+              current is AppStartupSuccess && previous != current,
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
@@ -128,9 +127,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                   child: Text(
                     context.loc.appStartupErrorMessage,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.secondary.withValues(
-                        alpha: 0.7,
-                      ),
+                      color: context.appColors.secondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
