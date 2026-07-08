@@ -27,6 +27,8 @@ Future<void> main({bool isInitialized = false}) async {
     final relay = FakeNostrRelay();
     await wipeAppState(locator);
     await overrideBoundariesForTest(locator, relay: relay, bullnym: bullnym);
+    // Freeze the clock for deterministic timestamps across the round-trip.
+    await overrideClockForTest(locator);
     // Default wallets only: invoices own no reserved wallet and need no nym.
     await locator<CreateDefaultWalletsUsecase>().execute(
       mnemonicWords: getPaidFixtureMnemonicWords,
@@ -92,6 +94,32 @@ Future<void> main({bool isInitialized = false}) async {
     expect(
       bullnym.createInvoiceCalls[0].fields.liquidAddress,
       isNot(bullnym.createInvoiceCalls[1].fields.liquidAddress),
+    );
+  });
+
+  test('two back-to-back invoices reserve DISTINCT Liquid addresses + keys',
+      () async {
+    // No funding between creates: the first invoice's unfunded address must be
+    // reserved (system label) so the second derives a fresh index instead of
+    // colliding on the same address + blinding key.
+    final bullnym = FakeBullnymClient();
+    await bootstrap(bullnym);
+
+    final first = await locator<InvoicesFacade>().create(liquidInvoice());
+    final second = await locator<InvoicesFacade>().create(liquidInvoice());
+
+    // Both creates succeeded and produced distinct invoices.
+    expect(first.invoiceId.value, isNot(second.invoiceId.value));
+    expect(bullnym.createInvoiceCalls, hasLength(2));
+
+    final firstFields = bullnym.createInvoiceCalls[0].fields;
+    final secondFields = bullnym.createInvoiceCalls[1].fields;
+    expect(firstFields.liquidAddress, isNotEmpty);
+    expect(secondFields.liquidAddress, isNotEmpty);
+    expect(firstFields.liquidAddress, isNot(secondFields.liquidAddress));
+    expect(
+      firstFields.liquidBlindingKeyHex,
+      isNot(secondFields.liquidBlindingKeyHex),
     );
   });
 
