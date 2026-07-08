@@ -830,10 +830,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Bilinmeyen hata meydana geldi",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "Get Address",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6501,10 +6497,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Türleme yolu imzalamak için gereklidir",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "Cüzdanınızı Değiştirin",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7635,17 +7627,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "Doğrulama yolu doğrulama için gereklidir",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault ayarlanmamış değildir",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Senaryo türü imzalamak için gereklidir",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "Devam etmeye devam et",
   "@dcaSetupContinue": {
@@ -9714,10 +9698,6 @@
   "fundExchangeLabelBankName": "Banka adı",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Senaryo türü doğrulama için gereklidir",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "Bulutunuzu kullanarak güçlü şifreleme ile anonim yedekleme.",
   "@backupWalletEncryptedVaultDescription": {

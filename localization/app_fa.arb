@@ -178,10 +178,6 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "ledgerErrorUnknownOccurred": "خطای ناشناخته رخ داد",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "ledgerErrorNoConnection": "هیچ اتصال Ledger در دسترس نیست",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -202,25 +198,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "مسیر راهنمایی برای امضای",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "نوع اسکریپت برای امضای",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "آدرس مورد نیاز برای تایید",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "مسیر راهنمایی برای تایید",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "نوع اسکریپت برای تأیید لازم است",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "دوباره امتحان کنید",
   "@ledgerButtonTryAgain": {

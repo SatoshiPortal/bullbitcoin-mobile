@@ -802,10 +802,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "خطأ غير معروف",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "العنوان الاستلامي",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6098,10 +6094,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "لا بد من المسار الباعث للتوقيع",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "دعم محفظتك",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7180,17 +7172,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "لا بد من وجود مسار للتحقّق",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "الخزنة ليست جاهزة",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "النوع المطلوب للتوقيع",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "استمر",
   "@dcaSetupContinue": {
@@ -9134,10 +9118,6 @@
   "fundExchangeLabelBankName": "اسم مصرفي",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "مطلوب نوع محدد للتحقق",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "دعم مجهول مع تشفير قوي باستخدام سحابتك.",
   "@backupWalletEncryptedVaultDescription": {

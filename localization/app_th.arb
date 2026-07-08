@@ -834,10 +834,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "ความผิดพลาดที่เป็นที่รู้จัก",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "ลงทะเบียน",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6529,10 +6525,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "กฎระเบียบที่จําเป็นสําหรับการลงทะเบียน",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "การสํารองข้อมูลกระเป๋าสตางค์ของคุณ",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7693,17 +7685,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "กฎระเบียบที่จําเป็นสําหรับการตรวจสอบ",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault ไม่ได้ตั้งค่า",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "ประเภทสคริปต์จะต้องลงทะเบียน",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "อ่านต่อ",
   "@dcaSetupContinue": {
@@ -9789,10 +9773,6 @@
   "fundExchangeLabelBankName": "ชื่อธนาคาร",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "ประเภทสคริปต์จําเป็นต้องตรวจสอบ",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "สํารองข้อมูลด้วยการเข้ารหัสที่แข็งแกร่งโดยใช้ระบบคลาวด์ของคุณ.",
   "@backupWalletEncryptedVaultDescription": {

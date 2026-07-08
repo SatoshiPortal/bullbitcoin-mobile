@@ -7955,10 +7955,6 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "ledgerErrorUnknownOccurred": "অজ্ঞাত ত্ৰুটি ঘটিছে",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "ledgerErrorNoConnection": "কোনো Ledger সংযোগ উপলব্ধ নাই",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -7979,25 +7975,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "চহিৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "চহিৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "যাচাইৰ বাবে ঠিকনা আৱশ্যক",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "যাচাইৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "যাচাইৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "পুনৰ চেষ্টা কৰক",
   "@ledgerButtonTryAgain": {
