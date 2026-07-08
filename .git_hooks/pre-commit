@@ -47,11 +47,17 @@ if echo "$staged" | grep -q '\.dart$'; then
 
   # Format check on staged Dart source only (check-only, like analyze/fix
   # above — never rewrites the working tree). Generated files are excluded so
-  # regenerated output can't fail the commit; `dart format` ignores the
-  # analyzer's `exclude:`, so the filter lives here. xargs -r no-ops when the
-  # staged set is all-generated. Exits non-zero if any staged file is unformatted.
-  echo "$staged" | grep '\.dart$' | grep -vE '\.(g|freezed|gr|config|mocks)\.dart$' \
-    | xargs -r "$DART" format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
+  # regenerated output can't fail the commit: by suffix and by /generated/
+  # path segment (drift schema snapshots). `dart format` ignores the analyzer's
+  # `exclude:`, so the filter lives here — keep the regex in sync with the
+  # format gate in .github/workflows/analyze_and_test.yml. xargs -r no-ops when
+  # the staged set is all-generated. Exits non-zero if any staged file is
+  # unformatted.
+  # $DART is intentionally unquoted: the fallback sets DART="fvm dart" (two
+  # words), and quoting it makes xargs exec a literal binary named "fvm dart"
+  # (exit 127). Word splitting here matches the `$DART fix` call above.
+  echo "$staged" | grep '\.dart$' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' \
+    | xargs -r $DART format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
   fmtPid=$!
 
   wait $analyzePid; analyzeExit=$?
