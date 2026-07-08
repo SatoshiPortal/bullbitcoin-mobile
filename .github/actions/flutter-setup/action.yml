@@ -62,16 +62,13 @@ runs:
       shell: bash
       run: make deps
 
-    # build_runner's incremental cache — RESTORE ONLY. PR jobs never save (a
-    # sha-keyed save per push would blow the 10GB repo cache quota and evict
-    # the FVM/pub/cargo caches); only the cache-warmer workflow saves, on
-    # develop pushes, so all PRs restore develop's latest warm snapshot.
-    # Generated source files are cached alongside .dart_tool/build so the
-    # restored state is self-consistent (outputs present + asset graph
-    # present); build_runner hashes inputs itself and regenerates what
-    # changed. Arch is in the key defensively: the build cache holds
-    # kernel/asset hashes we don't want shared across arches. Keep path + key
-    # in sync with the save step in cache-warmer.yml.
+    # build_runner's incremental cache — RESTORE ONLY. PR jobs never save (a sha-keyed save per push would blow the 10GB repo cache quota and evict the FVM/pub/cargo caches); only the cache-warmer workflow saves, on develop pushes, so all PRs restore develop's latest warm snapshot.
+    # ALL gitignored generated source files are cached alongside .dart_tool/build so the restored state is self-consistent (outputs present + asset graph present); build_runner hashes inputs itself and regenerates what changed.
+    # The suffix list MUST cover every gitignored to-source output: build_runner trusts .dart_tool/build and will NOT regenerate an output whose file is missing from disk (it reports "N skipped"), so a suffix left out here is silently absent after restore and breaks the build — that is how the missing assets.gen.dart (flutter_gen, *.gen.dart ≠ *.g.dart) incident happened.
+    # *.gr.dart / *.config.dart match nothing today but are pre-listed to mirror the format-filter regex (makefile format-check), so adding auto_route/injectable later cannot reproduce the incident; *.steps.dart is deliberately NOT cached — drift schema snapshots are git-tracked, and restoring a tracked file would overwrite the checkout (same reason main.directories.g.dart is excluded below).
+    # Arch is in the key defensively: the build cache holds kernel/asset hashes we don't want shared across arches.
+    # The key embeds hashFiles of this action and the warmer workflow, so any edit to either file self-busts the cache instead of restoring a stale pre-edit snapshot — no manual version token to bump (this replaced the short-lived -v2- token).
+    # Keep path + key in sync with the save step in cache-warmer.yml.
     - name: Restore build_runner cache
       uses: actions/cache/restore@v6
       with:
@@ -80,9 +77,12 @@ runs:
           **/*.g.dart
           **/*.freezed.dart
           **/*.mocks.dart
+          **/*.gen.dart
+          **/*.gr.dart
+          **/*.config.dart
           !packages/bull_ui_catalogue/lib/main.directories.g.dart
-        key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
-        restore-keys: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
+        key: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        restore-keys: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
     - name: Generate code (build_runner)
       shell: bash

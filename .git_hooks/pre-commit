@@ -50,7 +50,7 @@ if echo "$staged" | grep -q '\.dart$'; then
   # regenerated output can't fail the commit: by suffix and by /generated/
   # path segment (drift schema snapshots). `dart format` ignores the analyzer's
   # `exclude:`, so the filter lives here — keep the regex in sync with the
-  # format gate in .github/workflows/analyze_and_test.yml. xargs -r no-ops when
+  # format-check target in the makefile (which CI invokes). xargs -r no-ops when
   # the staged set is all-generated. Exits non-zero if any staged file is
   # unformatted.
   # $DART is intentionally unquoted: the fallback sets DART="fvm dart" (two

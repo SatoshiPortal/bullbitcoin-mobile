@@ -129,6 +129,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
 
                 SettingsEntryItem(
+                  icon: Icons.map,
+                  title: context.loc.settingsBtcMapTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.btcMap.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.description,
                   title: context.loc.settingsTermsOfServiceTitle,
                   onTap: () {

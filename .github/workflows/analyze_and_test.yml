@@ -72,40 +72,23 @@ jobs:
       # failures instead of stopping at the first (they're independent and
       # cheap, ~1.5min combined). `!cancelled()` (not `always()`) so a
       # superseded run cancelled by the concurrency group stops immediately.
+      # Each gate is a makefile target so the definition lives in one place; `make checks` runs this whole job locally.
       - name: Linter shouldn't raise errors, warnings or infos
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
 
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
-        run: |
-          if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then
-            echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"
-            exit 1
-          fi
+        run: make bull-ui-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
-        run: |
-          output=$(fvm dart fix --dry-run)
-          echo "$output"
-          echo "$output" | grep -q "Nothing to fix!"
+        run: make fix-check
 
-      # Formatting gate. Scoped to git-tracked source via `git ls-files` — this
-      # excludes untracked generated code (*.g.dart, *.freezed.dart, gen_l10n),
-      # so `make build-runner` output can never trip this check. Tracked
-      # generated files are filtered too, for the same reason: by suffix
-      # (.g/.freezed/.gr/.config/.mocks/.steps) and by /generated/ path segment
-      # (drift schema snapshots under test/migrations_test). `dart format` does
-      # not read analysis_options.yaml `exclude:`, so the filter lives here.
-      # Keep this regex in sync with the same filter in .git_hooks/pre-commit.
-      # Explicit `shell: bash` enables pipefail (the implicit default is only
-      # `bash -e`, no pipefail): if `git ls-files` or `grep` errored, `xargs -r`
-      # would no-op and exit 0, silently passing the gate. pipefail closes that.
+      # The gate's filter regex and pipefail rationale live in the makefile's format-check target; the staged-files variant in .git_hooks/pre-commit keeps its own copy of the regex.
       - name: dart format should have nothing to change
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
-        shell: bash
-        run: git ls-files '*.dart' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' | xargs -r fvm dart format --output=none --set-exit-if-changed
+        run: make format-check
 
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
