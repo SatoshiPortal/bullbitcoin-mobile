@@ -1,0 +1,85 @@
+name: Cache Warmer
+
+# PR-saved Actions caches are scoped to the PR branch — they are NOT shared
+# between PRs. Caches saved on the base branch ARE visible to every PR
+# targeting it. This workflow runs the shared setup (FVM SDK, pub, build_runner
+# outputs) on each develop push so every fresh PR restores warm caches instead
+# of paying the full ~10min prefix. Matrix over both arches because the
+# analyze_and_test jobs run on x64 (checks) and arm64 (integration), and the
+# FVM + build_runner caches are arch-keyed. The Cargo cache is NOT warmed here:
+# it only fills during an actual Rust build, which this workflow deliberately
+# avoids.
+on:
+  push:
+    branches:
+      - develop
+    # Docs-only merges don't change any cache input — skip the ~2x10min warm.
+    # Keep in sync with the paths-ignore in analyze_and_test.yml.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.git-blame-ignore-revs'
+      - '.github/ISSUE_TEMPLATE/**'
+
+permissions:
+  contents: read
+
+# Only the newest develop push matters for cache freshness.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    strategy:
+      # The two arch legs are fully independent seeds — one arch's transient
+      # failure must not cancel the other's warm.
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      # x64 stock images are tight on disk once the SDK + pub + build_runner
+      # output land (see the checks job in analyze_and_test.yml); the arm64
+      # partner image is leaner and the action is x64-oriented, so clean up
+      # inline there instead.
+      - name: Free disk space (x64)
+        if: ${{ runner.arch == 'X64' }}
+        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Free disk space (arm64, inline)
+        if: ${{ runner.arch == 'ARM64' }}
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
+          df -h /
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+
+      # The composite only RESTORES the build_runner cache (PR jobs must never
+      # save — quota); this workflow is the single writer. Keep path + key in
+      # sync with the restore step in .github/actions/flutter-setup/action.yml.
+      - name: Save build_runner cache
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            .dart_tool/build
+            **/*.g.dart
+            **/*.freezed.dart
+            **/*.mocks.dart
+            !packages/bull_ui_catalogue/lib/main.directories.g.dart
+          key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
