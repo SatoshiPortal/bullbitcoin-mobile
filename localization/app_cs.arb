@@ -9694,6 +9694,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "Neznámá chyba",
+  "ledgerErrorPermissionDenied": "Pro připojení k zařízením Ledger jsou vyžadována oprávnění Bluetooth.",
+  "ledgerErrorNoDevicesFound": "Nebyla nalezena žádná zařízení Ledger. Ujistěte se, že je vaše zařízení zapnuté a má povolené Bluetooth.",
+  "ledgerErrorMultipleDevicesFound": "Bylo nalezeno více zařízení Ledger. Ujistěte se, že je v blízkosti pouze jedno zařízení.",
+  "ledgerErrorDeviceNotFound": "Zařízení Ledger nebylo nalezeno.",
+  "ledgerErrorDeviceMismatch": "Byla zjištěna neshoda zařízení.",
+  "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
+  "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
+  "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

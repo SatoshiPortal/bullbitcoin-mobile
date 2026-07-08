@@ -9876,6 +9876,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "잘못된 오류",
+  "ledgerErrorPermissionDenied": "Ledger 기기에 연결하려면 블루투스 권한이 필요합니다.",
+  "ledgerErrorNoDevicesFound": "Ledger 기기를 찾을 수 없습니다. 기기가 켜져 있고 블루투스가 활성화되어 있는지 확인하세요.",
+  "ledgerErrorMultipleDevicesFound": "여러 개의 Ledger 기기가 발견되었습니다. 근처에 기기가 하나만 있는지 확인하세요.",
+  "ledgerErrorDeviceNotFound": "Ledger 기기를 찾을 수 없습니다.",
+  "ledgerErrorDeviceMismatch": "기기 불일치가 감지되었습니다.",
+  "ledgerErrorInvalidPsbt": "잘못된 PSBT 형식이 감지되었습니다.",
+  "ledgerErrorMissingDerivationPath": "파생 경로가 필요합니다",
+  "ledgerErrorMissingScriptType": "스크립트 유형이 필요합니다",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

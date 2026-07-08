@@ -8189,6 +8189,14 @@
     "description": "Error when connection type is not initialized"
   },
   "ledgerErrorUnknown": "Άγνωστο λάθος",
+  "ledgerErrorPermissionDenied": "Απαιτούνται άδειες Bluetooth για τη σύνδεση με συσκευές Ledger.",
+  "ledgerErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές Ledger. Βεβαιωθείτε ότι η συσκευή σας είναι ενεργοποιημένη και το Bluetooth ενεργό.",
+  "ledgerErrorMultipleDevicesFound": "Βρέθηκαν πολλές συσκευές Ledger. Βεβαιωθείτε ότι υπάρχει μόνο μία συσκευή κοντά.",
+  "ledgerErrorDeviceNotFound": "Η συσκευή Ledger δεν βρέθηκε.",
+  "ledgerErrorDeviceMismatch": "Εντοπίστηκε ασυμφωνία συσκευής.",
+  "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
+  "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
+  "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

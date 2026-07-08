@@ -9217,6 +9217,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "خطأ غير معروف",
+  "ledgerErrorPermissionDenied": "أذونات البلوتوث مطلوبة للاتصال بأجهزة Ledger.",
+  "ledgerErrorNoDevicesFound": "لم يتم العثور على أجهزة Ledger. تأكد من أن جهازك قيد التشغيل وأن البلوتوث مُفعّل.",
+  "ledgerErrorMultipleDevicesFound": "تم العثور على عدة أجهزة Ledger. يرجى التأكد من وجود جهاز واحد فقط بالقرب منك.",
+  "ledgerErrorDeviceNotFound": "لم يتم العثور على جهاز Ledger.",
+  "ledgerErrorDeviceMismatch": "تم اكتشاف عدم تطابق الجهاز.",
+  "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
+  "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
+  "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
