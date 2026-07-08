@@ -134,6 +134,20 @@ jobs:
           sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
           df -h /
 
+      # cargokit builds the FRB crates via `rustup run stable cargo`; the
+      # leaner arm64 partner image may lack rustup (the x64 image ships it).
+      # Idempotent: installs rustup if absent, then ensures the stable
+      # toolchain exists either way (newer rustup does not auto-install
+      # toolchains on `rustup run`).
+      - name: Ensure rustup + stable toolchain
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          else
+            rustup toolchain install stable --profile minimal
+          fi
+
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
         with:
@@ -174,6 +188,11 @@ jobs:
           TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
           SCCACHE_GHA_ENABLED: "true"
           RUSTC_WRAPPER: sccache
+          # sccache cannot cache incremental compilation artifacts; disabling
+          # incremental makes every rustc invocation cacheable (and is the
+          # standard sccache-in-CI pairing — CI never reuses incremental state
+          # anyway).
+          CARGO_INCREMENTAL: "0"
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets

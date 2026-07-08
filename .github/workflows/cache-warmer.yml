@@ -13,6 +13,15 @@ on:
   push:
     branches:
       - develop
+    # Docs-only merges don't change any cache input — skip the ~2x10min warm.
+    # Keep in sync with the paths-ignore in analyze_and_test.yml.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.git-blame-ignore-revs'
+      - '.github/ISSUE_TEMPLATE/**'
 
 permissions:
   contents: read
@@ -57,3 +66,16 @@ jobs:
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
+
+      # The composite only RESTORES the build_runner cache (PR jobs must never
+      # save — quota); this workflow is the single writer. Keep path + key in
+      # sync with the restore step in .github/actions/flutter-setup/action.yml.
+      - name: Save build_runner cache
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            .dart_tool/build
+            **/*.g.dart
+            **/*.freezed.dart
+            **/*.mocks.dart
+          key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
