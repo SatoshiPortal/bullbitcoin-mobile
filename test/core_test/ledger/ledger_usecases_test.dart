@@ -23,6 +23,11 @@ void main() {
     deviceType: SignerDeviceEntity.ledgerNanoX,
   );
 
+  setUpAll(() {
+    registerFallbackValue(device);
+    registerFallbackValue(ScriptType.bip84);
+  });
+
   setUp(() {
     repository = _MockLedgerDeviceRepository();
   });
