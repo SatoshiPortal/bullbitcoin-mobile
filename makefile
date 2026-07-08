@@ -43,6 +43,10 @@ bootstrap:
 analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
+	@echo "🧹 dart fix (matches CI: nothing to suggest)"
+	@output=$$(fvm dart fix --dry-run); echo "$$output"; echo "$$output" | grep -q "Nothing to fix!"
+	@echo "🎨 dart format (matches CI: nothing to change)"
+	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | xargs -r fvm dart format --output=none --set-exit-if-changed'
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
