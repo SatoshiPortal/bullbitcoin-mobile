@@ -82,5 +82,7 @@ jobs:
             **/*.freezed.dart
             **/*.mocks.dart
             **/*.gen.dart
+            **/*.gr.dart
+            **/*.config.dart
             !packages/bull_ui_catalogue/lib/main.directories.g.dart
-          key: buildrunner-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          key: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
