@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
+import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_operation_state.freezed.dart';
@@ -17,7 +18,7 @@ sealed class LedgerOperationState with _$LedgerOperationState {
   const factory LedgerOperationState({
     @Default(LedgerOperationStatus.initial) LedgerOperationStatus status,
     LedgerDeviceEntity? connectedDevice,
-    String? errorMessage,
+    LedgerFailure? failure,
     dynamic result,
   }) = _LedgerOperationState;
 
