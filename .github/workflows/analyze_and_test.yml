@@ -5,6 +5,17 @@ on:
     branches:
       - main
       - develop
+    # Docs-only PRs skip both jobs entirely. Safe because develop has no
+    # required status checks (verified via the API) — a skipped run can't
+    # strand a PR on "Expected — waiting". If checks are ever made required,
+    # this needs the paths-filter + always-green sentinel pattern instead.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.git-blame-ignore-revs'
+      - '.github/ISSUE_TEMPLATE/**'
 
 # Checkout + tests only; no writes to the repo via the token.
 permissions:
@@ -33,10 +44,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      # Kept in v1 for safety (FVM SDK + pub cache + build_runner output on a
-      # stock runner is probably fine, but not proven). The setup action logs
-      # `df -h` — once a few runs show comfortable headroom, drop this step
-      # here (NOT in integration, which genuinely needs the space).
+      # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
+      # runner has ~21GB free, so dropping this risks turning every PR red on
+      # "No space left on device". The setup action logs `df -h` — only drop
+      # this once a few runs prove comfortable headroom.
       - name: Free disk space
         # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
         # on a runner that can hold PR test secrets — a retag must not run here.
@@ -102,32 +113,39 @@ jobs:
         run: make unit-test
 
   integration:
-    runs-on: ubuntu-24.04
+    # arm64: free 4-vCPU runners for public repos, native arm execution — the
+    # Rust FRB compile is exactly the workload that benefits. If this arch
+    # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
+    # jlumbroso free-disk-space step (see checks job) in one commit.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
       # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
-      # Linux desktop app on one runner; the stock ubuntu-24.04 image fills up
-      # and the runner dies with "No space left on device". Reclaim the unused
-      # pre-installed toolchains first.
-      - name: Free disk space
-        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
-        # on a runner that can hold PR test secrets — a retag must not run here.
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
+      # Linux desktop app on one runner. The arm64 partner image is leaner
+      # than x64 (more free space, and the x64-oriented free-disk-space action
+      # doesn't apply), so reclaim the few big preinstalled dirs inline;
+      # `|| true` because they may not exist on this image. The setup action
+      # logs `df -h` to confirm headroom.
+      - name: Free disk space (inline, arch-agnostic)
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
+          df -h /
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
         with:
           cargo-cache: 'true'
+
+      # Compiler cache for the FRB Rust crates (the dominant cost of the app
+      # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
+      # third-party action on a runner that holds PR test secrets.
+      # RUSTC_WRAPPER is exported at the test step below; cargokit's cargo
+      # inherits it from the environment.
+      - name: Setup sccache
+        uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 
       - name: Install Linux desktop for integration tests
         run: |
@@ -154,6 +172,8 @@ jobs:
         env:
           TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
           TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
+          SCCACHE_GHA_ENABLED: "true"
+          RUSTC_WRAPPER: sccache
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets

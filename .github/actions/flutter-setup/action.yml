@@ -22,11 +22,15 @@ inputs:
 runs:
   using: composite
   steps:
+    # runner.arch is in the FVM key because the SDK is native binaries — an
+    # x64 SDK restored on an arm64 runner is broken. pub/cargo caches hold
+    # sources only (arch-independent), so they keep os-only keys and stay
+    # shared across arches.
     - name: Cache Flutter SDK (FVM)
       uses: actions/cache@v6
       with:
         path: ~/fvm/versions
-        key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
+        key: fvm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.fvmrc') }}
 
     - name: Cache pub (hosted + git deps)
       uses: actions/cache@v6
@@ -57,6 +61,22 @@ runs:
     - name: Get dependencies
       shell: bash
       run: make deps
+
+    # build_runner's incremental cache. The key ends in github.sha so it never
+    # exact-hits and every run saves a fresh snapshot at job end; restore-keys
+    # falls back to the newest cache for the same lockfile, so build_runner
+    # only regenerates outputs whose inputs changed (it hashes inputs itself —
+    # staleness is its own invariant to keep). Arch is in the key defensively:
+    # the build cache holds kernel/asset hashes we don't want shared across
+    # arches. Cross-PR note: PR-saved caches are branch-scoped; the
+    # cache-warmer workflow on develop pushes seeds a base cache all PRs can
+    # restore.
+    - name: Cache build_runner outputs
+      uses: actions/cache@v6
+      with:
+        path: .dart_tool/build
+        key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        restore-keys: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
     - name: Generate code (build_runner)
       shell: bash
