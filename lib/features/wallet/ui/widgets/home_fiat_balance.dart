@@ -68,8 +68,7 @@ class HomeFiatBalance extends StatelessWidget {
 
     // Only gate on balance/loading and whether we have a usable rate — not
     // [startupFailed], or a successful currency change still shows skeleton.
-    final showSkeleton =
-        showBalanceLoading || loadingPrice || !hasValid;
+    final showSkeleton = showBalanceLoading || loadingPrice || !hasValid;
 
     if (showSkeleton) {
       return GestureDetector(

@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 class MempoolUrlBuilder {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
 
-  const MempoolUrlBuilder({
-    required this._getActiveMempoolServerUsecase,
-  });
+  const MempoolUrlBuilder({required this._getActiveMempoolServerUsecase});
 
   Future<String> bitcoinTxid(String txid, {required bool isTestnet}) async {
     final server = await _activeServer(isTestnet: isTestnet, isLiquid: false);

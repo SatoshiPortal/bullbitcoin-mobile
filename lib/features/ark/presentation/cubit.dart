@@ -30,13 +30,12 @@ class ArkCubit extends Cubit<ArkState> {
   Future<void> load() async {
     try {
       emit(state.copyWith(isLoading: true));
-      final (arkTransactions, balance, fiatCurrencyCodes, settings) =
-          await (
-            wallet.transactions,
-            wallet.balance,
-            getAvailableCurrenciesUsecase.execute(),
-            getSettingsUsecase.execute(),
-          ).wait;
+      final (arkTransactions, balance, fiatCurrencyCodes, settings) = await (
+        wallet.transactions,
+        wallet.balance,
+        getAvailableCurrenciesUsecase.execute(),
+        getSettingsUsecase.execute(),
+      ).wait;
       emit(
         state.copyWith(
           transactions: arkTransactions,
@@ -63,8 +62,9 @@ class ArkCubit extends Cubit<ArkState> {
   }
 
   void receiveMethodChanged(bool isOffchain) {
-    final receiveMethod =
-        isOffchain ? ArkReceiveMethod.offchain : ArkReceiveMethod.boarding;
+    final receiveMethod = isOffchain
+        ? ArkReceiveMethod.offchain
+        : ArkReceiveMethod.boarding;
     emit(state.copyWith(receiveMethod: receiveMethod));
   }
 

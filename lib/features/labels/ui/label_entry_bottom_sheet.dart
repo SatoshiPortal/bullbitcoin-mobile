@@ -226,8 +226,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
                   decoration: InputDecoration(
                     isCollapsed: true,
                     border: InputBorder.none,
-                    hintText:
-                        widget.hint ?? context.loc.receiveEnterHere,
+                    hintText: widget.hint ?? context.loc.receiveEnterHere,
                     hintStyle: context.font.bodyMedium?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
@@ -267,8 +266,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
     return FutureBuilder<Set<String>>(
       future: widget.suggestionsFuture,
       builder: (context, snapshot) {
-        final loading =
-            snapshot.connectionState == ConnectionState.waiting;
+        final loading = snapshot.connectionState == ConnectionState.waiting;
         final query = _trimmed.toLowerCase();
         final filtered = (snapshot.data ?? const <String>{})
             .where((l) => !LabelSystem.isSystemLabel(l))
@@ -311,4 +309,3 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
     );
   }
 }
-

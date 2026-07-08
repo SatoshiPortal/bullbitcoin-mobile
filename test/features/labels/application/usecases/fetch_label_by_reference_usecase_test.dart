@@ -18,23 +18,20 @@ void main() {
   });
 
   group('FetchLabelByReferenceUsecase', () {
-    test(
-      'maps a repository failure to a sanitized LabelFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => repository.fetchByReference(any()),
-        ).thenThrow(Exception('drift failure exposing an on-chain reference'));
+    test('maps a repository failure to a sanitized LabelFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => repository.fetchByReference(any()),
+      ).thenThrow(Exception('drift failure exposing an on-chain reference'));
 
-        final result = await usecase.execute('some-address');
+      final result = await usecase.execute('some-address');
 
-        expect(result, isA<Err<List<ApplicationLabel>, LabelFailure>>());
-        expect(
-          (result as Err<List<ApplicationLabel>, LabelFailure>).failure,
-          isA<LabelUnexpectedFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<List<ApplicationLabel>, LabelFailure>>());
+      expect(
+        (result as Err<List<ApplicationLabel>, LabelFailure>).failure,
+        isA<LabelUnexpectedFailure>(),
+      );
+    });
 
     test('returns Ok with the mapped labels on success', () async {
       when(

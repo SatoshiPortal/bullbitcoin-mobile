@@ -103,20 +103,16 @@ class _SelectableRow extends StatelessWidget {
                         padding: EdgeInsets.zero,
                       )
                     else
-                      BBText(
-                        item.subtitle2,
-                        style: context.font.labelMedium,
-                      ),
+                      BBText(item.subtitle2, style: context.font.labelMedium),
                   ],
                 ),
               ),
               const Gap(8),
               Icon(
                 Icons.radio_button_checked_outlined,
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.textMuted,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.textMuted,
               ),
             ],
           ),

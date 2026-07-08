@@ -16,7 +16,9 @@ class ExchangeKycRepositoryImpl implements ExchangeKycRepository {
   });
 
   Future<String> _getApiKey() async {
-    final apiKey = await _bullbitcoinApiKeyDatasource.get(isTestnet: _isTestnet);
+    final apiKey = await _bullbitcoinApiKeyDatasource.get(
+      isTestnet: _isTestnet,
+    );
     if (apiKey == null || !apiKey.isActive) {
       throw ApiKeyException(
         'API key not found. Please login to your Bull Bitcoin account.',
@@ -50,4 +52,3 @@ class ExchangeKycRepositoryImpl implements ExchangeKycRepository {
     }
   }
 }
-

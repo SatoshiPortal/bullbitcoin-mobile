@@ -143,9 +143,9 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                     BBButton.big(
                       label: context.loc.backupWarningBackupLater,
                       onPressed: () {
-                        context
-                            .read<WalletBloc>()
-                            .add(const DismissBackupWarning());
+                        context.read<WalletBloc>().add(
+                          const DismissBackupWarning(),
+                        );
                       },
                       bgColor: context.appColors.surface,
                       textColor: context.appColors.onSurface,

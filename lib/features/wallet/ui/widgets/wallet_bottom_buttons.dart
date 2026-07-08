@@ -25,8 +25,8 @@ class WalletBottomButtons extends StatelessWidget {
             label: context.loc.walletButtonReceive,
             iconFirst: true,
             onPressed: () {
-              final type = wallet?.defaultReceiveNetwork ??
-                  ReceiveNetworkType.bitcoin;
+              final type =
+                  wallet?.defaultReceiveNetwork ?? ReceiveNetworkType.bitcoin;
               final routeName = switch (type) {
                 ReceiveNetworkType.bitcoin => ReceiveRoute.receiveBitcoin.name,
                 ReceiveNetworkType.lightning =>

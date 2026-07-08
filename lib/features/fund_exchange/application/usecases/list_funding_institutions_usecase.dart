@@ -19,9 +19,7 @@ class ListFundingInstitutionsResult {
 class ListFundingInstitutionsUsecase {
   final FundingGatewayPort _fundingGateway;
 
-  const ListFundingInstitutionsUsecase({
-    required this._fundingGateway,
-  });
+  const ListFundingInstitutionsUsecase({required this._fundingGateway});
 
   Future<ListFundingInstitutionsResult> execute(
     ListFundingInstitutionsQuery query,

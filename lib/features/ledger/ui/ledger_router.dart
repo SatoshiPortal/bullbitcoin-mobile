@@ -17,9 +17,8 @@ class LedgerRouter {
     GoRoute(
       name: LedgerRoute.importLedger.name,
       path: LedgerRoute.importLedger.path,
-      builder:
-          (context, state) =>
-              const LedgerActionScreen(action: LedgerAction.importWallet()),
+      builder: (context, state) =>
+          const LedgerActionScreen(action: LedgerAction.importWallet()),
     ),
     GoRoute(
       name: LedgerRoute.ledgerSignTransaction.name,

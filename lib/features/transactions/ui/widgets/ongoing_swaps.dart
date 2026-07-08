@@ -68,7 +68,10 @@ class OngoingSwapsWidget extends StatelessWidget {
         ...ongoingSwaps.map((tx) {
           return Column(
             crossAxisAlignment: .start,
-            children: [TxListItem(tx: tx), const Gap(8)],
+            children: [
+              TxListItem(tx: tx),
+              const Gap(8),
+            ],
           );
         }),
 

@@ -26,7 +26,8 @@ class HomeWarnings extends StatelessWidget {
               current.showAutoSwapActiveStatus() ||
           previous.warnings != current.warnings,
       builder: (context, state) {
-        final showBackupWarning = state.hasNoBackup() && !state.isOnLegacyStorage;
+        final showBackupWarning =
+            state.hasNoBackup() && !state.isOnLegacyStorage;
         final showAutoSwapDefaultEnabledWarning = state
             .showAutoSwapDefaultEnabledWarning();
         final showAutoSwapActiveStatus = state.showAutoSwapActiveStatus();

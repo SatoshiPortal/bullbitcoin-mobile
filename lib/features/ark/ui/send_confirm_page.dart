@@ -27,22 +27,20 @@ class SendConfirmPage extends StatelessWidget {
     final fiatCurrencyCode = context.select(
       (ArkCubit cubit) =>
           cubit.state.fiatCurrencyCodes.contains(cubit.state.currencyCode)
-              ? cubit.state.currencyCode
-              : cubit.state.preferrredFiatCurrencyCode,
+          ? cubit.state.currencyCode
+          : cubit.state.preferrredFiatCurrencyCode,
     );
     final exchangeRate = context.select(
       (ArkCubit cubit) => cubit.state.exchangeRate,
     );
 
-    final bitcoinAmount =
-        bitcoinUnit == BitcoinUnit.btc
-            ? (amountSat != null ? amountSat / 1e8 : 0)
-            : (amountSat ?? 0);
+    final bitcoinAmount = bitcoinUnit == BitcoinUnit.btc
+        ? (amountSat != null ? amountSat / 1e8 : 0)
+        : (amountSat ?? 0);
 
-    final fiatAmount =
-        amountSat != null
-            ? (amountSat / 1e8 * exchangeRate).toStringAsFixed(2)
-            : '0';
+    final fiatAmount = amountSat != null
+        ? (amountSat / 1e8 * exchangeRate).toStringAsFixed(2)
+        : '0';
 
     return Scaffold(
       appBar: AppBar(
@@ -52,15 +50,14 @@ class SendConfirmPage extends StatelessWidget {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child:
-              isLoading
-                  ? FadingLinearProgress(
-                    height: 3,
-                    trigger: isLoading,
-                    backgroundColor: context.appColors.surface,
-                    foregroundColor: context.appColors.primary,
-                  )
-                  : const SizedBox(height: 3),
+          child: isLoading
+              ? FadingLinearProgress(
+                  height: 3,
+                  trigger: isLoading,
+                  backgroundColor: context.appColors.surface,
+                  foregroundColor: context.appColors.primary,
+                )
+              : const SizedBox(height: 3),
         ),
       ),
       body: SafeArea(
@@ -137,16 +134,15 @@ class SendConfirmationDetailRow extends StatelessWidget {
           ),
           const Gap(8),
           Expanded(
-            child:
-                value == null
-                    ? const LoadingLineContent()
-                    : Text(
-                      value!,
-                      textAlign: .end,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
-                      ),
+            child: value == null
+                ? const LoadingLineContent()
+                : Text(
+                    value!,
+                    textAlign: .end,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: context.appColors.outlineVariant,
                     ),
+                  ),
           ),
         ],
       ),

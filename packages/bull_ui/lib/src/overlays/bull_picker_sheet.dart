@@ -52,7 +52,9 @@ class BullPickerSheet<T> extends StatelessWidget {
               const Spacer(),
               Text(
                 title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colors.onSurface),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: colors.onSurface),
               ),
               const Spacer(),
               IconButton(
@@ -84,12 +86,15 @@ class BullPickerSheet<T> extends StatelessWidget {
                         Expanded(
                           child: Text(
                             label(option),
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: selected ? colors.primary : colors.onSurface,
-                              fontWeight: selected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: selected
+                                      ? colors.primary
+                                      : colors.onSurface,
+                                  fontWeight: selected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                           ),
                         ),
                         if (selected) Icon(Icons.check, color: colors.primary),

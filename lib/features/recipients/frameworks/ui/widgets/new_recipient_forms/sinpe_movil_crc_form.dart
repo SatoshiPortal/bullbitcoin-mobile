@@ -140,10 +140,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                 controller: _ownerNameController,
                 disabled: true,
                 suffix: _ownerNameController.text.isNotEmpty
-                    ? Icon(
-                        Icons.check_circle,
-                        color: context.appColors.primary,
-                      )
+                    ? Icon(Icons.check_circle, color: context.appColors.primary)
                     : isChecking
                     ? SizedBox(
                         width: 20,

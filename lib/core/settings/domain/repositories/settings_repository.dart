@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
 abstract class SettingsRepository {
@@ -49,5 +48,8 @@ abstract class SettingsRepository {
 
   Future<void> setErrorReportingEnabled(bool enabled);
 
-  Future<void> setExchangeTestnetBasicAuth({String? username, String? password});
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  });
 }

@@ -117,8 +117,8 @@ class _SellAmountInputBottomButtonsState
                     widget.fiatCurrency ??
                     ((state is SellAmountInputState)
                         ? FiatCurrency.fromCode(
-                          state.userSummary.currency ?? 'CAD',
-                        )
+                            state.userSummary.currency ?? 'CAD',
+                          )
                         : state is SellWalletSelectionState
                         ? state.fiatCurrency
                         : FiatCurrency.cad),

@@ -161,10 +161,9 @@ sealed class UserSummary with _$UserSummary {
     'RISK_PROHIBITED_COUNTRY',
   };
 
-  bool get isFundingRestricted =>
-      groups.any(_fundingRestrictedGroups.contains);
+  bool get isFundingRestricted => groups.any(_fundingRestrictedGroups.contains);
 
- static const _lightKycCurrencies = {
+  static const _lightKycCurrencies = {
     FiatCurrency.cad,
     FiatCurrency.crc,
     FiatCurrency.ars,

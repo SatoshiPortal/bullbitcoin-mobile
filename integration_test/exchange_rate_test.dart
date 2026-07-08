@@ -68,8 +68,10 @@ Future<void> main({bool isInitialized = false}) async {
         );
         final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
-        debugPrint('Converted $amountSat sats to $amount $currency '
-            '(reference price $bitcoinPrice)');
+        debugPrint(
+          'Converted $amountSat sats to $amount $currency '
+          '(reference price $bitcoinPrice)',
+        );
 
         expect(amount, closeTo(bitcoinPrice, bitcoinPrice * 0.01));
       });

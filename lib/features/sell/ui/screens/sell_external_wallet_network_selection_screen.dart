@@ -46,14 +46,13 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.sellBitcoinOnChain),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingSellOrder
-                            ? null
-                            : () => context.read<SellBloc>().add(
-                              const SellEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.bitcoin,
-                              ),
+                    onTap: isCreatingSellOrder
+                        ? null
+                        : () => context.read<SellBloc>().add(
+                            const SellEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.bitcoin,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -61,14 +60,13 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.sellLightningNetwork),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingSellOrder
-                            ? null
-                            : () => context.read<SellBloc>().add(
-                              const SellEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.lightning,
-                              ),
+                    onTap: isCreatingSellOrder
+                        ? null
+                        : () => context.read<SellBloc>().add(
+                            const SellEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.lightning,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -76,14 +74,13 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.sellLiquidNetwork),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingSellOrder
-                            ? null
-                            : () => context.read<SellBloc>().add(
-                              const SellEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.liquid,
-                              ),
+                    onTap: isCreatingSellOrder
+                        ? null
+                        : () => context.read<SellBloc>().add(
+                            const SellEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.liquid,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   const _SellError(),
@@ -103,10 +100,9 @@ class _SellError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sellError = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellWalletSelectionState
-              ? (bloc.state as SellWalletSelectionState).error
-              : null,
+      (SellBloc bloc) => bloc.state is SellWalletSelectionState
+          ? (bloc.state as SellWalletSelectionState).error
+          : null,
     );
 
     if (sellError == null) return const SizedBox.shrink();

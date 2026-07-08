@@ -63,12 +63,15 @@ void main() {
     startedController = StreamController<Wallet>.broadcast();
     finishedController = StreamController<Wallet>.broadcast();
 
-    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => startedController.stream);
-    when(() => watchFinished.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => finishedController.stream);
-    when(() => labelsFacade.fetchDistinctLabels())
-        .thenAnswer((_) async => <String>{});
+    when(
+      () => watchStarted.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) => startedController.stream);
+    when(
+      () => watchFinished.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) => finishedController.stream);
+    when(
+      () => labelsFacade.fetchDistinctLabels(),
+    ).thenAnswer((_) async => <String>{});
   });
 
   tearDown(() {
@@ -78,9 +81,13 @@ void main() {
 
   group('load', () {
     test('emits ready with utxos when load succeeds', () async {
-      final utxos = [walletUtxoFixture(sats: 100), walletUtxoFixture(sats: 200)];
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => utxos);
+      final utxos = [
+        walletUtxoFixture(sats: 100),
+        walletUtxoFixture(sats: 200),
+      ];
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => utxos);
 
       final cubit = buildCubit();
       await cubit.load();
@@ -91,8 +98,9 @@ void main() {
     });
 
     test('emits empty when no utxos', () async {
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => []);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => []);
 
       final cubit = buildCubit();
       await cubit.load();
@@ -102,8 +110,9 @@ void main() {
     });
 
     test('emits error holding a CoinsError on failure', () async {
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenThrow(const CoinsError.loadFailed());
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenThrow(const CoinsError.loadFailed());
 
       final cubit = buildCubit();
       await cubit.load();
@@ -130,8 +139,9 @@ void main() {
         walletUtxoFixture(sats: 100, txId: 'a', isFrozen: false),
         walletUtxoFixture(sats: 200, txId: 'b', isFrozen: true),
       ];
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => utxos);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => utxos);
 
       final cubit = buildCubit();
       await cubit.load();
@@ -143,9 +153,13 @@ void main() {
     });
 
     test('reload silently prunes a vanished selected outpoint', () async {
-      final initial = [walletUtxoFixture(txId: 'a'), walletUtxoFixture(txId: 'b')];
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => initial);
+      final initial = [
+        walletUtxoFixture(txId: 'a'),
+        walletUtxoFixture(txId: 'b'),
+      ];
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => initial);
 
       final cubit = buildCubit();
       await cubit.load();
@@ -155,8 +169,9 @@ void main() {
       expect(cubit.state.selectedOutpoints, {'a:0', 'b:0'});
 
       // 'b' is spent — gone from the next load.
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
       await cubit.load();
 
       expect(cubit.state.selectedOutpoints, {'a:0'});
@@ -166,8 +181,9 @@ void main() {
 
   group('freeze / unfreeze', () {
     test('freeze success reloads and exits selection', () async {
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
       when(
         () => freezeUtxos.execute(
           walletId: any(named: 'walletId'),
@@ -196,8 +212,9 @@ void main() {
     });
 
     test('freeze failure holds error and preserves selection', () async {
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [walletUtxoFixture(txId: 'a')]);
       when(
         () => freezeUtxos.execute(
           walletId: any(named: 'walletId'),
@@ -223,8 +240,9 @@ void main() {
     });
 
     test('unfreeze failure holds error and preserves selection', () async {
-      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => [walletUtxoFixture(txId: 'a', isFrozen: true)]);
+      when(
+        () => getUtxos.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [walletUtxoFixture(txId: 'a', isFrozen: true)]);
       when(
         () => unfreezeUtxos.execute(
           walletId: any(named: 'walletId'),
@@ -251,8 +269,9 @@ void main() {
     test('started sets syncing=true; finished triggers debounced reload', () {
       fakeAsync((async) {
         var loadCalls = 0;
-        when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-            .thenAnswer((_) async {
+        when(
+          () => getUtxos.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async {
           loadCalls++;
           return [walletUtxoFixture()];
         });
@@ -281,8 +300,9 @@ void main() {
     test('rapid finished events collapse to a single reload (debounce)', () {
       fakeAsync((async) {
         var loadCalls = 0;
-        when(() => getUtxos.execute(walletId: any(named: 'walletId')))
-            .thenAnswer((_) async {
+        when(
+          () => getUtxos.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async {
           loadCalls++;
           return [walletUtxoFixture()];
         });

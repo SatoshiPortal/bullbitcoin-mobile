@@ -33,40 +33,50 @@ void main() {
   });
 
   group('correct PIN', () {
-    test('returns Ok(UnlockAttempt(success: true)) and resets counter', () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(true));
-      when(() => attemptsRepository.setFailedUnlockAttempts(0))
-          .thenAnswer((_) async => const Ok(null));
+    test(
+      'returns Ok(UnlockAttempt(success: true)) and resets counter',
+      () async {
+        when(
+          () => pinCodeRepository.verifyPinCode(any()),
+        ).thenAnswer((_) async => const Ok(true));
+        when(
+          () => attemptsRepository.setFailedUnlockAttempts(0),
+        ).thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute('1234');
+        final result = await usecase.execute('1234');
 
-      expect(result, isA<Ok>());
-      final attempt = (result as Ok).value;
-      expect(attempt.success, true);
-      expect(attempt.failedAttempts, 0);
-    });
+        expect(result, isA<Ok>());
+        final attempt = (result as Ok).value;
+        expect(attempt.success, true);
+        expect(attempt.failedAttempts, 0);
+      },
+    );
   });
 
   group('wrong PIN', () {
-    test('increments counter and returns Ok(UnlockAttempt(success: false))',
-        () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(false));
-      when(() => attemptsRepository.getFailedUnlockAttempts())
-          .thenAnswer((_) async => const Ok(2));
-      when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
-      when(() => attemptsRepository.setFailedUnlockAttempts(3))
-          .thenAnswer((_) async => const Ok(null));
+    test(
+      'increments counter and returns Ok(UnlockAttempt(success: false))',
+      () async {
+        when(
+          () => pinCodeRepository.verifyPinCode(any()),
+        ).thenAnswer((_) async => const Ok(false));
+        when(
+          () => attemptsRepository.getFailedUnlockAttempts(),
+        ).thenAnswer((_) async => const Ok(2));
+        when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
+        when(
+          () => attemptsRepository.setFailedUnlockAttempts(3),
+        ).thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute('0000');
+        final result = await usecase.execute('0000');
 
-      expect(result, isA<Ok>());
-      final attempt = (result as Ok).value;
-      expect(attempt.success, false);
-      expect(attempt.failedAttempts, 3);
-      expect(attempt.timeout, 30);
-    });
+        expect(result, isA<Ok>());
+        final attempt = (result as Ok).value;
+        expect(attempt.success, false);
+        expect(attempt.failedAttempts, 3);
+        expect(attempt.timeout, 30);
+      },
+    );
   });
 
   group('sanitized failures — no raw leak', () {
@@ -74,7 +84,8 @@ void main() {
       'returns Err(AppUnlockPinVerifyFailure) when verifyPinCode fails',
       () async {
         when(() => pinCodeRepository.verifyPinCode(any())).thenAnswer(
-          (_) async => const Err(PinCodeUnexpectedFailure('raw keychain error')),
+          (_) async =>
+              const Err(PinCodeUnexpectedFailure('raw keychain error')),
         );
 
         final result = await usecase.execute('1234');
@@ -87,8 +98,9 @@ void main() {
     test(
       'returns Err(AppUnlockUnexpectedFailure) when getFailedUnlockAttempts fails',
       () async {
-        when(() => pinCodeRepository.verifyPinCode(any()))
-            .thenAnswer((_) async => const Ok(false));
+        when(
+          () => pinCodeRepository.verifyPinCode(any()),
+        ).thenAnswer((_) async => const Ok(false));
         when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
           (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
         );
@@ -103,8 +115,9 @@ void main() {
     test(
       'returns Err(AppUnlockUnexpectedFailure) when setFailedUnlockAttempts fails',
       () async {
-        when(() => pinCodeRepository.verifyPinCode(any()))
-            .thenAnswer((_) async => const Ok(true));
+        when(
+          () => pinCodeRepository.verifyPinCode(any()),
+        ).thenAnswer((_) async => const Ok(true));
         when(() => attemptsRepository.setFailedUnlockAttempts(0)).thenAnswer(
           (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
         );

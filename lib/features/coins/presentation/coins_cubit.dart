@@ -84,7 +84,9 @@ class CoinsCubit extends Cubit<CoinsState> {
       );
     } on CoinsError catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(status: CoinsStatus.error, error: e, syncing: false));
+        emit(
+          state.copyWith(status: CoinsStatus.error, error: e, syncing: false),
+        );
       }
     } catch (e) {
       if (!isClosed) {

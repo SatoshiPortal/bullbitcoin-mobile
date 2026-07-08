@@ -61,7 +61,11 @@ class BullLabelChip extends StatelessWidget {
               const SizedBox(width: 4),
               GestureDetector(
                 onTap: onRemove,
-                child: BullIcon(BullIcons.close, size: 11, color: colors.textMuted),
+                child: BullIcon(
+                  BullIcons.close,
+                  size: 11,
+                  color: colors.textMuted,
+                ),
               ),
             ],
           ],

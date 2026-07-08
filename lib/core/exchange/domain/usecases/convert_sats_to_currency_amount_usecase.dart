@@ -19,10 +19,9 @@ class ConvertSatsToCurrencyAmountUsecase {
       final settings = await _settingsRepository.fetch();
       final currency = currencyCode ?? settings.currencyCode;
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeRateRepository
-              : _mainnetExchangeRateRepository;
+      final repo = isTestnet
+          ? _testnetExchangeRateRepository
+          : _mainnetExchangeRateRepository;
       final availableCurrencies = await repo.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {

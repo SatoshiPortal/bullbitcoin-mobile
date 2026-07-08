@@ -62,16 +62,14 @@ class BullBackupOptionCard extends StatelessWidget {
                       children: [
                         BullText(
                           title,
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
                         ),
                         const Gap(10),
                         BullText(
                           description,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colors.textMuted,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: colors.textMuted),
                           maxLines: 3,
                         ),
                         const Gap(10),

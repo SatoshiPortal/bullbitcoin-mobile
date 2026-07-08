@@ -44,142 +44,142 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
           }
         },
         child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: BBText(
-                context.loc.allSeedViewTitle,
-                style: const TextStyle(fontWeight: .bold, fontSize: 20),
+          builder: (context, state) {
+            return Scaffold(
+              appBar: AppBar(
+                title: BBText(
+                  context.loc.allSeedViewTitle,
+                  style: const TextStyle(fontWeight: .bold, fontSize: 20),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(3),
+                  child: state.loading
+                      ? FadingLinearProgress(
+                          height: 3,
+                          trigger: state.loading,
+                          backgroundColor: context.appColors.surface,
+                          foregroundColor: context.appColors.primary,
+                        )
+                      : const SizedBox(height: 3),
+                ),
               ),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(3),
-                child: state.loading
-                    ? FadingLinearProgress(
-                        height: 3,
-                        trigger: state.loading,
-                        backgroundColor: context.appColors.surface,
-                        foregroundColor: context.appColors.primary,
-                      )
-                    : const SizedBox(height: 3),
-              ),
-            ),
-            body: Builder(
-              builder: (context) {
-                if (state.loading) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: BBText(
-                        context.loc.allSeedViewLoadingMessage,
-                        style: context.font.bodyMedium,
-                        color: context.appColors.onSurface.withValues(
-                          alpha: 0.7,
+              body: Builder(
+                builder: (context) {
+                  if (state.loading) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: BBText(
+                          context.loc.allSeedViewLoadingMessage,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface.withValues(
+                            alpha: 0.7,
+                          ),
+                          textAlign: .center,
                         ),
-                        textAlign: .center,
                       ),
-                    ),
-                  );
-                }
-                if (state.failure is AllSeedViewFetchFailure) {
-                  return Center(
-                    child: BBText(
-                      state.failure!.toTranslated(context),
-                      style: context.font.bodyLarge,
-                      color: context.appColors.error,
-                    ),
-                  );
-                }
-                if (state.allSeeds.isEmpty) {
-                  return Center(
-                    child: BBText(
-                      context.loc.allSeedViewNoSeedsFound,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.onSurface,
-                    ),
-                  );
-                }
-                if (!state.seedsVisible) {
-                  return SafeArea(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Icon(
-                              Icons.visibility_off,
-                              size: 120,
-                              color: context.appColors.onSurface.withValues(
-                                alpha: 0.3,
+                    );
+                  }
+                  if (state.failure is AllSeedViewFetchFailure) {
+                    return Center(
+                      child: BBText(
+                        state.failure!.toTranslated(context),
+                        style: context.font.bodyLarge,
+                        color: context.appColors.error,
+                      ),
+                    );
+                  }
+                  if (state.allSeeds.isEmpty) {
+                    return Center(
+                      child: BBText(
+                        context.loc.allSeedViewNoSeedsFound,
+                        style: context.font.bodyLarge,
+                        color: context.appColors.onSurface,
+                      ),
+                    );
+                  }
+                  if (!state.seedsVisible) {
+                    return SafeArea(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Icon(
+                                Icons.visibility_off,
+                                size: 120,
+                                color: context.appColors.onSurface.withValues(
+                                  alpha: 0.3,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: BBButton.big(
-                            label: context.loc.allSeedViewShowSeedsButton,
-                            onPressed: () => _showWarningDialog(context),
-                            bgColor: context.appColors.secondary,
-                            textColor: context.appColors.onSecondary,
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: BBButton.big(
+                              label: context.loc.allSeedViewShowSeedsButton,
+                              onPressed: () => _showWarningDialog(context),
+                              bgColor: context.appColors.secondary,
+                              textColor: context.appColors.onSecondary,
+                            ),
                           ),
+                        ],
+                      ),
+                    );
+                  }
+                  return ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      if (state.existingWallets.isNotEmpty) ...[
+                        BBText(
+                          context.loc.allSeedViewExistingWallets(
+                            state.existingWallets.length,
+                          ),
+                          style: context.font.headlineSmall?.copyWith(
+                            fontWeight: .bold,
+                          ),
+                          color: context.appColors.onSurface,
+                        ),
+                        const SizedBox(height: 8),
+                        ...state.existingWallets.map<Widget>(
+                          (seed) =>
+                              _buildSeedCard(context, seed, isOldWallet: false),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                      if (state.oldWallets.isNotEmpty) ...[
+                        BBText(
+                          context.loc.allSeedViewOldWallets(
+                            state.oldWallets.length,
+                          ),
+                          style: context.font.headlineSmall?.copyWith(
+                            fontWeight: .bold,
+                          ),
+                          color: context.appColors.onSurface,
+                        ),
+                        const SizedBox(height: 8),
+                        ...state.oldWallets.map<Widget>(
+                          (seed) =>
+                              _buildSeedCard(context, seed, isOldWallet: true),
                         ),
                       ],
-                    ),
+                      if (state.swapMasterKey != null) ...[
+                        const SizedBox(height: 24),
+                        BBText(
+                          'Swap mnemonic',
+                          style: context.font.headlineSmall?.copyWith(
+                            fontWeight: .bold,
+                          ),
+                          color: context.appColors.onSurface,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSwapKeyCard(context, state.swapMasterKey!),
+                      ],
+                    ],
                   );
-                }
-                return ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    if (state.existingWallets.isNotEmpty) ...[
-                      BBText(
-                        context.loc.allSeedViewExistingWallets(
-                          state.existingWallets.length,
-                        ),
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
-                        color: context.appColors.onSurface,
-                      ),
-                      const SizedBox(height: 8),
-                      ...state.existingWallets.map<Widget>(
-                        (seed) =>
-                            _buildSeedCard(context, seed, isOldWallet: false),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                    if (state.oldWallets.isNotEmpty) ...[
-                      BBText(
-                        context.loc.allSeedViewOldWallets(
-                          state.oldWallets.length,
-                        ),
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
-                        color: context.appColors.onSurface,
-                      ),
-                      const SizedBox(height: 8),
-                      ...state.oldWallets.map<Widget>(
-                        (seed) =>
-                            _buildSeedCard(context, seed, isOldWallet: true),
-                      ),
-                    ],
-                    if (state.swapMasterKey != null) ...[
-                      const SizedBox(height: 24),
-                      BBText(
-                        'Swap mnemonic',
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
-                        color: context.appColors.onSurface,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSwapKeyCard(context, state.swapMasterKey!),
-                    ],
-                  ],
-                );
-              },
-            ),
-          );
-        },
+                },
+              ),
+            );
+          },
         ),
       ),
     );

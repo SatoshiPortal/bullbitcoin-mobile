@@ -97,9 +97,8 @@ class LoadInstitutionsFailed extends FundExchangePresentationError {
   String? displayTitle(AppLocalizations loc) => null;
 
   @override
-  String displayMessage(AppLocalizations loc) => message.isNotEmpty
-      ? message
-      : loc.fundExchangeErrorLoadingDetails;
+  String displayMessage(AppLocalizations loc) =>
+      message.isNotEmpty ? message : loc.fundExchangeErrorLoadingDetails;
 }
 
 class ScamWarningConsentRegistrationFailed

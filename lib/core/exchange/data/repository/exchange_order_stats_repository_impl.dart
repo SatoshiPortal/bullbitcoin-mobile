@@ -17,7 +17,9 @@ class ExchangeOrderStatsRepositoryImpl implements ExchangeOrderStatsRepository {
   });
 
   Future<String> _getApiKey() async {
-    final apiKey = await _bullbitcoinApiKeyDatasource.get(isTestnet: _isTestnet);
+    final apiKey = await _bullbitcoinApiKeyDatasource.get(
+      isTestnet: _isTestnet,
+    );
     if (apiKey == null || !apiKey.isActive) {
       throw ApiKeyException(
         'API key not found. Please login to your Bull Bitcoin account.',
@@ -31,7 +33,9 @@ class ExchangeOrderStatsRepositoryImpl implements ExchangeOrderStatsRepository {
     try {
       final apiKey = await _getApiKey();
 
-      final json = await _bullbitcoinApiDatasource.getOrderStats(apiKey: apiKey);
+      final json = await _bullbitcoinApiDatasource.getOrderStats(
+        apiKey: apiKey,
+      );
       final model = OrderStatsResponseModel.fromJson(json);
       return model.toEntity();
     } catch (e) {
@@ -40,4 +44,3 @@ class ExchangeOrderStatsRepositoryImpl implements ExchangeOrderStatsRepository {
     }
   }
 }
-

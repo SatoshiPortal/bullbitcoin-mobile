@@ -36,23 +36,20 @@ void main() {
   });
 
   group('StoreLabelUsecase', () {
-    test(
-      'maps a repository failure to a sanitized LabelFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => repository.store(any()),
-        ).thenThrow(Exception('drift: UNIQUE constraint failed'));
+    test('maps a repository failure to a sanitized LabelFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => repository.store(any()),
+      ).thenThrow(Exception('drift: UNIQUE constraint failed'));
 
-        final result = await usecase.execute(newLabel);
+      final result = await usecase.execute(newLabel);
 
-        expect(result, isA<Err<ApplicationLabel, LabelFailure>>());
-        expect(
-          (result as Err<ApplicationLabel, LabelFailure>).failure,
-          isA<LabelUnexpectedFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<ApplicationLabel, LabelFailure>>());
+      expect(
+        (result as Err<ApplicationLabel, LabelFailure>).failure,
+        isA<LabelUnexpectedFailure>(),
+      );
+    });
 
     test('returns Ok with the mapped label on success', () async {
       final stored = _MockLabelEntity();

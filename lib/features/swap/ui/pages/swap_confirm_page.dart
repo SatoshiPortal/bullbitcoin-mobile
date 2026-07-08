@@ -122,8 +122,7 @@ class SwapConfirmPage extends StatelessWidget {
                                     customFeeColors: FeeModalCustomFeeColors(
                                       tile: context.appColors.onSecondary,
                                       shadow: context.appColors.secondary,
-                                      unselectedIcon:
-                                          context.appColors.surface,
+                                      unselectedIcon: context.appColors.surface,
                                     ),
                                   ),
                                 ).then((selected) {
@@ -149,8 +148,7 @@ class SwapConfirmPage extends StatelessWidget {
                                     // typed custom rate if any. Replaces
                                     // the old "Confirm Custom Fee" button.
                                     bloc.add(
-                                      const TransferEvent
-                                          .customFeeFinalized(),
+                                      const TransferEvent.customFeeFinalized(),
                                     );
                                   }
                                 });

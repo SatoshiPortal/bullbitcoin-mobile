@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 class CalculateBitcoinAbsoluteFeesUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
-  CalculateBitcoinAbsoluteFeesUsecase({
-    required this._bitcoinWalletRepository,
-  });
+  CalculateBitcoinAbsoluteFeesUsecase({required this._bitcoinWalletRepository});
 
   /// Returns (amount, absFees)
   Future<int> execute({required String psbt}) async {

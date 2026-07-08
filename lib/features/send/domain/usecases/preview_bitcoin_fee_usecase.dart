@@ -21,9 +21,9 @@ class PreviewBitcoinFeeUsecase {
   PreviewBitcoinFeeUsecase({
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
     required CalculateBitcoinAbsoluteFeesUsecase
-        calculateBitcoinAbsoluteFeesUsecase,
-  })  : _prepare = prepareBitcoinSendUsecase,
-        _calculateFees = calculateBitcoinAbsoluteFeesUsecase;
+    calculateBitcoinAbsoluteFeesUsecase,
+  }) : _prepare = prepareBitcoinSendUsecase,
+       _calculateFees = calculateBitcoinAbsoluteFeesUsecase;
 
   Future<BitcoinFeePreviewSlot> execute({
     required String walletId,

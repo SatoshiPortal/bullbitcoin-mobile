@@ -46,10 +46,9 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
     _pollingTimer?.cancel();
     _hasStartedPolling = true;
     _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final order =
-          context.read<PayBloc>().state is PaySuccessState
-              ? (context.read<PayBloc>().state as PaySuccessState).payOrder
-              : null;
+      final order = context.read<PayBloc>().state is PaySuccessState
+          ? (context.read<PayBloc>().state as PaySuccessState).payOrder
+          : null;
 
       if (order != null) {
         context.read<PayBloc>().add(
@@ -67,10 +66,9 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PaySuccessState
-              ? (bloc.state as PaySuccessState).payOrder
-              : null,
+      (PayBloc bloc) => bloc.state is PaySuccessState
+          ? (bloc.state as PaySuccessState).payOrder
+          : null,
     );
 
     return BlocListener<PayBloc, PayState>(

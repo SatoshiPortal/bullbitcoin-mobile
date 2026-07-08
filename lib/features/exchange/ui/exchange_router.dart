@@ -96,8 +96,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
-        final fromSupport =
-            state.uri.queryParameters['from'] == 'support';
+        final fromSupport = state.uri.queryParameters['from'] == 'support';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
@@ -105,12 +104,14 @@ class ExchangeRouter {
                 previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, exchangeState) {
               if (fromSupport) {
-                final isIOSNonSuperuser = Platform.isIOS &&
+                final isIOSNonSuperuser =
+                    Platform.isIOS &&
                     !(context.read<SettingsCubit>().state.isSuperuser ?? false);
                 context.goNamed(
                   ExchangeSupportChatRoute.supportChat.name,
-                  queryParameters:
-                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                  queryParameters: isIOSNonSuperuser
+                      ? {}
+                      : {'from': 'exchange'},
                 );
                 return;
               }

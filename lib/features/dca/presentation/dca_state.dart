@@ -39,26 +39,26 @@ sealed class DcaState with _$DcaState {
   String? get defaultLightningAddress {
     return when(
       initial: (getUserSummaryException) => null,
-      buyInput:
-          (defaultLightningAddress, balances, currency) =>
-              defaultLightningAddress,
+      buyInput: (defaultLightningAddress, balances, currency) =>
+          defaultLightningAddress,
       walletSelection:
           (defaultLightningAddress, balances, amount, currency, frequency) =>
               defaultLightningAddress,
-      confirmation: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-        network,
-        lightningAddress,
-        isDefaultLightningAddress,
-        isConfirmingDca,
-        error,
-      ) {
-        return defaultLightningAddress;
-      },
+      confirmation:
+          (
+            defaultLightningAddress,
+            balances,
+            amount,
+            currency,
+            frequency,
+            network,
+            lightningAddress,
+            isDefaultLightningAddress,
+            isConfirmingDca,
+            error,
+          ) {
+            return defaultLightningAddress;
+          },
       success: (amount, currency, frequency) => null,
     );
   }
@@ -72,107 +72,100 @@ sealed class DcaState with _$DcaState {
           currency: currency,
         );
       },
-      walletSelection: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-      ) {
-        return DcaBuyInputState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          currency: currency,
-        );
-      },
-      confirmation: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-        network,
-        lightningAddress,
-        isDefaultLightningAddress,
-        isConfirmingDca,
-        error,
-      ) {
-        return DcaBuyInputState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          currency: currency,
-        );
-      },
+      walletSelection:
+          (defaultLightningAddress, balances, amount, currency, frequency) {
+            return DcaBuyInputState(
+              defaultLightningAddress: defaultLightningAddress,
+              balances: balances,
+              currency: currency,
+            );
+          },
+      confirmation:
+          (
+            defaultLightningAddress,
+            balances,
+            amount,
+            currency,
+            frequency,
+            network,
+            lightningAddress,
+            isDefaultLightningAddress,
+            isConfirmingDca,
+            error,
+          ) {
+            return DcaBuyInputState(
+              defaultLightningAddress: defaultLightningAddress,
+              balances: balances,
+              currency: currency,
+            );
+          },
     );
   }
 
   DcaWalletSelectionState? get toCleanWalletSelectionState {
     return whenOrNull(
-      walletSelection: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-      ) {
-        return DcaWalletSelectionState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          amount: amount,
-          currency: currency,
-          frequency: frequency,
-        );
-      },
-      confirmation: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-        network,
-        lightningAddress,
-        isDefaultLightningAddress,
-        isConfirmingDca,
-        error,
-      ) {
-        return DcaWalletSelectionState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          amount: amount,
-          currency: currency,
-          frequency: frequency,
-        );
-      },
+      walletSelection:
+          (defaultLightningAddress, balances, amount, currency, frequency) {
+            return DcaWalletSelectionState(
+              defaultLightningAddress: defaultLightningAddress,
+              balances: balances,
+              amount: amount,
+              currency: currency,
+              frequency: frequency,
+            );
+          },
+      confirmation:
+          (
+            defaultLightningAddress,
+            balances,
+            amount,
+            currency,
+            frequency,
+            network,
+            lightningAddress,
+            isDefaultLightningAddress,
+            isConfirmingDca,
+            error,
+          ) {
+            return DcaWalletSelectionState(
+              defaultLightningAddress: defaultLightningAddress,
+              balances: balances,
+              amount: amount,
+              currency: currency,
+              frequency: frequency,
+            );
+          },
     );
   }
 
   DcaConfirmationState? get toCleanConfirmationState {
     return whenOrNull(
-      confirmation: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-        network,
-        lightningAddress,
-        isDefaultLightningAddress,
-        isConfirmingDca,
-        error,
-      ) {
-        return DcaConfirmationState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          amount: amount,
-          currency: currency,
-          frequency: frequency,
-          network: network,
-          lightningAddress: lightningAddress,
-          isDefaultLightningAddress: isDefaultLightningAddress,
-          isConfirmingDca: false,
-          error: null,
-        );
-      },
+      confirmation:
+          (
+            defaultLightningAddress,
+            balances,
+            amount,
+            currency,
+            frequency,
+            network,
+            lightningAddress,
+            isDefaultLightningAddress,
+            isConfirmingDca,
+            error,
+          ) {
+            return DcaConfirmationState(
+              defaultLightningAddress: defaultLightningAddress,
+              balances: balances,
+              amount: amount,
+              currency: currency,
+              frequency: frequency,
+              network: network,
+              lightningAddress: lightningAddress,
+              isDefaultLightningAddress: isDefaultLightningAddress,
+              isConfirmingDca: false,
+              error: null,
+            );
+          },
     );
   }
 
@@ -183,20 +176,21 @@ sealed class DcaState with _$DcaState {
       walletSelection:
           (defaultLightningAddress, balances, amount, currency, frequency) =>
               currency,
-      confirmation: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-        network,
-        lightningAddress,
-        isDefaultLightningAddress,
-        isConfirmingDca,
-        error,
-      ) {
-        return currency;
-      },
+      confirmation:
+          (
+            defaultLightningAddress,
+            balances,
+            amount,
+            currency,
+            frequency,
+            network,
+            lightningAddress,
+            isDefaultLightningAddress,
+            isConfirmingDca,
+            error,
+          ) {
+            return currency;
+          },
       success: (amount, currency, frequency) => currency,
     );
   }
@@ -207,20 +201,21 @@ sealed class DcaState with _$DcaState {
     walletSelection:
         (defaultLightningAddress, balances, amount, currency, frequency) =>
             balances,
-    confirmation: (
-      defaultLightningAddress,
-      balances,
-      amount,
-      currency,
-      frequency,
-      network,
-      lightningAddress,
-      isDefaultLightningAddress,
-      isConfirmingDca,
-      error,
-    ) {
-      return balances;
-    },
+    confirmation:
+        (
+          defaultLightningAddress,
+          balances,
+          amount,
+          currency,
+          frequency,
+          network,
+          lightningAddress,
+          isDefaultLightningAddress,
+          isConfirmingDca,
+          error,
+        ) {
+          return balances;
+        },
     success: (amount, currency, frequency) => [],
   );
 }

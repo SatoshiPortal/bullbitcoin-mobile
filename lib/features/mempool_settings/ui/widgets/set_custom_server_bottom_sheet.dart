@@ -118,7 +118,8 @@ class _SetCustomServerBottomSheetState
     } else {
       final failure = context.read<MempoolSettingsCubit>().state.failure;
       setState(() {
-        _errorMessage = failure?.toTranslated(context) ??
+        _errorMessage =
+            failure?.toTranslated(context) ??
             context.loc.mempoolCustomServerSaveFailed;
       });
       context.read<MempoolSettingsCubit>().clearError();
@@ -254,7 +255,10 @@ class _SetCustomServerBottomSheetState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(context.loc.mempoolCustomServerUseSsl, style: context.font.bodyMedium),
+                            Text(
+                              context.loc.mempoolCustomServerUseSsl,
+                              style: context.font.bodyMedium,
+                            ),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(

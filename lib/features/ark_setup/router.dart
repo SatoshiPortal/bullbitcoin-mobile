@@ -24,17 +24,15 @@ class ArkSetupRouter {
       final wallet = context.watch<WalletBloc>().state.arkWallet;
 
       return BlocProvider(
-        create:
-            (context) => ArkSetupCubit(
-              getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
-              createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
-              wallet: wallet,
-              walletBloc: context.read<WalletBloc>(),
-            ),
+        create: (context) => ArkSetupCubit(
+          getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+          createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
+          wallet: wallet,
+          walletBloc: context.read<WalletBloc>(),
+        ),
         child: BlocListener<WalletBloc, WalletState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.arkWallet == null && current.arkWallet != null,
+          listenWhen: (previous, current) =>
+              previous.arkWallet == null && current.arkWallet != null,
           listener: (context, state) {
             context.goNamed(WalletRoute.walletHome.name);
           },

@@ -33,10 +33,7 @@ class MempoolSettings {
   bool get useForFeeEstimation => _useForFeeEstimation;
 
   MempoolSettings updateUseForFeeEstimation(bool value) {
-    return MempoolSettings._(
-      network: _network,
-      useForFeeEstimation: value,
-    );
+    return MempoolSettings._(network: _network, useForFeeEstimation: value);
   }
 
   @override

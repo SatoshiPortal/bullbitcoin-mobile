@@ -20,7 +20,7 @@ class VerifyAddressBitBoxUsecase {
   }) async {
     final settings = await _settingsRepository.fetch();
     final isTestnet = settings.environment.isTestnet;
-    
+
     return await _repository.verifyAddress(
       device,
       address: address,

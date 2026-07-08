@@ -51,9 +51,7 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
             backgroundColor: context.appColors.surface,
             color: context.appColors.primary,
           ),
-        Expanded(
-          child: _buildContent(context, state),
-        ),
+        Expanded(child: _buildContent(context, state)),
       ],
     );
   }
@@ -128,9 +126,7 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 }
 
 class _OrderStatsSection extends StatelessWidget {
-  const _OrderStatsSection({
-    required this.state,
-  });
+  const _OrderStatsSection({required this.state});
 
   final StatisticsState state;
 
@@ -212,11 +208,7 @@ class _OrderStatsSection extends StatelessWidget {
 }
 
 class _StatRow extends StatelessWidget {
-  const _StatRow({
-    required this.label,
-    required this.values,
-    this.description,
-  });
+  const _StatRow({required this.label, required this.values, this.description});
 
   final String label;
   final List<String> values;
@@ -313,11 +305,7 @@ class _StatCard extends StatelessWidget {
               color: context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              color: context.appColors.primary,
-              size: 24,
-            ),
+            child: Icon(icon, color: context.appColors.primary, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -396,11 +384,7 @@ class _MultiValueStatCard extends StatelessWidget {
               color: context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              color: context.appColors.primary,
-              size: 24,
-            ),
+            child: Icon(icon, color: context.appColors.primary, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -535,9 +519,7 @@ class _BillerStatsSection extends StatelessWidget {
 }
 
 class _BillerStatCard extends StatelessWidget {
-  const _BillerStatCard({
-    required this.stat,
-  });
+  const _BillerStatCard({required this.stat});
 
   final FormattedBillerStat stat;
 

@@ -7,13 +7,12 @@ import 'package:flutter/widgets.dart';
 /// raw `logMessage`.
 extension TransactionReviewFailureL10n on TransactionReviewFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        TransactionReviewFetchFailure(:final txid) =>
-          context.loc.coreScreensFetchFailed(txid),
-        TransactionReviewNoServersFailure() =>
-          context.loc.coreScreensNoServersAvailable,
-        TransactionReviewInputResolutionFailure(:final parentTxId, :final vout) =>
-          context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
-        TransactionReviewUnexpectedFailure() =>
-          context.loc.oopsSomethingWentWrong,
-      };
+    TransactionReviewFetchFailure(:final txid) =>
+      context.loc.coreScreensFetchFailed(txid),
+    TransactionReviewNoServersFailure() =>
+      context.loc.coreScreensNoServersAvailable,
+    TransactionReviewInputResolutionFailure(:final parentTxId, :final vout) =>
+      context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
+    TransactionReviewUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

@@ -68,8 +68,8 @@ class DcaSuccessScreen extends StatelessWidget {
                   DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(
                     amount,
                   ),
-                  DcaBuyFrequency.monthly => context.loc
-                      .dcaSuccessMessageMonthly(amount),
+                  DcaBuyFrequency.monthly =>
+                    context.loc.dcaSuccessMessageMonthly(amount),
                 },
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: .center,

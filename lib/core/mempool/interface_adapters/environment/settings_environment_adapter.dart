@@ -8,9 +8,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
   final SettingsRepository _settingsRepository;
 
-  SettingsEnvironmentAdapter({
-    required this._settingsRepository,
-  });
+  SettingsEnvironmentAdapter({required this._settingsRepository});
 
   @override
   Future<Result<Environment, MempoolFailure>> getEnvironment() async {
