@@ -12250,6 +12250,38 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
+  "ledgerErrorPermissionDenied": "Bluetooth permissions are required to connect to Ledger devices.",
+  "@ledgerErrorPermissionDenied": {
+    "description": "Error message when Bluetooth permissions are denied for Ledger"
+  },
+  "ledgerErrorNoDevicesFound": "No Ledger devices found. Make sure your device is powered on and has Bluetooth enabled.",
+  "@ledgerErrorNoDevicesFound": {
+    "description": "Error message when no Ledger devices are found during scan"
+  },
+  "ledgerErrorMultipleDevicesFound": "Multiple Ledger devices found. Please ensure only one device is nearby.",
+  "@ledgerErrorMultipleDevicesFound": {
+    "description": "Error message when multiple Ledger devices are found during scan"
+  },
+  "ledgerErrorDeviceNotFound": "Ledger device not found.",
+  "@ledgerErrorDeviceNotFound": {
+    "description": "Error message when the requested Ledger device cannot be found"
+  },
+  "ledgerErrorDeviceMismatch": "Device mismatch detected.",
+  "@ledgerErrorDeviceMismatch": {
+    "description": "Error message when the connected Ledger device does not match the expected one"
+  },
+  "ledgerErrorInvalidPsbt": "Invalid PSBT format detected.",
+  "@ledgerErrorInvalidPsbt": {
+    "description": "Error message when the PSBT sent to the Ledger has an invalid format"
+  },
+  "ledgerErrorMissingDerivationPath": "Derivation path is required",
+  "@ledgerErrorMissingDerivationPath": {
+    "description": "Error message when a Ledger operation is missing the derivation path"
+  },
+  "ledgerErrorMissingScriptType": "Script type is required",
+  "@ledgerErrorMissingScriptType": {
+    "description": "Error message when a Ledger operation is missing the script type"
+  },
   "ledgerErrorUnknownOccurred": "Unknown error occurred",
   "@ledgerErrorUnknownOccurred": {
     "description": "Error message when an unknown error occurs during Ledger operation"

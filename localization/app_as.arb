@@ -8657,6 +8657,14 @@
     "description": "Subtext shown while connecting to Ledger"
   },
   "ledgerErrorUnknown": "অজ্ঞাত ত্ৰুটি",
+  "ledgerErrorPermissionDenied": "Ledger ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ব্লুটুথ অনুমতি প্ৰয়োজন।",
+  "ledgerErrorNoDevicesFound": "কোনো Ledger ডিভাইচ পোৱা নগ'ল। আপোনাৰ ডিভাইচটো চালু আছে আৰু ব্লুটুথ সক্ষম আছে বুলি নিশ্চিত কৰক।",
+  "ledgerErrorMultipleDevicesFound": "একাধিক Ledger ডিভাইচ পোৱা গ'ল। অনুগ্ৰহ কৰি ওচৰত কেৱল এটা ডিভাইচ থকাটো নিশ্চিত কৰক।",
+  "ledgerErrorDeviceNotFound": "Ledger ডিভাইচ পোৱা নগ'ল।",
+  "ledgerErrorDeviceMismatch": "ডিভাইচৰ অমিল ধৰা পৰিছে।",
+  "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
+  "ledgerErrorMissingDerivationPath": "ডেৰিভেশ্যন পাথ প্ৰয়োজন",
+  "ledgerErrorMissingScriptType": "স্ক্ৰিপ্ট প্ৰকাৰ প্ৰয়োজন",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

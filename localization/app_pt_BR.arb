@@ -10653,6 +10653,14 @@
     "description": "Label for mnemonic words display"
   },
   "ledgerErrorUnknown": "Erro desconhecido",
+  "ledgerErrorPermissionDenied": "São necessárias permissões de Bluetooth para conectar aos dispositivos Ledger.",
+  "ledgerErrorNoDevicesFound": "Nenhum dispositivo Ledger encontrado. Verifique se o seu dispositivo está ligado e com o Bluetooth ativado.",
+  "ledgerErrorMultipleDevicesFound": "Vários dispositivos Ledger encontrados. Certifique-se de que apenas um dispositivo esteja por perto.",
+  "ledgerErrorDeviceNotFound": "Dispositivo Ledger não encontrado.",
+  "ledgerErrorDeviceMismatch": "Incompatibilidade de dispositivo detectada.",
+  "ledgerErrorInvalidPsbt": "Formato PSBT inválido detectado.",
+  "ledgerErrorMissingDerivationPath": "O caminho de derivação é obrigatório",
+  "ledgerErrorMissingScriptType": "O tipo de script é obrigatório",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

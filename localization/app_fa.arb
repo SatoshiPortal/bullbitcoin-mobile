@@ -397,6 +397,14 @@
     "description": "Subtext shown while connecting to Ledger"
   },
   "ledgerErrorUnknown": "خطای ناشناخته",
+  "ledgerErrorPermissionDenied": "برای اتصال به دستگاه‌های Ledger مجوزهای بلوتوث لازم است.",
+  "ledgerErrorNoDevicesFound": "هیچ دستگاه Ledger یافت نشد. مطمئن شوید که دستگاه شما روشن است و بلوتوث فعال است.",
+  "ledgerErrorMultipleDevicesFound": "چندین دستگاه Ledger یافت شد. لطفاً مطمئن شوید که فقط یک دستگاه در نزدیکی است.",
+  "ledgerErrorDeviceNotFound": "دستگاه Ledger یافت نشد.",
+  "ledgerErrorDeviceMismatch": "عدم تطابق دستگاه شناسایی شد.",
+  "ledgerErrorInvalidPsbt": "قالب PSBT نامعتبر شناسایی شد.",
+  "ledgerErrorMissingDerivationPath": "مسیر اشتقاق لازم است",
+  "ledgerErrorMissingScriptType": "نوع اسکریپت لازم است",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
