@@ -80,6 +80,7 @@ runs:
           **/*.g.dart
           **/*.freezed.dart
           **/*.mocks.dart
+          !packages/bull_ui_catalogue/lib/main.directories.g.dart
         key: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
         restore-keys: buildrunner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
