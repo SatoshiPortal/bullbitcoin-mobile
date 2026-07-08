@@ -1,63 +1,28 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
+import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:satoshifier/satoshifier.dart' hide Network;
+import 'package:meta/meta.dart';
 
 class GetLedgerWatchOnlyWalletUsecase {
   final LedgerDeviceRepository _repository;
-  final SettingsRepository _settingsRepository;
 
-  GetLedgerWatchOnlyWalletUsecase({
-    required this._repository,
-    required this._settingsRepository,
-  });
+  GetLedgerWatchOnlyWalletUsecase({required this._repository});
 
-  Future<WatchOnlyWalletEntity> execute({
+  @useResult
+  Future<Result<WatchOnlyWalletEntity, LedgerFailure>> execute({
     required String label,
     required LedgerDeviceEntity device,
     ScriptType scriptType = ScriptType.bip84,
     int account = 0,
-  }) async {
-    final settings = await _settingsRepository.fetch();
-    final network = Network.fromEnvironment(
-      isTestnet: settings.environment.isTestnet,
-      isLiquid: false,
-    );
-
-    final derivationPath =
-        "m/${scriptType.purpose}'/${network.coinType}'/$account'";
-
-    final masterFingerprint = await _repository.getMasterFingerprint(device);
-    final xpub = await _repository.getXpub(
+  }) {
+    return _repository.getWatchOnlyWallet(
       device,
-      derivationPath: derivationPath,
-      scriptType: scriptType,
-    );
-
-    final descriptor = Descriptor.fromStrings(
-      fingerprint: masterFingerprint,
-      path: derivationPath,
-      xpub: xpub,
-    );
-
-    final watchOnly = Satoshifier.watchOnlyDescriptor(descriptor: descriptor);
-
-    if (watchOnly is! WatchOnlyDescriptor) {
-      throw Exception(
-        'Failed to parse descriptor: got ${watchOnly.runtimeType}',
-      );
-    }
-
-    final watchOnlyWallet = WatchOnlyWalletEntity.descriptor(
-      watchOnlyDescriptor: watchOnly,
-      signer: SignerEntity.remote,
       label: label,
-      signerDevice: device.deviceType,
+      scriptType: scriptType,
+      account: account,
     );
-
-    return watchOnlyWallet;
   }
 }
