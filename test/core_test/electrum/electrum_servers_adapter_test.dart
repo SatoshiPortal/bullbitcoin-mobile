@@ -125,23 +125,26 @@ void main() {
       expect(tried, ['ssl://a:50002', 'ssl://b:50002']);
     });
 
-    test('throws AllElectrumServersFailedException listing every attempt', () async {
-      stub(servers: [_server('ssl://a:50002'), _server('ssl://b:50002')]);
+    test(
+      'throws AllElectrumServersFailedException listing every attempt',
+      () async {
+        stub(servers: [_server('ssl://a:50002'), _server('ssl://b:50002')]);
 
-      await expectLater(
-        adapter.runWithFallback<String>(
-          network: _network,
-          operation: (_) async => throw Exception('down'),
-        ),
-        throwsA(
-          isA<AllElectrumServersFailedException>().having(
-            (e) => e.attempts.map((a) => a.url).toList(),
-            'attempts',
-            ['ssl://a:50002', 'ssl://b:50002'],
+        await expectLater(
+          adapter.runWithFallback<String>(
+            network: _network,
+            operation: (_) async => throw Exception('down'),
           ),
-        ),
-      );
-    });
+          throwsA(
+            isA<AllElectrumServersFailedException>().having(
+              (e) => e.attempts.map((a) => a.url).toList(),
+              'attempts',
+              ['ssl://a:50002', 'ssl://b:50002'],
+            ),
+          ),
+        );
+      },
+    );
 
     test('rethrows immediately on a permanent error (no fallback)', () async {
       stub(servers: [_server('ssl://a:50002'), _server('ssl://b:50002')]);
@@ -162,17 +165,20 @@ void main() {
       expect(tried, ['ssl://a:50002']); // short-circuited, never tried b
     });
 
-    test('throws NoElectrumServersConfiguredException when set is empty', () async {
-      stub(servers: []);
+    test(
+      'throws NoElectrumServersConfiguredException when set is empty',
+      () async {
+        stub(servers: []);
 
-      await expectLater(
-        adapter.runWithFallback<String>(
-          network: _network,
-          operation: (_) async => 'unreachable',
-        ),
-        throwsA(isA<NoElectrumServersConfiguredException>()),
-      );
-    });
+        await expectLater(
+          adapter.runWithFallback<String>(
+            network: _network,
+            operation: (_) async => 'unreachable',
+          ),
+          throwsA(isA<NoElectrumServersConfiguredException>()),
+        );
+      },
+    );
 
     test('R2a: custom-only set + all fail → never reaches defaults', () async {
       // fetchActiveServers returns ONLY custom servers when a custom is set
@@ -209,10 +215,7 @@ void main() {
 
   group('runWithFallback — connection assembly', () {
     test('merges electrum settings into every connection', () async {
-      stub(
-        servers: [_server('ssl://a:50002')],
-        settings: _settings(),
-      );
+      stub(servers: [_server('ssl://a:50002')], settings: _settings());
 
       late final dynamic seen;
       await adapter.runWithFallback<void>(
@@ -230,23 +233,26 @@ void main() {
       expect(seen.isCustom, false);
     });
 
-    test('Tor disabled → uses the persisted socks5 (which may be null)', () async {
-      stub(
-        servers: [_server('ssl://a:50002')],
-        settings: _settings(),
-        appSettings: _appSettings(useTorProxy: false),
-      );
+    test(
+      'Tor disabled → uses the persisted socks5 (which may be null)',
+      () async {
+        stub(
+          servers: [_server('ssl://a:50002')],
+          settings: _settings(),
+          appSettings: _appSettings(useTorProxy: false),
+        );
 
-      late final String? socks5;
-      await adapter.runWithFallback<void>(
-        network: _network,
-        operation: (connection) async {
-          socks5 = connection.socks5;
-        },
-      );
+        late final String? socks5;
+        await adapter.runWithFallback<void>(
+          network: _network,
+          operation: (connection) async {
+            socks5 = connection.socks5;
+          },
+        );
 
-      expect(socks5, isNull);
-    });
+        expect(socks5, isNull);
+      },
+    );
 
     test('Tor enabled on Bitcoin → injects 127.0.0.1:<port>', () async {
       stub(
@@ -266,26 +272,23 @@ void main() {
       expect(socks5, '127.0.0.1:9150');
     });
 
-    test(
-      'Tor enabled but persisted socks5 set → persisted wins',
-      () async {
-        stub(
-          servers: [_server('ssl://a:50002')],
-          settings: _settings(socks5: 'proxy.example:9999'),
-          appSettings: _appSettings(useTorProxy: true, torProxyPort: 9150),
-        );
+    test('Tor enabled but persisted socks5 set → persisted wins', () async {
+      stub(
+        servers: [_server('ssl://a:50002')],
+        settings: _settings(socks5: 'proxy.example:9999'),
+        appSettings: _appSettings(useTorProxy: true, torProxyPort: 9150),
+      );
 
-        late final String? socks5;
-        await adapter.runWithFallback<void>(
-          network: _network,
-          operation: (connection) async {
-            socks5 = connection.socks5;
-          },
-        );
+      late final String? socks5;
+      await adapter.runWithFallback<void>(
+        network: _network,
+        operation: (connection) async {
+          socks5 = connection.socks5;
+        },
+      );
 
-        expect(socks5, 'proxy.example:9999');
-      },
-    );
+      expect(socks5, 'proxy.example:9999');
+    });
 
     test('Tor enabled on Liquid → socks5 is NOT applied', () async {
       when(
@@ -303,9 +306,7 @@ void main() {
       when(
         () => settingsRepo.fetchByNetwork(any()),
       ).thenAnswer((_) async => Ok(_settings()));
-      when(
-        () => appSettingsRepo.fetch(),
-      ).thenAnswer(
+      when(() => appSettingsRepo.fetch()).thenAnswer(
         (_) async => _appSettings(useTorProxy: true, torProxyPort: 9150),
       );
 

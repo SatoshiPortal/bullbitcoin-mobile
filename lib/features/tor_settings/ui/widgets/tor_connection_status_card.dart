@@ -16,7 +16,10 @@ class TorConnectionStatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            Text(context.loc.torSettingsConnectionStatus, style: context.font.titleMedium),
+            Text(
+              context.loc.torSettingsConnectionStatus,
+              style: context.font.titleMedium,
+            ),
             const Gap(16),
             Row(
               children: [
@@ -96,17 +99,16 @@ class _StatusIndicator extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
       ),
       child: Center(
-        child:
-            status == TorStatus.connecting
-                ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(color),
-                  ),
-                )
-                : Icon(_getStatusIcon(status), color: color, size: 24),
+        child: status == TorStatus.connecting
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                ),
+              )
+            : Icon(_getStatusIcon(status), color: color, size: 24),
       ),
     );
   }

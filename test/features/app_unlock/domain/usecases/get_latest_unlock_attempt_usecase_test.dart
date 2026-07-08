@@ -26,8 +26,9 @@ void main() {
   });
 
   test('returns Ok with success=true when no prior failed attempts', () async {
-    when(() => attemptsRepository.getFailedUnlockAttempts())
-        .thenAnswer((_) async => const Ok(0));
+    when(
+      () => attemptsRepository.getFailedUnlockAttempts(),
+    ).thenAnswer((_) async => const Ok(0));
     when(() => timeoutCalculator.calculateTimeout(0)).thenReturn(0);
 
     final result = await usecase.execute();
@@ -39,20 +40,23 @@ void main() {
     expect(attempt.timeout, 0);
   });
 
-  test('returns Ok with correct attempts and timeout when prior failures exist',
-      () async {
-    when(() => attemptsRepository.getFailedUnlockAttempts())
-        .thenAnswer((_) async => const Ok(3));
-    when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(60);
+  test(
+    'returns Ok with correct attempts and timeout when prior failures exist',
+    () async {
+      when(
+        () => attemptsRepository.getFailedUnlockAttempts(),
+      ).thenAnswer((_) async => const Ok(3));
+      when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(60);
 
-    final result = await usecase.execute();
+      final result = await usecase.execute();
 
-    expect(result, isA<Ok>());
-    final attempt = (result as Ok).value;
-    expect(attempt.success, false);
-    expect(attempt.failedAttempts, 3);
-    expect(attempt.timeout, 60);
-  });
+      expect(result, isA<Ok>());
+      final attempt = (result as Ok).value;
+      expect(attempt.success, false);
+      expect(attempt.failedAttempts, 3);
+      expect(attempt.timeout, 60);
+    },
+  );
 
   test(
     'returns Err(AppUnlockUnexpectedFailure) when repository fails — no raw leak',

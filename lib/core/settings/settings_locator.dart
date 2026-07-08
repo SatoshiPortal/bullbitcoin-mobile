@@ -17,9 +17,8 @@ class SettingsLocator {
 
   static Future<void> registerRepositories(GetIt locator) async {
     locator.registerLazySingleton<SettingsRepository>(
-      () => SettingsRepository(
-        settingsDatasource: locator<SettingsDatasource>(),
-      ),
+      () =>
+          SettingsRepository(settingsDatasource: locator<SettingsDatasource>()),
     );
 
     // Register the interface for new code, resolving to the same instance

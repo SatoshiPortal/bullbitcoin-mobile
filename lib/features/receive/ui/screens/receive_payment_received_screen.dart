@@ -53,8 +53,10 @@ class PaymentReceivedPage extends StatelessWidget {
     final lnSwap = context.read<ReceiveBloc>().state.lightningSwap;
     final fees = lnSwap?.fees?.totalFees(amountSat) ?? 0;
     final finalAmount = (amountSat ?? 0) - fees;
-    final amountFiat =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+    final amountFiat = context
+        .read<ReceiveBloc>()
+        .state
+        .formattedConfirmedAmountFiat;
 
     return Center(
       child: Column(

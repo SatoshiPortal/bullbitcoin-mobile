@@ -43,8 +43,20 @@ void main() {
   late MockWalletRepository walletRepository;
   late ImportWalletUsecase usecase;
 
-  const words = ['abandon', 'abandon', 'abandon', 'abandon', 'abandon',
-    'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about'];
+  const words = [
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'about',
+  ];
 
   final fakeSeed = MnemonicSeed(
     mnemonicWords: words,
@@ -74,24 +86,31 @@ void main() {
   group('ImportWalletUsecase', () {
     test('returns Ok(wallet) on success', () async {
       final fakeWallet = MockWallet();
-      when(() => checkDuplicate.execute(
-        mnemonicWords: any(named: 'mnemonicWords'),
-        passphrase: any(named: 'passphrase'),
-      )).thenAnswer((_) async => const Ok(null));
-      when(() => settingsRepository.fetch())
-          .thenAnswer((_) async => fakeSettings);
-      when(() => seedRepository.createFromMnemonic(
-        mnemonicWords: any(named: 'mnemonicWords'),
-        passphrase: any(named: 'passphrase'),
-      )).thenAnswer((_) async => fakeSeed);
-      when(() => walletRepository.createWallet(
-        seed: any(named: 'seed'),
-        network: any(named: 'network'),
-        scriptType: any(named: 'scriptType'),
-        isDefault: any(named: 'isDefault'),
-        sync: any(named: 'sync'),
-        label: any(named: 'label'),
-      )).thenAnswer((_) async => fakeWallet);
+      when(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => fakeSettings);
+      when(
+        () => seedRepository.createFromMnemonic(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => fakeSeed);
+      when(
+        () => walletRepository.createWallet(
+          seed: any(named: 'seed'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          isDefault: any(named: 'isDefault'),
+          sync: any(named: 'sync'),
+          label: any(named: 'label'),
+        ),
+      ).thenAnswer((_) async => fakeWallet);
 
       final result = await usecase.execute(
         mnemonicWords: words,
@@ -105,12 +124,12 @@ void main() {
     test(
       'returns Err(ImportMnemonicDuplicateFailure) when duplicate — no raw leak',
       () async {
-        when(() => checkDuplicate.execute(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        )).thenAnswer(
-          (_) async => const Err(ImportMnemonicDuplicateFailure()),
-        );
+        when(
+          () => checkDuplicate.execute(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async => const Err(ImportMnemonicDuplicateFailure()));
 
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -118,10 +137,7 @@ void main() {
         );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ImportMnemonicDuplicateFailure>(),
-        );
+        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
         verifyNever(() => settingsRepository.fetch());
       },
     );
@@ -129,12 +145,15 @@ void main() {
     test(
       'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
       () async {
-        when(() => checkDuplicate.execute(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        )).thenAnswer((_) async => const Ok(null));
-        when(() => settingsRepository.fetch())
-            .thenThrow(Exception('settings unavailable'));
+        when(
+          () => checkDuplicate.execute(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => settingsRepository.fetch(),
+        ).thenThrow(Exception('settings unavailable'));
 
         final result = await usecase.execute(
           mnemonicWords: words,

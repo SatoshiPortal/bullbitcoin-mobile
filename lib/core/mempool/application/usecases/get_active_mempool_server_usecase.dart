@@ -8,9 +8,7 @@ import 'package:meta/meta.dart';
 class GetActiveMempoolServerUsecase {
   final MempoolServerRepository _serverRepository;
 
-  GetActiveMempoolServerUsecase({
-    required this._serverRepository,
-  });
+  GetActiveMempoolServerUsecase({required this._serverRepository});
 
   @useResult
   Future<Result<MempoolServer, MempoolFailure>> execute({

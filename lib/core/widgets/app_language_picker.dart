@@ -41,9 +41,7 @@ class AppLanguagePicker extends StatelessWidget {
               child: Text(
                 l.label,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: l == value
-                      ? FontWeight.w600
-                      : FontWeight.w400,
+                  fontWeight: l == value ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
             ),
@@ -66,7 +64,11 @@ class AppLanguagePicker extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.language, size: 18, color: theme.colorScheme.onSurface),
+              Icon(
+                Icons.language,
+                size: 18,
+                color: theme.colorScheme.onSurface,
+              ),
               SizedBox(width: iconGap),
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxLabelWidth),

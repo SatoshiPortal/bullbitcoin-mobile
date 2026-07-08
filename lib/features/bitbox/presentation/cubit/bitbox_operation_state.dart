@@ -31,9 +31,12 @@ sealed class BitBoxOperationState with _$BitBoxOperationState {
   bool get isScanning => status == BitBoxOperationStatus.scanning;
   bool get isConnecting => status == BitBoxOperationStatus.connecting;
   bool get isProcessing => status == BitBoxOperationStatus.processing;
-  bool get isShowingPairingCode => status == BitBoxOperationStatus.showingPairingCode;
-  bool get isWaitingForPassword => status == BitBoxOperationStatus.waitingForPassword;
-  bool get isShowingAddressVerification => status == BitBoxOperationStatus.showingAddressVerification;
+  bool get isShowingPairingCode =>
+      status == BitBoxOperationStatus.showingPairingCode;
+  bool get isWaitingForPassword =>
+      status == BitBoxOperationStatus.waitingForPassword;
+  bool get isShowingAddressVerification =>
+      status == BitBoxOperationStatus.showingAddressVerification;
   bool get isSuccess => status == BitBoxOperationStatus.success;
   bool get isError => status == BitBoxOperationStatus.error;
 }

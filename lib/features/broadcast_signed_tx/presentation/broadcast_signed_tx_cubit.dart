@@ -68,9 +68,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
     } catch (e, st) {
       log.warning('Failed to scan QR transaction', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -118,9 +116,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       emit(state.copyWith(pushTxUri: pushTx));
     } catch (e, st) {
       log.warning('Failed to scan NFC PushTx tag', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -132,9 +128,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       emit(state.copyWith(isBroadcasted: true));
     } catch (e, st) {
       log.warning('Failed to open PushTx URI', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -156,12 +150,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           ),
         );
       } catch (e, st) {
-        log.warning('Pasted input is not a valid PSBT or tx', error: e, trace: st);
-        emit(
-          state.copyWith(
-            failure: const InvalidTransactionFailure(),
-          ),
+        log.warning(
+          'Pasted input is not a valid PSBT or tx',
+          error: e,
+          trace: st,
         );
+        emit(state.copyWith(failure: const InvalidTransactionFailure()));
       }
     }
   }

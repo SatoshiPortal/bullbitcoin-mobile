@@ -20,9 +20,8 @@ import 'package:get_it/get_it.dart';
 class SettingsLocator {
   static void setup(GetIt locator) {
     locator.registerFactory<SwapRestoreCubit>(
-      () => SwapRestoreCubit(
-        restoreSwapsUsecase: locator<RestoreSwapsUsecase>(),
-      ),
+      () =>
+          SwapRestoreCubit(restoreSwapsUsecase: locator<RestoreSwapsUsecase>()),
     );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(

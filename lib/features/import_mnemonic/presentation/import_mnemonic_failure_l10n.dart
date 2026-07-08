@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 
 extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        ImportMnemonicDuplicateFailure() =>
-          context.loc.importMnemonicDuplicateError,
-        ImportMnemonicEmptyLabelFailure() =>
-          context.loc.importMnemonicEmptyLabelError,
-        ImportMnemonicNullMnemonicFailure() => context.loc.oopsSomethingWentWrong,
-        ImportMnemonicUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    ImportMnemonicDuplicateFailure() =>
+      context.loc.importMnemonicDuplicateError,
+    ImportMnemonicEmptyLabelFailure() =>
+      context.loc.importMnemonicEmptyLabelError,
+    ImportMnemonicNullMnemonicFailure() => context.loc.oopsSomethingWentWrong,
+    ImportMnemonicUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

@@ -17,21 +17,18 @@ void main() {
   });
 
   group('TrashLabelUsecase', () {
-    test(
-      'maps a repository failure to a sanitized LabelFailure '
-      'without leaking the raw exception',
-      () async {
-        when(() => repository.trash(any())).thenThrow(Exception('db locked'));
+    test('maps a repository failure to a sanitized LabelFailure '
+        'without leaking the raw exception', () async {
+      when(() => repository.trash(any())).thenThrow(Exception('db locked'));
 
-        final result = await usecase.execute(42);
+      final result = await usecase.execute(42);
 
-        expect(result, isA<Err<Null, LabelFailure>>());
-        expect(
-          (result as Err<Null, LabelFailure>).failure,
-          isA<LabelUnexpectedFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<Null, LabelFailure>>());
+      expect(
+        (result as Err<Null, LabelFailure>).failure,
+        isA<LabelUnexpectedFailure>(),
+      );
+    });
 
     test('returns Ok on success', () async {
       when(() => repository.trash(any())).thenAnswer((_) async {});

@@ -54,9 +54,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         watchOnlyDescriptor: wallet,
       );
     } else if (wallet is WatchOnlyXpubEntity) {
-      result = await _importWatchOnlyXpubUsecase.execute(
-        watchOnlyXpub: wallet,
-      );
+      result = await _importWatchOnlyXpubUsecase.execute(watchOnlyXpub: wallet);
     } else {
       return;
     }

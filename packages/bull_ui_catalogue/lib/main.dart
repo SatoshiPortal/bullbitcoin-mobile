@@ -34,8 +34,14 @@ class BullUiCatalogue extends StatelessWidget {
         // read via `context.bull`. This is exactly how the app wires bull_ui.
         MaterialThemeAddon(
           themes: [
-            WidgetbookTheme(name: 'Light', data: catalogueThemeData(Brightness.light)),
-            WidgetbookTheme(name: 'Dark', data: catalogueThemeData(Brightness.dark)),
+            WidgetbookTheme(
+              name: 'Light',
+              data: catalogueThemeData(Brightness.light),
+            ),
+            WidgetbookTheme(
+              name: 'Dark',
+              data: catalogueThemeData(Brightness.dark),
+            ),
           ],
           initialTheme: WidgetbookTheme(
             name: 'Light',

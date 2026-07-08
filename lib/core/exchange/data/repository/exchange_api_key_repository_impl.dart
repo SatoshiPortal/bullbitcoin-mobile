@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
 
-  ExchangeApiKeyRepositoryImpl({
-    required this._bullbitcoinApiKeyDatasource,
-  });
+  ExchangeApiKeyRepositoryImpl({required this._bullbitcoinApiKeyDatasource});
 
   @override
   Future<void> saveApiKey(

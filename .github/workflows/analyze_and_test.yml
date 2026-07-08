@@ -101,6 +101,21 @@ jobs:
           echo "$output"
           echo "$output" | grep -q "Nothing to fix!"
 
+      # Formatting gate. Scoped to git-tracked source via `git ls-files` — this
+      # excludes untracked generated code (*.g.dart, *.freezed.dart, gen_l10n),
+      # so `make build-runner` output can never trip this check. Tracked
+      # generated files are filtered too, for the same reason: by suffix
+      # (.g/.freezed/.gr/.config/.mocks/.steps) and by /generated/ path segment
+      # (drift schema snapshots under test/migrations_test). `dart format` does
+      # not read analysis_options.yaml `exclude:`, so the filter lives here.
+      # Keep this regex in sync with the same filter in .git_hooks/pre-commit.
+      # Explicit `shell: bash` enables pipefail (the implicit default is only
+      # `bash -e`, no pipefail): if `git ls-files` or `grep` errored, `xargs -r`
+      # would no-op and exit 0, silently passing the gate. pipefail closes that.
+      - name: dart format should have nothing to change
+        shell: bash
+        run: git ls-files '*.dart' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' | xargs -r fvm dart format --output=none --set-exit-if-changed
+
       - name: Unit tests must pass
         run: make unit-test
 

@@ -163,10 +163,18 @@ void main() {
     test('is deterministic across repeated calls', () {
       final utxos = [
         for (var i = 0; i < 20; i++)
-          walletUtxoFixture(confirmations: 1, sats: 1000, txId: 'tx$i', vout: 0),
+          walletUtxoFixture(
+            confirmations: 1,
+            sats: 1000,
+            txId: 'tx$i',
+            vout: 0,
+          ),
       ];
       final first = sortAndFilterUtxos(utxos, const CoinsFilter());
-      final second = sortAndFilterUtxos(utxos.reversed.toList(), const CoinsFilter());
+      final second = sortAndFilterUtxos(
+        utxos.reversed.toList(),
+        const CoinsFilter(),
+      );
       expect(first.map((u) => u.txId), second.map((u) => u.txId));
     });
 
@@ -183,8 +191,14 @@ void main() {
 
   group('CoinsFilter value object', () {
     test('hasActiveFilter ignores sort', () {
-      expect(const CoinsFilter(sort: CoinsSort.amountAsc).hasActiveFilter, isFalse);
-      expect(const CoinsFilter(frozen: FrozenFilter.frozen).hasActiveFilter, isTrue);
+      expect(
+        const CoinsFilter(sort: CoinsSort.amountAsc).hasActiveFilter,
+        isFalse,
+      );
+      expect(
+        const CoinsFilter(frozen: FrozenFilter.frozen).hasActiveFilter,
+        isTrue,
+      );
     });
 
     test('activeFilterCount counts facets', () {

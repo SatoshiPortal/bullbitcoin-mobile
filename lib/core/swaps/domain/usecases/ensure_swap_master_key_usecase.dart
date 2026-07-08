@@ -42,7 +42,9 @@ class EnsureSwapMasterKeyUsecase {
     // Bind the key for reads and skip the wallet-seed decryption entirely when
     // it already exists (the common warm-launch case). Only a genuine first
     // derive reads the mnemonic.
-    if (await _swapRepository.swapMasterKeyReady(walletFingerprint: fingerprint)) {
+    if (await _swapRepository.swapMasterKeyReady(
+      walletFingerprint: fingerprint,
+    )) {
       return;
     }
 

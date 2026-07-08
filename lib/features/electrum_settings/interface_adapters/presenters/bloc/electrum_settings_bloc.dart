@@ -186,7 +186,10 @@ class ElectrumSettingsBloc
 
     final reorderedServers = List<ElectrumServerViewModel>.from(currentServers);
     if (oldIndex < newIndex) {
-      reorderedServers.insert(newIndex - 1, reorderedServers.removeAt(oldIndex));
+      reorderedServers.insert(
+        newIndex - 1,
+        reorderedServers.removeAt(oldIndex),
+      );
     } else {
       reorderedServers.insert(newIndex, reorderedServers.removeAt(oldIndex));
     }
@@ -375,8 +378,9 @@ class ElectrumSettingsBloc
           ElectrumServersAlreadyExistsFailure(failure.logMessage),
         core.ElectrumServerUnreachableFailure() =>
           ElectrumServersUnreachableFailure(failure.logMessage),
-        core.ElectrumUnexpectedFailure() =>
-          ElectrumServersUnexpectedFailure(failure.logMessage),
+        core.ElectrumUnexpectedFailure() => ElectrumServersUnexpectedFailure(
+          failure.logMessage,
+        ),
         // Any other add-flow failure shares the "failed to add" message; the
         // precise core variant is preserved in logs.
         _ => ElectrumServersAddFailure(failure.logMessage),
@@ -400,8 +404,9 @@ class ElectrumSettingsBloc
             value.toString(),
             failure.logMessage,
           ),
-        core.ElectrumSaveFailure() =>
-          AdvancedOptionsSaveFailure(failure.logMessage),
+        core.ElectrumSaveFailure() => AdvancedOptionsSaveFailure(
+          failure.logMessage,
+        ),
         // Load failure (fetch before save) + anything else → generic message.
         _ => AdvancedOptionsUnexpectedFailure(failure.logMessage),
       };

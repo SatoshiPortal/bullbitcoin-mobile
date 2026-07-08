@@ -21,10 +21,9 @@ class SwapFeesRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final estimatedFees =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(estimatedFeesSat)
-            : FormatAmount.btc(ConvertAmount.satsToBtc(estimatedFeesSat));
+    final estimatedFees = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(estimatedFeesSat)
+        : FormatAmount.btc(ConvertAmount.satsToBtc(estimatedFeesSat));
 
     return Row(
       children: [

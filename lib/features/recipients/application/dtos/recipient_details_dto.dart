@@ -330,7 +330,8 @@ class RecipientDetailsDto {
       case RecipientType.sepaEur:
         if (iban == null) throw StateError('iban is required for SEPA_EUR.');
         final inferredIsCorporate =
-            isCorporate ?? (corporateName != null && corporateName!.trim().isNotEmpty);
+            isCorporate ??
+            (corporateName != null && corporateName!.trim().isNotEmpty);
         return SepaEurDetails.create(
           label: label,
           isDefault: def,

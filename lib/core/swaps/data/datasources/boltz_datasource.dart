@@ -1558,7 +1558,9 @@ class BoltzDatasource {
               ? receiveWalletId
               : null,
           boltzFees:
-              (chainFees.lbtcToBtcFees.percentage * swap.outAmount.toInt() / 100)
+              (chainFees.lbtcToBtcFees.percentage *
+                          swap.outAmount.toInt() /
+                          100)
                       .ceil()
                   as int?,
           lockupFees: chainFees.lbtcToBtcFees.userLockup.toInt() as int?,
@@ -1585,7 +1587,9 @@ class BoltzDatasource {
               ? receiveWalletId
               : null,
           boltzFees:
-              (chainFees.btcToLbtcFees.percentage * swap.outAmount.toInt() / 100)
+              (chainFees.btcToLbtcFees.percentage *
+                          swap.outAmount.toInt() /
+                          100)
                       .ceil()
                   as int?,
           lockupFees: chainFees.btcToLbtcFees.userLockup.toInt() as int?,

@@ -68,9 +68,9 @@ class BuildReviewableTransactionUsecase {
   }
 
   TransactionReviewFailure _mapPortError(TransactionPortError e) => switch (e) {
-        TransactionPortFetchFailed(:final txid, :final message) =>
-          TransactionReviewFetchFailure(txid: txid, logMessage: message),
-        TransactionPortNoServersAvailable(:final network) =>
-          TransactionReviewNoServersFailure(network: network),
-      };
+    TransactionPortFetchFailed(:final txid, :final message) =>
+      TransactionReviewFetchFailure(txid: txid, logMessage: message),
+    TransactionPortNoServersAvailable(:final network) =>
+      TransactionReviewNoServersFailure(network: network),
+  };
 }

@@ -12,7 +12,11 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 // Colours — the BullTheme palette (mirrors AppColors), light/dark via the addon
 // ---------------------------------------------------------------------------
 
-@widgetbook.UseCase(name: 'Colours', type: FoundationColours, path: 'Foundation')
+@widgetbook.UseCase(
+  name: 'Colours',
+  type: FoundationColours,
+  path: 'Foundation',
+)
 m.Widget foundationColoursUseCase(m.BuildContext context) =>
     const FoundationColours();
 
@@ -160,7 +164,11 @@ class FoundationRadius extends m.StatelessWidget {
 // Spacing — BullSpacing scale
 // ---------------------------------------------------------------------------
 
-@widgetbook.UseCase(name: 'Spacing', type: FoundationSpacing, path: 'Foundation')
+@widgetbook.UseCase(
+  name: 'Spacing',
+  type: FoundationSpacing,
+  path: 'Foundation',
+)
 m.Widget foundationSpacingUseCase(m.BuildContext context) =>
     const FoundationSpacing();
 
@@ -192,8 +200,15 @@ class FoundationSpacing extends m.StatelessWidget {
               padding: const m.EdgeInsets.only(bottom: BullSpacing.sm),
               child: m.Row(
                 children: [
-                  m.SizedBox(width: 56, child: m.Text(name, style: t.labelMedium)),
-                  m.Container(width: s == 0 ? 1 : s, height: 16, color: b.primary),
+                  m.SizedBox(
+                    width: 56,
+                    child: m.Text(name, style: t.labelMedium),
+                  ),
+                  m.Container(
+                    width: s == 0 ? 1 : s,
+                    height: 16,
+                    color: b.primary,
+                  ),
                   const m.SizedBox(width: BullSpacing.sm),
                   m.Text(
                     '${s.toInt()}px',

@@ -44,10 +44,9 @@ abstract class LedgerDeviceModel with _$LedgerDeviceModel {
     return LedgerDeviceModel(
       id: device.id,
       name: device.name,
-      connectionType:
-          device.connectionType == ConnectionType.ble
-              ? LedgerConnectionType.ble
-              : LedgerConnectionType.usb,
+      connectionType: device.connectionType == ConnectionType.ble
+          ? LedgerConnectionType.ble
+          : LedgerConnectionType.usb,
       deviceType: device.deviceInfo,
     );
   }

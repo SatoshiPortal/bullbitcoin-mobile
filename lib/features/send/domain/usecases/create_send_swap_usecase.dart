@@ -59,15 +59,13 @@ class CreateSendSwapUsecase {
         );
       }
 
-      final btcElectrumUrl =
-          wallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.publicElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl =
-          wallet.network.isTestnet
-              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.bitcoinToLightning:

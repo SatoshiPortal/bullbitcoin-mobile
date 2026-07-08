@@ -27,10 +27,7 @@ class RestoreSwapsUsecase {
 
       final result = [
         for (final swap in restored)
-          RestorableSwap(
-            swap: swap,
-            existsLocally: localIds.contains(swap.id),
-          ),
+          RestorableSwap(swap: swap, existsLocally: localIds.contains(swap.id)),
       ];
       final missing = result.where((r) => !r.existsLocally).length;
       log.info(

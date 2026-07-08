@@ -9,7 +9,8 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../wallet_utxo_fixture.dart';
 
-class _MockGetWalletUtxosUsecase extends Mock implements GetWalletUtxosUsecase {}
+class _MockGetWalletUtxosUsecase extends Mock
+    implements GetWalletUtxosUsecase {}
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
@@ -25,8 +26,9 @@ void main() {
 
     test('returns the utxos from the core usecase', () async {
       final utxos = [walletUtxoFixture()];
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => utxos);
+      when(
+        () => core.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => utxos);
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -34,8 +36,9 @@ void main() {
     });
 
     test('maps GetUtxosUsecaseException to CoinsError.loadFailed', () async {
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenThrow(GetUtxosUsecaseException('boom'));
+      when(
+        () => core.execute(walletId: any(named: 'walletId')),
+      ).thenThrow(GetUtxosUsecaseException('boom'));
 
       expect(
         () => usecase.execute(walletId: 'w1'),
@@ -44,8 +47,9 @@ void main() {
     });
 
     test('maps any other error to CoinsError.unexpected', () async {
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenThrow(Exception('weird'));
+      when(
+        () => core.execute(walletId: any(named: 'walletId')),
+      ).thenThrow(Exception('weird'));
 
       expect(
         () => usecase.execute(walletId: 'w1'),
@@ -74,7 +78,8 @@ void main() {
       await usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]);
 
       verify(
-        () => repo.freezeUtxos(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        () =>
+            repo.freezeUtxos(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
       ).called(1);
     });
 
@@ -87,7 +92,8 @@ void main() {
       ).thenThrow(Exception('db down'));
 
       expect(
-        () => usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        () =>
+            usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
         throwsA(isA<FreezeFailedCoinsError>()),
       );
     });
@@ -113,7 +119,10 @@ void main() {
       await usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]);
 
       verify(
-        () => repo.unfreezeUtxos(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        () => repo.unfreezeUtxos(
+          walletId: 'w1',
+          outpoints: [(txId: 'a', vout: 0)],
+        ),
       ).called(1);
     });
 
@@ -126,7 +135,8 @@ void main() {
       ).thenThrow(Exception('db down'));
 
       expect(
-        () => usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        () =>
+            usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
         throwsA(isA<UnfreezeFailedCoinsError>()),
       );
     });

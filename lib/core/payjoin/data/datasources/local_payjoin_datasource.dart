@@ -28,10 +28,9 @@ class LocalPayjoinDatasource {
   }
 
   Future<PayjoinReceiverModel?> fetchReceiver(String id) async {
-    final receiver =
-        await _db.managers.payjoinReceivers
-            .filter((f) => f.id(id))
-            .getSingleOrNull();
+    final receiver = await _db.managers.payjoinReceivers
+        .filter((f) => f.id(id))
+        .getSingleOrNull();
 
     if (receiver == null) return null;
 
@@ -39,10 +38,9 @@ class LocalPayjoinDatasource {
   }
 
   Future<PayjoinSenderModel?> fetchSender(String uri) async {
-    final sender =
-        await _db.managers.payjoinSenders
-            .filter((f) => f.uri(uri))
-            .getSingleOrNull();
+    final sender = await _db.managers.payjoinSenders
+        .filter((f) => f.uri(uri))
+        .getSingleOrNull();
 
     if (sender == null) return null;
 
@@ -94,8 +92,10 @@ class LocalPayjoinDatasource {
       return expr;
     });
 
-    final (receivers, senders) =
-        await (receiverFilter.get(), senderFilter.get()).wait;
+    final (receivers, senders) = await (
+      receiverFilter.get(),
+      senderFilter.get(),
+    ).wait;
 
     return [
       ...receivers.map(PayjoinModel.fromReceiverTable),
@@ -104,11 +104,10 @@ class LocalPayjoinDatasource {
   }
 
   Future<List<PayjoinModel>> fetchByTxId(String txId) async {
-    final (receivers, senders) =
-        await (
-          _db.managers.payjoinReceivers.filter((f) => f.txId(txId)).get(),
-          _db.managers.payjoinSenders.filter((f) => f.txId(txId)).get(),
-        ).wait;
+    final (receivers, senders) = await (
+      _db.managers.payjoinReceivers.filter((f) => f.txId(txId)).get(),
+      _db.managers.payjoinSenders.filter((f) => f.txId(txId)).get(),
+    ).wait;
 
     return [
       ...receivers.map((receiver) => PayjoinModel.fromReceiverTable(receiver)),
@@ -122,11 +121,10 @@ class LocalPayjoinDatasource {
     final receiversTable = _db.managers.payjoinReceivers;
     List<PayjoinReceiverRow> receivers;
     if (onlyOngoing) {
-      receivers =
-          await receiversTable
-              .filter((f) => f.isExpired(false))
-              .filter((f) => f.isCompleted(false))
-              .get();
+      receivers = await receiversTable
+          .filter((f) => f.isExpired(false))
+          .filter((f) => f.isCompleted(false))
+          .get();
     } else {
       receivers = await receiversTable.get();
     }
@@ -146,11 +144,10 @@ class LocalPayjoinDatasource {
     List<PayjoinSenderRow> senders;
 
     if (onlyOngoing) {
-      senders =
-          await sendersTable
-              .filter((f) => f.isExpired(false))
-              .filter((f) => f.isCompleted(false))
-              .get();
+      senders = await sendersTable
+          .filter((f) => f.isExpired(false))
+          .filter((f) => f.isCompleted(false))
+          .get();
     } else {
       senders = await sendersTable.get();
     }

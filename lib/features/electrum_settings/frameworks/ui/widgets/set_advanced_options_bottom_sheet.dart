@@ -80,7 +80,6 @@ class _SetAdvancedOptionsBottomSheetState
     }
   }
 
-
   int _getRecommendedTimeoutSeconds({
     required int stopGap,
     int retries = 1,

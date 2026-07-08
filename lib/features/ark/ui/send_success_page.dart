@@ -24,7 +24,11 @@ class SendSuccessPage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 24),
-            Icon(Icons.check_circle, color: context.appColors.success, size: 72),
+            Icon(
+              Icons.check_circle,
+              color: context.appColors.success,
+              size: 72,
+            ),
             const SizedBox(height: 24),
             Text(context.loc.arkSendSuccessMessage),
           ],

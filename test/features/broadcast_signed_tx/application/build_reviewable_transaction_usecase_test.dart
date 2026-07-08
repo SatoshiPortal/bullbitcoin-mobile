@@ -35,50 +35,50 @@ void main() {
   }
 
   group('BuildReviewableTransactionUsecase', () {
-    test(
-      'maps a TransactionPort fetch failure to a sanitized review failure '
-      'without leaking the raw reason',
-      () async {
-        final tx = txSpending('parenttxid', 0);
-        when(() => port.fetch(txid: any(named: 'txid'))).thenThrow(
-          const TransactionPortError.fetchFailed(
-            txid: 'parenttxid',
-            message: 'electrum: connection reset by 1.2.3.4',
-          ),
-        );
-
-        final result = await usecase.execute(tx);
-
-        expect(
-          result,
-          isA<Err<ReviewableTransaction, TransactionReviewFailure>>(),
-        );
-        final failure =
-            (result as Err<ReviewableTransaction, TransactionReviewFailure>)
-                .failure;
-        expect(failure, isA<TransactionReviewFetchFailure>());
-        expect((failure as TransactionReviewFetchFailure).txid, 'parenttxid');
-        // The raw electrum reason is logged-only, never surfaced as the txid.
-        expect(failure.txid, isNot(contains('electrum')));
-      },
-    );
-
-    test('returns an input-resolution failure when the vout is out of range', () async {
-      final tx = txSpending('parenttxid', 5);
-      final parentTx = _MockTransaction();
-      when(() => parentTx.outputs).thenReturn(const []);
-      when(
-        () => port.fetch(txid: any(named: 'txid')),
-      ).thenAnswer((_) async => parentTx);
+    test('maps a TransactionPort fetch failure to a sanitized review failure '
+        'without leaking the raw reason', () async {
+      final tx = txSpending('parenttxid', 0);
+      when(() => port.fetch(txid: any(named: 'txid'))).thenThrow(
+        const TransactionPortError.fetchFailed(
+          txid: 'parenttxid',
+          message: 'electrum: connection reset by 1.2.3.4',
+        ),
+      );
 
       final result = await usecase.execute(tx);
 
       expect(
-        (result as Err<ReviewableTransaction, TransactionReviewFailure>)
-            .failure,
-        isA<TransactionReviewInputResolutionFailure>(),
+        result,
+        isA<Err<ReviewableTransaction, TransactionReviewFailure>>(),
       );
+      final failure =
+          (result as Err<ReviewableTransaction, TransactionReviewFailure>)
+              .failure;
+      expect(failure, isA<TransactionReviewFetchFailure>());
+      expect((failure as TransactionReviewFetchFailure).txid, 'parenttxid');
+      // The raw electrum reason is logged-only, never surfaced as the txid.
+      expect(failure.txid, isNot(contains('electrum')));
     });
+
+    test(
+      'returns an input-resolution failure when the vout is out of range',
+      () async {
+        final tx = txSpending('parenttxid', 5);
+        final parentTx = _MockTransaction();
+        when(() => parentTx.outputs).thenReturn(const []);
+        when(
+          () => port.fetch(txid: any(named: 'txid')),
+        ).thenAnswer((_) async => parentTx);
+
+        final result = await usecase.execute(tx);
+
+        expect(
+          (result as Err<ReviewableTransaction, TransactionReviewFailure>)
+              .failure,
+          isA<TransactionReviewInputResolutionFailure>(),
+        );
+      },
+    );
 
     test('resolves the input value and returns Ok on success', () async {
       final tx = txSpending('parenttxid', 0);

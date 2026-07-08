@@ -12,7 +12,8 @@ import 'package:drift/drift.dart';
 class FrozenWalletUtxoDatasource {
   final SqliteDatabase _db;
 
-  FrozenWalletUtxoDatasource({required SqliteDatabase db}) : _db = db; // ignore: prefer_initializing_formals
+  FrozenWalletUtxoDatasource({required SqliteDatabase db})
+    : _db = db; // ignore: prefer_initializing_formals
   // Named `db` (not `_db`) so callers read `db:`; the field stays private.
 
   /// Upserts a freeze row per outpoint, attributed to [walletId] (the wallet
@@ -63,12 +64,10 @@ class FrozenWalletUtxoDatasource {
   }
 
   /// Returns the frozen outpoints attributed to a wallet.
-  Future<List<Outpoint>> getFrozenOutpoints({
-    required String walletId,
-  }) async {
-    final rows = await (_db.select(_db.frozenUtxos)
-          ..where((row) => row.walletId.equals(walletId)))
-        .get();
+  Future<List<Outpoint>> getFrozenOutpoints({required String walletId}) async {
+    final rows = await (_db.select(
+      _db.frozenUtxos,
+    )..where((row) => row.walletId.equals(walletId))).get();
     return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
   }
 
@@ -80,9 +79,7 @@ class FrozenWalletUtxoDatasource {
   getAllFrozen() async {
     final rows = await _db.select(_db.frozenUtxos).get();
     return rows
-        .map(
-          (row) => (walletId: row.walletId, txId: row.txId, vout: row.vout),
-        )
+        .map((row) => (walletId: row.walletId, txId: row.txId, vout: row.vout))
         .toList();
   }
 }

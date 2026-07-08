@@ -36,22 +36,17 @@ class WalletDetailBalanceCard extends StatelessWidget {
                 : Assets.backgrounds.bgSecureWallet.path,
           ),
           fit: .cover,
-          colorFilter:
-              signer == SignerEntity.none
-                  ? ColorFilter.mode(
-                    context.theme.secondaryHeaderColor,
-                    .color,
-                  )
-                  : null,
+          colorFilter: signer == SignerEntity.none
+              ? ColorFilter.mode(context.theme.secondaryHeaderColor, .color)
+              : null,
         ),
         border: Border(
           bottom: BorderSide(
-            color:
-                isLiquid && signer == SignerEntity.local
-                    ? context.appColors.tertiary
-                    : !isLiquid && signer == SignerEntity.local
-                    ? context.appColors.onTertiary
-                    : context.appColors.secondary,
+            color: isLiquid && signer == SignerEntity.local
+                ? context.appColors.tertiary
+                : !isLiquid && signer == SignerEntity.local
+                ? context.appColors.onTertiary
+                : context.appColors.secondary,
             width: 9,
           ),
         ),

@@ -186,9 +186,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const Gap(96.0),
-          Center(
-            child: Text(message, style: context.font.bodyLarge),
-          ),
+          Center(child: Text(message, style: context.font.bodyLarge)),
         ],
       );
     }

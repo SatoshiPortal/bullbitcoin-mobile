@@ -49,8 +49,9 @@ class LabelsFacade {
     // Best-effort enrichment: a lookup failure is already logged at the
     // use-case boundary, so degrade to no labels rather than abort the caller.
     return result.fold(
-      (labels) =>
-          labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
+      (labels) => labels
+          .map((label) => LabelMapper.applicationLabelToLabel(label))
+          .toList(),
       (_) => const <Label>[],
     );
   }
@@ -58,8 +59,9 @@ class LabelsFacade {
   Future<List<Label>> fetchAll() async {
     final result = await _fetchAllLabelsUsecase.execute();
     return result.fold(
-      (labels) =>
-          labels.map((label) => LabelMapper.applicationLabelToLabel(label)).toList(),
+      (labels) => labels
+          .map((label) => LabelMapper.applicationLabelToLabel(label))
+          .toList(),
       (_) => const <Label>[],
     );
   }

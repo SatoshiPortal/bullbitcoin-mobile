@@ -47,8 +47,10 @@ class PaymentInProgressPage extends StatelessWidget {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
     final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
-    final amountFiat =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+    final amountFiat = context
+        .read<ReceiveBloc>()
+        .state
+        .formattedConfirmedAmountFiat;
 
     final isBitcoin = context.select<ReceiveBloc, bool>(
       (bloc) => bloc.state.isBitcoin,
