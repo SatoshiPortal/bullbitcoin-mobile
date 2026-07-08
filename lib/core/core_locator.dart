@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
+import 'package:bb_mobile/core/utils/clock.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
@@ -21,6 +22,7 @@ import 'package:get_it/get_it.dart';
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
     locator.registerLazySingleton<SqliteDatabase>(() => database);
+    locator.registerLazySingleton<Clock>(() => const SystemClock());
   }
 
   static Future<void> registerDatasources(GetIt locator) async {

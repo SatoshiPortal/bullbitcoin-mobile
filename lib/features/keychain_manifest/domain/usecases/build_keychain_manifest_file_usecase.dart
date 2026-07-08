@@ -1,18 +1,23 @@
+import 'package:bb_mobile/core/utils/clock.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
 
 class BuildKeychainManifestFileUsecase {
   final KeychainManifestEntryRepository repository;
+  final Clock _clock;
 
-  const BuildKeychainManifestFileUsecase({required this.repository});
+  const BuildKeychainManifestFileUsecase({
+    required this.repository,
+    this._clock = const SystemClock(),
+  });
 
   Future<KeychainManifestFile> execute(
     String parentFingerprint, {
     DateTime? now,
   }) async {
     final generatedAt =
-        (now ?? DateTime.now().toUtc()).millisecondsSinceEpoch ~/ 1000;
+        (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
     final normalizedParentFingerprint = KeychainManifestFingerprint.normalize(
       parentFingerprint,
     );

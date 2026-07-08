@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/clock.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/drift_keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
@@ -18,11 +19,13 @@ class KeychainManifestLocator {
       () => RecordKeychainManifestEntryUsecase(
         repository: locator<KeychainManifestEntryRepository>(),
         bip85Registry: locator<Bip85RegistryFacade>(),
+        clock: locator<Clock>(),
       ),
     );
     locator.registerFactory<BuildKeychainManifestFileUsecase>(
       () => BuildKeychainManifestFileUsecase(
         repository: locator<KeychainManifestEntryRepository>(),
+        clock: locator<Clock>(),
       ),
     );
     locator.registerFactory<KeychainManifestFacade>(

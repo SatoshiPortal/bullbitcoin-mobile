@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/clock.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
@@ -8,10 +9,12 @@ import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychai
 class RecordKeychainManifestEntryUsecase {
   final KeychainManifestEntryRepository _repository;
   final Bip85RegistryFacade _bip85Registry;
+  final Clock _clock;
 
   RecordKeychainManifestEntryUsecase({
     required this._repository,
     required this._bip85Registry,
+    this._clock = const SystemClock(),
   });
 
   Future<void> execute(
@@ -41,7 +44,7 @@ class RecordKeychainManifestEntryUsecase {
     }
 
     final timestamp =
-        (now ?? DateTime.now().toUtc()).millisecondsSinceEpoch ~/ 1000;
+        (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
     final entry = KeychainManifestEntry(
       parentFingerprint: request.parentFingerprint,
       bip85DerivationPath: reservation.scope.exactPath,
