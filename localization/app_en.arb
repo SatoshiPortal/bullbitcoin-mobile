@@ -12282,10 +12282,6 @@
   "@ledgerErrorMissingScriptType": {
     "description": "Error message when a Ledger operation is missing the script type"
   },
-  "ledgerErrorUnknownOccurred": "Unknown error occurred",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "ledgerErrorNoConnection": "No Ledger connection available",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -12306,25 +12302,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "Derivation path is required for signing",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Script type is required for signing",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "Address is required for verification",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "Derivation path is required for verification",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Script type is required for verification",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "Try Again",
   "@ledgerButtonTryAgain": {

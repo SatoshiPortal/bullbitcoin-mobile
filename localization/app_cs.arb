@@ -1156,10 +1156,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Neznámá chyba nastala",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "Zadejte adresu",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6868,10 +6864,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Derivační cesta je nutná pro přihlášení",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "Zálohování vaší peněženky",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -8041,17 +8033,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "Derivační cesta je nutná pro ověření",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault není nastaven",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Typ skriptu je nutné pro přihlášení",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "electrumFormatError": "Použijte hostitel:port formát (např.:50001)",
   "@electrumFormatError": {
@@ -10165,10 +10149,6 @@
   "fundExchangeLabelBankName": "Název banky",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Typ skriptu je nutné pro ověření",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "Anonymní zálohování se silným šifrováním pomocí cloudu.",
   "@backupWalletEncryptedVaultDescription": {

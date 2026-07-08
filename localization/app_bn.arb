@@ -874,10 +874,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "অজানা ত্রুটি ঘটেছে",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "গ্রহণের ঠিকানা",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6742,10 +6738,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "সাইন করার জন্য উৎপত্তি পথ প্রয়োজন।",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "আপনার ওয়ালেট ব্যাকআপ করুন",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7929,17 +7921,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "যাচাই করার জন্য উৎপত্তি পথ প্রয়োজন।",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "ভল্ট সেট করা হয়নি",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "সাইন করার জন্য স্ক্রিপ্ট ধরন প্রয়োজন।",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "চালিয়ে যান",
   "@dcaSetupContinue": {
@@ -10144,10 +10128,6 @@
   "fundExchangeLabelBankName": "ব্যাংকের নাম",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "যাচাই করার জন্য স্ক্রিপ্ট ধরন প্রয়োজন।",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "আপনার ক্লাউড ব্যবহার করে শক্ত এনক্রিপশনসহ গোপন ব্যাকআপ।",
   "@backupWalletEncryptedVaultDescription": {

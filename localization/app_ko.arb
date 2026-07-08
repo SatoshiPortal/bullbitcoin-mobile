@@ -878,10 +878,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Unknown 오류가 발생했습니다",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "자주 묻는 질문",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6921,10 +6917,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Derivation 경로는 서명을 위해 요구됩니다",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "지갑 백업",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -8146,17 +8138,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "Derivation 경로는 검증을 위해 필요합니다",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault는 설정되지 않습니다",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Script 타입은 signing에 필요합니다",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "계속하기",
   "@dcaSetupContinue": {
@@ -10403,10 +10387,6 @@
   "fundExchangeLabelBankName": "은행 이름",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Script 타입은 검증을 위해 필요합니다",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "클라우드를 사용하여 강력한 암호화를 가진 익명 백업.",
   "@backupWalletEncryptedVaultDescription": {

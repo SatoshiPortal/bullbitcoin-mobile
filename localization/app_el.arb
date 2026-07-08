@@ -774,10 +774,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "Το άγνωστο λάθος συνέβη",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "Λήψη διεύθυνση",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -5760,10 +5756,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "Απαιτούμενο μονοπάτι για την υπογραφή",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "Ανοίξτε το πορτοφόλι σας",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -6793,14 +6785,6 @@
   "addressCardIndexLabel": "Index: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "Απαιτούμενο μονοπάτι για επαλήθευση",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeSign": "Ο τύπος Script απαιτείται για την υπογραφή",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
   "@dcaSetupContinue": {
@@ -8551,10 +8535,6 @@
   "fundExchangeLabelBankName": "Bank name Bank",
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "Ο τύπος Script απαιτείται για επαλήθευση",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "backupWalletEncryptedVaultDescription": "Anonymous backup με ισχυρή κρυπτογράφηση χρησιμοποιώντας το σύννεφο σας.",
   "@backupWalletEncryptedVaultDescription": {

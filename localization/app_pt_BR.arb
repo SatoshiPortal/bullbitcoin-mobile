@@ -762,10 +762,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "ledgerErrorUnknownOccurred": "O erro desconhecido ocorreu",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "arkSessionDuration": "Duração da sessão",
   "@arkSessionDuration": {
     "description": "Label for session duration field"
@@ -6211,10 +6207,6 @@
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
   },
-  "ledgerErrorMissingDerivationPathSign": "O caminho de derivação é necessário para assinar",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "advancedOptionsTitle": "Opções avançadas",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
@@ -7189,10 +7181,6 @@
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
   },
-  "ledgerErrorMissingScriptTypeSign": "O tipo de script é necessário para assinar",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
@@ -7983,10 +7971,6 @@
   "withdrawRecipientsFilterAll": "Todos os tipos",
   "@withdrawRecipientsFilterAll": {
     "description": "Filter option for all recipient types"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "O caminho de derivação é necessário para verificação",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
   },
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
   "@electrumFormatError": {
@@ -10627,10 +10611,6 @@
   "rbfTitle": "Substituir por taxa",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "O tipo de script é necessário para verificação",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "exchangeAppSettingsPreferredLanguageLabel": "Língua preferencial",
   "@exchangeAppSettingsPreferredLanguageLabel": {
