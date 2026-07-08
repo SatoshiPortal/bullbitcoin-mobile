@@ -3521,6 +3521,7 @@
   "payAdvancedOptions": "A. 先进选择",
   "sendSigningTransaction": "签署交易......",
   "sellErrorFeesNotCalculated": "未计算的交易费。 请再次审判.",
+  "sellErrorSendPayment": "发送付款失败。请重试。",
   "dcaAddressLiquid": "流动资金",
   "buyVerificationInProgress": "正在进行的核查......",
   "transactionSwapDescChainPaid": "你的交易已经播放。 我们现在等待着锁定交易得到确认.",

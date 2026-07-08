@@ -8980,6 +8980,7 @@
     "description": "Description explaining user must complete KYC before proceeding"
   },
   "sellErrorFeesNotCalculated": "লেনদেনৰ মাচুল গণনা কৰা হোৱা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "sellErrorSendPayment": "পেমেণ্ট পঠাবলৈ ব্যৰ্থ হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

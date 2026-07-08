@@ -3915,6 +3915,7 @@
   "sellKycPendingTitle": "Vérification KYC en attente",
   "sellKycPendingDescription": "Vous devez d'abord compléter la vérification d'identité",
   "sellErrorFeesNotCalculated": "Frais de transaction non calculés. Veuillez réessayer.",
+  "sellErrorSendPayment": "Échec de l'envoi du paiement. Veuillez réessayer.",
   "sellLoadingGeneric": "Chargement...",
   "allSeedViewTitle": "Visualiseur de Graines",
   "allSeedViewLoadingMessage": "Cela peut prendre un certain temps à charger si vous avez beaucoup de graines sur cet appareil.",

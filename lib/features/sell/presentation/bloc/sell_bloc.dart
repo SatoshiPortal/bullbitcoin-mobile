@@ -443,7 +443,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       log.severe(message: 'send payment confirmation failed', error: e, trace: st);
       emit(
         sellPaymentState.copyWith(
-          error: SellPrepareTransactionFailure(e.toString()),
+          error: SellSendPaymentFailure(e.toString()),
           isConfirmingPayment: false,
         ),
       );

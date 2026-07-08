@@ -10673,6 +10673,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "거래 수수료는 계산되지 않습니다. 다시 시도하십시오.",
+  "sellErrorSendPayment": "결제를 보내지 못했습니다. 다시 시도해 주세요.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

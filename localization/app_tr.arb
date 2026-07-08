@@ -10594,6 +10594,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "İşlem ücretleri hesaplanmadı. Lütfen tekrar deneyin.",
+  "sellErrorSendPayment": "Ödeme gönderilemedi. Lütfen tekrar deneyin.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

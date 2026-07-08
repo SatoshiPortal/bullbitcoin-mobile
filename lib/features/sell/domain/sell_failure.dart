@@ -36,6 +36,10 @@ final class SellPrepareTransactionFailure extends SellFailure {
   const SellPrepareTransactionFailure([super.logMessage]);
 }
 
+final class SellSendPaymentFailure extends SellFailure {
+  const SellSendPaymentFailure([super.logMessage]);
+}
+
 final class SellLoadUtxosFailure extends SellFailure {
   const SellLoadUtxosFailure([super.logMessage]);
 }

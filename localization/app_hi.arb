@@ -10673,6 +10673,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "लेनदेन शुल्क की गणना नहीं की जाती है। फिर से प्रयास करें।।",
+  "sellErrorSendPayment": "भुगतान भेजने में विफल। कृपया पुनः प्रयास करें।",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

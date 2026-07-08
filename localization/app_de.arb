@@ -3462,6 +3462,7 @@
   "payAdvancedOptions": "Erweiterte Optionen",
   "sendSigningTransaction": "Transaktion wird signiert…",
   "sellErrorFeesNotCalculated": "Transaktionsgebühren konnten nicht berechnet werden. Bitte versuchen Sie es erneut.",
+  "sellErrorSendPayment": "Zahlung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
   "dcaAddressLiquid": "Liquid-Adresse",
   "buyVerificationInProgress": "Verifizierung läuft…",
   "transactionSwapDescChainPaid": "Ihre Transaktion wurde gesendet. Wir warten auf die Bestätigung der Sperrtransaktion",

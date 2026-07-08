@@ -9998,6 +9998,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "رسوم المعاملات غير محسوبة أرجوك حاول مرة أخرى.",
+  "sellErrorSendPayment": "فشل إرسال الدفعة. يرجى المحاولة مرة أخرى.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

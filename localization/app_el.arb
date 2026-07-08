@@ -8753,6 +8753,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "Τα τέλη συναλλαγών δεν υπολογίζονται. Παρακαλώ δοκιμάστε ξανά.",
+  "sellErrorSendPayment": "Αποτυχία αποστολής της πληρωμής. Παρακαλώ δοκιμάστε ξανά.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

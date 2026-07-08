@@ -9024,6 +9024,7 @@
     "description": "Jade instruction step 2"
   },
   "sellErrorFeesNotCalculated": "Taxas de transação não calculadas. Por favor, tente novamente.",
+  "sellErrorSendPayment": "Falha ao enviar o pagamento. Por favor, tente novamente.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

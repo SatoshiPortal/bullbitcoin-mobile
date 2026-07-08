@@ -10665,6 +10665,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "ค่าธรรมเนียมการทําธุรกรรมไม่คํานวณ กรุณาลองอีกครั้ง.",
+  "sellErrorSendPayment": "ส่งการชำระเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

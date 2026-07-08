@@ -782,6 +782,7 @@
     "description": "Description explaining user must complete KYC before proceeding"
   },
   "sellErrorFeesNotCalculated": "هزینه های معاملات محاسبه نمی شود. لطفا دوباره امتحان کنید.",
+  "sellErrorSendPayment": "ارسال پرداخت انجام نشد. لطفاً دوباره تلاش کنید.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

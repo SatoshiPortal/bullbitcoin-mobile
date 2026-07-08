@@ -3654,6 +3654,7 @@
   "psbtFlowAddPassphrase": "Якщо у вас є одна (необов'язково)",
   "sendSigningTransaction": "Реєстрація.",
   "sellErrorFeesNotCalculated": "Комісія не розраховується. Будь ласка, спробуйте знову.",
+  "sellErrorSendPayment": "Не вдалося надіслати платіж. Будь ласка, спробуйте ще раз.",
   "dcaAddressLiquid": "Контакти",
   "buyVerificationInProgress": "Перевірка в прогресі ...",
   "mempoolSettingsUseForFeeEstimation": "Використання для оцінки Fee",

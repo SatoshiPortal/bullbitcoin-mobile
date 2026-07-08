@@ -10415,6 +10415,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "Transakční poplatky nejsou vypočítány. Prosím, zkuste to znovu.",
+  "sellErrorSendPayment": "Odeslání platby se nezdařilo. Zkuste to prosím znovu.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

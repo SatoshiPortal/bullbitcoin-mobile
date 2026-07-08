@@ -16,6 +16,7 @@ extension SellFailureL10n on SellFailure {
           ),
         SellPrepareTransactionFailure() =>
           context.loc.sellErrorFeesNotCalculated,
+        SellSendPaymentFailure() => context.loc.sellErrorSendPayment,
         SellLoadUtxosFailure() => context.loc.sellErrorLoadUtxos,
         SellUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
       };

@@ -3521,6 +3521,7 @@
   "payAdvancedOptions": "Opzioni avanzate",
   "sendSigningTransaction": "La transazione di firma...",
   "sellErrorFeesNotCalculated": "Tasse di transazione non calcolate. Per favore riprovate.",
+  "sellErrorSendPayment": "Invio del pagamento non riuscito. Riprova.",
   "dcaAddressLiquid": "Indirizzo liquido",
   "buyVerificationInProgress": "Verifica in corso...",
   "transactionSwapDescChainPaid": "La tua transazione e' stata trasmessa. Stiamo aspettando che la transazione di blocco venga confermata.",

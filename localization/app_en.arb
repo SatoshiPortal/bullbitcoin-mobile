@@ -12652,6 +12652,10 @@
   "@sellErrorFeesNotCalculated": {
     "description": "Error shown when transaction fee estimation or payment preparation fails"
   },
+  "sellErrorSendPayment": "Failed to send the payment. Please try again.",
+  "@sellErrorSendPayment": {
+    "description": "Error shown when signing or broadcasting the sell payment fails"
+  },
   "sellErrorLoadUtxos": "Failed to load coins. Please try again.",
   "@sellErrorLoadUtxos": {
     "description": "Error shown when loading wallet UTXOs fails"

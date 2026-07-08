@@ -10889,5 +10889,6 @@
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "sellErrorFeesNotCalculated": "Транзакционните такси не са изчислени. Моля, опитайте отново.",
+  "sellErrorSendPayment": "Плащането не бе изпратено. Моля, опитайте отново.",
   "sellErrorLoadUtxos": "Неуспешно зареждане на монети. Моля, опитайте отново."
 }

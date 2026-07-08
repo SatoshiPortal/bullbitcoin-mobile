@@ -3863,6 +3863,7 @@
   "sellKycPendingTitle": "KYC-vahvistus kesken",
   "sellKycPendingDescription": "Sinun on ensin suoritettava henkilöllisyyden varmistus",
   "sellErrorFeesNotCalculated": "Transaktio kuluja ei laskettu. Yritä uudelleen.",
+  "sellErrorSendPayment": "Maksun lähettäminen epäonnistui. Yritä uudelleen.",
   "sellLoadingGeneric": "Ladataan...",
   "allSeedViewTitle": "Näytä siemenlauseet",
   "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",

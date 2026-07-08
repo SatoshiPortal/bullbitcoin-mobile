@@ -3497,6 +3497,7 @@
   "payAdvancedOptions": "Opções avançadas",
   "sendSigningTransaction": "Assinar transação...",
   "sellErrorFeesNotCalculated": "Taxas de transação não calculadas. Por favor, tente novamente.",
+  "sellErrorSendPayment": "Falha ao enviar o pagamento. Por favor, tente novamente.",
   "dcaAddressLiquid": "Endereço líquido",
   "buyVerificationInProgress": "Verificação em andamento...",
   "transactionSwapDescChainPaid": "A sua transação foi transmitida. Estamos agora à espera que a transação de bloqueio seja confirmada.",

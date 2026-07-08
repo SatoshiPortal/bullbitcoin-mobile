@@ -10414,6 +10414,7 @@
     "description": "Status while hardware wallet signs"
   },
   "sellErrorFeesNotCalculated": "লেনদেনের ফি নির্ধারণ করা হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "sellErrorSendPayment": "পেমেন্ট পাঠাতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },

@@ -3929,6 +3929,7 @@
   "sellKycPendingTitle": "Verificación KYC pendiente",
   "sellKycPendingDescription": "Debes completar la verificación de identidad primero",
   "sellErrorFeesNotCalculated": "Tarifas de transacción no calculadas. Por favor, inténtalo de nuevo.",
+  "sellErrorSendPayment": "No se pudo enviar el pago. Por favor intente de nuevo.",
   "sellLoadingGeneric": "Cargando...",
   "allSeedViewTitle": "Visualizador de Semillas",
   "allSeedViewLoadingMessage": "Esto puede tardar un tiempo en cargar si tiene muchas semillas en este dispositivo.",
