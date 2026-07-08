@@ -179,8 +179,13 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
         LedgerUnexpectedFailure('connection type not initialized'),
       );
     } catch (e, st) {
-      log.severe(message: 'Ledger operation failed', error: e, trace: st);
-      return Err(_interpretRawError(e));
+      final failure = _interpretRawError(e);
+      if (failure is LedgerUnexpectedFailure) {
+        log.severe(message: 'Ledger operation failed', error: e, trace: st);
+      } else {
+        log.warning('Ledger operation failed', error: e, trace: st);
+      }
+      return Err(failure);
     }
   }
 

@@ -51,62 +51,53 @@ void main() {
       final result = await repository.connectDevice(device);
 
       expect(result, isA<Err<Null, LedgerFailure>>());
-      expect(
-        (result as Err).failure,
-        isA<LedgerPermissionDeniedFailure>(),
-      );
+      expect((result as Err).failure, isA<LedgerPermissionDeniedFailure>());
     });
 
-    test(
-      'interprets a raw APDU 6985 device string as rejected-by-user, '
-      'keeping the raw reason for logs only',
-      () async {
-        when(
-          () => datasource.signPsbt(
-            any(),
-            psbt: any(named: 'psbt'),
-            derivationPath: any(named: 'derivationPath'),
-            scriptType: any(named: 'scriptType'),
-          ),
-        ).thenThrow(Exception('Ledger error: 0x6985 rejected'));
+    test('interprets a raw APDU 6985 device string as rejected-by-user, '
+        'keeping the raw reason for logs only', () async {
+      when(
+        () => datasource.signPsbt(
+          any(),
+          psbt: any(named: 'psbt'),
+          derivationPath: any(named: 'derivationPath'),
+          scriptType: any(named: 'scriptType'),
+        ),
+      ).thenThrow(Exception('Ledger error: 0x6985 rejected'));
 
-        final result = await repository.signPsbt(
-          device,
-          psbt: 'psbt',
-          derivationPath: "m/84'/0'/0'",
-          scriptType: ScriptType.bip84,
-        );
+      final result = await repository.signPsbt(
+        device,
+        psbt: 'psbt',
+        derivationPath: "m/84'/0'/0'",
+        scriptType: ScriptType.bip84,
+      );
 
-        final failure = (result as Err).failure;
-        expect(failure, isA<LedgerRejectedByUserFailure>());
-        // The raw reason is retained for logs/Sentry, never rendered by the UI.
-        expect(failure.logMessage, contains('6985'));
-      },
-    );
+      final failure = (result as Err).failure;
+      expect(failure, isA<LedgerRejectedByUserFailure>());
+      // The raw reason is retained for logs/Sentry, never rendered by the UI.
+      expect(failure.logMessage, contains('6985'));
+    });
 
-    test(
-      'maps an unrecognized raw exception to a sanitized unexpected failure '
-      'without leaking the message to the UI surface',
-      () async {
-        when(
-          () => datasource.signPsbt(
-            any(),
-            psbt: any(named: 'psbt'),
-            derivationPath: any(named: 'derivationPath'),
-            scriptType: any(named: 'scriptType'),
-          ),
-        ).thenThrow(Exception('bdk: internal descriptor parse blew up'));
+    test('maps an unrecognized raw exception to a sanitized unexpected failure '
+        'without leaking the message to the UI surface', () async {
+      when(
+        () => datasource.signPsbt(
+          any(),
+          psbt: any(named: 'psbt'),
+          derivationPath: any(named: 'derivationPath'),
+          scriptType: any(named: 'scriptType'),
+        ),
+      ).thenThrow(Exception('bdk: internal descriptor parse blew up'));
 
-        final result = await repository.signPsbt(
-          device,
-          psbt: 'psbt',
-          derivationPath: "m/84'/0'/0'",
-          scriptType: ScriptType.bip84,
-        );
+      final result = await repository.signPsbt(
+        device,
+        psbt: 'psbt',
+        derivationPath: "m/84'/0'/0'",
+        scriptType: ScriptType.bip84,
+      );
 
-        expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
-      },
-    );
+      expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
+    });
 
     test('returns Ok with the value on success', () async {
       when(
@@ -129,22 +120,19 @@ void main() {
       expect((result as Ok).value, 'deadbeef');
     });
 
-    test(
-      'getWatchOnlyWallet sanitizes a throwing foreign dependency '
-      '(settings fetch) into an unexpected failure',
-      () async {
-        when(
-          () => settingsRepository.fetch(),
-        ).thenThrow(Exception('STORAGE UNAVAILABLE'));
+    test('getWatchOnlyWallet sanitizes a throwing foreign dependency '
+        '(settings fetch) into an unexpected failure', () async {
+      when(
+        () => settingsRepository.fetch(),
+      ).thenThrow(Exception('STORAGE UNAVAILABLE'));
 
-        final result = await repository.getWatchOnlyWallet(
-          device,
-          label: 'Ledger',
-        );
+      final result = await repository.getWatchOnlyWallet(
+        device,
+        label: 'Ledger',
+      );
 
-        expect(result, isA<Err<WatchOnlyWalletEntity, LedgerFailure>>());
-        expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
-      },
-    );
+      expect(result, isA<Err<WatchOnlyWalletEntity, LedgerFailure>>());
+      expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
+    });
   });
 }
