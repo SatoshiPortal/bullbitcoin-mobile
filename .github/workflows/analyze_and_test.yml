@@ -101,6 +101,14 @@ jobs:
           echo "$output"
           echo "$output" | grep -q "Nothing to fix!"
 
+      # Formatting gate. Scoped to git-tracked source via `git ls-files` — this
+      # excludes untracked generated code (*.g.dart, *.freezed.dart, gen_l10n),
+      # so `make build-runner` output can never trip this check. Generated files
+      # that ARE tracked are filtered too, for the same reason. `dart format`
+      # does not read analysis_options.yaml `exclude:`, so the filter lives here.
+      - name: dart format should have nothing to change
+        run: git ls-files '*.dart' | grep -vE '\.(g|freezed|gr|config|mocks)\.dart$' | xargs -r fvm dart format --output=none --set-exit-if-changed
+
       - name: Unit tests must pass
         run: make unit-test
 
