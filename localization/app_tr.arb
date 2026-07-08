@@ -1788,7 +1788,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.",
+  "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum tutar {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2386,10 +2386,6 @@
   "exchangeDcaCancelDialogCancelButton": "Cancel",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "Bu satış siparişi zaten doğrulandı.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -5311,7 +5307,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "Seçilen cüzdanda bu satış siparişini tamamlamak için yeterli bir denge.",
+  "sellInsufficientBalanceError": "Bu satış emrini tamamlamak için seçilen cüzdanda yeterli bakiye yok. Gerekli: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -10297,7 +10293,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
+  "sellAboveMaxAmountError": "Bu cüzdanla satılabilecek maksimum tutar {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10503,10 +10499,6 @@
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin işlemi onaylandığında bir süre alacaktır.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "Satış siparişi bulunamadı. Lütfen tekrar deneyin.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
   "@fundExchangeOnlineBillPaymentTitle": {

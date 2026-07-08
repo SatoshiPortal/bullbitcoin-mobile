@@ -2684,7 +2684,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "شما در حال تلاش برای فروش زیر حداقل مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
+  "sellBelowMinAmountError": "حداقل مبلغی که می‌توان با این کیف پول فروخت {amount} است.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -3199,10 +3199,6 @@
   "arkUnifiedAddressCopied": "Unified Address",
   "@arkUnifiedAddressCopied": {
     "description": "SnackBar message when unified address is copied to clipboard"
-  },
-  "sellOrderAlreadyConfirmedError": "این سفارش فروش تاکنون تایید شده است.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -5664,7 +5660,7 @@
   "@bitboxErrorDeviceNotFound": {
     "description": "Error when BitBox device cannot be found"
   },
-  "sellInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش فروش.",
+  "sellInsufficientBalanceError": "موجودی کیف پول انتخاب‌شده برای تکمیل این سفارش فروش کافی نیست. مورد نیاز: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -9797,7 +9793,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "شما در حال تلاش برای فروش بیش از حداکثر مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
+  "sellAboveMaxAmountError": "حداکثر مبلغی که می‌توان با این کیف پول فروخت {amount} است.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -9971,10 +9967,6 @@
   "receiveBitcoinTransactionWillTakeTime": "معامله Bitcoin مدتی طول می کشد تا تایید شود.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "سفارش فروش پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "sellReceiveAmount": "شما دریافت خواهید کرد",
   "@sellReceiveAmount": {

@@ -1775,7 +1775,7 @@
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
   },
-  "sellBelowMinAmountError": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
+  "sellBelowMinAmountError": "O valor mínimo que pode ser vendido com esta carteira é {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2430,10 +2430,6 @@
   "logoutConfirmationLogout": "Logotipo",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "lastKnownEncryptedVault": "Última criptografia conhecida Vault: {date}",
   "@lastKnownEncryptedVault": {
@@ -5001,7 +4997,7 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "sellInsufficientBalanceError": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
+  "sellInsufficientBalanceError": "Saldo insuficiente na carteira selecionada para concluir esta ordem de venda. Necessário: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -8978,10 +8974,6 @@
   "@bitboxErrorNoDevicesFound": {
     "description": "Error when no BitBox devices are detected"
   },
-  "sellOrderNotFoundError": "A ordem de venda não foi encontrada. Por favor, tente novamente.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "swapValidationPositiveAmount": "Insira uma quantidade positiva",
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
@@ -10714,7 +10706,7 @@
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
   },
-  "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
+  "sellAboveMaxAmountError": "O valor máximo que pode ser vendido com esta carteira é {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },

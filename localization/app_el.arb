@@ -1540,7 +1540,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "Προσπαθείτε να πουλήσετε κάτω από το ελάχιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
+  "sellBelowMinAmountError": "Το ελάχιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι είναι {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2000,10 +2000,6 @@
   "exchangeDcaCancelDialogCancelButton": "Ακύρωση",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "Αυτή η σειρά πώλησης έχει ήδη επιβεβαιωθεί.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -4451,7 +4447,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πώλησης.",
+  "sellInsufficientBalanceError": "Ανεπαρκές υπόλοιπο στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της εντολής πώλησης. Απαιτείται: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -8516,7 +8512,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "Προσπαθείτε να πουλήσετε πάνω από το μέγιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
+  "sellAboveMaxAmountError": "Το μέγιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι είναι {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8670,10 +8666,6 @@
   "receiveBitcoinTransactionWillTakeTime": "Η συναλλαγή Bitcoin θα πάρει λίγο χρόνο για να επιβεβαιώσει.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "Η σειρά πώλησης δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "importQrDeviceSeedsignerStep7": "Στην κινητή σας συσκευή, πατήστε Open Camera",
   "@importQrDeviceSeedsignerStep7": {

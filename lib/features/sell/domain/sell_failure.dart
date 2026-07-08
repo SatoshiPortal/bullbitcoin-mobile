@@ -24,14 +24,6 @@ final class SellAboveMaxAmountFailure extends SellFailure {
   }) : super(logMessage);
 }
 
-final class SellOrderNotFoundFailure extends SellFailure {
-  const SellOrderNotFoundFailure();
-}
-
-final class SellOrderAlreadyConfirmedFailure extends SellFailure {
-  const SellOrderAlreadyConfirmedFailure();
-}
-
 final class SellInsufficientBalanceFailure extends SellFailure {
   final int requiredAmountSat;
   const SellInsufficientBalanceFailure({

@@ -1786,7 +1786,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বনিম্ন পরিমাণের কম বিক্রি করার চেষ্টা করছেন।",
+  "sellBelowMinAmountError": "এই ওয়ালেট দিয়ে বিক্রি করা যায় এমন সর্বনিম্ন পরিমাণ হল {amount}।",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2355,10 +2355,6 @@
   "exchangeDcaCancelDialogCancelButton": "বাতিল",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "এই বিক্রয় অর্ডারটি ইতিমধ্যে নিশ্চিত করা হয়েছে।",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE পাঠানো!",
   "@paySinpeEnviado": {
@@ -5193,7 +5189,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "এই বিক্রয় অর্ডার সম্পন্ন করতে নির্বাচিত ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই।",
+  "sellInsufficientBalanceError": "এই বিক্রয় অর্ডারটি সম্পূর্ণ করার জন্য নির্বাচিত ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই। প্রয়োজন: {amount}।",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -10117,7 +10113,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।",
+  "sellAboveMaxAmountError": "এই ওয়ালেট দিয়ে বিক্রি করা যায় এমন সর্বোচ্চ পরিমাণ হল {amount}।",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10323,10 +10319,6 @@
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin লেনদেন নিশ্চিত হতে কিছুটা সময় লাগবে।",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "বিক্রয় অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "fundExchangeOnlineBillPaymentTitle": "অনলাইন বিল পরিশোধ",
   "@fundExchangeOnlineBillPaymentTitle": {

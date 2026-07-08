@@ -1796,7 +1796,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.",
+  "sellBelowMinAmountError": "이 지갑으로 판매할 수 있는 최소 금액은 {amount}입니다.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2394,10 +2394,6 @@
   "exchangeDcaCancelDialogCancelButton": "이름 *",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "이 판매 순서는 이미 확인되었습니다.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE 엔비 아도!",
   "@paySinpeEnviado": {
@@ -5335,7 +5331,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 판매 주문을 완료합니다.",
+  "sellInsufficientBalanceError": "선택한 지갑의 잔액이 부족하여 이 판매 주문을 완료할 수 없습니다. 필요 금액: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -10376,7 +10372,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
+  "sellAboveMaxAmountError": "이 지갑으로 판매할 수 있는 최대 금액은 {amount}입니다.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10582,10 +10578,6 @@
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin 거래는 확인하는 동안 걸릴 것입니다.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "판매 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "fundExchangeOnlineBillPaymentTitle": "온라인 빌 지불",
   "@fundExchangeOnlineBillPaymentTitle": {

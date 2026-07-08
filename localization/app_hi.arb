@@ -1796,7 +1796,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।",
+  "sellBelowMinAmountError": "इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि {amount} है।",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2394,10 +2394,6 @@
   "exchangeDcaCancelDialogCancelButton": "रद्द करना",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "यह बिक्री ऑर्डर पहले ही पुष्टि हो चुका है।",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -5335,7 +5331,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चुने गए वॉलेट में अपर्याप्त शेष है।",
+  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चयनित वॉलेट में पर्याप्त बैलेंस नहीं है। आवश्यक: {amount}।",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -10376,7 +10372,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "आप इस वॉलेट से बेची जा सकने वाली अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।",
+  "sellAboveMaxAmountError": "इस वॉलेट से बेची जा सकने वाली अधिकतम राशि {amount} है।",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10582,10 +10578,6 @@
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin लेनदेन की पुष्टि में कुछ समय लगेगा।",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "बिक्री ऑर्डर नहीं मिला। कृपया पुनः प्रयास करें।",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "fundExchangeOnlineBillPaymentTitle": "ऑनलाइन बिल भुगतान",
   "@fundExchangeOnlineBillPaymentTitle": {

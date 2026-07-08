@@ -1770,29 +1770,21 @@
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "sellAboveMaxAmountError": "Aap maximum raashi se zyada bechne ki koshish kar rahe ho is wallet se.",
+  "sellAboveMaxAmountError": "Is wallet se bechi ja sakne wali maximum raashi {amount} hai.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
-  "sellBelowMinAmountError": "Aap minimum raashi se kam bechne ki koshish kar rahe ho is wallet se.",
+  "sellBelowMinAmountError": "Is wallet se bechi ja sakne wali minimum raashi {amount} hai.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
-  "sellInsufficientBalanceError": "Chunhe wallet mein itna balance nahi hai yeh sell order poora karne ke liye.",
+  "sellInsufficientBalanceError": "Is sell order ko poora karne ke liye chune gaye wallet mein paryapt balance nahi hai. Aavashyak: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
   "sellUnauthenticatedError": "Aap logged in nahi ho. Jaari rakhne ke liye login karo.",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
-  },
-  "sellOrderNotFoundError": "Sell order nahi mila. Dobara koshish karo.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellOrderAlreadyConfirmedError": "Yeh sell order pehle hi confirm ho chuka hai.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "sellSelectNetwork": "Network Chuniye",
   "@sellSelectNetwork": {

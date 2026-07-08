@@ -1682,7 +1682,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "أنت تحاول بيع أقل من المبلغ الأدنى الذي يمكن بيعه بهذه المحفظة.",
+  "sellBelowMinAmountError": "الحد الأدنى للمبلغ الذي يمكن بيعه بهذه المحفظة هو {amount}.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2254,10 +2254,6 @@
   "exchangeDcaCancelDialogCancelButton": "إلغاء",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "تم تأكيد أمر البيع هذا.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "سنبي إنفيدو!",
   "@paySinpeEnviado": {
@@ -5026,7 +5022,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "عدم كفاية التوازن في المحفظة المختارة لإكمال أمر البيع هذا.",
+  "sellInsufficientBalanceError": "الرصيد غير كافٍ في المحفظة المحددة لإتمام أمر البيع هذا. المطلوب: {amount}.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -9717,7 +9713,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "أنت تحاول بيع أعلى من المبلغ الأقصى الذي يمكن بيعه بهذه المحفظة.",
+  "sellAboveMaxAmountError": "الحد الأقصى للمبلغ الذي يمكن بيعه بهذه المحفظة هو {amount}.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -9911,10 +9907,6 @@
   "receiveBitcoinTransactionWillTakeTime": "ستستغرق صفقة (بيتكوين) بعض الوقت لتأكيدها.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "لم يتم العثور على أمر البيع أرجوك حاول مرة أخرى.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "importQrDeviceSeedsignerStep7": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
   "@importQrDeviceSeedsignerStep7": {

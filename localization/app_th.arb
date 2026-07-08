@@ -1796,7 +1796,7 @@
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.",
+  "sellBelowMinAmountError": "จำนวนเงินขั้นต่ำที่สามารถขายได้ด้วยกระเป๋าเงินนี้คือ {amount}",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -2394,10 +2394,6 @@
   "exchangeDcaCancelDialogCancelButton": "ยกเลิก",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
-  },
-  "sellOrderAlreadyConfirmedError": "การขายนี้ได้รับการยืนยัน.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -5335,7 +5331,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "สมดุลไม่เพียงพอในกระเป๋าเงินที่เลือกเสร็จสมบูรณ์.",
+  "sellInsufficientBalanceError": "ยอดคงเหลือในกระเป๋าเงินที่เลือกไม่เพียงพอที่จะทำรายการขายนี้ให้เสร็จสมบูรณ์ ต้องการ: {amount}",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -10368,7 +10364,7 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
+  "sellAboveMaxAmountError": "จำนวนเงินสูงสุดที่สามารถขายได้ด้วยกระเป๋าเงินนี้คือ {amount}",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -10574,10 +10570,6 @@
   "receiveBitcoinTransactionWillTakeTime": "การทําธุรกรรม Bitcoin จะใช้เวลาประมาณ.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "sellOrderNotFoundError": "ราคาขายไม่ได้ กรุณาลองอีกครั้ง.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "fundExchangeOnlineBillPaymentTitle": "ชําระเงินออนไลน์",
   "@fundExchangeOnlineBillPaymentTitle": {
