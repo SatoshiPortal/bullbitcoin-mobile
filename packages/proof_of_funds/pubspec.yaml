@@ -1,0 +1,19 @@
+name: proof_of_funds
+description: BIP-322 Proof of Funds — prove and verify control of a set of Bitcoin UTXOs. Pure Dart; BDK/Electrum are injected as ports.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+
+dependencies:
+  bip322:
+    git:
+      url: https://github.com/ethicnology/dart-bip322-proof-of-funds.git
+      ref: 2e00cd9624fd6a6783a33332d0e80088da59f864
+  hex: ^0.2.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3
