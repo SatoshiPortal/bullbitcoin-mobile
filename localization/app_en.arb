@@ -346,6 +346,10 @@
   "@settingsBitcoinSettingsTitle": {
     "description": "Title for the Bitcoin settings section in the settings menu"
   },
+  "settingsVerifyProofOfFundsTitle": "Verify Proof of Funds",
+  "@settingsVerifyProofOfFundsTitle": {
+    "description": "Title for the verify proof of funds entry in the settings menu"
+  },
   "settingsSecurityPinTitle": "Security Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
@@ -14786,6 +14790,10 @@
   "proofOfFundsProveResult": "Share this proof with the verifier:",
   "@proofOfFundsProveResult": {
     "description": "Label shown above the generated proof output"
+  },
+  "proofOfFundsTooLargeForQr": "This proof is too large for a QR code — copy it as text instead.",
+  "@proofOfFundsTooLargeForQr": {
+    "description": "Shown when a proof-of-funds signature exceeds single-QR capacity"
   },
   "proofOfFundsCopy": "Copy proof",
   "@proofOfFundsCopy": {

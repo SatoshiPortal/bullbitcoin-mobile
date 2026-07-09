@@ -121,6 +121,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.verified_user,
+                  title: context.loc.settingsVerifyProofOfFundsTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.verifyProofOfFunds.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.app_settings_alt,
                   title: context.loc.settingsAppSettingsTitle,
                   onTap: () {

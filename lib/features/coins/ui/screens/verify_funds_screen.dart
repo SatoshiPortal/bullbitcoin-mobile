@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/coins/presentation/proof_of_funds_cubit.dart';
-import 'package:bb_mobile/features/coins/presentation/proof_of_funds_state.dart';
+import 'package:bb_mobile/features/coins/presentation/verify_proof_of_funds_cubit.dart';
+import 'package:bb_mobile/features/coins/presentation/verify_proof_of_funds_state.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,14 +28,15 @@ class _VerifyFundsScreenState extends State<VerifyFundsScreen> {
     final loc = context.loc;
     final colors = context.appColors;
 
-    return BlocConsumer<ProofOfFundsCubit, ProofOfFundsState>(
+    return BlocConsumer<VerifyProofOfFundsCubit, VerifyProofOfFundsState>(
       listener: (context, state) {
-        if (state.status == ProofOfFundsStatus.error && state.error != null) {
+        if (state.status == VerifyProofOfFundsStatus.error &&
+            state.error != null) {
           BullSnackBar.show(
             context,
             message: state.error!.toTranslated(context),
           );
-          context.read<ProofOfFundsCubit>().clearError();
+          context.read<VerifyProofOfFundsCubit>().clearError();
         }
       },
       builder: (context, state) {
@@ -80,7 +81,7 @@ class _VerifyFundsScreenState extends State<VerifyFundsScreen> {
                               _proof.trim().isEmpty ||
                               state.isWorking,
                           onPressed: () =>
-                              context.read<ProofOfFundsCubit>().verify(
+                              context.read<VerifyProofOfFundsCubit>().verify(
                                 message: _message.trim(),
                                 challengeAddress: _address.trim(),
                                 signature: _proof.trim(),

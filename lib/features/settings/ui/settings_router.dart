@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
+import 'package:bb_mobile/features/coins/presentation/verify_proof_of_funds_cubit.dart';
+import 'package:bb_mobile/features/coins/ui/screens/verify_funds_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -81,6 +83,7 @@ enum SettingsRoute {
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
+  verifyProofOfFunds('verify-proof-of-funds'),
   appSettings('app-settings'),
   theme('theme'),
   autoswapSettings('autoswap-settings'),
@@ -184,6 +187,14 @@ class SettingsRouter {
         name: SettingsRoute.bitcoinSettings.name,
         path: SettingsRoute.bitcoinSettings.path,
         builder: (context, state) => const BitcoinSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.verifyProofOfFunds.name,
+        path: SettingsRoute.verifyProofOfFunds.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<VerifyProofOfFundsCubit>(),
+          child: const VerifyFundsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.swapRestore.name,

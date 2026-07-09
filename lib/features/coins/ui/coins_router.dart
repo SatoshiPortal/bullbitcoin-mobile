@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/proof_of_funds_cubit.dart';
 import 'package:bb_mobile/features/coins/ui/screens/coins_screen.dart';
 import 'package:bb_mobile/features/coins/ui/screens/prove_funds_screen.dart';
-import 'package:bb_mobile/features/coins/ui/screens/verify_funds_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +11,7 @@ import 'package:go_router/go_router.dart';
 
 enum CoinsRoute {
   coins('/coins'),
-  proveFunds('/coins/prove'),
-  verifyFunds('/coins/verify');
+  proveFunds('/coins/prove');
 
   const CoinsRoute(this.path);
 
@@ -64,19 +62,5 @@ class CoinsRouter {
     },
   );
 
-  static final verifyFundsRoute = GoRoute(
-    name: CoinsRoute.verifyFunds.name,
-    path: CoinsRoute.verifyFunds.path,
-    redirect: (context, state) =>
-        state.extra is! Wallet ? WalletRoute.walletHome.path : null,
-    builder: (context, state) {
-      final wallet = state.extra! as Wallet;
-      return BlocProvider(
-        create: (_) => locator<ProofOfFundsCubit>(param1: wallet),
-        child: const VerifyFundsScreen(),
-      );
-    },
-  );
-
-  static final routes = [route, proveFundsRoute, verifyFundsRoute];
+  static final routes = [route, proveFundsRoute];
 }

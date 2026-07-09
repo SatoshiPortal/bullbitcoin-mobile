@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -14,6 +15,7 @@ import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.
 import 'package:bb_mobile/features/coins/domain/usecases/verify_proof_of_funds_usecase.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/proof_of_funds_cubit.dart';
+import 'package:bb_mobile/features/coins/presentation/verify_proof_of_funds_cubit.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -47,6 +49,7 @@ class CoinsLocator {
         serversPort: locator<ElectrumServersPort>(),
         transactionRepository: locator<ElectrumTransactionRepository>(),
         electrumDatasource: locator<ElectrumRemoteDatasource>(),
+        environmentPort: locator<EnvironmentPort>(),
       ),
     );
 
@@ -65,13 +68,20 @@ class CoinsLocator {
       ),
     );
 
-    // Proof-of-funds cubit — built per route with the target wallet
-    // (id + network, since prove/verify need the network).
+    // Prove-funds cubit — built per route with the target wallet
+    // (id + network needed to derive per-UTXO keys and sign).
     locator.registerFactoryParam<ProofOfFundsCubit, Wallet, void>(
       (wallet, _) => ProofOfFundsCubit(
         walletId: wallet.id,
         network: wallet.network,
         signProofOfFundsUsecase: locator<SignProofOfFundsUsecase>(),
+      ),
+    );
+
+    // Verify-funds cubit — standalone (no wallet needed); network is resolved
+    // from the app environment inside the use-case. Used from Settings.
+    locator.registerFactory<VerifyProofOfFundsCubit>(
+      () => VerifyProofOfFundsCubit(
         verifyProofOfFundsUsecase: locator<VerifyProofOfFundsUsecase>(),
       ),
     );
