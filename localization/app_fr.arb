@@ -3538,6 +3538,7 @@
   "ledgerErrorInvalidPsbt": "Format PSBT invalide détecté.",
   "ledgerErrorMissingDerivationPath": "Le chemin de dérivation est requis",
   "ledgerErrorMissingScriptType": "Le type de script est requis",
+  "ledgerErrorDeviceBusy": "Un autre programme utilise votre Ledger. Veuillez le fermer (par exemple, Ledger Live) et réessayer.",
   "ledgerErrorNoConnection": "Aucune connexion Ledger disponible",
   "ledgerErrorRejectedByUser": "La transaction a été rejetée par l'utilisateur sur l'appareil Ledger.",
   "ledgerErrorDeviceLocked": "L'appareil Ledger est verrouillé. Veuillez déverrouiller votre appareil et réessayer.",

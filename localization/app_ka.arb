@@ -3373,6 +3373,7 @@
   "ledgerErrorInvalidPsbt": "აღმოჩენილია არასწორი PSBT ფორმატი.",
   "ledgerErrorMissingDerivationPath": "საჭიროა წარმოების გზა",
   "ledgerErrorMissingScriptType": "საჭიროა სკრიპტის ტიპი",
+  "ledgerErrorDeviceBusy": "სხვა პროგრამა იყენებს თქვენს Ledger-ს. გთხოვთ დახუროთ ის (მაგალითად, Ledger Live) და სცადოთ თავიდან.",
   "ledgerErrorNoConnection": "Ledger-თან კავშირი მიუწვდომელია",
   "ledgerErrorRejectedByUser": "ტრანზაქცია უარყო მომხმარებელმა Ledger მოწყობილობაზე.",
   "ledgerErrorDeviceLocked": "Ledger მოწყობილობა დაბლოკილია. გთხოვთ, განბლოკოთ მოწყობილობა და სცადოთ ხელახლა.",

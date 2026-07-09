@@ -11675,6 +11675,10 @@
   "@ledgerErrorMissingScriptType": {
     "description": "Error message when a Ledger operation is missing the script type"
   },
+  "ledgerErrorDeviceBusy": "Another program is using your Ledger. Please close it (for example, Ledger Live) and try again.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "No Ledger connection available",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

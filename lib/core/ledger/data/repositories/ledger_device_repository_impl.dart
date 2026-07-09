@@ -1,26 +1,18 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_exception.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:satoshifier/satoshifier.dart' hide Network;
 
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   final LedgerDeviceDatasource _datasource;
-  final SettingsRepository _settingsRepository;
 
-  LedgerDeviceRepositoryImpl({
-    required this._datasource,
-    required this._settingsRepository,
-  });
+  LedgerDeviceRepositoryImpl({required this._datasource});
 
   @override
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
@@ -33,68 +25,30 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   }
 
   @override
-  Future<Result<Null, LedgerFailure>> connectDevice(LedgerDeviceEntity device) {
+  Future<Result<void, LedgerFailure>> connectDevice(LedgerDeviceEntity device) {
     return _guard(() async {
       await _datasource.connectDevice(device.toModel());
-      return null;
     });
   }
 
   @override
-  Future<Result<WatchOnlyWalletEntity, LedgerFailure>> getWatchOnlyWallet(
+  Future<Result<String, LedgerFailure>> getMasterFingerprint(
+    LedgerDeviceEntity device,
+  ) {
+    return _guard(() => _datasource.getMasterFingerprint(device.toModel()));
+  }
+
+  @override
+  Future<Result<String, LedgerFailure>> getXpub(
     LedgerDeviceEntity device, {
-    required String label,
-    ScriptType scriptType = ScriptType.bip84,
-    int account = 0,
-  }) async {
-    final Satoshifier watchOnly;
-    switch (await _guard(() async {
-      final settings = await _settingsRepository.fetch();
-      final network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
-        isLiquid: false,
-      );
-
-      final derivationPath =
-          "m/${scriptType.purpose}'/${network.coinType}'/$account'";
-
-      final model = device.toModel();
-      final masterFingerprint = await _datasource.getMasterFingerprint(model);
-      final xpub = await _datasource.getXpub(
-        model,
+    required String derivationPath,
+    required ScriptType scriptType,
+  }) {
+    return _guard(
+      () => _datasource.getXpub(
+        device.toModel(),
         derivationPath: derivationPath,
         scriptType: scriptType,
-      );
-
-      final descriptor = Descriptor.fromStrings(
-        fingerprint: masterFingerprint,
-        path: derivationPath,
-        xpub: xpub,
-      );
-
-      return Satoshifier.watchOnlyDescriptor(descriptor: descriptor);
-    })) {
-      case Ok(:final value):
-        watchOnly = value;
-      case Err(:final failure):
-        return Err(failure);
-    }
-
-    if (watchOnly is! WatchOnlyDescriptor) {
-      log.severe(
-        message: 'Unexpected Ledger descriptor type',
-        error: 'got ${watchOnly.runtimeType}',
-        trace: StackTrace.current,
-      );
-      return const Err(LedgerUnexpectedFailure('unexpected descriptor type'));
-    }
-
-    return Ok(
-      WatchOnlyWalletEntity.descriptor(
-        watchOnlyDescriptor: watchOnly,
-        signer: SignerEntity.remote,
-        label: label,
-        signerDevice: device.deviceType,
       ),
     );
   }
@@ -168,7 +122,7 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     } on DeviceNotFoundLedgerException {
       return const Err(LedgerDeviceNotFoundFailure());
     } on NoActiveConnectionLedgerException {
-      return const Err(LedgerNoActiveConnectionFailure());
+      return const Err(LedgerNoConnectionFailure());
     } on DeviceMismatchLedgerException {
       return const Err(LedgerDeviceMismatchFailure());
     } on InvalidMagicBytesLedgerException {
@@ -194,33 +148,39 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   /// only; it is never rendered by the UI.
   LedgerFailure _interpretRawError(Object error) {
     final raw = error.toString();
+
+    // The Ledger SDK reports a busy device as free text, not an APDU code.
+    if (_deviceBusyPattern.hasMatch(raw)) return LedgerDeviceBusyFailure(raw);
+
     final code = _extractApduCode(raw);
     if (code != null) {
-      if (code.contains('6985')) return LedgerRejectedByUserFailure(raw);
-      if (code.contains('5515')) return LedgerDeviceLockedFailure(raw);
-      const appNotOpenCodes = ['6e01', '6a87', '6d02', '6511', '6e00'];
-      if (appNotOpenCodes.any(code.contains)) {
+      if (code == '6985') return LedgerRejectedByUserFailure(raw);
+      if (code == '5515') return LedgerDeviceLockedFailure(raw);
+      const appNotOpenCodes = {'6e01', '6a87', '6d02', '6511', '6e00'};
+      if (appNotOpenCodes.contains(code)) {
         return LedgerBitcoinAppNotOpenFailure(raw);
       }
     }
     return LedgerUnexpectedFailure(raw);
   }
 
+  static final RegExp _deviceBusyPattern = RegExp(
+    r'no other program|another program|already (in use|open)|'
+    r'communicating with the ledger',
+    caseSensitive: false,
+  );
+
+  /// Extracts a normalized (lowercase, no `0x`) 4-hex-digit APDU status word.
+  /// Matches are anchored on word boundaries and accept an optional `0x`
+  /// prefix, so a status word survives but an incidental 4-hex run inside a
+  /// txid/address does not get mistaken for one.
   String? _extractApduCode(String error) {
-    final patterns = [
-      RegExp(r'(?:0x\S*?|[0-9a-f]{4})(?= )'),
-      RegExp('Exception:\\s*([0-9a-f]{4})'),
-      RegExp('[0-9a-f]{4}'),
-    ];
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(error);
-      if (match != null) {
-        return match
-            .group(0)
-            ?.replaceAll('0x', '')
-            .replaceAll('Exception: ', '');
-      }
-    }
-    return null;
+    final match = _apduCodePattern.firstMatch(error);
+    return match?.group(1)?.toLowerCase();
   }
+
+  static final RegExp _apduCodePattern = RegExp(
+    r'\b(?:0x)?([0-9a-f]{4})\b',
+    caseSensitive: false,
+  );
 }

@@ -10152,6 +10152,7 @@
   "ledgerErrorInvalidPsbt": "Открит е невалиден PSBT формат.",
   "ledgerErrorMissingDerivationPath": "Изисква се път на деривация",
   "ledgerErrorMissingScriptType": "Изисква се тип на скрипта",
+  "ledgerErrorDeviceBusy": "Друга програма използва вашия Ledger. Моля, затворете я (например Ledger Live) и опитайте отново.",
   "ledgerErrorNoConnection": "Няма налична връзка с Ledger",
   "ledgerErrorRejectedByUser": "Транзакцията беше отхвърлена от потребителя на устройството Ledger.",
   "ledgerErrorDeviceLocked": "Устройството Ledger е заключено. Моля, отключете устройството си и опитайте отново.",

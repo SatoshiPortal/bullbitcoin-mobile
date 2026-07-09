@@ -3001,6 +3001,7 @@
   "payNotAuthenticated": "Sie sind nicht authentifiziert. Bitte melden Sie sich an, um fortzufahren",
   "paySinpeNumeroComprobante": "Referenznummer",
   "backupSettingsViewVaultKey": "Tresor-Schlüssel anzeigen",
+  "ledgerErrorDeviceBusy": "Ein anderes Programm verwendet Ihren Ledger. Bitte schließen Sie es (zum Beispiel Ledger Live) und versuchen Sie es erneut.",
   "ledgerErrorNoConnection": "Keine Ledger-Verbindung verfügbar.",
   "testBackupSuccessButton": "Verstanden",
   "transactionLabelTransactionId": "Transaktions-ID",

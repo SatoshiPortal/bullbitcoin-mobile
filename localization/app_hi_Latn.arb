@@ -10096,6 +10096,10 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
+  "ledgerErrorDeviceBusy": "Koi doosra program aapke Ledger ka use kar raha hai. Kripya use band karo (jaise ki Ledger Live) aur dobara try karo.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "Koi Ledger connection available nahi hai",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

@@ -3262,6 +3262,7 @@
   "testBackupDoNotShare": "НЕ ЗДОРОВ'Я",
   "kruxInstructionsTitle": "Krux Інструкції",
   "backupSettingsViewVaultKey": "Переглянути Vault Головна",
+  "ledgerErrorDeviceBusy": "Інша програма використовує ваш Ledger. Будь ласка, закрийте її (наприклад, Ledger Live) і спробуйте знову.",
   "ledgerErrorNoConnection": "Немає підключень Ledger",
   "testBackupSuccessButton": "Про нас",
   "importWalletLedger": "Клей",

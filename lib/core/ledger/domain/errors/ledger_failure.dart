@@ -28,10 +28,6 @@ final class LedgerDeviceNotFoundFailure extends LedgerFailure {
   const LedgerDeviceNotFoundFailure([super.logMessage]);
 }
 
-final class LedgerNoActiveConnectionFailure extends LedgerFailure {
-  const LedgerNoActiveConnectionFailure([super.logMessage]);
-}
-
 final class LedgerDeviceMismatchFailure extends LedgerFailure {
   const LedgerDeviceMismatchFailure([super.logMessage]);
 }
@@ -55,9 +51,17 @@ final class LedgerBitcoinAppNotOpenFailure extends LedgerFailure {
   const LedgerBitcoinAppNotOpenFailure([super.logMessage]);
 }
 
-/// No connected device when an operation was requested.
+/// No active connection to a device. Raised both by the datasource (when an
+/// operation needs a live connection it doesn't have) and by the UI pre-check
+/// before an operation is requested; both surface the same message.
 final class LedgerNoConnectionFailure extends LedgerFailure {
   const LedgerNoConnectionFailure([super.logMessage]);
+}
+
+/// Another program (e.g. Ledger Live) is communicating with the device, so the
+/// app cannot claim the connection. The user must close the other program.
+final class LedgerDeviceBusyFailure extends LedgerFailure {
+  const LedgerDeviceBusyFailure([super.logMessage]);
 }
 
 /// A required PSBT parameter was missing when signing.

@@ -3486,6 +3486,7 @@
   "ledgerErrorInvalidPsbt": "Havaittiin virheellinen PSBT-muoto.",
   "ledgerErrorMissingDerivationPath": "Johtamispolku vaaditaan",
   "ledgerErrorMissingScriptType": "Skriptityyppi vaaditaan",
+  "ledgerErrorDeviceBusy": "Toinen ohjelma käyttää Ledger-laitettasi. Sulje se (esimerkiksi Ledger Live) ja yritä uudelleen.",
   "ledgerErrorNoConnection": "Ledger-yhteyttä ei ole saatavilla",
   "ledgerErrorRejectedByUser": "Käyttäjä hylkäsi transaktion Ledger-laitteella.",
   "ledgerErrorDeviceLocked": "Ledger-laite on lukittu. Avaa laite ja yritä uudelleen.",

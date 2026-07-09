@@ -3224,6 +3224,7 @@
   "ledgerErrorInvalidPsbt": "Đã phát hiện định dạng PSBT không hợp lệ.",
   "ledgerErrorMissingDerivationPath": "Bắt buộc phải có đường dẫn dẫn xuất",
   "ledgerErrorMissingScriptType": "Bắt buộc phải có loại script",
+  "ledgerErrorDeviceBusy": "Một chương trình khác đang sử dụng Ledger của bạn. Vui lòng đóng chương trình đó (ví dụ: Ledger Live) và thử lại.",
   "ledgerErrorNoConnection": "Không có kết nối Ledger khả dụng",
   "ledgerErrorRejectedByUser": "Giao dịch đã bị người dùng từ chối trên thiết bị Ledger.",
   "ledgerErrorDeviceLocked": "Thiết bị Ledger đang bị khóa. Vui lòng mở khóa thiết bị của bạn và thử lại.",

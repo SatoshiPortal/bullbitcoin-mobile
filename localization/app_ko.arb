@@ -9353,6 +9353,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "다른 프로그램이 Ledger를 사용하고 있습니다. 해당 프로그램(예: Ledger Live)을 닫고 다시 시도하십시오.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "사용할 수있는 Ledger 연결 없음",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

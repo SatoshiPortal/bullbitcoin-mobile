@@ -7955,6 +7955,10 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
+  "ledgerErrorDeviceBusy": "আন এটা প্ৰগ্ৰামে আপোনাৰ Ledger ব্যৱহাৰ কৰি আছে। অনুগ্ৰহ কৰি ইয়াক বন্ধ কৰক (উদাহৰণস্বৰূপে, Ledger Live) আৰু পুনৰ চেষ্টা কৰক।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "কোনো Ledger সংযোগ উপলব্ধ নাই",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

@@ -10,7 +10,7 @@ class ConnectLedgerDeviceUsecase {
   ConnectLedgerDeviceUsecase({required this._repository});
 
   @useResult
-  Future<Result<Null, LedgerFailure>> execute(LedgerDeviceEntity device) {
+  Future<Result<void, LedgerFailure>> execute(LedgerDeviceEntity device) {
     return _repository.connectDevice(device);
   }
 }

@@ -5,21 +5,16 @@ import 'package:bb_mobile/core/ledger/data/repositories/ledger_device_repository
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_exception.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLedgerDeviceDatasource extends Mock
     implements LedgerDeviceDatasource {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
 void main() {
   late _MockLedgerDeviceDatasource datasource;
-  late _MockSettingsRepository settingsRepository;
   late LedgerDeviceRepositoryImpl repository;
 
   const device = LedgerDeviceEntity(
@@ -36,11 +31,7 @@ void main() {
 
   setUp(() {
     datasource = _MockLedgerDeviceDatasource();
-    settingsRepository = _MockSettingsRepository();
-    repository = LedgerDeviceRepositoryImpl(
-      datasource: datasource,
-      settingsRepository: settingsRepository,
-    );
+    repository = LedgerDeviceRepositoryImpl(datasource: datasource);
   });
 
   group('LedgerDeviceRepositoryImpl (the sanitization boundary)', () {
@@ -121,19 +112,36 @@ void main() {
       expect((result as Ok).value, 'deadbeef');
     });
 
-    test('getWatchOnlyWallet sanitizes a throwing foreign dependency '
-        '(settings fetch) into an unexpected failure', () async {
+    test('getMasterFingerprint returns Ok with the datasource value', () async {
       when(
-        () => settingsRepository.fetch(),
-      ).thenThrow(Exception('STORAGE UNAVAILABLE'));
+        () => datasource.getMasterFingerprint(any()),
+      ).thenAnswer((_) async => 'abcd1234');
 
-      final result = await repository.getWatchOnlyWallet(
-        device,
-        label: 'Ledger',
-      );
+      final result = await repository.getMasterFingerprint(device);
 
-      expect(result, isA<Err<WatchOnlyWalletEntity, LedgerFailure>>());
-      expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
+      expect(result, isA<Ok<String, LedgerFailure>>());
+      expect((result as Ok).value, 'abcd1234');
     });
+
+    test(
+      'getXpub sanitizes a raw datasource throw into a typed failure',
+      () async {
+        when(
+          () => datasource.getXpub(
+            any(),
+            derivationPath: any(named: 'derivationPath'),
+            scriptType: any(named: 'scriptType'),
+          ),
+        ).thenThrow(Exception('bdk: xpub derivation blew up'));
+
+        final result = await repository.getXpub(
+          device,
+          derivationPath: "m/84'/0'/0'",
+          scriptType: ScriptType.bip84,
+        );
+
+        expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
+      },
+    );
   });
 }

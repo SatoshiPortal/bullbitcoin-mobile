@@ -20,7 +20,6 @@ class LedgerLocator {
     locator.registerLazySingleton<LedgerDeviceRepository>(
       () => LedgerDeviceRepositoryImpl(
         datasource: locator<LedgerDeviceDatasource>(),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }
@@ -39,6 +38,7 @@ class LedgerLocator {
     locator.registerFactory<GetLedgerWatchOnlyWalletUsecase>(
       () => GetLedgerWatchOnlyWalletUsecase(
         repository: locator<LedgerDeviceRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SignPsbtLedgerUsecase>(

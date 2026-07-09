@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 
 abstract class LedgerDeviceRepository {
@@ -13,14 +12,18 @@ abstract class LedgerDeviceRepository {
   });
 
   @useResult
-  Future<Result<Null, LedgerFailure>> connectDevice(LedgerDeviceEntity device);
+  Future<Result<void, LedgerFailure>> connectDevice(LedgerDeviceEntity device);
 
   @useResult
-  Future<Result<WatchOnlyWalletEntity, LedgerFailure>> getWatchOnlyWallet(
+  Future<Result<String, LedgerFailure>> getMasterFingerprint(
+    LedgerDeviceEntity device,
+  );
+
+  @useResult
+  Future<Result<String, LedgerFailure>> getXpub(
     LedgerDeviceEntity device, {
-    required String label,
-    ScriptType scriptType = ScriptType.bip84,
-    int account = 0,
+    required String derivationPath,
+    required ScriptType scriptType,
   });
 
   @useResult

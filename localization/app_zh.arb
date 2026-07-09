@@ -3068,6 +3068,7 @@
   "payNotAuthenticated": "你没有认证。 请继续发言.",
   "paySinpeNumeroComprobante": "参考数字",
   "backupSettingsViewVaultKey": "观点五 关键",
+  "ledgerErrorDeviceBusy": "另一个程序正在使用您的 Ledger。请关闭它（例如 Ledger Live）并重试。",
   "ledgerErrorNoConnection": "无液化连接",
   "testBackupSuccessButton": "签字",
   "transactionLabelTransactionId": "Transaction ID",

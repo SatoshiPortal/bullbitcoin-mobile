@@ -3065,6 +3065,7 @@
   "payNotAuthenticated": "Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.",
   "paySinpeNumeroComprobante": "Номер",
   "backupSettingsViewVaultKey": "Посмотреть хранилище Ключ",
+  "ledgerErrorDeviceBusy": "Другая программа использует ваш Ledger. Пожалуйста, закройте её (например, Ledger Live) и попробуйте еще раз.",
   "ledgerErrorNoConnection": "Доступно подключение Ledger",
   "testBackupSuccessButton": "Понял",
   "transactionLabelTransactionId": "ID транзакции",

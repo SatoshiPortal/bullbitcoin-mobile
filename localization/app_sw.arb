@@ -3237,6 +3237,7 @@
   "ledgerErrorInvalidPsbt": "Muundo batili wa PSBT umegunduliwa.",
   "ledgerErrorMissingDerivationPath": "Njia ya utoaji inahitajika",
   "ledgerErrorMissingScriptType": "Aina ya hati inahitajika",
+  "ledgerErrorDeviceBusy": "Programu nyingine inatumia Ledger yako. Tafadhali ifunge (kwa mfano, Ledger Live) na ujaribu tena.",
   "ledgerErrorNoConnection": "Hakuna muunganisho wa Ledger unaopatikana",
   "ledgerErrorRejectedByUser": "Muamala umekataliwa na mtumiaji kwenye kifaa cha Ledger.",
   "ledgerErrorDeviceLocked": "Kifaa cha Ledger kimefungwa. Tafadhali kifungue kifaa chako na ujaribu tena.",
