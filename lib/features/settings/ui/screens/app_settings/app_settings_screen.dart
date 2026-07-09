@@ -81,10 +81,10 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
-                const SettingsEntryItem(
+                SettingsEntryItem(
                   icon: Icons.visibility_off,
-                  title: 'Hide Exchange Features',
-                  trailing: HideExchangeFeaturesSwitch(),
+                  title: context.loc.settingsHideExchangeFeaturesTitle,
+                  trailing: const HideExchangeFeaturesSwitch(),
                 ),
                 if (isSuperuser)
                   SettingsEntryItem(

@@ -39,12 +39,12 @@ class _ActionRow extends StatelessWidget {
     if (hideExchangeFeatures) {
       return Material(
         elevation: 2,
-        color: Colors.transparent,
+        color: context.appColors.transparent,
         child: SizedBox(
           height: 80,
           child: _ActionButton(
             icon: Assets.icons.swap.path,
-            label: 'Transfer',
+            label: context.loc.homeActionTransfer,
             onPressed: () {
               context.pushNamed(SwapRoute.swap.name);
             },
