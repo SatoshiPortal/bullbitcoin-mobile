@@ -37,6 +37,17 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '
 android {
     ndkVersion = rootProject.properties['android.ndkVersion']
 
+    // The Play dependency-metadata block AGP writes into the signing block is
+    // a runtime snapshot (upload key / Play Console project), not something
+    // derived from source — it's invisible while release builds are unsigned
+    // (as they are for reproducibility verification), but would silently
+    // become a non-reproducible blob the moment the production flavor is
+    // signed on the release machine. Disable it outright.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -89,6 +100,16 @@ android {
             // No signingConfig here on purpose: signing is set per-flavor below.
             // AGP resolves a build-type signingConfig ahead of a flavor's, so
             // setting it here would stop the beta flavor from using its own key.
+            vcsInfo {
+                // AGP embeds a git-derived version-control snapshot per build.
+                // In the containerized build it currently always fails to
+                // detect git and falls back to a constant
+                // "NO_SUPPORTED_VCS_FOUND" string, which is why it hasn't
+                // broken reproducibility yet — but that's a fragile
+                // coincidence of the container's git setup, not a guarantee.
+                // Disable it outright so it can never diverge between builders.
+                include = false
+            }
         }
     }
 

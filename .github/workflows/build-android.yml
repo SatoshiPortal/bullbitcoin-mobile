@@ -21,7 +21,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v7
+      # Pinned to a commit SHA (not the mutable v7 tag): this job handles the
+      # beta signing secrets below, so a retag must not run here.
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       # Short SHA for the artifact name so each build is traceable to a commit.
       # `github` context has no short-SHA field; compute it from the checkout.
@@ -75,7 +77,20 @@ jobs:
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
         run: make android ${{ inputs.mode }} FORMAT=${{ inputs.format }}
 
-      - uses: actions/upload-artifact@v7
+      # Publishes the sha256 of the exact bytes uploaded below, so anyone
+      # comparing this run's artifact against a locally reproduced build (or
+      # against what later gets signed and released) has a tamper-evident
+      # value to check against beyond trusting the artifact download itself.
+      - name: Record artifact hash
+        run: |
+          echo "### Artifact hash" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          sha256sum "BULL-${{ inputs.mode }}.${{ inputs.format }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # Pinned to a commit SHA (not the mutable v7 tag): this job handles the
+      # beta signing secrets above, so a retag must not run here.
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: BULL-${{ inputs.mode }}-${{ steps.meta.outputs.sha_short }}-${{ inputs.format }}
           path: BULL-${{ inputs.mode }}.${{ inputs.format }}

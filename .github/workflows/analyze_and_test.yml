@@ -22,7 +22,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        # Pinned to a commit SHA (not the mutable v7 tag): this job handles PR
+        # test secrets (funded-testnet mnemonics below), so a retag must not
+        # silently change what runs here.
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       # The job builds the FRB Rust crates, the Flutter SDK toolchain, the
       # Linux desktop app and runs integration tests on one runner; the stock
@@ -48,7 +51,7 @@ jobs:
       # when deps change. pubspec.lock pins the bull_sdk commit, so it is
       # the right key for the Cargo cache (there is no repo-root Cargo.lock).
       - name: Cache Flutter SDK (FVM)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/fvm/versions
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
@@ -61,13 +64,13 @@ jobs:
       # pubspec.lock, so an unchanged lock still hits; a changed lock does one
       # clean fetch and re-caches.
       - name: Cache pub (hosted + git deps)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
       - name: Cache Cargo (FRB native crates)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry

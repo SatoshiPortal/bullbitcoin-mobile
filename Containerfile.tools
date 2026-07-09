@@ -17,9 +17,13 @@ ARG FLUTTER_VERSION="3.44.2"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)
-# forces every cargo/rustc invocation through this version, so plugins that
-# request "stable" or anything else still get the pinned bytes. This is
-# essential for reproducibility — upstream stable drifts every 6 weeks.
+# forces cargo/rustc invocations that respect it through this version. It does
+# NOT cover cargokit or bdk_dart's native-assets build hook, both of which
+# invoke `rustup run <toolchain>` directly — an explicit `rustup run` always
+# wins over the env var. Those are covered separately below by linking
+# "stable" to this pinned toolchain, and by pre-installing bdk_dart's own
+# pinned channel (BDK_RUST_VERSION). This is essential for reproducibility —
+# upstream stable drifts every 6 weeks.
 ARG RUST_VERSION="1.95.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
@@ -132,6 +136,28 @@ RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
+# cargokit (used by payjoin_flutter, tor, and bull_sdk's rust_builder) invokes
+# `rustup run stable cargo build` directly instead of reading RUSTUP_TOOLCHAIN.
+# An explicit `rustup run <toolchain>` always wins over the env var, and
+# RUSTUP_AUTO_INSTALL=0 only blocks *implicit* toolchain installs — not this
+# explicit one. A fresh image has no toolchain named "stable", so cargokit was
+# silently installing whatever upstream stable is on build day (moves every 6
+# weeks), which is why prior builds' .so files embedded rustc versions newer
+# than RUST_VERSION. Link "stable" to the pinned toolchain directory so
+# `rustup run stable` resolves to the exact pinned bytes instead.
+RUN rustup toolchain link stable "/home/${USER}/.rustup/toolchains/${RUST_VERSION}-x86_64-unknown-linux-gnu"
+
+# bdk_dart builds via native_toolchain_rust (a Dart native-assets build hook,
+# not cargokit) and reads its own rust-toolchain.toml, invoking
+# `rustup run <channel> cargo build` directly — same bypass as cargokit above,
+# but with its own pinned channel. Pre-install it (and its Android targets) so
+# the build never fetches a toolchain from the network. Keep in sync with the
+# `channel` value in bdk-dart's native/rust-toolchain.toml (see the bdk_dart
+# git dependency in pubspec.yaml).
+ARG BDK_RUST_VERSION="1.85.1"
+RUN rustup toolchain install ${BDK_RUST_VERSION}
+RUN rustup target add --toolchain ${BDK_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
 # Belt-and-suspenders verification: abort if the installed Rust does not match
 # EXPECTED_RUST_VERSION when provided.
 ARG EXPECTED_RUST_VERSION=""
@@ -177,6 +203,20 @@ RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
+
+# AGP resolves an NDK/CMake version per-subproject: flutter_zxing pins NDK
+# 27.0.12077973 for its vendored C++ build, and any plugin without an explicit
+# ndkVersion falls back to the Flutter Gradle plugin's default (28.2.13676358
+# for this Flutter version), which also needs CMake 3.22.1. Without these
+# pre-installed, AGP silently fetches ~2GB from dl.google.com mid-build —
+# content-pinned so it doesn't change output bytes, but it makes the build
+# depend on Google continuing to serve them and adds an unpinned network step.
+# Keep these two NDK versions in sync with `android.ndkVersion` overrides in
+# the plugin dependency tree and the Flutter Gradle plugin's default per
+# .fvmrc; keep CMake in sync with whatever that NDK/AGP combination requests.
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;27.0.12077973"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;28.2.13676358"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "cmake;3.22.1"
 
 # Pre-cache Flutter engine artifacts for the platforms we build for.
 RUN fvm flutter precache --android --linux

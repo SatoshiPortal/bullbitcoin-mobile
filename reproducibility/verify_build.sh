@@ -41,6 +41,33 @@ containerApktool() {
         sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
 }
 
+# Helper: authoritative reproducibility verdict — hashes every zip entry's raw
+# content (see compare_apk_entries.sh for why this, not the apktool diff
+# below, is the thing that decides pass/fail).
+containerCompareApks() {
+    local apk1="$1" apk2="$2"
+    local dir1=$(dirname "$apk1") file1=$(basename "$apk1")
+    local dir2=$(dirname "$apk2") file2=$(basename "$apk2")
+
+    $CONTAINER_CMD run --rm \
+        -v "$dir1":/a:ro \
+        -v "$dir2":/b:ro \
+        -v "$SCRIPT_DIR/compare_apk_entries.sh":/compare.sh:ro \
+        $VERIFY_TOOLS_IMAGE \
+        sh /compare.sh "/a/$file1" "/b/$file2"
+}
+
+# apktool's decoded output normalizes away real byte-level differences
+# (baksmali can re-emit different dex bytes as identical smali; aapt2 can
+# decode different resources.arsc bytes to identical XML), so it is used only
+# to explain *what* changed once containerCompareApks has already found a
+# real difference — never as the verdict itself. The exclusion here mirrors
+# compare_apk_entries.sh: only the legacy JAR signature files, anchored by
+# name, not a blanket "META-INF" substring match (which would also hide
+# tampering in META-INF/services/* ServiceLoader registrations and other
+# real shipped content).
+APKTOOL_DIFF_EXCLUDES=(-x "MANIFEST.MF" -x "*.RSA" -x "*.SF" -x "*.EC" -x "*.DSA")
+
 
 usage() {
     cat <<'EOF'
@@ -54,6 +81,9 @@ OPTIONS:
                           If directory: split APK comparison (Play Store path)
     --cleanup             Remove workspace after completion
     --yes                 Skip interactive prompts (for CI/automation)
+    --allow-dirty         Skip the working-tree cleanliness check (not recommended:
+                          a dirty tree builds modified sources while this script
+                          still attests the clean commit hash)
     --help                Show this help
 
 EXAMPLES:
@@ -73,6 +103,7 @@ appVersion=""
 apkPath=""
 shouldCleanup=false
 skipPrompts=false
+allowDirty=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -80,6 +111,7 @@ while [[ "$#" -gt 0 ]]; do
         --apk) apkPath="$2"; shift ;;
         --cleanup) shouldCleanup=true ;;
         --yes) skipPrompts=true ;;
+        --allow-dirty) allowDirty=true ;;
         --help) usage; exit 0 ;;
         *) echo "Unknown argument: $1"; usage; exit 1 ;;
     esac
@@ -100,6 +132,27 @@ if [[ -n "$appVersion" ]]; then
         echo -e "${RED}Error: local repo is not at tag $expectedTag (currently at: $currentRef)${NC}"
         echo "Run: git checkout $expectedTag"
         exit 1
+    fi
+fi
+
+# Containerfile.app does `COPY . /app`, and SOURCE_DATE_EPOCH plus the
+# "commit:" line in RESULTS.md both come from `git log`, not from what's
+# actually on disk. A dirty tree would silently build modified sources while
+# this script still attests a clean commit hash. Modified/staged tracked
+# files are a hard failure; untracked files only warn, since expected
+# host-side byproducts (prior APKs, build caches) are untracked but already
+# excluded from the build context via .dockerignore.
+if [[ "$allowDirty" == false ]]; then
+    if ! git -C "$REPO_ROOT" diff --quiet || ! git -C "$REPO_ROOT" diff --cached --quiet; then
+        echo -e "${RED}Error: working tree has uncommitted changes to tracked files.${NC}"
+        echo "The build would embed these changes while attesting a clean commit hash."
+        echo "Commit or stash them, or pass --allow-dirty to proceed anyway (not recommended)."
+        git -C "$REPO_ROOT" status --short
+        exit 1
+    fi
+    untrackedCount=$(git -C "$REPO_ROOT" ls-files --others --exclude-standard | wc -l | tr -d ' ')
+    if [[ "$untrackedCount" -gt 0 ]]; then
+        echo -e "${YELLOW}Warning: $untrackedCount untracked file(s) present in the repo. Verify none would be picked up by the build (check .dockerignore).${NC}"
     fi
 fi
 
@@ -339,13 +392,21 @@ if [[ "$verificationMode" == "github" ]]; then
     officialApk="$workDir/official.apk"
     [[ -f "$apkDir/base.apk" ]] && officialApk="$apkDir/base.apk"
 
+    # Authoritative verdict: raw per-entry content hash comparison.
+    if rawCompareOutput=$(containerCompareApks "$officialApk" "$workDir/built.apk" 2>&1); then
+        total_diffs=0
+    else
+        total_diffs=1
+        echo "$rawCompareOutput" > "$workDir/raw_entry_diff.txt"
+    fi
+
+    # apktool decode kept purely as a diagnostic to explain *what* differs —
+    # see the comment on containerCompareApks above for why it isn't the verdict.
     mkdir -p "$workDir/official-decoded" "$workDir/built-decoded"
     containerApktool "$workDir/official-decoded" "$officialApk"
     containerApktool "$workDir/built-decoded" "$workDir/built.apk"
 
-    diff_output=$(diff -r "$workDir/official-decoded" "$workDir/built-decoded" 2>&1 | grep -v "META-INF" || true)
-    total_diffs=$(echo "$diff_output" | wc -l)
-    [[ -z "$diff_output" ]] && total_diffs=0
+    diff_output=$(diff -r "${APKTOOL_DIFF_EXCLUDES[@]}" "$workDir/official-decoded" "$workDir/built-decoded" 2>&1 || true)
     [[ -n "$diff_output" ]] && echo "$diff_output" > "$workDir/diff.txt"
 else
     # Split APK comparison using bundletool
@@ -368,6 +429,10 @@ else
     # Decode and compare each split
     mkdir -p "$workDir/official-decoded" "$workDir/built-decoded"
     total_diffs=0
+    # Newline-delimited (not a bash array) so this stays portable to the
+    # older bash shipped by default on macOS, where `set -u` + empty arrays
+    # is a known footgun.
+    matchedBuiltNames=""
 
     for official in "$apkDir"/*.apk; do
         [[ -f "$official" ]] || continue
@@ -381,24 +446,47 @@ else
         fi
 
         built="$workDir/built-splits/${builtName}.apk"
-        [[ ! -f "$built" ]] && built="$workDir/built-splits/${name}.apk"
-
         if [[ ! -f "$built" ]]; then
-            echo "  Warning: No match for $name"
+            built="$workDir/built-splits/${name}.apk"
+            builtName="$name"
+        fi
+
+        # A missing built counterpart used to be a skipped warning that still
+        # exited 0 — an entire split (potentially all native libs, or all
+        # drawables) could go completely unverified with a clean PASS. Treat
+        # it as a hard failure instead.
+        if [[ ! -f "$built" ]]; then
+            echo -e "${RED}  ✗ $name: no matching built split found (expected ${builtName}.apk) — FAIL${NC}"
+            total_diffs=$((total_diffs + 1))
             continue
+        fi
+        matchedBuiltNames="$matchedBuiltNames
+$(basename "$built")"
+
+        if rawCompareOutput=$(containerCompareApks "$official" "$built" 2>&1); then
+            echo "  $name: identical"
+        else
+            total_diffs=$((total_diffs + 1))
+            echo -e "${RED}  $name: differences found${NC}"
+            echo "$rawCompareOutput" > "$workDir/raw_entry_diff_${name}.txt"
         fi
 
         containerApktool "$workDir/official-decoded/$name" "$official"
         containerApktool "$workDir/built-decoded/$name" "$built"
+        split_diff=$(diff -r "${APKTOOL_DIFF_EXCLUDES[@]}" "$workDir/official-decoded/$name" "$workDir/built-decoded/$name" 2>&1 || true)
+        [[ -n "$split_diff" ]] && echo "$split_diff" > "$workDir/diff_${name}.txt"
+    done
 
-        split_diff=$(diff -r "$workDir/official-decoded/$name" "$workDir/built-decoded/$name" 2>&1 | grep -v "META-INF" || true)
-        if [[ -n "$split_diff" ]]; then
-            count=$(echo "$split_diff" | wc -l)
-            total_diffs=$((total_diffs + count))
-            echo "$split_diff" > "$workDir/diff_${name}.txt"
-            echo "  $name: $count differences"
-        else
-            echo "  $name: identical"
+    # The reverse direction matters too: a built split with no official
+    # counterpart (e.g. bundletool's split-generation diverging from the
+    # official device-spec mapping) previously wasn't even enumerated, so it
+    # went unverified with no warning at all.
+    for built in "$workDir"/built-splits/*.apk; do
+        [[ -f "$built" ]] || continue
+        bname=$(basename "$built")
+        if ! grep -qxF "$bname" <<< "$matchedBuiltNames"; then
+            echo -e "${RED}  ✗ $bname: built split has no official counterpart — FAIL${NC}"
+            total_diffs=$((total_diffs + 1))
         fi
     done
 
@@ -423,7 +511,8 @@ else
     verdict="differences found"
     echo -e "verdict:        ${RED}$verdict${NC}"
     echo ""
-    echo "Differences (excluding META-INF):"
+    echo "Verdict is based on a raw per-entry content hash comparison (see raw_entry_diff*.txt in $workDir/)."
+    echo "The apktool-decoded diff below (excluding legacy JAR signature files only) is a diagnostic aid, not the verdict:"
     { echo "$diff_output" | head -30; } || true
     [[ $(echo "$diff_output" | wc -l) -gt 30 ]] && echo "... (truncated, see $workDir/)"
     exitCode=1
@@ -448,10 +537,17 @@ EOF
 
 if [[ $total_diffs -gt 0 ]]; then
     echo "" >> "$workDir/RESULTS.md"
-    echo "## Differences (excluding META-INF)" >> "$workDir/RESULTS.md"
+    echo "## Raw entry-hash differences (authoritative verdict)" >> "$workDir/RESULTS.md"
     echo "" >> "$workDir/RESULTS.md"
     echo "\`\`\`" >> "$workDir/RESULTS.md"
-    cat "$workDir"/diff*.txt >> "$workDir/RESULTS.md"
+    cat "$workDir"/raw_entry_diff*.txt >> "$workDir/RESULTS.md" 2>/dev/null || echo "(no raw entry diff file — see split-matching failures logged above)" >> "$workDir/RESULTS.md"
+    echo "\`\`\`" >> "$workDir/RESULTS.md"
+
+    echo "" >> "$workDir/RESULTS.md"
+    echo "## apktool-decoded diff (diagnostic only — excludes legacy JAR signature files, not the verdict)" >> "$workDir/RESULTS.md"
+    echo "" >> "$workDir/RESULTS.md"
+    echo "\`\`\`" >> "$workDir/RESULTS.md"
+    cat "$workDir"/diff*.txt >> "$workDir/RESULTS.md" 2>/dev/null || true
     echo "\`\`\`" >> "$workDir/RESULTS.md"
 fi
 

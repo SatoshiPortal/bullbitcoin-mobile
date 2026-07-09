@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -208,6 +208,47 @@ android: container-app
 	@$(CONTAINER) rm bull-build > /dev/null
 	@echo "✅ Output extracted: $(HOST_OUTPUT)"
 	@sha256sum $(HOST_OUTPUT)
+	@if [ "$(FORMAT)" = "apk" ]; then $(MAKE) --no-print-directory verify-rustc-pins APK=$(HOST_OUTPUT); fi
+
+# Guards against the `rustup toolchain link stable` fix in Containerfile.tools
+# regressing: without it, cargokit's `rustup run stable` silently installs
+# whatever upstream Rust is current on build day instead of the pinned
+# version, breaking reproducibility invisibly (this is exactly how it broke
+# before — two builds on the same day matched by coincidence, not by pinning).
+# Compares the rustc version string every compiler embeds in its output
+# against the pinned toolchains running live inside bull-app.
+verify-rustc-pins:
+	@command -v strings >/dev/null 2>&1 || { echo "  ⚠️  'strings' (binutils) not found on host, skipping rustc-pin verification"; exit 0; }
+	@tmpdir=$$(mktemp -d); \
+	trap 'rm -rf "$$tmpdir"' EXIT; \
+	unzip -q -o "$(APK)" -d "$$tmpdir" 'lib/*/*.so' 2>/dev/null || true; \
+	abi_dir=$$(find "$$tmpdir/lib" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1); \
+	if [ -z "$$abi_dir" ]; then echo "  ⚠️  no native libraries found in $(APK), skipping rustc-pin verification"; exit 0; fi; \
+	echo "🔎 Verifying Rust libraries embed the pinned rustc versions..."; \
+	cargokit_rustc=$$($(CONTAINER) run --rm bull-app rustup run stable rustc --version | awk '{print $$2}'); \
+	bdk_rustc=$$($(CONTAINER) run --rm bull-app rustup run 1.85.1 rustc --version 2>/dev/null | awk '{print $$2}'); \
+	fail=0; \
+	for so in "$$abi_dir"/*.so; do \
+		name=$$(basename "$$so"); \
+		embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
+		[ -z "$$embedded" ] && continue; \
+		case "$$name" in \
+			libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
+			libtor.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
+			*) expected="" ;; \
+		esac; \
+		if [ -z "$$expected" ]; then echo "  ℹ️  $$name: rustc $$embedded (no pin tracked, add it to the case above if this is a new Rust plugin)"; continue; fi; \
+		if [ "$$embedded" != "$$expected" ]; then \
+			echo "  ❌ $$name: embedded rustc $$embedded, expected pinned $$expected"; \
+			fail=1; \
+		else \
+			echo "  ✅ $$name: rustc $$embedded (matches pin)"; \
+		fi; \
+	done; \
+	if [ "$$fail" = "1" ]; then \
+		echo "❌ A Rust library was not built with its pinned toolchain — reproducibility is broken. Check the rustup toolchain link in Containerfile.tools."; \
+		exit 1; \
+	fi
 
 verify:
 	@echo "🔍 Verifying reproducible build"
