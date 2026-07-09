@@ -29,11 +29,7 @@ class VerifyProofOfFundsUsecase {
   final EnvironmentPort environmentPort;
   final ProofOfFunds proofOfFunds;
 
-  Future<ProofResult> execute({
-    required String message,
-    required String challengeAddress,
-    required String signature,
-  }) async {
+  Future<ProofResult> execute({required String signature}) async {
     final environment = await environmentPort.getEnvironment();
     final isTestnet = environment.isTestnet;
 
@@ -45,9 +41,9 @@ class VerifyProofOfFundsUsecase {
     );
 
     try {
+      // Self-contained: the message and challenge address are recovered from
+      // the proof itself (BIP-322 0x09 field + input 0 scriptPubKey).
       return await proofOfFunds.verify(
-        message: message,
-        challengeAddress: challengeAddress,
         signature: signature,
         network: isTestnet ? ProofNetwork.testnet : ProofNetwork.mainnet,
         chain: chain,

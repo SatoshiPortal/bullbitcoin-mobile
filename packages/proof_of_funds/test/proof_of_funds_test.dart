@@ -72,8 +72,6 @@ void main() {
       expect(signature.startsWith('pof'), isTrue);
 
       final result = await pof.verify(
-        message: 'I control these funds',
-        challengeAddress: triple.address,
         signature: signature,
         network: ProofNetwork.mainnet,
       );
@@ -81,12 +79,15 @@ void main() {
       expect(result.proven, hasLength(1));
       expect(result.proven.single.onChain, OnChainStatus.notChecked);
       expect(result.proven.single.outpoint.txId, txid);
+      // Self-contained: message + challenge address recovered from the proof.
+      expect(result.message, 'I control these funds');
+      expect(result.challengeAddress, triple.address);
     });
 
-    test('a wrong message fails verification', () async {
+    test('verify recovers the embedded message from the proof', () async {
       final resolver = _FakeKeyResolver({HEX.encode(triple.script): key});
       final signature = await pof.prove(
-        message: 'right',
+        message: 'a specific message',
         challengeAddress: triple.address,
         utxos: [
           ProofInput(
@@ -99,13 +100,13 @@ void main() {
         network: ProofNetwork.mainnet,
       );
 
+      // Self-contained: the message is read from the proof, not supplied.
       final result = await pof.verify(
-        message: 'wrong',
-        challengeAddress: triple.address,
         signature: signature,
         network: ProofNetwork.mainnet,
       );
-      expect(result.status, ProofStatus.invalid);
+      expect(result.status, ProofStatus.valid);
+      expect(result.message, 'a specific message');
     });
   });
 
@@ -136,8 +137,6 @@ void main() {
           ),
         });
         final result = await pof.verify(
-          message: 'm',
-          challengeAddress: triple.address,
           signature: signature,
           network: ProofNetwork.mainnet,
           chain: chain,
@@ -157,8 +156,6 @@ void main() {
         ),
       });
       final result = await pof.verify(
-        message: 'm',
-        challengeAddress: triple.address,
         signature: signature,
         network: ProofNetwork.mainnet,
         chain: chain,
@@ -182,8 +179,6 @@ void main() {
         ),
       });
       final result = await pof.verify(
-        message: 'm',
-        challengeAddress: triple.address,
         signature: signature,
         network: ProofNetwork.mainnet,
         chain: chain,
@@ -196,8 +191,6 @@ void main() {
   group('malformed and unsupported input', () {
     test('a garbled signature verifies as invalid, never throws', () async {
       final result = await pof.verify(
-        message: 'm',
-        challengeAddress: triple.address,
         signature: 'pof!!!not-base64!!!',
         network: ProofNetwork.mainnet,
       );

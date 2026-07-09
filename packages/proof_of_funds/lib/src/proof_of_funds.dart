@@ -102,32 +102,25 @@ class ProofOfFunds {
   /// [ProofStatus.invalid]. Throws [UnsupportedScriptError] for an
   /// out-of-scope challenge address.
   Future<ProofResult> verify({
-    required String message,
-    required String challengeAddress,
     required String signature,
     required ProofNetwork network,
     ChainLookup? chain,
   }) async {
     final net = _network(network);
 
-    try {
-      bip322.parseAddress(challengeAddress, net);
-    } on bip322.Bip322Exception catch (e) {
-      throw UnsupportedScriptError('invalid challenge address: $e');
-    }
-
-    final result = bip322.Bip322.verifyProofOfFunds(
-      message: message,
-      address: challengeAddress,
-      signature: signature,
-      network: net,
-    );
+    // Self-contained per BIP-322 v2: the message (0x09 global field) and the
+    // challenge scriptPubKey (input 0) are recovered from the proof itself.
+    final result = bip322.Bip322.verifyProofOfFundsFromSignature(signature);
 
     final status = switch (result.status) {
       bip322.ProofOfFundsStatus.valid => ProofStatus.valid,
       bip322.ProofOfFundsStatus.inconclusive => ProofStatus.inconclusive,
       bip322.ProofOfFundsStatus.invalid => ProofStatus.invalid,
     };
+
+    final challengeAddress = result.challengeScriptPubKey == null
+        ? null
+        : _addressFromScript(result.challengeScriptPubKey!, net);
 
     // Offline-only path: report cryptographically proven outpoints, unchecked.
     if (chain == null || status == ProofStatus.invalid) {
@@ -142,6 +135,8 @@ class ProofOfFunds {
         ],
         lockTime: result.lockTime,
         sequence: result.sequence,
+        message: result.message,
+        challengeAddress: challengeAddress,
       );
     }
 
@@ -175,7 +170,16 @@ class ProofOfFunds {
       proven: proven,
       lockTime: result.lockTime,
       sequence: result.sequence,
+      message: result.message,
+      challengeAddress: challengeAddress,
     );
+  }
+
+  /// Re-encodes a challenge [scriptPubKey] (P2WPKH/P2TR) as an address string
+  /// for display. Returns `null` for any other script type — purely cosmetic,
+  /// so a failure never affects the verify result.
+  String? _addressFromScript(Uint8List scriptPubKey, bip322.Network net) {
+    return bip322.Bip322.addressFromScriptPubKey(scriptPubKey, network: net);
   }
 
   /// Decodes the finalized PSBT and pairs each proven outpoint with the

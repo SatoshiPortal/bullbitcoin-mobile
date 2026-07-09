@@ -11,7 +11,7 @@ dependencies:
   bip322:
     git:
       url: https://github.com/ethicnology/dart-bip322-proof-of-funds.git
-      ref: 2e00cd9624fd6a6783a33332d0e80088da59f864
+      ref: d94e80f64cc98b6d15b481f64ea132ddd4cbef99
   hex: ^0.2.0
 
 dev_dependencies:

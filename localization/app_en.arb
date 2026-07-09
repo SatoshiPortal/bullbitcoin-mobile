@@ -14807,6 +14807,24 @@
   "@proofOfFundsVerifyTitle": {
     "description": "Title of the verify-funds screen"
   },
+  "proofOfFundsVerifySubtitle": "Paste a proof of funds. The message and address it was signed for are read from the proof itself.",
+  "@proofOfFundsVerifySubtitle": {
+    "description": "Subtitle explaining the single-field verify input"
+  },
+  "proofOfFundsRecoveredMessage": "Message: {message}",
+  "@proofOfFundsRecoveredMessage": {
+    "description": "Shows the message recovered from a verified proof",
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "proofOfFundsRecoveredAddress": "Address: {address}",
+  "@proofOfFundsRecoveredAddress": {
+    "description": "Shows the challenge address recovered from a verified proof",
+    "placeholders": {
+      "address": { "type": "String" }
+    }
+  },
   "proofOfFundsChallengeAddressHint": "Challenge address",
   "@proofOfFundsChallengeAddressHint": {
     "description": "Hint for the challenge address input when verifying"

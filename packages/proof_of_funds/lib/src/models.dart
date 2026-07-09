@@ -97,11 +97,21 @@ class ProofResult {
   /// nSequence of `to_sign`'s first input — "S" in the same phrase.
   final int sequence;
 
+  /// The message the proof commits to, recovered from the proof itself
+  /// (BIP-322 0x09 field). `null` if the proof did not embed it.
+  final String? message;
+
+  /// The challenge address the proof is signed for, recovered from the proof
+  /// (input 0's scriptPubKey). `null` if it could not be recovered/encoded.
+  final String? challengeAddress;
+
   const ProofResult({
     required this.status,
     required this.proven,
     this.lockTime = 0,
     this.sequence = 0,
+    this.message,
+    this.challengeAddress,
   });
 
   bool get isValid => status == ProofStatus.valid;

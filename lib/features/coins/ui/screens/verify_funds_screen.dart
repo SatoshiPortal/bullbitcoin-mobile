@@ -19,8 +19,6 @@ class VerifyFundsScreen extends StatefulWidget {
 }
 
 class _VerifyFundsScreenState extends State<VerifyFundsScreen> {
-  String _message = '';
-  String _address = '';
   String _proof = '';
 
   @override
@@ -55,16 +53,9 @@ class _VerifyFundsScreenState extends State<VerifyFundsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        BullInputText(
-                          value: _message,
-                          onChanged: (v) => setState(() => _message = v),
-                          hint: loc.proofOfFundsMessageHint,
-                        ),
-                        const Gap(12),
-                        BullInputText(
-                          value: _address,
-                          onChanged: (v) => setState(() => _address = v),
-                          hint: loc.proofOfFundsChallengeAddressHint,
+                        Text(
+                          loc.proofOfFundsVerifySubtitle,
+                          style: TextStyle(color: colors.textMuted),
                         ),
                         const Gap(12),
                         BullInputText(
@@ -75,17 +66,10 @@ class _VerifyFundsScreenState extends State<VerifyFundsScreen> {
                         const Gap(24),
                         BullButton.big(
                           label: loc.proofOfFundsVerifyAction,
-                          disabled:
-                              _message.trim().isEmpty ||
-                              _address.trim().isEmpty ||
-                              _proof.trim().isEmpty ||
-                              state.isWorking,
-                          onPressed: () =>
-                              context.read<VerifyProofOfFundsCubit>().verify(
-                                message: _message.trim(),
-                                challengeAddress: _address.trim(),
-                                signature: _proof.trim(),
-                              ),
+                          disabled: _proof.trim().isEmpty || state.isWorking,
+                          onPressed: () => context
+                              .read<VerifyProofOfFundsCubit>()
+                              .verify(signature: _proof.trim()),
                           bgColor: colors.primary,
                           textColor: colors.onPrimary,
                         ),
@@ -136,6 +120,21 @@ class _ResultView extends StatelessWidget {
           ),
         ),
         const Gap(12),
+        // Recovered from the proof itself (BIP-322 0x09 + input 0).
+        if (result.message != null) ...[
+          Text(
+            loc.proofOfFundsRecoveredMessage(result.message!),
+            style: TextStyle(color: colors.text, fontSize: 13),
+          ),
+          const Gap(4),
+        ],
+        if (result.challengeAddress != null) ...[
+          Text(
+            loc.proofOfFundsRecoveredAddress(result.challengeAddress!),
+            style: TextStyle(color: colors.text, fontSize: 13),
+          ),
+          const Gap(8),
+        ],
         for (final u in result.proven)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),

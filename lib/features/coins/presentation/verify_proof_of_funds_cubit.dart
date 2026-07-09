@@ -12,11 +12,7 @@ class VerifyProofOfFundsCubit extends Cubit<VerifyProofOfFundsState> {
 
   final VerifyProofOfFundsUsecase verifyProofOfFundsUsecase;
 
-  Future<void> verify({
-    required String message,
-    required String challengeAddress,
-    required String signature,
-  }) async {
+  Future<void> verify({required String signature}) async {
     emit(
       state.copyWith(
         status: VerifyProofOfFundsStatus.working,
@@ -26,8 +22,6 @@ class VerifyProofOfFundsCubit extends Cubit<VerifyProofOfFundsState> {
     );
     try {
       final result = await verifyProofOfFundsUsecase.execute(
-        message: message,
-        challengeAddress: challengeAddress,
         signature: signature,
       );
       emit(
