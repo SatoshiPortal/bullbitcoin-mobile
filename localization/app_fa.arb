@@ -1617,10 +1617,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "عدم تطابق دستگاه شناسایی شده است.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -2958,10 +2954,6 @@
   "bip85NextMnemonic": "بعدی Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "هیچ اتصال فعال با دستگاه BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "بودجه حساب شما",
   "@dcaFundAccountButton": {
@@ -7050,10 +7042,6 @@
   "kruxStep4": "روی Load از دوربین",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "فرمت Invalid PSBT شناسایی شده است.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "dcaSetupFrequencyError": "لطفا یک فرکانس انتخاب کنید",
   "@dcaSetupFrequencyError": {

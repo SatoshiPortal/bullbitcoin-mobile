@@ -159,7 +159,6 @@
   "recoverbullSelectVaultImportSuccess": "La tua cassaforte e' stata importata con successo",
   "mempoolServerNotUsed": "Non utilizzato (server personalizzato attivo)",
   "recoverbullSelectErrorPrefix": "Errore:",
-  "bitboxErrorDeviceMismatch": "Rilevato errore del dispositivo.",
   "arkReceiveBtcAddress": "BT2 indirizzo",
   "exchangeLandingRecommendedExchange": "Scambio Bitcoin consigliato",
   "backupWalletHowToDecideVaultMoreInfo": "Visitare Recoverbull.com per ulteriori informazioni.",
@@ -698,7 +697,6 @@
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Importazione di Mnemonic",
   "bip85NextMnemonic": "Il prossimo Mnemonic",
-  "bitboxErrorNoActiveConnection": "Nessuna connessione attiva al dispositivo BitBox.",
   "dcaFundAccountButton": "Finanziamento del tuo conto",
   "transactionFilterAll": "Tutti",
   "arkSendTitle": "Invia",
@@ -2284,7 +2282,6 @@
   "recoverbullRecoveryContinueButton": "Continua",
   "payTimeoutError": "Tempo di pagamento. Si prega di controllare lo stato",
   "kruxStep4": "Fare clic su Carica dalla fotocamera",
-  "bitboxErrorInvalidMagicBytes": "Rilevato formato PSBT non valido.",
   "sellErrorRecalculateFees": "Non ha ricalcolato le tasse: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {

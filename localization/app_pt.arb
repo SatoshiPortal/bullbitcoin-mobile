@@ -157,7 +157,6 @@
   "recoverbullSelectVaultImportSuccess": "Seu cofre foi importado com sucesso",
   "mempoolServerNotUsed": "Não usado (servidor personalizado ativo)",
   "recoverbullSelectErrorPrefix": "Erro:",
-  "bitboxErrorDeviceMismatch": "Desvio de dispositivo detectado.",
   "arkReceiveBtcAddress": "Endereço de BTC",
   "exchangeLandingRecommendedExchange": "Troca de Bitcoin recomendada",
   "backupWalletHowToDecideVaultMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
@@ -695,7 +694,6 @@
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Importação Mnemonic",
   "bip85NextMnemonic": "Próximo Mnemonic",
-  "bitboxErrorNoActiveConnection": "Nenhuma conexão ativa com o dispositivo BitBox.",
   "dcaFundAccountButton": "Fina sua conta",
   "transactionFilterAll": "Todos",
   "arkSendTitle": "Enviar",
@@ -2265,7 +2263,6 @@
   "recoverbullRecoveryContinueButton": "Continue",
   "payTimeoutError": "Tempo de pagamento. Por favor verifique o status",
   "kruxStep4": "Clique em Carregar da câmera",
-  "bitboxErrorInvalidMagicBytes": "Formato PSBT inválido detectado.",
   "sellErrorRecalculateFees": "Falhado em taxas recalculadas: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {

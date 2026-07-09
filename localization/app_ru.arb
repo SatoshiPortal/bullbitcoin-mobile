@@ -158,7 +158,6 @@
   "recoverbullSelectVaultImportSuccess": "Ваше хранилище было успешно импортировано",
   "mempoolServerNotUsed": "Не используется (активный сервер)",
   "recoverbullSelectErrorPrefix": "Ошибка:",
-  "bitboxErrorDeviceMismatch": "Устройства обнаружена ошибка.",
   "arkReceiveBtcAddress": "Адрес BTC",
   "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
   "backupWalletHowToDecideVaultMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
@@ -696,7 +695,6 @@
   "importQrDeviceJadeName": "Жадный блок",
   "importWalletImportMnemonic": "Импорт Mnemonic",
   "bip85NextMnemonic": "Следующий Mnemonic",
-  "bitboxErrorNoActiveConnection": "Нет активного подключения к устройству BitBox.",
   "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
@@ -2282,7 +2280,6 @@
   "recoverbullRecoveryContinueButton": "Продолжить",
   "payTimeoutError": "Время оплаты. Пожалуйста, проверьте статус",
   "kruxStep4": "Нажмите кнопку Загрузка с камеры",
-  "bitboxErrorInvalidMagicBytes": "Выявлен неверный формат PSBT.",
   "sellErrorRecalculateFees": "Не удалось пересчитать сборы: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {

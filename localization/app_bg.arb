@@ -628,10 +628,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Установено несъответствие на устройството.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "Посетете recoverbull.com за повече информация.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
@@ -1831,10 +1827,6 @@
   "bip85NextMnemonic": "Създайте ръчно резервно копие на вашите деривационни пътища.",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "Няма активна връзка с BitBox устройство.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "transactionFilterAll": "Всички",
   "@transactionFilterAll": {
@@ -5413,10 +5405,6 @@
   "kruxStep4": "Натисни Зареди от камерата",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Открит е невалиден PSBT формат.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "testBackupErrorNoMnemonic": "Няма заредена мнемонична фраза.",
   "@testBackupErrorNoMnemonic": {

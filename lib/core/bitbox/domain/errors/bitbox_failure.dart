@@ -28,18 +28,6 @@ final class ConnectionTypeNotInitializedBitBoxFailure extends BitBoxFailure {
   const ConnectionTypeNotInitializedBitBoxFailure();
 }
 
-final class NoActiveConnectionBitBoxFailure extends BitBoxFailure {
-  const NoActiveConnectionBitBoxFailure();
-}
-
-final class DeviceMismatchBitBoxFailure extends BitBoxFailure {
-  const DeviceMismatchBitBoxFailure();
-}
-
-final class InvalidMagicBytesBitBoxFailure extends BitBoxFailure {
-  const InvalidMagicBytesBitBoxFailure();
-}
-
 final class DeviceNotPairedBitBoxFailure extends BitBoxFailure {
   const DeviceNotPairedBitBoxFailure();
 }

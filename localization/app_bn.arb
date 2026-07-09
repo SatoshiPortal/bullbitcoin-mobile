@@ -456,10 +456,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "ডিভাইস মিল খাপ খায় না সনাক্ত হয়েছে।",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC ঠিকানা",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2034,10 +2030,6 @@
   "importWalletImportMnemonic": "Mnemonic আমদানি",
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
-  },
-  "bitboxErrorNoActiveConnection": "BitBox ডিভাইসের সাথে কোনো সক্রিয় সংযোগ নেই।",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
   "@dcaFundAccountButton": {
@@ -6811,10 +6803,6 @@
   "kruxStep4": "ক্যামেরা থেকে লোড করুন",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "PSBT ফরম্যাট অবৈধ সনাক্ত হয়েছে।",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "ফি পুনরায় গণনা করতে ব্যর্থ: {error}",
   "@sellErrorRecalculateFees": {

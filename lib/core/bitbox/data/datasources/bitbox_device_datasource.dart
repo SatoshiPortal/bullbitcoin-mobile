@@ -30,8 +30,7 @@ class BitBoxDeviceDatasource {
           return await _scanBleDevices();
       }
     } catch (e) {
-      if (e is BitBoxFailure) rethrow;
-      throw BitBoxUnexpectedFailure(e.toString());
+      throw _mapOperationError(e);
     }
   }
 
@@ -78,7 +77,7 @@ class BitBoxDeviceDatasource {
     }
 
     if (!scanSucceeded && lastScanError != null) {
-      throw BitBoxUnexpectedFailure(lastScanError.toString());
+      throw _mapOperationError(lastScanError);
     }
 
     throw const NoDevicesFoundBitBoxFailure();
@@ -228,8 +227,7 @@ class BitBoxDeviceDatasource {
           return await _connectBleDevice(device);
       }
     } catch (e) {
-      if (e is BitBoxFailure) rethrow;
-      throw BitBoxUnexpectedFailure(e.toString());
+      throw _mapOperationError(e);
     }
   }
 
@@ -397,7 +395,43 @@ class BitBoxDeviceDatasource {
   BitBoxFailure _mapOperationError(Object error) {
     if (error is BitBoxFailure) return error;
 
-    return BitBoxUnexpectedFailure(error.toString());
+    return _interpretOperationError(error.toString()) ??
+        BitBoxUnexpectedFailure(error.toString());
+  }
+
+  BitBoxFailure? _interpretOperationError(String raw) {
+    final normalized = raw.toLowerCase();
+
+    if (normalized.contains('permission denied')) {
+      return const PermissionDeniedBitBoxFailure();
+    }
+    if (normalized.contains('no devices found')) {
+      return const NoDevicesFoundBitBoxFailure();
+    }
+    if (normalized.contains('device not found')) {
+      return const DeviceNotFoundBitBoxFailure();
+    }
+    if (normalized.contains('device not paired') ||
+        normalized.contains('not paired')) {
+      return const DeviceNotPairedBitBoxFailure();
+    }
+    if (normalized.contains('handshake')) {
+      return const HandshakeFailedBitBoxFailure();
+    }
+    if (normalized.contains('timeout')) {
+      return const OperationTimeoutBitBoxFailure();
+    }
+    if (normalized.contains('connection failed')) {
+      return const ConnectionFailedBitBoxFailure();
+    }
+    if (normalized.contains('invalid response')) {
+      return const InvalidResponseBitBoxFailure();
+    }
+    if (normalized.contains('operation cancelled') ||
+        normalized.contains('operation canceled')) {
+      return const OperationCancelledBitBoxFailure();
+    }
+    return null;
   }
 
   Future<void> disconnectConnection(BitBoxDeviceModel device) async {

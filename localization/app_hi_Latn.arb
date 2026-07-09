@@ -4835,18 +4835,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "BitBox device se koi active connection nahi hai.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detect hua.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detect hua.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device pair nahi hua. Pehle pairing process complete karo.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"

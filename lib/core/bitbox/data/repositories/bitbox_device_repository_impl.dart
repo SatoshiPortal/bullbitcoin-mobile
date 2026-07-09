@@ -21,6 +21,7 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
     try {
       return Ok(await run());
     } on BitBoxFailure catch (f) {
+      log.warning('BitBox failure: ${f.runtimeType}', error: f.logMessage);
       return Err(f);
     } catch (e, st) {
       if (isCleanup) {

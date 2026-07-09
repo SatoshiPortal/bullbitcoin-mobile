@@ -5936,18 +5936,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "No active connection to BitBox device.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "Device mismatch detected.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"

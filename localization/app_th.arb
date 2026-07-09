@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "อุปกรณ์ตรวจจับข้อบกพร่อง.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "ที่อยู่อีเมล",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2061,10 +2057,6 @@
   "bip85NextMnemonic": "ถัดไป Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "ไม่มีการเชื่อมต่อการใช้งานบน BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "บัญชีบัญชีของคุณ",
   "@dcaFundAccountButton": {

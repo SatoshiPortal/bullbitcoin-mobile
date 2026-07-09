@@ -1282,7 +1282,6 @@
   "recoverbullSelectVaultImportSuccess": "Ви успішно імпортували",
   "mempoolServerNotUsed": "Не використовується (активний сервер)",
   "recoverbullSelectErrorPrefix": "Помилка:",
-  "bitboxErrorDeviceMismatch": "Виявлено неправильний пристрій.",
   "arkReceiveBtcAddress": "Bitcoin у USD",
   "exchangeLandingRecommendedExchange": "Bitcoin у USD",
   "backupWalletHowToDecideVaultMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
@@ -1663,7 +1662,6 @@
   "importQrDeviceJadeName": "Блокстрім Jade",
   "importWalletImportMnemonic": "Імпортний мнемічний",
   "bip85NextMnemonic": "Далі Mnemonic",
-  "bitboxErrorNoActiveConnection": "Не активне підключення до пристрою BitBox.",
   "dcaFundAccountButton": "Оберіть Ваш рахунок",
   "arkSendTitle": "Відправити",
   "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
@@ -2766,7 +2764,6 @@
   "recoverbullRecoveryContinueButton": "Продовжити",
   "payTimeoutError": "Розстрочка платежу. Будь ласка, перевірте статус",
   "kruxStep4": "Натисніть завантаження з камери",
-  "bitboxErrorInvalidMagicBytes": "Виявлено неточний формат PSBT.",
   "sellErrorRecalculateFees": "Плата за перерахунок: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {

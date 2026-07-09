@@ -431,10 +431,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "تم اكتشاف خطأ في جهاز التحكم.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "عنوان BTC",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -1947,10 +1943,6 @@
   "bip85NextMnemonic": "التالي",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "لا علاقة نشطة بجهاز (بيتبوكس).",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "صندوق حسابك",
   "@dcaFundAccountButton": {
@@ -6563,10 +6555,6 @@
   "kruxStep4": "كليك لود من الكاميرا",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "عدم إعادة حساب الرسوم: {error}",
   "@sellErrorRecalculateFees": {

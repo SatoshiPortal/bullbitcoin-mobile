@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "장치 mismatch 검출.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC 주소",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2061,10 +2057,6 @@
   "bip85NextMnemonic": "다음 Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "BitBox 장치에 대한 활성 연결이 없습니다.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "계정 생성",
   "@dcaFundAccountButton": {
@@ -6994,10 +6986,6 @@
   "kruxStep4": "본문 바로가기",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "PSBT 형식이 감지되었습니다.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "송금 수수료: {error}",
   "@sellErrorRecalculateFees": {

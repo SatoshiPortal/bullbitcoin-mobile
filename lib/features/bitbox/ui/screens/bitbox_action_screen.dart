@@ -348,16 +348,17 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
       final device = cubit.state.connectedDevice!;
       final address = widget.parameters?.address;
+      final derivationPath = widget.parameters?.derivationPath;
       final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
 
-      if (address != null) {
+      if (address != null && derivationPath != null) {
         cubit.showAddressVerification(address);
       }
 
       return locator<VerifyAddressBitBoxUsecase>().execute(
         device: device,
         address: address,
-        derivationPath: widget.parameters?.derivationPath,
+        derivationPath: derivationPath,
         scriptType: scriptType,
       );
     });

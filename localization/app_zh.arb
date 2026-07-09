@@ -160,7 +160,6 @@
   "recoverbullSelectVaultImportSuccess": "成功进口",
   "mempoolServerNotUsed": "未使用(海关服务器运行)",
   "recoverbullSelectErrorPrefix": "错误:",
-  "bitboxErrorDeviceMismatch": "检测到的装置不匹配.",
   "arkReceiveBtcAddress": "BTC 地址",
   "exchangeLandingRecommendedExchange": "提议交换",
   "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
@@ -699,7 +698,6 @@
   "importQrDeviceJadeName": "B. 集群",
   "importWalletImportMnemonic": "导入助记词",
   "bip85NextMnemonic": "接下来的Mnemonic",
-  "bitboxErrorNoActiveConnection": "与BitBox装置没有积极的联系.",
   "dcaFundAccountButton": "基金",
   "transactionFilterAll": "所有人",
   "arkSendTitle": "修正",
@@ -2285,7 +2283,6 @@
   "recoverbullRecoveryContinueButton": "继续",
   "payTimeoutError": "支付时间。 请检查情况",
   "kruxStep4": "Click Load",
-  "bitboxErrorInvalidMagicBytes": "检测到了无效的PSBT格式.",
   "sellErrorRecalculateFees": "未收回费用:{error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {

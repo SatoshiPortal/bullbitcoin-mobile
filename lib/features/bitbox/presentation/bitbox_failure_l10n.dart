@@ -15,11 +15,6 @@ extension BitBoxFailureL10n on BitBoxFailure {
     DeviceNotFoundBitBoxFailure() => context.loc.bitboxErrorDeviceNotFound,
     ConnectionTypeNotInitializedBitBoxFailure() =>
       context.loc.bitboxErrorConnectionTypeNotInitialized,
-    NoActiveConnectionBitBoxFailure() =>
-      context.loc.bitboxErrorNoActiveConnection,
-    DeviceMismatchBitBoxFailure() => context.loc.bitboxErrorDeviceMismatch,
-    InvalidMagicBytesBitBoxFailure() =>
-      context.loc.bitboxErrorInvalidMagicBytes,
     DeviceNotPairedBitBoxFailure() => context.loc.bitboxErrorDeviceNotPaired,
     HandshakeFailedBitBoxFailure() => context.loc.bitboxErrorHandshakeFailed,
     OperationTimeoutBitBoxFailure() => context.loc.bitboxErrorOperationTimeout,

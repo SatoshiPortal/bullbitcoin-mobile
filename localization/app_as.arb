@@ -2677,18 +2677,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "bitboxErrorNoActiveConnection": "BitBox ডিভাইচৰ সৈতে কোনো সক্ৰিয় সংযোগ নাই।",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
-  "bitboxErrorDeviceMismatch": "ডিভাইচৰ অসামঞ্জস্য ধৰা পৰিছে।",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "bitboxErrorInvalidMagicBytes": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
-  },
   "bitboxErrorDeviceNotPaired": "ডিভাইচ পেয়াৰ কৰা হোৱা নাই। অনুগ্ৰহ কৰি প্ৰথমে পেয়াৰিং প্ৰক্ৰিয়া সম্পন্ন কৰক।",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"

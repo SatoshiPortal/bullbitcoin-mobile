@@ -447,10 +447,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Cihaz yanlış uyumlu tespit edildi.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC adresi",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2053,10 +2049,6 @@
   "bip85NextMnemonic": "Sonraki Mnemonik",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "BitBox cihazına aktif bir bağlantı yok.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "Hesabınızı finanse edin",
   "@dcaFundAccountButton": {
@@ -6962,10 +6954,6 @@
   "kruxStep4": "Kameradan Yük",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Invalid PSBT formatı tespit edildi.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "Ücretleri yeniden hesaplamak için başarısız oldu: {error}",
   "@sellErrorRecalculateFees": {

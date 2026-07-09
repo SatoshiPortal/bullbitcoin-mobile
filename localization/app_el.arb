@@ -372,10 +372,6 @@
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "bitboxErrorDeviceMismatch": "Device mismatch εντοπίστηκε.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC διεύθυνση διεύθυνση",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -1758,10 +1754,6 @@
   "bip85NextMnemonic": "Next Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "Καμία ενεργή σύνδεση με τη συσκευή BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "transactionFilterAll": "Όλα όλα",
   "@transactionFilterAll": {
@@ -5821,10 +5813,6 @@
   "kruxStep4": "Κάντε κλικ Φόρτρα από κάμερα",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Η μορφή Invalid PSBT εντοπίστηκε.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "Απέτυχε να υπολογίσει τα τέλη: {error}",
   "@sellErrorRecalculateFees": {

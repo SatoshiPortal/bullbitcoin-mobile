@@ -156,7 +156,6 @@
   "recoverbullSelectVaultImportSuccess": "Ihr Tresor wurde erfolgreich importiert",
   "mempoolServerNotUsed": "Nicht verwendet (eigener Server aktiv)",
   "recoverbullSelectErrorPrefix": "Fehler:",
-  "bitboxErrorDeviceMismatch": "Gerätefehler erkannt.",
   "arkReceiveBtcAddress": "Adresse",
   "exchangeLandingRecommendedExchange": "Empfohlene Bitcoin-Börse",
   "backupWalletHowToDecideVaultMoreInfo": "Besuchen Sie recoverybull.com für weitere Informationen.",
@@ -684,7 +683,6 @@
   "importQrDeviceJadeName": "Blockstream Jade",
   "importWalletImportMnemonic": "Mnemonik importieren",
   "bip85NextMnemonic": "Nächster Mnemonic",
-  "bitboxErrorNoActiveConnection": "Keine aktive Verbindung zum BitBox-Gerät.",
   "dcaFundAccountButton": "Ihr Konto aufladen",
   "arkSendTitle": "Senden",
   "transactionDetailLabelAmountReceived": "Erhaltener Betrag",
@@ -2233,7 +2231,6 @@
   "recoverbullRecoveryContinueButton": "Fortfahren",
   "payTimeoutError": "Zahlungszeitüberschreitung. Bitte überprüfen Sie den Status.",
   "kruxStep4": "Von Kamera laden",
-  "bitboxErrorInvalidMagicBytes": "Ungültiges PSBT-Format erkannt.",
   "sellErrorRecalculateFees": "Gebühren konnten nicht neu berechnet werden: {error}.",
   "@sellErrorRecalculateFees": {
     "placeholders": {

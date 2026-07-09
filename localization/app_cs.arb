@@ -742,10 +742,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Detekována chyba zařízení.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "arkReceiveBtcAddress": "BTC adresa",
   "@arkReceiveBtcAddress": {
     "description": "Label for Bitcoin address"
@@ -2273,10 +2269,6 @@
   "bip85NextMnemonic": "Další Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "bitboxErrorNoActiveConnection": "Žádné aktivní připojení k zařízení BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "dcaFundAccountButton": "Fond vašeho účtu",
   "@dcaFundAccountButton": {
@@ -6933,10 +6925,6 @@
   "kruxStep4": "Klikněte na Vložte z kamery",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Neplatný formát PSBT detekován.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "Přepočtení poplatků: {error}",
   "@sellErrorRecalculateFees": {

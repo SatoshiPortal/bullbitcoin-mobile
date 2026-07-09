@@ -421,10 +421,6 @@
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
-  "bitboxErrorDeviceMismatch": "Desvio de dispositivo detectado.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
   "rbfFastest": "Mais rápido",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
@@ -1851,10 +1847,6 @@
   "sendServerNetworkFees": "Taxas de rede do servidor",
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
-  },
-  "bitboxErrorNoActiveConnection": "Nenhuma conexão ativa com o dispositivo BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
   },
   "transactionLabelReceiveAmount": "Receber valor",
   "@transactionLabelReceiveAmount": {
@@ -6259,10 +6251,6 @@
   "fundExchangeMethodSinpeTransfer": "Transferência de SINPE",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "bitboxErrorInvalidMagicBytes": "Formato PSBT inválido detectado.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
   "@sendEstimatedDelivery10to30Minutes": {
