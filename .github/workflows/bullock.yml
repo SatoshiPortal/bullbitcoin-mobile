@@ -1,14 +1,22 @@
 # Bullock — the coding intern
 #
 # A young bull: the Bull's junior. A write-access collaborator summons it with
-# an `@bullock <instruction>` comment on an OPEN, SAME-REPO pull request. Bullock
-# gathers the full context (the PR's comments, any prior Claude review, and the
-# linked issue + its comments), decides whether it has enough information, and
-# then either:
-#   - SUFFICIENT   → implements ONLY what was requested (per AGENTS.md), verifies
-#                    with `make checks`, and opens a NEW pull request whose BASE
-#                    is the branch of the PR it was called from (a stacked PR).
-#   - INSUFFICIENT → posts a specific question on the PR and opens no PR.
+# an `@bullock <instruction>` comment, in one of two places:
+#
+#   ON A PULL REQUEST (same-repo only) — Bullock gathers the full context (the
+#   PR's comments, any prior Claude review, and the linked issue + its
+#   comments), and if the request is actionable it implements it and opens a
+#   NEW pull request whose BASE is the branch of the PR it was called from (a
+#   stacked PR — the maintainer reviews Bullock's diff in isolation, then
+#   merges it into their own branch).
+#
+#   ON AN ISSUE — Bullock reads the issue thread, branches off the repo's
+#   default branch (develop), implements, and opens a normal PR against
+#   develop with `Closes #N`. No fork concern here: the code built is always
+#   the repo's own default branch.
+#
+# In both modes, if the request is too vague to act on, Bullock posts a
+# specific clarifying question and opens no PR.
 #
 # ── Why this is a separate workflow from claude.yml ──────────────────────────
 # claude.yml is the REVIEWER (auto-review on PR-open + interactive @claude). This
@@ -30,14 +38,13 @@
 # `branch_name`. So Bullock writes its verdict to `.bullock/verdict.json` and a
 # shell step reads it with jq. Deterministic and v1-safe.
 #
-# ── Same-repo only (this is a PUBLIC repo) ───────────────────────────────────
+# ── Same-repo only for PR mode (this is a PUBLIC repo) ───────────────────────
 # Running a FORK PR's build/tests (`make checks` runs build_runner, dart fix,
 # unit tests) in a job that holds ANTHROPIC_API_KEY + a write token is an
 # untrusted-code-execution / secret-exfiltration path (see the action's
 # security.md). Bullock therefore refuses fork PRs with an explanatory comment.
 # External contributions are handled by a maintainer re-pushing the branch into
-# the repo first. The action itself already restricts comment triggers to
-# write-access users.
+# the repo first. Issue mode is unaffected: it only ever builds develop.
 name: Bullock
 
 on:
@@ -52,39 +59,36 @@ on:
 permissions:
   id-token: write # required: the action mints its GitHub token via OIDC
   contents: write # create/push the bullock/* branch
-  pull-requests: write # open the stacked PR + comment
-  issues: write # comment on the source PR (a PR is an issue for the comments API)
+  pull-requests: write # open the new PR + comment
+  issues: write # comment on the source PR/issue
 
-# One Bullock run per PR; queue rather than cancel — a maintainer's follow-up
-# instruction should not kill an in-flight implementation. Public-repo minutes
-# are free, so queuing is acceptable.
+# One Bullock run per source PR/issue; queue rather than cancel — a maintainer's
+# follow-up instruction should not kill an in-flight implementation. Public-repo
+# minutes are free, so queuing is acceptable.
 concurrency:
   group: bullock-${{ github.event.issue.number || github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
   bullock:
-    # Only fire on a PR comment that summons Bullock. `issue_comment` fires for
-    # both issues and PRs, so `github.event.issue.pull_request` narrows it to
-    # PRs; `pull_request_review_comment` is always on a PR. Write-access gating
-    # happens twice: the first step fails fast for non-write actors, and
-    # claude-code-action enforces it again internally — this `if` just avoids
-    # spinning a runner on unrelated comments.
-    if: >
-      (github.event_name == 'issue_comment' &&
-       github.event.issue.pull_request &&
-       contains(github.event.comment.body, '@bullock')) ||
-      (github.event_name == 'pull_request_review_comment' &&
-       contains(github.event.comment.body, '@bullock'))
+    # Fire on any comment that summons Bullock — on a PR (issue_comment with
+    # .pull_request set, or pull_request_review_comment) or on a plain issue.
+    # Write-access gating happens twice: the first step fails fast for
+    # non-write actors, and claude-code-action enforces it again internally —
+    # this `if` just avoids spinning a runner on unrelated comments.
+    if: contains(github.event.comment.body, '@bullock')
     runs-on: ubuntu-24.04
     # analyze_and_test's checks job needs ~30min for setup + `make checks` alone;
     # Bullock adds Claude's implement/verify loop on top of the same prefix.
     timeout-minutes: 60
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+      SOURCE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
       ACTOR: ${{ github.event.comment.user.login }}
       INSTRUCTION: ${{ github.event.comment.body }}
+      # pull_request_review_comment is always on a PR; issue_comment is on a PR
+      # only when the issue payload carries a pull_request key.
+      IS_PR: ${{ github.event_name == 'pull_request_review_comment' || github.event.issue.pull_request != null }}
     steps:
       # ── Gate: only write-access users may summon Bullock ────────────────────
       # claude-code-action enforces this internally too, but that check runs
@@ -100,50 +104,62 @@ jobs:
             *) echo "::error::@${ACTOR} has '${perm}' access — only write/maintain/admin may summon Bullock."; exit 1 ;;
           esac
 
-      # ── Resolve the PR facts up front (branch names + fork flag + context) ──
-      # A single gh call feeds every later step. headRefName is the branch we
-      # branch off AND the base of the stacked PR. closingIssuesReferences is
-      # GitHub's authoritative linked-issue list (better than regexing the body).
-      - name: Resolve PR facts
-        id: pr
+      # ── Resolve the source facts (PR mode vs issue mode) ────────────────────
+      # One step decides everything the later steps need: what to check out,
+      # what the new PR's base is, and (PR mode) whether the head is a fork.
+      # closingIssuesReferences is GitHub's authoritative linked-issue list
+      # (better than regexing the PR body).
+      - name: Resolve source facts
+        id: src
         run: |
           set -euo pipefail
-          pr_json=$(gh pr view "$PR_NUMBER" \
-            --repo "${{ github.repository }}" \
-            --json headRefName,baseRefName,isCrossRepository,headRepositoryOwner,url,title,body,closingIssuesReferences)
-          echo "cross=$(echo "$pr_json" | jq -r '.isCrossRepository')" >> "$GITHUB_OUTPUT"
-          echo "head=$(echo "$pr_json" | jq -r '.headRefName')" >> "$GITHUB_OUTPUT"
-          echo "base=$(echo "$pr_json" | jq -r '.baseRefName')" >> "$GITHUB_OUTPUT"
-          echo "url=$(echo "$pr_json" | jq -r '.url')" >> "$GITHUB_OUTPUT"
-          # Newline-delimited issue numbers (empty if none) for the prompt.
-          echo "$pr_json" | jq -r '.closingIssuesReferences[]?.number' > /tmp/bullock-linked-issues.txt || true
-          echo "linked_issues<<EOF" >> "$GITHUB_OUTPUT"
-          cat /tmp/bullock-linked-issues.txt >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          if [ "$IS_PR" = "true" ]; then
+            pr_json=$(gh pr view "$SOURCE_NUMBER" \
+              --repo "${{ github.repository }}" \
+              --json headRefName,baseRefName,isCrossRepository,url,closingIssuesReferences)
+            head=$(echo "$pr_json" | jq -r '.headRefName')
+            echo "kind=pr" >> "$GITHUB_OUTPUT"
+            echo "cross=$(echo "$pr_json" | jq -r '.isCrossRepository')" >> "$GITHUB_OUTPUT"
+            echo "checkout_ref=${head}" >> "$GITHUB_OUTPUT"
+            # Stacked: the new PR targets the source PR's own branch.
+            echo "pr_base=${head}" >> "$GITHUB_OUTPUT"
+            echo "linked_issues<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$pr_json" | jq -r '.closingIssuesReferences[]?.number' >> "$GITHUB_OUTPUT" || true
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          else
+            default_branch=$(gh repo view "${{ github.repository }}" \
+              --json defaultBranchRef --jq '.defaultBranchRef.name')
+            echo "kind=issue" >> "$GITHUB_OUTPUT"
+            echo "cross=false" >> "$GITHUB_OUTPUT"
+            echo "checkout_ref=${default_branch}" >> "$GITHUB_OUTPUT"
+            # Normal PR: from an issue, Bullock targets the default branch.
+            echo "pr_base=${default_branch}" >> "$GITHUB_OUTPUT"
+            echo "linked_issues=" >> "$GITHUB_OUTPUT"
+          fi
 
       # ── Refuse fork PRs (with feedback, not silence) ────────────────────────
       - name: Reject fork PRs
-        if: steps.pr.outputs.cross == 'true'
+        if: steps.src.outputs.cross == 'true'
         run: |
           set -euo pipefail
-          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body \
+          gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body \
             "🐂 Bullock only works on same-repo branches — this PR's branch lives on a fork, which Bullock can't build safely. A maintainer can re-push the branch into \`${{ github.repository }}\` and summon me again."
           echo "Fork PR — Bullock declined."
 
       # Everything below is gated on same-repo so no fork code ever runs with
-      # secrets present.
-      - name: Checkout source PR head branch
-        if: steps.pr.outputs.cross != 'true'
+      # secrets present. (Issue mode always passes: it checks out develop.)
+      - name: Checkout source branch
+        if: steps.src.outputs.cross != 'true'
         uses: actions/checkout@v7
         with:
-          ref: ${{ steps.pr.outputs.head }}
+          ref: ${{ steps.src.outputs.checkout_ref }}
           fetch-depth: 0 # full history for branch/PR operations
           persist-credentials: true
 
-      # Bullock's work branch, created off the source PR head BEFORE Claude runs.
+      # Bullock's work branch, created off the source ref BEFORE Claude runs.
       # Slug: first ~6 words of the instruction, kebab-cased, @mention stripped.
       - name: Create Bullock branch
-        if: steps.pr.outputs.cross != 'true'
+        if: steps.src.outputs.cross != 'true'
         id: branch
         run: |
           set -euo pipefail
@@ -155,7 +171,7 @@ jobs:
             | cut -d' ' -f1-6 \
             | tr ' ' '-')
           [ -z "$slug" ] && slug="task"
-          branch="bullock/pr-${PR_NUMBER}-${slug}"
+          branch="bullock/${{ steps.src.outputs.kind }}-${SOURCE_NUMBER}-${slug}"
           # Uniqueness: if it somehow exists on the remote, suffix the run id.
           if git ls-remote --exit-code origin "refs/heads/${branch}" >/dev/null 2>&1; then
             branch="${branch}-${{ github.run_id }}"
@@ -172,7 +188,7 @@ jobs:
       # third-party action on a runner that can see our ANTHROPIC_API_KEY must
       # not silently change under us.
       - name: Free disk space
-        if: steps.pr.outputs.cross != 'true'
+        if: steps.src.outputs.cross != 'true'
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         with:
           tool-cache: true
@@ -183,16 +199,16 @@ jobs:
           swap-storage: false
 
       - name: Flutter setup
-        if: steps.pr.outputs.cross != 'true'
+        if: steps.src.outputs.cross != 'true'
         uses: ./.github/actions/flutter-setup
 
       # ── Claude does the code + the sufficiency verdict, nothing else ────────
-      # Automation mode (prompt provided). NO git / gh pr create in allowedTools:
-      # the workflow owns branch/commit/push/PR. Claude may read PR/issue context
-      # via `gh ... view`, edit files, run make/fvm/dart format, and Write the
-      # verdict sentinel.
+      # Automation mode (prompt provided). NO git commit/push / gh pr create in
+      # allowedTools: the workflow owns branch/commit/push/PR. Claude may read
+      # PR/issue context via `gh ... view`, edit files, run make/fvm/dart
+      # format, and Write the verdict sentinel.
       - name: Bullock (Claude Code)
-        if: steps.pr.outputs.cross != 'true'
+        if: steps.src.outputs.cross != 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -200,7 +216,7 @@ jobs:
             --model claude-opus-4-8
             --allowedTools Edit,Read,Write,Glob,Grep,"Bash(make *)","Bash(fvm *)","Bash(dart format *)","Bash(gh pr view *)","Bash(gh pr diff *)","Bash(gh issue view *)","Bash(git add *)","Bash(git status *)","Bash(git diff *)"
           prompt: |
-            You are **Bullock**, the junior coding intern for the Bull Bitcoin mobile repo. A maintainer summoned you with a comment on pull request #${{ env.PR_NUMBER }}.
+            You are **Bullock**, the junior coding intern for the Bull Bitcoin mobile repo. A maintainer summoned you with a comment on ${{ steps.src.outputs.kind }} #${{ env.SOURCE_NUMBER }}.
 
             THE REQUEST (verbatim comment by @${{ env.ACTOR }}):
             ---
@@ -208,19 +224,25 @@ jobs:
             ---
 
             ## Step 1 — Gather full context before doing anything
-            - Read the pull request, its description, and ALL its comments:
-              `gh pr view ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --comments`
-            - Read the code changes: `gh pr diff ${{ env.PR_NUMBER }} --repo ${{ github.repository }}`
-            - If a previous Claude/automated review exists on this PR, read it — the request may be "apply the review's suggestions".
-            - Linked issues for this PR (may be empty):
-            ${{ steps.pr.outputs.linked_issues }}
-              For each linked issue number N, read it and its comments:
-              `gh issue view N --repo ${{ github.repository }} --comments`
+            You were summoned from a ${{ steps.src.outputs.kind }}.
+            - If summoned from a PULL REQUEST:
+              - Read the PR, its description, and ALL its comments:
+                `gh pr view ${{ env.SOURCE_NUMBER }} --repo ${{ github.repository }} --comments`
+              - Read the code changes: `gh pr diff ${{ env.SOURCE_NUMBER }} --repo ${{ github.repository }}`
+              - If a previous Claude/automated review exists on the PR, read it — the request may be "apply the review's suggestions".
+              - Linked issues for this PR (may be empty):
+            ${{ steps.src.outputs.linked_issues }}
+                For each linked issue number N, read it and its comments:
+                `gh issue view N --repo ${{ github.repository }} --comments`
+            - If summoned from an ISSUE:
+              - The issue thread is your primary context. Read it and ALL its comments:
+                `gh issue view ${{ env.SOURCE_NUMBER }} --repo ${{ github.repository }} --comments`
 
             ## Step 2 — Decide if you have ENOUGH information to act
             Implement ONLY if the request is unambiguous on its own OR is made
             unambiguous by the PR/review/issue context (e.g. "apply Claude's
-            suggestions", "fix the failing lint"). If the request is vague AND
+            suggestions", "fix the failing lint", or an issue with clear
+            reproduction and expected behavior). If the request is vague AND
             nothing in the context resolves it, DO NOT guess and DO NOT edit any
             files — ask a specific clarifying question instead.
 
@@ -241,17 +263,17 @@ jobs:
 
       # ── Read the verdict and act on it (workflow-owned git/PR) ──────────────
       - name: Act on Bullock's verdict
-        if: steps.pr.outputs.cross != 'true'
+        if: steps.src.outputs.cross != 'true'
         env:
-          HEAD_REF: ${{ steps.pr.outputs.head }}
+          KIND: ${{ steps.src.outputs.kind }}
+          PR_BASE: ${{ steps.src.outputs.pr_base }}
           BRANCH: ${{ steps.branch.outputs.name }}
-          PR_URL: ${{ steps.pr.outputs.url }}
         run: |
           set -euo pipefail
 
           # Fail-closed: a missing/invalid verdict must NEVER silently open a PR.
           if [ ! -f .bullock/verdict.json ] || ! jq empty .bullock/verdict.json 2>/dev/null; then
-            gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body \
+            gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body \
               "🐂 Bullock couldn't complete the task (no valid verdict was produced). Please re-summon me with a clearer instruction."
             rm -rf .bullock
             echo "No valid verdict — declined."
@@ -268,18 +290,18 @@ jobs:
           if [ "$sufficient" != "true" ]; then
             body="🐂 Bullock needs more info before implementing:"
             body="${body}"$'\n\n'"> ${question:-Please clarify what you'd like changed.}"
-            gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body "$body"
+            gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body "$body"
             echo "Insufficient info — asked for clarification, no PR opened."
             exit 0
           fi
 
-          # Sufficient → commit whatever Bullock staged/changed and open the stacked PR.
+          # Sufficient → commit whatever Bullock staged/changed and open the PR.
           git config user.name "bullock[bot]"
           git config user.email "bullock@users.noreply.github.com"
           git add -A
 
           if git diff --cached --quiet; then
-            gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body \
+            gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body \
               "🐂 Bullock judged the request actionable but produced no changes. Please re-summon with a more specific instruction."
             echo "No changes staged — nothing to PR."
             exit 0
@@ -287,31 +309,40 @@ jobs:
 
           # summary is a full conventional-commit subject written by Claude
           # (type(scope): description); fall back to a generic chore subject.
-          [ -z "$summary" ] && summary="chore: apply requested change from PR #${PR_NUMBER}"
-          git commit -m "${summary}" -m "Requested by @${ACTOR} in #${PR_NUMBER}."
+          [ -z "$summary" ] && summary="chore: apply requested change from #${SOURCE_NUMBER}"
+          git commit -m "${summary}" -m "Requested by @${ACTOR} in #${SOURCE_NUMBER}."
           git push origin "HEAD:${BRANCH}"
 
-          # The stacked PR targets the branch of the PR Bullock was called from.
-          # Guard: that branch must still exist as the base.
-          if ! git ls-remote --exit-code origin "refs/heads/${HEAD_REF}" >/dev/null 2>&1; then
-            gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body \
-              "🐂 Bullock pushed \`${BRANCH}\` but the source branch \`${HEAD_REF}\` no longer exists, so it couldn't open the stacked PR. Open it manually if still wanted."
+          # PR mode: the stacked PR targets the branch of the PR Bullock was
+          # called from — guard that it still exists. Issue mode: the base is
+          # the default branch, which always exists, so the guard is a no-op.
+          if ! git ls-remote --exit-code origin "refs/heads/${PR_BASE}" >/dev/null 2>&1; then
+            gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body \
+              "🐂 Bullock pushed \`${BRANCH}\` but the base branch \`${PR_BASE}\` no longer exists, so it couldn't open the PR. Open it manually if still wanted."
             echo "Base branch gone — pushed branch but skipped PR."
             exit 0
           fi
 
-          # The stacked PR won't get its own analyze_and_test run: that workflow
-          # only triggers for bases main/develop, and GITHUB_TOKEN-created PRs
-          # don't trigger workflows anyway. `make checks` already ran green in
-          # this job, and the changes re-run full CI once merged into the source
-          # PR's branch.
+          # PRs opened with GITHUB_TOKEN never trigger other workflows (GitHub
+          # anti-recursion rule), so analyze_and_test / the claude.yml reviewer
+          # won't auto-run on Bullock's PR. `make checks` already ran green in
+          # this job; for an issue-mode PR against develop, close and reopen the
+          # PR to trigger full CI (documented in the PR body below).
+          if [ "$KIND" = "issue" ]; then
+            pr_body=$(printf '🐂 Opened by Bullock at the request of @%s in #%s.\n\nCloses #%s.\n\n%s\n\nNote: CI does not auto-run on bot-opened PRs — close and reopen this PR to trigger it.' \
+              "$ACTOR" "$SOURCE_NUMBER" "$SOURCE_NUMBER" "$summary")
+          else
+            pr_body=$(printf '🐂 Opened by Bullock at the request of @%s in #%s.\n\n%s\n\nTargets the branch of #%s so it can be reviewed and merged into that PR.' \
+              "$ACTOR" "$SOURCE_NUMBER" "$summary" "$SOURCE_NUMBER")
+          fi
+
           new_pr_url=$(gh pr create \
             --repo "${{ github.repository }}" \
-            --base "$HEAD_REF" \
+            --base "$PR_BASE" \
             --head "$BRANCH" \
             --title "${summary}" \
-            --body "$(printf '🐂 Opened by Bullock at the request of @%s in #%s.\n\n%s\n\nTargets the branch of #%s so it can be reviewed and merged into that PR.' "$ACTOR" "$PR_NUMBER" "$summary" "$PR_NUMBER")")
+            --body "$pr_body")
 
-          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body \
-            "🐂 Done — Bullock opened ${new_pr_url} targeting \`${HEAD_REF}\`. Review and merge it into this PR."
+          gh issue comment "$SOURCE_NUMBER" --repo "${{ github.repository }}" --body \
+            "🐂 Done — Bullock opened ${new_pr_url} targeting \`${PR_BASE}\`. Review it before merging."
           echo "Opened $new_pr_url"
