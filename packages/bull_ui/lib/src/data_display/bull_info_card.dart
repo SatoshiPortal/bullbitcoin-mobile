@@ -75,21 +75,23 @@ class BullInfoCard extends StatelessWidget {
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
                                 title!,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: tagColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: tagColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                               const Gap(4),
                             ],
                             Text(
                               description,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                fontWeight: boldDescription
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                    fontWeight: boldDescription
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
                             ),
                           ],
                         ),

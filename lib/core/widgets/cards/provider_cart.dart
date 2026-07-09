@@ -67,10 +67,7 @@ class _ProviderCardState extends State<ProviderCard>
                   SizedBox(
                     width: 48,
                     height: 48,
-                    child: Image.asset(
-                      widget.provider.iconPath,
-                      fit: .cover,
-                    ),
+                    child: Image.asset(widget.provider.iconPath, fit: .cover),
                   ),
                   const Gap(12),
                   Expanded(

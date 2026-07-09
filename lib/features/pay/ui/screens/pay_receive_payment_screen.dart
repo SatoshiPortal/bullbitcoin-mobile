@@ -107,12 +107,11 @@ class PayReceivePaymentScreen extends StatelessWidget {
             ),
             const Gap(32),
             CopyInput(
-              text:
-                  bitcoinUnit == BitcoinUnit.btc
-                      ? FormatAmount.btc(order.payinAmount)
-                      : FormatAmount.sats(
-                        ConvertAmount.btcToSats(order.payinAmount),
-                      ),
+              text: bitcoinUnit == BitcoinUnit.btc
+                  ? FormatAmount.btc(order.payinAmount)
+                  : FormatAmount.sats(
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(32),
             _buildPaymentInput(context, order),
@@ -167,8 +166,8 @@ class PayReceivePaymentScreen extends StatelessWidget {
               bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
-                    ConvertAmount.btcToSats(order.payinAmount),
-                  ),
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(8),
             _buildDetailRow(
@@ -264,7 +263,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.appColors.error : context.appColors.secondary,
+                      color: isError
+                          ? context.appColors.error
+                          : context.appColors.secondary,
                     ),
                   ),
                 ),

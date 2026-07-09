@@ -12,9 +12,9 @@ sealed class Result<T, F extends Failure> {
       };
 
   Result<R, F> map<R>(R Function(T value) transform) => switch (this) {
-        Ok(:final value) => Ok<R, F>(transform(value)),
-        Err(:final failure) => Err<R, F>(failure),
-      };
+    Ok(:final value) => Ok<R, F>(transform(value)),
+    Err(:final failure) => Err<R, F>(failure),
+  };
 
   /// Convert the failure type — to unify two failure domains before returning,
   /// or to lift a core failure into a feature failure.

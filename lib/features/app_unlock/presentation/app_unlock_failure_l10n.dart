@@ -7,8 +7,8 @@ import 'package:flutter/widgets.dart';
 /// [Failure.logMessage].
 extension AppUnlockFailureL10n on AppUnlockFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        AppUnlockPinCheckFailure() => context.loc.appUnlockPinCheckError,
-        AppUnlockPinVerifyFailure() => context.loc.appUnlockPinVerifyError,
-        AppUnlockUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    AppUnlockPinCheckFailure() => context.loc.appUnlockPinCheckError,
+    AppUnlockPinVerifyFailure() => context.loc.appUnlockPinVerifyError,
+    AppUnlockUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

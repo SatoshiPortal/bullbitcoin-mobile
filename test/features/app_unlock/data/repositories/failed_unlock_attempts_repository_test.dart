@@ -36,20 +36,28 @@ void main() {
       expect((result as Ok).value, 0);
     });
 
-    test('returns Err(AppUnlockUnexpectedFailure) when storage throws', () async {
-      when(() => storage.getValue(any())).thenThrow(Exception('storage error'));
+    test(
+      'returns Err(AppUnlockUnexpectedFailure) when storage throws',
+      () async {
+        when(
+          () => storage.getValue(any()),
+        ).thenThrow(Exception('storage error'));
 
-      final result = await repository.getFailedUnlockAttempts();
+        final result = await repository.getFailedUnlockAttempts();
 
-      expect(result, isA<Err<int, AppUnlockFailure>>());
-      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-    });
+        expect(result, isA<Err<int, AppUnlockFailure>>());
+        expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+      },
+    );
   });
 
   group('setFailedUnlockAttempts', () {
     test('returns Ok when storage saves successfully', () async {
       when(
-        () => storage.saveValue(key: any(named: 'key'), value: any(named: 'value')),
+        () => storage.saveValue(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
       ).thenAnswer((_) async {});
 
       final result = await repository.setFailedUnlockAttempts(3);
@@ -57,15 +65,21 @@ void main() {
       expect(result, isA<Ok<void, AppUnlockFailure>>());
     });
 
-    test('returns Err(AppUnlockUnexpectedFailure) when storage throws', () async {
-      when(
-        () => storage.saveValue(key: any(named: 'key'), value: any(named: 'value')),
-      ).thenThrow(Exception('storage error'));
+    test(
+      'returns Err(AppUnlockUnexpectedFailure) when storage throws',
+      () async {
+        when(
+          () => storage.saveValue(
+            key: any(named: 'key'),
+            value: any(named: 'value'),
+          ),
+        ).thenThrow(Exception('storage error'));
 
-      final result = await repository.setFailedUnlockAttempts(3);
+        final result = await repository.setFailedUnlockAttempts(3);
 
-      expect(result, isA<Err<void, AppUnlockFailure>>());
-      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-    });
+        expect(result, isA<Err<void, AppUnlockFailure>>());
+        expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+      },
+    );
   });
 }

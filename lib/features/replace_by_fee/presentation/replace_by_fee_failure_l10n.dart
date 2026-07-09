@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 
 extension ReplaceByFeeFailureL10n on ReplaceByFeeFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        ReplaceByFeeNoFeeRateSelectedFailure() =>
-          context.loc.replaceByFeeErrorNoFeeRateSelected,
-        ReplaceByFeeFeeRateTooLowFailure() =>
-          context.loc.replaceByFeeErrorFeeRateTooLow,
-        ReplaceByFeeNetworkFeesFailure() => context.loc.oopsSomethingWentWrong,
-        ReplaceByFeeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    ReplaceByFeeNoFeeRateSelectedFailure() =>
+      context.loc.replaceByFeeErrorNoFeeRateSelected,
+    ReplaceByFeeFeeRateTooLowFailure() =>
+      context.loc.replaceByFeeErrorFeeRateTooLow,
+    ReplaceByFeeNetworkFeesFailure() => context.loc.oopsSomethingWentWrong,
+    ReplaceByFeeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

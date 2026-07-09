@@ -15,9 +15,7 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
 
   /// Fiat per 1 BTC from the API; must be positive to display converted amounts.
   bool get hasValidFiatRate =>
-      currency != null &&
-      bitcoinPrice != null &&
-      bitcoinPrice! > 0;
+      currency != null && bitcoinPrice != null && bitcoinPrice! > 0;
 
   String? calculateFiatPrice(int satAmount) {
     if (!hasValidFiatRate) return null;

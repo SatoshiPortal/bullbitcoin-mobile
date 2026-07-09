@@ -7,9 +7,7 @@ class DriftElectrumTransactionRepository
     implements ElectrumTransactionRepository {
   final ElectrumRemoteDatasource _datasource;
 
-  DriftElectrumTransactionRepository({
-    required this._datasource,
-  });
+  DriftElectrumTransactionRepository({required this._datasource});
 
   @override
   Future<BitcoinTx> fetch({

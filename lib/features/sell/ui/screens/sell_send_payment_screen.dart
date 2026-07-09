@@ -31,10 +31,9 @@ class SellSendPaymentScreen extends StatelessWidget {
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).selectedWallet
-              : null,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).selectedWallet
+          : null,
     );
     final bitcoinUnit = context.select((SellBloc bloc) {
       final state = bloc.state;
@@ -42,10 +41,9 @@ class SellSendPaymentScreen extends StatelessWidget {
       return BitcoinUnit.btc;
     });
     final order = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).sellOrder
-              : null,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).sellOrder
+          : null,
     );
 
     return Scaffold(
@@ -117,35 +115,29 @@ class SellSendPaymentScreen extends StatelessWidget {
             const _Divider(),
             _DetailRow(
               title: context.loc.sellPayinAmount,
-              value:
-                  order == null
-                      ? null
-                      : bitcoinUnit == BitcoinUnit.btc
-                      ? FormatAmount.btc(order.payinAmount)
-                      : FormatAmount.sats(
-                        ConvertAmount.btcToSats(order.payinAmount),
-                      ),
+              value: order == null
+                  ? null
+                  : bitcoinUnit == BitcoinUnit.btc
+                  ? FormatAmount.btc(order.payinAmount)
+                  : FormatAmount.sats(
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             _DetailRow(
               title: context.loc.sellPayoutAmount,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.payoutAmount,
-                        order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
             ),
             _DetailRow(
               title: context.loc.sellExchangeRate,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.exchangeRateAmount ??
-                            order.payoutAmount / order.payinAmount,
-                        order.exchangeRateCurrency ?? order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(
+                      order.exchangeRateAmount ??
+                          order.payoutAmount / order.payinAmount,
+                      order.exchangeRateCurrency ?? order.payoutCurrency,
+                    ),
             ),
             const _Divider(),
             _DetailRow(
@@ -154,8 +146,8 @@ class SellSendPaymentScreen extends StatelessWidget {
                   wallet?.label ??
                   (wallet?.isDefault == true
                       ? wallet?.isLiquid == true
-                          ? context.loc.sellInstantPayments
-                          : context.loc.sellSecureBitcoinWallet
+                            ? context.loc.sellInstantPayments
+                            : context.loc.sellSecureBitcoinWallet
                       : ''),
             ),
             if (wallet != null && !wallet.isLiquid) ...[
@@ -175,8 +167,8 @@ class SellSendPaymentScreen extends StatelessWidget {
                 if (state is SellPaymentState && state.absoluteFees != null) {
                   return bitcoinUnit == BitcoinUnit.btc
                       ? FormatAmount.btc(
-                        ConvertAmount.satsToBtc(state.absoluteFees!),
-                      )
+                          ConvertAmount.satsToBtc(state.absoluteFees!),
+                        )
                       : FormatAmount.sats(state.absoluteFees!);
                 }
                 return context.loc.sellCalculating;
@@ -215,86 +207,83 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueColor =
-        onTap == null
-            ? context.appColors.outlineVariant
-            : context.appColors.primary;
+    final valueColor = onTap == null
+        ? context.appColors.outlineVariant
+        : context.appColors.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child:
-          value == null
-              ? const LoadingLineContent()
-              : Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
+      child: value == null
+          ? const LoadingLineContent()
+          : Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
                   ),
-                  Expanded(
-                    child:
-                        onTap == null
-                            ? Row(
-                              mainAxisAlignment: .end,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    value!,
-                                    textAlign: .end,
-                                    maxLines: 2,
-                                    style: context.font.bodyMedium?.copyWith(
-                                      color: context.appColors.secondary,
-                                    ),
-                                  ),
+                ),
+                Expanded(
+                  child: onTap == null
+                      ? Row(
+                          mainAxisAlignment: .end,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                value!,
+                                textAlign: .end,
+                                maxLines: 2,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.appColors.secondary,
                                 ),
-                                if (copyValue != null) ...[
-                                  const Gap(8),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: copyValue!),
-                                      );
-                                      SnackBarUtils.showCopiedSnackBar(context);
-                                    },
-                                    child: Icon(
-                                      Icons.copy,
-                                      color: context.appColors.primary,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            )
-                            : GestureDetector(
-                              onTap: onTap,
-                              behavior: .opaque,
-                              child: Row(
-                                mainAxisAlignment: .end,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      value!,
-                                      textAlign: .end,
-                                      maxLines: 2,
-                                      style: context.font.bodyMedium?.copyWith(
-                                        color: valueColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: valueColor,
-                                    size: 20,
-                                  ),
-                                ],
                               ),
                             ),
-                  ),
-                ],
-              ),
+                            if (copyValue != null) ...[
+                              const Gap(8),
+                              GestureDetector(
+                                onTap: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: copyValue!),
+                                  );
+                                  SnackBarUtils.showCopiedSnackBar(context);
+                                },
+                                child: Icon(
+                                  Icons.copy,
+                                  color: context.appColors.primary,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
+                          ],
+                        )
+                      : GestureDetector(
+                          onTap: onTap,
+                          behavior: .opaque,
+                          child: Row(
+                            mainAxisAlignment: .end,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  value!,
+                                  textAlign: .end,
+                                  maxLines: 2,
+                                  style: context.font.bodyMedium?.copyWith(
+                                    color: valueColor,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: valueColor,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -321,10 +310,9 @@ class _BottomButtons extends StatelessWidget {
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).selectedWallet
-              : null,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).selectedWallet
+          : null,
     );
     return Column(
       children: [
@@ -366,10 +354,9 @@ class _SellError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sellError = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).error
-              : null,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).error
+          : null,
     );
 
     if (sellError == null) return const SizedBox.shrink();

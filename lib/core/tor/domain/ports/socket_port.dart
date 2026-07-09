@@ -2,11 +2,7 @@ import 'dart:async';
 
 abstract class SocketPort {
   /// Connects to a socket at the given host and port with an optional timeout
-  Future<SocketConnection> connect(
-    String host,
-    int port, {
-    Duration? timeout,
-  });
+  Future<SocketConnection> connect(String host, int port, {Duration? timeout});
 }
 
 abstract class SocketConnection {

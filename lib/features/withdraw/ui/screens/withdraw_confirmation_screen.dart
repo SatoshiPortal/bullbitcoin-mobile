@@ -19,17 +19,15 @@ class WithdrawConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (WithdrawBloc bloc) =>
-          bloc.state is WithdrawConfirmationState
-              ? (bloc.state as WithdrawConfirmationState).order
-              : null,
+      (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
+          ? (bloc.state as WithdrawConfirmationState).order
+          : null,
     );
 
     final recipient = context.select(
-      (WithdrawBloc bloc) =>
-          bloc.state is WithdrawConfirmationState
-              ? (bloc.state as WithdrawConfirmationState).recipient
-              : null,
+      (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
+          ? (bloc.state as WithdrawConfirmationState).recipient
+          : null,
     );
 
     return Scaffold(
@@ -79,13 +77,12 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   const _Divider(),
                   _DetailRow(
                     title: context.loc.withdrawConfirmAmount,
-                    value:
-                        order == null
-                            ? null
-                            : FormatAmount.fiat(
-                              order.payoutAmount,
-                              order.payoutCurrency,
-                            ),
+                    value: order == null
+                        ? null
+                        : FormatAmount.fiat(
+                            order.payoutAmount,
+                            order.payoutCurrency,
+                          ),
                   ),
                   const Spacer(),
                   _ConfirmButton(
@@ -187,30 +184,29 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child:
-          value == null
-              ? const LoadingLineContent()
-              : Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Text(
-                    title,
+      child: value == null
+          ? const LoadingLineContent()
+          : Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    value!,
+                    textAlign: .end,
+                    maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                      color: context.appColors.secondary,
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      value!,
-                      textAlign: .end,
-                      maxLines: 2,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.secondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -237,10 +233,9 @@ class _ConfirmButton extends StatelessWidget {
           (bloc.state as WithdrawConfirmationState).isConfirmingWithdrawal,
     );
     final withdrawError = context.select(
-      (WithdrawBloc bloc) =>
-          bloc.state is WithdrawConfirmationState
-              ? (bloc.state as WithdrawConfirmationState).error
-              : null,
+      (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
+          ? (bloc.state as WithdrawConfirmationState).error
+          : null,
     );
 
     return Column(

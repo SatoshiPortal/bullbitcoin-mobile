@@ -34,11 +34,7 @@ WalletUtxo walletUtxoFixture({
     confirmations: confirmations,
     labels: [
       for (var i = 0; i < labels.length; i++)
-        Label.addr(
-          id: i,
-          address: resolvedAddress,
-          label: labels[i],
-        ),
+        Label.addr(id: i, address: resolvedAddress, label: labels[i]),
     ],
   );
 }

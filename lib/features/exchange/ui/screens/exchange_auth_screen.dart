@@ -39,10 +39,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     final settingsState = context.read<SettingsCubit>().state;
     final isTestnet = settingsState.environment == Environment.testnet;
-    _bbAuthUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    _bbAuthUrl = isTestnet
+        ? ApiServiceConstants.bbAuthTestUrl
+        : ApiServiceConstants.bbAuthUrl;
     if (isTestnet) {
       _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
@@ -126,7 +125,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             // stays open and the user can complete email verification. Once
             // done, the auth app navigates away and the API key is generated
             // on the next URL change.
-            if (url.contains('/registration') || url.contains('/verification')) {
+            if (url.contains('/registration') ||
+                url.contains('/verification')) {
               return;
             }
 
@@ -154,13 +154,19 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
               // Check if the API key was successfully stored
               if (!mounted) return;
-              final saveApiKeyException =
-                  context.read<ExchangeCubit>().state.saveApiKeyException;
+              final saveApiKeyException = context
+                  .read<ExchangeCubit>()
+                  .state
+                  .saveApiKeyException;
               if (saveApiKeyException != null) {
                 throw saveApiKeyException;
               }
             } catch (e) {
-              log.severe(message: 'Error generating or saving API key',error: e, trace: StackTrace.current);
+              log.severe(
+                message: 'Error generating or saving API key',
+                error: e,
+                trace: StackTrace.current,
+              );
               await _handleLoginError();
             } finally {
               // Reset the flag after the API key generation process is done
@@ -219,10 +225,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child:
-          _isGeneratingApiKey
-              ? const Center(child: CircularProgressIndicator())
-              : WebViewWidget(controller: _controller),
+      child: _isGeneratingApiKey
+          ? const Center(child: CircularProgressIndicator())
+          : WebViewWidget(controller: _controller),
     );
   }
 
@@ -289,9 +294,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),
-        content: Text(
-          context.loc.exchangeAuthLoginFailedMessage,
-        ),
+        content: Text(context.loc.exchangeAuthLoginFailedMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),

@@ -171,6 +171,8 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.11.2
   mocktail: ^1.0.4
+  # Direct dep for the webview test fake: the Platform* types and callback typedefs it extends are not re-exported by webview_flutter.
+  webview_flutter_platform_interface: ^2.15.1
   flutter_launcher_icons: ^0.14.4
   test: ^1.26.3
   flutter_gen_runner: any

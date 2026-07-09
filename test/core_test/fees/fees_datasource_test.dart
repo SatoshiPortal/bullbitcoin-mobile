@@ -34,7 +34,10 @@ DioException _dioError(String path, {int? statusCode}) => DioException(
   requestOptions: RequestOptions(path: path),
   response: statusCode == null
       ? null
-      : Response(requestOptions: RequestOptions(path: path), statusCode: statusCode),
+      : Response(
+          requestOptions: RequestOptions(path: path),
+          statusCode: statusCode,
+        ),
 );
 
 void main() {

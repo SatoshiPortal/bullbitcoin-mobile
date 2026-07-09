@@ -28,14 +28,14 @@ void main() {
 
   group('WalletUtxo.isConfirmed (threshold 1)', () {
     WalletUtxo build(int confirmations) => WalletUtxo.bitcoin(
-          walletId: 'w',
-          txId: 'tx',
-          vout: 0,
-          scriptPubkey: Uint8List(0),
-          amountSat: BigInt.from(1000),
-          address: 'addr',
-          confirmations: confirmations,
-        );
+      walletId: 'w',
+      txId: 'tx',
+      vout: 0,
+      scriptPubkey: Uint8List(0),
+      amountSat: BigInt.from(1000),
+      address: 'addr',
+      confirmations: confirmations,
+    );
 
     test('0 confirmations → not confirmed (pending)', () {
       expect(build(0).isConfirmed, isFalse);

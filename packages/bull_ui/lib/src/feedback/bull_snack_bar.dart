@@ -123,9 +123,9 @@ class _BullSnackBarContent extends StatelessWidget {
         Flexible(
           child: Text(
             message,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colors.onSecondaryFixed,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: colors.onSecondaryFixed),
           ),
         ),
         if (actionLabel != null && onAction != null) ...[

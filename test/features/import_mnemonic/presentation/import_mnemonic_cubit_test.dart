@@ -21,10 +21,10 @@ void main() {
   late MockCheckDuplicateMnemonicUsecase checkDuplicate;
 
   ImportMnemonicCubit buildCubit() => ImportMnemonicCubit(
-        importWalletUsecase: importWallet,
-        checkWalletUsecase: checkWalletStatus,
-        checkDuplicateMnemonicUsecase: checkDuplicate,
-      );
+    importWalletUsecase: importWallet,
+    checkWalletUsecase: checkWalletStatus,
+    checkDuplicateMnemonicUsecase: checkDuplicate,
+  );
 
   setUp(() {
     importWallet = MockImportWalletUsecase();
@@ -46,10 +46,12 @@ void main() {
         ));
 
         expect(cubit.state.failure, isA<ImportMnemonicEmptyLabelFailure>());
-        verifyNever(() => checkDuplicate.execute(
-              mnemonicWords: any(named: 'mnemonicWords'),
-              passphrase: any(named: 'passphrase'),
-            ));
+        verifyNever(
+          () => checkDuplicate.execute(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: any(named: 'passphrase'),
+          ),
+        );
 
         cubit.close();
       },
@@ -63,28 +65,27 @@ void main() {
         await cubit.import();
 
         expect(cubit.state.failure, isA<ImportMnemonicNullMnemonicFailure>());
-        verifyNever(() => importWallet.execute(
-              mnemonicWords: any(named: 'mnemonicWords'),
-              label: any(named: 'label'),
-            ));
+        verifyNever(
+          () => importWallet.execute(
+            mnemonicWords: any(named: 'mnemonicWords'),
+            label: any(named: 'label'),
+          ),
+        );
 
         cubit.close();
       },
     );
 
-    test(
-      'clearFailure resets failure to null',
-      () async {
-        final cubit = buildCubit();
+    test('clearFailure resets failure to null', () async {
+      final cubit = buildCubit();
 
-        await cubit.import();
-        expect(cubit.state.failure, isNotNull);
+      await cubit.import();
+      expect(cubit.state.failure, isNotNull);
 
-        cubit.clearFailure();
-        expect(cubit.state.failure, isNull);
+      cubit.clearFailure();
+      expect(cubit.state.failure, isNull);
 
-        cubit.close();
-      },
-    );
+      cubit.close();
+    });
   });
 }

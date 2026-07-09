@@ -41,28 +41,25 @@ void main() {
   });
 
   group('ImportWatchOnlyXpubUsecase', () {
-    test(
-      'maps a foreign repository failure to ImportFailedFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => repository.importWatchOnlyXpub(
-            xpub: any(named: 'xpub'),
-            network: any(named: 'network'),
-            scriptType: any(named: 'scriptType'),
-            label: any(named: 'label'),
-          ),
-        ).thenThrow(Exception('BDK: invalid xpub checksum 0xdeadbeef'));
+    test('maps a foreign repository failure to ImportFailedFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => repository.importWatchOnlyXpub(
+          xpub: any(named: 'xpub'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          label: any(named: 'label'),
+        ),
+      ).thenThrow(Exception('BDK: invalid xpub checksum 0xdeadbeef'));
 
-        final result = await usecase.execute(watchOnlyXpub: entity);
+      final result = await usecase.execute(watchOnlyXpub: entity);
 
-        expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
-        final failure = (result as Err<Wallet, ImportWatchOnlyFailure>).failure;
-        expect(failure, isA<ImportFailedFailure>());
-        // The sanitized failure carries no raw reason for the UI to render.
-        expect(failure.logMessage, isNull);
-      },
-    );
+      expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
+      final failure = (result as Err<Wallet, ImportWatchOnlyFailure>).failure;
+      expect(failure, isA<ImportFailedFailure>());
+      // The sanitized failure carries no raw reason for the UI to render.
+      expect(failure.logMessage, isNull);
+    });
 
     test('returns Ok with the wallet on success', () async {
       final wallet = _MockWallet();
@@ -78,7 +75,10 @@ void main() {
       final result = await usecase.execute(watchOnlyXpub: entity);
 
       expect(result, isA<Ok<Wallet, ImportWatchOnlyFailure>>());
-      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value, same(wallet));
+      expect(
+        (result as Ok<Wallet, ImportWatchOnlyFailure>).value,
+        same(wallet),
+      );
     });
   });
 }

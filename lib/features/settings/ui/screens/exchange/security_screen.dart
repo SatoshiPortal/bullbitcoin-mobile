@@ -21,10 +21,9 @@ class ExchangeSecurityScreen extends StatelessWidget {
   void _openSecurityWebView(BuildContext context) {
     final isTestnet =
         context.read<SettingsCubit>().state.environment == Environment.testnet;
-    final baseUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    final baseUrl = isTestnet
+        ? ApiServiceConstants.bbAuthTestUrl
+        : ApiServiceConstants.bbAuthUrl;
     final securityUrl = '$baseUrl/settings';
 
     Navigator.of(context).push(

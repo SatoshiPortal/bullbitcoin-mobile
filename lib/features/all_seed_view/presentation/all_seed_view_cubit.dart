@@ -36,8 +36,9 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     emit(state.copyWith(loading: true, failure: null));
 
     final List<MnemonicSeed> seeds;
-    switch ((await _getAllSeedsUsecase.execute())
-        .mapErr((f) => AllSeedViewFetchFailure(f.logMessage))) {
+    switch ((await _getAllSeedsUsecase.execute()).mapErr(
+      (f) => AllSeedViewFetchFailure(f.logMessage),
+    )) {
       case Ok(:final value):
         seeds = value;
       case Err(:final failure):
@@ -96,8 +97,9 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   void hideSeeds() => emit(state.copyWith(seedsVisible: false));
 
   Future<void> deleteSeed(String fingerprint) async {
-    switch ((await _deleteSeedUsecase.execute(fingerprint))
-        .mapErr((f) => AllSeedViewDeleteFailure(f.logMessage))) {
+    switch ((await _deleteSeedUsecase.execute(
+      fingerprint,
+    )).mapErr((f) => AllSeedViewDeleteFailure(f.logMessage))) {
       case Ok():
         emit(
           state.copyWith(

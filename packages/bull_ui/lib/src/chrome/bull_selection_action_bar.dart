@@ -43,7 +43,10 @@ class BullSelectionActionBar extends StatelessWidget {
             children: [
               Text(
                 summary,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: colors.text),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colors.text,
+                ),
               ),
               const SizedBox(height: 8),
               Row(

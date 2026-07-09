@@ -12,20 +12,18 @@ class ThemeSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SettingsCubit, SettingsState>(
-      listenWhen:
-          (previous, current) =>
-              current.storedSettings?.themeMode !=
-              previous.storedSettings?.themeMode,
+      listenWhen: (previous, current) =>
+          current.storedSettings?.themeMode !=
+          previous.storedSettings?.themeMode,
       listener: (context, state) => context.pop(),
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.settingsThemeTitle)),
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            children:
-                AppThemeMode.values
-                    .map((themeMode) => ThemeOption(themeMode: themeMode))
-                    .toList(),
+            children: AppThemeMode.values
+                .map((themeMode) => ThemeOption(themeMode: themeMode))
+                .toList(),
           ),
         ),
       ),

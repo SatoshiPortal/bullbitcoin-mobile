@@ -4,6 +4,6 @@ import 'package:flutter/widgets.dart';
 
 extension BackupSettingsFailureL10n on BackupSettingsFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        BackupSettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    BackupSettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

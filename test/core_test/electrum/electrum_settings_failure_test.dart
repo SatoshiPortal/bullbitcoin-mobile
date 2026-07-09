@@ -51,9 +51,9 @@ void main() {
     test('propagates the sanitized failure from the repository', () async {
       final repo = _MockServerRepository();
       final usecase = DeleteCustomServerUsecase(electrumServerRepository: repo);
-      when(
-        () => repo.delete(url: any(named: 'url')),
-      ).thenAnswer((_) async => const Err(ElectrumDeleteFailure('raw db error')));
+      when(() => repo.delete(url: any(named: 'url'))).thenAnswer(
+        (_) async => const Err(ElectrumDeleteFailure('raw db error')),
+      );
 
       final result = await usecase.execute(
         DeleteCustomServerRequest(url: 'ssl://a:50002'),
@@ -122,34 +122,38 @@ void main() {
       expect((result as Err).failure, isA<ElectrumLoadFailure>());
     });
 
-    test('returns Unreachable failure when the socket check is offline',
-        () async {
-      when(() => serverRepo.fetchByUrl(any())).thenAnswer((_) async => Ok(null));
-      when(() => appSettingsRepo.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          useTorProxy: false,
-          torProxyPort: 9050,
-        ),
-      );
-      when(
-        () => statusPort.checkSocket(
-          url: any(named: 'url'),
-          useTorProxy: any(named: 'useTorProxy'),
-          torProxyPort: any(named: 'torProxyPort'),
-        ),
-      ).thenAnswer((_) async => ElectrumServerStatus.offline);
+    test(
+      'returns Unreachable failure when the socket check is offline',
+      () async {
+        when(
+          () => serverRepo.fetchByUrl(any()),
+        ).thenAnswer((_) async => Ok(null));
+        when(() => appSettingsRepo.fetch()).thenAnswer(
+          (_) async => SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            useTorProxy: false,
+            torProxyPort: 9050,
+          ),
+        );
+        when(
+          () => statusPort.checkSocket(
+            url: any(named: 'url'),
+            useTorProxy: any(named: 'useTorProxy'),
+            torProxyPort: any(named: 'torProxyPort'),
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.offline);
 
-      final result = await usecase.execute(request());
+        final result = await usecase.execute(request());
 
-      expect(result, isA<Err>());
-      expect(
-        (result as Err).failure,
-        isA<ElectrumServerUnreachableFailure>(),
-      );
-    });
+        expect(result, isA<Err>());
+        expect(
+          (result as Err).failure,
+          isA<ElectrumServerUnreachableFailure>(),
+        );
+      },
+    );
   });
 
   group('SetAdvancedElectrumOptionsUsecase', () {
@@ -185,46 +189,50 @@ void main() {
       expect((result as Err).failure, isA<ElectrumLoadFailure>());
     });
 
-    test('maps invalid stopGap to a sanitized failure carrying the value',
-        () async {
-      when(
-        () => settingsRepo.fetchByNetwork(_network),
-      ).thenAnswer((_) async => Ok(_settings()));
+    test(
+      'maps invalid stopGap to a sanitized failure carrying the value',
+      () async {
+        when(
+          () => settingsRepo.fetchByNetwork(_network),
+        ).thenAnswer((_) async => Ok(_settings()));
 
-      final result = await usecase.execute(request(-1));
+        final result = await usecase.execute(request(-1));
 
-      expect(result, isA<Err>());
-      final failure = (result as Err).failure;
-      expect(failure, isA<ElectrumInvalidStopGapFailure>());
-      expect((failure as ElectrumInvalidStopGapFailure).value, -1);
-    });
+        expect(result, isA<Err>());
+        final failure = (result as Err).failure;
+        expect(failure, isA<ElectrumInvalidStopGapFailure>());
+        expect((failure as ElectrumInvalidStopGapFailure).value, -1);
+      },
+    );
   });
 
   group('LoadElectrumServerDataUsecase', () {
-    test('maps a throwing dependency to a sanitized failure — no raw leak',
-        () async {
-      final serverRepo = _MockServerRepository();
-      final settingsRepo = _MockSettingsRepository();
-      final envPort = _MockEnvironmentPort();
-      final statusPort = _MockServerStatusPort();
-      final appSettingsRepo = _MockAppSettingsRepository();
-      final usecase = LoadElectrumServerDataUsecase(
-        electrumServerRepository: serverRepo,
-        electrumSettingsRepository: settingsRepo,
-        environmentPort: envPort,
-        serverStatusPort: statusPort,
-        settingsRepository: appSettingsRepo,
-      );
-      // EnvironmentPort still throws; the use-case is the boundary that maps it.
-      when(() => envPort.getEnvironment()).thenThrow(Exception('boom'));
+    test(
+      'maps a throwing dependency to a sanitized failure — no raw leak',
+      () async {
+        final serverRepo = _MockServerRepository();
+        final settingsRepo = _MockSettingsRepository();
+        final envPort = _MockEnvironmentPort();
+        final statusPort = _MockServerStatusPort();
+        final appSettingsRepo = _MockAppSettingsRepository();
+        final usecase = LoadElectrumServerDataUsecase(
+          electrumServerRepository: serverRepo,
+          electrumSettingsRepository: settingsRepo,
+          environmentPort: envPort,
+          serverStatusPort: statusPort,
+          settingsRepository: appSettingsRepo,
+        );
+        // EnvironmentPort still throws; the use-case is the boundary that maps it.
+        when(() => envPort.getEnvironment()).thenThrow(Exception('boom'));
 
-      final result = await usecase.execute(
-        LoadElectrumServerDataRequest(isLiquid: false),
-      );
+        final result = await usecase.execute(
+          LoadElectrumServerDataRequest(isLiquid: false),
+        );
 
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<ElectrumUnexpectedFailure>());
-    });
+        expect(result, isA<Err>());
+        expect((result as Err).failure, isA<ElectrumUnexpectedFailure>());
+      },
+    );
   });
 
   group('SetCustomServersPriorityUsecase', () {

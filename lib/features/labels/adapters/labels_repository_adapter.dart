@@ -12,13 +12,15 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   @override
   Future<LabelEntity> store(NewLabel newLabel) async {
     final companion = LabelMapper.newLabelEntityToCompanion(newLabel);
-    final id = await _database.into(_database.labels).insert(
-      companion,
-      onConflict: DoUpdate(
-        (old) => companion,
-        target: [_database.labels.label, _database.labels.reference],
-      ),
-    );
+    final id = await _database
+        .into(_database.labels)
+        .insert(
+          companion,
+          onConflict: DoUpdate(
+            (old) => companion,
+            target: [_database.labels.label, _database.labels.reference],
+          ),
+        );
 
     return LabelEntity(
       id: id,

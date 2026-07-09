@@ -33,19 +33,18 @@ class PreviewBitcoinFeePresetsUsecase {
       RelativeFee(:final satPerKwu) => 'kwu:$satPerKwu',
     };
     final byRate = <String, Future<BitcoinFeePreviewSlot>>{};
-    Future<BitcoinFeePreviewSlot> resolve(NetworkFee fee) =>
-        byRate.putIfAbsent(
-          rateKey(fee),
-          () => _previewOne.execute(
-            walletId: walletId,
-            address: address,
-            amountSat: amountSat,
-            networkFee: fee,
-            replaceByFee: replaceByFee,
-            selectedInputs: selectedInputs,
-            drain: drain,
-          ),
-        );
+    Future<BitcoinFeePreviewSlot> resolve(NetworkFee fee) => byRate.putIfAbsent(
+      rateKey(fee),
+      () => _previewOne.execute(
+        walletId: walletId,
+        address: address,
+        amountSat: amountSat,
+        networkFee: fee,
+        replaceByFee: replaceByFee,
+        selectedInputs: selectedInputs,
+        drain: drain,
+      ),
+    );
     final results = await Future.wait([
       resolve(presets.fastest),
       resolve(presets.economic),

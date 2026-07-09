@@ -49,10 +49,8 @@ class PrepareBitcoinSendUsecase {
       // path from ever pinning a frozen coin).
       final filteredSelectedInputs = selectedInputs
           ?.where(
-            (utxo) => !unspendableUtxos.contains((
-              txId: utxo.txId,
-              vout: utxo.vout,
-            )),
+            (utxo) =>
+                !unspendableUtxos.contains((txId: utxo.txId, vout: utxo.vout)),
           )
           .toList();
 

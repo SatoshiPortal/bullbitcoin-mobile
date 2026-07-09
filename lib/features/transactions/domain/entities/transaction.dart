@@ -44,8 +44,7 @@ sealed class Transaction with _$Transaction {
 
   bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null;
-  bool get isOngoingSwap =>
-      isSwap && swap != null && !swap!.status.isTerminal;
+  bool get isOngoingSwap => isSwap && swap != null && !swap!.status.isTerminal;
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
@@ -99,7 +98,9 @@ sealed class Transaction with _$Transaction {
   int get swapDisplayAmountSat {
     final s = swap;
     if (s == null || s.recovered) return amountSat;
-    if (s is ChainSwap && s.receiveWalletId == null) return s.receieveAmount ?? 0;
+    if (s is ChainSwap && s.receiveWalletId == null) {
+      return s.receieveAmount ?? 0;
+    }
     return isOutgoing ? s.amountSat : (s.receieveAmount ?? 0);
   }
 

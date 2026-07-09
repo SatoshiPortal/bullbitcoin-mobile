@@ -15,10 +15,9 @@ class WithdrawSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (WithdrawBloc bloc) =>
-          bloc.state is WithdrawSuccessState
-              ? (bloc.state as WithdrawSuccessState).order
-              : null,
+      (WithdrawBloc bloc) => bloc.state is WithdrawSuccessState
+          ? (bloc.state as WithdrawSuccessState).order
+          : null,
     );
     return PopScope(
       canPop: false,

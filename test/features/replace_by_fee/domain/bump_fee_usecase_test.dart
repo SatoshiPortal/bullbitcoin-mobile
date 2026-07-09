@@ -123,8 +123,9 @@ void main() {
         slow: NetworkFee.relativeSatPerKwu(1),
         minRelay: RelativeFee(25),
       );
-      when(() => getNetworkFeesUsecase.execute(isLiquid: false))
-          .thenAnswer((_) async => feeOptions);
+      when(
+        () => getNetworkFeesUsecase.execute(isLiquid: false),
+      ).thenAnswer((_) async => feeOptions);
 
       final result = await usecase.getNetworkFees();
 
@@ -134,16 +135,14 @@ void main() {
     test(
       'returns Err(ReplaceByFeeNetworkFeesFailure) on exception — no raw leak',
       () async {
-        when(() => getNetworkFeesUsecase.execute(isLiquid: false))
-            .thenThrow(Exception('network unavailable'));
+        when(
+          () => getNetworkFeesUsecase.execute(isLiquid: false),
+        ).thenThrow(Exception('network unavailable'));
 
         final result = await usecase.getNetworkFees();
 
         expect(result, isA<Err<FeeOptions, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeNetworkFeesFailure>(),
-        );
+        expect((result as Err).failure, isA<ReplaceByFeeNetworkFeesFailure>());
       },
     );
   });

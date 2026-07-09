@@ -55,8 +55,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
 
       // verify it's a valid number (block height should be > 0)
       final data = response.data;
-      final blockHeight =
-          data is int ? data : int.tryParse(data.toString());
+      final blockHeight = data is int ? data : int.tryParse(data.toString());
 
       if (blockHeight == null || blockHeight <= 0) {
         log.warning('Validation failed: Invalid block height response');
@@ -66,10 +65,18 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       log.fine('Mempool server validation successful: $fullUrl');
       return const Ok(null);
     } on DioException catch (e, st) {
-      log.severe(message: 'Validation failed with DioException', error: e, trace: st);
+      log.severe(
+        message: 'Validation failed with DioException',
+        error: e,
+        trace: st,
+      );
       return Err(_dioFailure(e, url));
     } catch (e, st) {
-      log.severe(message: 'Validation failed with unexpected exception', error: e, trace: st);
+      log.severe(
+        message: 'Validation failed with unexpected exception',
+        error: e,
+        trace: st,
+      );
       return Err(MempoolUnexpectedFailure(e.toString()));
     }
   }
@@ -77,15 +84,18 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
   MempoolFailure _dioFailure(DioException e, String url) => switch (e.type) {
     DioExceptionType.connectionTimeout ||
     DioExceptionType.sendTimeout ||
-    DioExceptionType.receiveTimeout =>
-      MempoolValidationTimeoutFailure(e.toString()),
-    DioExceptionType.connectionError =>
-      switch (e.message?.contains('Failed host lookup')) {
-        true when url.contains('.onion') =>
-          MempoolValidationTorNotRunningFailure(e.toString()),
-        true => MempoolValidationHostNotFoundFailure(e.toString()),
-        _ => MempoolValidationConnectionErrorFailure(e.toString()),
-      },
+    DioExceptionType.receiveTimeout => MempoolValidationTimeoutFailure(
+      e.toString(),
+    ),
+    DioExceptionType.connectionError => switch (e.message?.contains(
+      'Failed host lookup',
+    )) {
+      true when url.contains('.onion') => MempoolValidationTorNotRunningFailure(
+        e.toString(),
+      ),
+      true => MempoolValidationHostNotFoundFailure(e.toString()),
+      _ => MempoolValidationConnectionErrorFailure(e.toString()),
+    },
     _ => switch (e.response?.statusCode) {
       404 => MempoolValidationNotMempoolServerFailure(e.toString()),
       500 => MempoolValidationServerErrorFailure(e.toString()),

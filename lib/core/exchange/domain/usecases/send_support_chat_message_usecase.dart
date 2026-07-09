@@ -21,13 +21,9 @@ class SendSupportChatMessageUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet ? _testnetRepository : _mainnetRepository;
+      final repo = isTestnet ? _testnetRepository : _mainnetRepository;
 
-      await repo.sendMessage(
-        text: text,
-        attachments: attachments,
-      );
+      await repo.sendMessage(text: text, attachments: attachments);
     } catch (e) {
       throw SendSupportChatMessageException('$e');
     }
@@ -37,4 +33,3 @@ class SendSupportChatMessageUsecase {
 class SendSupportChatMessageException extends BullException {
   SendSupportChatMessageException(super.message);
 }
-

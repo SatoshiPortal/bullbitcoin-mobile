@@ -37,7 +37,9 @@ class ArkTransactionDetailsPage extends StatelessWidget {
           date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
         type = context.loc.arkTxBoarding;
-        statusLabel = date != null ? context.loc.arkStatusConfirmed : context.loc.arkTxPending;
+        statusLabel = date != null
+            ? context.loc.arkStatusConfirmed
+            : context.loc.arkTxPending;
       case final ark_wallet.ArkTransaction_Commitment tx:
         txid = tx.txid;
         sats = tx.sats;
@@ -51,7 +53,9 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         type = context.loc.arkTxPayment;
-        statusLabel = tx.isSettled ? context.loc.arkStatusSettled : context.loc.arkTxPending;
+        statusLabel = tx.isSettled
+            ? context.loc.arkStatusSettled
+            : context.loc.arkTxPending;
         isIncoming = false;
     }
 
@@ -110,7 +114,10 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    DetailsTableItem(label: context.loc.arkType, displayValue: type),
+                    DetailsTableItem(
+                      label: context.loc.arkType,
+                      displayValue: type,
+                    ),
                     DetailsTableItem(
                       label: context.loc.arkStatus,
                       displayValue: statusLabel,
