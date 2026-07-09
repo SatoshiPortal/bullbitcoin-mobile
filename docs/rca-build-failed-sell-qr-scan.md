@@ -51,7 +51,31 @@ tracks how unhelpful this is). Because the build never completed, `liquidAbsolut
 stays null → **"Network fees 0"** on screen. Both observed symptoms match a failed
 `buildLbtcTx`, not anything after it.
 
-## Most likely underlying failure: LWK `InsufficientFunds`
+## Underlying failure: LWK `InsufficientFunds` — **confirmed by device logs**
+
+Logs from the reporter's device (app 6.x, line numbers differ from current HEAD):
+
+```
+09:04:17 SEVERE InsufficientFunds
+  #0 SendCubit.createTransaction (send_cubit.dart:1365)
+  #1 SendCubit.continueOnAddressConfirmed (send_cubit.dart:489)
+  #2 SendCubit.onScannedPaymentRequest (send_cubit.dart:232)
+
+09:27:07 SEVERE InsufficientFunds        ← rescan ~10s after app restart
+  (same stack: createTransaction ← continueOnAddressConfirmed ← onScannedPaymentRequest)
+
+09:28:41 SEVERE InsufficientFunds        ← user tapped Confirm again
+  #0 SendCubit.createTransaction (send_cubit.dart:1365)
+  #1 SendCubit.onConfirmTransactionClicked (send_cubit.dart:1576)
+```
+
+Three failures over 24 minutes, every one via the **scan path** (`onScannedPaymentRequest`)
+or a Confirm retap, all `InsufficientFunds` from the LWK builder. The 09:04:17 and
+09:28:41 failures each came seconds *after* a `[SyncCoordinator] sync ok (bitcoin, liquid,
+swaps)`, which rules out the stale-wallet-DB / sync-race alternative: the wallet's view of
+its UTXOs was fresh, and it genuinely cannot fund `amount + fee`.
+
+## Why the wallet hits `InsufficientFunds`
 
 The QR pins the **exact** sell pay-in amount. The wallet must fund `amount + network fee`,
 and nothing on the scan path verifies it can:
@@ -73,15 +97,13 @@ case for a sell — the wallet passes selection (`balance > amount`) but LWK can
 - **Fees show 0, amount/address correct**: the failure happens inside the build, before any
   fee is computed.
 
-### To confirm from the field
+### Remaining field question
 
-The exact LWK message is captured by `log.severe` in `createTransaction`'s catch
-(`send_cubit.dart:1826-1845`). Ask the reporter for app logs from the failing attempt and
-for their Instant payments balance at the time — expectation is
-`balance − 1,305,000 sats < the ~30–60 sat Liquid network fee`. If the logs show something
-other than insufficient funds, the fallback hypothesis is a stale LWK on-disk wallet DB
-(`lib/core/wallet/data/datasources/lwk_facade.dart:39-64` — builds run off the persisted DB),
-but the failure surviving restarts and retries over ~30 minutes makes that unlikely.
+The only unconfirmed detail is the reporter's exact Instant payments balance at the time —
+expectation is `balance − 1,305,000 sats` was smaller than the Liquid network fee
+(~30–60 sats), consistent with a sell order created for (approximately) the full wallet
+balance. Immediate workaround for the user: paste the address and use **Max**, or send a
+slightly smaller amount / top up the wallet.
 
 ## Contributing defects (each independently worth a fix)
 
