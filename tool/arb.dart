@@ -31,6 +31,9 @@ void main(List<String> args) {
   final rest = args.sublist(1);
 
   try {
+    if (command != 'help' && command != '-h' && command != '--help') {
+      _rejectUnknownOptions(rest);
+    }
     switch (command) {
       case 'get':
         _cmdGet(rest);
@@ -134,6 +137,13 @@ void _cmdCheck(List<String> args) {
 }
 
 void _cmdMissing(List<String> args) {
+  final extra = _positional(args);
+  if (extra.isNotEmpty) {
+    throw UsageException(
+      'missing takes no positional arguments; got "${extra.join(' ')}". '
+      'To focus on one locale use `missing --locale ${extra.first}`.',
+    );
+  }
   final localeFilter = _option(args, '--locale');
   final list = _flag(args, '--list');
   if (localeFilter != null) {
@@ -170,6 +180,13 @@ void _cmdMissing(List<String> args) {
 }
 
 void _cmdDead(List<String> args) {
+  final extra = _positional(args);
+  if (extra.isNotEmpty) {
+    throw UsageException(
+      'dead takes no positional arguments; got "${extra.join(' ')}". '
+      'Use `check <key>` to inspect a single key.',
+    );
+  }
   final list = _flag(args, '--list');
   final templateKeys = _realKeys(_readMap(_fileFor(templateLocale)));
 
@@ -230,10 +247,14 @@ void _cmdAdd(List<String> args) {
 
   final description = _option(args, '--description');
   final placeholders = _readJsonMapOption(args, '--placeholders', null);
+  if (placeholders != null) _validatePlaceholders(placeholders);
 
-  // Guard: refuse to overwrite an existing key. Use `set` or `delete` first.
+  // Guard: refuse to overwrite an existing key. Also reject a leftover orphan
+  // @key (no base key) — appending would create a duplicate @key that then
+  // fails _assertInvariant on every later edit. Use `set` or `delete` first.
   for (final locale in translations.keys) {
-    if (_readMap(_fileFor(locale)).containsKey(key)) {
+    final map = _readMap(_fileFor(locale));
+    if (map.containsKey(key) || map.containsKey('@$key')) {
       throw ArbException(
         'Key "$key" already exists in $locale. Use `set` to '
         'update a value, or `delete` first to replace it.',
@@ -320,6 +341,7 @@ void _cmdSetMeta(List<String> args) {
   if (description == null && placeholders == null) {
     throw UsageException('set-meta needs --description and/or --placeholders.');
   }
+  if (placeholders != null) _validatePlaceholders(placeholders);
 
   final template = _readMap(_fileFor(templateLocale));
   if (!template.containsKey(key)) {
@@ -336,7 +358,9 @@ void _cmdSetMeta(List<String> args) {
     if (existing is Map) ...existing.cast<String, dynamic>(),
   };
   if (description != null) meta['description'] = description;
-  if (placeholders != null) meta['placeholders'] = placeholders;
+  if (placeholders != null && placeholders.isNotEmpty) {
+    meta['placeholders'] = placeholders;
+  }
 
   _replaceOrInsertMeta(_fileFor(templateLocale), key, meta);
   print('updated metadata for $key in $templateLocale');
@@ -414,6 +438,12 @@ void _cmdDelete(List<String> args) {
 }
 
 void _cmdValidate(List<String> args) {
+  final extra = _positional(args);
+  if (extra.isNotEmpty) {
+    throw UsageException(
+      'validate takes no arguments; got "${extra.join(' ')}".',
+    );
+  }
   var ok = true;
   for (final locale in _allLocales()) {
     final file = _fileFor(locale);
@@ -501,11 +531,36 @@ final _topKeyLine = RegExp(r'^  "((?:@@|@)?(?:\\.|[^"\\])*)":');
 void _assertInvariant(String file) {
   final lines = File(file).readAsStringSync().split('\n');
   final map = _readMap(file);
-  final topLines = lines.where((l) => _topKeyLine.hasMatch(l)).length;
-  if (topLines != map.length) {
+  final lineKeys = [
+    for (final l in lines)
+      if (_topKeyLine.firstMatch(l) case final m?) _unescapeKey(m.group(1)!),
+  ];
+  final mapKeys = map.keys.toList();
+  // Count AND order must match the parsed keys. A bare count is not enough: a
+  // stray line at 2-space indent (e.g. a reflowed metadata field) can offset
+  // one real key and still tie the total, which would make _blocks split a
+  // block mid-way and corrupt the following edit.
+  if (lineKeys.length != mapKeys.length) {
     throw ArbException(
       '$file does not match the expected 2-space-per-top-level-key layout '
-      '($topLines key lines vs ${map.length} keys). Refusing to edit.',
+      '(${lineKeys.length} key lines vs ${mapKeys.length} keys). '
+      'Refusing to edit.',
+    );
+  }
+  for (var i = 0; i < mapKeys.length; i++) {
+    if (lineKeys[i] != mapKeys[i]) {
+      throw ArbException(
+        '$file does not match the expected layout: key line ${i + 1} reads '
+        '"${lineKeys[i]}" but is the ${i + 1}th JSON key "${mapKeys[i]}". '
+        'Refusing to edit.',
+      );
+    }
+  }
+  // The block model assumes a column-0 closing brace; without it insertion
+  // math (closeIdx) would throw a raw RangeError mid-command.
+  if (!lines.any((l) => l.trimRight() == '}')) {
+    throw ArbException(
+      '$file has no top-level closing brace on its own line. Refusing to edit.',
     );
   }
 }
@@ -550,7 +605,21 @@ bool _editLines(String file, bool Function(List<String> lines) edit) {
   final trailingNewline = lines.isNotEmpty && lines.last.isEmpty;
   if (trailingNewline) lines.removeLast();
   final changed = edit(lines);
-  if (changed) File(file).writeAsStringSync('${lines.join('\n')}\n');
+  if (changed) {
+    final result = '${lines.join('\n')}\n';
+    // Last-line of defence: the surgical edit math is trusted, but a bug in it
+    // must never reach disk. Re-parse before writing so a broken edit aborts
+    // cleanly and leaves the file untouched instead of corrupting it.
+    try {
+      jsonDecode(result);
+    } catch (e) {
+      throw ArbException(
+        'Aborting write to $file: the edit would produce invalid JSON ($e). '
+        'This is a bug in the tool; the file was left unchanged.',
+      );
+    }
+    File(file).writeAsStringSync(result);
+  }
   return changed;
 }
 
@@ -753,10 +822,11 @@ Set<String> _referencedTokens() {
 // Argument parsing
 // ---------------------------------------------------------------------------
 
-// Only these are treated as options; any other token — including a value that
-// happens to start with `--` (e.g. `set k en '--dash'`) — is positional. A
-// bare `--` ends option parsing: everything after it is positional even if it
-// equals a known option/flag name (e.g. `set k en -- --list`).
+// Only these are treated as options. Any other token starting with `--` in the
+// option region is rejected as an unknown option (so a typo like `--lst` fails
+// loudly instead of being silently ignored). To pass a value that genuinely
+// starts with `--`, put it after a bare `--`: everything after the separator is
+// positional even if it equals a known option/flag name (e.g. `set k en -- --list`).
 const _valueOptions = {
   '--locale',
   '--translations',
@@ -810,15 +880,55 @@ String? _option(List<String> args, String name) {
 
 bool _flag(List<String> args, String name) => _optionArgs(args).contains(name);
 
-final _keyPattern = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$');
+/// Rejects any unknown `--option` in the option region (before a bare `--`), so
+/// a misspelled flag fails loudly instead of being silently dropped. Values of
+/// known value-options are skipped, so `--description --foo` keeps `--foo` as
+/// the description; a literal option-like value goes after the `--` separator.
+void _rejectUnknownOptions(List<String> args) {
+  final head = _optionArgs(args);
+  for (var i = 0; i < head.length; i++) {
+    final a = head[i];
+    if (_valueOptions.contains(a)) {
+      i++; // skip this option's value, whatever it is
+      continue;
+    }
+    if (_booleanFlags.contains(a)) continue;
+    if (a.startsWith('--')) {
+      final known = [..._valueOptions, ..._booleanFlags]..sort();
+      throw UsageException(
+        'Unknown option "$a". Valid options: ${known.join(', ')}. To pass a '
+        'value that begins with "--", put it after a bare "--".',
+      );
+    }
+  }
+}
+
+// gen-l10n requires resource names to be lowerCamelCase (a valid Dart method
+// name starting with a lowercase letter).
+final _keyPattern = RegExp(r'^[a-z][a-zA-Z0-9_]*$');
+
+/// Each ARB placeholder must map to an object (`{"type":"int"}`), not a bare
+/// value. Checking here turns an abbreviated shape into a clear error instead
+/// of a much later, context-free failure inside `make translations`.
+void _validatePlaceholders(Map<String, dynamic> placeholders) {
+  for (final entry in placeholders.entries) {
+    if (entry.value is! Map) {
+      throw UsageException(
+        'Placeholder "${entry.key}" must map to an object like {"type":"int"}, '
+        'got ${entry.value.runtimeType}. '
+        'Example: --placeholders \'{"count":{"type":"int"}}\'.',
+      );
+    }
+  }
+}
 
 /// Rejects keys gen-l10n cannot turn into a Dart getter, before anything is
 /// written (a bad key would otherwise only fail later in `make translations`).
 void _validateKey(String key) {
   if (!_keyPattern.hasMatch(key)) {
     throw UsageException(
-      'Invalid key "$key". Must be a valid Dart identifier '
-      '(letters, digits, underscore; not starting with a digit).',
+      'Invalid key "$key". Must be lowerCamelCase (start with a lowercase '
+      'letter; letters, digits, underscore only).',
     );
   }
 }

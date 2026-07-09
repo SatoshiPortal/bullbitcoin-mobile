@@ -34,9 +34,13 @@ Write (other keys left untouched):
 | `rename OLD NEW` | Rename a key across every locale in place, preserving values + metadata |
 | `delete KEY` | Remove KEY and its `@KEY` metadata from every file |
 
-After any write that changes the key set or a key's metadata (`add`, `delete`,
-`set-meta` — including placeholder changes), run `make translations` to
-regenerate the Dart localizations. Run `fvm dart run tool/arb.dart help` for the
+Unknown options are rejected rather than ignored, so a typo fails loudly. To
+pass a value that begins with `--` (e.g. `set KEY LOCALE -- --dash`), put it
+after a bare `--`.
+
+After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
+`make translations` to regenerate the Dart localizations — each changes either
+the key set or a generated string. Run `fvm dart run tool/arb.dart help` for the
 full reference.
 
 > First run is slow (cold package build hooks); subsequent runs are sub-second.
