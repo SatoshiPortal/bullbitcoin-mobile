@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 extension ExchangeSupportChatFailureL10n on ExchangeSupportChatFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    NotAuthenticatedFailure() => context.loc.exchangeSupportLoginChatRequired,
     LoadMessagesFailure() => context.loc.exchangeSupportChatLoadMessagesError,
     SendMessageFailure() => context.loc.exchangeSupportChatSendMessageError,
     MessageEmptyFailure() => context.loc.exchangeSupportChatMessageEmptyError,

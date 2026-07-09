@@ -50,14 +50,14 @@ void main() {
       );
     });
 
-    test('maps a missing API key to a sanitized LoadMessagesFailure', () async {
+    test('maps a missing API key to NotAuthenticatedFailure', () async {
       when(
         () => apiKeyDatasource.get(isTestnet: any(named: 'isTestnet')),
       ).thenAnswer((_) async => null);
 
       final result = await repository.getMessages();
 
-      expect((result as Err).failure, isA<LoadMessagesFailure>());
+      expect((result as Err).failure, isA<NotAuthenticatedFailure>());
     });
 
     test('maps a datasource throw to a sanitized LoadAttachmentFailure '
@@ -82,7 +82,7 @@ void main() {
     });
 
     test(
-      'sendMessage with a missing API key returns SendMessageFailure',
+      'sendMessage with a missing API key returns NotAuthenticatedFailure',
       () async {
         when(
           () => apiKeyDatasource.get(isTestnet: any(named: 'isTestnet')),
@@ -90,7 +90,7 @@ void main() {
 
         final result = await repository.sendMessage(text: 'hi');
 
-        expect((result as Err).failure, isA<SendMessageFailure>());
+        expect((result as Err).failure, isA<NotAuthenticatedFailure>());
       },
     );
   });
@@ -147,7 +147,10 @@ void main() {
 
         final result = await usecase.execute(page: 1, pageSize: 10);
 
-        expect((result as Err).failure, isA<LoadMessagesFailure>());
+        expect(
+          (result as Err).failure,
+          isA<ExchangeSupportChatUnexpectedFailure>(),
+        );
       },
     );
 

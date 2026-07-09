@@ -292,7 +292,20 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
     switch (await _getAttachmentUsecase.execute(attachmentId)) {
       case Ok(:final value):
-        if (value.fileData != null && value.fileName != null) {
+        if (value.fileData == null || value.fileName == null) {
+          emit(
+            state.copyWith(
+              loadingAttachmentId: null,
+              failure: const FetchFileDataFailure(),
+            ),
+          );
+          return;
+        }
+        // Writing the temp file and opening the share sheet is foreign IO
+        // (share_plus throws on some devices/iPad popover cases) — guard it so
+        // a failure clears the spinner and surfaces a sanitized failure instead
+        // of escaping as an unhandled async error and leaving a stuck spinner.
+        try {
           final tempDir = await getTemporaryDirectory();
           // fileName is server-controlled input: never let it become path
           // material beyond a bare filename, or a crafted response could
@@ -308,11 +321,16 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
             ShareParams(files: [xFile], subject: value.fileName),
           );
           emit(state.copyWith(loadingAttachmentId: null));
-        } else {
+        } catch (e, st) {
+          log.warning(
+            'Failed to open support chat attachment',
+            error: e,
+            trace: st,
+          );
           emit(
             state.copyWith(
               loadingAttachmentId: null,
-              failure: const FetchFileDataFailure(),
+              failure: LoadAttachmentFailure('$e'),
             ),
           );
         }

@@ -4,6 +4,12 @@ sealed class ExchangeSupportChatFailure extends Failure {
   const ExchangeSupportChatFailure([super.logMessage]);
 }
 
+/// The user is not logged in to their Bull Bitcoin account — the actionable
+/// signal is "log in", not "retry".
+final class NotAuthenticatedFailure extends ExchangeSupportChatFailure {
+  const NotAuthenticatedFailure([super.logMessage]);
+}
+
 /// Could not load the chat message history.
 final class LoadMessagesFailure extends ExchangeSupportChatFailure {
   const LoadMessagesFailure([super.logMessage]);

@@ -34,7 +34,7 @@ class SendSupportChatMessageUsecase {
         error: e,
         trace: st,
       );
-      return Err(SendMessageFailure('$e'));
+      return Err(ExchangeSupportChatUnexpectedFailure('$e'));
     }
 
     return repository.sendMessage(text: text, attachments: attachments);

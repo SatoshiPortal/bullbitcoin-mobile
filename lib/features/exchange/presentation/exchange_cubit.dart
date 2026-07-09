@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_us
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
@@ -182,11 +183,19 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
-  Future<void> deleteAccount() async {
-    final _ = await _sendSupportChatMessageUsecase.execute(
+  /// Sends the account-deletion request to support and logs out. Returns true
+  /// on success; false if the request could not be sent — callers must NOT show
+  /// a success confirmation on false. The raw reason is logged at the boundary.
+  Future<bool> deleteAccount() async {
+    switch (await _sendSupportChatMessageUsecase.execute(
       text: 'I want to delete my account',
-    );
-    await logout();
+    )) {
+      case Ok():
+        await logout();
+        return true;
+      case Err():
+        return false;
+    }
   }
 
   void loadAnnouncements() async {
