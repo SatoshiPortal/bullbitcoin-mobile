@@ -72,42 +72,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         ? context.loc.settingsAccountSettingsTitle
                         : context.loc.settingsExchangeSettingsTitle,
                     onTap: () {
-                      if (Platform.isIOS) {
-                        if (isSuperuser) {
-                          final notLoggedIn = context
-                              .read<ExchangeCubit>()
-                              .state
-                              .notLoggedIn;
-                          if (notLoggedIn) {
-                            context.goNamed(ExchangeRoute.exchangeLanding.name);
-                          } else {
-                            context.pushNamed(
-                              SettingsRoute.exchangeSettings.name,
-                            );
-                          }
-                        } else {
-                          final notLoggedIn = context
-                              .read<ExchangeCubit>()
-                              .state
-                              .notLoggedIn;
-                          if (notLoggedIn) {
-                            context.goNamed(ExchangeRoute.exchangeLanding.name);
-                          } else {
-                            context.pushNamed(
-                              SettingsRoute.exchangeSettings.name,
-                            );
-                          }
-                        }
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
+                      if (notLoggedIn) {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(SettingsRoute.exchangeSettings.name);
-                        }
+                        context.pushNamed(SettingsRoute.exchangeSettings.name);
                       }
                     },
                   ),
