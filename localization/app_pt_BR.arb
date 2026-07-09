@@ -8533,6 +8533,10 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
+  "ledgerErrorDeviceBusy": "Outro programa está usando o seu Ledger. Por favor, feche-o (por exemplo, o Ledger Live) e tente novamente.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "Não há conexão Ledger disponível",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

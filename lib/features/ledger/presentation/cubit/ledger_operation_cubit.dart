@@ -51,6 +51,9 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       case Err(:final failure):
         return _emitFailure(failure);
     }
+    if (devices.isEmpty) {
+      return _emitFailure(const LedgerNoDevicesFoundFailure());
+    }
 
     emit(
       state.copyWith(

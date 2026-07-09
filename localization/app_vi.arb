@@ -600,6 +600,7 @@
   "ledgerErrorMissingPsbt": "Cần có PSBT để ký",
   "ledgerErrorMissingScriptType": "Bắt buộc phải có loại script",
   "ledgerErrorMultipleDevicesFound": "Đã tìm thấy nhiều thiết bị Ledger. Vui lòng đảm bảo chỉ có một thiết bị ở gần.",
+  "ledgerErrorDeviceBusy": "Một chương trình khác đang sử dụng Ledger của bạn. Vui lòng đóng chương trình đó (ví dụ: Ledger Live) và thử lại.",
   "ledgerErrorNoConnection": "Không có kết nối Ledger khả dụng",
   "ledgerErrorNoDevicesFound": "Không tìm thấy thiết bị Ledger. Hãy đảm bảo thiết bị của bạn đã bật và đã bật Bluetooth.",
   "ledgerErrorPermissionDenied": "Cần có quyền Bluetooth để kết nối với các thiết bị Ledger.",

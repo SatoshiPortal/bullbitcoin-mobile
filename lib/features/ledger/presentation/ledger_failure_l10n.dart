@@ -11,8 +11,8 @@ extension LedgerFailureL10n on LedgerFailure {
     LedgerMultipleDevicesFoundFailure() =>
       context.loc.ledgerErrorMultipleDevicesFound,
     LedgerDeviceNotFoundFailure() => context.loc.ledgerErrorDeviceNotFound,
-    LedgerNoActiveConnectionFailure() => context.loc.ledgerErrorNoConnection,
     LedgerNoConnectionFailure() => context.loc.ledgerErrorNoConnection,
+    LedgerDeviceBusyFailure() => context.loc.ledgerErrorDeviceBusy,
     LedgerDeviceMismatchFailure() => context.loc.ledgerErrorDeviceMismatch,
     LedgerInvalidPsbtFailure() => context.loc.ledgerErrorInvalidPsbt,
     LedgerRejectedByUserFailure() => context.loc.ledgerErrorRejectedByUser,

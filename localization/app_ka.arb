@@ -812,6 +812,7 @@
   "ledgerErrorMissingPsbt": "ხელმოწერისთვის საჭიროა PSBT",
   "ledgerErrorMissingScriptType": "საჭიროა სკრიპტის ტიპი",
   "ledgerErrorMultipleDevicesFound": "აღმოჩენილია რამდენიმე Ledger მოწყობილობა. გთხოვთ, დარწმუნდეთ, რომ ახლოს მხოლოდ ერთი მოწყობილობაა.",
+  "ledgerErrorDeviceBusy": "სხვა პროგრამა იყენებს თქვენს Ledger-ს. გთხოვთ დახუროთ ის (მაგალითად, Ledger Live) და სცადოთ თავიდან.",
   "ledgerErrorNoConnection": "Ledger-თან კავშირი მიუწვდომელია",
   "ledgerErrorNoDevicesFound": "Ledger მოწყობილობები ვერ მოიძებნა. დარწმუნდით, რომ თქვენი მოწყობილობა ჩართულია და Bluetooth გააქტიურებულია.",
   "ledgerErrorPermissionDenied": "Ledger მოწყობილობებთან დასაკავშირებლად საჭიროა Bluetooth-ის ნებართვები.",

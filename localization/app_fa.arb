@@ -408,6 +408,10 @@
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
+  "ledgerErrorDeviceBusy": "برنامه دیگری در حال استفاده از Ledger شما است. لطفاً آن را ببندید (برای مثال، Ledger Live) و دوباره امتحان کنید.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "هیچ اتصال Ledger در دسترس نیست",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"

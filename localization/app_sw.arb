@@ -60,6 +60,7 @@
   "ledgerErrorMissingPsbt": "PSBT inahitajika kwa kusaini",
   "ledgerErrorMissingScriptType": "Aina ya hati inahitajika",
   "ledgerErrorMultipleDevicesFound": "Vifaa vingi vya Ledger vimepatikana. Tafadhali hakikisha kuna kifaa kimoja tu karibu.",
+  "ledgerErrorDeviceBusy": "Programu nyingine inatumia Ledger yako. Tafadhali ifunge (kwa mfano, Ledger Live) na ujaribu tena.",
   "ledgerErrorNoConnection": "Hakuna muunganisho wa Ledger unaopatikana",
   "ledgerErrorNoDevicesFound": "Hakuna vifaa vya Ledger vilivyopatikana. Hakikisha kifaa chako kimewashwa na Bluetooth imewashwa.",
   "ledgerErrorPermissionDenied": "Ruhusa za Bluetooth zinahitajika ili kuunganisha na vifaa vya Ledger.",

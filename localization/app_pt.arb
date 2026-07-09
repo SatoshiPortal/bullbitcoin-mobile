@@ -3265,6 +3265,7 @@
   "payNotAuthenticated": "Não és autenticado. Faça login para continuar.",
   "paySinpeNumeroComprobante": "Número de referência",
   "backupSettingsViewVaultKey": "Ver o Vault Chaveiro",
+  "ledgerErrorDeviceBusy": "Outro programa está usando o seu Ledger. Por favor, feche-o (por exemplo, o Ledger Live) e tente novamente.",
   "ledgerErrorNoConnection": "Não há conexão Ledger disponível",
   "testBackupSuccessButton": "Entendido",
   "transactionLabelTransactionId": "ID de transação",

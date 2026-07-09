@@ -9934,6 +9934,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "कोई अन्य प्रोग्राम आपके Ledger का उपयोग कर रहा है। कृपया उसे बंद करें (उदाहरण के लिए, Ledger Live) और फिर से कोशिश करें।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "कोई लेजर कनेक्शन उपलब्ध नहीं",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
