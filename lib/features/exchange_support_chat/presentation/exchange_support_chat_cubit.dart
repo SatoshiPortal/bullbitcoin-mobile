@@ -5,11 +5,14 @@ import 'package:bb_mobile/core/exchange/data/services/exchange_notification_serv
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,44 +45,36 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   bool _limitFetchingOlderMessages = false;
 
   Future<void> loadMessages({int? page}) async {
-    try {
-      emit(state.copyWith(loadingMessages: true, errorLoadingMessages: ''));
+    emit(state.copyWith(loadingMessages: true, failure: null));
 
-      if (state.userId == null) {
-        try {
-          final userSummary = await _getUserSummaryUsecase.execute();
-          final userId = userSummary.userId;
-          if (userId == null) {
-            throw Exception('User ID not found in user summary');
-          }
+    if (state.userId == null) {
+      // Best-effort: a missing user id must not block loading messages.
+      try {
+        final userSummary = await _getUserSummaryUsecase.execute();
+        final userId = userSummary.userId;
+        if (userId != null) {
           emit(state.copyWith(userId: userId));
-        } catch (_) {}
+        }
+      } catch (e) {
+        log.warning('Failed to resolve support chat user id', error: e);
       }
+    }
 
-      final pageToLoad = page ?? 1;
-      final messages = await _getMessagesUsecase.execute(
-        page: pageToLoad,
-        pageSize: 10,
-      );
-
-      final updatedMessages = pageToLoad == 1
-          ? messages
-          : [...state.messages, ...messages];
-
-      emit(
-        state.copyWith(
-          messages: updatedMessages,
-          loadingMessages: false,
-          currentPage: pageToLoad,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          loadingMessages: false,
-          errorLoadingMessages: e.toString(),
-        ),
-      );
+    final pageToLoad = page ?? 1;
+    switch (await _getMessagesUsecase.execute(page: pageToLoad, pageSize: 10)) {
+      case Ok(:final value):
+        final updatedMessages = pageToLoad == 1
+            ? value
+            : [...state.messages, ...value];
+        emit(
+          state.copyWith(
+            messages: updatedMessages,
+            loadingMessages: false,
+            currentPage: pageToLoad,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(loadingMessages: false, failure: failure));
     }
   }
 
@@ -92,39 +87,31 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     final nextPage = state.currentPage + 1;
     emit(state.copyWith(loadingOlderMessages: true));
 
-    try {
-      final messages = await _getMessagesUsecase.execute(
-        page: nextPage,
-        pageSize: 10,
-      );
-
-      if (messages.isEmpty) {
+    switch (await _getMessagesUsecase.execute(page: nextPage, pageSize: 10)) {
+      case Ok(:final value):
+        if (value.isEmpty) {
+          emit(state.copyWith(loadingOlderMessages: false));
+        } else {
+          emit(
+            state.copyWith(
+              messages: [...state.messages, ...value],
+              loadingOlderMessages: false,
+              currentPage: nextPage,
+            ),
+          );
+        }
+      case Err():
         emit(state.copyWith(loadingOlderMessages: false));
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          messages: [...state.messages, ...messages],
-          loadingOlderMessages: false,
-          currentPage: nextPage,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(loadingOlderMessages: false));
-    } finally {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _limitFetchingOlderMessages = false;
-      });
     }
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _limitFetchingOlderMessages = false;
+    });
   }
 
   void updateMessageText(String text) {
     emit(state.copyWith(newMessageText: text));
   }
-
-  static const String errorMessageEmpty =
-      'EXCHANGE_SUPPORT_CHAT_MESSAGE_EMPTY_ERROR';
 
   Future<bool> _requestPhotoLibraryPermission() async {
     if (Platform.isIOS) {
@@ -175,7 +162,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
   Future<void> addAttachment() async {
     try {
-      emit(state.copyWith(errorCode: null));
+      emit(state.copyWith(failure: null));
 
       if (Platform.isAndroid) {
         final hasPermission = await _requestPhotoLibraryPermission();
@@ -186,14 +173,12 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
               storageStatus.isPermanentlyDenied) {
             emit(
               state.copyWith(
-                errorCode: SupportChatErrorCode.permissionDeniedNeedsSettings,
+                failure: const PermissionDeniedNeedsSettingsFailure(),
               ),
             );
             return;
           }
-          emit(
-            state.copyWith(errorCode: SupportChatErrorCode.permissionDenied),
-          );
+          emit(state.copyWith(failure: const PermissionDeniedFailure()));
           return;
         }
       }
@@ -251,20 +236,27 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
           ],
         ),
       );
-    } on Exception catch (e) {
-      final errorMessage = e.toString().toLowerCase();
-      if (errorMessage.contains('permission') ||
-          errorMessage.contains('denied')) {
+    } on Exception catch (e, st) {
+      final message = e.toString().toLowerCase();
+      log.warning(
+        'Failed to pick support chat attachments',
+        error: e,
+        trace: st,
+      );
+      if (message.contains('permission') || message.contains('denied')) {
         emit(
-          state.copyWith(
-            errorCode: SupportChatErrorCode.permissionDeniedNeedsSettings,
-          ),
+          state.copyWith(failure: PermissionDeniedNeedsSettingsFailure('$e')),
         );
       } else {
-        emit(state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed));
+        emit(state.copyWith(failure: PickFilesFailure('$e')));
       }
-    } catch (e) {
-      emit(state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed));
+    } catch (e, st) {
+      log.warning(
+        'Failed to pick support chat attachments',
+        error: e,
+        trace: st,
+      );
+      emit(state.copyWith(failure: PickFilesFailure('$e')));
     }
   }
 
@@ -279,59 +271,45 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   }
 
   Future<void> attachLogs() async {
-    try {
-      emit(state.copyWith(errorCode: null));
+    emit(state.copyWith(failure: null));
 
-      final attachment = await _createLogAttachmentUsecase.execute();
-
-      emit(
-        state.copyWith(
-          newMessageText: 'Here are my logs',
-          newMessageAttachments: [...state.newMessageAttachments, attachment],
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(errorCode: SupportChatErrorCode.attachLogsFailed));
+    switch (await _createLogAttachmentUsecase.execute()) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            newMessageText: 'Here are my logs',
+            newMessageAttachments: [...state.newMessageAttachments, value],
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
     }
   }
 
   Future<void> downloadAttachment(String attachmentId) async {
-    try {
-      emit(
-        state.copyWith(
-          loadingAttachmentId: attachmentId,
-          errorLoadingAttachment: '',
-        ),
-      );
+    emit(state.copyWith(loadingAttachmentId: attachmentId, failure: null));
 
-      final attachment = await _getAttachmentUsecase.execute(attachmentId);
-
-      if (attachment.fileData != null && attachment.fileName != null) {
-        final tempDir = await getTemporaryDirectory();
-        final tempFile = File('${tempDir.path}/${attachment.fileName}');
-        await tempFile.writeAsBytes(attachment.fileData!);
-        final xFile = XFile(tempFile.path);
-        await SharePlus.instance.share(
-          ShareParams(files: [xFile], subject: attachment.fileName),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            loadingAttachmentId: null,
-            errorCode: SupportChatErrorCode.fetchFileDataFailed,
-          ),
-        );
-        return;
-      }
-
-      emit(state.copyWith(loadingAttachmentId: null));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          loadingAttachmentId: null,
-          errorLoadingAttachment: e.toString(),
-        ),
-      );
+    switch (await _getAttachmentUsecase.execute(attachmentId)) {
+      case Ok(:final value):
+        if (value.fileData != null && value.fileName != null) {
+          final tempDir = await getTemporaryDirectory();
+          final tempFile = File('${tempDir.path}/${value.fileName}');
+          await tempFile.writeAsBytes(value.fileData!);
+          final xFile = XFile(tempFile.path);
+          await SharePlus.instance.share(
+            ShareParams(files: [xFile], subject: value.fileName),
+          );
+          emit(state.copyWith(loadingAttachmentId: null));
+        } else {
+          emit(
+            state.copyWith(
+              loadingAttachmentId: null,
+              failure: const FetchFileDataFailure(),
+            ),
+          );
+        }
+      case Err(:final failure):
+        emit(state.copyWith(loadingAttachmentId: null, failure: failure));
     }
   }
 
@@ -343,54 +321,52 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     final hasAttachments = attachmentsToSend.isNotEmpty;
 
     if (messageText.isEmpty) {
-      emit(state.copyWith(errorSendingMessage: errorMessageEmpty));
+      emit(state.copyWith(sendMessageFailure: const MessageEmptyFailure()));
       return;
     }
 
-    try {
-      emit(state.copyWith(sendingMessage: true, errorSendingMessage: ''));
+    emit(state.copyWith(sendingMessage: true, sendMessageFailure: null));
 
-      final tempMessage = SupportChatMessage(
-        messageId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
-        text: messageText.isEmpty ? null : messageText,
-        fromUserId: state.userId,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isAdmin: false,
-        attachments: attachmentsToSend,
-      );
+    final tempMessage = SupportChatMessage(
+      messageId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      text: messageText.isEmpty ? null : messageText,
+      fromUserId: state.userId,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      isAdmin: false,
+      attachments: attachmentsToSend,
+    );
 
-      emit(
-        state.copyWith(
-          messages: [tempMessage, ...state.messages],
-          newMessageText: '',
-          newMessageAttachments: [],
-        ),
-      );
+    emit(
+      state.copyWith(
+        messages: [tempMessage, ...state.messages],
+        newMessageText: '',
+        newMessageAttachments: [],
+      ),
+    );
 
-      await _sendMessageUsecase.execute(
-        text: messageText,
-        attachments: hasAttachments ? attachmentsToSend : null,
-      );
-
-      // Don't immediately reload - let the message appear naturally
-      // The attachment might not be fully processed on the server yet
-      await Future.delayed(const Duration(seconds: 2));
-      await loadMessages(page: 1);
-
-      emit(state.copyWith(sendingMessage: false));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          sendingMessage: false,
-          errorSendingMessage: e.toString(),
-          newMessageText: messageText,
-          newMessageAttachments: attachmentsToSend,
-          messages: state.messages
-              .where((msg) => !msg.messageId!.startsWith('temp'))
-              .toList(),
-        ),
-      );
+    switch (await _sendMessageUsecase.execute(
+      text: messageText,
+      attachments: hasAttachments ? attachmentsToSend : null,
+    )) {
+      case Ok():
+        // Don't immediately reload - let the message appear naturally.
+        // The attachment might not be fully processed on the server yet.
+        await Future.delayed(const Duration(seconds: 2));
+        await loadMessages(page: 1);
+        emit(state.copyWith(sendingMessage: false));
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            sendingMessage: false,
+            sendMessageFailure: failure,
+            newMessageText: messageText,
+            newMessageAttachments: attachmentsToSend,
+            messages: state.messages
+                .where((msg) => !msg.messageId!.startsWith('temp'))
+                .toList(),
+          ),
+        );
     }
   }
 
