@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'old_address.freezed.dart';
