@@ -1968,10 +1968,6 @@
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
   },
-  "bitboxCubitOperationTimeout": "العملية انتهت أرجوك حاول مرة أخرى.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -3673,10 +3669,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "bitboxCubitHandshakeFailed": "فشل في إقامة اتصال آمن. أرجوك حاول مرة أخرى.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "المبلغ فوق حدود التبديل",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3957,10 +3949,6 @@
   "exchangeLandingFeature1": "اشتري بيتكين مباشرةً للإستدعاء الذاتي",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "إذن من وكالة USB رفض. من فضلك امنح الإذن للدخول إلى جهاز (بيتبوكس) الخاص بك.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "التحويل إلى",
   "@swapTransferTo": {
@@ -7733,10 +7721,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "فشل في التواصل مع جهاز (بيتبوكس) من فضلك تحقق من اتصالك.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "مدة الخدمة",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -7856,10 +7840,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "النّساء لَيسَ أزواجَ. من فضلك أكمل عملية الأزواج أولاً.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC الرصيد",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -7896,10 +7876,6 @@
   "payPriceRefreshIn": "ستنعش الأسعار ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "وألغيت العملية. أرجوك حاول مرة أخرى.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
   "@passportStep3": {
@@ -10005,10 +9981,6 @@
   "sellReceiveAmount": "سوف تستقبل",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "رد غير سليم من جهاز (بيتبوكس) أرجوك حاول مرة أخرى.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "الترتيبات",
   "@settingsScreenTitle": {

@@ -2966,38 +2966,6 @@
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
   },
-  "bitboxCubitPermissionDenied": "USB অনুমতি অস্বীকাৰ কৰা হৈছে। অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচ অ্যাক্সেস কৰিবলৈ অনুমতি প্ৰদান কৰক।",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "কোনো BitBox ডিভাইচ পোৱা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচ সংযুক্ত কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "ডিভাইচ যুগ্মিত হোৱা নাই। অনুগ্ৰহ কৰি প্ৰথমে যুগ্মিতকৰণ প্ৰক্ৰিয়া সম্পন্ন কৰক।",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "সুৰক্ষিত সংযোগ স্থাপন কৰিবলৈ বিফল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "অপাৰেশনৰ সময় উত্তীৰ্ণ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "BitBox ডিভাইচৰ সৈতে সংযুক্ত হ'বলৈ বিফল হৈছে। অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক।",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "BitBox ডিভাইচৰ পৰা অবৈধ সঁহাৰি। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "অপাৰেশন বাতিল কৰা হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "advancedOptionsTitle": "উন্নত বিকল্পসমূহ",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"

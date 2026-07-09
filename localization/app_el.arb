@@ -1767,10 +1767,6 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "bitboxCubitOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
   "receivePaymentReceived": "Η πληρωμή έλαβε!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -3267,10 +3263,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "bitboxCubitHandshakeFailed": "Απέτυχε να δημιουργήσει ασφαλή σύνδεση. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Ποσό είναι πάνω από όρια ανταλλαγής",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -3519,10 +3511,6 @@
   "exchangeLandingFeature1": "Αγοράστε Bitcoin απευθείας στην αυτο-κατηγορία",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "Η άδεια USB αρνήθηκε. Σας παρακαλούμε να δώσετε άδεια πρόσβασης στη συσκευή BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Μεταφορά",
   "@swapTransferTo": {
@@ -6848,10 +6836,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -6933,10 +6917,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Συσκευή που δεν συνδυάζονται. Παρακαλούμε να ολοκληρώσετε πρώτα τη διαδικασία ζευγαρώματος.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC ισορροπία ισορροπία",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -6964,10 +6944,6 @@
   "payPriceRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Η επιχείρηση ακυρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@passportStep3": {
@@ -8764,10 +8740,6 @@
   "sellReceiveAmount": "Θα λάβετε",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "Ακυρωμένη απάντηση από τη συσκευή BitBox. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Ρυθμίσεις",
   "@settingsScreenTitle": {

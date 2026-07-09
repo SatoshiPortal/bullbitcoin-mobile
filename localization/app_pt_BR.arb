@@ -1943,10 +1943,6 @@
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
   },
-  "bitboxCubitOperationTimeout": "A operação acabou. Por favor, tente novamente.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
   "fundExchangeMethodBankTransferWire": "Transferência bancária (Wire ou EFT)",
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
@@ -3527,10 +3523,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxCubitHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
@@ -3767,10 +3759,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "compartilhado com Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxCubitPermissionDenied": "Autorização USB negada. Por favor, dê permissão para acessar seu dispositivo BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "backupIdLabel": "ID de backup:",
   "@backupIdLabel": {
@@ -7471,10 +7459,6 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "bitboxCubitConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "transactionSwapDescChainDefault": "Sua transferência está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
@@ -8232,17 +8216,9 @@
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
   },
-  "bitboxCubitOperationCancelled": "A operação foi cancelada. Por favor, tente novamente.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "buyKycPendingDescription": "Você deve concluir a verificação de identificação primeiro",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
-  },
-  "bitboxCubitDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
   },
   "exchangeFileUploadPartialSuccess": "{uploaded} de arquivos {total} enviados",
   "@exchangeFileUploadPartialSuccess": {
@@ -8992,10 +8968,6 @@
   "sellOrderNumber": "Número de ordem",
   "@sellOrderNumber": {
     "description": "Label for order number"
-  },
-  "bitboxCubitDeviceNotFound": "Nenhum dispositivo BitBox encontrado. Por favor, conecte seu dispositivo e tente novamente.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
   },
   "payBatchPayment": "Pagamento de lote",
   "@payBatchPayment": {
@@ -10795,10 +10767,6 @@
   "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "bitboxCubitInvalidResponse": "Resposta inválida do dispositivo BitBox. Por favor, tente novamente.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "@sellAboveMaxAmountError": {

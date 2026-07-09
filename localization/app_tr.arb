@@ -2074,10 +2074,6 @@
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
   },
-  "bitboxCubitOperationTimeout": "Operasyon zamanı çıktı. Lütfen tekrar deneyin.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
   "receivePaymentReceived": "Ödeme alındı!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -3887,10 +3883,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Güvenli bağlantı kurmak için başarısız oldu. Lütfen tekrar deneyin.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Miktarın üzerinde",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4179,10 +4171,6 @@
   "exchangeLandingFeature1": "Bitcoin'i doğrudan kendi kendine özgü olarak satın alın",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB izni reddetti. BitBox cihazınıza erişmek için izin verin.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "Transfer to Transferi",
   "@swapTransferTo": {
@@ -8184,10 +8172,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox cihazına bağlanmak için başarısız oldu. Lütfen bağlantınızı kontrol edin.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "Hizmet Şartları",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8298,10 +8282,6 @@
   "@walletButtonReceive": {
     "description": "Button label to receive funds"
   },
-  "bitboxCubitDeviceNotPaired": "Cihaz çiftleştirilmedi. Lütfen ilk önce çiftleşme sürecini tamamlamak.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC Denge dengesi",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8338,10 +8318,6 @@
   "payPriceRefreshIn": "Fiyat yenilenecek ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "Operasyon iptal edildi. Lütfen tekrar deneyin.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull cüzdanında gösterilen QR kodu",
   "@passportStep3": {
@@ -10601,10 +10577,6 @@
   "sellReceiveAmount": "Alacaksınız",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox cihazından gelen uygun yanıt. Lütfen tekrar deneyin.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "Ayarlar",
   "@settingsScreenTitle": {

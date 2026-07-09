@@ -700,7 +700,6 @@
   "transactionFilterAll": "Todos",
   "arkSendTitle": "Enviar",
   "transactionDetailLabelAmountReceived": "Montante recebido",
-  "bitboxCubitOperationTimeout": "A operação acabou. Por favor, tente novamente.",
   "receivePaymentReceived": "Pagamento recebido!",
   "backupWalletHowToDecideVaultCloudSecurity": "Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Eles só podem acessar seu Bitcoin no caso improvável que eles colludem com o servidor chave (o serviço on-line que armazena sua senha de criptografia). Se o servidor chave alguma vez for hackeado, seu Bitcoin pode estar em risco com o Google ou a nuvem da Apple.",
   "howToDecideBackupText1": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
@@ -1292,7 +1291,6 @@
   "recoverbullSelectQuickAndEasy": "Rápido e fácil",
   "exchangeFileUploadTitle": "Upload de arquivo seguro",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
-  "bitboxCubitHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
   "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de swap",
   "backupWalletHowToDecideBackupEncryptedVault": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
   "coreSwapsChainCompletedRefunded": "A transferência foi reembolsada.",
@@ -1384,7 +1382,6 @@
   "visitRecoverBullMessage": "Visite o Recoverbull.com para obter mais informações.",
   "payMyFiatRecipients": "Os meus destinatários fiat",
   "exchangeLandingFeature1": "Comprar Bitcoin direto para self-custody",
-  "bitboxCubitPermissionDenied": "Autorização USB negada. Por favor, dê permissão para acessar seu dispositivo BitBox.",
   "swapTransferTo": "Transferência para",
   "testBackupPinMessage": "Teste para se certificar de que você se lembra de seu backup {pinOrPassword}",
   "@testBackupPinMessage": {
@@ -2695,7 +2692,6 @@
   },
   "transactionStatusPending": "Pendente",
   "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
-  "bitboxCubitConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
   "settingsTermsOfServiceTitle": "Termos de Serviço",
   "importQrDeviceScanning": "A procurar...",
   "importWalletKeystone": "Chaveiro",
@@ -2744,7 +2740,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
   "sellCrcBalance": "CRC Balanço",
   "paySelectCoinsManually": "Selecione moedas manualmente",
   "replaceByFeeActivatedLabel": "Substitui-a-taxa activada",
@@ -2760,7 +2755,6 @@
     }
   },
   "payPriceRefreshIn": "Preço irá refrescar-se ",
-  "bitboxCubitOperationCancelled": "A operação foi cancelada. Por favor, tente novamente.",
   "passportStep3": "Digitalizar o código QR mostrado na carteira Bull",
   "jadeStep5": "Se você tiver problemas de digitalização:",
   "electrumProtocolError": "Não inclua protocolo (ssl:// ou tcp://).",
@@ -3513,7 +3507,6 @@
   "importQrDeviceSeedsignerStep7": "No seu dispositivo móvel, toque em Abrir Câmara",
   "addressViewChangeAddressesDescription": "Carteira de exibição Alterar endereços",
   "sellReceiveAmount": "Você receberá",
-  "bitboxCubitInvalidResponse": "Resposta inválida do dispositivo BitBox. Por favor, tente novamente.",
   "settingsScreenTitle": "Configurações",
   "transactionDetailLabelTransferFee": "Taxa de transferência",
   "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",

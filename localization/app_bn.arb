@@ -2055,10 +2055,6 @@
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
   },
-  "bitboxCubitOperationTimeout": "ক্রিয়াটি সময়সীমা অতিক্রম করেছে। দয়া করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
   "receivePaymentReceived": "পেমেন্ট প্রাপ্ত হয়েছে!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -3821,10 +3817,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "নিরাপদ সংযোগ স্থাপন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "পরিমাণ স্যুইপ সীমার ওপর",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4109,10 +4101,6 @@
   "exchangeLandingFeature1": "Bitcoin সরাসরি নিজস্ব জিম্মায় কিনুন",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
-  },
-  "bitboxCubitPermissionDenied": "USB অনুমতি অস্বীকৃত। আপনার বিটবক্স ডিভাইস অ্যাক্সেস করার জন্য অনুমতি দিন।",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
   },
   "swapTransferTo": "প্রাপকের ঠিকানায় স্থানান্তর",
   "@swapTransferTo": {
@@ -8025,10 +8013,6 @@
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
-  "bitboxCubitConnectionFailed": "BitBox ডিভাইসের সাথে সংযোগ স্থাপন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার সংযোগটি পরীক্ষা করুন।",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
   "settingsTermsOfServiceTitle": "সেবার শর্তাবলী",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -8148,10 +8132,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "ডিভাইস জোড়া করা হয়নি। দয়া করে প্রথমে জোড়া প্রক্রিয়া সম্পূর্ণ করুন।",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "CRC ব্যালেন্স",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8184,10 +8164,6 @@
   "payPriceRefreshIn": "দাম আপডেট হবে ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "bitboxCubitOperationCancelled": "ক্রিয়া বাতিল করা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
   },
   "passportStep3": "Bull Bitcoin ওয়ালেট-এ প্রদর্শিত QR কোড স্ক্যান করুন",
   "@passportStep3": {
@@ -10421,10 +10397,6 @@
   "sellReceiveAmount": "আপনি পাবেন",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "bitboxCubitInvalidResponse": "BitBox ডিভাইস থেকে অবৈধ উত্তর পাওয়া গেছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
   },
   "settingsScreenTitle": "সেটিংস",
   "@settingsScreenTitle": {

@@ -1666,7 +1666,6 @@
   "bitboxErrorNoActiveConnection": "Не активне підключення до пристрою BitBox.",
   "dcaFundAccountButton": "Оберіть Ваш рахунок",
   "arkSendTitle": "Відправити",
-  "bitboxCubitOperationTimeout": "Час роботи. Будь ласка, спробуйте знову.",
   "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
   "coldcardStep13": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на Coldcard. Сканування.",
   "psbtFlowIncreaseBrightness": "Збільшення яскравості екрану на вашому пристрої",
@@ -2052,7 +2051,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "bitcoin у USD.",
   "recoverbullSelectQuickAndEasy": "Швидкий і простий",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Ви впевнені, що ваші можливості оперативної безпеки приховати і зберегти ваші слова насіннєвих.",
-  "bitboxCubitHandshakeFailed": "Не вдалося встановити безпечне з'єднання. Будь ласка, спробуйте знову.",
   "sendErrorAmountAboveSwapLimits": "Сума вище лімітів закрутки",
   "backupWalletHowToDecideBackupEncryptedVault": "Зашифрована схованка запобігає вам з тих, хто шукає крадіжку вашої резервної копії. Ви також не зможете втратити резервну копію, оскільки вона буде зберігатися у хмарі. Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Існує невелика ймовірність, що веб-сервер, який зберігає ключ шифрування резервної копії. У цьому випадку безпека резервного копіювання у хмарному обліковому записі може бути на ризику.",
   "seedsignerStep11": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
@@ -2124,7 +2122,6 @@
   },
   "importColdcardScanning": "Сканування ...",
   "exchangeLandingFeature1": "Купити Bitcoin прямо на самоктоди",
-  "bitboxCubitPermissionDenied": "Відхилено дозвіл USB. Будь ласка, надайте дозвіл на доступ до пристрою BitBox.",
   "swapTransferTo": "Трансфер до",
   "bitcoinSettingsMempoolServerTitle": "Налаштування сервера Mempool",
   "selectCoinsManuallyLabel": "Виберіть монети вручну",
@@ -3107,7 +3104,6 @@
       }
     }
   },
-  "bitboxCubitConnectionFailed": "Ввімкніть підключення до пристрою BitBox. Будь ласка, перевірте підключення.",
   "importQrDeviceScanning": "Сканування ...",
   "importWalletKeystone": "Головна",
   "testBackupConfirm": "Підтвердження",
@@ -3143,7 +3139,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Пристрої непаровані. Будь ласка, заповніть процес паріння першим.",
   "replaceByFeeActivatedLabel": "Замініть активоване",
   "sendPaymentProcessing": "Опрацьовується платіж. До хвилини",
   "electrumDefaultServersInfo": "Щоб захистити конфіденційність, сервери за замовчуванням не використовуються при налаштуванні користувацьких серверів.",
@@ -3155,7 +3150,6 @@
       }
     }
   },
-  "bitboxCubitOperationCancelled": "Операція скасована. Будь ласка, спробуйте знову.",
   "passportStep3": "Сканування QR-коду, показаного в булл-гаманці",
   "jadeStep5": "Якщо у вас є проблеми сканування:",
   "electrumProtocolError": "Не містить протоколу (ssl:// або tcp://).",
@@ -3676,7 +3670,6 @@
   "importQrDeviceSeedsignerStep7": "На мобільному пристрої натисніть Open Camera",
   "addressViewChangeAddressesDescription": "Показати гаманець Зміна адрес",
   "sellReceiveAmount": "Ви отримаєте",
-  "bitboxCubitInvalidResponse": "Інвалідна відповідь від пристрою BitBox. Будь ласка, спробуйте знову.",
   "importQrDeviceKruxStep5": "Скануйте QR-код, який ви бачите на вашому пристрої.",
   "arkStatus": "Статус на сервери",
   "fundExchangeHelpTransferCode": "Додати це з причини передачі",

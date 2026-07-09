@@ -5124,38 +5124,6 @@
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
   },
-  "bitboxCubitPermissionDenied": "USB permission deny hua. Apne BitBox device ka access dene ke liye permission do.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
-  "bitboxCubitDeviceNotFound": "Koi BitBox device nahi mila. Device connect karo aur phir try karo.",
-  "@bitboxCubitDeviceNotFound": {
-    "description": "Error interpretation for device not found"
-  },
-  "bitboxCubitDeviceNotPaired": "Device pair nahi hua. Pehle pairing process complete karo.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
-  "bitboxCubitHandshakeFailed": "Secure connection establish nahi ho payi. Phir try karo.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
-  "bitboxCubitOperationTimeout": "Operation timeout ho gayi. Phir try karo.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
-  },
-  "bitboxCubitConnectionFailed": "BitBox device se connect nahi ho paya. Apna connection check karo.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
-  },
-  "bitboxCubitInvalidResponse": "BitBox device se invalid response. Phir try karo.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
-  "bitboxCubitOperationCancelled": "Operation cancel hua. Phir try karo.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
