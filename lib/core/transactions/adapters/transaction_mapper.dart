@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/transactions/domain/entities/bitcoin_transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 
 /// Maps the BDK utility class [btc_utils.BitcoinTx] to the domain entity
