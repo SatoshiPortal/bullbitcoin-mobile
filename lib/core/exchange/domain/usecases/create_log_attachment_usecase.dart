@@ -2,13 +2,17 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:intl/intl.dart';
+import 'package:meta/meta.dart';
 
 class CreateLogAttachmentUsecase {
-  Future<SupportChatMessageAttachment> execute() async {
+  @useResult
+  Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
+  execute() async {
     try {
       List<String> logs;
       try {
@@ -43,20 +47,19 @@ class CreateLogAttachmentUsecase {
 
       final fileName = '$timestamp.BullLog.$randomAlphanumeric.txt';
 
-      return SupportChatMessageAttachment(
-        attachmentId: 'temp_logs_${DateTime.now().millisecondsSinceEpoch}',
-        fileName: fileName,
-        fileType: 'text/plain',
-        fileSize: bytes.length,
-        fileData: bytes,
-        createdAt: DateTime.now(),
+      return Ok(
+        SupportChatMessageAttachment(
+          attachmentId: 'temp_logs_${DateTime.now().millisecondsSinceEpoch}',
+          fileName: fileName,
+          fileType: 'text/plain',
+          fileSize: bytes.length,
+          fileData: bytes,
+          createdAt: DateTime.now(),
+        ),
       );
-    } catch (e) {
-      throw CreateLogAttachmentException('$e');
+    } catch (e, st) {
+      log.warning('Failed to build log attachment', error: e, trace: st);
+      return Err(AttachLogsFailure('$e'));
     }
   }
-}
-
-class CreateLogAttachmentException extends BullException {
-  CreateLogAttachmentException(super.message);
 }

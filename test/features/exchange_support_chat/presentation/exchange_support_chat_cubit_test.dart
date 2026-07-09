@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,10 +81,12 @@ void main() {
       // path, so this payload wrote attacker bytes over a sibling file.
       const payload = '../outside_the_sandbox.txt';
       when(() => getAttachmentUsecase.execute('att-1')).thenAnswer(
-        (_) async => SupportChatMessageAttachment(
-          attachmentId: 'att-1',
-          fileName: payload,
-          fileData: Uint8List.fromList('attacker bytes'.codeUnits),
+        (_) async => Ok(
+          SupportChatMessageAttachment(
+            attachmentId: 'att-1',
+            fileName: payload,
+            fileData: Uint8List.fromList('attacker bytes'.codeUnits),
+          ),
         ),
       );
 
@@ -109,10 +112,12 @@ void main() {
       'a plain fileName is written as-is inside the temp directory',
       () async {
         when(() => getAttachmentUsecase.execute('att-2')).thenAnswer(
-          (_) async => SupportChatMessageAttachment(
-            attachmentId: 'att-2',
-            fileName: 'receipt.pdf',
-            fileData: Uint8List.fromList('%PDF'.codeUnits),
+          (_) async => Ok(
+            SupportChatMessageAttachment(
+              attachmentId: 'att-2',
+              fileName: 'receipt.pdf',
+              fileData: Uint8List.fromList('%PDF'.codeUnits),
+            ),
           ),
         );
 

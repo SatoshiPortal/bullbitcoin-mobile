@@ -1,7 +1,10 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 class SendSupportChatMessageUsecase {
   final ExchangeSupportChatRepository _mainnetRepository;
@@ -14,22 +17,26 @@ class SendSupportChatMessageUsecase {
     required this._settingsRepository,
   });
 
-  Future<void> execute({
+  @useResult
+  Future<Result<void, ExchangeSupportChatFailure>> execute({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) async {
+    final ExchangeSupportChatRepository repository;
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      final repo = isTestnet ? _testnetRepository : _mainnetRepository;
-
-      await repo.sendMessage(text: text, attachments: attachments);
-    } catch (e) {
-      throw SendSupportChatMessageException('$e');
+      repository = settings.environment.isTestnet
+          ? _testnetRepository
+          : _mainnetRepository;
+    } catch (e, st) {
+      log.warning(
+        'Failed to resolve support chat network',
+        error: e,
+        trace: st,
+      );
+      return Err(SendMessageFailure('$e'));
     }
-  }
-}
 
-class SendSupportChatMessageException extends BullException {
-  SendSupportChatMessageException(super.message);
+    return repository.sendMessage(text: text, attachments: attachments);
+  }
 }

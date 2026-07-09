@@ -183,7 +183,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> deleteAccount() async {
-    await _sendSupportChatMessageUsecase.execute(
+    final _ = await _sendSupportChatMessageUsecase.execute(
       text: 'I want to delete my account',
     );
     await logout();
