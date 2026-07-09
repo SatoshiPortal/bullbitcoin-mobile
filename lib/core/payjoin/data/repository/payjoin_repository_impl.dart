@@ -446,6 +446,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ) {
     return unspent
         .where((u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout))
+        // Skip 0-conf UTXOs: temporal-fingerprint leak + parent can be RBF'd out.
+        .where((u) => u.confirmations > 0)
         .whereType<BitcoinWalletUtxoModel>()
         .map((u) => PayjoinInputPairModel.fromWalletUtxoModel(u))
         .toList();
