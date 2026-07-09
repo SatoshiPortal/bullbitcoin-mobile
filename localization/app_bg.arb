@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Карта",
   "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
   "backupWarningLoseReasonLostPhone": "Загубите телефона си",
   "backupWarningLoseReasonDeletedApp": "Изтриете приложението",

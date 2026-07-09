@@ -447,9 +447,9 @@
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
   },
-  "settingsBtcMapTitle": "BTC Map",
+  "settingsBtcMapTitle": "Map",
   "@settingsBtcMapTitle": {
-    "description": "Title for the BTC Map screen in the settings menu"
+    "description": "Title for the Map screen in the settings menu"
   },
   "settingsTermsOfServiceTitle": "Terms of Service",
   "@settingsTermsOfServiceTitle": {
