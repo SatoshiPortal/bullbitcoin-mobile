@@ -12581,5 +12581,8 @@
   "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",
   "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
   "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
-  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky."
+  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky.",
+  "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
+  "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
+  "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu."
 }

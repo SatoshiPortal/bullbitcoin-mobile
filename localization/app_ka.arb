@@ -3819,5 +3819,8 @@
   "settingsSearchTestnetCredentialsKeywords": "testnet მომხმარებლის ავტორიზაციის მონაცემები|testnet-ში შესვლა|testnet მომხმარებლის სახელი|testnet პაროლი|საბაზისო ავთენტიფიკაცია",
   "settingsSearchErrorReportingKeywords": "ავარიული დახურვის ანგარიშები|ხარვეზების ანგარიშები|დიაგნოსტიკა|ტელემეტრია|შეცდომების ჟურნალები",
   "settingsSearchScreenPrivacyKeywords": "სკრინშოტი|ეკრანის ჩაწერა|ეკრანის გადაღების დაცვა|კონფიდენციალურობა",
-  "settingsSearchStartTyping": "შედეგების სანახავად დაიწყეთ აკრეფა."
+  "settingsSearchStartTyping": "შედეგების სანახავად დაიწყეთ აკრეფა.",
+  "exchangeSupportChatLoadMessagesError": "შეტყობინებების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatSendMessageError": "თქვენი შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

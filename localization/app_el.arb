@@ -12581,5 +12581,8 @@
   "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
   "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
-  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα."
+  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα.",
+  "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
+  "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
+  "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά."
 }

@@ -12581,5 +12581,8 @@
   "settingsSearchTestnetCredentialsKeywords": "testnet kimlik bilgileri|testnet girişi|testnet kullanıcı adı|testnet parolası|Basic Auth",
   "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
   "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
-  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın."
+  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
+  "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin."
 }

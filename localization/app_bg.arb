@@ -10488,5 +10488,8 @@
   "settingsSearchTestnetCredentialsKeywords": "данни за вход в testnet|testnet вход|testnet потребителско име|testnet парола|Basic Auth",
   "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
   "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
-  "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати."
+  "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати.",
+  "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
+  "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново."
 }

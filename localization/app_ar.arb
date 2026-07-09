@@ -12584,5 +12584,8 @@
   "settingsSearchTestnetCredentialsKeywords": "بيانات اعتماد شبكة الاختبار|تسجيل دخول شبكة الاختبار|اسم مستخدم شبكة الاختبار|كلمة مرور شبكة الاختبار|مصادقة أساسية",
   "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
   "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
-  "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج."
+  "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
+  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى."
 }

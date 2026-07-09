@@ -12969,5 +12969,8 @@
   "settingsSearchTestnetCredentialsKeywords": "Testnet user credentials|Testnet login|Testnet username|Testnet password|Basic Auth",
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
   "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
-  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein."
+  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
+  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
+  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
+  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein."
 }

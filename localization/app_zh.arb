@@ -5035,5 +5035,8 @@
   "settingsSearchTestnetCredentialsKeywords": "测试网用户凭据|测试网登录|测试网用户名|测试网密码|基本身份验证",
   "settingsSearchErrorReportingKeywords": "崩溃报告|错误报告|诊断|遥测|错误日志",
   "settingsSearchScreenPrivacyKeywords": "屏幕截图|屏幕录制|截屏保护|隐私",
-  "settingsSearchStartTyping": "开始输入以查看结果。"
+  "settingsSearchStartTyping": "开始输入以查看结果。",
+  "exchangeSupportChatLoadMessagesError": "无法加载消息。请重试。",
+  "exchangeSupportChatSendMessageError": "无法发送您的消息。请重试。",
+  "exchangeSupportChatLoadAttachmentError": "无法打开附件。请重试。"
 }

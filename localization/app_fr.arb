@@ -5075,5 +5075,8 @@
   "torStatusProtectedTrafficLabel": "Trafic acheminé via Tor",
   "torStatusNotStartedDescription": "Le Tor intégré démarre automatiquement lorsque RecoverBull ou un serveur Bitcoin .onion en a besoin.",
   "torStatusTelemetryUnavailable": "Les chemins des circuits et le débit ne sont pas exposés par le moteur Tor intégré.",
-  "torStatusProxyEndpointLabel": "Point de terminaison SOCKS5"
+  "torStatusProxyEndpointLabel": "Point de terminaison SOCKS5",
+  "exchangeSupportChatLoadMessagesError": "Impossible de charger les messages. Veuillez réessayer.",
+  "exchangeSupportChatSendMessageError": "Impossible d'envoyer votre message. Veuillez réessayer.",
+  "exchangeSupportChatLoadAttachmentError": "Impossible d'ouvrir la pièce jointe. Veuillez réessayer."
 }

@@ -3672,5 +3672,8 @@
   "settingsSearchTestnetCredentialsKeywords": "testnet օգտվողի հավատարմագրեր|testnet մուտք|testnet օգտանուն|testnet գաղտնաբառ|հիմնական նույնականացում",
   "settingsSearchErrorReportingKeywords": "խափանման հաշվետվություններ|սխալների հաշվետվություններ|ախտորոշում|հեռաչափություն|սխալների մատյաններ",
   "settingsSearchScreenPrivacyKeywords": "սքրինշոթ|էկրանի ձայնագրում|էկրանի նկարահանման պաշտպանություն|գաղտնիություն",
-  "settingsSearchStartTyping": "Սկսեք մուտքագրել՝ արդյունքները տեսնելու համար։"
+  "settingsSearchStartTyping": "Սկսեք մուտքագրել՝ արդյունքները տեսնելու համար։",
+  "exchangeSupportChatLoadMessagesError": "Չհաջողվեց բեռնել հաղորդագրությունները։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatSendMessageError": "Չհաջողվեց ուղարկել ձեր հաղորդագրությունը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։"
 }

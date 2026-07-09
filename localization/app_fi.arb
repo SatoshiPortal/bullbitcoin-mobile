@@ -5026,5 +5026,8 @@
   "settingsSearchTestnetCredentialsKeywords": "testnet-tunnukset|testnet-kirjautuminen|testnet-käyttäjänimi|testnet-salasana|Basic Auth",
   "settingsSearchErrorReportingKeywords": "kaatumisraportit|virheraportit|diagnostiikka|telemetria|virhelokit",
   "settingsSearchScreenPrivacyKeywords": "kuvakaappaukset|näytön tallennus|kaappaussuojaus|yksityisyys",
-  "settingsSearchStartTyping": "Aloita kirjoittaminen nähdäksesi tulokset."
+  "settingsSearchStartTyping": "Aloita kirjoittaminen nähdäksesi tulokset.",
+  "exchangeSupportChatLoadMessagesError": "Viestien lataaminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen."
 }

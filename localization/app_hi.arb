@@ -12771,5 +12771,8 @@
   "settingsSearchTestnetCredentialsKeywords": "Testnet उपयोगकर्ता क्रेडेंशियल|Testnet लॉगिन|Testnet उपयोगकर्ता नाम|Testnet पासवर्ड|Basic Auth",
   "settingsSearchErrorReportingKeywords": "Crash report|त्रुटि रिपोर्ट|डायग्नोस्टिक्स|Telemetry|त्रुटि लॉग",
   "settingsSearchScreenPrivacyKeywords": "स्क्रीनशॉट|स्क्रीन रिकॉर्डिंग|स्क्रीन कैप्चर सुरक्षा|गोपनीयता",
-  "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।"
+  "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।",
+  "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।"
 }

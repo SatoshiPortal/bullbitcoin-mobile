@@ -9654,5 +9654,8 @@
   "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যৱহাৰকাৰীৰ তথ্য|Testnet লগইন|Testnet ব্যৱহাৰকাৰীৰ নাম|Testnet পাছৱৰ্ড|Basic Auth",
   "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
-  "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।"
+  "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।",
+  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

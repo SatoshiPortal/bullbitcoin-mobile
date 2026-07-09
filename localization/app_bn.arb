@@ -12791,5 +12791,8 @@
   "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যবহারকারীর তথ্য|Testnet লগইন|Testnet ব্যবহারকারীর নাম|Testnet পাসওয়ার্ড|Basic Auth",
   "settingsSearchErrorReportingKeywords": "Crash report|ত্রুটি প্রতিবেদন|Diagnostic|Telemetry|ত্রুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্রিনশট|স্ক্রিন রেকর্ডিং|স্ক্রিন ক্যাপচার সুরক্ষা|গোপনীয়তা",
-  "settingsSearchStartTyping": "ফলাফল দেখতে টাইপ করা শুরু করুন।"
+  "settingsSearchStartTyping": "ফলাফল দেখতে টাইপ করা শুরু করুন।",
+  "exchangeSupportChatLoadMessagesError": "বার্তা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatSendMessageError": "আপনার বার্তা পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatLoadAttachmentError": "সংযুক্তিটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

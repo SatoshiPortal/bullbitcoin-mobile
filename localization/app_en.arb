@@ -14978,5 +14978,17 @@
         "type": "int"
       }
     }
+  },
+  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
+  "@exchangeSupportChatLoadMessagesError": {
+    "description": "Shown when loading the support chat message history fails."
+  },
+  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
+  "@exchangeSupportChatSendMessageError": {
+    "description": "Shown when sending a support chat message fails."
+  },
+  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
+  "@exchangeSupportChatLoadAttachmentError": {
+    "description": "Shown when downloading or opening a support chat attachment fails."
   }
 }

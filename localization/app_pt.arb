@@ -5081,5 +5081,8 @@
   "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|início de sessão testnet|utilizador testnet|palavra-passe testnet|Basic Auth",
   "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de erros|diagnóstico|telemetria|registos de erros",
   "settingsSearchScreenPrivacyKeywords": "capturas de ecrã|gravação do ecrã|proteção contra captura|privacidade",
-  "settingsSearchStartTyping": "Comece a escrever para ver os resultados."
+  "settingsSearchStartTyping": "Comece a escrever para ver os resultados.",
+  "exchangeSupportChatLoadMessagesError": "Não foi possível carregar as mensagens. Tente novamente.",
+  "exchangeSupportChatSendMessageError": "Não foi possível enviar a sua mensagem. Tente novamente.",
+  "exchangeSupportChatLoadAttachmentError": "Não foi possível abrir o anexo. Tente novamente."
 }

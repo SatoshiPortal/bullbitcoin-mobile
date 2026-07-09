@@ -3672,5 +3672,8 @@
   "settingsSearchTestnetCredentialsKeywords": "thông tin đăng nhập testnet|đăng nhập testnet|tên người dùng testnet|mật khẩu testnet|xác thực cơ bản",
   "settingsSearchErrorReportingKeywords": "báo cáo sự cố|báo cáo lỗi|chẩn đoán|dữ liệu đo từ xa|nhật ký lỗi",
   "settingsSearchScreenPrivacyKeywords": "ảnh chụp màn hình|ghi màn hình|bảo vệ chụp màn hình|quyền riêng tư",
-  "settingsSearchStartTyping": "Bắt đầu nhập để xem kết quả."
+  "settingsSearchStartTyping": "Bắt đầu nhập để xem kết quả.",
+  "exchangeSupportChatLoadMessagesError": "Không thể tải tin nhắn. Vui lòng thử lại.",
+  "exchangeSupportChatSendMessageError": "Không thể gửi tin nhắn của bạn. Vui lòng thử lại.",
+  "exchangeSupportChatLoadAttachmentError": "Không thể mở tệp đính kèm. Vui lòng thử lại."
 }
