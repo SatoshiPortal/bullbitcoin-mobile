@@ -629,6 +629,14 @@
     "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "این چت تنها برای تبادل مسائل مربوط به صندوق / خرید / خرید / Sell / باdraw /Pay است.\nبرای مسائل مربوط به کیف پول، با کلیک کردن در اینجا به گروه تلگرام بپیوندید.",
+  "exchangeSupportChatPermissionDenied": "دسترسی رد شد.",
+  "exchangeSupportChatPermissionDeniedSettings": "دسترسی رد شد. لطفاً در تنظیمات به کتابخانه عکس‌ها دسترسی بدهید.",
+  "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌های فایل ناموفق بود",
+  "exchangeSupportChatLoadMessagesError": "بارگیری پیام‌ها ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatSendMessageError": "ارسال پیام شما ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
   },

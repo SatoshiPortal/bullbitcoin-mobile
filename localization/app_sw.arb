@@ -601,5 +601,14 @@
   "logsShareOptionShare": "Shiriki",
   "logsShareOptionExport": "Hamisha",
   "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
-  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu"
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu",
+  "exchangeSupportChatPermissionDenied": "Ruhusa imekataliwa.",
+  "exchangeSupportChatPermissionDeniedSettings": "Ruhusa imekataliwa. Tafadhali ruhusu ufikiaji wa maktaba ya picha katika Mipangilio.",
+  "exchangeSupportChatPickFilesFailed": "Imeshindwa kuchagua faili. Tafadhali jaribu tena.",
+  "exchangeSupportChatAttachLogsFailed": "Imeshindwa kuambatisha kumbukumbu. Tafadhali jaribu tena.",
+  "exchangeSupportChatFetchFileDataFailed": "Imeshindwa kupata data ya faili",
+  "exchangeSupportChatMessageEmptyError": "Ujumbe hauwezi kuwa tupu",
+  "exchangeSupportChatLoadMessagesError": "Imeshindwa kupakia ujumbe. Tafadhali jaribu tena.",
+  "exchangeSupportChatSendMessageError": "Imeshindwa kutuma ujumbe wako. Tafadhali jaribu tena.",
+  "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena."
 }

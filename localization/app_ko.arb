@@ -12284,6 +12284,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "지원 채팅",
+  "exchangeSupportChatPermissionDenied": "권한이 거부되었습니다.",
+  "exchangeSupportChatPermissionDeniedSettings": "권한이 거부되었습니다. 설정에서 사진 라이브러리 접근을 허용해 주세요.",
+  "exchangeSupportChatPickFilesFailed": "파일을 선택하지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatAttachLogsFailed": "로그를 첨부하지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",
+  "exchangeSupportChatLoadMessagesError": "메시지를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatSendMessageError": "메시지를 보내지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatLoadAttachmentError": "첨부 파일을 열지 못했습니다. 다시 시도해 주세요.",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },

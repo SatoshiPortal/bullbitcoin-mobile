@@ -581,5 +581,14 @@
   "logsShareOptionShare": "Chia sẻ",
   "logsShareOptionExport": "Xuất",
   "logsExportedMessage": "Nhật ký đã được xuất thành công",
-  "logsExportFailedMessage": "Xuất nhật ký thất bại"
+  "logsExportFailedMessage": "Xuất nhật ký thất bại",
+  "exchangeSupportChatPermissionDenied": "Quyền bị từ chối.",
+  "exchangeSupportChatPermissionDeniedSettings": "Quyền bị từ chối. Vui lòng cấp quyền truy cập thư viện ảnh trong Cài đặt.",
+  "exchangeSupportChatPickFilesFailed": "Không thể chọn tệp. Vui lòng thử lại.",
+  "exchangeSupportChatAttachLogsFailed": "Không thể đính kèm nhật ký. Vui lòng thử lại.",
+  "exchangeSupportChatFetchFileDataFailed": "Không thể lấy dữ liệu tệp",
+  "exchangeSupportChatMessageEmptyError": "Tin nhắn không được để trống",
+  "exchangeSupportChatLoadMessagesError": "Không thể tải tin nhắn. Vui lòng thử lại.",
+  "exchangeSupportChatSendMessageError": "Không thể gửi tin nhắn của bạn. Vui lòng thử lại.",
+  "exchangeSupportChatLoadAttachmentError": "Không thể mở tệp đính kèm. Vui lòng thử lại."
 }

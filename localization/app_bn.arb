@@ -11976,6 +11976,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "সমর্থন চ্যাট",
+  "exchangeSupportChatPermissionDenied": "অনুমতি প্রত্যাখ্যান করা হয়েছে।",
+  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি প্রত্যাখ্যান করা হয়েছে। অনুগ্রহ করে সেটিংসে ফটো লাইব্রেরিতে অ্যাক্সেস দিন।",
+  "exchangeSupportChatPickFilesFailed": "ফাইল নির্বাচন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatAttachLogsFailed": "লগ সংযুক্ত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatFetchFileDataFailed": "ফাইলের ডেটা আনা যায়নি",
+  "exchangeSupportChatLoadMessagesError": "বার্তা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatSendMessageError": "আপনার বার্তা পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSupportChatLoadAttachmentError": "সংযুক্তিটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },

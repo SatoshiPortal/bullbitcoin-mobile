@@ -12171,6 +12171,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "Destek Chat",
+  "exchangeSupportChatPermissionDenied": "İzin reddedildi.",
+  "exchangeSupportChatPermissionDeniedSettings": "İzin reddedildi. Lütfen Ayarlar'dan fotoğraf kitaplığı erişimine izin verin.",
+  "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatFetchFileDataFailed": "Dosya verileri alınamadı",
+  "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
