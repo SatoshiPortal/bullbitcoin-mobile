@@ -34,7 +34,7 @@ class GetSupportChatMessagesUsecase {
         error: e,
         trace: st,
       );
-      return Err(LoadMessagesFailure('$e'));
+      return Err(ExchangeSupportChatUnexpectedFailure('$e'));
     }
 
     return repository.getMessages(page: page, pageSize: pageSize);

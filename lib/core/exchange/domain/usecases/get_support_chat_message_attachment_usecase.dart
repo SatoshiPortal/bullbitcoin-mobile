@@ -32,7 +32,7 @@ class GetSupportChatMessageAttachmentUsecase {
         error: e,
         trace: st,
       );
-      return Err(LoadAttachmentFailure('$e'));
+      return Err(ExchangeSupportChatUnexpectedFailure('$e'));
     }
 
     return repository.getMessageAttachment(attachmentId);

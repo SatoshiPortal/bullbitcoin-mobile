@@ -55,6 +55,9 @@ class ExchangeSupportChatRepositoryImpl
       );
 
       return Ok(messageModels.map((model) => model.toEntity()).toList());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
     } catch (e, st) {
       log.warning('Failed to load support chat messages', error: e, trace: st);
       return Err(LoadMessagesFailure('$e'));
@@ -94,6 +97,9 @@ class ExchangeSupportChatRepositoryImpl
         attachments: attachmentModels,
       );
       return const Ok(null);
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
     } catch (e, st) {
       log.warning('Failed to send support chat message', error: e, trace: st);
       return Err(SendMessageFailure('$e'));
@@ -117,6 +123,9 @@ class ExchangeSupportChatRepositoryImpl
       );
 
       return Ok(attachmentModel.toEntity());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
     } catch (e, st) {
       log.warning(
         'Failed to load support chat attachment',
