@@ -281,7 +281,9 @@ jobs:
           fi
 
           sufficient=$(jq -r '.sufficient' .bullock/verdict.json)
-          summary=$(jq -r '.summary // ""' .bullock/verdict.json)
+          # summary becomes a commit subject + PR title: force it to a single
+          # line ≤72 chars (repo convention; GitHub titles reject newlines).
+          summary=$(jq -r '.summary // ""' .bullock/verdict.json | tr -d '\r' | head -n1 | cut -c1-72)
           question=$(jq -r '.question // ""' .bullock/verdict.json)
 
           # The sentinel is internal only — never commit it.
