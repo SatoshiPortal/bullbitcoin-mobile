@@ -68,7 +68,8 @@ class AppRouter {
         builder: (context, state, child) {
           final location = state.uri.toString();
           final hideExchangeFeatures =
-              context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
+              context.watch<SettingsCubit>().state.hideExchangeFeatures ??
+              false;
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;

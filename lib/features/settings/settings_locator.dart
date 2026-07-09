@@ -97,7 +97,8 @@ class SettingsLocator {
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
-        setHideExchangeFeaturesUsecase: locator<SetHideExchangeFeaturesUsecase>(),
+        setHideExchangeFeaturesUsecase:
+            locator<SetHideExchangeFeaturesUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
