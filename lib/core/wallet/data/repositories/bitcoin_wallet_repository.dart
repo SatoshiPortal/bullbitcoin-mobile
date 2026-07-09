@@ -74,6 +74,23 @@ class BitcoinWalletRepository {
     return signedPsbt;
   }
 
+  /// Derives the raw 32-byte private key controlling [scriptPubkey] for the
+  /// wallet [walletId]. Used for BIP-322 proof of funds, which signs per-UTXO
+  /// with the raw key rather than through a PSBT signer.
+  ///
+  /// Security: the returned bytes are secret key material — use transiently,
+  /// never log/cache/persist.
+  Future<Uint8List> derivePrivateKeyForScript({
+    required String walletId,
+    required Uint8List scriptPubkey,
+  }) async {
+    final wallet = await getPrivateWallet(walletId: walletId);
+    return _bdkWallet.derivePrivateKeyForScript(
+      wallet: wallet,
+      scriptPubkey: scriptPubkey,
+    );
+  }
+
   Future<bool> isScriptOfWallet({
     required String walletId,
     required Uint8List script,

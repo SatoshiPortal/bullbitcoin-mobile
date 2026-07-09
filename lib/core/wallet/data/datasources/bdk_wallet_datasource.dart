@@ -323,6 +323,53 @@ class BdkWalletDatasource {
     return psbt.serialize();
   }
 
+  /// Derives the raw 32-byte private key that can spend the output with
+  /// [scriptPubkey], for the wallet described by [wallet].
+  ///
+  /// Uses the synced BDK wallet to resolve the script's (keychain, index) via
+  /// `derivationOfSpk`, then derives that child from the mnemonic-backed
+  /// [bdk.DescriptorSecretKey] along the wallet's BIP-84/49/44 path.
+  ///
+  /// Security: the returned bytes are secret key material. Callers must use
+  /// them transiently (never log, cache, or persist). Throws if the script is
+  /// not one this wallet controls.
+  Future<Uint8List> derivePrivateKeyForScript({
+    required PrivateBdkWalletModel wallet,
+    required Uint8List scriptPubkey,
+  }) async {
+    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    final script = bdk.Script(rawOutputScript: scriptPubkey);
+
+    final derivation = bdkWallet.derivationOfSpk(spk: script);
+    if (derivation == null) {
+      throw BdkKeyDerivationException(
+        'scriptPubkey is not controlled by wallet ${wallet.id}',
+      );
+    }
+
+    final networkKind = wallet.isTestnet
+        ? bdk.NetworkKind.test
+        : bdk.NetworkKind.main;
+    final secretKey = bdk.DescriptorSecretKey(
+      networkKind: networkKind,
+      mnemonic: bdk.Mnemonic.fromString(mnemonic: wallet.mnemonic),
+      password: wallet.passphrase,
+    );
+
+    // Full BIP-32 path to the leaf: m/purpose'/coinType'/0'/change/index.
+    // change (keychain) is 0 for external, 1 for internal; index is the
+    // child index BDK resolved for this scriptPubkey.
+    final coinType = wallet.isTestnet ? 1 : 0;
+    final change = derivation.keychain == bdk.KeychainKind.internal ? 1 : 0;
+    final path = bdk.DerivationPath(
+      path:
+          "m/${wallet.scriptType.purpose}'/$coinType'/0'/$change/${derivation.index}",
+    );
+
+    final childKey = secretKey.derive(path: path);
+    return childKey.secretBytes();
+  }
+
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final unspent = bdkWallet.listUnspent();
@@ -789,6 +836,10 @@ class UnsupportedBdkNetworkException extends BullException {
 
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);
+}
+
+class BdkKeyDerivationException extends BullException {
+  BdkKeyDerivationException(super.message);
 }
 
 /// Confirmation count for an output confirmed at [height], given the current
