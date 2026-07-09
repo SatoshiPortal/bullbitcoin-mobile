@@ -226,34 +226,54 @@ android: container-app
 	@sha256sum $(HOST_OUTPUT)
 	@if [ "$(FORMAT)" = "apk" ]; then $(MAKE) --no-print-directory verify-rustc-pins APK=$(HOST_OUTPUT); fi
 
-# Guards against the `rustup toolchain link stable` fix in Containerfile.tools
-# regressing: without it, cargokit's `rustup run stable` silently installs
-# whatever upstream Rust is current on build day instead of the pinned
-# version, breaking reproducibility invisibly (this is exactly how it broke
-# before — two builds on the same day matched by coincidence, not by pinning).
-# Compares the rustc version string every compiler embeds in its output
-# against the pinned toolchains running live inside bull-app.
+# Guards against the rustup shim in Containerfile.tools regressing: without it,
+# cargokit's `rustup run stable` silently uses whatever upstream Rust is current
+# on build day instead of the pinned version, breaking reproducibility invisibly
+# (this is exactly how it broke before — two builds on the same day matched by
+# coincidence, not by pinning). Compares the rustc version string every compiler
+# embeds in its output against the pinned toolchains running live inside bull-app.
+#
+# Fails CLOSED: an empty/failed toolchain lookup, a tracked lib present with no
+# embedded version, a version mismatch, or zero tracked Rust libs found all
+# ABORT — a green result must mean the pins were actually checked, never that a
+# check was skipped. Keep TRACKED_RUST_LIBS in sync with the case below; a lib
+# from that list that is absent from the APK is reported loudly (a build should
+# ship all of them, but we only warn rather than hard-fail here because the exact
+# shipped set is confirmed by a real build, not by this static guard).
+TRACKED_RUST_LIBS := libbdk_dart_ffi.so libtor.so libpayjoin_flutter.so librust_lib_bull_sdk.so
 verify-rustc-pins:
 	@command -v strings >/dev/null 2>&1 || { echo "  ⚠️  'strings' (binutils) not found on host, skipping rustc-pin verification"; exit 0; }
 	@tmpdir=$$(mktemp -d); \
 	trap 'rm -rf "$$tmpdir"' EXIT; \
 	unzip -q -o "$(APK)" -d "$$tmpdir" 'lib/*/*.so' 2>/dev/null || true; \
 	abi_dir=$$(find "$$tmpdir/lib" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1); \
-	if [ -z "$$abi_dir" ]; then echo "  ⚠️  no native libraries found in $(APK), skipping rustc-pin verification"; exit 0; fi; \
+	if [ -z "$$abi_dir" ]; then echo "❌ no native libraries extracted from $(APK) (unreadable APK, or no lib/*/*.so) — cannot verify rustc pins"; exit 1; fi; \
 	echo "🔎 Verifying Rust libraries embed the pinned rustc versions..."; \
 	cargokit_rustc=$$($(CONTAINER) run --rm bull-app rustup run stable rustc --version | awk '{print $$2}'); \
-	bdk_rustc=$$($(CONTAINER) run --rm bull-app rustup run 1.85.1 rustc --version 2>/dev/null | awk '{print $$2}'); \
-	fail=0; \
+	bdk_rustc=$$($(CONTAINER) run --rm bull-app rustup run 1.85.1 rustc --version | awk '{print $$2}'); \
+	if [ -z "$$cargokit_rustc" ] || [ -z "$$bdk_rustc" ]; then \
+		echo "❌ could not read pinned toolchain versions from bull-app (cargokit='$$cargokit_rustc' bdk='$$bdk_rustc') — cannot verify rustc pins"; \
+		exit 1; \
+	fi; \
+	fail=0; seen=" "; \
 	for so in "$$abi_dir"/*.so; do \
+		[ -e "$$so" ] || { echo "❌ no .so files under $$abi_dir — cannot verify rustc pins"; exit 1; }; \
 		name=$$(basename "$$so"); \
-		embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
-		[ -z "$$embedded" ] && continue; \
 		case "$$name" in \
 			libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
 			libtor.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
 			*) expected="" ;; \
 		esac; \
-		if [ -z "$$expected" ]; then echo "  ℹ️  $$name: rustc $$embedded (no pin tracked, add it to the case above if this is a new Rust plugin)"; continue; fi; \
+		embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
+		if [ -z "$$expected" ]; then \
+			[ -n "$$embedded" ] && echo "  ℹ️  $$name: rustc $$embedded (no pin tracked, add it to TRACKED_RUST_LIBS + the case above if this is a new Rust plugin)"; \
+			continue; \
+		fi; \
+		seen="$$seen$$name "; \
+		if [ -z "$$embedded" ]; then \
+			echo "  ❌ $$name: tracked Rust lib but no embedded 'rustc version' string found (stripped, or the grep pattern needs updating)"; \
+			fail=1; continue; \
+		fi; \
 		if [ "$$embedded" != "$$expected" ]; then \
 			echo "  ❌ $$name: embedded rustc $$embedded, expected pinned $$expected"; \
 			fail=1; \
@@ -261,10 +281,19 @@ verify-rustc-pins:
 			echo "  ✅ $$name: rustc $$embedded (matches pin)"; \
 		fi; \
 	done; \
-	if [ "$$fail" = "1" ]; then \
-		echo "❌ A Rust library was not built with its pinned toolchain — reproducibility is broken. Check the rustup toolchain link in Containerfile.tools."; \
+	checked=0; \
+	for want in $(TRACKED_RUST_LIBS); do \
+		case "$$seen" in *" $$want "*) checked=$$((checked+1)) ;; *) echo "  ⚠️  expected Rust lib $$want not found in this ABI of $(APK) — its pin was NOT verified" ;; esac; \
+	done; \
+	if [ "$$checked" = "0" ]; then \
+		echo "❌ none of the tracked Rust libs ($(TRACKED_RUST_LIBS)) were found — the rustc-pin check verified nothing; treating as failure"; \
 		exit 1; \
-	fi
+	fi; \
+	if [ "$$fail" = "1" ]; then \
+		echo "❌ A Rust library was not built with its pinned toolchain — reproducibility is broken. Check the rustup shim in Containerfile.tools."; \
+		exit 1; \
+	fi; \
+	echo "✅ Tracked Rust libraries embed their pinned rustc versions."
 
 verify:
 	@echo "🔍 Verifying reproducible build"

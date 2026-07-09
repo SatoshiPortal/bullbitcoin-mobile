@@ -20,10 +20,10 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 # forces cargo/rustc invocations that respect it through this version. It does
 # NOT cover cargokit or bdk_dart's native-assets build hook, both of which
 # invoke `rustup run <toolchain>` directly — an explicit `rustup run` always
-# wins over the env var. Those are covered separately below by linking
-# "stable" to this pinned toolchain, and by pre-installing bdk_dart's own
-# pinned channel (BDK_RUST_VERSION). This is essential for reproducibility —
-# upstream stable drifts every 6 weeks.
+# wins over the env var. Those are covered separately below by a rustup shim
+# that rewrites the "stable" token to this pinned version, and by pre-installing
+# bdk_dart's own pinned channel (BDK_RUST_VERSION). This is essential for
+# reproducibility — upstream stable drifts every 6 weeks.
 ARG RUST_VERSION="1.95.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
@@ -136,26 +136,25 @@ RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
-# cargokit (used by payjoin_flutter, tor, and bull_sdk's rust_builder) invokes
-# `rustup run stable cargo build` directly instead of reading RUSTUP_TOOLCHAIN.
-# An explicit `rustup run <toolchain>` always wins over the env var, and
-# RUSTUP_AUTO_INSTALL=0 only blocks *implicit* toolchain installs — not this
-# explicit one. A fresh image has no toolchain named "stable", so cargokit was
-# silently installing whatever upstream stable is on build day (moves every 6
-# weeks), which is why prior builds' .so files embedded rustc versions newer
-# than RUST_VERSION. Link "stable" to the pinned toolchain directory so
-# `rustup run stable` resolves to the exact pinned bytes instead.
-RUN rustup toolchain link stable "/home/${USER}/.rustup/toolchains/${RUST_VERSION}-x86_64-unknown-linux-gnu"
+# cargokit's hard-coded `rustup run stable` bypass (which would otherwise build
+# with floating upstream stable instead of RUST_VERSION) is handled by the
+# rustup shim installed near the end of this file — it rewrites the "stable"
+# argument to RUST_VERSION. It is NOT handled here by `rustup toolchain link
+# stable`, because rustup >=1.28 rejects linking a reserved channel name. See
+# that shim's comment for the full rationale.
 
 # bdk_dart builds via native_toolchain_rust (a Dart native-assets build hook,
 # not cargokit) and reads its own rust-toolchain.toml, invoking
 # `rustup run <channel> cargo build` directly — same bypass as cargokit above,
 # but with its own pinned channel. Pre-install it (and its Android targets) so
 # the build never fetches a toolchain from the network. Keep in sync with the
-# `channel` value in bdk-dart's native/rust-toolchain.toml (see the bdk_dart
-# git dependency in pubspec.yaml).
+# `channel` value AND `components` in bdk-dart's native/rust-toolchain.toml (see
+# the bdk_dart git dependency in pubspec.yaml) — the components are pre-added
+# here so rustup does not silently fetch them from the network at build time
+# when native_toolchain_rust honours that toolchain file.
 ARG BDK_RUST_VERSION="1.85.1"
 RUN rustup toolchain install ${BDK_RUST_VERSION}
+RUN rustup component add --toolchain ${BDK_RUST_VERSION} clippy rustfmt
 RUN rustup target add --toolchain ${BDK_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
 
 # Belt-and-suspenders verification: abort if the installed Rust does not match
@@ -225,13 +224,30 @@ RUN fvm flutter precache --android --linux
 RUN fvm flutter config --no-analytics
 RUN fvm dart --disable-analytics
 
-# Serialize all rustup invocations behind a file lock. Multiple Rust-based
-# Flutter plugins build in parallel via cargokit, and concurrent rustup
-# calls race in ~/.rustup/downloads/ — one process renames the .partial
-# file while another is still looking for it, causing ENOENT. The wrapper
-# makes every rustup call acquire an exclusive flock first.
+# Wrap rustup with a thin shim that does two things before delegating to the
+# real binary.
 #
-# The wrapper MUST be #!/bin/bash, not #!/bin/sh. cargokit injects per-target
+# (1) Version pin. cargokit (payjoin_flutter, tor, bull_sdk's rust_builder)
+# hard-codes `rustup run stable cargo build` and `rustup toolchain install
+# stable` — its toolchain option is a fixed stable/beta/nightly enum, so it
+# cannot name a version. An explicit `rustup run stable` outranks both
+# RUSTUP_TOOLCHAIN and any rust-toolchain.toml (rustup's documented override
+# precedence), so without intervention cargokit silently builds with whatever
+# upstream stable is current on build day — that is how shipped .so files ended
+# up embedding rustc newer than RUST_VERSION. rustup >=1.28 forbids `rustup
+# toolchain link stable` (reserved channel name), so we cannot alias "stable"
+# to the pinned toolchain directory; instead the shim rewrites the argument
+# "stable" -> RUST_VERSION before calling the real rustup. bdk_dart's explicit
+# `rustup run 1.85.1` has no "stable" token and passes through untouched. The
+# match is exact-equality per argument, so substrings like "stableish" and
+# args with spaces are preserved.
+#
+# (2) flock. Multiple Rust plugins build in parallel via cargokit and
+# concurrent rustup calls race in ~/.rustup/downloads/ — one process renames
+# the .partial file while another is still looking for it, causing ENOENT. The
+# shim makes every rustup call acquire an exclusive flock first.
+#
+# The shim MUST be #!/bin/bash, not #!/bin/sh. cargokit injects per-target
 # cross-compiler env vars whose names contain dashes (e.g.
 # CC_aarch64-linux-android, AR_aarch64-linux-android, CXX_aarch64-linux-android).
 # POSIX sh (dash) discards environment variables with non-identifier names at
@@ -241,7 +257,7 @@ RUN fvm dart --disable-analytics
 # 'failed to find tool "aarch64-linux-android-clang"'. bash preserves
 # dash-named env vars across exec, so the compiler env reaches cargo intact.
 RUN mv /home/$USER/.cargo/bin/rustup /home/$USER/.cargo/bin/rustup.real && \
-    printf '#!/bin/bash\nexec flock /tmp/rustup.lock /home/%s/.cargo/bin/rustup.real "$@"\n' "$USER" > /home/$USER/.cargo/bin/rustup && \
+    printf '#!/bin/bash\nargs=()\nfor a in "$@"; do [ "$a" = stable ] && a=%s; args+=("$a"); done\nexec flock /tmp/rustup.lock /home/%s/.cargo/bin/rustup.real "${args[@]}"\n' "$RUST_VERSION" "$USER" > /home/$USER/.cargo/bin/rustup && \
     chmod +x /home/$USER/.cargo/bin/rustup
 
 # Persistent bash history (backed by a named volume mounted at ~/.history).
