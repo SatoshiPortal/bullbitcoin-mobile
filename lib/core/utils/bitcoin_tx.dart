@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitcoin_tx.freezed.dart';

@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';

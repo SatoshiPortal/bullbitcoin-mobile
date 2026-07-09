@@ -19,10 +19,6 @@ dependencies:
     sdk: flutter
   bull_ui:
   proof_of_funds:
-  bdk_dart:
-    git:
-      url: https://github.com/ethicnology/bdk-dart
-      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -56,17 +52,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 39a964bdd1296a32fde514ffa450522c3bac576b
+      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 39a964bdd1296a32fde514ffa450522c3bac576b
+      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 39a964bdd1296a32fde514ffa450522c3bac576b
+      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   hex: ^0.2.0
@@ -84,7 +80,10 @@ dependencies:
   intl: any
   bip85_entropy: ^1.0.2
   bip21_uri: ^2.1.3
-  bip32_keys: ^3.1.1
+  # Pinned exactly to 3.1.1: later published patches (3.1.2/3.1.3) accidentally
+  # shipped breaking API renames (NetworkType/Bip32Type -> Bip32Network) that
+  # bip32_derivation.dart depends on. Revisit once a clean patch is released.
+  bip32_keys: 3.1.1
   bip39_mnemonic: ^4.0.1
   bip329_labels: ^2.0.0
   bs58check: ^1.0.2
@@ -121,7 +120,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 39a964bdd1296a32fde514ffa450522c3bac576b
+      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -129,7 +128,7 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
-      ref: c4240d1f518c5903b67191253212754a31ed5333
+      ref: 9973a6b4f693856dae9bff6735e022e94988988d
   permission_handler: ^12.0.1
   cbor: ^6.3.7
   ur:
@@ -152,20 +151,16 @@ dependencies:
   sentry_flutter: ^9.22.0
   keyboard_actions: ^4.2.1
 
-# Force a single bdk_dart across the whole graph onto the reproducible-build fork.
-# satoshifier (from bull_sdk) transitively pins bitcoindevkit/bdk-dart@1377091;
-# ethicnology/bdk-dart@a3873c0 is that same commit plus a committed Cargo.lock and
-# codegen-units=1 (no Dart API change, same 1.0.0-rc.2), so the override is safe and
-# makes libbdk_dart_ffi.so reproducible.
+# proof_of_funds -> bip322 -> bip340 pins pointycastle ^4.0.0, while several
+# first-party deps (bip85_entropy, and transitively others) still pin ^3.9.1
+# (<4.0.0). All of them use only stable pointycastle APIs (digests, HMAC,
+# ECDSA), so forcing the whole graph onto 4.x is safe and keeps a single
+# resolved version. Verified: bip32_keys and the ledger fork were relaxed to
+# <5.0.0 and pass their tests on 4.0.0.
+# RISK: any dep declaring <4.0.0 is being pushed past its declared bound —
+# Ledger hardware signing and Bitcoin key derivation must be regression-tested
+# on pointycastle 4.x before release.
 dependency_overrides:
-  bdk_dart:
-    git:
-      url: https://github.com/ethicnology/bdk-dart
-      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
-  # proof_of_funds -> bip322 -> bip340 pins pointycastle ^4.0.0, while
-  # ledger_bitcoin pins ^3.9.1 (<4.0.0). Force the whole graph onto 4.x.
-  # RISK: ledger_bitcoin declares <4.0.0 — Ledger hardware signing must be
-  # regression-tested against pointycastle 4.x before release.
   pointycastle: ^4.0.0
 
 dev_dependencies:
