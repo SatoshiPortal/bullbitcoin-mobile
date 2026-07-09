@@ -122,6 +122,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  bip322:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "2e00cd9624fd6a6783a33332d0e80088da59f864"
+      resolved-ref: "2e00cd9624fd6a6783a33332d0e80088da59f864"
+      url: "https://github.com/ethicnology/dart-bip322-proof-of-funds.git"
+    source: git
+    version: "1.0.0"
   bip329_labels:
     dependency: "direct main"
     description:
@@ -138,6 +147,23 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  bip340:
+    dependency: transitive
+    description:
+      name: bip340
+      sha256: "4c2df9fa2409d26f1d9334b2801015ebe4dc3978191f186743e60e89a90230c4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
+  bip341:
+    dependency: transitive
+    description:
+      path: "."
+      ref: e2e3e5fbb9b3551822c5f43903e441a83c2ce0dd
+      resolved-ref: e2e3e5fbb9b3551822c5f43903e441a83c2ce0dd
+      url: "https://github.com/ethicnology/dart-bip341-taproot.git"
+    source: git
+    version: "1.0.0"
   bip39_mnemonic:
     dependency: "direct main"
     description:
@@ -606,6 +632,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+  ecdsa:
+    dependency: transitive
+    description:
+      name: ecdsa
+      sha256: "13b4e01ac140575cf88ef5e5268f92b8dd0a67a26c60a1b74e67d146068dc246"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
+  elliptic:
+    dependency: transitive
+    description:
+      name: elliptic
+      sha256: "67931d408faa353bdebac9f7a1df0c3f6f828f4e8439cdf084573cd1601a2f4b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.12"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -1228,14 +1270,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.14.2"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      sha256: "53385261521cc4a0c4658fd0ad07a7d14591cf8fc33abbceae306ddb974888dc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.2"
   json_annotation:
     dependency: "direct main"
     description:
@@ -1429,6 +1463,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  ninja_asn1:
+    dependency: transitive
+    description:
+      name: ninja_asn1
+      sha256: b0f04877243fda51c475ec2bcaadb55a92759baee9f02888124c60775760ccf7
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   no_screenshot:
     dependency: "direct main"
     description:
@@ -1623,13 +1665,13 @@ packages:
     source: hosted
     version: "2.1.8"
   pointycastle:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: pointycastle
-      sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
+      sha256: "92aa3841d083cc4b0f4709b5c74fd6409a3e6ba833ffc7dc6a8fee096366acf5"
       url: "https://pub.dev"
     source: hosted
-    version: "3.9.1"
+    version: "4.0.0"
   pool:
     dependency: transitive
     description:

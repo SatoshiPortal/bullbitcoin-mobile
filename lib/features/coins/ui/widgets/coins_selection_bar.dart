@@ -18,6 +18,7 @@ class CoinsSelectionBar extends StatelessWidget {
     required this.anyFrozen,
     required this.onFreeze,
     required this.onUnfreeze,
+    this.onProve,
   });
 
   final int selectedCount;
@@ -26,6 +27,10 @@ class CoinsSelectionBar extends StatelessWidget {
   final bool anyFrozen;
   final VoidCallback onFreeze;
   final VoidCallback onUnfreeze;
+
+  /// Optional "prove funds" action — shown only when the selection can be
+  /// proven (all selected coins are Bitcoin P2WPKH/P2TR). Null hides it.
+  final VoidCallback? onProve;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,12 @@ class CoinsSelectionBar extends StatelessWidget {
             label: loc.coinsUnfreeze,
             icon: BullIcons.lockOpen,
             onPressed: onUnfreeze,
+          ),
+        if (onProve != null)
+          BullToolButton(
+            label: loc.proofOfFundsProveAction,
+            icon: BullIcons.check,
+            onPressed: onProve!,
           ),
       ],
     );

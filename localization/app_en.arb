@@ -14751,5 +14751,92 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "coinsErrorUnsupportedScript": "This coin's address type isn't supported for proof of funds (only native SegWit and Taproot).",
+  "@coinsErrorUnsupportedScript": {
+    "description": "Coins error when a selected UTXO or challenge address is not P2WPKH/P2TR"
+  },
+  "coinsErrorProofFailed": "Couldn't create the proof of funds. Please try again.",
+  "@coinsErrorProofFailed": {
+    "description": "Coins error when building a proof-of-funds signature fails"
+  },
+  "coinsErrorVerifyFailed": "Couldn't verify the proof. Check the message, address and proof, then try again.",
+  "@coinsErrorVerifyFailed": {
+    "description": "Coins error when verifying a proof-of-funds signature fails to run"
+  },
+  "proofOfFundsProveTitle": "Prove funds",
+  "@proofOfFundsProveTitle": {
+    "description": "Title of the prove-funds screen"
+  },
+  "proofOfFundsProveSubtitle": "{count, plural, =1{Proving control of 1 coin} other{Proving control of {count} coins}}",
+  "@proofOfFundsProveSubtitle": {
+    "description": "Subtitle on the prove-funds screen showing how many UTXOs are being proven",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "proofOfFundsMessageHint": "Message to sign",
+  "@proofOfFundsMessageHint": {
+    "description": "Hint for the message input in proof of funds"
+  },
+  "proofOfFundsProveAction": "Create proof",
+  "@proofOfFundsProveAction": {
+    "description": "Button to generate the proof-of-funds signature"
+  },
+  "proofOfFundsProveResult": "Share this proof with the verifier:",
+  "@proofOfFundsProveResult": {
+    "description": "Label shown above the generated proof output"
+  },
+  "proofOfFundsCopy": "Copy proof",
+  "@proofOfFundsCopy": {
+    "description": "Button to copy the proof-of-funds signature"
+  },
+  "proofOfFundsCopied": "Proof copied to clipboard",
+  "@proofOfFundsCopied": {
+    "description": "Toast shown after copying the proof"
+  },
+  "proofOfFundsVerifyTitle": "Verify proof of funds",
+  "@proofOfFundsVerifyTitle": {
+    "description": "Title of the verify-funds screen"
+  },
+  "proofOfFundsChallengeAddressHint": "Challenge address",
+  "@proofOfFundsChallengeAddressHint": {
+    "description": "Hint for the challenge address input when verifying"
+  },
+  "proofOfFundsProofHint": "Paste the proof (pof...)",
+  "@proofOfFundsProofHint": {
+    "description": "Hint for the proof string input when verifying"
+  },
+  "proofOfFundsVerifyAction": "Verify",
+  "@proofOfFundsVerifyAction": {
+    "description": "Button to run proof-of-funds verification"
+  },
+  "proofOfFundsStatusValid": "Valid proof",
+  "@proofOfFundsStatusValid": {
+    "description": "Verification result: the proof is valid"
+  },
+  "proofOfFundsStatusInconclusive": "Inconclusive",
+  "@proofOfFundsStatusInconclusive": {
+    "description": "Verification result: the proof could not be fully checked"
+  },
+  "proofOfFundsStatusInvalid": "Invalid proof",
+  "@proofOfFundsStatusInvalid": {
+    "description": "Verification result: the proof is invalid"
+  },
+  "proofOfFundsUtxoConfirmed": "confirmed unspent on-chain",
+  "@proofOfFundsUtxoConfirmed": {
+    "description": "Per-UTXO status: matches on-chain and is unspent"
+  },
+  "proofOfFundsUtxoSpent": "already spent",
+  "@proofOfFundsUtxoSpent": {
+    "description": "Per-UTXO status: the output is already spent"
+  },
+  "proofOfFundsUtxoMismatch": "not found or mismatched on-chain",
+  "@proofOfFundsUtxoMismatch": {
+    "description": "Per-UTXO status: missing on-chain or claimed script/amount mismatch"
+  },
+  "proofOfFundsUtxoNotChecked": "cryptographically proven (not checked on-chain)",
+  "@proofOfFundsUtxoNotChecked": {
+    "description": "Per-UTXO status: proven offline but no chain lookup was done"
   }
 }

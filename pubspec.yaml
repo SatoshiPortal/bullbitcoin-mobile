@@ -12,11 +12,13 @@ workspace:
   # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
+  - packages/proof_of_funds
 
 dependencies:
   flutter:
     sdk: flutter
   bull_ui:
+  proof_of_funds:
   bdk_dart:
     git:
       url: https://github.com/ethicnology/bdk-dart
@@ -160,6 +162,11 @@ dependency_overrides:
     git:
       url: https://github.com/ethicnology/bdk-dart
       ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
+  # proof_of_funds -> bip322 -> bip340 pins pointycastle ^4.0.0, while
+  # ledger_bitcoin pins ^3.9.1 (<4.0.0). Force the whole graph onto 4.x.
+  # RISK: ledger_bitcoin declares <4.0.0 — Ledger hardware signing must be
+  # regression-tested against pointycastle 4.x before release.
+  pointycastle: ^4.0.0
 
 dev_dependencies:
   build_runner: ^2.10.4

@@ -151,7 +151,7 @@ class AppRouter {
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,
-      CoinsRouter.route,
+      ...CoinsRouter.routes,
       SwapRouter.route,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,

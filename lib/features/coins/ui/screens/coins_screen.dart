@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
+import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_selection_bar.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_summary_bar.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_sort_filter_sheet.dart';
@@ -71,10 +73,35 @@ class CoinsScreen extends StatelessWidget {
                         .map(utxoOutpointKey)
                         .toList(),
                   ),
+                  onProve: _canProve(state)
+                      ? () => _prove(context, state)
+                      : null,
                 )
               : null,
         );
       },
+    );
+  }
+
+  /// Proof of funds is Bitcoin-only, so the action is offered only when every
+  /// selected coin is a Bitcoin UTXO.
+  bool _canProve(CoinsState state) =>
+      state.selectedUtxos.isNotEmpty &&
+      state.selectedUtxos.every((u) => u is BitcoinWalletUtxo);
+
+  void _prove(BuildContext context, CoinsState state) {
+    final wallet = context
+        .read<WalletBloc>()
+        .state
+        .wallets
+        .where((w) => w.id == state.walletId)
+        .firstOrNull;
+    if (wallet == null) return;
+
+    final utxos = state.selectedUtxos.whereType<BitcoinWalletUtxo>().toList();
+    context.pushNamed(
+      CoinsRoute.proveFunds.name,
+      extra: ProveFundsArgs(wallet: wallet, utxos: utxos),
     );
   }
 
