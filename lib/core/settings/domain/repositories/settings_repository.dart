@@ -22,6 +22,7 @@ abstract class SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    required bool hideExchangeFeatures,
   });
 
   Future<SettingsEntity> fetch();
@@ -52,4 +53,6 @@ abstract class SettingsRepository {
     String? username,
     String? password,
   });
+
+  Future<void> setHideExchangeFeatures(bool hide);
 }

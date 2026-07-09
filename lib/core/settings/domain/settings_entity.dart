@@ -145,6 +145,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(false) bool isErrorReportingEnabled,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    bool? hideExchangeFeatures,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

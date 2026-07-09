@@ -67,6 +67,8 @@ class AppRouter {
         notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
+          final hideExchangeFeatures =
+              context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
@@ -89,7 +91,7 @@ class AppRouter {
                     appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                     extendBodyBehindAppBar: true,
                     body: child,
-                    bottomNavigationBar: isSupportChat
+                    bottomNavigationBar: isSupportChat || hideExchangeFeatures
                         ? null
                         : BottomNavigationBar(
                             currentIndex: tabIndex,
