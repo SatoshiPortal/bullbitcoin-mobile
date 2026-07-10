@@ -582,5 +582,6 @@
   "logsShareOptionShare": "Կիսվել",
   "logsShareOptionExport": "Արտահանել",
   "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
-  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց"
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց",
+  "settingsExchangeSettingsTitleNewspeakApple": "Հաշվի կարգավորումներ"
 }

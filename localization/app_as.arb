@@ -10052,5 +10052,6 @@
   "logsShareOptionShare": "শ্বেয়াৰ কৰক",
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
-  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে"
+  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
+  "settingsExchangeSettingsTitleNewspeakApple": "একাউণ্ট ছেটিংছ"
 }

@@ -12938,5 +12938,6 @@
   "logsShareOptionShare": "مشاركة",
   "logsShareOptionExport": "تصدير",
   "logsExportedMessage": "تم تصدير السجلات بنجاح",
-  "logsExportFailedMessage": "فشل تصدير السجلات"
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "settingsExchangeSettingsTitleNewspeakApple": "إعدادات الحساب"
 }

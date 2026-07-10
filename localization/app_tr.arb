@@ -12934,5 +12934,6 @@
   "logsShareOptionShare": "Paylaş",
   "logsShareOptionExport": "Dışa Aktar",
   "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
-  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı"
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
+  "settingsExchangeSettingsTitleNewspeakApple": "Hesap ayarları"
 }

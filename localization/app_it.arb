@@ -5094,5 +5094,6 @@
   "logsShareOptionShare": "Condividi",
   "logsShareOptionExport": "Esporta",
   "logsExportedMessage": "Registri esportati con successo",
-  "logsExportFailedMessage": "Esportazione dei registri non riuscita"
+  "logsExportFailedMessage": "Esportazione dei registri non riuscita",
+  "settingsExchangeSettingsTitleNewspeakApple": "Impostazioni account"
 }

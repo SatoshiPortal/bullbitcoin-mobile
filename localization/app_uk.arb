@@ -5091,5 +5091,6 @@
   "logsShareOptionShare": "Поділитися",
   "logsShareOptionExport": "Експорт",
   "logsExportedMessage": "Журнали успішно експортовано",
-  "logsExportFailedMessage": "Не вдалося експортувати журнали"
+  "logsExportFailedMessage": "Не вдалося експортувати журнали",
+  "settingsExchangeSettingsTitleNewspeakApple": "Налаштування облікового запису"
 }

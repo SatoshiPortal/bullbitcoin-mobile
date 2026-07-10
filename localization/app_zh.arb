@@ -4976,5 +4976,6 @@
   "logsShareOptionShare": "分享",
   "logsShareOptionExport": "导出",
   "logsExportedMessage": "日志导出成功",
-  "logsExportFailedMessage": "日志导出失败"
+  "logsExportFailedMessage": "日志导出失败",
+  "settingsExchangeSettingsTitleNewspeakApple": "账户设置"
 }

@@ -5083,5 +5083,6 @@
   "logsShareOptionShare": "Partager",
   "logsShareOptionExport": "Exporter",
   "logsExportedMessage": "Journaux exportés avec succès",
-  "logsExportFailedMessage": "Échec de l'exportation des journaux"
+  "logsExportFailedMessage": "Échec de l'exportation des journaux",
+  "settingsExchangeSettingsTitleNewspeakApple": "Paramètres du compte"
 }

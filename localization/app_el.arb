@@ -13052,5 +13052,6 @@
   "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
-  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "settingsExchangeSettingsTitleNewspeakApple": "Ρυθμίσεις λογαριασμού"
 }

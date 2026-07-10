@@ -582,5 +582,6 @@
   "logsShareOptionShare": "Chia sẻ",
   "logsShareOptionExport": "Xuất",
   "logsExportedMessage": "Nhật ký đã được xuất thành công",
-  "logsExportFailedMessage": "Xuất nhật ký thất bại"
+  "logsExportFailedMessage": "Xuất nhật ký thất bại",
+  "settingsExchangeSettingsTitleNewspeakApple": "Cài đặt tài khoản"
 }

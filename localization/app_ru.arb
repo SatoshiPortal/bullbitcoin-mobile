@@ -5103,5 +5103,6 @@
   "logsShareOptionShare": "Поделиться",
   "logsShareOptionExport": "Экспорт",
   "logsExportedMessage": "Журналы успешно экспортированы",
-  "logsExportFailedMessage": "Не удалось экспортировать журналы"
+  "logsExportFailedMessage": "Не удалось экспортировать журналы",
+  "settingsExchangeSettingsTitleNewspeakApple": "Настройки аккаунта"
 }

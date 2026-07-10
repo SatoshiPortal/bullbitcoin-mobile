@@ -602,5 +602,6 @@
   "logsShareOptionShare": "Shiriki",
   "logsShareOptionExport": "Hamisha",
   "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
-  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu"
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu",
+  "settingsExchangeSettingsTitleNewspeakApple": "Mipangilio ya akaunti"
 }

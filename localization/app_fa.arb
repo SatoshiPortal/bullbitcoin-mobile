@@ -12934,5 +12934,6 @@
   "logsShareOptionShare": "اشتراک‌گذاری",
   "logsShareOptionExport": "صدور",
   "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
-  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود"
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
+  "settingsExchangeSettingsTitleNewspeakApple": "تنظیمات حساب"
 }

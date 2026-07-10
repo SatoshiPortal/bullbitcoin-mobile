@@ -13052,5 +13052,6 @@
   "logsShareOptionShare": "Sdílet",
   "logsShareOptionExport": "Exportovat",
   "logsExportedMessage": "Záznamy byly úspěšně exportovány",
-  "logsExportFailedMessage": "Export záznamů se nezdařil"
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "settingsExchangeSettingsTitleNewspeakApple": "Nastavení účtu"
 }
