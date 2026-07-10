@@ -54,6 +54,11 @@ class PaymentPageState {
   /// The DG-6 choose-a-name input.
   final String nymDraft;
 
+  /// The field flagged by the last submit-time validation, for per-field
+  /// highlighting (`errorText`). Cleared when that field is edited or on a new
+  /// submit.
+  final PaymentPageField? invalidField;
+
   const PaymentPageState({
     this.status = PaymentPageStatus.loading,
     this.submitting = false,
@@ -70,6 +75,7 @@ class PaymentPageState {
     this.currencies = const [],
     this.currenciesUnavailable = false,
     this.nymDraft = '',
+    this.invalidField,
   });
 
   bool get isLoading => status == PaymentPageStatus.loading;
@@ -104,8 +110,10 @@ class PaymentPageState {
     List<DisplayCurrency>? currencies,
     bool? currenciesUnavailable,
     String? nymDraft,
+    PaymentPageField? invalidField,
     bool clearFailure = false,
     bool clearPage = false,
+    bool clearInvalidField = false,
   }) {
     return PaymentPageState(
       status: status ?? this.status,
@@ -124,6 +132,7 @@ class PaymentPageState {
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
       nymDraft: nymDraft ?? this.nymDraft,
+      invalidField: clearInvalidField ? null : invalidField ?? this.invalidField,
     );
   }
 }

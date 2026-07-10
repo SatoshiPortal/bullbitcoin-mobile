@@ -45,6 +45,28 @@ bool isValidPaymentPageInstagram(String value) {
   return _instagramHandleRegExp.hasMatch(value);
 }
 
+/// Submit-time normalization for the Donation Page website: a non-empty value
+/// with no URL scheme gets an `https://` prefix (so `aa.com` becomes
+/// `https://aa.com`); an existing `http://`/`https://` (any case) is left
+/// untouched. Empty stays empty. Surrounding whitespace is trimmed.
+String normalizePaymentPageUrl(String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return '';
+  final lower = trimmed.toLowerCase();
+  if (lower.startsWith('https://') || lower.startsWith('http://')) {
+    return trimmed;
+  }
+  return 'https://$trimmed';
+}
+
+/// Submit-time normalization for a social handle: strips a single leading `@`
+/// (users type `@name`) and trims surrounding whitespace. Empty stays empty.
+String stripHandleAt(String value) {
+  final trimmed = value.trim();
+  if (trimmed.startsWith('@')) return trimmed.substring(1);
+  return trimmed;
+}
+
 /// The fields the editor collects, in the order the form presents them; used to
 /// point per-field validation at the failing input.
 enum PaymentPageField {

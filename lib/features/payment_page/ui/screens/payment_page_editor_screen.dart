@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/get_paid_settings/public/automated_backup_consent.dart';
 import 'package:bb_mobile/features/payment_page/domain/payment_page_validation.dart';
@@ -89,8 +91,16 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
   Widget _body(BuildContext context, PaymentPageState state) {
     final cubit = context.read<PaymentPageCubit>();
     return switch (state.status) {
-      PaymentPageStatus.loading => const Center(
-        child: CircularProgressIndicator(),
+      PaymentPageStatus.loading => const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LoadingBoxContent(height: 72),
+            LoadingLineContent(),
+            LoadingLineContent(width: 220),
+          ],
+        ),
       ),
       PaymentPageStatus.needsNym => _needsNymView(context, state, cubit),
       PaymentPageStatus.loadFailed => _loadFailedView(context, cubit),
@@ -227,6 +237,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           maxBytes: paymentPageHeaderMaxBytes,
           enabled: !state.submitting,
           onChanged: cubit.headerChanged,
+          errorText: state.invalidField == PaymentPageField.header
+              ? context.loc.paymentPageHeaderError
+              : null,
         ),
         const Gap(16),
         _byteCountedField(
@@ -239,6 +252,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           enabled: !state.submitting,
           onChanged: cubit.descriptionChanged,
           maxLines: 4,
+          errorText: state.invalidField == PaymentPageField.description
+              ? context.loc.paymentPageDescriptionError
+              : null,
         ),
         const Gap(16),
         _currencyField(context, state, cubit),
@@ -252,6 +268,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: context.loc.paymentPageWebsiteLabel,
+            errorText: state.invalidField == PaymentPageField.website
+                ? context.loc.paymentPageWebsiteError
+                : null,
           ),
         ),
         const Gap(16),
@@ -264,6 +283,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: context.loc.paymentPageTwitterLabel,
+            errorText: state.invalidField == PaymentPageField.twitter
+                ? context.loc.paymentPageTwitterError
+                : null,
           ),
         ),
         const Gap(16),
@@ -276,6 +298,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: context.loc.paymentPageInstagramLabel,
+            errorText: state.invalidField == PaymentPageField.instagram
+                ? context.loc.paymentPageInstagramError
+                : null,
           ),
         ),
         if (!isCreate && state.publicUrl != null) ...[
@@ -290,7 +315,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
               ? context.loc.paymentPageCreateButton
               : context.loc.paymentPageSaveButton,
           onPressed: () => _save(cubit),
-          disabled: !state.canSubmit,
+          // Always tappable: save() validates on tap and surfaces the specific
+          // invalid field, rather than silently disabling with no feedback.
+          disabled: state.submitting,
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
         ),
@@ -343,6 +370,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: context.loc.paymentPageCurrencyLabel,
+        errorText: state.invalidField == PaymentPageField.displayCurrency
+            ? context.loc.paymentPageCurrencyError
+            : null,
       ),
       items: [
         for (final code in codes)
@@ -366,6 +396,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
     required bool enabled,
     required ValueChanged<String> onChanged,
     int maxLines = 1,
+    String? errorText,
   }) {
     return TextField(
       controller: controller,
@@ -376,6 +407,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
         border: const OutlineInputBorder(),
         labelText: label,
         hintText: hint,
+        errorText: errorText,
         counterText: context.loc.paymentPageByteCounter(
           paymentPageByteLength(value),
           maxBytes,

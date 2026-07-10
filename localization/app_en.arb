@@ -855,6 +855,30 @@
   "@paymentPageInstagramLabel": {
     "description": "Label for the Donation Page Instagram handle field"
   },
+  "paymentPageHeaderError": "Enter a title",
+  "@paymentPageHeaderError": {
+    "description": "Per-field error shown when the Donation Page title is empty or too long"
+  },
+  "paymentPageDescriptionError": "Enter a description",
+  "@paymentPageDescriptionError": {
+    "description": "Per-field error shown when the Donation Page description is empty or too long"
+  },
+  "paymentPageCurrencyError": "Choose a currency",
+  "@paymentPageCurrencyError": {
+    "description": "Per-field error shown when no Donation Page display currency is selected"
+  },
+  "paymentPageWebsiteError": "Enter a website like https://example.com",
+  "@paymentPageWebsiteError": {
+    "description": "Per-field error shown when the Donation Page website is invalid"
+  },
+  "paymentPageTwitterError": "Use letters, numbers and underscores only",
+  "@paymentPageTwitterError": {
+    "description": "Per-field error shown when the Donation Page X/Twitter handle is invalid"
+  },
+  "paymentPageInstagramError": "Use letters, numbers, dots and underscores only",
+  "@paymentPageInstagramError": {
+    "description": "Per-field error shown when the Donation Page Instagram handle is invalid"
+  },
   "paymentPageCurrencyLabel": "Display currency",
   "@paymentPageCurrencyLabel": {
     "description": "Label for the Donation Page display-currency dropdown"

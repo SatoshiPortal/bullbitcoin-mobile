@@ -67,6 +67,56 @@ void main() {
     });
   });
 
+  group('normalizePaymentPageUrl', () {
+    test('prepends https:// to a bare domain', () {
+      expect(normalizePaymentPageUrl('aa.com'), 'https://aa.com');
+      expect(
+        normalizePaymentPageUrl('example.com/path'),
+        'https://example.com/path',
+      );
+    });
+
+    test('leaves an existing http:// or https:// scheme untouched', () {
+      expect(
+        normalizePaymentPageUrl('https://example.com'),
+        'https://example.com',
+      );
+      expect(
+        normalizePaymentPageUrl('http://example.com'),
+        'http://example.com',
+      );
+      // Scheme detection is case-insensitive.
+      expect(
+        normalizePaymentPageUrl('HTTPS://example.com'),
+        'HTTPS://example.com',
+      );
+    });
+
+    test('empty (or whitespace-only) stays empty', () {
+      expect(normalizePaymentPageUrl(''), '');
+      expect(normalizePaymentPageUrl('   '), '');
+    });
+
+    test('trims surrounding whitespace before prefixing', () {
+      expect(normalizePaymentPageUrl('  aa.com  '), 'https://aa.com');
+    });
+  });
+
+  group('stripHandleAt', () {
+    test('strips a single leading @', () {
+      expect(stripHandleAt('@handle'), 'handle');
+    });
+
+    test('leaves a bare handle untouched', () {
+      expect(stripHandleAt('handle'), 'handle');
+    });
+
+    test('empty stays empty and strips only one @', () {
+      expect(stripHandleAt(''), '');
+      expect(stripHandleAt('@@double'), '@double');
+    });
+  });
+
   group('SavePaymentPageCommand', () {
     test('flags the first invalid field in form order', () {
       expect(

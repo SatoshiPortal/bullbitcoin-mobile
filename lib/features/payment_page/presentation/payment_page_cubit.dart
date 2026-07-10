@@ -149,23 +149,53 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
   void nymDraftChanged(String value) =>
       emit(state.copyWith(nymDraft: value, clearFailure: true));
 
-  void headerChanged(String value) =>
-      emit(state.copyWith(header: value, clearFailure: true));
+  void headerChanged(String value) => emit(
+    state.copyWith(
+      header: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.header,
+    ),
+  );
 
-  void descriptionChanged(String value) =>
-      emit(state.copyWith(description: value, clearFailure: true));
+  void descriptionChanged(String value) => emit(
+    state.copyWith(
+      description: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.description,
+    ),
+  );
 
-  void displayCurrencyChanged(String value) =>
-      emit(state.copyWith(displayCurrency: value, clearFailure: true));
+  void displayCurrencyChanged(String value) => emit(
+    state.copyWith(
+      displayCurrency: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.displayCurrency,
+    ),
+  );
 
-  void websiteChanged(String value) =>
-      emit(state.copyWith(website: value, clearFailure: true));
+  void websiteChanged(String value) => emit(
+    state.copyWith(
+      website: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.website,
+    ),
+  );
 
-  void twitterChanged(String value) =>
-      emit(state.copyWith(twitter: value, clearFailure: true));
+  void twitterChanged(String value) => emit(
+    state.copyWith(
+      twitter: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.twitter,
+    ),
+  );
 
-  void instagramChanged(String value) =>
-      emit(state.copyWith(instagram: value, clearFailure: true));
+  void instagramChanged(String value) => emit(
+    state.copyWith(
+      instagram: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.instagram,
+    ),
+  );
 
   /// DG-6: register the nym (and wallet 101) through the shared Lightning
   /// Address facade, then reload into the create form.
@@ -188,12 +218,32 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
 
   Future<void> save() async {
     if (state.submitting) return;
+
+    // Normalize the website + social handles at submit time and reflect the
+    // result back into form state (the user sees `aa.com` become
+    // `https://aa.com`, and `@name` become `name`) BEFORE validating.
+    final normalizedWebsite = normalizePaymentPageUrl(state.website);
+    final normalizedTwitter = stripHandleAt(state.twitter);
+    final normalizedInstagram = stripHandleAt(state.instagram);
+    if (normalizedWebsite != state.website ||
+        normalizedTwitter != state.twitter ||
+        normalizedInstagram != state.instagram) {
+      emit(
+        state.copyWith(
+          website: normalizedWebsite,
+          twitter: normalizedTwitter,
+          instagram: normalizedInstagram,
+        ),
+      );
+    }
+
     final command = state.command;
     final invalidField = command.firstInvalidField();
     if (invalidField != null) {
       emit(
         state.copyWith(
           failure: PaymentPageException.invalidInput(code: invalidField.name),
+          invalidField: invalidField,
         ),
       );
       return;
@@ -204,6 +254,7 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
       state.copyWith(
         submitting: true,
         clearFailure: true,
+        clearInvalidField: true,
         submissionUncertain: false,
       ),
     );
