@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
@@ -52,9 +53,9 @@ Future<void> _pump(WidgetTester tester, InvoicesListState state) async {
 }
 
 void main() {
-  testWidgets('loading shows a progress indicator', (tester) async {
+  testWidgets('loading shows the shimmer placeholder', (tester) async {
     await _pump(tester, const InvoicesListState(status: InvoicesListStatus.loading));
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(LoadingBoxContent), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

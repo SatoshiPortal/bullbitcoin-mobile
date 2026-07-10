@@ -49,9 +49,23 @@ class TxListItem extends StatelessWidget {
         : tx.isBitcoin
         ? context.loc.transactionNetworkBitcoin
         : context.loc.transactionNetworkLiquid;
-    final labels = tx.walletTransaction != null
-        ? tx.walletTransaction!.labels
-        : <Label>[];
+    final txLabels = tx.walletTransaction?.labels ?? <Label>[];
+    // Also surface SYSTEM address labels on the received/owned output (e.g. the
+    // "Invoice" reservation label) so an incoming payment reads as its feature
+    // in history, mirroring the details screen. Only system labels are promoted
+    // — private memos / user address labels stay out of the list — and a label
+    // already shown at the transaction level is not duplicated. Localization is
+    // handled downstream by LabelText.toTranslatedLabel.
+    final shownLabelTexts = txLabels.map((label) => label.label).toSet();
+    final systemAddressLabels =
+        (tx.walletTransaction?.toAddressLabels ?? <Label>[])
+            .where(
+              (label) =>
+                  LabelSystem.isSystemLabel(label.label) &&
+                  shownLabelTexts.add(label.label),
+            )
+            .toList();
+    final labels = [...txLabels, ...systemAddressLabels];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
               ? (tx.swap?.completionTime != null

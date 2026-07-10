@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
@@ -43,7 +45,17 @@ class InvoicesListScreen extends StatelessWidget {
           builder: (context, state) => switch (state.status) {
             InvoicesListStatus.initial ||
             InvoicesListStatus.loading =>
-              const Center(child: CircularProgressIndicator()),
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LoadingBoxContent(height: 72),
+                    LoadingLineContent(),
+                    LoadingLineContent(width: 220),
+                  ],
+                ),
+              ),
             InvoicesListStatus.error => _error(context),
             InvoicesListStatus.loaded => _loaded(context, state),
           },

@@ -2,6 +2,10 @@ import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 
 enum InvoiceAmountMode { sats, fiat }
 
+/// The create-invoice fields that submit-time validation can flag, for
+/// per-field highlighting (`errorText`).
+enum InvoiceCreateField { amount, currency }
+
 /// The create-invoice form + submission state. All form fields are local; the
 /// wallet lookup, address generation, signing and labels live in the usecase,
 /// never here. On success [result] carries the share URL.
@@ -34,6 +38,11 @@ class InvoiceCreateState {
   final List<BullnymSupportedCurrency> currencies;
   final bool currenciesUnavailable;
 
+  /// The field flagged by the last submit-time validation, for per-field
+  /// highlighting (`errorText`). Cleared when that field is edited or on a new
+  /// submit.
+  final InvoiceCreateField? invalidField;
+
   const InvoiceCreateState({
     this.submitting = false,
     this.result,
@@ -51,6 +60,7 @@ class InvoiceCreateState {
     this.privateMemo = '',
     this.currencies = const [],
     this.currenciesUnavailable = false,
+    this.invalidField,
   });
 
   bool get isSubmitted => result != null;
@@ -73,7 +83,9 @@ class InvoiceCreateState {
     String? privateMemo,
     List<BullnymSupportedCurrency>? currencies,
     bool? currenciesUnavailable,
+    InvoiceCreateField? invalidField,
     bool clearFailure = false,
+    bool clearInvalidField = false,
   }) {
     return InvoiceCreateState(
       submitting: submitting ?? this.submitting,
@@ -93,6 +105,7 @@ class InvoiceCreateState {
       currencies: currencies ?? this.currencies,
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
+      invalidField: clearInvalidField ? null : invalidField ?? this.invalidField,
     );
   }
 }

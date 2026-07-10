@@ -38,14 +38,29 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
     }
   }
 
-  void amountModeChanged(InvoiceAmountMode mode) =>
-      emit(state.copyWith(amountMode: mode, clearFailure: true));
+  void amountModeChanged(InvoiceAmountMode mode) => emit(
+    state.copyWith(
+      amountMode: mode,
+      clearFailure: true,
+      clearInvalidField: true,
+    ),
+  );
 
-  void amountChanged(String value) =>
-      emit(state.copyWith(amountInput: value, clearFailure: true));
+  void amountChanged(String value) => emit(
+    state.copyWith(
+      amountInput: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == InvoiceCreateField.amount,
+    ),
+  );
 
-  void fiatCurrencyChanged(String code) =>
-      emit(state.copyWith(fiatCurrency: code, clearFailure: true));
+  void fiatCurrencyChanged(String code) => emit(
+    state.copyWith(
+      fiatCurrency: code,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == InvoiceCreateField.currency,
+    ),
+  );
 
   void publicDescriptionChanged(String value) =>
       emit(state.copyWith(publicDescription: value, clearFailure: true));
@@ -99,16 +114,32 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
     } else {
       amountSat = null;
       fiatCurrency = state.fiatCurrency;
+      if (fiatCurrency.isEmpty) {
+        emit(
+          state.copyWith(
+            failure: const InvoicesException.invalidInput(
+              code: 'CurrencyRequired',
+            ),
+            invalidField: InvoiceCreateField.currency,
+          ),
+        );
+        return;
+      }
       fiatAmountMinor = _parseFiatMinor(state.amountInput, fiatCurrency);
-      if (fiatAmountMinor == null || fiatAmountMinor <= 0 ||
-          fiatCurrency.isEmpty) {
+      if (fiatAmountMinor == null || fiatAmountMinor <= 0) {
         _emitInvalidAmount();
         return;
       }
     }
 
     final op = ++_operationId;
-    emit(state.copyWith(submitting: true, clearFailure: true));
+    emit(
+      state.copyWith(
+        submitting: true,
+        clearFailure: true,
+        clearInvalidField: true,
+      ),
+    );
 
     final command = CreateInvoiceCommand(
       amountSat: amountSat,
@@ -146,6 +177,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
   void _emitInvalidAmount() => emit(
     state.copyWith(
       failure: const InvoicesException.invalidInput(code: 'AmountInvalid'),
+      invalidField: InvoiceCreateField.amount,
     ),
   );
 

@@ -968,6 +968,14 @@
   "@invoiceCurrencyLabel": {
     "description": "Label for the fiat currency selector"
   },
+  "invoiceAmountError": "Enter a valid amount",
+  "@invoiceAmountError": {
+    "description": "Per-field error shown when the invoice amount is missing or not a positive number"
+  },
+  "invoiceCurrencyError": "Choose a currency",
+  "@invoiceCurrencyError": {
+    "description": "Per-field error shown when no invoice fiat currency is selected"
+  },
   "invoiceRailsLabel": "Accepted payment methods",
   "@invoiceRailsLabel": {
     "description": "Section header for the invoice payment-rail toggles"

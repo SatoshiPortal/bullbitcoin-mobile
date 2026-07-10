@@ -143,6 +143,9 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
             labelText: state.amountMode == InvoiceAmountMode.sats
                 ? context.loc.invoiceAmountSatsLabel
                 : context.loc.invoiceAmountFiatLabel,
+            errorText: state.invalidField == InvoiceCreateField.amount
+                ? context.loc.invoiceAmountError
+                : null,
           ),
         ),
         if (state.amountMode == InvoiceAmountMode.fiat) ...[
@@ -240,6 +243,9 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
     InvoiceCreateState state,
     InvoiceCreateCubit cubit,
   ) {
+    final errorText = state.invalidField == InvoiceCreateField.currency
+        ? context.loc.invoiceCurrencyError
+        : null;
     if (state.currenciesUnavailable || state.currencies.isEmpty) {
       return TextField(
         enabled: !state.submitting,
@@ -248,6 +254,7 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: context.loc.invoiceCurrencyLabel,
+          errorText: errorText,
         ),
       );
     }
@@ -260,6 +267,7 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: context.loc.invoiceCurrencyLabel,
+        errorText: errorText,
       ),
       items: [
         for (final code in codes)

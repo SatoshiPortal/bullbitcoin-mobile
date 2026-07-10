@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_cubit.dart';
@@ -35,8 +37,17 @@ class InvoiceDetailScreen extends StatelessWidget {
           appBar: AppBar(title: Text(context.loc.invoiceDetailTitle)),
           body: SafeArea(
             child: switch (state.status) {
-              InvoiceDetailStatus.loading =>
-                const Center(child: CircularProgressIndicator()),
+              InvoiceDetailStatus.loading => const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LoadingBoxContent(height: 72),
+                    LoadingLineContent(),
+                    LoadingLineContent(width: 220),
+                  ],
+                ),
+              ),
               InvoiceDetailStatus.error => _error(context, state),
               InvoiceDetailStatus.loaded => _loaded(context, state),
             },
