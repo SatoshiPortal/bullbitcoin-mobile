@@ -44,11 +44,13 @@ void main() {
     String? google,
   }) async {
     debugDefaultTargetPlatformOverride = platform;
+    final cubit = _FakeSettingsCubit(state);
+    addTearDown(cubit.close);
     try {
       late String rendered;
       await tester.pumpWidget(
         BlocProvider<SettingsCubit>.value(
-          value: _FakeSettingsCubit(state),
+          value: cubit,
           child: Builder(
             builder: (context) {
               rendered = context.novlang(
