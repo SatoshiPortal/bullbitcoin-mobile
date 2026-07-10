@@ -32,8 +32,9 @@ void main(List<String> args) {
 
   try {
     if (command != 'help' && command != '-h' && command != '--help') {
-      _rejectUnknownOptions(rest);
+      _rejectUnknownOptions(command, rest);
     }
+    _dryRun = _flag(rest, '--dry-run');
     switch (command) {
       case 'get':
         _cmdGet(rest);
@@ -494,13 +495,37 @@ void _requireLocale(String locale) {
   }
 }
 
-Map<String, dynamic> _readMap(String file) {
+// Per-invocation cache of file contents and their parsed maps. A single command
+// reads the same large (250–660 KB) file several times — a multi-locale `add`
+// hits every locale through _readMap, _assertInvariant and _editLines — so the
+// process would otherwise re-read and re-parse each file ~3x. The cache is only
+// safe because every write funnels through _editLines, which calls
+// _invalidateCache before returning; nothing else mutates a file.
+final _rawCache = <String, String>{};
+final _mapCache = <String, Map<String, dynamic>>{};
+
+String _readRaw(String file) {
+  final cached = _rawCache[file];
+  if (cached != null) return cached;
   final f = File(file);
   if (!f.existsSync()) {
     throw ArbException('File not found: $file');
   }
+  return _rawCache[file] = f.readAsStringSync();
+}
+
+void _invalidateCache(String file) {
+  _rawCache.remove(file);
+  _mapCache.remove(file);
+}
+
+Map<String, dynamic> _readMap(String file) {
+  final cached = _mapCache[file];
+  if (cached != null) return cached;
   try {
-    return jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
+    return _mapCache[file] = jsonDecode(_readRaw(file)) as Map<String, dynamic>;
+  } on ArbException {
+    rethrow; // file-not-found from _readRaw already has a clean message
   } catch (e) {
     throw ArbException('Invalid JSON in $file: $e');
   }
@@ -529,7 +554,7 @@ final _topKeyLine = RegExp(r'^  "((?:@@|@)?(?:\\.|[^"\\])*)":');
 
 /// Verifies the two-space-indent invariant this tool relies on for writes.
 void _assertInvariant(String file) {
-  final lines = File(file).readAsStringSync().split('\n');
+  final lines = _readRaw(file).split('\n');
   final map = _readMap(file);
   final lineKeys = [
     for (final l in lines)
@@ -601,7 +626,7 @@ String _unescapeKey(String raw) =>
 /// if [edit] reports a change. Returns whether the file was written.
 bool _editLines(String file, bool Function(List<String> lines) edit) {
   _assertInvariant(file);
-  final lines = File(file).readAsStringSync().split('\n');
+  final lines = _readRaw(file).split('\n');
   final trailingNewline = lines.isNotEmpty && lines.last.isEmpty;
   if (trailingNewline) lines.removeLast();
   final changed = edit(lines);
@@ -618,7 +643,14 @@ bool _editLines(String file, bool Function(List<String> lines) edit) {
         'This is a bug in the tool; the file was left unchanged.',
       );
     }
-    File(file).writeAsStringSync(result);
+    if (_dryRun) {
+      stderr.writeln('[dry-run] would write ${_basename(file)}');
+    } else {
+      File(file).writeAsStringSync(result);
+      // Cached raw/map are now stale; drop them so any later read in the same
+      // command re-reads the written bytes.
+      _invalidateCache(file);
+    }
   }
   return changed;
 }
@@ -834,7 +866,35 @@ const _valueOptions = {
   '--description',
   '--placeholders',
 };
-const _booleanFlags = {'--list'};
+const _booleanFlags = {'--list', '--dry-run'};
+
+// Which options each command actually accepts. Passing a globally-known option
+// that is meaningless for the command (e.g. `get KEY --description x`) is a
+// mistake, so it is rejected rather than silently ignored — matching the
+// tool's fail-loud stance on typos. Write commands accept `--dry-run`; read
+// commands do not (they never write). A command absent from this map takes no
+// options at all.
+const _commandOptions = <String, Set<String>>{
+  'get': {'--locale'},
+  'check': {},
+  'missing': {'--locale', '--list'},
+  'dead': {'--list'},
+  'add': {
+    '--translations',
+    '--translations-file',
+    '--description',
+    '--placeholders',
+    '--dry-run',
+  },
+  'set': {'--dry-run'},
+  'set-meta': {'--description', '--placeholders', '--dry-run'},
+  'rename': {'--dry-run'},
+  'delete': {'--dry-run'},
+  'validate': {},
+};
+
+// Set once in main from the parsed args; read by _editLines to skip the write.
+bool _dryRun = false;
 
 /// The slice of [args] before a bare `--` separator (all of it if absent),
 /// where option/flag parsing applies.
@@ -880,23 +940,28 @@ String? _option(List<String> args, String name) {
 
 bool _flag(List<String> args, String name) => _optionArgs(args).contains(name);
 
-/// Rejects any unknown `--option` in the option region (before a bare `--`), so
-/// a misspelled flag fails loudly instead of being silently dropped. Values of
+/// Rejects any `--option` in the option region (before a bare `--`) that the
+/// given [command] does not accept, so both a misspelled flag and a valid-but-
+/// wrong-command flag fail loudly instead of being silently dropped. Values of
 /// known value-options are skipped, so `--description --foo` keeps `--foo` as
 /// the description; a literal option-like value goes after the `--` separator.
-void _rejectUnknownOptions(List<String> args) {
+void _rejectUnknownOptions(String command, List<String> args) {
+  final allowed = _commandOptions[command] ?? const <String>{};
   final head = _optionArgs(args);
   for (var i = 0; i < head.length; i++) {
     final a = head[i];
-    if (_valueOptions.contains(a)) {
+    if (allowed.contains(a) && _valueOptions.contains(a)) {
       i++; // skip this option's value, whatever it is
       continue;
     }
-    if (_booleanFlags.contains(a)) continue;
+    if (allowed.contains(a)) continue; // a boolean flag valid for this command
     if (a.startsWith('--')) {
-      final known = [..._valueOptions, ..._booleanFlags]..sort();
+      final known = allowed.toList()..sort();
+      final valid = known.isEmpty
+          ? '$command takes no options'
+          : 'Valid for $command: ${known.join(', ')}';
       throw UsageException(
-        'Unknown option "$a". Valid options: ${known.join(', ')}. To pass a '
+        'Unknown option "$a" for $command. $valid. To pass a '
         'value that begins with "--", put it after a bare "--".',
       );
     }
@@ -1036,6 +1101,9 @@ Write commands (surgical; other keys are left byte-for-byte unchanged):
 
   delete KEY
       Remove KEY (and its @KEY metadata) from every locale file.
+
+Every write command accepts --dry-run: it runs all checks and reports which
+files would change, without writing anything.
 
 A value that looks like an option (e.g. the literal "--list") can be passed
 after a bare `--`: `set KEY LOCALE -- --list`.

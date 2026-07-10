@@ -34,9 +34,18 @@ Write (other keys left untouched):
 | `rename OLD NEW` | Rename a key across every locale in place, preserving values + metadata |
 | `delete KEY` | Remove KEY and its `@KEY` metadata from every file |
 
-Unknown options are rejected rather than ignored, so a typo fails loudly. To
-pass a value that begins with `--` (e.g. `set KEY LOCALE -- --dash`), put it
-after a bare `--`.
+Unknown options are rejected rather than ignored, so a typo fails loudly — and
+an option that isn't valid for the specific command (e.g. `get KEY --description
+x`) is rejected too, not silently dropped. To pass a value that begins with `--`
+(e.g. `set KEY LOCALE -- --dash`), put it after a bare `--`. Add `--dry-run` to
+any write command to see which files *would* change without touching disk.
+
+The tool relies on one layout invariant: every top-level key sits on its own
+line indented by exactly two spaces, in the same order as the parsed JSON, with
+the closing `}` on its own column-0 line. This is what `make translations`
+currently produces. If `validate` starts failing repo-wide after a Flutter /
+`gen-l10n` / formatter bump, that output shape changed — update `_topKeyLine`
+and `_assertInvariant` in `arb.dart` to match, don't hand-patch the files.
 
 After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
 `make translations` to regenerate the Dart localizations — each changes either
