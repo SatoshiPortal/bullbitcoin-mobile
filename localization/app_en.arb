@@ -5576,6 +5576,26 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
+  "getPaidWalletSettingsSectionTitle": "Wallet settings",
+  "@getPaidWalletSettingsSectionTitle": {
+    "description": "Section header for a Get Paid product's reserved wallet behavior controls"
+  },
+  "getPaidWalletAutoSweepLabel": "Auto-sweep",
+  "@getPaidWalletAutoSweepLabel": {
+    "description": "Label for the reserved wallet auto-sweep toggle"
+  },
+  "getPaidWalletAutoSweepInfo": "Automatically transfers funds received on this wallet to your main wallet.",
+  "@getPaidWalletAutoSweepInfo": {
+    "description": "Subtitle describing what the auto-sweep toggle does"
+  },
+  "getPaidWalletHideOnHomeLabel": "Hide on home",
+  "@getPaidWalletHideOnHomeLabel": {
+    "description": "Label for the reserved wallet hide-on-home toggle"
+  },
+  "getPaidWalletHideOnHomeInfo": "Keeps this wallet off your home screen wallet list.",
+  "@getPaidWalletHideOnHomeInfo": {
+    "description": "Subtitle describing what the hide-on-home toggle does"
+  },
   "getPaidDashboardTitle": "Get Paid",
   "@getPaidDashboardTitle": {
     "description": "Title of the Get Paid hub screen"

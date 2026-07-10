@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
+
 enum LightningAddressActivationStatus {
   loading,
   idle,
@@ -33,6 +35,13 @@ class LightningAddressActivationState {
   /// back (R2-D1b); the copy claims autosweep only on this positive signal.
   final bool autoSweepConfirmed;
 
+  /// The reserved Lightning Address wallet's current behavior (auto-sweep /
+  /// hide-on-home), resolved read-only. Null until wallet 101 exists.
+  final GetPaidWalletBehavior? walletBehavior;
+
+  /// True while a wallet-behavior toggle write is in flight.
+  final bool walletBehaviorSaving;
+
   const LightningAddressActivationState({
     this.status = LightningAddressActivationStatus.loading,
     this.failure,
@@ -40,6 +49,8 @@ class LightningAddressActivationState {
     this.registeredAddress,
     this.localSetupRetryable = false,
     this.autoSweepConfirmed = false,
+    this.walletBehavior,
+    this.walletBehaviorSaving = false,
   });
 
   bool get isLoading => status == LightningAddressActivationStatus.loading;
@@ -62,8 +73,11 @@ class LightningAddressActivationState {
     String? registeredAddress,
     bool? localSetupRetryable,
     bool? autoSweepConfirmed,
+    GetPaidWalletBehavior? walletBehavior,
+    bool? walletBehaviorSaving,
     bool clearFailure = false,
     bool clearRegisteredAddress = false,
+    bool clearWalletBehavior = false,
   }) {
     return LightningAddressActivationState(
       status: status ?? this.status,
@@ -74,6 +88,10 @@ class LightningAddressActivationState {
           : registeredAddress ?? this.registeredAddress,
       localSetupRetryable: localSetupRetryable ?? this.localSetupRetryable,
       autoSweepConfirmed: autoSweepConfirmed ?? this.autoSweepConfirmed,
+      walletBehavior: clearWalletBehavior
+          ? null
+          : walletBehavior ?? this.walletBehavior,
+      walletBehaviorSaving: walletBehaviorSaving ?? this.walletBehaviorSaving,
     );
   }
 }

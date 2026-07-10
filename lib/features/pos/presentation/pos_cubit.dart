@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/resolve_pos_identity_usecase.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_state.dart';
@@ -14,10 +16,16 @@ class PosCubit extends Cubit<PosState> {
 
   final PosFacade _facade;
   final LightningAddressFacade _lightningAddress;
+  final GetGetPaidWalletBehaviorsUsecase _getWalletBehaviors;
+  final UpdateWalletBehaviorUsecase _updateWalletBehavior;
   int _operationId = 0;
 
-  PosCubit({required this._facade, required this._lightningAddress})
-    : super(const PosState());
+  PosCubit({
+    required this._facade,
+    required this._lightningAddress,
+    required this._getWalletBehaviors,
+    required this._updateWalletBehavior,
+  }) : super(const PosState());
 
   Future<void> load() async {
     if (state.submitting) return;
@@ -30,6 +38,11 @@ class PosCubit extends Cubit<PosState> {
       ),
     );
 
+    // Resolve the reserved wallet locally FIRST (label-match, no server) so the
+    // behavior controls stay reachable even when the server load below fails.
+    final walletBehavior = await _resolveWalletBehavior();
+    if (_isStale(op)) return;
+
     final String nym;
     try {
       final status = await _lightningAddress.lookupWalletOwnedRegistration();
@@ -37,13 +50,21 @@ class PosCubit extends Cubit<PosState> {
     } on LightningAddressException catch (e) {
       if (_isStale(op)) return;
       if (e.code == _nymNotFoundCode) {
-        emit(state.copyWith(status: PosStatus.needsNym));
+        emit(
+          state.copyWith(
+            status: PosStatus.needsNym,
+            walletBehavior: walletBehavior,
+            clearWalletBehavior: walletBehavior == null,
+          ),
+        );
         return;
       }
       emit(
         state.copyWith(
           status: PosStatus.loadFailed,
           failure: posExceptionFromLightningAddress(e),
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
@@ -54,6 +75,8 @@ class PosCubit extends Cubit<PosState> {
         state.copyWith(
           status: PosStatus.loadFailed,
           failure: const PosException.unexpected(),
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
@@ -85,6 +108,8 @@ class PosCubit extends Cubit<PosState> {
           status: PosStatus.loadFailed,
           nym: nym,
           failure: _asPosException(e),
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
@@ -102,6 +127,8 @@ class PosCubit extends Cubit<PosState> {
           label: '',
           clearTerminal: true,
           clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
@@ -117,6 +144,8 @@ class PosCubit extends Cubit<PosState> {
         label: terminal.label,
         displayCurrency: terminal.displayCurrency,
         clearFailure: true,
+        walletBehavior: walletBehavior,
+        clearWalletBehavior: walletBehavior == null,
       ),
     );
   }
@@ -209,6 +238,9 @@ class PosCubit extends Cubit<PosState> {
     try {
       final terminal = await _facade.provision(command);
       if (isClosed || _isStale(op)) return;
+      // Provisioning creates wallet 103, so refresh its resolved behavior.
+      final walletBehavior = await _resolveWalletBehavior();
+      if (isClosed || _isStale(op)) return;
       emit(
         state.copyWith(
           submitting: false,
@@ -217,6 +249,8 @@ class PosCubit extends Cubit<PosState> {
           label: terminal.label,
           displayCurrency: terminal.displayCurrency,
           clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
         ),
       );
     } on PosProvisionException catch (e) {
@@ -248,6 +282,72 @@ class PosCubit extends Cubit<PosState> {
       log.warning('Point of Sale archive failed', error: e, trace: stack);
       if (isClosed || _isStale(op)) return;
       emit(state.copyWith(submitting: false, failure: _asPosException(e)));
+    }
+  }
+
+  /// Updates the reserved wallet's auto-sweep / hide-on-home behavior with the
+  /// same optimistic-emit / revert-on-failure / saving-guard posture BTCPay
+  /// uses (`BtcpayPairingCubit.updateWalletBehavior`).
+  Future<void> updateWalletBehavior({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {
+    if (state.walletBehaviorSaving) return;
+    final previous = state.walletBehavior;
+    if (previous == null || previous.walletId != walletId) return;
+    emit(
+      state.copyWith(
+        walletBehavior: previous.copyWith(
+          hideOnHome: hideOnHome,
+          autoSweepEnabled: autoSweepEnabled,
+        ),
+        walletBehaviorSaving: true,
+      ),
+    );
+    try {
+      await _updateWalletBehavior.execute(
+        walletId: walletId,
+        hideOnHome: hideOnHome,
+        autoSweepEnabled: autoSweepEnabled,
+      );
+      if (isClosed) return;
+      final refreshed = await _resolveWalletBehavior();
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          walletBehavior: refreshed,
+          clearWalletBehavior: refreshed == null,
+          walletBehaviorSaving: false,
+        ),
+      );
+    } catch (e, stack) {
+      log.warning(
+        'Point of Sale wallet behavior update failed',
+        error: e,
+        trace: stack,
+      );
+      if (isClosed) return;
+      emit(
+        state.copyWith(walletBehavior: previous, walletBehaviorSaving: false),
+      );
+    }
+  }
+
+  // Read-only resolution of the reserved wallet (103); null until it exists.
+  Future<GetPaidWalletBehavior?> _resolveWalletBehavior() async {
+    try {
+      final behaviors = await _getWalletBehaviors.execute(
+        only: GetPaidWalletProduct.pos,
+      );
+      return behaviors.isEmpty ? null : behaviors.first;
+    } catch (e, stack) {
+      log.warning(
+        'Failed to load Point of Sale wallet behavior',
+        error: e,
+        trace: stack,
+      );
+      return null;
     }
   }
 

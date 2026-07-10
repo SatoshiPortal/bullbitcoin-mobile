@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/activate_wallet_owned_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_receive_readiness_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_cubit.dart';
@@ -12,12 +14,21 @@ void main() {
   group('LightningAddressActivationCubit', () {
     late _FakeActivateWalletOwnedLightningAddressUsecase activate;
     late _FakeLookupLightningAddressReceiveReadinessUsecase lookup;
+    late _FakeGetGetPaidWalletBehaviorsUsecase walletBehaviors;
+    late _FakeUpdateWalletBehaviorUsecase updateWalletBehavior;
     late LightningAddressActivationCubit cubit;
 
     setUp(() {
       activate = _FakeActivateWalletOwnedLightningAddressUsecase();
       lookup = _FakeLookupLightningAddressReceiveReadinessUsecase();
-      cubit = LightningAddressActivationCubit(activate, lookup);
+      walletBehaviors = _FakeGetGetPaidWalletBehaviorsUsecase();
+      updateWalletBehavior = _FakeUpdateWalletBehaviorUsecase();
+      cubit = LightningAddressActivationCubit(
+        activate,
+        lookup,
+        walletBehaviors,
+        updateWalletBehavior,
+      );
     });
 
     tearDown(() => cubit.close());
@@ -101,6 +112,23 @@ void main() {
 
       expect(cubit.state.status, LightningAddressActivationStatus.idle);
       expect(cubit.state.failure, isNull);
+    });
+
+    test('a failed lookup still exposes the local wallet behavior', () async {
+      lookup.error = Exception('lookup offline');
+      walletBehaviors.behaviors = const [
+        GetPaidWalletBehavior(
+          product: GetPaidWalletProduct.lightningAddress,
+          walletId: 'wallet-101',
+          hideOnHome: true,
+          autoSweepEnabled: true,
+        ),
+      ];
+
+      await cubit.load();
+
+      expect(cubit.state.status, LightningAddressActivationStatus.failure);
+      expect(cubit.state.walletBehavior?.walletId, 'wallet-101');
     });
 
     test(
@@ -365,6 +393,28 @@ void main() {
       expect(cubit.state.registeredAddress, 'alice@example.invalid');
     });
   });
+}
+
+class _FakeGetGetPaidWalletBehaviorsUsecase
+    implements GetGetPaidWalletBehaviorsUsecase {
+  List<GetPaidWalletBehavior> behaviors = const [];
+
+  @override
+  Future<List<GetPaidWalletBehavior>> execute({
+    GetPaidWalletProduct? only,
+  }) async {
+    if (only == null) return behaviors;
+    return behaviors.where((b) => b.product == only).toList();
+  }
+}
+
+class _FakeUpdateWalletBehaviorUsecase implements UpdateWalletBehaviorUsecase {
+  @override
+  Future<void> execute({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {}
 }
 
 class _FakeActivateWalletOwnedLightningAddressUsecase

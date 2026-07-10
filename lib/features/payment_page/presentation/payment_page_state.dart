@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 
 /// The default display currency when the live supported-currencies list cannot
@@ -59,6 +60,13 @@ class PaymentPageState {
   /// submit.
   final PaymentPageField? invalidField;
 
+  /// The reserved Payment Page wallet's current behavior (auto-sweep /
+  /// hide-on-home), resolved read-only. Null until wallet 102 exists.
+  final GetPaidWalletBehavior? walletBehavior;
+
+  /// True while a wallet-behavior toggle write is in flight.
+  final bool walletBehaviorSaving;
+
   const PaymentPageState({
     this.status = PaymentPageStatus.loading,
     this.submitting = false,
@@ -76,6 +84,8 @@ class PaymentPageState {
     this.currenciesUnavailable = false,
     this.nymDraft = '',
     this.invalidField,
+    this.walletBehavior,
+    this.walletBehaviorSaving = false,
   });
 
   bool get isLoading => status == PaymentPageStatus.loading;
@@ -111,9 +121,12 @@ class PaymentPageState {
     bool? currenciesUnavailable,
     String? nymDraft,
     PaymentPageField? invalidField,
+    GetPaidWalletBehavior? walletBehavior,
+    bool? walletBehaviorSaving,
     bool clearFailure = false,
     bool clearPage = false,
     bool clearInvalidField = false,
+    bool clearWalletBehavior = false,
   }) {
     return PaymentPageState(
       status: status ?? this.status,
@@ -135,6 +148,10 @@ class PaymentPageState {
       invalidField: clearInvalidField
           ? null
           : invalidField ?? this.invalidField,
+      walletBehavior: clearWalletBehavior
+          ? null
+          : walletBehavior ?? this.walletBehavior,
+      walletBehaviorSaving: walletBehaviorSaving ?? this.walletBehaviorSaving,
     );
   }
 }

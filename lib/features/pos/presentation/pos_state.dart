@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 
 /// The default display currency when the live supported-currencies list cannot
@@ -55,6 +56,13 @@ class PosState {
   /// provision.
   final PosField? invalidField;
 
+  /// The reserved POS wallet's current behavior (auto-sweep / hide-on-home),
+  /// resolved read-only. Null until wallet 103 exists.
+  final GetPaidWalletBehavior? walletBehavior;
+
+  /// True while a wallet-behavior toggle write is in flight.
+  final bool walletBehaviorSaving;
+
   const PosState({
     this.status = PosStatus.loading,
     this.submitting = false,
@@ -68,6 +76,8 @@ class PosState {
     this.currenciesUnavailable = false,
     this.nymDraft = '',
     this.invalidField,
+    this.walletBehavior,
+    this.walletBehaviorSaving = false,
   });
 
   bool get isLoading => status == PosStatus.loading;
@@ -93,9 +103,12 @@ class PosState {
     bool? currenciesUnavailable,
     String? nymDraft,
     PosField? invalidField,
+    GetPaidWalletBehavior? walletBehavior,
+    bool? walletBehaviorSaving,
     bool clearFailure = false,
     bool clearTerminal = false,
     bool clearInvalidField = false,
+    bool clearWalletBehavior = false,
   }) {
     return PosState(
       status: status ?? this.status,
@@ -113,6 +126,10 @@ class PosState {
       invalidField: clearInvalidField
           ? null
           : invalidField ?? this.invalidField,
+      walletBehavior: clearWalletBehavior
+          ? null
+          : walletBehavior ?? this.walletBehavior,
+      walletBehaviorSaving: walletBehaviorSaving ?? this.walletBehaviorSaving,
     );
   }
 }

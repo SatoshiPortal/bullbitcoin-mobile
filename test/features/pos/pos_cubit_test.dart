@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
+import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_cubit.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_state.dart';
@@ -9,8 +11,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late _FakeLightningAddressFacade la;
   late _FakePosFacade facade;
+  late _FakeGetGetPaidWalletBehaviorsUsecase walletBehaviors;
+  late _FakeUpdateWalletBehaviorUsecase updateWalletBehavior;
 
-  PosCubit build() => PosCubit(facade: facade, lightningAddress: la);
+  PosCubit build() => PosCubit(
+    facade: facade,
+    lightningAddress: la,
+    getWalletBehaviors: walletBehaviors,
+    updateWalletBehavior: updateWalletBehavior,
+  );
 
   PosTerminal buildTerminal({bool archived = false}) => PosTerminal(
     nym: 'alice',
@@ -24,6 +33,8 @@ void main() {
   setUp(() {
     la = _FakeLightningAddressFacade();
     facade = _FakePosFacade();
+    walletBehaviors = _FakeGetGetPaidWalletBehaviorsUsecase();
+    updateWalletBehavior = _FakeUpdateWalletBehaviorUsecase();
     facade.currencies = const [
       DisplayCurrency(code: 'CAD', precision: 2),
       DisplayCurrency(code: 'USD', precision: 2),
@@ -92,6 +103,30 @@ void main() {
 
       expect(cubit.state.status, PosStatus.loadFailed);
     });
+
+    test(
+      'server load failure still exposes the local wallet behavior',
+      () async {
+        la.lookupError = const LightningAddressServerRejectedRequestException(
+          code: 'ServiceUnavailable',
+          retryable: true,
+        );
+        walletBehaviors.behaviors = const [
+          GetPaidWalletBehavior(
+            product: GetPaidWalletProduct.pos,
+            walletId: 'wallet-103',
+            hideOnHome: true,
+            autoSweepEnabled: true,
+          ),
+        ];
+        final cubit = build();
+
+        await cubit.load();
+
+        expect(cubit.state.status, PosStatus.loadFailed);
+        expect(cubit.state.walletBehavior?.walletId, 'wallet-103');
+      },
+    );
 
     test(
       'currency fetch failure degrades but still reaches the form',
@@ -208,6 +243,28 @@ void main() {
       expect(facade.provisionCallCount, 1);
     });
   });
+}
+
+class _FakeGetGetPaidWalletBehaviorsUsecase
+    implements GetGetPaidWalletBehaviorsUsecase {
+  List<GetPaidWalletBehavior> behaviors = const [];
+
+  @override
+  Future<List<GetPaidWalletBehavior>> execute({
+    GetPaidWalletProduct? only,
+  }) async {
+    if (only == null) return behaviors;
+    return behaviors.where((b) => b.product == only).toList();
+  }
+}
+
+class _FakeUpdateWalletBehaviorUsecase implements UpdateWalletBehaviorUsecase {
+  @override
+  Future<void> execute({
+    required String walletId,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) async {}
 }
 
 class _FakeLightningAddressFacade implements LightningAddressFacade {
