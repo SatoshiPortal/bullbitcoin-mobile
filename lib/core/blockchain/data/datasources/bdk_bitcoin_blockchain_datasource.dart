@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 
 class BdkBitcoinBlockchainDatasource {
   const BdkBitcoinBlockchainDatasource();

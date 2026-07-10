@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Kartta",
   "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos:",
   "backupWarningLoseReasonLostPhone": "kadotat puhelimesi",
   "backupWarningLoseReasonDeletedApp": "poistat sovelluksen",

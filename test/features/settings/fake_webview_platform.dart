@@ -3,14 +3,20 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 class FakeWebViewPlatform extends WebViewPlatform {
   /// Last created navigation delegate, so tests can drive its callbacks
-  /// (e.g. simulate a main-frame load failure).
+  /// (e.g. simulate a main-frame load failure or a finished page load).
   static FakePlatformNavigationDelegate? lastNavigationDelegate;
+
+  /// Last created controller, so tests can inspect the JavaScript primed into
+  /// the page and whether a reload was requested.
+  static FakePlatformWebViewController? lastController;
 
   @override
   PlatformWebViewController createPlatformWebViewController(
     PlatformWebViewControllerCreationParams params,
   ) {
-    return FakePlatformWebViewController(params);
+    final controller = FakePlatformWebViewController(params);
+    lastController = controller;
+    return controller;
   }
 
   @override
@@ -33,11 +39,27 @@ class FakeWebViewPlatform extends WebViewPlatform {
 class FakePlatformWebViewController extends PlatformWebViewController {
   FakePlatformWebViewController(super.params) : super.implementation();
 
+  /// JavaScript strings run via [runJavaScript], in order.
+  final List<String> ranJavaScript = [];
+
+  /// Number of times [reload] was requested.
+  int reloadCount = 0;
+
   @override
   Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) async {}
 
   @override
   Future<void> loadRequest(LoadRequestParams params) async {}
+
+  @override
+  Future<void> runJavaScript(String javaScript) async {
+    ranJavaScript.add(javaScript);
+  }
+
+  @override
+  Future<void> reload() async {
+    reloadCount++;
+  }
 
   @override
   Future<bool> canGoBack() async => false;
@@ -61,9 +83,12 @@ class FakePlatformNavigationDelegate extends PlatformNavigationDelegate {
   FakePlatformNavigationDelegate(super.params) : super.implementation();
 
   WebResourceErrorCallback? webResourceErrorCallback;
+  PageEventCallback? pageFinishedCallback;
 
   @override
-  Future<void> setOnPageFinished(PageEventCallback onPageFinished) async {}
+  Future<void> setOnPageFinished(PageEventCallback onPageFinished) async {
+    pageFinishedCallback = onPageFinished;
+  }
 
   @override
   Future<void> setOnNavigationRequest(

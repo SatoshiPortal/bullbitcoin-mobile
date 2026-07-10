@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
   "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
   "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",

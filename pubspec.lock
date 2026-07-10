@@ -98,14 +98,14 @@ packages:
     source: hosted
     version: "2.0.1"
   bdk_dart:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
-      ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
-      resolved-ref: a3873c06f0892cb5ea2549ad5368951a9df57f00
-      url: "https://github.com/ethicnology/bdk-dart"
+      ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
+      resolved-ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
+      url: "https://github.com/bitcoindevkit/bdk-dart"
     source: git
-    version: "1.0.0-rc.2"
+    version: "1.0.0-rc.3"
   bech32:
     dependency: transitive
     description:
@@ -158,8 +158,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
-      resolved-ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
+      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
+      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -216,8 +216,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
-      resolved-ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
+      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
+      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -305,8 +305,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
-      resolved-ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
+      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
+      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1755,8 +1755,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
-      resolved-ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
+      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
+      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1772,8 +1772,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
-      resolved-ref: "39a964bdd1296a32fde514ffa450522c3bac576b"
+      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
+      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"

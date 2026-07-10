@@ -10,6 +10,7 @@ void main() {
   setUp(() {
     WebViewPlatform.instance = FakeWebViewPlatform();
     FakeWebViewPlatform.lastNavigationDelegate = null;
+    FakeWebViewPlatform.lastController = null;
   });
 
   group('isBtcMapUrl', () {
@@ -28,11 +29,12 @@ void main() {
     });
   });
 
-  Widget buildTestWidget() {
-    return const MaterialApp(
+  Widget buildTestWidget({Brightness? brightness}) {
+    return MaterialApp(
+      theme: brightness == null ? null : ThemeData(brightness: brightness),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: BtcMapScreen(),
+      home: const BtcMapScreen(),
     );
   }
 
@@ -44,6 +46,100 @@ void main() {
 
     expect(find.byType(WebViewWidget), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets(
+    'primes localStorage theme to dark and reloads when the app is dark',
+    (tester) async {
+      await tester.pumpWidget(buildTestWidget(brightness: Brightness.dark));
+      await tester.pump();
+
+      final controller = FakeWebViewPlatform.lastController!;
+      // Nothing primed until the first page load reports finished.
+      expect(controller.ranJavaScript, isEmpty);
+      expect(controller.reloadCount, 0);
+
+      FakeWebViewPlatform.lastNavigationDelegate!.pageFinishedCallback!(
+        'https://btcmap.org/map',
+      );
+      // Two pumps flush the async prime (runJavaScript then reload) and the
+      // rebuild; pumpAndSettle can't be used while the spinner animates.
+      await tester.pump();
+      await tester.pump();
+
+      expect(controller.ranJavaScript.single, contains("localStorage.theme"));
+      expect(controller.ranJavaScript.single, contains("'dark'"));
+      // The basemap is pinned to OpenFreeMap Dark, not left to btcmap's
+      // theme-derived default (which can pick the light basemap for a dark app).
+      expect(controller.ranJavaScript.single, contains("btcmap-next-basemap"));
+      expect(controller.ranJavaScript.single, contains("ofm-dark"));
+      expect(controller.reloadCount, 1);
+      // The reload keeps the loading overlay up until its own page-finished.
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // The reloaded page finishing clears the overlay and does not re-prime.
+      FakeWebViewPlatform.lastNavigationDelegate!.pageFinishedCallback!(
+        'https://btcmap.org/map',
+      );
+      await tester.pump();
+
+      expect(controller.ranJavaScript.length, 1);
+      expect(controller.reloadCount, 1);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    },
+  );
+
+  testWidgets('re-primes and reloads when the app theme changes while open', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildTestWidget(brightness: Brightness.dark));
+    await tester.pump();
+
+    final controller = FakeWebViewPlatform.lastController!;
+    // Initial load primes dark and reloads once.
+    FakeWebViewPlatform.lastNavigationDelegate!.pageFinishedCallback!(
+      'https://btcmap.org/map',
+    );
+    await tester.pump();
+    await tester.pump();
+    // The reload's own page-finished clears the initial-load overlay.
+    FakeWebViewPlatform.lastNavigationDelegate!.pageFinishedCallback!(
+      'https://btcmap.org/map',
+    );
+    await tester.pump();
+    expect(controller.ranJavaScript.single, contains("'dark'"));
+    expect(controller.reloadCount, 1);
+
+    // App theme flips to light while the screen stays mounted: the same
+    // controller must be re-primed to light and reloaded again. Pump past the
+    // MaterialApp AnimatedTheme (~200ms) so the resolved brightness crosses to
+    // light, then flush the async re-prime.
+    await tester.pumpWidget(buildTestWidget(brightness: Brightness.light));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump();
+
+    expect(controller.ranJavaScript.length, 2);
+    expect(controller.ranJavaScript.last, contains("'light'"));
+    expect(controller.ranJavaScript.last, contains("liberty"));
+    expect(controller.reloadCount, 2);
+  });
+
+  testWidgets('primes localStorage theme to light when the app is light', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildTestWidget(brightness: Brightness.light));
+    await tester.pump();
+
+    FakeWebViewPlatform.lastNavigationDelegate!.pageFinishedCallback!(
+      'https://btcmap.org/map',
+    );
+    await tester.pump();
+    await tester.pump();
+
+    final controller = FakeWebViewPlatform.lastController!;
+    expect(controller.ranJavaScript.single, contains("'light'"));
+    expect(controller.ranJavaScript.single, contains("liberty"));
+    expect(controller.reloadCount, 1);
   });
 
   testWidgets('shows an error state with retry on main-frame load failure', (
