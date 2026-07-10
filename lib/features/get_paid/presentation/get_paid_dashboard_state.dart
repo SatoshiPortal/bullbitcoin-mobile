@@ -10,19 +10,30 @@ import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 class GetPaidDashboardState {
   final bool isLoading;
   final String? lightningAddress;
+
+  /// True when the Lightning Address registration is ACTIVE. Decoupled from
+  /// [lightningAddress]: the address may be present while the registration is
+  /// inactive (subtitle shows the address; the status dot stays muted).
+  final bool lightningActive;
   final String? nym;
   final PaymentPage? paymentPage;
   final PosTerminal? posTerminal;
   final BtcpayConnection? btcpayConnection;
+
+  /// True when the user has a default wallet created — the Invoices product
+  /// issues payouts from the default wallet, so this gates its "Active" status.
+  final bool invoicesWalletReady;
   final String? error;
 
   const GetPaidDashboardState({
     this.isLoading = false,
     this.lightningAddress,
+    this.lightningActive = false,
     this.nym,
     this.paymentPage,
     this.posTerminal,
     this.btcpayConnection,
+    this.invoicesWalletReady = false,
     this.error,
   });
 
@@ -45,6 +56,7 @@ class GetPaidDashboardState {
     bool? isLoading,
     String? lightningAddress,
     bool clearLightningAddress = false,
+    bool? lightningActive,
     String? nym,
     bool clearNym = false,
     PaymentPage? paymentPage,
@@ -53,6 +65,7 @@ class GetPaidDashboardState {
     bool clearPos = false,
     BtcpayConnection? btcpayConnection,
     bool clearBtcpayConnection = false,
+    bool? invoicesWalletReady,
     String? error,
     bool clearError = false,
   }) {
@@ -61,12 +74,14 @@ class GetPaidDashboardState {
       lightningAddress: clearLightningAddress
           ? null
           : lightningAddress ?? this.lightningAddress,
+      lightningActive: lightningActive ?? this.lightningActive,
       nym: clearNym ? null : nym ?? this.nym,
       paymentPage: clearPaymentPage ? null : paymentPage ?? this.paymentPage,
       posTerminal: clearPos ? null : posTerminal ?? this.posTerminal,
       btcpayConnection: clearBtcpayConnection
           ? null
           : btcpayConnection ?? this.btcpayConnection,
+      invoicesWalletReady: invoicesWalletReady ?? this.invoicesWalletReady,
       error: clearError ? null : error ?? this.error,
     );
   }

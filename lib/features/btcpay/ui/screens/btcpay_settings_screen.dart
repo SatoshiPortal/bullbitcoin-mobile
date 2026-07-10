@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/btcpay/presentation/btcpay_failure_l10n.dart';
 import 'package:bb_mobile/features/btcpay/presentation/btcpay_pairing_cubit.dart';
@@ -66,7 +68,17 @@ class _BtcpaySettingsScreenState extends State<BtcpaySettingsScreen> {
               child: state.isSuccess
                   ? const _BtcpayPairingSuccessView()
                   : state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LoadingBoxContent(height: 72),
+                          LoadingLineContent(),
+                          LoadingLineContent(width: 220),
+                        ],
+                      ),
+                    )
                   : state.shouldShowConnection
                   ? _BtcpayConnectionView(
                       connection: state.connection!,

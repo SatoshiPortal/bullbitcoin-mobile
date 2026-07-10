@@ -109,12 +109,14 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
       GetPaidSlotCard(
         icon: Icons.alternate_email,
         title: loc.getPaidDashboardLightningAddressTitle,
+        // Show the address as the subtitle whenever one is present, regardless
+        // of the active status (the status dot reflects `active` separately).
         subtitle: state.hasLightningAddress
             ? state.lightningAddress!
             : loc.getPaidDashboardLightningAddressSubtitle,
-        statusLabel:
-            state.hasLightningAddress ? loc.getPaidDashboardActive : null,
-        statusActive: true,
+        // Active green when the registration itself is ACTIVE.
+        statusLabel: state.lightningActive ? loc.getPaidDashboardActive : null,
+        statusActive: state.lightningActive,
         onTap: () => _open(LightningAddressRoute.lightningAddressSettings.name),
       ),
       const Gap(12),
@@ -122,13 +124,10 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.storefront,
         title: loc.getPaidDashboardDonationPageTitle,
         subtitle: page?.publicUrl ?? loc.getPaidDashboardDonationPageSubtitle,
-        // No chip when unset; Active when published, else Not published.
-        statusLabel: page == null
-            ? null
-            : page.enabled
-                ? loc.getPaidDashboardActive
-                : loc.getPaidDashboardNotPublished,
-        statusActive: page?.enabled ?? false,
+        // Active green when a (non-archived) payment page exists.
+        statusLabel:
+            state.hasPaymentPage ? loc.getPaidDashboardActive : null,
+        statusActive: state.hasPaymentPage,
         onTap: () => _open(PaymentPageRoute.paymentPageSettings.name),
       ),
       const Gap(12),
@@ -136,12 +135,9 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.point_of_sale,
         title: loc.getPaidDashboardPosTitle,
         subtitle: pos?.terminalUrl ?? loc.getPaidDashboardPosSubtitle,
-        statusLabel: pos == null
-            ? null
-            : pos.enabled
-                ? loc.getPaidDashboardActive
-                : loc.getPaidDashboardNotPublished,
-        statusActive: pos?.enabled ?? false,
+        // Active green when a (non-archived) POS terminal exists.
+        statusLabel: state.hasPos ? loc.getPaidDashboardActive : null,
+        statusActive: state.hasPos,
         onTap: () => _open(PosRoute.posSettings.name),
       ),
       const Gap(12),
@@ -149,17 +145,25 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.receipt_long,
         title: loc.getPaidDashboardInvoicesTitle,
         subtitle: loc.getPaidDashboardInvoicesSubtitle,
+        // Active green once the user's default wallet is created (invoices pay
+        // out from the default wallet).
+        statusLabel:
+            state.invoicesWalletReady ? loc.getPaidDashboardActive : null,
+        statusActive: state.invoicesWalletReady,
         onTap: () => _open(InvoicesRoute.list.name),
       ),
       const Gap(12),
       GetPaidSlotCard(
         icon: Icons.hub,
         title: loc.getPaidDashboardBtcpayTitle,
+        // No store-name field on the connection; the server URL is the most
+        // human-readable identifier available.
         subtitle: state.btcpayConnection?.serverUrl ??
             loc.getPaidDashboardBtcpaySubtitle,
+        // Active green when a BTCPay connection exists.
         statusLabel:
             state.hasBtcpayConnection ? loc.getPaidDashboardActive : null,
-        statusActive: true,
+        statusActive: state.hasBtcpayConnection,
         onTap: () => _open(BtcpayRoute.btcpaySettings.name),
       ),
     ];

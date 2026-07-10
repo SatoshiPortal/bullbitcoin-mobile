@@ -1,10 +1,17 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockGetWallets extends Mock implements GetWalletsUsecase {}
+
+class _MockWallet extends Mock implements Wallet {}
 
 // The public facades are callback-injected, so the tests wire real facade
 // instances to plain closures — no mocking framework needed.
@@ -93,17 +100,34 @@ BtcpayConnection _connection() {
   );
 }
 
+GetWalletsUsecase _getWallets({bool hasDefaultWallet = false}) {
+  final usecase = _MockGetWallets();
+  when(
+    () => usecase.execute(
+      onlyDefaults: any(named: 'onlyDefaults'),
+      onlyBitcoin: any(named: 'onlyBitcoin'),
+      onlyLiquid: any(named: 'onlyLiquid'),
+      sync: any(named: 'sync'),
+    ),
+  ).thenAnswer(
+    (_) async => hasDefaultWallet ? [_MockWallet()] : <Wallet>[],
+  );
+  return usecase;
+}
+
 GetPaidDashboardCubit _cubit({
   Future<LightningAddressStatus> Function()? lookup,
   Future<PaymentPage?> Function({required String nym})? pageFind,
   Future<PosTerminal?> Function({required String nym})? posFind,
   Future<BtcpayConnection?> Function()? connection,
+  bool hasDefaultWallet = false,
 }) {
   return GetPaidDashboardCubit(
     lightningAddress: _laFacade(lookup ?? () async => _status()),
     paymentPage: _pageFacade(pageFind ?? ({required String nym}) async => null),
     pos: _posFacade(posFind ?? ({required String nym}) async => null),
     btcpay: _btcpayFacade(connection ?? () async => null),
+    getWallets: _getWallets(hasDefaultWallet: hasDefaultWallet),
   );
 }
 
@@ -132,7 +156,39 @@ void main() {
 
     expect(cubit.state.hasLightningAddress, isTrue);
     expect(cubit.state.lightningAddress, 'satoshi@bull.money');
+    expect(cubit.state.lightningActive, isTrue);
     expect(cubit.state.nym, 'satoshi');
+    await cubit.close();
+  });
+
+  test('inactive registration keeps the address but is not active', () async {
+    final cubit = _cubit(
+      lookup: () async =>
+          _status(active: false, address: 'satoshi@bull.money'),
+    );
+
+    await cubit.refresh();
+
+    expect(cubit.state.lightningAddress, 'satoshi@bull.money');
+    expect(cubit.state.lightningActive, isFalse);
+    await cubit.close();
+  });
+
+  test('invoices tile is ready when a default wallet exists', () async {
+    final cubit = _cubit(hasDefaultWallet: true);
+
+    await cubit.refresh();
+
+    expect(cubit.state.invoicesWalletReady, isTrue);
+    await cubit.close();
+  });
+
+  test('invoices tile is not ready without a default wallet', () async {
+    final cubit = _cubit();
+
+    await cubit.refresh();
+
+    expect(cubit.state.invoicesWalletReady, isFalse);
     await cubit.close();
   });
 

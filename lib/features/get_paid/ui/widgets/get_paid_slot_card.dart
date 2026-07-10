@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/material.dart' show BoxDecoration, BoxShape, Container, Icons;
 
 /// A single Get Paid product row. Domain-agnostic feature composite (the
 /// `UtxoTile` precedent): it lives in the feature but is built entirely out of
@@ -43,12 +43,31 @@ class GetPaidSlotCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: context.bullText.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colors.text,
-                  ),
+                Row(
+                  children: [
+                    // Green "active" dot — same recipe as the electrum server
+                    // list item's online indicator. Rendered only when active.
+                    if (statusActive) ...[
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colors.success,
+                        ),
+                      ),
+                      const Gap(8),
+                    ],
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: context.bullText.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colors.text,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const Gap(4),
                 Text(

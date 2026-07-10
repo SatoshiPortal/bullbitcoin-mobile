@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
@@ -20,6 +21,7 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
   final PaymentPageFacade _paymentPage;
   final PosFacade _pos;
   final BtcpayFacade _btcpay;
+  final GetWalletsUsecase _getWallets;
   int _refreshGeneration = 0;
 
   GetPaidDashboardCubit({
@@ -27,6 +29,7 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     required this._paymentPage,
     required this._pos,
     required this._btcpay,
+    required this._getWallets,
   }) : super(const GetPaidDashboardState());
 
   Future<void> refresh() async {
@@ -34,10 +37,12 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     emit(state.copyWith(isLoading: true, clearError: true));
 
     String? lightningAddress;
+    bool lightningActive = false;
     String? nym;
     PaymentPage? paymentPage;
     PosTerminal? posTerminal;
     BtcpayConnection? btcpayConnection;
+    final invoicesWalletReady = await _hasDefaultWallet();
 
     try {
       btcpayConnection = await _btcpay.connection();
@@ -45,9 +50,12 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       final registration = await _lightningAddress
           .lookupWalletOwnedRegistration();
       nym = registration.nym.isEmpty ? null : registration.nym;
-      lightningAddress = registration.active
-          ? registration.lightningAddress
-          : null;
+      lightningActive = registration.active;
+      // Decoupled from active: keep the address whenever the registration
+      // carries one, so the subtitle can show it even while inactive.
+      lightningAddress = (registration.lightningAddress?.isEmpty ?? true)
+          ? null
+          : registration.lightningAddress;
 
       if (nym != null) {
         if (_isStale(generation)) return;
@@ -62,10 +70,12 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       if (_isStale(generation)) return;
       emit(_snapshot(
         lightningAddress: lightningAddress,
+        lightningActive: lightningActive,
         nym: nym,
         paymentPage: paymentPage,
         posTerminal: posTerminal,
         btcpayConnection: btcpayConnection,
+        invoicesWalletReady: invoicesWalletReady,
       ));
     } on Exception catch (e, stack) {
       if (_isStale(generation)) return;
@@ -74,27 +84,45 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       // error so the screen can toast it.
       emit(_snapshot(
         lightningAddress: lightningAddress,
+        lightningActive: lightningActive,
         nym: nym,
         paymentPage: paymentPage,
         posTerminal: posTerminal,
         btcpayConnection: btcpayConnection,
+        invoicesWalletReady: invoicesWalletReady,
         error: 'Something went wrong. Please try again.',
       ));
     }
   }
 
+  /// Whether the user has at least one default wallet — the Invoices product
+  /// pays out from the default wallet, mirroring [CreateInvoiceUsecase]'s
+  /// `onlyDefaults: true` resolution. Never throws: a missing-wallet failure
+  /// simply means "not ready", and it must not abort the dashboard refresh.
+  Future<bool> _hasDefaultWallet() async {
+    try {
+      final wallets = await _getWallets.execute(onlyDefaults: true);
+      return wallets.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   GetPaidDashboardState _snapshot({
     required String? lightningAddress,
+    required bool lightningActive,
     required String? nym,
     required PaymentPage? paymentPage,
     required PosTerminal? posTerminal,
     required BtcpayConnection? btcpayConnection,
+    required bool invoicesWalletReady,
     String? error,
   }) {
     return state.copyWith(
       isLoading: false,
       lightningAddress: lightningAddress,
       clearLightningAddress: lightningAddress == null,
+      lightningActive: lightningActive,
       nym: nym,
       clearNym: nym == null,
       paymentPage: paymentPage,
@@ -103,6 +131,7 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       clearPos: posTerminal == null,
       btcpayConnection: btcpayConnection,
       clearBtcpayConnection: btcpayConnection == null,
+      invoicesWalletReady: invoicesWalletReady,
       error: error,
       clearError: error == null,
     );

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
@@ -15,6 +16,7 @@ class GetPaidLocator {
         paymentPage: locator<PaymentPageFacade>(),
         pos: locator<PosFacade>(),
         btcpay: locator<BtcpayFacade>(),
+        getWallets: locator<GetWalletsUsecase>(),
       ),
     );
   }
