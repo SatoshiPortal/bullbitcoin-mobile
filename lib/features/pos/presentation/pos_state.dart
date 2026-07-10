@@ -50,6 +50,11 @@ class PosState {
   /// The DG-P6 choose-a-name input.
   final String nymDraft;
 
+  /// The field flagged by the last provision-time validation, for per-field
+  /// highlighting (`errorText`). Cleared when that field is edited or on a new
+  /// provision.
+  final PosField? invalidField;
+
   const PosState({
     this.status = PosStatus.loading,
     this.submitting = false,
@@ -62,6 +67,7 @@ class PosState {
     this.currencies = const [],
     this.currenciesUnavailable = false,
     this.nymDraft = '',
+    this.invalidField,
   });
 
   bool get isLoading => status == PosStatus.loading;
@@ -86,8 +92,10 @@ class PosState {
     List<DisplayCurrency>? currencies,
     bool? currenciesUnavailable,
     String? nymDraft,
+    PosField? invalidField,
     bool clearFailure = false,
     bool clearTerminal = false,
+    bool clearInvalidField = false,
   }) {
     return PosState(
       status: status ?? this.status,
@@ -102,6 +110,7 @@ class PosState {
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
       nymDraft: nymDraft ?? this.nymDraft,
+      invalidField: clearInvalidField ? null : invalidField ?? this.invalidField,
     );
   }
 }

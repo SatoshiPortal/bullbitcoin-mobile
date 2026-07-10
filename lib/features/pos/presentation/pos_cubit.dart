@@ -140,11 +140,21 @@ class PosCubit extends Cubit<PosState> {
   void nymDraftChanged(String value) =>
       emit(state.copyWith(nymDraft: value, clearFailure: true));
 
-  void labelChanged(String value) =>
-      emit(state.copyWith(label: value, clearFailure: true));
+  void labelChanged(String value) => emit(
+    state.copyWith(
+      label: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PosField.label,
+    ),
+  );
 
-  void displayCurrencyChanged(String value) =>
-      emit(state.copyWith(displayCurrency: value, clearFailure: true));
+  void displayCurrencyChanged(String value) => emit(
+    state.copyWith(
+      displayCurrency: value,
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PosField.displayCurrency,
+    ),
+  );
 
   /// DG-P6: register the nym (and wallet 101) through the shared Lightning
   /// Address facade, then reload into the create form.
@@ -171,6 +181,7 @@ class PosCubit extends Cubit<PosState> {
       emit(
         state.copyWith(
           failure: PosException.invalidInput(code: invalidField.name),
+          invalidField: invalidField,
         ),
       );
       return;
@@ -181,6 +192,7 @@ class PosCubit extends Cubit<PosState> {
       state.copyWith(
         submitting: true,
         clearFailure: true,
+        clearInvalidField: true,
         submissionUncertain: false,
       ),
     );

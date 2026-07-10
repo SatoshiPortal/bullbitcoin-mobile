@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/pos/domain/pos_validation.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_cubit.dart';
@@ -77,7 +79,17 @@ class _PosProvisioningScreenState extends State<PosProvisioningScreen> {
   Widget _body(BuildContext context, PosState state) {
     final cubit = context.read<PosCubit>();
     return switch (state.status) {
-      PosStatus.loading => const Center(child: CircularProgressIndicator()),
+      PosStatus.loading => const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LoadingBoxContent(height: 72),
+            LoadingLineContent(),
+            LoadingLineContent(width: 220),
+          ],
+        ),
+      ),
       PosStatus.needsNym => _needsNymView(context, state, cubit),
       PosStatus.loadFailed => _loadFailedView(context, cubit),
       PosStatus.archived => _archivedView(context, state, cubit),
@@ -199,6 +211,9 @@ class _PosProvisioningScreenState extends State<PosProvisioningScreen> {
             border: const OutlineInputBorder(),
             labelText: context.loc.posLabelFieldLabel,
             hintText: context.loc.posLabelFieldHint,
+            errorText: state.invalidField == PosField.label
+                ? context.loc.posLabelError
+                : null,
             counterText: context.loc.posByteCounter(
               posByteLength(state.label),
               posLabelMaxBytes,
@@ -219,7 +234,9 @@ class _PosProvisioningScreenState extends State<PosProvisioningScreen> {
               ? context.loc.posCreateButton
               : context.loc.posSaveButton,
           onPressed: () => _provision(cubit),
-          disabled: !state.canSubmit,
+          // Always tappable: provision() validates on tap and surfaces the
+          // specific invalid field, rather than silently disabling.
+          disabled: state.submitting,
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
         ),
@@ -268,6 +285,9 @@ class _PosProvisioningScreenState extends State<PosProvisioningScreen> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: context.loc.posCurrencyLabel,
+        errorText: state.invalidField == PosField.displayCurrency
+            ? context.loc.posCurrencyError
+            : null,
       ),
       items: [
         for (final code in codes)

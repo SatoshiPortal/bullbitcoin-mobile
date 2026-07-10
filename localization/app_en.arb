@@ -1126,6 +1126,14 @@
   "@posCurrencyLabel": {
     "description": "Label for the Point of Sale display-currency dropdown"
   },
+  "posLabelError": "Enter a name",
+  "@posLabelError": {
+    "description": "Per-field error shown when the Point of Sale name is empty or too long"
+  },
+  "posCurrencyError": "Choose a currency",
+  "@posCurrencyError": {
+    "description": "Per-field error shown when no Point of Sale display currency is selected"
+  },
   "posCurrenciesUnavailable": "Currency list unavailable. Using {currency}.",
   "@posCurrenciesUnavailable": {
     "description": "Notice shown when the live currency list could not be fetched for the Point of Sale",
