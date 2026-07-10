@@ -1,4 +1,4 @@
-# tool/
+# tools/
 
 Developer scripts for this repo. Run everything through `fvm` (see `AGENTS.md`).
 Each script is documented in its own section below.
@@ -11,7 +11,7 @@ other key stays byte-for-byte unchanged and JSON never breaks. It refuses to edi
 a file that doesn't match the expected 2-space-per-top-level-key layout.
 
 ```
-fvm dart run tool/arb.dart <command>
+fvm dart run tools/arb.dart <command>
 ```
 
 Read:
@@ -40,7 +40,7 @@ after a bare `--`.
 
 After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
 `make translations` to regenerate the Dart localizations — each changes either
-the key set or a generated string. Run `fvm dart run tool/arb.dart help` for the
+the key set or a generated string. Run `fvm dart run tools/arb.dart help` for the
 full reference.
 
 > First run is slow (cold package build hooks); subsequent runs are sub-second.

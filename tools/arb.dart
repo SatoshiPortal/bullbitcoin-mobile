@@ -13,7 +13,7 @@
 // validates this invariant before mutating and refuses to touch a file that
 // breaks it.
 //
-// Run `dart run tool/arb.dart help` for usage.
+// Run `dart run tools/arb.dart help` for usage.
 
 import 'dart:convert';
 import 'dart:io';
@@ -994,7 +994,7 @@ void _printUsage() {
   print(r'''
 arb.dart — manage the .arb localization files under localization/
 
-Usage: dart run tool/arb.dart <command> [args]
+Usage: dart run tools/arb.dart <command> [args]
 
 Read commands:
   get KEY [--locale L]
@@ -1041,13 +1041,13 @@ A value that looks like an option (e.g. the literal "--list") can be passed
 after a bare `--`: `set KEY LOCALE -- --list`.
 
 Examples:
-  dart run tool/arb.dart get exchangeTestnetBasicAuthTitle
-  dart run tool/arb.dart check exchangeTestnetBasicAuthTitle
-  dart run tool/arb.dart missing --locale fr --list
-  dart run tool/arb.dart dead --list
-  dart run tool/arb.dart add myNewKey \
+  dart run tools/arb.dart get exchangeTestnetBasicAuthTitle
+  dart run tools/arb.dart check exchangeTestnetBasicAuthTitle
+  dart run tools/arb.dart missing --locale fr --list
+  dart run tools/arb.dart dead --list
+  dart run tools/arb.dart add myNewKey \
     --translations '{"en":"Hello","fr":"Bonjour"}' \
     --description "A greeting"
-  dart run tool/arb.dart delete myNewKey
+  dart run tools/arb.dart delete myNewKey
 ''');
 }

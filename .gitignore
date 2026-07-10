@@ -115,7 +115,7 @@ CLAUDE.md
 # sentry-native build artifacts pulled by sentry_flutter on Linux
 .sentry-native/
 
-# Generated integration-test aggregator (see tool/gen_all_test.dart)
+# Generated integration-test aggregator (see tools/gen_all_test.dart)
 integration_test/all_test.dart
 
 # Generated swap debug log export (written during test runs)
