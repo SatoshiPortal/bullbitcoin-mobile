@@ -66,6 +66,7 @@ class CurrencyConstants {
     'EUR',
     'ARS',
     'COP',
+    'ILS'
   ];
 }
 
@@ -184,5 +185,6 @@ class CountryConstants {
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
     {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
     {'code': 'CO', 'name': 'Colombia', 'flag': '🇨🇴'},
+    {'code': 'IL', 'name': 'Israel', 'flag': '🇮🇱'},
   ];
 }
