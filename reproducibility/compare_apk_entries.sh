@@ -27,7 +27,14 @@ apk2="$2"
 exclude_re='^META-INF/(MANIFEST\.MF|[^/]+\.(RSA|SF|EC|DSA))$'
 
 hash_entries() {
-    unzip -Z1 "$1" | grep -Ev "$exclude_re" | LC_ALL=C sort | while IFS= read -r entry; do
+    # List entries as their own step first: if unzip can't read the archive
+    # (missing/corrupt/truncated file, bad mount path) it must ABORT, not emit
+    # an empty list that would later compare "equal" to another empty list and
+    # yield a false IDENTICAL. `set -e` does not catch a failure mid-pipeline,
+    # so the listing is captured and checked explicitly.
+    entries=$(unzip -Z1 "$1") || { echo "error: cannot read zip entries from $1" >&2; return 3; }
+    printf '%s\n' "$entries" | grep -Ev "$exclude_re" | LC_ALL=C sort | while IFS= read -r entry; do
+        [ -n "$entry" ] || continue
         hash=$(unzip -p "$1" "$entry" 2>/dev/null | sha256sum | awk '{print $1}')
         printf '%s  %s\n' "$hash" "$entry"
     done
@@ -37,8 +44,16 @@ tmp1=$(mktemp)
 tmp2=$(mktemp)
 trap 'rm -f "$tmp1" "$tmp2"' EXIT
 
-hash_entries "$apk1" > "$tmp1"
-hash_entries "$apk2" > "$tmp2"
+hash_entries "$apk1" > "$tmp1" || exit 2
+hash_entries "$apk2" > "$tmp2" || exit 2
+
+# A readable APK always has at least one comparable entry. Empty output means
+# the archive was empty or unreadable — treating that as "identical" would be a
+# false reproducible verdict, so it is an error (exit 2), never exit 0.
+if [ ! -s "$tmp1" ] || [ ! -s "$tmp2" ]; then
+    echo "error: no comparable entries found (empty or unreadable APK)" >&2
+    exit 2
+fi
 
 if diff -u "$tmp1" "$tmp2"; then
     echo "IDENTICAL"

@@ -27,11 +27,11 @@ reproducibility/reproducibility_test_*/
 # .dockerignore does not inherit .gitignore, so they need their own entries.
 # NOTE: dockerignore patterns follow Go filepath.Match, NOT gitignore: a bare
 # `*.keystore` matches only at the context root, so nested paths need `**/`.
-# The one keystore the build genuinely needs is re-included below; CI-written
-# beta signing files (android/key-beta.properties + beta-upload.keystore) are
-# deliberately NOT excluded — build.gradle must see them inside the image to
-# sign the beta channel, and the CI runner is already the secret boundary
-# there. Everything else keeps secrets out of layers.
+# Two keystores are re-included below (the `!` lines): debug.keystore for
+# debug/local builds, and beta-upload.keystore so build.gradle can sign the beta
+# channel inside the image — the CI runner is already the secret boundary there.
+# android/key-beta.properties is not matched by any exclude here, so it too
+# stays available for beta signing. Everything else keeps secrets out of layers.
 **/.env
 android/key.properties
 **/*.keystore
@@ -39,10 +39,13 @@ android/key.properties
 !android/app/debug.keystore
 !android/app/beta-upload.keystore
 
-# Stale host-generated code. These are gitignored and regenerated inside the
-# image by `make build-runner` / `make translations`, but .dockerignore
-# doesn't inherit .gitignore — without these entries a locally generated (and
-# possibly stale) file gets COPYed in ahead of the in-image regeneration.
+# Stale host-generated code. Most of these are gitignored and regenerated inside
+# the image by `make build-runner` / `make translations`; .dockerignore doesn't
+# inherit .gitignore, so without these entries a locally generated (and possibly
+# stale) file gets COPYed in ahead of the in-image regeneration. (`**/*.g.dart`
+# also matches one tracked file, packages/bull_ui_catalogue/lib/main.directories.g.dart,
+# but that's a widgetbook-catalogue artifact the app APK build never uses, so
+# excluding it from the build context is harmless.)
 lib/generated/
 **/*.freezed.dart
 **/*.g.dart
