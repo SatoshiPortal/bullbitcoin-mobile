@@ -8,6 +8,12 @@ const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';
 const invoiceLabelSystem = 'invoice';
+// Get Paid feature labels applied to the transaction an auto-sweep lands in the
+// default wallet, so the swept funds read as the product that received them.
+const lightningAddressLabelSystem = 'lightning-address';
+const paymentPageLabelSystem = 'payment-page';
+const posLabelSystem = 'point-of-sale';
+const btcpayLabelSystem = 'btcpay';
 
 enum LabelTypeColumn { tx, address, pubkey, input, output, xpub }
 

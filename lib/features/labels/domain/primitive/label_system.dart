@@ -9,7 +9,11 @@ enum LabelSystem {
   selfSpend,
   exchangeBuy,
   exchangeSell,
-  invoice;
+  invoice,
+  lightningAddress,
+  paymentPage,
+  pointOfSale,
+  btcpay;
 
   const LabelSystem();
 
@@ -21,6 +25,10 @@ enum LabelSystem {
     LabelSystem.exchangeBuy => exchangeBuyLabelSystem,
     LabelSystem.exchangeSell => exchangeSellLabelSystem,
     LabelSystem.invoice => invoiceLabelSystem,
+    LabelSystem.lightningAddress => lightningAddressLabelSystem,
+    LabelSystem.paymentPage => paymentPageLabelSystem,
+    LabelSystem.pointOfSale => posLabelSystem,
+    LabelSystem.btcpay => btcpayLabelSystem,
   };
 
   static LabelSystem fromLabel(String label) {
@@ -32,6 +40,10 @@ enum LabelSystem {
       exchangeBuyLabelSystem => LabelSystem.exchangeBuy,
       exchangeSellLabelSystem => LabelSystem.exchangeSell,
       invoiceLabelSystem => LabelSystem.invoice,
+      lightningAddressLabelSystem => LabelSystem.lightningAddress,
+      paymentPageLabelSystem => LabelSystem.paymentPage,
+      posLabelSystem => LabelSystem.pointOfSale,
+      btcpayLabelSystem => LabelSystem.btcpay,
       _ => throw ArgumentError('Invalid $LabelSystem: $label'),
     };
   }
@@ -54,6 +66,13 @@ enum LabelSystem {
       LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
       LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,
       LabelSystem.invoice => context.loc.systemLabelInvoice,
+      // Reuse the existing product-name strings so these labels track the same
+      // wording (and translations) shown on the Get Paid dashboard cards.
+      LabelSystem.lightningAddress =>
+        context.loc.getPaidDashboardLightningAddressTitle,
+      LabelSystem.paymentPage => context.loc.getPaidDashboardDonationPageTitle,
+      LabelSystem.pointOfSale => context.loc.getPaidDashboardPosTitle,
+      LabelSystem.btcpay => context.loc.btcpaySettingsTitle,
     };
   }
 

@@ -294,6 +294,92 @@ void main() {
       ),
     );
   });
+
+  group('swept transaction label', () {
+    Future<String> sweepAndCaptureLabel({required String walletLabel}) async {
+      final source = _wallet(
+        id: 'source',
+        label: walletLabel,
+        network: Network.liquidMainnet,
+        autoSweepEnabled: true,
+        balanceSat: BigInt.from(1000),
+      );
+      when(
+        () => wallets.getDefaultWallet(
+          sourceWallet: source,
+          onlyBitcoin: false,
+          onlyLiquid: true,
+        ),
+      ).thenAnswer(
+        (_) async => _wallet(
+          id: 'default-liquid',
+          network: Network.liquidMainnet,
+          isDefault: true,
+        ),
+      );
+      when(
+        () => wallets.getCurrentReceiveAddress(walletId: 'default-liquid'),
+      ).thenAnswer((_) async => 'lq1destination');
+      when(
+        () => wallets.buildLiquidDrainPset(
+          walletId: 'source',
+          address: 'lq1destination',
+          feeRate: NetworkFee.relativeFromSatPerVbyte(0.1),
+        ),
+      ).thenAnswer((_) async => 'pset');
+      when(
+        () => wallets.signLiquidPset(pset: 'pset', walletId: 'source'),
+      ).thenAnswer((_) async => 'signed-pset');
+      when(
+        () => broadcastLiquid.execute('signed-pset', isTestnet: false),
+      ).thenAnswer((_) async => 'txid');
+
+      await usecase.execute(source);
+
+      final stored =
+          verify(() => labelsFacade.store(captureAny())).captured.single
+              as NewLabel;
+      return stored.label;
+    }
+
+    test(
+      'Lightning Address reserved wallet -> Lightning Address label',
+      () async {
+        expect(
+          await sweepAndCaptureLabel(walletLabel: 'Lightning Address Liquid'),
+          LabelSystem.lightningAddress.label,
+        );
+      },
+    );
+
+    test('Payment Page reserved wallet -> Donation Page label', () async {
+      expect(
+        await sweepAndCaptureLabel(walletLabel: 'Payment Page Liquid'),
+        LabelSystem.paymentPage.label,
+      );
+    });
+
+    test('POS reserved wallet -> Point of Sale label', () async {
+      expect(
+        await sweepAndCaptureLabel(walletLabel: 'POS Liquid'),
+        LabelSystem.pointOfSale.label,
+      );
+    });
+
+    test('BTCPay reserved wallet -> BTCPay label', () async {
+      expect(
+        await sweepAndCaptureLabel(walletLabel: 'BTCPay Liquid'),
+        LabelSystem.btcpay.label,
+      );
+    });
+
+    test('non-Get-Paid wallet keeps the Autosweep-from fallback', () async {
+      expect(
+        await sweepAndCaptureLabel(walletLabel: 'My Savings'),
+        'Autosweep from My Savings',
+      );
+    });
+  });
 }
 
 Wallet _wallet({
@@ -302,10 +388,11 @@ Wallet _wallet({
   bool isDefault = false,
   bool autoSweepEnabled = false,
   BigInt? balanceSat,
+  String? label,
 }) {
   return Wallet(
     origin: id,
-    label: id,
+    label: label ?? id,
     network: network,
     isDefault: isDefault,
     masterFingerprint: 'fingerprint',

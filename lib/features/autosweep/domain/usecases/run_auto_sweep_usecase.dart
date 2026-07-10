@@ -50,9 +50,15 @@ class RunAutoSweepUsecase {
           ? await _sweepLiquid(syncedWallet)
           : await _sweepBitcoin(syncedWallet);
       if (result is AutosweepSwept) {
+        final featureLabel = _reservedFeatureLabel(syncedWallet);
         await _storeSweepLabel(
           txid: result.txid,
-          label: 'Autosweep from ${syncedWallet.label ?? syncedWallet.id}',
+          // A swept reserved Get Paid wallet is labelled with the product's
+          // display name; any other wallet (a user manually enabling auto-sweep
+          // on a normal wallet) keeps the original free-form label.
+          label:
+              featureLabel?.label ??
+              'Autosweep from ${syncedWallet.label ?? syncedWallet.id}',
           origin: syncedWallet.id,
         );
       }
@@ -152,6 +158,23 @@ class RunAutoSweepUsecase {
       onlyBitcoin: onlyBitcoin,
       onlyLiquid: onlyLiquid,
     );
+  }
+
+  // Maps a reserved Get Paid product wallet to the system label whose display
+  // name is the product's name. The matched labels mirror the wallet labels set
+  // at creation time (the Prepare*WalletUsecase specs and BtcpayWalletConstants)
+  // — kept as literals here so core autosweep takes no feature dependency and no
+  // server call. Only the Liquid wallets actually reach here (BTCPay's Bitcoin
+  // wallet is created with auto-sweep off), but both BTCPay labels are mapped
+  // defensively. A non-reserved wallet returns null (free-form fallback).
+  LabelSystem? _reservedFeatureLabel(Wallet wallet) {
+    return switch (wallet.label) {
+      'Lightning Address Liquid' => LabelSystem.lightningAddress,
+      'Payment Page Liquid' => LabelSystem.paymentPage,
+      'POS Liquid' => LabelSystem.pointOfSale,
+      'BTCPay Liquid' || 'BTCPay Bitcoin' => LabelSystem.btcpay,
+      _ => null,
+    };
   }
 
   Future<void> _storeSweepLabel({
