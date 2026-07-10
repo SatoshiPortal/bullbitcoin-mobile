@@ -36,7 +36,9 @@ class BullToolButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final fg = primary ? colors.onPrimary : colors.text;
-    final bg = primary ? colors.primary : colors.textMuted.withValues(alpha: 0.12);
+    final bg = primary
+        ? colors.primary
+        : colors.textMuted.withValues(alpha: 0.12);
 
     return Semantics(
       button: true,

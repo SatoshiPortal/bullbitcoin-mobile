@@ -5,29 +5,49 @@ on:
     branches:
       - main
       - develop
+    # Docs-only PRs skip both jobs entirely. Safe because develop has no
+    # required status checks (verified via the API) — a skipped run can't
+    # strand a PR on "Expected — waiting". If checks are ever made required,
+    # this needs the paths-filter + always-green sentinel pattern instead.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.git-blame-ignore-revs'
+      - '.github/ISSUE_TEMPLATE/**'
 
 # Checkout + tests only; no writes to the repo via the token.
 permissions:
   contents: read
 
-# Cancel superseded runs on the same PR — this build is heavy (Rust FRB crates +
-# Flutter SDK + Linux GTK app + integration tests), so don't run stale commits to
-# completion when newer ones are pushed.
+# Cancel superseded runs on the same PR — these builds are heavy (Rust FRB
+# crates + Flutter SDK + Linux GTK app + integration tests), so don't run stale
+# commits to completion when newer ones are pushed.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Two independent jobs split at the FRB boundary. `checks` (analyze + fix +
+# format + unit tests) never compiles the Rust FRB crates — unit tests run on
+# the Dart VM against the bindings' Dart side only — so it reports in ~11min.
+# `integration` builds and launches the real Linux GTK app (Rust + GTK), the
+# ~28min long pole, in parallel. Both pay the same setup prefix (composite
+# action below); build_runner (~6.5min) dominates it — caching its output is
+# the known follow-up. Neither job `needs:` the other on purpose: the split
+# exists so the fast signal never waits for the slow one.
 jobs:
-  analyze_and_test:
+  checks:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      # The job builds the FRB Rust crates, the Flutter SDK toolchain, the
-      # Linux desktop app and runs integration tests on one runner; the stock
-      # ubuntu-24.04 image fills up and the runner dies with "No space left on
-      # device". Reclaim the unused pre-installed toolchains first.
+      # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
+      # runner has ~21GB free, so dropping this risks turning every PR red on
+      # "No space left on device". The setup action logs `df -h` — only drop
+      # this once a few runs prove comfortable headroom.
       - name: Free disk space
         # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
         # on a runner that can hold PR test secrets — a retag must not run here.
@@ -40,69 +60,89 @@ jobs:
           large-packages: true
           swap-storage: false
 
-      # Caches below are restored before any toolchain step that uses
-      # them, so the SDK download / pub resolve / crate fetch on a cold
-      # runner only pays out on a cache miss. The pub cache also holds the
-      # bull_sdk git clone; the Cargo cache holds its transitive crates.io
-      # deps. All three keys derive from lockfiles, so they self-invalidate
-      # when deps change. pubspec.lock pins the bull_sdk commit, so it is
-      # the right key for the Cargo cache (there is no repo-root Cargo.lock).
-      - name: Cache Flutter SDK (FVM)
-        uses: actions/cache@v6
-        with:
-          path: ~/fvm/versions
-          key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
+      # The gates below reference steps.setup.outcome — if this `id` is ever
+      # renamed, the expression silently evaluates to '' and every check
+      # SKIPS (job goes green with nothing run). Keep id and gates in sync.
+      - name: Flutter setup
+        id: setup
+        uses: ./.github/actions/flutter-setup
 
-      # No restore-keys here on purpose: the pub cache holds the bull_sdk git
-      # clone, and a fuzzy fallback can restore a checkout from an OLDER lock
-      # whose pinned commit differs. pub then resolves against that stale clone,
-      # so `pub get --enforce-lockfile` sees deps the committed lock doesn't (it
-      # fails wanting to drop them). The exact key already pins the commit via
-      # pubspec.lock, so an unchanged lock still hits; a changed lock does one
-      # clean fetch and re-caches.
-      - name: Cache pub (hosted + git deps)
-        uses: actions/cache@v6
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-
-      - name: Cache Cargo (FRB native crates)
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: cargo-${{ runner.os }}-
-
-      - name: Install FVM
-        run: |
-          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.1.1
-          echo "$HOME/fvm/bin" >> $GITHUB_PATH
-
-      - run: make fvm-check
-      - run: make deps
-      - run: make build-runner
-      - run: make translations
-
+      # The four static checks are gated on `!cancelled()` + setup success
+      # instead of the implicit success(): one CI run surfaces ALL static
+      # failures instead of stopping at the first (they're independent and
+      # cheap, ~1.5min combined). `!cancelled()` (not `always()`) so a
+      # superseded run cancelled by the concurrency group stops immediately.
+      # Each gate is a makefile target so the definition lives in one place; `make checks` runs this whole job locally.
       - name: Linter shouldn't raise errors, warnings or infos
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
 
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
-        run: |
-          if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then
-            echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"
-            exit 1
-          fi
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make bull-ui-check
 
       - name: dart fix should have nothing to suggest
-        run: |
-          output=$(fvm dart fix --dry-run)
-          echo "$output"
-          echo "$output" | grep -q "Nothing to fix!"
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make fix-check
 
+      # The gate's filter regex and pipefail rationale live in the makefile's format-check target; the staged-files variant in .git_hooks/pre-commit keeps its own copy of the regex.
+      - name: dart format should have nothing to change
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make format-check
+
+      # Default success() gate on purpose: if any static check above is red,
+      # skip the tests — the PR needs another push anyway.
       - name: Unit tests must pass
         run: make unit-test
+
+  integration:
+    # arm64: free 4-vCPU runners for public repos, native arm execution — the
+    # Rust FRB compile is exactly the workload that benefits. If this arch
+    # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
+    # jlumbroso free-disk-space step (see checks job) in one commit.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
+      # Linux desktop app on one runner. The arm64 partner image is leaner
+      # than x64 (more free space, and the x64-oriented free-disk-space action
+      # doesn't apply), so reclaim the few big preinstalled dirs inline;
+      # `|| true` because they may not exist on this image. The setup action
+      # logs `df -h` to confirm headroom.
+      - name: Free disk space (inline, arch-agnostic)
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
+          df -h /
+
+      # cargokit builds the FRB crates via `rustup run stable cargo`; the
+      # leaner arm64 partner image may lack rustup (the x64 image ships it).
+      # Idempotent: installs rustup if absent, then ensures the stable
+      # toolchain exists either way (newer rustup does not auto-install
+      # toolchains on `rustup run`).
+      - name: Ensure rustup + stable toolchain
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          else
+            rustup toolchain install stable --profile minimal
+          fi
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+        with:
+          cargo-cache: 'true'
+
+      # Compiler cache for the FRB Rust crates (the dominant cost of the app
+      # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
+      # third-party action on a runner that holds PR test secrets.
+      # RUSTC_WRAPPER is exported at the test step below; cargokit's cargo
+      # inherits it from the environment.
+      - name: Setup sccache
+        uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 
       - name: Install Linux desktop for integration tests
         run: |
@@ -129,6 +169,13 @@ jobs:
         env:
           TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
           TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
+          SCCACHE_GHA_ENABLED: "true"
+          RUSTC_WRAPPER: sccache
+          # sccache cannot cache incremental compilation artifacts; disabling
+          # incremental makes every rustc invocation cacheable (and is the
+          # standard sccache-in-CI pairing — CI never reuses incremental state
+          # anyway).
+          CARGO_INCREMENTAL: "0"
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets

@@ -3,10 +3,7 @@ class AmountByCurrencyCode {
   final String currency;
   final double value;
 
-  const AmountByCurrencyCode({
-    required this.currency,
-    required this.value,
-  });
+  const AmountByCurrencyCode({required this.currency, required this.value});
 
   @override
   bool operator ==(Object other) {
@@ -84,10 +81,7 @@ class BillerStats {
   final String currency;
   final List<BillerStat> stats;
 
-  const BillerStats({
-    required this.currency,
-    required this.stats,
-  });
+  const BillerStats({required this.currency, required this.stats});
 
   bool get hasStats => stats.isNotEmpty;
 }

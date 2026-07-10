@@ -34,10 +34,9 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
       future: enableScreenPrivacy(),
       builder: (context, snapshot) {
         return BlocListener<OnboardingBloc, OnboardingState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.step != current.step ||
-                  previous.onboardingStepStatus != current.onboardingStepStatus,
+          listenWhen: (previous, current) =>
+              previous.step != current.step ||
+              previous.onboardingStepStatus != current.onboardingStepStatus,
           listener: (context, state) {
             if (state.step == OnboardingStep.recover &&
                 state.onboardingStepStatus == OnboardingStepStatus.success) {
@@ -73,16 +72,17 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                                   child: Opacity(
                                     opacity:
                                         state.onboardingStepStatus ==
-                                                OnboardingStepStatus.loading
-                                            ? 0.5
-                                            : 1.0,
+                                            OnboardingStepStatus.loading
+                                        ? 0.5
+                                        : 1.0,
                                     child: MnemonicWidget(
                                       initialLength:
                                           bip39.MnemonicLength.words12,
                                       allowMultipleMnemonicLength: true,
                                       allowLabel: false,
                                       allowPassphrase: false,
-                                      submitLabel: context.loc.onboardingRecover,
+                                      submitLabel:
+                                          context.loc.onboardingRecover,
                                       onSubmit: (mnemonic) {
                                         context.read<OnboardingBloc>().add(
                                           OnboardingRecoverWalletClicked(

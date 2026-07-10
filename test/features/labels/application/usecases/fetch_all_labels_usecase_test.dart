@@ -18,23 +18,20 @@ void main() {
   });
 
   group('FetchAllLabelsUsecase', () {
-    test(
-      'maps a repository failure to a sanitized LabelFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => repository.fetchAll(),
-        ).thenThrow(Exception('drift: database is locked at /data/secret.db'));
+    test('maps a repository failure to a sanitized LabelFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => repository.fetchAll(),
+      ).thenThrow(Exception('drift: database is locked at /data/secret.db'));
 
-        final result = await usecase.execute();
+      final result = await usecase.execute();
 
-        expect(result, isA<Err<List<ApplicationLabel>, LabelFailure>>());
-        expect(
-          (result as Err<List<ApplicationLabel>, LabelFailure>).failure,
-          isA<LabelUnexpectedFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<List<ApplicationLabel>, LabelFailure>>());
+      expect(
+        (result as Err<List<ApplicationLabel>, LabelFailure>).failure,
+        isA<LabelUnexpectedFailure>(),
+      );
+    });
 
     test('returns Ok with the mapped labels on success', () async {
       when(() => repository.fetchAll()).thenAnswer((_) async => []);

@@ -155,7 +155,10 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           const Gap(24),
         ],
-        BBText(context.loc.importWatchOnlyType, style: context.font.titleMedium),
+        BBText(
+          context.loc.importWatchOnlyType,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         if (!isXpub) ...[
           BBText(

@@ -20,11 +20,10 @@ class CreateChainSwapUsecase {
     int? amountSat,
   }) async {
     try {
-      final (bitcoinWallet, liquidWallet) =
-          await (
-            _walletRepository.getWallet(bitcoinWalletId),
-            _walletRepository.getWallet(liquidWalletId),
-          ).wait;
+      final (bitcoinWallet, liquidWallet) = await (
+        _walletRepository.getWallet(bitcoinWalletId),
+        _walletRepository.getWallet(liquidWalletId),
+      ).wait;
 
       if (bitcoinWallet == null || liquidWallet == null) {
         throw Exception('One or both wallets not found');
@@ -46,15 +45,13 @@ class CreateChainSwapUsecase {
 
       final swapRepository = _swapRepository;
 
-      final btcElectrumUrl =
-          bitcoinWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl = bitcoinWallet.network.isTestnet
+          ? ApiServiceConstants.publicElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl =
-          liquidWallet.network.isTestnet
-              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl = liquidWallet.network.isTestnet
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.bitcoinToLiquid:

@@ -179,7 +179,8 @@ class _FundExchangeMethodSelectionScreenState
                       FundingJurisdiction.argentina =>
                         FundExchangeMethodListTile(
                           title: context.loc.fundExchangeBankTransfer,
-                          subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                          subtitle:
+                              context.loc.fundExchangeBankTransferSubtitle,
                           onTap: () {
                             context.read<FundExchangeBloc>().add(
                               const FundExchangeEvent.fundingDetailsRequested(
@@ -188,18 +189,17 @@ class _FundExchangeMethodSelectionScreenState
                             );
                           },
                         ),
-                      FundingJurisdiction.colombia =>
-                        FundExchangeMethodListTile(
-                          title: context.loc.fundExchangeBankTransfer,
-                          subtitle: context.loc.fundExchangeBankTransferSubtitle,
-                          onTap: () {
-                            context.read<FundExchangeBloc>().add(
-                              const FundExchangeEvent.fundingInstitutionsRequested(
-                                jurisdiction: FundingJurisdiction.colombia,
-                              ),
-                            );
-                          },
-                        ),
+                      FundingJurisdiction.colombia => FundExchangeMethodListTile(
+                        title: context.loc.fundExchangeBankTransfer,
+                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                        onTap: () {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.fundingInstitutionsRequested(
+                              jurisdiction: FundingJurisdiction.colombia,
+                            ),
+                          );
+                        },
+                      ),
                     },
                   if (_fundingDetailsError != null ||
                       _institutionsError != null) ...[

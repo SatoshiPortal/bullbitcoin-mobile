@@ -86,10 +86,7 @@ Future<String?> _showWalletPicker({
               children: [
                 const Spacer(),
                 IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: context.appColors.secondary,
-                  ),
+                  icon: Icon(Icons.close, color: context.appColors.secondary),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],

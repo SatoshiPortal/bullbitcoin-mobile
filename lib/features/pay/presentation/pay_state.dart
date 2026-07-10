@@ -71,9 +71,10 @@ sealed class PayState with _$PayState {
   }
 
   FiatCurrency get currency => switch (this) {
-    PayRecipientSelectionState(:final userSummary) => userSummary != null
-        ? FiatCurrency.fromCode(userSummary.currency!)
-        : FiatCurrency.cad,
+    PayRecipientSelectionState(:final userSummary) =>
+      userSummary != null
+          ? FiatCurrency.fromCode(userSummary.currency!)
+          : FiatCurrency.cad,
     PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
       selectedRecipient.currencyCode,
     ),
@@ -89,22 +90,22 @@ sealed class PayState with _$PayState {
   };
 
   // Backward step: drop forward state, reset transients on the destination.
-  PayRecipientSelectionState? get cleanRecipientSelectionState => switch (this) {
-    final PayRecipientSelectionState s => s.copyWith(
-      isLoadingUserSummary: false,
-      error: null,
-    ),
-    PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PayWalletSelectionState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PayPaymentState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PaySuccessState() => null,
-  };
+  PayRecipientSelectionState? get cleanRecipientSelectionState =>
+      switch (this) {
+        final PayRecipientSelectionState s => s.copyWith(
+          isLoadingUserSummary: false,
+          error: null,
+        ),
+        PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
+          userSummary: userSummary,
+        ),
+        PayWalletSelectionState(:final userSummary) =>
+          PayRecipientSelectionState(userSummary: userSummary),
+        PayPaymentState(:final userSummary) => PayRecipientSelectionState(
+          userSummary: userSummary,
+        ),
+        PaySuccessState() => null,
+      };
 
   PayAmountInputState? get cleanAmountInputState => switch (this) {
     final PayAmountInputState s => s.copyWith(error: null),

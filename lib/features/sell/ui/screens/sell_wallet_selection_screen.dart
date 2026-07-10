@@ -54,12 +54,11 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   const Gap(24.0),
                   WalletCards(
                     padding: EdgeInsets.zero,
-                    onTap:
-                        isCreatingSellOrder
-                            ? null
-                            : (wallet) => context.read<SellBloc>().add(
-                              SellEvent.walletSelected(wallet: wallet),
-                            ),
+                    onTap: isCreatingSellOrder
+                        ? null
+                        : (wallet) => context.read<SellBloc>().add(
+                            SellEvent.walletSelected(wallet: wallet),
+                          ),
                     localSignersOnly: true,
                   ),
                   const Gap(24.0),
@@ -69,12 +68,11 @@ class SellWalletSelectionScreen extends StatelessWidget {
                     title: Text(context.loc.sellExternalWallet),
                     subtitle: Text(context.loc.sellFromAnotherWallet),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingSellOrder
-                            ? null
-                            : () => context.pushNamed(
-                              SellRoute.sellExternalWalletNetworkSelection.name,
-                            ),
+                    onTap: isCreatingSellOrder
+                        ? null
+                        : () => context.pushNamed(
+                            SellRoute.sellExternalWalletNetworkSelection.name,
+                          ),
                   ),
                   const Gap(24.0),
                   const _SellError(),
@@ -94,10 +92,9 @@ class _SellError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sellError = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellWalletSelectionState
-              ? (bloc.state as SellWalletSelectionState).error
-              : null,
+      (SellBloc bloc) => bloc.state is SellWalletSelectionState
+          ? (bloc.state as SellWalletSelectionState).error
+          : null,
     );
 
     if (sellError == null) return const SizedBox.shrink();

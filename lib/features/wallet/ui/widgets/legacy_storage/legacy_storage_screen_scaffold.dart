@@ -66,10 +66,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
               const Gap(10),
               if (primaryButton != null) ...[primaryButton!, const Gap(8)],
               secondaryButton,
-              if (belowButtons != null) ...[
-                const Gap(10),
-                belowButtons!,
-              ],
+              if (belowButtons != null) ...[const Gap(10), belowButtons!],
               const Gap(10),
               WizardDots(count: dotCount, index: dotIndex),
             ],

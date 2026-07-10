@@ -10,21 +10,20 @@ class PriceLocalDatasource {
   Future<void> savePrices(List<Rate> prices) async {
     if (prices.isEmpty) return;
 
-    final companions =
-        prices.map((price) {
-          return PricesCompanion.insert(
-            fromCurrency: price.fromCurrency,
-            toCurrency: price.toCurrency,
-            interval: price.interval.value,
-            createdAt: price.createdAt.toIso8601String(),
-            marketPrice: Value(price.marketPrice),
-            price: Value(price.price),
-            priceCurrency: Value(price.priceCurrency),
-            precision: Value(price.precision),
-            indexPrice: Value(price.indexPrice),
-            userPrice: Value(price.userPrice),
-          );
-        }).toList();
+    final companions = prices.map((price) {
+      return PricesCompanion.insert(
+        fromCurrency: price.fromCurrency,
+        toCurrency: price.toCurrency,
+        interval: price.interval.value,
+        createdAt: price.createdAt.toIso8601String(),
+        marketPrice: Value(price.marketPrice),
+        price: Value(price.price),
+        priceCurrency: Value(price.priceCurrency),
+        precision: Value(price.precision),
+        indexPrice: Value(price.indexPrice),
+        userPrice: Value(price.userPrice),
+      );
+    }).toList();
 
     await _db.batch((batch) {
       for (final companion in companions) {
@@ -40,17 +39,18 @@ class PriceLocalDatasource {
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
-    var query = _db.select(_db.prices)..where(
-      (p) =>
-          p.fromCurrency.equals(fromCurrency) &
-          p.toCurrency.equals(toCurrency) &
-          p.interval.equals(interval.value),
-    );
+    var query = _db.select(_db.prices)
+      ..where(
+        (p) =>
+            p.fromCurrency.equals(fromCurrency) &
+            p.toCurrency.equals(toCurrency) &
+            p.interval.equals(interval.value),
+      );
 
     if (fromDate != null) {
       final fromDateStr = fromDate.toUtc().toIso8601String();
-      query =
-          query..where((p) => p.createdAt.isBiggerOrEqualValue(fromDateStr));
+      query = query
+        ..where((p) => p.createdAt.isBiggerOrEqualValue(fromDateStr));
     }
     if (toDate != null) {
       final toDateStr = toDate.toUtc().toIso8601String();
@@ -87,12 +87,13 @@ class PriceLocalDatasource {
     final cutoffDateStr = cutoffDate.toIso8601String();
 
     await (_db.delete(_db.prices)..where(
-      (p) =>
-          p.fromCurrency.equals(fromCurrency) &
-          p.toCurrency.equals(toCurrency) &
-          p.interval.equals(interval) &
-          p.createdAt.isSmallerThanValue(cutoffDateStr),
-    )).go();
+          (p) =>
+              p.fromCurrency.equals(fromCurrency) &
+              p.toCurrency.equals(toCurrency) &
+              p.interval.equals(interval) &
+              p.createdAt.isSmallerThanValue(cutoffDateStr),
+        ))
+        .go();
   }
 
   Future<void> clearPrices({
@@ -103,13 +104,13 @@ class PriceLocalDatasource {
     var query = _db.delete(_db.prices);
 
     if (fromCurrency != null && toCurrency != null && interval != null) {
-      query =
-          query..where(
-            (p) =>
-                p.fromCurrency.equals(fromCurrency) &
-                p.toCurrency.equals(toCurrency) &
-                p.interval.equals(interval),
-          );
+      query = query
+        ..where(
+          (p) =>
+              p.fromCurrency.equals(fromCurrency) &
+              p.toCurrency.equals(toCurrency) &
+              p.interval.equals(interval),
+        );
     } else {
       if (fromCurrency != null) {
         query = query..where((p) => p.fromCurrency.equals(fromCurrency));

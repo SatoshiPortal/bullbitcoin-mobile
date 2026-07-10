@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "რუკა",
   "fundExchangeRestrictedTitle": "დაფინანსება მიუწვდომელია",
   "fundExchangeRestrictedMessage": "დაფინანსება მიუწვდომელია თქვენს ანგარიშზე. დამატებითი ინფორმაციისთვის დაუკავშირდით მხარდაჭერას.",
   "recipientsListLoadError": "მიმღებების ჩატვირთვა ვერ მოხერხდა. ხელახლა საცდელად ჩამოწიეთ ქვემოთ.",

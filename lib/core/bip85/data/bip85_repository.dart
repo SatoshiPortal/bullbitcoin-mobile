@@ -28,7 +28,11 @@ class Bip85Repository {
       );
       return Ok(result);
     } catch (e, st) {
-      log.severe(message: 'Bip85Repository.deriveHex failed', error: e, trace: st);
+      log.severe(
+        message: 'Bip85Repository.deriveHex failed',
+        error: e,
+        trace: st,
+      );
       return Err(Bip85DerivationFailure(e.toString()));
     }
   }
@@ -85,7 +89,11 @@ class Bip85Repository {
       final result = await _datasource.fetchAll();
       return Ok(result.map((e) => e.toEntity()).toList());
     } catch (e, st) {
-      log.severe(message: 'Bip85Repository.fetchAll failed', error: e, trace: st);
+      log.severe(
+        message: 'Bip85Repository.fetchAll failed',
+        error: e,
+        trace: st,
+      );
       return Err(Bip85StorageFailure(e.toString()));
     }
   }

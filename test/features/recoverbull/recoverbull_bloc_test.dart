@@ -32,8 +32,8 @@ class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
-class _MockCheckConnection extends Mock implements CheckServerConnectionUsecase {
-}
+class _MockCheckConnection extends Mock
+    implements CheckServerConnectionUsecase {}
 
 class _MockFetchKey extends Mock implements FetchVaultKeyFromServerUsecase {}
 
@@ -129,100 +129,107 @@ void main() {
   );
 
   group('OnVaultPasswordSet guard', () {
+    test('no vault set -> VaultNotSetFailure, password not stored, key never '
+        'fetched', () async {
+      // recoverVault hits the default branch; no preSelectedVault => null.
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+      bloc.add(const OnVaultPasswordSet(password: 'pw'));
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<VaultNotSetFailure>());
+      // The guard must return before storing the password or fetching the
+      // key — proving the early `return` is effective (the pre-fix code fell
+      // through to `state.vault!`).
+      expect(bloc.state.vaultPassword, isNull);
+      verifyNever(
+        () => fetchKey.execute(
+          vault: any(named: 'vault'),
+          password: any(named: 'password'),
+        ),
+      );
+
+      await bloc.close();
+    });
+  });
+
+  group('OnVaultProviderSelection (secureVault) guard', () {
     test(
-      'no vault set -> VaultNotSetFailure, password not stored, key never '
-      'fetched',
+      'no password set -> PasswordNotSetFailure, creation never started',
       () async {
-        // recoverVault hits the default branch; no preSelectedVault => null.
-        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
 
-        bloc.add(const OnVaultPasswordSet(password: 'pw'));
-        await pumpEventQueue();
-
-        expect(bloc.state.failure, isA<VaultNotSetFailure>());
-        // The guard must return before storing the password or fetching the
-        // key — proving the early `return` is effective (the pre-fix code fell
-        // through to `state.vault!`).
-        expect(bloc.state.vaultPassword, isNull);
-        verifyNever(
-          () => fetchKey.execute(
-            vault: any(named: 'vault'),
-            password: any(named: 'password'),
+        bloc.add(
+          const OnVaultProviderSelection(
+            provider: VaultProvider.customLocation,
           ),
         );
+        await pumpEventQueue();
+
+        // The pre-fix code fell through to `state.vaultPassword!`, which threw and
+        // surfaced as a generic RecoverBullUnexpectedFailure. The guard must keep
+        // the intended typed failure and never reach vault creation.
+        expect(bloc.state.failure, isA<PasswordNotSetFailure>());
+        verifyNever(() => createVault.execute());
 
         await bloc.close();
       },
     );
   });
 
-  group('OnVaultProviderSelection (secureVault) guard', () {
-    test('no password set -> PasswordNotSetFailure, creation never started', () async {
-      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
-
-      bloc.add(
-        const OnVaultProviderSelection(provider: VaultProvider.customLocation),
-      );
-      await pumpEventQueue();
-
-      // The pre-fix code fell through to `state.vaultPassword!`, which threw and
-      // surfaced as a generic RecoverBullUnexpectedFailure. The guard must keep
-      // the intended typed failure and never reach vault creation.
-      expect(bloc.state.failure, isA<PasswordNotSetFailure>());
-      verifyNever(() => createVault.execute());
-
-      await bloc.close();
-    });
-  });
-
   group('OnVaultCreation store-key failure mapping', () {
-    test('rate-limited storeVaultKey -> VaultRateLimitedFailure (cooldown kept)', () async {
-      const cooldown = Duration(minutes: 5);
-      final vault = _MockEncryptedVault();
-      when(() => vault.toFile()).thenReturn('{}');
-      when(() => vault.filename).thenReturn('vault.json');
+    test(
+      'rate-limited storeVaultKey -> VaultRateLimitedFailure (cooldown kept)',
+      () async {
+        const cooldown = Duration(minutes: 5);
+        final vault = _MockEncryptedVault();
+        when(() => vault.toFile()).thenReturn('{}');
+        when(() => vault.filename).thenReturn('vault.json');
 
-      when(() => createVault.execute()).thenAnswer(
-        (_) async => Ok((vault: vault, vaultKey: 'deadbeef')),
-      );
-      when(() => checkConnection.execute()).thenAnswer((_) async => true);
-      when(
-        () => saveFile.execute(
-          content: any(named: 'content'),
-          filename: any(named: 'filename'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => storeKey.execute(
-          password: any(named: 'password'),
-          vault: any(named: 'vault'),
-          vaultKey: any(named: 'vaultKey'),
-        ),
-      ).thenAnswer(
-        (_) async =>
-            Err(const core.KeyServerRateLimitedFailure(retryIn: cooldown)),
-      );
+        when(
+          () => createVault.execute(),
+        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => checkConnection.execute()).thenAnswer((_) async => true);
+        when(
+          () => saveFile.execute(
+            content: any(named: 'content'),
+            filename: any(named: 'filename'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => storeKey.execute(
+            password: any(named: 'password'),
+            vault: any(named: 'vault'),
+            vaultKey: any(named: 'vaultKey'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              Err(const core.KeyServerRateLimitedFailure(retryIn: cooldown)),
+        );
 
-      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+        final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
 
-      // secureVault stores the password, then provider selection triggers
-      // creation.
-      bloc.add(const OnVaultPasswordSet(password: 'pw'));
-      await pumpEventQueue();
-      bloc.add(
-        const OnVaultProviderSelection(provider: VaultProvider.customLocation),
-      );
-      await pumpEventQueue();
+        // secureVault stores the password, then provider selection triggers
+        // creation.
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+        bloc.add(
+          const OnVaultProviderSelection(
+            provider: VaultProvider.customLocation,
+          ),
+        );
+        await pumpEventQueue();
 
-      // The 429 cooldown must survive the create path instead of collapsing
-      // into the generic VaultCreationFailure.
-      expect(bloc.state.failure, isA<VaultRateLimitedFailure>());
-      expect(
-        (bloc.state.failure as VaultRateLimitedFailure).retryIn,
-        cooldown,
-      );
+        // The 429 cooldown must survive the create path instead of collapsing
+        // into the generic VaultCreationFailure.
+        expect(bloc.state.failure, isA<VaultRateLimitedFailure>());
+        expect(
+          (bloc.state.failure as VaultRateLimitedFailure).retryIn,
+          cooldown,
+        );
 
-      await bloc.close();
-    });
+        await bloc.close();
+      },
+    );
   });
 }

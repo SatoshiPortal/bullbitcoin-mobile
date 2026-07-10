@@ -65,7 +65,8 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
         style: TextStyle(
           fontSize: 14,
           color:
-              widget.tapsReachedMessageTextColor ?? context.appColors.onSecondary,
+              widget.tapsReachedMessageTextColor ??
+              context.appColors.onSecondary,
         ),
       ),
     );

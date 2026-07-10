@@ -93,8 +93,9 @@ void main() {
 
       final prefs = await SharedPreferences.getInstance();
       final allKeys = prefs.getKeys();
-      final seedStoreKeys =
-          allKeys.where((k) => k == 'seed_store_type').toList();
+      final seedStoreKeys = allKeys
+          .where((k) => k == 'seed_store_type')
+          .toList();
       final rawValue = prefs.getString('seed_store_type');
 
       print('--- overwrite fss9 -> fss10 ---');
@@ -108,7 +109,11 @@ void main() {
 
       print('entity.storageLibrary: ${entity.storageLibrary}');
 
-      expect(seedStoreKeys.length, 1, reason: 'only one seed_store_type entry must exist');
+      expect(
+        seedStoreKeys.length,
+        1,
+        reason: 'only one seed_store_type entry must exist',
+      );
       expect(entity.storageLibrary, SeedStorageLibrary.fss10);
     });
   });

@@ -195,13 +195,12 @@ class OrderModel {
   };
 
   Order toEntity({required bool isTestnet}) {
-    final orderMsg =
-        message != null && message is Map<String, dynamic>
-            ? OrderMessage(
-              code: message?['code']?.toString() ?? '',
-              message: message?['message']?.toString() ?? '',
-            )
-            : OrderMessage(code: '', message: '');
+    final orderMsg = message != null && message is Map<String, dynamic>
+        ? OrderMessage(
+            code: message?['code']?.toString() ?? '',
+            message: message?['message']?.toString() ?? '',
+          )
+        : OrderMessage(code: '', message: '');
 
     final orderTypeEnum = OrderType.fromValue(orderType);
     final payinMethodEnum = OrderPaymentMethod.fromValue(payinMethod);
@@ -211,28 +210,26 @@ class OrderModel {
     final payoutStatusEnum = OrderPayoutStatus.fromValue(payoutStatus);
     final confirmationDeadlineDt = DateTime.parse(confirmationDeadline);
     final createdAtDt = DateTime.parse(createdAt);
-    final completedAtDt =
-        completedAt != null ? DateTime.tryParse(completedAt!) : null;
+    final completedAtDt = completedAt != null
+        ? DateTime.tryParse(completedAt!)
+        : null;
     final sentAtDt = sentAt != null ? DateTime.tryParse(sentAt!) : null;
-    final scheduledPayoutTimeDt =
-        scheduledPayoutTime != null
-            ? DateTime.tryParse(scheduledPayoutTime!)
-            : null;
-    final lightningVoucherExpiresAtDt =
-        lightningVoucherExpiresAt != null
-            ? DateTime.tryParse(lightningVoucherExpiresAt!)
-            : null;
+    final scheduledPayoutTimeDt = scheduledPayoutTime != null
+        ? DateTime.tryParse(scheduledPayoutTime!)
+        : null;
+    final lightningVoucherExpiresAtDt = lightningVoucherExpiresAt != null
+        ? DateTime.tryParse(lightningVoucherExpiresAt!)
+        : null;
     final payinAmountChangedObj =
         payinAmountChanged != null && payinAmountChanged is Map<String, dynamic>
-            ? PayinAmountChanged(
-              requestedAmount:
-                  (payinAmountChanged['requestedAmount'] as num?)?.toDouble() ??
-                  0,
-              receivedAmount:
-                  (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ??
-                  0,
-            )
-            : null;
+        ? PayinAmountChanged(
+            requestedAmount:
+                (payinAmountChanged['requestedAmount'] as num?)?.toDouble() ??
+                0,
+            receivedAmount:
+                (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ?? 0,
+          )
+        : null;
 
     switch (orderTypeEnum) {
       case OrderType.buy:

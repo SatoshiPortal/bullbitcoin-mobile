@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,9 +68,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
     } catch (e, st) {
       log.warning('Failed to scan QR transaction', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -118,9 +116,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       emit(state.copyWith(pushTxUri: pushTx));
     } catch (e, st) {
       log.warning('Failed to scan NFC PushTx tag', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -132,9 +128,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       emit(state.copyWith(isBroadcasted: true));
     } catch (e, st) {
       log.warning('Failed to open PushTx URI', error: e, trace: st);
-      emit(
-        state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())),
-      );
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -156,12 +150,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           ),
         );
       } catch (e, st) {
-        log.warning('Pasted input is not a valid PSBT or tx', error: e, trace: st);
-        emit(
-          state.copyWith(
-            failure: const InvalidTransactionFailure(),
-          ),
+        log.warning(
+          'Pasted input is not a valid PSBT or tx',
+          error: e,
+          trace: st,
         );
+        emit(state.copyWith(failure: const InvalidTransactionFailure()));
       }
     }
   }

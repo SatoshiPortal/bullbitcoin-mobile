@@ -413,7 +413,9 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
       final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet ? lwk.LiquidNetwork.testnet : lwk.LiquidNetwork.mainnet,
+        network: wallet.isTestnet
+            ? lwk.LiquidNetwork.testnet
+            : lwk.LiquidNetwork.mainnet,
         pset: pset,
         mnemonic: wallet.mnemonic,
       );

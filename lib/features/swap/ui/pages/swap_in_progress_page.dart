@@ -146,8 +146,7 @@ class SwapInProgressPage extends StatelessWidget {
                 ],
                 BBButton.big(
                   label: context.loc.swapGoHomeButton,
-                  onPressed: () =>
-                      context.goNamed(WalletRoute.walletHome.name),
+                  onPressed: () => context.goNamed(WalletRoute.walletHome.name),
                   bgColor: context.appColors.secondary,
                   textColor: context.appColors.onSecondary,
                 ),

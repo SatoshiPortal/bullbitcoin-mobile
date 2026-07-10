@@ -34,10 +34,15 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
             originalTransaction.feeSat / originalTransaction.vsize;
         emit(
           state.copyWith(
-            fastestFeeRate: FeeEntity(type: FeeType.fastest, feeRate: fastestRate),
+            fastestFeeRate: FeeEntity(
+              type: FeeType.fastest,
+              feeRate: fastestRate,
+            ),
             newFeeRate: FeeEntity(
               type: FeeType.custom,
-              feeRate: NetworkFee.relativeFromSatPerVbyte(originalSatPerVbyte + 1),
+              feeRate: NetworkFee.relativeFromSatPerVbyte(
+                originalSatPerVbyte + 1,
+              ),
             ),
             minRelay: value.minRelay,
           ),
@@ -51,7 +56,9 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     emit(state.copyWith(failure: null));
 
     if (state.newFeeRate == null) {
-      emit(state.copyWith(failure: const ReplaceByFeeNoFeeRateSelectedFailure()));
+      emit(
+        state.copyWith(failure: const ReplaceByFeeNoFeeRateSelectedFailure()),
+      );
       return;
     }
 
@@ -77,8 +84,9 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
   /// A valid (above-floor) selection — from a custom keystroke or the Fastest
   /// tile. Clears any prior below-floor flag and any broadcast failure.
-  void onChangeFee(FeeEntity fee) =>
-      emit(state.copyWith(newFeeRate: fee, customFeeBelowFloor: false, failure: null));
+  void onChangeFee(FeeEntity fee) => emit(
+    state.copyWith(newFeeRate: fee, customFeeBelowFloor: false, failure: null),
+  );
 
   /// The custom field went below the relay floor or was emptied. Keep
   /// [newFeeRate] (the last valid value / init sentinel) but flag the field so

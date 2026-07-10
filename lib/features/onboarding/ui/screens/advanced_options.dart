@@ -67,7 +67,8 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       const TorProxyWidget(),
                       SettingsEntryItem(
                         icon: Icons.hub,
-                        title: context.loc.onboardingAdvancedOptionsCustomElectrum,
+                        title:
+                            context.loc.onboardingAdvancedOptionsCustomElectrum,
                         onTap: () {
                           context.pushNamed(
                             ElectrumSettingsRoute.electrumSettings.name,
@@ -76,15 +77,17 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       ),
                       SettingsEntryItem(
                         icon: Icons.memory,
-                        title: context.loc.onboardingAdvancedOptionsCustomMempool,
+                        title:
+                            context.loc.onboardingAdvancedOptionsCustomMempool,
                         onTap: () {
                           context.pushNamed(MempoolSettingsRoute.name);
                         },
                       ),
                       SettingsEntryItem(
                         icon: Icons.cloud_circle,
-                        title:
-                            context.loc.onboardingAdvancedOptionsCustomRecoverbull,
+                        title: context
+                            .loc
+                            .onboardingAdvancedOptionsCustomRecoverbull,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(

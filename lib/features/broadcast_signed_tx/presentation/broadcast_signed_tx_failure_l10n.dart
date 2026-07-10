@@ -7,11 +7,10 @@ import 'package:flutter/widgets.dart';
 /// raw `logMessage`.
 extension BroadcastSignedTxFailureL10n on BroadcastSignedTxFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        InvalidTransactionFailure() =>
-          context.loc.broadcastSignedTxErrorInvalidTransaction,
-        InvalidPushTxFailure() =>
-          context.loc.broadcastSignedTxErrorInvalidPushTx,
-        BroadcastFailedFailure() => context.loc.broadcastSignedTxBroadcastError,
-        BroadcastUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
-      };
+    InvalidTransactionFailure() =>
+      context.loc.broadcastSignedTxErrorInvalidTransaction,
+    InvalidPushTxFailure() => context.loc.broadcastSignedTxErrorInvalidPushTx,
+    BroadcastFailedFailure() => context.loc.broadcastSignedTxBroadcastError,
+    BroadcastUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
 }

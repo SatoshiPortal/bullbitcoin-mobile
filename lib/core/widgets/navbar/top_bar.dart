@@ -44,18 +44,17 @@ class TopBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.only(bottom: 8),
               alignment: Alignment.bottomCenter,
-              child:
-                  bullLogo
-                      ? Image.asset(
-                        Assets.logos.bbLogoSmall.path,
-                        height: 32,
-                        width: 32,
-                      )
-                      : BBText(
-                        title,
-                        style: context.font.headlineMedium,
-                        color: context.appColors.onSurface,
-                      ),
+              child: bullLogo
+                  ? Image.asset(
+                      Assets.logos.bbLogoSmall.path,
+                      height: 32,
+                      width: 32,
+                    )
+                  : BBText(
+                      title,
+                      style: context.font.headlineMedium,
+                      color: context.appColors.onSurface,
+                    ),
             ),
           ),
           if (onAction != null) ...[

@@ -23,15 +23,15 @@ class ExchangeAccountScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 context.loc.exchangeAccountSettingsTitle,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: .bold,
-                ),
+                style: const TextStyle(fontSize: 24, fontWeight: .bold),
               ),
               const SizedBox(height: 8),
               Text(
                 context.loc.exchangeAccountComingSoon,
-                style: TextStyle(fontSize: 16, color: context.appColors.textMuted),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.appColors.textMuted,
+                ),
                 textAlign: .center,
               ),
             ],

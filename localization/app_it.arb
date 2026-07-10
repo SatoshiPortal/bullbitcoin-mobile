@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Mappa",
   "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perdi il telefono",
   "backupWarningLoseReasonDeletedApp": "Elimini l'app",

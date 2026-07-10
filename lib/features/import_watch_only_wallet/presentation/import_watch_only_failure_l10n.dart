@@ -7,10 +7,10 @@ import 'package:flutter/widgets.dart';
 /// raw `logMessage`.
 extension ImportWatchOnlyFailureL10n on ImportWatchOnlyFailure {
   String toTranslated(BuildContext context) => switch (this) {
-        NoWalletSelectedFailure() =>
-          context.loc.importWatchOnlyErrorNoWalletSelected,
-        LabelRequiredFailure() => context.loc.importWatchOnlyErrorLabelRequired,
-        InvalidFormatFailure() => context.loc.importWatchOnlyErrorInvalidFormat,
-        ImportFailedFailure() => context.loc.importWatchOnlyErrorImportFailed,
-      };
+    NoWalletSelectedFailure() =>
+      context.loc.importWatchOnlyErrorNoWalletSelected,
+    LabelRequiredFailure() => context.loc.importWatchOnlyErrorLabelRequired,
+    InvalidFormatFailure() => context.loc.importWatchOnlyErrorInvalidFormat,
+    ImportFailedFailure() => context.loc.importWatchOnlyErrorImportFailed,
+  };
 }

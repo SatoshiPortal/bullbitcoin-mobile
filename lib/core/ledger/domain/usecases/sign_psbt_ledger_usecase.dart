@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class SignPsbtLedgerUsecase {
   final LedgerDeviceRepository _repository;
 
-  SignPsbtLedgerUsecase({
-    required this._repository,
-  });
+  SignPsbtLedgerUsecase({required this._repository});
 
   Future<String> execute(
     LedgerDeviceEntity device, {

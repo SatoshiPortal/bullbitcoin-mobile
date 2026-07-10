@@ -30,7 +30,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
-                Text(context.loc.arkBalanceBreakdown, style: context.font.headlineMedium),
+                Text(
+                  context.loc.arkBalanceBreakdown,
+                  style: context.font.headlineMedium,
+                ),
                 const Gap(24),
                 if (arkBalance != null) ...[
                   // Boarding Unconfirmed
@@ -94,7 +97,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.warning,
                           ),
                           const Gap(8),
-                          Text(context.loc.arkPreconfirmed, style: context.font.bodyLarge),
+                          Text(
+                            context.loc.arkPreconfirmed,
+                            style: context.font.bodyLarge,
+                          ),
                         ],
                       ),
                       CurrencyText(
@@ -116,7 +122,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.success,
                           ),
                           const Gap(8),
-                          Text(context.loc.arkSettled, style: context.font.bodyLarge),
+                          Text(
+                            context.loc.arkSettled,
+                            style: context.font.bodyLarge,
+                          ),
                         ],
                       ),
                       CurrencyText(
@@ -138,7 +147,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.primary,
                           ),
                           const Gap(8),
-                          Text(context.loc.arkAvailable, style: context.font.bodyLarge),
+                          Text(
+                            context.loc.arkAvailable,
+                            style: context.font.bodyLarge,
+                          ),
                         ],
                       ),
                       CurrencyText(
@@ -155,7 +167,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      Text(context.loc.arkTotal, style: context.font.titleLarge),
+                      Text(
+                        context.loc.arkTotal,
+                        style: context.font.titleLarge,
+                      ),
                       CurrencyText(
                         arkBalance!.completeTotal,
                         style: context.font.titleLarge,
