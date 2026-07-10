@@ -12,11 +12,13 @@ workspace:
   # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
+  - packages/novlang
 
 dependencies:
   flutter:
     sdk: flutter
   bull_ui:
+  novlang:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
