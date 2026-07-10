@@ -15,10 +15,10 @@ Two-file build setup driven by `make android release`:
 
 Two environment variables are set at build time to eliminate sources of non-determinism:
 
-- `SOURCE_DATE_EPOCH` — set to the timestamp of the latest git commit (`git log -1 --format=%ct`). OpenSSL embeds a wall-clock build timestamp in compiled binaries by default; setting this variable makes it use a fixed value instead, so any `.so` that links against OpenSSL (`libark_wallet.so`, `libboltz.so`, `libtor.so`) is identical across builds.
+- `SOURCE_DATE_EPOCH` — set to the timestamp of the latest git commit (`git log -1 --format=%ct`). OpenSSL embeds a wall-clock build timestamp in compiled binaries by default; setting this variable makes it use a fixed value instead, so any `.so` that links against OpenSSL (e.g. `libtor.so`) is identical across builds. The exact set of shipped Rust `.so` files is confirmed by a real build, not by this doc; the toolchain-pinned subset that `make verify-rustc-pins` checks is the `TRACKED_RUST_LIBS` list in the [`makefile`](../makefile) — keep that list authoritative and this sentence illustrative.
 - `CARGO_ENCODED_RUSTFLAGS` — three `--remap-path-prefix` flags that rewrite absolute paths baked into Rust binaries at compile time (home directory, `.cargo`, `.rustup`) to fixed strings (`/cargo`, `/rustup`, `/build`). cargokit reads `CARGO_ENCODED_RUSTFLAGS` rather than `RUSTFLAGS`; flags are separated by the ASCII unit separator `\x1f` (octal `\037`).
 
-After extracting the APK, `make android` (for `FORMAT=apk`) also runs `make verify-rustc-pins`, which greps the embedded `rustc version` string out of every shipped Rust `.so` and compares it against the pinned toolchains running live inside `bull-app`. This exists because `Containerfile.tools`'s `RUSTUP_TOOLCHAIN` pin only covers cargo/rustc invocations that read that env var — cargokit and `bdk_dart`'s native-assets build hook both invoke `rustup run <toolchain>` directly, which bypasses it. See the `rustup toolchain link stable` step in `Containerfile.tools` for the actual fix; this check exists to catch a regression of that fix, not to work around its absence.
+After extracting the APK, `make android` (for `FORMAT=apk`) also runs `make verify-rustc-pins`, which greps the embedded `rustc version` string out of every shipped Rust `.so` and compares it against the pinned toolchains running live inside `bull-app`. This exists because `Containerfile.tools`'s `RUSTUP_TOOLCHAIN` pin only covers cargo/rustc invocations that read that env var — cargokit and `bdk_dart`'s native-assets build hook both invoke `rustup run <toolchain>` directly, which bypasses it. See the `rustup` shim installed near the end of `Containerfile.tools` for the actual fix (it rewrites cargokit's hard-coded `stable` argument to the pinned `RUST_VERSION`; `rustup toolchain link stable` is *not* usable because rustup ≥1.28 rejects the reserved channel name); this check exists to catch a regression of that fix, not to work around its absence.
 
 ### `Dockerfile` (this directory)
 
@@ -114,12 +114,18 @@ SatoshiPortal GitHub org) — tracked here rather than silently dropped:
   a byte-identical rebuild to silently stop matching. Push the built image to
   a registry (or `podman save` a tarball) per release and record its digest
   in the release notes; verifiers can then pull the frozen toolchain instead
-  of re-resolving it.
+  of re-resolving it. **Caveat — never archive an image built with beta signing
+  secrets present.** `.dockerignore` deliberately re-includes
+  `android/app/beta-upload.keystore` and does not exclude
+  `android/key-beta.properties` (which holds the store/key passwords), so a
+  *beta* build's `bull-app` layers contain live signing material — safe only on
+  an ephemeral runner. Only images built for `release`/verification (where
+  `build-android.yml` materializes beta secrets solely for `mode == 'beta'`, so
+  they are absent otherwise) may be pushed or saved. Confirm the keystore and
+  properties are not in the image before archiving.
 - **Mirror personal-account git dependencies into the SatoshiPortal org.**
-  `pubspec.yaml`'s `bdk_dart` dependency (the reproducible-build fork this
-  whole pipeline depends on) points at `github.com/ethicnology/bdk-dart`, a
-  personal account; `bull_sdk`'s `Cargo.toml` pins `bitbox-api-rs` from
-  `github.com/ben-kaufman/bitbox-api-rs`, also personal. Commit-SHA pinning
+  `bull_sdk`'s `Cargo.toml` pins `bitbox-api-rs` from
+  `github.com/ben-kaufman/bitbox-api-rs`, a personal account. Commit-SHA pinning
   makes these resolve to exact bytes today, but a pin doesn't survive the
   commit becoming unreachable (account deleted, repo force-pushed/rewritten).
   Mirroring these forks under the SatoshiPortal org removes that single
