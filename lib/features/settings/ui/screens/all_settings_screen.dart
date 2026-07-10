@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/novlang_x.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
@@ -63,9 +64,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               children: [
                 SettingsEntryItem(
                   icon: Icons.currency_exchange,
-                  title: Platform.isIOS && !isSuperuser
-                      ? context.loc.settingsAccountSettingsTitle
-                      : context.loc.settingsExchangeSettingsTitle,
+                  title: context.novlang(
+                    real: context.loc.settingsExchangeSettingsTitle,
+                    apple:
+                        context.loc.settingsExchangeSettingsTitleNewspeakApple,
+                  ),
                   onTap: () {
                     if (Platform.isIOS) {
                       if (isSuperuser) {
