@@ -13349,7 +13349,7 @@
   },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
-    "description": "Title for the account settings screen (shown to non-superusers)"
+    "description": "DEPRECATED: replaced by settingsExchangeSettingsTitleNewspeakApple (novlang twin). Kept until translation sync confirms; remove in a follow-up PR."
   },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
   "@exchangeSettingsDeleteAccountTitle": {
@@ -14751,5 +14751,9 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "settingsExchangeSettingsTitleNewspeakApple": "Account Settings",
+  "@settingsExchangeSettingsTitleNewspeakApple": {
+    "description": "Apple App Store store-compliance twin of settingsExchangeSettingsTitle (real term: Exchange Settings). Shown to non-superusers on iOS via context.novlang()."
   }
 }
