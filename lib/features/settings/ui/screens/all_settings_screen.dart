@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/novlang_x.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';

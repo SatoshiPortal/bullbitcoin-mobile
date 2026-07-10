@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A minimal stand-in for [SettingsCubit] that only carries state. The real
-/// cubit needs a dozen use-case dependencies; the novlang helper only reads
+/// cubit needs a dozen use-case dependencies; the novlang extension only reads
 /// `state.isSuperuser`, so a stateful [Cubit] is enough. `noSuchMethod`
 /// satisfies the `implements` contract without stubbing every method.
 class _FakeSettingsCubit extends Cubit<SettingsState> implements SettingsCubit {
@@ -29,37 +29,13 @@ SettingsState _stateWithSuperuser(bool? isSuperuser) {
 }
 
 void main() {
-  // Resolves `context.novlangPolicy` under a given platform + state.
+  // Renders `context.novlang(...)` under a given platform + state and returns
+  // the chosen string. Exercises the extension's policy resolution (platform +
+  // superuser); the pure pick() table is covered in package:novlang's tests.
   //
-  // The platform override must be reset before the test body returns:
-  // flutter_test asserts all foundation debug vars are unset at the end of the
-  // body, which runs *before* tearDowns — so we reset in a finally here.
-  Future<NewspeakPolicy> resolvePolicy(
-    WidgetTester tester, {
-    required SettingsState state,
-    required TargetPlatform platform,
-  }) async {
-    debugDefaultTargetPlatformOverride = platform;
-    try {
-      late NewspeakPolicy policy;
-      await tester.pumpWidget(
-        BlocProvider<SettingsCubit>.value(
-          value: _FakeSettingsCubit(state),
-          child: Builder(
-            builder: (context) {
-              policy = context.novlangPolicy;
-              return const SizedBox();
-            },
-          ),
-        ),
-      );
-      return policy;
-    } finally {
-      debugDefaultTargetPlatformOverride = null;
-    }
-  }
-
-  // Renders `context.novlang(...)` and returns the chosen string.
+  // The platform override is reset before the test body returns: flutter_test
+  // asserts all foundation debug vars are unset at the end of the body, which
+  // runs *before* tearDowns — so we reset in a finally here.
   Future<String> resolveNovlang(
     WidgetTester tester, {
     required SettingsState state,
@@ -91,65 +67,8 @@ void main() {
     }
   }
 
-  group('novlangPolicy', () {
-    testWidgets('iOS non-superuser → apple', (tester) async {
-      expect(
-        await resolvePolicy(
-          tester,
-          state: _stateWithSuperuser(false),
-          platform: TargetPlatform.iOS,
-        ),
-        NewspeakPolicy.apple,
-      );
-    });
-
-    testWidgets('Android non-superuser → google', (tester) async {
-      expect(
-        await resolvePolicy(
-          tester,
-          state: _stateWithSuperuser(false),
-          platform: TargetPlatform.android,
-        ),
-        NewspeakPolicy.google,
-      );
-    });
-
-    testWidgets('superuser → none even on iOS', (tester) async {
-      expect(
-        await resolvePolicy(
-          tester,
-          state: _stateWithSuperuser(true),
-          platform: TargetPlatform.iOS,
-        ),
-        NewspeakPolicy.none,
-      );
-    });
-
-    testWidgets('null superuser is treated as non-superuser', (tester) async {
-      expect(
-        await resolvePolicy(
-          tester,
-          state: _stateWithSuperuser(null),
-          platform: TargetPlatform.iOS,
-        ),
-        NewspeakPolicy.apple,
-      );
-    });
-
-    testWidgets('desktop platform → none', (tester) async {
-      expect(
-        await resolvePolicy(
-          tester,
-          state: _stateWithSuperuser(false),
-          platform: TargetPlatform.macOS,
-        ),
-        NewspeakPolicy.none,
-      );
-    });
-  });
-
-  group('novlang selector', () {
-    testWidgets('apple policy uses the apple twin', (tester) async {
+  group('policy resolution', () {
+    testWidgets('iOS non-superuser → apple twin', (tester) async {
       expect(
         await resolveNovlang(
           tester,
@@ -162,21 +81,7 @@ void main() {
       );
     });
 
-    testWidgets('apple policy falls back to real when no apple twin', (
-      tester,
-    ) async {
-      expect(
-        await resolveNovlang(
-          tester,
-          state: _stateWithSuperuser(false),
-          platform: TargetPlatform.iOS,
-          google: 'google',
-        ),
-        'real',
-      );
-    });
-
-    testWidgets('google policy uses the google twin', (tester) async {
+    testWidgets('Android non-superuser → google twin', (tester) async {
       expect(
         await resolveNovlang(
           tester,
@@ -189,27 +94,50 @@ void main() {
       );
     });
 
-    testWidgets('google policy falls back to real when no google twin', (
-      tester,
-    ) async {
-      expect(
-        await resolveNovlang(
-          tester,
-          state: _stateWithSuperuser(false),
-          platform: TargetPlatform.android,
-          apple: 'apple',
-        ),
-        'real',
-      );
-    });
-
-    testWidgets('none policy (superuser) always returns real', (tester) async {
+    testWidgets('superuser → real even on iOS', (tester) async {
       expect(
         await resolveNovlang(
           tester,
           state: _stateWithSuperuser(true),
           platform: TargetPlatform.iOS,
           apple: 'apple',
+          google: 'google',
+        ),
+        'real',
+      );
+    });
+
+    testWidgets('null superuser is treated as non-superuser', (tester) async {
+      expect(
+        await resolveNovlang(
+          tester,
+          state: _stateWithSuperuser(null),
+          platform: TargetPlatform.iOS,
+          apple: 'apple',
+        ),
+        'apple',
+      );
+    });
+
+    testWidgets('desktop platform → real', (tester) async {
+      expect(
+        await resolveNovlang(
+          tester,
+          state: _stateWithSuperuser(false),
+          platform: TargetPlatform.macOS,
+          apple: 'apple',
+          google: 'google',
+        ),
+        'real',
+      );
+    });
+
+    testWidgets('iOS with no apple twin falls back to real', (tester) async {
+      expect(
+        await resolveNovlang(
+          tester,
+          state: _stateWithSuperuser(false),
+          platform: TargetPlatform.iOS,
           google: 'google',
         ),
         'real',
