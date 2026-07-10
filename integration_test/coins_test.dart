@@ -33,7 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 //      wallet's real UTXOs and asserts the confirmations/labels fields the view
 //      renders. Needs a funded testnet wallet → skipped when absent.
 //
-// Run via `make integration-test` (auto-aggregated by tool/gen_all_test.dart).
+// Run via `make integration-test` (auto-aggregated by tools/gen_all_test.dart).
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();

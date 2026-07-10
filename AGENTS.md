@@ -171,7 +171,7 @@ Workflow when you need a widget:
 3. **If genuinely new and reused by ≥ 2 features**, put it in `lib/core/widgets/<category>/` from the start — that *is* growing the UI Kit.
 4. **If used by exactly one feature**, it lives in `<feature>/ui/widgets/` — but write it composable enough to be promoted later (no hardcoded colors, no hardcoded text, take callbacks not bloc refs).
 5. **Widgets never live under `adapters/`, `frameworks/`, `domain/`, or `application/`.** UI goes in `ui/` or `lib/core/widgets/`. Full stop.
-6. **No hardcoded user-facing strings.** Always `context.loc.<key>` — the `BuildContext` extension (`build_context_x.dart`) that wraps `AppLocalizations.of(context)`; it is the dominant convention (≈2564 uses vs 3 raw `AppLocalizations.of`). Add the key to [`localization/`](localization/) and run `make translations`. A duplicated literal across screens means a missing l10n key.
+6. **No hardcoded user-facing strings.** Always `context.loc.<key>` — the `BuildContext` extension (`build_context_x.dart`) that wraps `AppLocalizations.of(context)`; it is the dominant convention (≈2564 uses vs 3 raw `AppLocalizations.of`). Manage keys in [`localization/`](localization/) with [`tools/arb.dart`](tools/README.md) (`fvm dart run tools/arb.dart help`) — don't hand-edit the `.arb` files — then run `make translations`. A duplicated literal across screens means a missing l10n key.
 7. **Theme tokens only** — colors, spacing, typography pulled from the theme. See rule #10 above.
 
 When you spot a duplicate of an existing core widget in feature code, flag it in the PR description as a follow-up cleanup. Don't silently leave it. Don't fix unrelated duplicates in the same PR either — that breaks atomic commits.
