@@ -393,11 +393,19 @@ if [[ "$verificationMode" == "github" ]]; then
     [[ -f "$apkDir/base.apk" ]] && officialApk="$apkDir/base.apk"
 
     # Authoritative verdict: raw per-entry content hash comparison.
+    # exit 0 = identical; exit 1 = real per-entry differences; exit 2 = the
+    # comparison could not run (unreadable/corrupt APK). All non-zero results
+    # fail closed, but 1 and 2 mean different things — keep them distinct so
+    # RESULTS.md doesn't present an infrastructure error as a byte difference.
     if rawCompareOutput=$(containerCompareApks "$officialApk" "$workDir/built.apk" 2>&1); then
         total_diffs=0
     else
+        rawCompareRc=$?
         total_diffs=1
         echo "$rawCompareOutput" > "$workDir/raw_entry_diff.txt"
+        if [[ "$rawCompareRc" -ge 2 ]]; then
+            echo "⚠️  entry comparison could not complete (exit $rawCompareRc) — treating as FAILED (unreadable APK), not a byte diff" >&2
+        fi
     fi
 
     # apktool decode kept purely as a diagnostic to explain *what* differs —
@@ -466,8 +474,15 @@ $(basename "$built")"
         if rawCompareOutput=$(containerCompareApks "$official" "$built" 2>&1); then
             echo "  $name: identical"
         else
+            splitRc=$?
             total_diffs=$((total_diffs + 1))
-            echo -e "${RED}  $name: differences found${NC}"
+            # exit 2 = the comparison couldn't run (unreadable split), exit 1 =
+            # real per-entry differences. Both fail closed; label them apart.
+            if [[ "$splitRc" -ge 2 ]]; then
+                echo -e "${RED}  $name: comparison could not complete (unreadable APK) — FAIL${NC}"
+            else
+                echo -e "${RED}  $name: differences found${NC}"
+            fi
             echo "$rawCompareOutput" > "$workDir/raw_entry_diff_${name}.txt"
         fi
 

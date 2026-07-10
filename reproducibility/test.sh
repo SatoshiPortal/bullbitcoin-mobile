@@ -72,6 +72,10 @@ sha256sum "$WORK_DIR/build2.apk"
 # exclusion is the same one used everywhere else: legacy JAR signature files.
 echo ""
 echo "=== Comparing raw entry contents ==="
+# Capture the exit code in the `else` branch: after a bare `if cmd; then ...;
+# fi` whose condition is false and whose `then` branch is skipped, bash resets
+# $? to 0, so reading it after `fi` would lose the real status. The `else`
+# branch runs while $? still holds the condition's exit code.
 if raw_diff=$($CTR run --rm \
     -v "$WORK_DIR":/work:ro \
     -v "$SCRIPT_DIR/compare_apk_entries.sh":/compare.sh:ro \
@@ -80,9 +84,17 @@ if raw_diff=$($CTR run --rm \
     echo -e "${GREEN}BUILD IS REPRODUCIBLE${NC}"
     echo "Both builds are identical (excluding legacy JAR signature files)."
     exit 0
+else
+    raw_rc=$?
 fi
 
-echo -e "${RED}DIFFERENCES FOUND${NC}"
+# exit 1 = real per-entry differences; exit 2 = the comparison could not run
+# (unreadable/corrupt APK). Both fail closed; distinguish them in the output.
+if [[ "$raw_rc" -ge 2 ]]; then
+    echo -e "${RED}COMPARISON COULD NOT COMPLETE (unreadable APK) — treating as NOT reproducible${NC}"
+else
+    echo -e "${RED}DIFFERENCES FOUND${NC}"
+fi
 echo "$raw_diff" | tee "$WORK_DIR/raw_diff.txt"
 
 # --- Decode both APKs for a human-readable explanation ---

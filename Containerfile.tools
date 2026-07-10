@@ -148,10 +148,14 @@ RUN rustc --version && cargo --version
 # `rustup run <channel> cargo build` directly — same bypass as cargokit above,
 # but with its own pinned channel. Pre-install it (and its Android targets) so
 # the build never fetches a toolchain from the network. Keep in sync with the
-# `channel` value AND `components` in bdk-dart's native/rust-toolchain.toml (see
-# the bdk_dart git dependency in pubspec.yaml) — the components are pre-added
+# `channel` value AND `components` in bdk-dart's native/rust-toolchain.toml
+# (bdk_dart is a transitive git dependency pulled in via bull_sdk — see its
+# resolved-ref in pubspec.lock) — the components are pre-added
 # here so rustup does not silently fetch them from the network at build time
 # when native_toolchain_rust honours that toolchain file.
+# Default here is a fallback; the makefile passes --build-arg BDK_RUST_VERSION
+# from its own BDK_RUST_VERSION variable (the single source of truth, also used
+# by `make verify-rustc-pins`). Keep the two in sync if you edit either.
 ARG BDK_RUST_VERSION="1.85.1"
 RUN rustup toolchain install ${BDK_RUST_VERSION}
 RUN rustup component add --toolchain ${BDK_RUST_VERSION} clippy rustfmt

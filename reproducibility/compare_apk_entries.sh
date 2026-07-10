@@ -33,11 +33,31 @@ hash_entries() {
     # yield a false IDENTICAL. `set -e` does not catch a failure mid-pipeline,
     # so the listing is captured and checked explicitly.
     entries=$(unzip -Z1 "$1") || { echo "error: cannot read zip entries from $1" >&2; return 3; }
+    entry_tmp=$(mktemp)
     printf '%s\n' "$entries" | grep -Ev "$exclude_re" | LC_ALL=C sort | while IFS= read -r entry; do
         [ -n "$entry" ] || continue
-        hash=$(unzip -p "$1" "$entry" 2>/dev/null | sha256sum | awk '{print $1}')
+        # unzip -p treats the member name as a shell-glob PATTERN: an entry name
+        # containing * ? [ ] would extract some OTHER pattern-matched entry
+        # (identically in both APKs), hashing a real byte difference as equal —
+        # a false IDENTICAL. Escape the glob metacharacters so the name matches
+        # literally. (-\ escaping per Info-ZIP's pattern syntax.)
+        escaped=$(printf '%s' "$entry" | sed 's/[][*?\\]/\\&/g')
+        # Extract to a temp file so we can check unzip's exit status: POSIX sh
+        # has no pipefail, so `unzip -p ... | sha256sum` would hash empty input
+        # and report success even when extraction failed — comparing the same
+        # unreadable entry in both APKs would then hash equal (empty==empty) and
+        # its real bytes would never be compared. A failed extraction ABORTS.
+        if ! unzip -p "$1" "$escaped" > "$entry_tmp" 2>/dev/null; then
+            echo "error: cannot extract entry '$entry' from $1" >&2
+            rm -f "$entry_tmp"
+            exit 3
+        fi
+        hash=$(sha256sum < "$entry_tmp" | awk '{print $1}')
         printf '%s  %s\n' "$hash" "$entry"
     done
+    rc=$?
+    rm -f "$entry_tmp"
+    return $rc
 }
 
 tmp1=$(mktemp)
