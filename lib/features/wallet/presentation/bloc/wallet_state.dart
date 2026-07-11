@@ -24,7 +24,6 @@ sealed class WalletState with _$WalletState {
     @Default(0) int arkBalanceSat,
     @Default(false) bool isArkWalletLoading,
     @Default(false) bool isArkWalletSetup,
-    @Default(null) SpWallet? spWallet,
     @Default(0) int spBalanceSat,
     @Default(false) bool isSpWalletSetup,
     // The SP feature gate (superuser + dev mode), mirrored here so the wallet

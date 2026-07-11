@@ -201,7 +201,6 @@ void main() {
         walletState: const WalletState(
           isSpWalletSetup: true,
           isSpFeatureEnabled: true,
-          spWallet: null,
         ),
         settingsState: _settingsState(isSuperuser: true),
       );

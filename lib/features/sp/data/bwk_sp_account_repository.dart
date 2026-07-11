@@ -352,12 +352,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
   SpBalance balance() => SpBalanceMapper.toDomain(_live.unifiedBalance());
 
   @override
-  bool get isScanning => _live.isScanning();
-
-  @override
-  int? get lastScannedHeight => _live.lastScannedHeight();
-
-  @override
   bool get isScanningCached => _scanning;
 
   @override

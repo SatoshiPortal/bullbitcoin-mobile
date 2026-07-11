@@ -93,8 +93,6 @@ abstract interface class SpAccountRepository {
   /// session is established.
   SpWallet snapshot();
   SpBalance balance();
-  bool get isScanning;
-  int? get lastScannedHeight;
 
   /// Whether a scan is running, tracked in Dart from notifications (no FFI), so
   /// callers can skip blocking reads while the scan holds the inner lock.

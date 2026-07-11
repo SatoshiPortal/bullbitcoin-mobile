@@ -218,7 +218,7 @@ Future<List<WalletState>> driveCollecting(
 void main() {
   group('WalletBloc SP: RefreshSpWallet handler', () {
     test(
-      'A: spWallet set in state when setup=true and wallet loaded',
+      'A: spBalanceSat set in state when setup=true and wallet loaded',
       () async {
         final refreshSp = _MockRefreshSpWalletForWallet();
         final checkSetup = _MockCheckSpWalletSetupForWallet();
@@ -233,8 +233,6 @@ void main() {
 
         expect(states, isNotEmpty);
         final finalState = states.last;
-        expect(finalState.spWallet, isNotNull);
-        expect(finalState.spWallet, same(wallet));
         expect(finalState.spBalanceSat, 5000);
         expect(finalState.isSpWalletLoading, isFalse);
         expect(finalState.isSpWalletSetup, isTrue);
@@ -260,7 +258,7 @@ void main() {
       expect(states, isNotEmpty);
       final finalState = states.last;
       expect(finalState.isSpWalletSetup, isFalse);
-      expect(finalState.spWallet, isNull);
+      expect(finalState.spBalanceSat, 0);
       expect(finalState.isSpWalletLoading, isFalse);
 
       await bloc.close();
@@ -303,7 +301,6 @@ void main() {
       await drive(bloc, const RefreshSpWallet());
 
       expect(bloc.state.isSpWalletSetup, isTrue);
-      expect(bloc.state.spWallet, same(wallet));
       expect(bloc.state.spBalanceSat, 200);
       expect(bloc.state.isSpWalletLoading, isFalse);
       verify(() => refreshSp.execute()).called(1);
@@ -327,7 +324,6 @@ void main() {
 
         // Prime state with a loaded wallet.
         await drive(bloc, const RefreshSpWallet());
-        expect(bloc.state.spWallet, same(wallet));
         expect(bloc.state.spBalanceSat, 7777);
 
         // Now make refresh fail.
@@ -338,11 +334,6 @@ void main() {
         await drive(bloc, const RefreshSpWallet());
 
         // State left intact; loading cleared so the UI doesn't get stuck.
-        expect(
-          bloc.state.spWallet,
-          same(wallet),
-          reason: 'state.spWallet must remain unchanged when refresh fails',
-        );
         expect(
           bloc.state.spBalanceSat,
           7777,
@@ -400,7 +391,7 @@ void main() {
 
       // Prime with a loaded wallet (not scanning).
       await drive(bloc, const RefreshSpWallet());
-      expect(bloc.state.spWallet, same(wallet));
+      expect(bloc.state.spBalanceSat, 3000);
 
       // Now a scan is running: the next refresh must skip (no dispose/snapshot).
       when(() => checkScanning.execute()).thenReturn(true);
@@ -408,7 +399,6 @@ void main() {
 
       await drive(bloc, const RefreshSpWallet());
 
-      expect(bloc.state.spWallet, same(wallet));
       expect(bloc.state.spBalanceSat, 3000);
       verifyNever(() => refreshSp.execute());
 
@@ -513,14 +503,13 @@ void main() {
       clearInteractions(checkSetup);
 
       final loaded = bloc.stream.firstWhere(
-        (s) => identical(s.spWallet, wallet),
+        (s) => s.spBalanceSat == 4321,
       );
 
       controller.add(const SpSetupChanged());
 
       await loaded;
       expect(bloc.state.isSpWalletSetup, isTrue);
-      expect(bloc.state.spWallet, same(wallet));
       expect(bloc.state.spBalanceSat, 4321);
       verify(() => checkSetup.execute()).called(1);
       verify(() => refreshSp.execute()).called(1);

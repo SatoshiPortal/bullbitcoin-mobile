@@ -22,5 +22,4 @@ class SpWallet {
   });
 
   BigInt get confirmedSat => balance.confirmedSat;
-  BigInt get totalUnifiedSat => balance.totalUnifiedSat;
 }

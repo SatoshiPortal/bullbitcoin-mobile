@@ -699,7 +699,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       case Ok(:final value):
         emit(
           state.copyWith(
-            spWallet: value,
             spBalanceSat: value?.confirmedSat.toInt() ?? 0,
             isSpWalletLoading: false,
           ),

@@ -14,6 +14,5 @@ abstract final class SpPaymentMapper {
     feeSat: view.feeSat,
     height: view.height,
     timestamp: view.timestamp,
-    label: view.label,
   );
 }

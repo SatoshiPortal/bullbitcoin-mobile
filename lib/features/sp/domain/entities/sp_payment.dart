@@ -11,7 +11,6 @@ class SpPayment {
   final BigInt? feeSat;
   final int? height;
   final BigInt? timestamp;
-  final String? label;
 
   const SpPayment({
     required this.txid,
@@ -20,6 +19,5 @@ class SpPayment {
     this.feeSat,
     this.height,
     this.timestamp,
-    this.label,
   });
 }

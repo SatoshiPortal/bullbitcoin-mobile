@@ -132,12 +132,6 @@ class FakeSpAccountRepository implements SpAccountRepository {
   SpBalance balance() => _wallet.balance;
 
   @override
-  bool get isScanning => _wallet.isScanning;
-
-  @override
-  int? get lastScannedHeight => _wallet.lastScannedHeight;
-
-  @override
   bool get isScanningCached => _wallet.isScanning;
 
   @override
