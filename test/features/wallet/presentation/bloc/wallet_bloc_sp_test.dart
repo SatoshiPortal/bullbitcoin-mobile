@@ -126,6 +126,9 @@ WalletBloc _makeBloc({
   // an empty stream so existing tests (which never dispatch `WalletStarted`,
   // or do so without expecting SP-driven dispatches) are unaffected.
   Stream<SpUpdate> spUpdates = const Stream<SpUpdate>.empty(),
+  // The superuser + dev mode feature gate. Defaults on so existing tests see
+  // the SP card enabled.
+  bool gateEnabled = true,
 }) {
   checkSetup ??= _MockCheckSpWalletSetupForWallet();
   checkScanning ??= _MockCheckSpScanningForWallet();
@@ -164,7 +167,7 @@ WalletBloc _makeBloc({
   when(() => seedStoreType.read()).thenAnswer((_) async => null);
 
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
-  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => true);
+  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
 
   return WalletBloc(
     getWalletsUsecase: getWallets,
@@ -263,6 +266,34 @@ void main() {
 
       await bloc.close();
     });
+
+    test(
+      'K: gate off emits isSpFeatureEnabled=false even when set up (SP card '
+      'stays hidden)',
+      () async {
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        final wallet = _spWallet(5000);
+
+        when(() => checkSetup.execute()).thenAnswer((_) async => true);
+        when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
+
+        final bloc = _makeBloc(
+          refreshSp: refreshSp,
+          checkSetup: checkSetup,
+          gateEnabled: false,
+        );
+
+        final states = await driveCollecting(bloc, const RefreshSpWallet());
+
+        // The card gates on isSpFeatureEnabled && isSpWalletSetup; a gate off
+        // hides it regardless of setup.
+        expect(states.last.isSpFeatureEnabled, isFalse);
+        expect(states.last.isSpWalletSetup, isTrue);
+
+        await bloc.close();
+      },
+    );
 
     test(
       'C: amount override emits spBalanceSat directly, no setup check',
