@@ -27,6 +27,8 @@ import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dar
 import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_amount_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notification_log_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notifications_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_updates_usecase.dart';
@@ -130,6 +132,16 @@ class SpLocator {
     locator.registerFactory<GetSpBalanceUsecase>(
       () => GetSpBalanceUsecase(repository: locator<SpAccountRepository>()),
     );
+    locator.registerFactory<ValidateSpRecipientUsecase>(
+      () => ValidateSpRecipientUsecase(
+        getSpNetworkUsecase: locator<GetSpNetworkUsecase>(),
+      ),
+    );
+    locator.registerFactory<ValidateSpAmountUsecase>(
+      () => ValidateSpAmountUsecase(
+        getSpBalanceUsecase: locator<GetSpBalanceUsecase>(),
+      ),
+    );
     locator.registerFactory<GetSpBackendDefaultsUsecase>(
       () => GetSpBackendDefaultsUsecase(
         configRepository: locator<SpBackendConfigRepository>(),
@@ -220,8 +232,8 @@ class SpLocator {
       () => SpSendCubit(
         prepareSpPaymentUsecase: locator<PrepareSpPaymentUsecase>(),
         sendSpPaymentUsecase: locator<SendSpPaymentUsecase>(),
-        getSpNetworkUsecase: locator<GetSpNetworkUsecase>(),
-        getSpBalanceUsecase: locator<GetSpBalanceUsecase>(),
+        validateSpRecipientUsecase: locator<ValidateSpRecipientUsecase>(),
+        validateSpAmountUsecase: locator<ValidateSpAmountUsecase>(),
       ),
     );
     locator.registerFactory<SpSetupCubit>(

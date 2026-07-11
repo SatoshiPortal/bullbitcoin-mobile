@@ -2,6 +2,8 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_balance_usecase.dar
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_network_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_amount_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_send_recipient_page.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -40,8 +42,12 @@ void main() {
     cubit = SpSendCubit(
       prepareSpPaymentUsecase: _MockPrepareSpPaymentUsecase(),
       sendSpPaymentUsecase: _MockSendSpPaymentUsecase(),
-      getSpNetworkUsecase: _MockGetSpNetworkUsecase(),
-      getSpBalanceUsecase: _MockGetSpBalanceUsecase(),
+      validateSpRecipientUsecase: ValidateSpRecipientUsecase(
+        getSpNetworkUsecase: _MockGetSpNetworkUsecase(),
+      ),
+      validateSpAmountUsecase: ValidateSpAmountUsecase(
+        getSpBalanceUsecase: _MockGetSpBalanceUsecase(),
+      ),
     );
   });
 

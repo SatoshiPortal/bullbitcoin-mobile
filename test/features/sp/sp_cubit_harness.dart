@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_amount_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notifications_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
@@ -115,7 +117,11 @@ class SpSendCubitHarness {
   SpSendCubit build() => SpSendCubit(
     prepareSpPaymentUsecase: prepareUsecase,
     sendSpPaymentUsecase: sendUsecase,
-    getSpNetworkUsecase: networkUsecase,
-    getSpBalanceUsecase: balanceUsecase,
+    validateSpRecipientUsecase: ValidateSpRecipientUsecase(
+      getSpNetworkUsecase: networkUsecase,
+    ),
+    validateSpAmountUsecase: ValidateSpAmountUsecase(
+      getSpBalanceUsecase: balanceUsecase,
+    ),
   );
 }
