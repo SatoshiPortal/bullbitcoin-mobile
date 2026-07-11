@@ -15,6 +15,10 @@ sealed class SettingsState with _$SettingsState {
     // renders a generic localized message and the raw cause is logged at the
     // boundary only, never surfaced to the user.
     @Default(false) bool revokeSpFailed,
+    // Whether the Silent Payments wallet is set up (gated + sentinel-aware),
+    // read through the SP facade. Drives the bitcoin-settings SP setup/settings
+    // entry, so the screen reads it here instead of the WalletBloc.
+    @Default(false) bool isSpWalletSetup,
   }) = _SettingsState;
   const SettingsState._();
 

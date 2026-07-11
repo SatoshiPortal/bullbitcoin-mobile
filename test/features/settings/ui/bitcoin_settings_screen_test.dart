@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,11 +10,10 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
-class _MockWalletBloc extends Mock implements WalletBloc {}
-
 SettingsState _settingsState({
   bool isSuperuser = true,
   bool isDevModeEnabled = true,
+  bool isSpWalletSetup = false,
 }) => SettingsState(
   storedSettings: SettingsEntity(
     environment: Environment.mainnet,
@@ -24,36 +22,29 @@ SettingsState _settingsState({
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
   ),
+  isSpWalletSetup: isSpWalletSetup,
 );
 
-Widget _buildPage({
-  required SettingsCubit settingsCubit,
-  required WalletBloc walletBloc,
-}) => MaterialApp(
+Widget _buildPage({required SettingsCubit settingsCubit}) => MaterialApp(
   localizationsDelegates: const [
     AppLocalizations.delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
   ],
   supportedLocales: AppLocalizations.supportedLocales,
-  home: MultiBlocProvider(
-    providers: [
-      BlocProvider<SettingsCubit>.value(value: settingsCubit),
-      BlocProvider<WalletBloc>.value(value: walletBloc),
-    ],
+  home: BlocProvider<SettingsCubit>.value(
+    value: settingsCubit,
     child: const BitcoinSettingsScreen(),
   ),
 );
 
 void main() {
   late _MockSettingsCubit settingsCubit;
-  late _MockWalletBloc walletBloc;
 
   setUp(() {
     settingsCubit = _MockSettingsCubit();
-    walletBloc = _MockWalletBloc();
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settingsCubit.checkSpWalletSetup()).thenAnswer((_) async {});
   });
 
   // Pumps the screen with the given gate flags + setup state. Both SP entries
@@ -68,14 +59,10 @@ void main() {
       _settingsState(
         isSuperuser: isSuperuser,
         isDevModeEnabled: isDevModeEnabled,
+        isSpWalletSetup: isSpWalletSetup,
       ),
     );
-    when(
-      () => walletBloc.state,
-    ).thenReturn(WalletState(isSpWalletSetup: isSpWalletSetup));
-    await tester.pumpWidget(
-      _buildPage(settingsCubit: settingsCubit, walletBloc: walletBloc),
-    );
+    await tester.pumpWidget(_buildPage(settingsCubit: settingsCubit));
   }
 
   group('superuser + dev mode both on', () {
@@ -101,6 +88,17 @@ void main() {
 
       expect(find.text('SP Wallet Settings'), findsOneWidget);
       expect(find.text('Create SP Wallet'), findsNothing);
+    });
+
+    testWidgets('refreshes the SP setup flag on entry', (tester) async {
+      await pumpScreen(
+        tester,
+        isSuperuser: true,
+        isDevModeEnabled: true,
+        isSpWalletSetup: false,
+      );
+
+      verify(() => settingsCubit.checkSpWalletSetup()).called(1);
     });
   });
 

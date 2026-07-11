@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -37,6 +38,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._getOldSeedsUsecase,
     required this._revokeArkUsecase,
     required this._revokeSpWalletUsecase,
+    required this._checkSpWalletSetupUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
   }) : super(const SettingsState());
@@ -53,6 +55,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
   final RevokeSpWalletForSettingsUsecase _revokeSpWalletUsecase;
+  final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
 
@@ -67,6 +70,19 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
     await checkHasLegacySeeds();
+    await checkSpWalletSetup();
+  }
+
+  /// Refresh whether the SP wallet is set up (read through the facade). Called
+  /// on init, after a dev-mode toggle, and when the bitcoin-settings screen is
+  /// (re)entered so its SP entry reflects the current state.
+  Future<void> checkSpWalletSetup() async {
+    try {
+      final isSpWalletSetup = await _checkSpWalletSetupUsecase.execute();
+      emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
+    } catch (e) {
+      log.warning('SettingsCubit.checkSpWalletSetup failed: $e');
+    }
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -196,6 +212,8 @@ class SettingsCubit extends Cubit<SettingsState> {
         revokeSpFailed: revokeSpFailed,
       ),
     );
+    // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.
+    await checkSpWalletSetup();
   }
 
   Future<void> setExchangeTestnetBasicAuth({

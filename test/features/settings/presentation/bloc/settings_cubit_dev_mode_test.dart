@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -49,6 +50,9 @@ class _MockRevokeArkUsecase extends Mock implements RevokeArkUsecase {}
 class _MockRevokeSpWalletUsecase extends Mock
     implements RevokeSpWalletForSettingsUsecase {}
 
+class _MockCheckSpWalletSetupUsecase extends Mock
+    implements CheckSpWalletSetupForSettingsUsecase {}
+
 class _MockSetErrorReportingUsecase extends Mock
     implements SetErrorReportingUsecase {}
 
@@ -77,6 +81,7 @@ void main() {
 
   late _MockSetIsDevModeUsecase setIsDevModeUsecase;
   late _MockRevokeSpWalletUsecase revokeSpWalletUsecase;
+  late _MockCheckSpWalletSetupUsecase checkSpWalletSetupUsecase;
   late _MockRevokeArkUsecase revokeArkUsecase;
   late _MockWalletBloc walletBloc;
   late SettingsCubit cubit;
@@ -84,6 +89,7 @@ void main() {
   setUp(() {
     setIsDevModeUsecase = _MockSetIsDevModeUsecase();
     revokeSpWalletUsecase = _MockRevokeSpWalletUsecase();
+    checkSpWalletSetupUsecase = _MockCheckSpWalletSetupUsecase();
     revokeArkUsecase = _MockRevokeArkUsecase();
     walletBloc = _MockWalletBloc();
 
@@ -91,6 +97,9 @@ void main() {
     when(
       () => revokeSpWalletUsecase.execute(),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => checkSpWalletSetupUsecase.execute(),
+    ).thenAnswer((_) async => false);
     when(() => revokeArkUsecase.execute()).thenAnswer((_) async {});
     when(() => walletBloc.add(any())).thenReturn(null);
 
@@ -107,6 +116,7 @@ void main() {
       getOldSeedsUsecase: _MockGetOldSeedsUsecase(),
       revokeArkUsecase: revokeArkUsecase,
       revokeSpWalletUsecase: revokeSpWalletUsecase,
+      checkSpWalletSetupUsecase: checkSpWalletSetupUsecase,
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),

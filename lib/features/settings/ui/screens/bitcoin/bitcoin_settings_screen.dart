@@ -10,13 +10,25 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:bb_mobile/features/sp/router.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BitcoinSettingsScreen extends StatelessWidget {
+class BitcoinSettingsScreen extends StatefulWidget {
   const BitcoinSettingsScreen({super.key});
+
+  @override
+  State<BitcoinSettingsScreen> createState() => _BitcoinSettingsScreenState();
+}
+
+class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the SP setup flag on entry so the SP entry reflects a setup that
+    // happened elsewhere (the settings cubit is a singleton).
+    context.read<SettingsCubit>().checkSpWalletSetup();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +42,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
     );
     final isSpWalletSetup = context.select(
-      (WalletBloc bloc) => bloc.state.isSpWalletSetup,
+      (SettingsCubit cubit) => cubit.state.isSpWalletSetup,
     );
 
     return Scaffold(
