@@ -164,28 +164,53 @@ class Logger {
   /// `bull_logs.tsv` via `Bull.initLogs`; BG `logs-prune` task fires
   /// every 15 minutes (Android) / on iOS BGTaskScheduler windows and
   /// prunes `bull_background_logs.tsv`.
-  Future<void> prune() => _enqueue(() async {
-    final sizeInKb = (await logsFile.stat()).size ~/ 1000;
+  Future<void> prune() => _enqueue(() => _pruneFile(logsFile, manageSink: true));
+
+  /// Prunes `bull_background_logs.tsv` from the foreground isolate.
+  /// Ordinarily unsafe for the reason documented on [prune] — but the
+  /// `logs-prune` workmanager task that used to own this file is
+  /// temporarily unregistered (see `Bull.initWorkmanager` in
+  /// main.dart, disabled as defense-in-depth for a concurrency bug).
+  /// With no isolate ever opening a live `IOSink` on this file, there
+  /// is nothing left for the truncate-then-rewrite to race against, so
+  /// it's safe to prune it from here instead. Existing installs may
+  /// have accumulated months of BG-task writes before this file ever
+  /// stopped growing; this is what clears that backlog going forward.
+  /// Revisit if the background task is ever re-enabled.
+  Future<void> pruneBackgroundFile() =>
+      _enqueue(() => _pruneFile(_backgroundFile, manageSink: false));
+
+  /// Core of [prune] / [pruneBackgroundFile]: halves [file]'s line
+  /// count once it exceeds [_maxLogSizeKb]. [manageSink] must be true
+  /// only when [file] is the caller's own `logsFile` (backed by this
+  /// instance's `_sink`) — pruning a file this isolate never opened a
+  /// sink for (e.g. the BG file from the FG isolate) must leave `_sink`
+  /// untouched.
+  Future<void> _pruneFile(File file, {required bool manageSink}) async {
+    if (!await file.exists()) return;
+    final sizeInKb = (await file.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;
 
-    await _sink?.flush();
-    await _sink?.close();
-    _sink = null;
+    if (manageSink) {
+      await _sink?.flush();
+      await _sink?.close();
+      _sink = null;
+    }
 
-    final lines = (await logsFile.readAsLines())
+    final lines = (await file.readAsLines())
         .where((e) => e.isNotEmpty)
         .toList();
     final linesToDelete = lines.length ~/ 2;
     final logsToKeep = lines.sublist(linesToDelete);
 
-    await logsFile.writeAsString(
+    await file.writeAsString(
       logsToKeep.isEmpty ? '' : '${logsToKeep.join('\n')}\n',
     );
-    _ensureSinkOpen();
+    if (manageSink) _ensureSinkOpen();
 
-    final newSizeInKb = (await logsFile.stat()).size ~/ 1000;
+    final newSizeInKb = (await file.stat()).size ~/ 1000;
     fine('Logs pruned from $sizeInKb kB to $newSizeInKb kB');
-  });
+  }
 
   Future<void> flush() => _enqueue(() async {
     await _sink?.flush();
