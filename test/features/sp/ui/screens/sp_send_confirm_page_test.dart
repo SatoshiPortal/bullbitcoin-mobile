@@ -53,7 +53,7 @@ void main() {
   late _TestSpSendCubit cubit;
 
   final fakeTxSimulation = SpTxDraft(
-    handle: Object(),
+    id: '0',
     inputs: [
       SpCoin(
         source: SpCoinSource.segwit,

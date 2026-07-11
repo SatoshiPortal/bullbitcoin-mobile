@@ -100,6 +100,12 @@ class BwkSpAccountRepository implements SpAccountRepository {
   // rolled back. Set by backupAccountDir, cleared by restore/discard.
   Directory? _recreateBackupDir;
 
+  // Confirmed FFI simulations pinned for the live session, keyed by draft id.
+  // The simulation must round-trip UNCHANGED from preparePsbt into finalize, so
+  // it stays here (never crosses the domain boundary) and is cleared on dispose.
+  final Map<String, TxSimulation> _simulations = {};
+  int _nextDraftId = 0;
+
   SpAccount get _live {
     final account = _account;
     if (account == null) {
@@ -416,7 +422,9 @@ class BwkSpAccountRepository implements SpAccountRepository {
         recipients: recipients.map(SpRecipientMapper.toFfi).toList(),
         feerateSatVb: feerateSatVb,
       );
-      return Ok(SpTxDraftMapper.toDomain(simulation));
+      final id = (_nextDraftId++).toString();
+      _simulations[id] = simulation;
+      return Ok(SpTxDraftMapper.toDomain(simulation, id));
     } catch (e) {
       return Err(_mapFfiError(e));
     }
@@ -426,12 +434,16 @@ class BwkSpAccountRepository implements SpAccountRepository {
   Future<Result<String, SpFailure>> finalizeSignBroadcast({
     required SpTxDraft draft,
   }) async {
-    try {
-      return Ok(
-        await _finalizeSignBroadcast(
-          simulation: SpTxDraftMapper.rawSimulation(draft),
-        ),
+    final simulation = _simulations[draft.id];
+    if (simulation == null) {
+      // The pinned simulation is gone (the session was recycled since confirm),
+      // so the tx can no longer be rebuilt from what the Confirm page showed.
+      return const Err(
+        SpSimulationDrifted('pinned simulation no longer available'),
       );
+    }
+    try {
+      return Ok(await _finalizeSignBroadcast(simulation: simulation));
     } catch (e) {
       return Err(_mapFfiError(e));
     }
@@ -609,6 +621,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
       await account.dispose();
       _account = null;
       _notifications = null;
+      _simulations.clear();
     }
   }
 

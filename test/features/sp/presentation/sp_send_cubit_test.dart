@@ -20,7 +20,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(
       SpTxDraft(
-        handle: Object(),
+        id: '0',
         inputs: const [],
         outputs: const [],
         feeSat: BigInt.zero,
@@ -42,7 +42,7 @@ void main() {
   );
 
   final fakeTxSimulation = SpTxDraft(
-    handle: Object(),
+    id: '1',
     inputs: [],
     outputs: [],
     feeSat: BigInt.from(200),
