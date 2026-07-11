@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_us
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_setup_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_setup_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -58,12 +58,12 @@ Widget _buildPage(_FakeSpSetupCubit cubit) => MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpSetupCubit>.value(
     value: cubit,
-    child: const SpSetupPage(),
+    child: const SpSetupScreen(),
   ),
 );
 
 void main() {
-  group('SpSetupPage', () {
+  group('SpSetupScreen', () {
     testWidgets('renders title and Create button', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
@@ -167,7 +167,7 @@ void main() {
     });
   });
 
-  group('SpSetupPage interactions', () {
+  group('SpSetupScreen interactions', () {
     late _MockSpSetupCubit cubit;
 
     setUpAll(() {
@@ -183,7 +183,7 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<SpSetupCubit>.value(
         value: c,
-        child: const SpSetupPage(),
+        child: const SpSetupScreen(),
       ),
     );
 

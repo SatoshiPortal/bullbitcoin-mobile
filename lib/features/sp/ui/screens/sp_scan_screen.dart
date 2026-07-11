@@ -14,8 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SpScanPage extends StatelessWidget {
-  const SpScanPage({super.key});
+class SpScanScreen extends StatelessWidget {
+  const SpScanScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

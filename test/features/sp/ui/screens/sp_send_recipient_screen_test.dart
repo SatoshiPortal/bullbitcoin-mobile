@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.da
 import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_amount_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_recipient_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_recipient_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +31,7 @@ Widget _buildPage(SpSendCubit cubit) => MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpSendCubit>.value(
     value: cubit,
-    child: const SpSendRecipientPage(),
+    child: const SpSendRecipientScreen(),
   ),
 );
 

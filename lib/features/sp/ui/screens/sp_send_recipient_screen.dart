@@ -17,14 +17,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SpSendRecipientPage extends StatefulWidget {
-  const SpSendRecipientPage({super.key});
+class SpSendRecipientScreen extends StatefulWidget {
+  const SpSendRecipientScreen({super.key});
 
   @override
-  State<SpSendRecipientPage> createState() => _SpSendRecipientPageState();
+  State<SpSendRecipientScreen> createState() => _SpSendRecipientScreenState();
 }
 
-class _SpSendRecipientPageState extends State<SpSendRecipientPage> {
+class _SpSendRecipientScreenState extends State<SpSendRecipientScreen> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
 

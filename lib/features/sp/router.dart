@@ -2,17 +2,17 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_coins_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_receive_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_scan_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_amount_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_confirm_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_recipient_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_success_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_settings_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_setup_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_page.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_coins_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_scan_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_amount_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_confirm_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_recipient_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_success_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_settings_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_setup_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,7 +81,7 @@ class SpSetupRouter {
     path: SpSetupRoute.spSetup.path,
     builder: (context, state) => BlocProvider(
       create: (_) => locator<SpSetupCubit>(),
-      child: const SpSetupPage(),
+      child: const SpSetupScreen(),
     ),
   );
 }
@@ -101,20 +101,20 @@ class SpRouter {
       GoRoute(
         name: SpRoute.spWalletDetail.name,
         path: SpRoute.spWalletDetail.path,
-        builder: (context, state) => const SpWalletDetailPage(),
+        builder: (context, state) => const SpWalletDetailScreen(),
       ),
       GoRoute(
         name: SpRoute.spSettings.name,
         path: SpRoute.spSettings.path,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<SpSettingsCubit>(),
-          child: const SpSettingsPage(),
+          child: const SpSettingsScreen(),
         ),
       ),
       GoRoute(
         name: SpRoute.spCoins.name,
         path: SpRoute.spCoins.path,
-        builder: (context, state) => const SpCoinsPage(),
+        builder: (context, state) => const SpCoinsScreen(),
       ),
       GoRoute(
         name: SpRoute.spTransactionDetails.name,
@@ -123,18 +123,18 @@ class SpRouter {
             spTransactionDetailsRedirect(state.extra),
         builder: (context, state) {
           final payment = state.extra! as SpPayment;
-          return SpTransactionDetailsPage(payment: payment);
+          return SpTransactionDetailsScreen(payment: payment);
         },
       ),
       GoRoute(
         name: SpRoute.spReceive.name,
         path: SpRoute.spReceive.path,
-        builder: (context, state) => const SpReceivePage(),
+        builder: (context, state) => const SpReceiveScreen(),
       ),
       GoRoute(
         name: SpRoute.spScan.name,
         path: SpRoute.spScan.path,
-        builder: (context, state) => const SpScanPage(),
+        builder: (context, state) => const SpScanScreen(),
       ),
       _sendRoute,
     ],
@@ -154,22 +154,22 @@ class SpRouter {
       GoRoute(
         name: SpRoute.spSendRecipient.name,
         path: SpRoute.spSendRecipient.path,
-        builder: (context, state) => const SpSendRecipientPage(),
+        builder: (context, state) => const SpSendRecipientScreen(),
       ),
       GoRoute(
         name: SpRoute.spSendAmount.name,
         path: SpRoute.spSendAmount.path,
-        builder: (context, state) => const SpSendAmountPage(),
+        builder: (context, state) => const SpSendAmountScreen(),
       ),
       GoRoute(
         name: SpRoute.spSendConfirm.name,
         path: SpRoute.spSendConfirm.path,
-        builder: (context, state) => const SpSendConfirmPage(),
+        builder: (context, state) => const SpSendConfirmScreen(),
       ),
       GoRoute(
         name: SpRoute.spSendSuccess.name,
         path: SpRoute.spSendSuccess.path,
-        builder: (context, state) => const SpSendSuccessPage(),
+        builder: (context, state) => const SpSendSuccessScreen(),
       ),
     ],
   );

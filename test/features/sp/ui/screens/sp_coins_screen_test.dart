@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_coins_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_coins_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +16,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 Widget _buildPage(SpCubit cubit) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpCoinsPage()),
+  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpCoinsScreen()),
 );
 
 void main() {

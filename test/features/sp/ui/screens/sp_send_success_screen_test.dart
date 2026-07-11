@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usec
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_state.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_success_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +40,7 @@ Widget _buildPage(_TestSpSendCubit cubit) => MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpSendCubit>.value(
     value: cubit,
-    child: const SpSendSuccessPage(),
+    child: const SpSendSuccessScreen(),
   ),
 );
 

@@ -8,8 +8,8 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SpSetupPage extends StatelessWidget {
-  const SpSetupPage({super.key});
+class SpSetupScreen extends StatelessWidget {
+  const SpSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

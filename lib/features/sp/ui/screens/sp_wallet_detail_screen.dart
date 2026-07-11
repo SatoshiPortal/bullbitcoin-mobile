@@ -20,8 +20,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class SpWalletDetailPage extends StatelessWidget {
-  const SpWalletDetailPage({super.key});
+class SpWalletDetailScreen extends StatelessWidget {
+  const SpWalletDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

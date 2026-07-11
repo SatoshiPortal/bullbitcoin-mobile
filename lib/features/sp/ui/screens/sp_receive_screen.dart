@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SpReceivePage extends StatefulWidget {
-  const SpReceivePage({super.key});
+class SpReceiveScreen extends StatefulWidget {
+  const SpReceiveScreen({super.key});
 
   @override
-  State<SpReceivePage> createState() => _SpReceivePageState();
+  State<SpReceiveScreen> createState() => _SpReceiveScreenState();
 }
 
-class _SpReceivePageState extends State<SpReceivePage> {
+class _SpReceiveScreenState extends State<SpReceiveScreen> {
   // Selected tab (local widget state). Two tabs: silent payment (0), taproot (1).
   int _index = 0;
 

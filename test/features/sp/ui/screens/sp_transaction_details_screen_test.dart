@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +14,7 @@ Widget _buildPage(SpCubit cubit, SpPayment payment) => MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpCubit>.value(
     value: cubit,
-    child: SpTransactionDetailsPage(payment: payment),
+    child: SpTransactionDetailsScreen(payment: payment),
   ),
 );
 

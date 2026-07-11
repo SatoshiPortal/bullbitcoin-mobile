@@ -21,14 +21,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SpSendAmountPage extends StatefulWidget {
-  const SpSendAmountPage({super.key});
+class SpSendAmountScreen extends StatefulWidget {
+  const SpSendAmountScreen({super.key});
 
   @override
-  State<SpSendAmountPage> createState() => _SpSendAmountPageState();
+  State<SpSendAmountScreen> createState() => _SpSendAmountScreenState();
 }
 
-class _SpSendAmountPageState extends State<SpSendAmountPage> {
+class _SpSendAmountScreenState extends State<SpSendAmountScreen> {
   // The amount lives in SpSendState.amountSat; the dialpad edits it as a digit
   // string derived from that single value.
   String _digitsOf(BigInt? sats) =>

@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_settings_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_settings_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ Widget _buildPage({
       BlocProvider<SpCubit>.value(value: spCubit),
       BlocProvider<SpSettingsCubit>.value(value: settingsCubit),
     ],
-    child: const SpSettingsPage(),
+    child: const SpSettingsScreen(),
   ),
 );
 
@@ -49,7 +49,7 @@ Widget _buildRouterPage({
             BlocProvider<SpCubit>.value(value: spCubit),
             BlocProvider<SpSettingsCubit>.value(value: settingsCubit),
           ],
-          child: const SpSettingsPage(),
+          child: const SpSettingsScreen(),
         ),
       ),
       GoRoute(

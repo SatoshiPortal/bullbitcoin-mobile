@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecas
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_send_amount_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_send_amount_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +22,7 @@ Widget _buildPage(SpCubit cubit, SpSendCubit sendCubit) => MaterialApp(
       BlocProvider<SpCubit>.value(value: cubit),
       BlocProvider<SpSendCubit>.value(value: sendCubit),
     ],
-    child: const SpSendAmountPage(),
+    child: const SpSendAmountScreen(),
   ),
 );
 

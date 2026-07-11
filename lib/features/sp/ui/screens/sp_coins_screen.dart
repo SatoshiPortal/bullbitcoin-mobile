@@ -10,8 +10,8 @@ import 'package:bb_mobile/features/sp/ui/widgets/sp_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SpCoinsPage extends StatelessWidget {
-  const SpCoinsPage({super.key});
+class SpCoinsScreen extends StatelessWidget {
+  const SpCoinsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

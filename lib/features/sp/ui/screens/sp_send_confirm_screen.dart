@@ -24,8 +24,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SpSendConfirmPage extends StatelessWidget {
-  const SpSendConfirmPage({super.key});
+class SpSendConfirmScreen extends StatelessWidget {
+  const SpSendConfirmScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

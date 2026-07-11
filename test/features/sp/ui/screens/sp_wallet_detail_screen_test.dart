@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/router.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
@@ -60,7 +60,7 @@ Widget _buildPage({
       BlocProvider<SettingsCubit>.value(value: settingsCubit),
       BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
     ],
-    child: const SpWalletDetailPage(),
+    child: const SpWalletDetailScreen(),
   ),
 );
 
@@ -191,7 +191,7 @@ void main() {
               BlocProvider<SettingsCubit>.value(value: settingsCubit),
               BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
             ],
-            child: const SpWalletDetailPage(),
+            child: const SpWalletDetailScreen(),
           ),
         ),
         GoRoute(

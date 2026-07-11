@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
-import 'package:bb_mobile/features/sp/ui/screens/sp_receive_page.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
@@ -22,13 +22,13 @@ class _MockSpCubit extends Mock implements SpCubit {}
 Widget _buildPage(SpCubit cubit) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceivePage()),
+  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceiveScreen()),
 );
 
 Widget _buildMockPage(_MockSpCubit cubit) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceivePage()),
+  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceiveScreen()),
 );
 
 void main() {

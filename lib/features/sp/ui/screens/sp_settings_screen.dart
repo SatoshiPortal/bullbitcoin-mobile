@@ -23,14 +23,14 @@ const double _statusDotSize = 10;
 // Fixed height of the scrollable notification debug console.
 const double _consoleHeight = 240;
 
-class SpSettingsPage extends StatefulWidget {
-  const SpSettingsPage({super.key});
+class SpSettingsScreen extends StatefulWidget {
+  const SpSettingsScreen({super.key});
 
   @override
-  State<SpSettingsPage> createState() => _SpSettingsPageState();
+  State<SpSettingsScreen> createState() => _SpSettingsScreenState();
 }
 
-class _SpSettingsPageState extends State<SpSettingsPage> {
+class _SpSettingsScreenState extends State<SpSettingsScreen> {
   @override
   void initState() {
     super.initState();

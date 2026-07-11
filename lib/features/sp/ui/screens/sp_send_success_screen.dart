@@ -11,8 +11,8 @@ import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
-class SpSendSuccessPage extends StatelessWidget {
-  const SpSendSuccessPage({super.key});
+class SpSendSuccessScreen extends StatelessWidget {
+  const SpSendSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

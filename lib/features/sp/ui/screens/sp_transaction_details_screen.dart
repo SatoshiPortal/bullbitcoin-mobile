@@ -21,8 +21,8 @@ String _directionLabel(BuildContext context, SpPaymentDirection direction) {
   }
 }
 
-class SpTransactionDetailsPage extends StatelessWidget {
-  const SpTransactionDetailsPage({super.key, required this.payment});
+class SpTransactionDetailsScreen extends StatelessWidget {
+  const SpTransactionDetailsScreen({super.key, required this.payment});
 
   final SpPayment payment;
 
