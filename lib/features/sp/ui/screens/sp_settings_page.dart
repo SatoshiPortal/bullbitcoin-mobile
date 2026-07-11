@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 // Backend online/offline status dot.
 const double _statusDotSize = 10;
@@ -270,7 +271,7 @@ class _NotificationConsoleSection extends StatelessWidget {
                     // Newest first.
                     final line = console[console.length - 1 - i];
                     return Text(
-                      '${_hms(line.time)}  ${line.text}',
+                      '${DateFormat.Hms().format(line.time)}  ${line.text}',
                       style: context.font.bodySmall?.copyWith(
                         fontFamily: 'monospace',
                         fontSize: 12,
@@ -282,11 +283,6 @@ class _NotificationConsoleSection extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  static String _hms(DateTime t) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(t.hour)}:${two(t.minute)}:${two(t.second)}';
   }
 }
 

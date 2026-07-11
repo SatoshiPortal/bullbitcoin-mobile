@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
@@ -88,42 +89,11 @@ class _SpReusableAddressTab extends StatelessWidget {
             const Gap(16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: context.appColors.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.appColors.tertiary),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: context.appColors.onTertiary,
-                        ),
-                        const Gap(6),
-                        Text(
-                          context.loc.spReceiveManualScanRequired,
-                          style: context.font.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: context.appColors.onTertiary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Gap(4),
-                    Text(
-                      context.loc.spReceiveReusableInfo,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.onTertiary,
-                      ),
-                    ),
-                  ],
-                ),
+              child: InfoCard(
+                title: context.loc.spReceiveManualScanRequired,
+                description: context.loc.spReceiveReusableInfo,
+                tagColor: context.appColors.tertiary,
+                bgColor: context.appColors.tertiaryContainer,
               ),
             ),
           ] else
