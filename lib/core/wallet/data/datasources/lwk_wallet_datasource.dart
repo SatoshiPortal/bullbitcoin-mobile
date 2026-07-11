@@ -64,7 +64,16 @@ class LwkWalletDatasource {
       if (e is lwk.LwkError) {
         if (e.toString().contains('UpdateOnDifferentStatus') ||
             e.msg.contains('UpdateOnDifferentStatus')) {
-          await delete(wallet: wallet);
+          // Best-effort: a failure here (e.g. the cache is already gone from
+          // an earlier heal) must not replace the original error above.
+          try {
+            await delete(wallet: wallet);
+          } catch (deleteError) {
+            log.warning(
+              'Failed to delete LwkDb during UpdateOnDifferentStatus heal',
+              error: deleteError,
+            );
+          }
         }
         throw e.msg;
       } else {
@@ -91,7 +100,16 @@ class LwkWalletDatasource {
       } catch (e) {
         if (e is lwk.LwkError) {
           if (e.msg.contains('UpdateOnDifferentStatus')) {
-            await delete(wallet: wallet);
+            // Best-effort: a failure here (e.g. the cache is already gone
+            // from an earlier heal) must not replace the original error.
+            try {
+              await delete(wallet: wallet);
+            } catch (deleteError) {
+              log.warning(
+                'Failed to delete LwkDb during UpdateOnDifferentStatus heal',
+                error: deleteError,
+              );
+            }
           }
           throw e.msg;
         } else {
