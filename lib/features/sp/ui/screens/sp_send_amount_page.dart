@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
@@ -16,7 +17,6 @@ import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_appbar_progress.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_error_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -205,6 +205,8 @@ class _SpSendAmountPageState extends State<SpSendAmountPage> {
   }
 }
 
+// Fixed presets plus a manual sat/vB entry; deliberately does not query the
+// fee-estimation ports (no live estimate on SP yet), so the user picks a rate.
 class _FeerateSelector extends StatefulWidget {
   const _FeerateSelector({required this.feerate, required this.onChanged});
   final int feerate;
@@ -283,26 +285,13 @@ class _FeerateSelectorState extends State<_FeerateSelector> {
               .toList(),
         ),
         const Gap(8),
-        TextFormField(
+        BBInputText(
           controller: _customController,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          value: _customController.text,
+          digitsOnly: true,
+          hint: context.loc.spSendCustomFeerateHint,
+          suffixText: context.loc.spSatPerVbUnit,
           onChanged: _onCustomChanged,
-          decoration: InputDecoration(
-            isDense: true,
-            hintText: context.loc.spSendCustomFeerateHint,
-            suffixText: context.loc.spSatPerVbUnit,
-            filled: true,
-            fillColor: context.appColors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: context.appColors.border),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-          ),
         ),
       ],
     );

@@ -19,12 +19,14 @@ class BBInputText extends StatefulWidget {
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
+    this.digitsOnly = false,
     this.obscure = false,
     this.style,
     this.hideBorder = false,
     this.maxLines,
     this.minLines,
     this.fixedPrefix,
+    this.suffixText,
   });
 
   final Key? uiKey;
@@ -42,12 +44,16 @@ class BBInputText extends StatefulWidget {
   final int? maxLength;
   final bool onlyPaste;
   final bool onlyNumbers;
+  // Restrict input to integer digits only. Unlike onlyNumbers, this rejects the
+  // decimal point, so keep onlyNumbers for decimal amount fields.
+  final bool digitsOnly;
   final bool obscure;
   final int? maxLines;
   final int? minLines;
   final TextStyle? style;
   final bool hideBorder;
   final String? fixedPrefix;
+  final String? suffixText;
 
   @override
   State<BBInputText> createState() => _BBInputTextState();
@@ -104,6 +110,8 @@ class _BBInputTextState extends State<BBInputText> {
       enabled: !widget.disabled,
       keyboardType: widget.onlyPaste
           ? TextInputType.none
+          : widget.digitsOnly
+          ? TextInputType.number
           : widget.onlyNumbers
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.multiline,
@@ -111,6 +119,7 @@ class _BBInputTextState extends State<BBInputText> {
       inputFormatters: [
         if (shouldPreventNewlines)
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
+        if (widget.digitsOnly) FilteringTextInputFormatter.digitsOnly,
         if (widget.maxLength != null)
           LengthLimitingTextInputFormatter(widget.maxLength),
       ],
@@ -131,6 +140,7 @@ class _BBInputTextState extends State<BBInputText> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
+        suffixText: widget.suffixText,
         hintStyle:
             widget.hintStyle ?? TextStyle(color: context.appColors.textMuted),
         prefixIcon: widget.fixedPrefix != null

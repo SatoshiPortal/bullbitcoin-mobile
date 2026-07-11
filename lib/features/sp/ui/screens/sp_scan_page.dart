@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
@@ -10,7 +11,6 @@ import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -352,22 +352,10 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                 const Gap(24),
                 Text(context.loc.spScanBlockHeightLabel, style: context.font.bodyMedium),
                 const Gap(8),
-                TextFormField(
+                BBInputText(
                   controller: _controller,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: context.appColors.surface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: context.appColors.border),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
+                  value: _controller.text,
+                  digitsOnly: true,
                   onChanged: (v) {
                     final parsed = int.tryParse(v);
                     if (parsed != null) _setHeight(parsed, syncField: false);
