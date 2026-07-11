@@ -63,6 +63,10 @@ class EnsureSpSessionUsecase {
     final seed = await _getDefaultSeedUsecase.execute();
     final mnemonic = spMnemonicFromSeed(seed);
 
+    // Re-check right before creating: a revoke/recreate may have begun teardown
+    // during the awaits above, and creating now would race a live session.
+    if (_repository.teardownInProgress) return null;
+
     await _repository.createFromMnemonic(
       network: config.network,
       mnemonic: mnemonic,

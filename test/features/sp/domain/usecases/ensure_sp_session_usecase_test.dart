@@ -168,6 +168,34 @@ void main() {
       );
     });
 
+    test('a teardown that begins after the entry checks but before create '
+        'aborts the create (TOCTOU)', () async {
+      // teardownInProgress is false through the entry/establish checks; a
+      // revoke/recreate flips it while the seed read is in flight, so the
+      // re-check right before create must abort instead of racing a live
+      // session.
+      var tearingDown = false;
+      when(
+        () => repository.teardownInProgress,
+      ).thenAnswer((_) => tearingDown);
+      when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async {
+        tearingDown = true;
+        return _mnemonicSeed();
+      });
+
+      final result = await usecase.execute();
+
+      expect(result, isNull);
+      verifyNever(
+        () => repository.createFromMnemonic(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          mnemonic: any(named: 'mnemonic'),
+        ),
+      );
+    });
+
     test('disposes a live session and returns null when the sentinel appeared '
         'after the session was established (T1.3 zombie)', () async {
       // A revoke wrote the sentinel while a session was still live; ensure must
