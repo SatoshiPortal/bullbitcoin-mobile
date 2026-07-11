@@ -83,7 +83,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
-    on<RefreshSpWallet>(_onRefreshSpWallet);
+    on<RefreshSpWallet>(_onRefreshSpWallet, transformer: droppable());
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
     on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);

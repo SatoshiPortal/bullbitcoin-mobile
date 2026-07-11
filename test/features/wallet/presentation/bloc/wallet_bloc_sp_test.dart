@@ -409,6 +409,34 @@ void main() {
 
       await bloc.close();
     });
+
+    test('J: bursty RefreshSpWallet events are droppable (one refresh runs)',
+        () async {
+      final refreshSp = _MockRefreshSpWalletForWallet();
+      final checkSetup = _MockCheckSpWalletSetupForWallet();
+      final wallet = _spWallet(1000);
+
+      // Hold the refresh open so the burst lands while the first handler is in
+      // flight; droppable() must drop the queued events instead of stacking
+      // loading passes on top of each other.
+      final gate = Completer<SpWallet?>();
+      when(() => checkSetup.execute()).thenAnswer((_) async => true);
+      when(() => refreshSp.execute()).thenAnswer((_) => gate.future);
+
+      final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+
+      bloc.add(const RefreshSpWallet());
+      bloc.add(const RefreshSpWallet());
+      bloc.add(const RefreshSpWallet());
+      await pumpEventQueue(times: 100);
+
+      gate.complete(wallet);
+      await pumpEventQueue(times: 100);
+
+      verify(() => refreshSp.execute()).called(1);
+
+      await bloc.close();
+    });
   });
 
   group('WalletBloc SP: observed update stream', () {
