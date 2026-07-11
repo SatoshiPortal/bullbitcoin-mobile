@@ -58,6 +58,11 @@ class RefreshArkWalletBalance extends WalletEvent {
   const RefreshArkWalletBalance({this.amount});
 }
 
+class RefreshSpWallet extends WalletEvent {
+  final int? amount;
+  const RefreshSpWallet({this.amount});
+}
+
 class ElectrumSyncResultChanged extends WalletEvent {
   final ElectrumSyncResult result;
   const ElectrumSyncResultChanged(this.result);
