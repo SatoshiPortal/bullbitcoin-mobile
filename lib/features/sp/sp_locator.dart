@@ -90,7 +90,7 @@ class SpLocator {
     locator.registerFactory<GetSpWalletUsecase>(
       () => GetSpWalletUsecase(
         ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
       ),
     );
     locator.registerFactory<CheckSpWalletSetupUsecase>(

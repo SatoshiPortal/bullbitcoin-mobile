@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
@@ -111,7 +112,9 @@ void main() {
         when(() => ensureSpSession.execute()).thenAnswer((_) async => null);
         final getUsecase = GetSpWalletUsecase(
           ensureSpSessionUsecase: ensureSpSession,
-          settingsRepository: settingsRepo,
+          getSpFeatureGateUsecase: GetSpFeatureGateUsecase(
+            settingsRepository: settingsRepo,
+          ),
         );
 
         final isSetUp = await checkUsecase.execute();
