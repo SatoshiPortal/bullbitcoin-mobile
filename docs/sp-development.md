@@ -11,7 +11,7 @@
 | Android SDK | `compileSdk` 36 | Android Studio SDK Manager |
 | Android NDK | `29.0.14206865` (see `android/gradle.properties`) | Android Studio SDK Manager |
 
-The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust libraries (bdk-dart and friends) are compiled by the `rust_builder` plugin during the Android/iOS build, which is why the Rust toolchain and Android targets above are required.
+The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust library (`rust_lib_bull_sdk`) is compiled by the `rust_builder` plugin during the Android/iOS build, which is why the Rust toolchain and Android targets above are required.
 
 `bull_sdk` is pinned in `dependency_overrides` to a fork (`github.com/pythcoiner/bull_sdk`) that carries SP support not yet upstream: a restartable electrum listener and `Account::broadcast` for eager spend marking. Drop that override once those changes land in the upstream bull_sdk.
 
@@ -46,7 +46,7 @@ Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch de
 
 ## 4. Tests and the No-Autoscan Invariant
 
-The SP suite is pure Dart. `make sp-verify-all` runs `flutter analyze`, the invariant audit, and the SP Flutter tests under `test/features/sp/` plus the related settings and wallet tests and `test/integration/sp_global_wiring_test.dart`.
+The SP suite needs no native libraries. `make sp-verify-all` runs `flutter analyze`, the invariant audit, and the SP Flutter tests under `test/features/sp/` plus the related settings and wallet tests.
 
 The invariant audit (`scripts/audit-sp-invariant.sh`) enforces that SP scanning is user-triggered only: `SpCubit.scan()` may be called only from SP UI handlers, `scanOnce`/`ScanSpWalletUsecase` stay confined to their few allowed files, and no scan is wired from a lifecycle or background hook in the SP or sync layer.
 
