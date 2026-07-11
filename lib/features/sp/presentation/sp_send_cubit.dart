@@ -103,7 +103,7 @@ class SpSendCubit extends Cubit<SpSendState> {
       case Ok(:final value):
         // Reflect the simulated output amount (the computed value when max).
         final outputAmount = value.outputs.isNotEmpty
-            ? _amountOf(value.outputs.first)
+            ? value.outputs.first.amountSat
             : amount;
         emit(
           state.copyWith(
@@ -201,8 +201,6 @@ class SpSendCubit extends Cubit<SpSendState> {
           isMax: isMax,
         ),
       };
-
-  BigInt _amountOf(SpRecipient recipient) => recipient.amountSat;
 
   void resetSendFlow() {
     emit(
