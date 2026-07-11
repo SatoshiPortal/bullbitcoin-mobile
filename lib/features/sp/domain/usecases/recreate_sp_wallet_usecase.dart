@@ -36,10 +36,7 @@ class RecreateSpWalletUsecase {
       final seed = await _getDefaultSeedUsecase.execute();
       final mnemonic = spMnemonicFromSeed(seed);
 
-      final previousConfig = (await _configRepository.fetch()).fold(
-        (config) => config,
-        (_) => null,
-      );
+      final previousConfig = await _configRepository.fetchOrNull();
 
       // Suppress the cubit self-heal for the whole dispose+create window so it
       // cannot re-establish (and double-create) the session mid-teardown.

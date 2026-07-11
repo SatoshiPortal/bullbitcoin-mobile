@@ -14,11 +14,7 @@ class CheckSpWalletSetupUsecase {
   /// sentinel is present. Only those two "not configured" signals return false;
   /// unexpected errors propagate. Keep in sync with `EnsureSpSessionUsecase`.
   Future<bool> execute() async {
-    final config = (await _configRepository.fetch()).fold(
-      (config) => config,
-      (_) => null,
-    );
-    if (config == null) return false;
+    if (await _configRepository.fetchOrNull() == null) return false;
 
     if (await _accountRepository.hasRevokedSentinel()) return false;
 

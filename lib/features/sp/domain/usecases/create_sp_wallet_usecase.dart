@@ -49,12 +49,8 @@ class CreateSpWalletUsecase {
       final hasSentinel = await _repository.hasRevokedSentinel();
 
       // A stored config with no revoke sentinel means the wallet is already set
-      // up; refuse a second setup. A corrupt config counts as absent (it will
-      // be overwritten by this setup).
-      final storedConfig = (await _configRepository.fetch()).fold(
-        (config) => config,
-        (_) => null,
-      );
+      // up; refuse a second setup.
+      final storedConfig = await _configRepository.fetchOrNull();
       if (!hasSentinel && storedConfig != null) {
         return const Err(SpAlreadySetUp('SP wallet already set up'));
       }

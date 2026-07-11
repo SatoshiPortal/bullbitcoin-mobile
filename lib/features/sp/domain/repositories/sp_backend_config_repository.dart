@@ -31,3 +31,12 @@ abstract interface class SpBackendConfigRepository {
   /// (FFI). Returns a failed [SpBackendDefaults] when the infra is unreachable.
   SpBackendDefaults fetchRegtestDefaults();
 }
+
+extension SpBackendConfigRepositoryX on SpBackendConfigRepository {
+  /// The stored config, treating a corrupt/unknown-network config as absent:
+  /// `null` for both "nothing stored" and "parse failed". Setup overwrites a
+  /// corrupt config, and the repo already logs the parse failure, so the "not
+  /// configured" callers (setup/session checks) collapse both cases to null.
+  Future<SpBackendConfig?> fetchOrNull() async =>
+      (await fetch()).fold((config) => config, (_) => null);
+}

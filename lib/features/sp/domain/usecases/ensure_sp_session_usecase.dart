@@ -51,13 +51,7 @@ class EnsureSpSessionUsecase {
     // wallet; never reload it.
     if (await _repository.hasRevokedSentinel()) return null;
 
-    // A corrupt/unknown-network config is treated as "not set up" here (the
-    // user can re-run setup, which overwrites it); the repo already logs the
-    // parse failure via the Err's logMessage.
-    final config = (await _configRepository.fetch()).fold(
-      (config) => config,
-      (_) => null,
-    );
+    final config = await _configRepository.fetchOrNull();
     if (config == null) return null;
 
     final seed = await _getDefaultSeedUsecase.execute();
