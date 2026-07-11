@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/logger.dart' hide Logger;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
@@ -9,7 +8,6 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logging_colorful/logging_colorful.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../sp_cubit_harness.dart';
@@ -71,14 +69,9 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok<SpTxDraft, SpFailure>(fakeTxSimulation));
 
-    // The repository logs the txid before returning so it survives an
-    // emit-after-close race; mirror that by logging at INFO in the mock.
     when(
       () => sendUsecase.execute(draft: any(named: 'draft')),
-    ).thenAnswer((_) async {
-      log.info('SP broadcast txid: $fakeTxid');
-      return const Ok<String, SpFailure>(fakeTxid);
-    });
+    ).thenAnswer((_) async => const Ok<String, SpFailure>(fakeTxid));
 
     cubit = harness.build();
   });
@@ -325,22 +318,13 @@ void main() {
     );
 
     test(
-      'signAndBroadcast() survives cubit.close() mid-broadcast: txid is logged, no emit-after-close, send called once',
+      'signAndBroadcast() survives cubit.close() mid-broadcast: no '
+      'emit-after-close, send called once',
       () async {
         cubit.previewRecipient('sp1qexampleaddress');
         cubit.setAmount(BigInt.from(5000));
         // confirm a simulation before driving Confirm.
         await cubit.prepare();
-
-        // Capture log records emitted during this test. The repository's
-        // `log.info(...)` writes through `Logger.root` (logging package),
-        // so installing a listener on the root logger lets us assert that
-        // the txid is captured in the device log even when the cubit is
-        // closed before it can `emit` the success state.
-        final records = <LogRecord>[];
-        final previousLevel = Logger.root.level;
-        Logger.root.level = Level.ALL;
-        final logSub = Logger.root.onRecord.listen(records.add);
 
         // Gate the send so we control exactly when it resolves. We close the
         // cubit BEFORE releasing the gate, simulating the user popping the SP
@@ -350,13 +334,7 @@ void main() {
         final gate = Completer<Result<String, SpFailure>>();
         when(
           () => sendUsecase.execute(draft: any(named: 'draft')),
-        ).thenAnswer((_) async {
-          final result = await gate.future;
-          if (result case Ok(:final value)) {
-            log.info('SP broadcast txid: $value');
-          }
-          return result;
-        });
+        ).thenAnswer((_) => gate.future);
 
         // Track any unhandled errors that escape from the in-flight future
         // (the cubit catches its own exceptions, but emit-after-close would
@@ -376,31 +354,15 @@ void main() {
         expect(cubit.isClosed, isTrue);
 
         // Now release the broadcast; tx hits the network AFTER the cubit is
-        // gone. The post-await code path must not throw and must log the txid.
+        // gone. The post-await code path must not throw.
         gate.complete(const Ok(fakeTxid));
         await inFlight;
         await Future<void>.delayed(Duration.zero);
 
-        await logSub.cancel();
-        Logger.root.level = previousLevel;
-
-        // 1. No emit-after-close exception escaped.
+        // No emit-after-close exception escaped.
         expect(asyncErrors, isEmpty);
 
-        // 2. Txid was logged to the side channel that survives close().
-        final infoLogs = records
-            .where((r) => r.level == Level.INFO)
-            .map((r) => r.message)
-            .toList();
-        expect(
-          infoLogs.any((m) => m.contains(fakeTxid)),
-          isTrue,
-          reason:
-              'Expected the broadcast txid to be logged at INFO level so it '
-              'survives a cubit-close race. Got info logs: $infoLogs',
-        );
-
-        // 3. Send ran exactly once (no retry, no duplicate send).
+        // Send ran exactly once (no retry, no duplicate send).
         verify(
           () => sendUsecase.execute(draft: any(named: 'draft')),
         ).called(1);
