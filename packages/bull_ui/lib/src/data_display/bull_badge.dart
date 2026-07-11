@@ -15,6 +15,7 @@ class BullBadge extends StatelessWidget {
     this.iconSize = 11,
     this.uppercase = false,
     this.radius = BullRadius.xxs,
+    this.border,
   });
 
   /// Badge text.
@@ -38,6 +39,9 @@ class BullBadge extends StatelessWidget {
   /// Corner radius.
   final double radius;
 
+  /// Optional outline. When null the pill has no border (the default).
+  final BoxBorder? border;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,6 +49,7 @@ class BullBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(radius),
+        border: border,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
