@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_feature_gate_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_scanning_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_wallet_setup_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/refresh_sp_wallet_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/watch_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_feature_gate_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
@@ -35,7 +35,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
