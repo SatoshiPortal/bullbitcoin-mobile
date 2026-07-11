@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockSpAccountRepository extends Mock implements SpAccountRepository {}
+import '../../sp_fakes.dart';
 
 void main() {
   late MockSpAccountRepository repository;

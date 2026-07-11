@@ -1,21 +1,14 @@
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
-
-class _MockSpAccountRepository extends Mock implements SpAccountRepository {}
+import '../../sp_fakes.dart';
 
 class _MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
@@ -23,14 +16,9 @@ class _MockSpBackendConfigRepository extends Mock
 class _MockEnsureSpSessionUsecase extends Mock
     implements EnsureSpSessionUsecase {}
 
-MnemonicSeed _seed() => MnemonicSeed(
-  mnemonicWords: List.filled(12, 'abandon'),
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
-
-SpBackendConfig _config() => SpBackendConfig(
-  network: SpNetwork.regtest,
+// The previous (pre-recreate) config, distinct from the new URLs each test
+// passes to execute().
+SpBackendConfig _previousConfig() => spBackendConfig(
   blindbitUrl: 'http://blindbit.old',
   electrumUrl: 'tcp://electrum.old:50001',
 );
@@ -40,8 +28,8 @@ SpBackendConfig _config() => SpBackendConfig(
 // the use case wires dispose/backup/create/discard (and the rollback) in the
 // right order.
 void main() {
-  late _MockGetDefaultSeedUsecase getDefaultSeedUsecase;
-  late _MockSpAccountRepository repository;
+  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
   late _MockEnsureSpSessionUsecase ensureSpSessionUsecase;
   late RecreateSpWalletUsecase usecase;
@@ -58,8 +46,8 @@ void main() {
   });
 
   setUp(() {
-    getDefaultSeedUsecase = _MockGetDefaultSeedUsecase();
-    repository = _MockSpAccountRepository();
+    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
+    repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
@@ -71,7 +59,7 @@ void main() {
 
     when(
       () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => _seed());
+    ).thenAnswer((_) async => spMnemonicSeed());
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async {});
@@ -79,7 +67,7 @@ void main() {
     when(() => repository.restoreAccountDir()).thenAnswer((_) async => true);
     when(() => repository.discardBackup()).thenAnswer((_) async {});
     when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_config()));
+        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_previousConfig()));
     when(() => configRepository.save(any())).thenAnswer((_) async {});
     when(() => ensureSpSessionUsecase.execute()).thenAnswer((_) async => null);
     when(
@@ -157,7 +145,7 @@ void main() {
     // runs first: a standalone verify would mark the call and break ordering.)
     verifyInOrder([
       () => repository.restoreAccountDir(),
-      () => configRepository.save(_config()),
+      () => configRepository.save(_previousConfig()),
       () => repository.endTeardown(),
       () => ensureSpSessionUsecase.execute(),
     ]);
@@ -188,7 +176,7 @@ void main() {
     verify(() => repository.restoreAccountDir()).called(1);
     // Config is always reverted so the failed new config never lingers, but with
     // no restored dir the session is not re-established.
-    verify(() => configRepository.save(_config())).called(1);
+    verify(() => configRepository.save(_previousConfig())).called(1);
     verifyNever(() => ensureSpSessionUsecase.execute());
   });
 

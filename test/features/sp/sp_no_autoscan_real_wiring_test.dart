@@ -19,8 +19,6 @@ import 'sp_fakes.dart';
 // the Rust boundary, so an accidental auto-scan anywhere in that chain trips the
 // counter. We then let a REAL duration elapse (not a single microtask) so any
 // stray timer/lifecycle-driven scan would have fired.
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -40,7 +38,7 @@ void main() {
     // read on this path (the fake reports a live session, so EnsureSpSession
     // returns the snapshot without reconstructing), but the graph resolves it.
     locator.registerSingleton<GetDefaultSeedUsecase>(
-      _MockGetDefaultSeedUsecase(),
+      MockGetDefaultSeedUsecase(),
     );
     locator.registerSingleton<SettingsRepository>(_MockSettingsRepository());
 

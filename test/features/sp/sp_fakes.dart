@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
@@ -17,6 +20,46 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
+import 'package:mocktail/mocktail.dart';
+
+/// Shared mocktail doubles + builders for the SP domain use case tests. The use
+/// case tests need `verify()` on collaborator calls, so they mock these two
+/// (rather than use the in-memory fakes above). Kept here so the declarations
+/// and fixture values live once instead of being copy-pasted per file.
+class MockSpAccountRepository extends Mock implements SpAccountRepository {}
+
+class MockGetDefaultSeedUsecase extends Mock
+    implements GetDefaultSeedUsecase {}
+
+MnemonicSeed spMnemonicSeed() => MnemonicSeed(
+  mnemonicWords: List.filled(12, 'abandon'),
+  bytes: Uint8List.fromList(List.filled(64, 1)),
+  masterFingerprint: 'f23f9fd2',
+);
+
+SpBackendConfig spBackendConfig({
+  SpNetwork network = SpNetwork.regtest,
+  String blindbitUrl = 'http://blindbit.example',
+  String electrumUrl = 'tcp://electrum.example:50001',
+}) => SpBackendConfig(
+  network: network,
+  blindbitUrl: blindbitUrl,
+  electrumUrl: electrumUrl,
+);
+
+SpWallet spWallet({
+  String spAddress = 'sp1qexample',
+  BigInt? confirmedSat,
+  BigInt? totalUnifiedSat,
+  bool isScanning = false,
+}) => SpWallet(
+  spAddress: spAddress,
+  balance: SpBalance(
+    confirmedSat: confirmedSat ?? BigInt.from(10),
+    totalUnifiedSat: totalUnifiedSat ?? BigInt.from(20),
+  ),
+  isScanning: isScanning,
+);
 
 /// In-memory fake of [SpAccountRepository]. The repo-rule prefers fakes over
 /// mocks for a datasource/repository: this behaves like a set-up, non-revoked

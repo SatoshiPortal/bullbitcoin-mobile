@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
@@ -89,8 +88,6 @@ class MockSendSpPaymentUsecase extends Mock implements SendSpPaymentUsecase {}
 class MockGetSpNetworkUsecase extends Mock implements GetSpNetworkUsecase {}
 
 class MockGetSpBalanceUsecase extends Mock implements GetSpBalanceUsecase {}
-
-class MockSpAccountRepository extends Mock implements SpAccountRepository {}
 
 /// Holds the six SpCubit collaborator mocks and builds the cubit. Stubbing
 /// stays in the test's `setUp`.

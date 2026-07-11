@@ -1,57 +1,29 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
-import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSpAccountRepository extends Mock implements SpAccountRepository {}
+import '../../sp_fakes.dart';
 
 class _MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
-
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
-
-MnemonicSeed _mnemonicSeed() => MnemonicSeed(
-  mnemonicWords: List.filled(12, 'abandon'),
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
 
 BytesSeed _bytesSeed() => BytesSeed(
   bytes: Uint8List.fromList(List.filled(64, 1)),
   masterFingerprint: 'f23f9fd2',
 );
 
-SpBackendConfig _config() => SpBackendConfig(
-  network: SpNetwork.regtest,
-  blindbitUrl: 'http://blindbit.example',
-  electrumUrl: 'tcp://electrum.example:50001',
-);
-
-SpWallet _wallet() => SpWallet(
-  spAddress: 'sp1qexample',
-  balance: SpBalance(
-    confirmedSat: BigInt.from(10),
-    totalUnifiedSat: BigInt.from(20),
-  ),
-  isScanning: false,
-);
-
 void main() {
-  late _MockSpAccountRepository repository;
+  late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
-  late _MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
   late EnsureSpSessionUsecase usecase;
 
   setUpAll(() {
@@ -59,9 +31,9 @@ void main() {
   });
 
   setUp(() {
-    repository = _MockSpAccountRepository();
+    repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
-    getDefaultSeedUsecase = _MockGetDefaultSeedUsecase();
+    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
     usecase = EnsureSpSessionUsecase(
       repository: repository,
       configRepository: configRepository,
@@ -72,12 +44,12 @@ void main() {
     when(() => repository.teardownInProgress).thenReturn(false);
     when(() => repository.hasRevokedSentinel()).thenAnswer((_) async => false);
     when(() => repository.dispose()).thenAnswer((_) async {});
-    when(() => repository.snapshot()).thenReturn(_wallet());
+    when(() => repository.snapshot()).thenReturn(spWallet());
     when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_config()));
+        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()));
     when(
       () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => _mnemonicSeed());
+    ).thenAnswer((_) async => spMnemonicSeed());
     when(
       () => repository.createFromMnemonic(
         network: any(named: 'network'),
@@ -180,7 +152,7 @@ void main() {
       ).thenAnswer((_) => tearingDown);
       when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async {
         tearingDown = true;
-        return _mnemonicSeed();
+        return spMnemonicSeed();
       });
 
       final result = await usecase.execute();

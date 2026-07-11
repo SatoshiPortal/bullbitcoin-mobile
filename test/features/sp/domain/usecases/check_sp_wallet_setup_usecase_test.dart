@@ -1,24 +1,22 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../sp_fakes.dart';
+
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
-
-class MockSpAccountRepository extends Mock implements SpAccountRepository {}
 
 class MockEnsureSpSessionUsecase extends Mock
     implements EnsureSpSessionUsecase {}
@@ -30,12 +28,6 @@ SettingsEntity _makeSettings({bool? isSuperuser = true}) => const SettingsEntity
   isSuperuser: null,
 ).copyWith(isSuperuser: isSuperuser, isDevModeEnabled: true);
 
-SpBackendConfig _config() => SpBackendConfig(
-  network: SpNetwork.regtest,
-  blindbitUrl: 'http://blindbit.example',
-  electrumUrl: 'tcp://electrum.example:50001',
-);
-
 void main() {
   late MockSpBackendConfigRepository configRepo;
   late MockSpAccountRepository accountRepo;
@@ -45,7 +37,9 @@ void main() {
     configRepo = MockSpBackendConfigRepository();
     accountRepo = MockSpAccountRepository();
     when(() => configRepo.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_config()));
+        .thenAnswer(
+          (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+        );
     when(() => accountRepo.hasRevokedSentinel()).thenAnswer((_) async => false);
     usecase = CheckSpWalletSetupUsecase(
       configRepository: configRepo,

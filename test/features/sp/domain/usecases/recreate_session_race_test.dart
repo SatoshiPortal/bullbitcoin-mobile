@@ -1,63 +1,33 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
-import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
-import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_cubit_harness.dart';
-
-class _MockSpAccountRepository extends Mock implements SpAccountRepository {}
+import '../../sp_fakes.dart';
 
 class _MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
 
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
-
-MnemonicSeed _seed() => MnemonicSeed(
-  mnemonicWords: List.filled(12, 'abandon'),
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
-
-SpBackendConfig _config() => SpBackendConfig(
-  network: SpNetwork.regtest,
-  blindbitUrl: 'http://blindbit.example',
-  electrumUrl: 'tcp://electrum.example:50001',
-);
-
-SpWallet _wallet() => SpWallet(
-  spAddress: 'sp1qexample',
-  balance: SpBalance(
-    confirmedSat: BigInt.from(10),
-    totalUnifiedSat: BigInt.from(20),
-  ),
-  isScanning: false,
-);
-
 void main() {
-  late _MockSpAccountRepository repository;
+  late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
-  late _MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
   late EnsureSpSessionUsecase ensureSpSessionUsecase;
   late LoadSpWalletDataUsecase loadSpWalletDataUsecase;
   late RecreateSpWalletUsecase recreateSpWalletUsecase;
@@ -73,13 +43,13 @@ void main() {
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(SpNetwork.regtest);
-    registerFallbackValue(_config());
+    registerFallbackValue(spBackendConfig());
   });
 
   setUp(() {
-    repository = _MockSpAccountRepository();
+    repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
-    getDefaultSeedUsecase = _MockGetDefaultSeedUsecase();
+    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
 
     // No account dir on disk, so no sentinel: ensure never treats the live
     // session as revoked.
@@ -129,7 +99,7 @@ void main() {
       notif = StreamController<SpNotification>.broadcast();
     });
     when(() => repository.notifications).thenAnswer((_) => notif.stream);
-    when(() => repository.snapshot()).thenReturn(_wallet());
+    when(() => repository.snapshot()).thenReturn(spWallet());
     when(() => repository.history())
         .thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(<SpPayment>[]));
     when(() => repository.coins())
@@ -139,9 +109,9 @@ void main() {
     when(() => repository.chainTip()).thenReturn(0);
     when(() => repository.minBirthdayHeight()).thenReturn(0);
 
-    when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async => _seed());
+    when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async => spMnemonicSeed());
     when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_config()));
+        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()));
     when(() => configRepository.save(any())).thenAnswer((_) async {});
 
     ensureSpSessionUsecase = EnsureSpSessionUsecase(

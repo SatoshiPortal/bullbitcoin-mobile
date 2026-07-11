@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
@@ -13,9 +12,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
-
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -43,7 +39,7 @@ Seed _bytesSeed() => Seed.bytes(
 );
 
 void main() {
-  late _MockGetDefaultSeedUsecase seedUsecase;
+  late MockGetDefaultSeedUsecase seedUsecase;
   late _MockSettingsRepository settingsRepo;
   late FakeSpAccountRepository accountRepo;
   late FakeSpBackendConfigRepository configRepo;
@@ -63,7 +59,7 @@ void main() {
   );
 
   setUp(() {
-    seedUsecase = _MockGetDefaultSeedUsecase();
+    seedUsecase = MockGetDefaultSeedUsecase();
     settingsRepo = _MockSettingsRepository();
     // hasSessionValue false so create actually reaches createFromMnemonic.
     accountRepo = FakeSpAccountRepository(hasSessionValue: false);
