@@ -11,6 +11,10 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 /// Self-validating: both node URLs must be non-empty, so an invalid config
 /// cannot exist. Consumers rely on this instead of re-checking `isNotEmpty`.
 class SpBackendConfig {
+  final SpNetwork network;
+  final String blindbitUrl;
+  final String electrumUrl;
+
   SpBackendConfig({
     required this.network,
     required this.blindbitUrl,
@@ -20,10 +24,6 @@ class SpBackendConfig {
       throw ArgumentError('SP backend URLs must not be empty');
     }
   }
-
-  final SpNetwork network;
-  final String blindbitUrl;
-  final String electrumUrl;
 
   @override
   bool operator ==(Object other) =>

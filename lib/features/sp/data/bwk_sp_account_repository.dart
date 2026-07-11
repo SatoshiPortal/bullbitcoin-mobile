@@ -54,10 +54,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
   final StreamController<SpUpdate> _updates =
       StreamController<SpUpdate>.broadcast();
 
-  void _emit(SpUpdate update) {
-    if (!_updates.isClosed) _updates.add(update);
-  }
-
   // Scanning flag tracked from notifications (no FFI), so reads/dispose can be
   // skipped while a scan holds the inner lock and would block the UI isolate.
   bool _scanning = false;
@@ -72,6 +68,10 @@ class BwkSpAccountRepository implements SpAccountRepository {
   final List<SpNotifLogLine> _notifLog = [];
   final StreamController<SpNotifLogLine> _notifLogController =
       StreamController<SpNotifLogLine>.broadcast();
+
+  void _emit(SpUpdate update) {
+    if (!_updates.isClosed) _updates.add(update);
+  }
 
   Future<String> get _dataDir async {
     final appDocsDir = await getApplicationDocumentsDirectory();
