@@ -24,16 +24,8 @@ class FormatAmount {
   /// Differs from [sats] on purpose: [sats] bundles a comma-grouped number and
   /// the unit for general (non-SP) use; the SP screens carry the unit in their
   /// own localized strings, so this returns the bare grouped number.
-  static String satsGrouped(int satsAmount) {
-    final digits = satsAmount.abs().toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(' ');
-      buf.write(digits[i]);
-    }
-    final sign = satsAmount < 0 ? '-' : '';
-    return '$sign$buf';
-  }
+  static String satsGrouped(int satsAmount) =>
+      NumberFormat('#,##0').format(satsAmount).replaceAll(',', ' ');
 
   static String btc(double btcAmount) {
     const maxDecimals = 8;
