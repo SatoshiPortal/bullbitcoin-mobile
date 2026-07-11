@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/data/mappers/sp_balance_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_coin_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_network_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_notification_mapper.dart';
@@ -326,7 +327,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
     final account = _live;
     return SpWallet(
       spAddress: account.spAddress(),
-      balance: SpBalance.fromView(account.unifiedBalance()),
+      balance: SpBalanceMapper.toDomain(account.unifiedBalance()),
       isScanning: account.isScanning(),
       lastScannedHeight: account.lastScannedHeight(),
     );
@@ -342,7 +343,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
   }
 
   @override
-  SpBalance balance() => SpBalance.fromView(_live.unifiedBalance());
+  SpBalance balance() => SpBalanceMapper.toDomain(_live.unifiedBalance());
 
   @override
   bool get isScanning => _live.isScanning();
