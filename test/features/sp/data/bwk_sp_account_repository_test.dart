@@ -39,6 +39,25 @@ class _RepoWithFakeSession extends BwkSpAccountRepository {
   }
 }
 
+// Fakes the FFI session disposal so _runDispose can be exercised with no live
+// Rust account. [shouldThrow] models a "dispose timed out" (inner lock still
+// held); otherwise a clean session teardown.
+class _RepoWithDisposableSession extends BwkSpAccountRepository {
+  _RepoWithDisposableSession({this.shouldThrow = false});
+
+  final bool shouldThrow;
+  bool session = true;
+
+  @override
+  bool get hasSession => session;
+
+  @override
+  Future<void> disposeCurrentSession() async {
+    if (shouldThrow) throw StateError('dispose timed out');
+    session = false;
+  }
+}
+
 void main() {
   late Directory tempDir;
 
@@ -219,6 +238,30 @@ void main() {
           .where((d) => d.path.contains('.backup-'))
           .toList();
       expect(backups, isEmpty);
+    });
+  });
+
+  group('dispose stream teardown', () {
+    test('a clean session dispose tears down the notification streams',
+        () async {
+      final repo = _RepoWithDisposableSession();
+
+      await repo.dispose();
+
+      expect(repo.notifStreamTornDown, isTrue);
+    });
+
+    test('a timed-out session dispose keeps the streams and session live',
+        () async {
+      final repo = _RepoWithDisposableSession(shouldThrow: true);
+
+      await expectLater(repo.dispose(), throwsA(isA<StateError>()));
+
+      // The stream plumbing is NOT torn down, so the still-live session keeps
+      // pushing notifications instead of going dark on a transient timeout.
+      expect(repo.notifStreamTornDown, isFalse);
+      expect(repo.hasSession, isTrue);
+      expect(repo.isScanningCached, isFalse);
     });
   });
 

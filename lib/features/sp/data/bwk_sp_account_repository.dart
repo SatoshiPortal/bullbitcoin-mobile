@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bull_sdk/bwk.dart';
+import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Secondary (driven) adapter that owns the single live `SpAccount` FFI
@@ -584,7 +585,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   Future<void> dispose() async {
-    if (_account == null) return;
+    if (!hasSession) return;
     final pending = _pendingDispose;
     if (pending != null) return pending;
     final future = _runDispose();
@@ -596,49 +597,61 @@ class BwkSpAccountRepository implements SpAccountRepository {
     }
   }
 
-  Future<void> _runDispose() async {
+  // Tears down the Rust session and drops the reference. Rethrows "dispose timed
+  // out" if the inner lock is still held, in which case the reference is kept.
+  // Protected so a test can override it (the live session is an FFI type).
+  @protected
+  @visibleForTesting
+  Future<void> disposeCurrentSession() async {
     final account = _account;
-    try {
-      // Tear down the Rust session FIRST. This flips the notif-thread shutdown
-      // flag, stops the electrum listener, and releases the sqlite handle/.lock.
-      // It MUST happen before cancelling the Dart notification subscription:
-      // cancelling an FRB stream subscription while the Rust notif thread is
-      // still actively producing (electrum flood) deadlocks, which previously
-      // wedged the whole revoke/delete flow. Rethrows "dispose timed out" if the
-      // inner lock is still held; only drop the reference after a clean dispose.
-      if (account != null) {
-        await account.dispose();
-        _account = null;
-        _notifications = null;
+    if (account != null) {
+      await account.dispose();
+      _account = null;
+      _notifications = null;
+    }
+  }
+
+  // Whether the Dart notification plumbing has been torn down. Test-only view of
+  // the internal flag so a timed-out dispose can be asserted not to tear it down.
+  @visibleForTesting
+  bool get notifStreamTornDown => _notifTornDown;
+
+  Future<void> _runDispose() async {
+    // Tear down the Rust session FIRST. This flips the notif-thread shutdown
+    // flag, stops the electrum listener, and releases the sqlite handle/.lock.
+    // It MUST happen before cancelling the Dart notification subscription:
+    // cancelling an FRB stream subscription while the Rust notif thread is
+    // still actively producing (electrum flood) deadlocks, which previously
+    // wedged the whole revoke/delete flow. Only tear down the Dart plumbing
+    // after a clean dispose, so a timed-out dispose keeps the live session's
+    // streams intact.
+    await disposeCurrentSession();
+    // Best-effort Dart-stream cleanup. NOT awaited: the session is already torn
+    // down (its source is done), and cancel/close must never be allowed to
+    // block dispose() and stall revoke.
+    if (!_notifTornDown) {
+      _notifTornDown = true;
+      final sub = _sourceSub;
+      _sourceSub = null;
+      if (sub != null) {
+        unawaited(
+          sub.cancel().catchError((Object e) {
+            log.warning(
+              'SpAccountRepository.dispose: source cancel failed: $e',
+            );
+          }),
+        );
       }
-    } finally {
-      // Best-effort Dart-stream cleanup. NOT awaited: the session is already
-      // torn down (its source is done), and cancel/close must never be allowed
-      // to block dispose() and stall revoke.
-      if (!_notifTornDown) {
-        _notifTornDown = true;
-        final sub = _sourceSub;
-        _sourceSub = null;
-        if (sub != null) {
-          unawaited(
-            sub.cancel().catchError((Object e) {
-              log.warning(
-                'SpAccountRepository.dispose: source cancel failed: $e',
-              );
-            }),
-          );
-        }
-        final controller = _broadcastController;
-        _broadcastController = null;
-        if (controller != null && !controller.isClosed) {
-          unawaited(
-            controller.close().catchError((Object e) {
-              log.warning(
-                'SpAccountRepository.dispose: controller close failed: $e',
-              );
-            }),
-          );
-        }
+      final controller = _broadcastController;
+      _broadcastController = null;
+      if (controller != null && !controller.isClosed) {
+        unawaited(
+          controller.close().catchError((Object e) {
+            log.warning(
+              'SpAccountRepository.dispose: controller close failed: $e',
+            );
+          }),
+        );
       }
     }
   }
