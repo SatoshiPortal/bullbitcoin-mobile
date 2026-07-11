@@ -89,11 +89,14 @@ class LwkFacade {
   static Future<void> delete(WalletModel walletModel) async {
     await _guarded(walletModel.hexId, (dbPath) async {
       try {
-        final dbFile = File(dbPath);
+        // dbPath is the base dir lwk_wollet's with_legacy_fs_store builds on
+        // (dbPath/<network>/enc_cache/<descriptor hash>/...), not a file —
+        // File(dbPath).exists() always returns false for it.
+        final dbDir = Directory(dbPath);
 
-        if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
+        if (!await dbDir.exists()) throw WalletError.notFound(walletModel.id);
         log.fine('Found LwkDb');
-        await dbFile.delete(recursive: true);
+        await dbDir.delete(recursive: true);
       } catch (e) {
         log.warning('Failed to delete LwkDb', error: e);
         rethrow;
