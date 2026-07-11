@@ -117,8 +117,8 @@ class BwkSpAccountRepository implements SpAccountRepository {
   SpFailure _mapFfiError(Object e) {
     final s = e.toString();
     final lower = s.toLowerCase();
-    if (s.contains('inputs changed')) return SpSimulationDrifted(s);
-    if (s.contains('dispose timed out')) return SpSessionBusy(s);
+    if (lower.contains('inputs changed')) return SpSimulationDrifted(s);
+    if (lower.contains('dispose timed out')) return SpSessionBusy(s);
     if (lower.contains('scanner already running')) return SpScanBusy(s);
     return SpUnexpected(s);
   }
