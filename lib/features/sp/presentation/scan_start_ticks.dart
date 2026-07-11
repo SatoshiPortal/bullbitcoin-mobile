@@ -6,6 +6,14 @@ typedef ScanStartTick = ({String label, int height});
 /// The time unit a scan-start ruler stop is expressed in.
 enum _TickUnit { year, month, week }
 
+/// Approximate days per unit (365-day years, 30-day months), used to map a
+/// stop's offset to a block height.
+int _unitDays(_TickUnit unit) => switch (unit) {
+  _TickUnit.year => 365,
+  _TickUnit.month => 30,
+  _TickUnit.week => 7,
+};
+
 /// Builds the ruler stops for the first-scan start chooser, ordered leftmost
 /// (oldest) to rightmost (newest): the earliest scannable height, then 1 year,
 /// 6 down to 1 months, then 3 down to 1 weeks ago. Each time offset is mapped
@@ -19,17 +27,17 @@ List<ScanStartTick> scanStartTicks({
   required int minBirthday,
   required int blocksPerDay,
 }) {
-  const offsets = <({_TickUnit unit, int count, int days})>[
-    (unit: _TickUnit.year, count: 1, days: 365),
-    (unit: _TickUnit.month, count: 6, days: 180),
-    (unit: _TickUnit.month, count: 5, days: 150),
-    (unit: _TickUnit.month, count: 4, days: 120),
-    (unit: _TickUnit.month, count: 3, days: 90),
-    (unit: _TickUnit.month, count: 2, days: 60),
-    (unit: _TickUnit.month, count: 1, days: 30),
-    (unit: _TickUnit.week, count: 3, days: 21),
-    (unit: _TickUnit.week, count: 2, days: 14),
-    (unit: _TickUnit.week, count: 1, days: 7),
+  const offsets = <({_TickUnit unit, int count})>[
+    (unit: _TickUnit.year, count: 1),
+    (unit: _TickUnit.month, count: 6),
+    (unit: _TickUnit.month, count: 5),
+    (unit: _TickUnit.month, count: 4),
+    (unit: _TickUnit.month, count: 3),
+    (unit: _TickUnit.month, count: 2),
+    (unit: _TickUnit.month, count: 1),
+    (unit: _TickUnit.week, count: 3),
+    (unit: _TickUnit.week, count: 2),
+    (unit: _TickUnit.week, count: 1),
   ];
 
   final ticks = <ScanStartTick>[
@@ -37,7 +45,7 @@ List<ScanStartTick> scanStartTicks({
   ];
   final seen = <int>{minBirthday};
   for (final o in offsets) {
-    final height = tip - o.days * blocksPerDay;
+    final height = tip - o.count * _unitDays(o.unit) * blocksPerDay;
     if (height <= minBirthday || height > tip || seen.contains(height)) continue;
     seen.add(height);
     ticks.add((label: _tickLabel(loc, o.unit, o.count), height: height));

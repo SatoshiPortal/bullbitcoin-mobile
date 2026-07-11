@@ -1,10 +1,15 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 
+/// The slow-preset feerate in sat/vB, also the send default. One literal so the
+/// two track together; Dart cannot read an enum field in a const expression, so
+/// they share this instead of `FeeratePreset.slow.satPerVb`.
+const int _slowFeerateSatPerVb = 1;
+
 /// A named feerate choice offered on the send amount page, in sat/vB. The
 /// sat/vB values live here; the display labels are mapped in the presentation
 /// layer (see FeeratePresetL10n) so domain stays Flutter- and l10n-free.
 enum FeeratePreset {
-  slow(1),
+  slow(_slowFeerateSatPerVb),
   normal(3),
   fast(10);
 
@@ -20,8 +25,8 @@ enum FeeratePreset {
 abstract class SpConfig {
   static const String accountName = 'sp';
 
-  /// Default send feerate in sat/vB, same value as the slow preset.
-  static const int defaultFeerateSatPerVb = 1;
+  /// Default send feerate in sat/vB: the slow preset.
+  static const int defaultFeerateSatPerVb = _slowFeerateSatPerVb;
 
   /// Rough blocks-per-day used to map a "months/weeks ago" scan start to a
   /// block height. Mainnet pace; test networks mine on demand, so on those the
