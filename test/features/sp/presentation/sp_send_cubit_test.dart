@@ -116,6 +116,30 @@ void main() {
       expect(cubit.state.error, isNull);
     });
 
+    test('previewRecipient rejects a tsp1 address on a regtest wallet', () {
+      // tsp1 is testnet/signet, so it must not be accepted on a regtest wallet.
+      when(() => networkUsecase.execute()).thenReturn(SpNetwork.regtest);
+      cubit.previewRecipient('tsp1qexampleaddress');
+      expect(cubit.state.recipient, isNull);
+      expect(cubit.state.error, isA<SpAddressNetworkMismatch>());
+    });
+
+    test('previewRecipient rejects an sprt1 address on a testnet wallet', () {
+      // sprt1 is regtest-only, so a testnet wallet must reject it.
+      when(() => networkUsecase.execute()).thenReturn(SpNetwork.testnet);
+      cubit.previewRecipient('sprt1qexampleaddress');
+      expect(cubit.state.recipient, isNull);
+      expect(cubit.state.error, isA<SpAddressNetworkMismatch>());
+    });
+
+    test('previewRecipient accepts a tsp1 address on a signet wallet', () {
+      // signet shares the tsp1 hrp with testnet.
+      when(() => networkUsecase.execute()).thenReturn(SpNetwork.signet);
+      cubit.previewRecipient('tsp1qexampleaddress');
+      expect(cubit.state.recipient, isA<SpRecipientSp>());
+      expect(cubit.state.error, isNull);
+    });
+
     test('setValidatedAmount rejects zero and surfaces an error', () {
       final ok = cubit.setValidatedAmount(BigInt.zero);
       expect(ok, isFalse);
@@ -147,9 +171,17 @@ void main() {
     });
 
     test('previewRecipient sets RecipientView.sp for tsp1... address', () {
-      // A test-network wallet accepts a tsp1 address.
-      when(() => networkUsecase.execute()).thenReturn(SpNetwork.regtest);
+      // A testnet wallet accepts a tsp1 address (the tsp1 hrp is testnet/signet).
+      when(() => networkUsecase.execute()).thenReturn(SpNetwork.testnet);
       cubit.previewRecipient('tsp1qexampleaddress');
+      expect(cubit.state.hasSendRecipient, true);
+      expect(cubit.state.recipient, isA<SpRecipientSp>());
+    });
+
+    test('previewRecipient sets RecipientView.sp for sprt1... address', () {
+      // A regtest wallet accepts a regtest silent payment address.
+      when(() => networkUsecase.execute()).thenReturn(SpNetwork.regtest);
+      cubit.previewRecipient('sprt1qexampleaddress');
       expect(cubit.state.hasSendRecipient, true);
       expect(cubit.state.recipient, isA<SpRecipientSp>());
     });

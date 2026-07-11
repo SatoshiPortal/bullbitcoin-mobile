@@ -41,7 +41,6 @@ class SpSendCubit extends Cubit<SpSendState> {
       return;
     }
     final kind = classifySpAddress(trimmed);
-    final isMainnetSp = kind == SpAddressKind.silentPaymentMainnet;
     final isSp = kind.isSilentPayment;
 
     if (isSp) {
@@ -60,17 +59,14 @@ class SpSendCubit extends Cubit<SpSendState> {
         );
         return;
       }
-      if (network != null) {
-        final wantsMainnet = network == SpNetwork.bitcoin;
-        if (wantsMainnet != isMainnetSp) {
-          emit(
-            state.copyWith(
-              recipient: null,
-              error: const SpAddressNetworkMismatch(),
-            ),
-          );
-          return;
-        }
+      if (network != null && !_allowedNetworks(kind).contains(network)) {
+        emit(
+          state.copyWith(
+            recipient: null,
+            error: const SpAddressNetworkMismatch(),
+          ),
+        );
+        return;
       }
     }
 
@@ -248,6 +244,18 @@ class SpSendCubit extends Cubit<SpSendState> {
       };
 
   BigInt _amountOf(SpRecipient recipient) => recipient.amountSat;
+
+  // Networks a silent payment address of the given kind may be sent to. The
+  // tsp1 hrp is shared by testnet and signet, so both are accepted for it.
+  Set<SpNetwork> _allowedNetworks(SpAddressKind kind) => switch (kind) {
+    SpAddressKind.silentPaymentMainnet => const {SpNetwork.bitcoin},
+    SpAddressKind.silentPaymentRegtest => const {SpNetwork.regtest},
+    SpAddressKind.silentPaymentTestnet => const {
+      SpNetwork.testnet,
+      SpNetwork.signet,
+    },
+    SpAddressKind.bitcoin || SpAddressKind.unrecognized => const {},
+  };
 
   void resetSendFlow() {
     emit(
