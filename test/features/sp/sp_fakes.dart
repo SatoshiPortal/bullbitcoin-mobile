@@ -211,8 +211,12 @@ class FakeSpBackendConfigRepository implements SpBackendConfigRepository {
   SpBackendConfig? _config;
   bool failFetch = false;
 
+  /// Model a save that fails on disk (used by the setup use case tests).
+  bool saveShouldThrow = false;
+
   @override
   Future<void> save(SpBackendConfig config) async {
+    if (saveShouldThrow) throw Exception('save failed on disk');
     _config = config;
   }
 

@@ -28,8 +28,8 @@ enum SpAddressKind {
 /// validation is deferred to the Rust side at prepare time.
 SpAddressKind classifySpAddress(String input) {
   final lower = input.trim().toLowerCase();
-  // `sprt1` and `tsp1` are checked before `sp1` so the shorter mainnet prefix
-  // does not swallow them (it does not, but the order keeps the intent clear).
+  // Match the longer `sprt1` and `tsp1` prefixes before the shorter `sp1` so
+  // the network is picked unambiguously.
   if (lower.startsWith('sprt1')) return SpAddressKind.silentPaymentRegtest;
   if (lower.startsWith('tsp1')) return SpAddressKind.silentPaymentTestnet;
   if (lower.startsWith('sp1')) return SpAddressKind.silentPaymentMainnet;

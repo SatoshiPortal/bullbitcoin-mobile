@@ -187,6 +187,45 @@ void main() {
       expect((result as Err).failure, isA<SpUnexpected>());
     });
 
+    test('rolls the config back on a createFromMnemonic throw so retry is not '
+        'wedged by SpAlreadySetUp', () async {
+      accountRepo.createShouldThrow = true;
+
+      final result = await run();
+
+      expect((result as Err).failure, isA<SpUnexpected>());
+      final stored =
+          (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
+      expect(
+        stored.value,
+        isNull,
+        reason: 'a failed first-time setup must leave no persisted config, '
+            'else the next setup hits the double-setup guard',
+      );
+    });
+
+    test('a save throw returns Err (execute is total, does not throw)',
+        () async {
+      configRepo.saveShouldThrow = true;
+
+      final result = await run();
+
+      expect((result as Err).failure, isA<SpUnexpected>());
+      expect(accountRepo.createCount, 0, reason: 'save is before create');
+    });
+
+    test('a seed read throw returns Err (execute is total, does not throw)',
+        () async {
+      when(
+        () => seedUsecase.execute(),
+      ).thenThrow(Exception('seed read failed'));
+
+      final result = await run();
+
+      expect((result as Err).failure, isA<SpUnexpected>());
+      expect(accountRepo.createCount, 0);
+    });
+
     test('happy path returns Ok and persists the checked config', () async {
       final result = await run();
 
