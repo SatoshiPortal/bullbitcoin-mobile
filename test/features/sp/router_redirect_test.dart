@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,5 +76,21 @@ void main() {
         expect(redirect(route.path), isNull);
       });
     }
+  });
+
+  group('spTransactionDetailsRedirect guards the unchecked extra cast', () {
+    test('redirects to SP coins when extra is not an SpPayment', () {
+      expect(spTransactionDetailsRedirect(null), SpRoute.spCoins.path);
+      expect(spTransactionDetailsRedirect('not a payment'), SpRoute.spCoins.path);
+    });
+
+    test('allows the navigation when extra is a valid SpPayment', () {
+      final payment = SpPayment(
+        txid: 'aabbcc',
+        direction: SpPaymentDirection.receive,
+        amountSat: BigInt.from(1000),
+      );
+      expect(spTransactionDetailsRedirect(payment), isNull);
+    });
   });
 }

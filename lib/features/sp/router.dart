@@ -41,6 +41,13 @@ String? spRedirect(
   return null;
 }
 
+/// Fallback path for the SP transaction-details route when navigated without a
+/// valid [SpPayment] in `state.extra` (e.g. a deep link or a stale restore).
+/// Returns the SP coins path to redirect to, or null to allow the navigation.
+/// Extracted so it is unit-testable with no widget tree.
+String? spTransactionDetailsRedirect(Object? extra) =>
+    extra is SpPayment ? null : SpRoute.spCoins.path;
+
 enum SpRoute {
   spWalletDetail('/sp-wallet-detail'),
   spSettings('/sp-settings'),
@@ -108,6 +115,8 @@ class SpRouter {
       GoRoute(
         name: SpRoute.spTransactionDetails.name,
         path: SpRoute.spTransactionDetails.path,
+        redirect: (context, state) =>
+            spTransactionDetailsRedirect(state.extra),
         builder: (context, state) {
           final payment = state.extra! as SpPayment;
           return SpTransactionDetailsPage(payment: payment);
