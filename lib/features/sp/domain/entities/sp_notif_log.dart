@@ -1,5 +1,9 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 
+/// Max retained SP notification-log lines, shared by the repository ring buffer
+/// and the settings console mirror so both cap at the same length.
+const int spNotifLogCap = 200;
+
 /// One timestamped line in the SP notifications debug console.
 class SpNotifLogLine {
   final DateTime time;

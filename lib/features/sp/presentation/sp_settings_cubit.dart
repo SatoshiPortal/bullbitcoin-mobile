@@ -24,7 +24,6 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
   final LoadSpBackendConfigUsecase _loadSpBackendConfigUsecase;
   final GetSpBackendDefaultsUsecase _getSpBackendDefaultsUsecase;
 
-  static const int _consoleCap = 200;
   StreamSubscription<SpNotifLogLine>? _logSub;
 
   SpSettingsCubit({
@@ -40,7 +39,7 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
     }
     _logSub = _watchNotificationLogUsecase.stream().listen((line) {
       final next = [...state.console, line];
-      if (next.length > _consoleCap) next.removeAt(0);
+      if (next.length > spNotifLogCap) next.removeAt(0);
       emit(state.copyWith(console: List.unmodifiable(next)));
     });
   }

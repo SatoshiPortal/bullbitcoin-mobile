@@ -69,7 +69,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   // Debug console: bounded notification log + a live broadcast of new lines.
   // Never cleared on session recycle; the controller lives for the app.
-  static const int _notifLogCap = 200;
   final List<SpNotifLogLine> _notifLog = [];
   final StreamController<SpNotifLogLine> _notifLogController =
       StreamController<SpNotifLogLine>.broadcast();
@@ -534,11 +533,18 @@ class BwkSpAccountRepository implements SpAccountRepository {
   // a lightweight balance signal (no session reload). Scan progress/start are
   // ignored; only events that change the coin set move the balance.
   void _maybeEmitBalanceChange(dom.SpNotification n) {
-    final affectsBalance =
-        n is dom.SpNewOutput ||
-        n is dom.SpOutputSpent ||
-        n is dom.SpElectrumTx ||
-        n is dom.SpScanCompleted;
+    final affectsBalance = switch (n) {
+      dom.SpNewOutput() ||
+      dom.SpOutputSpent() ||
+      dom.SpElectrumTx() ||
+      dom.SpScanCompleted() => true,
+      dom.SpScanStarted() ||
+      dom.SpScanReceiveProgress() ||
+      dom.SpScanSpendProgress() ||
+      dom.SpScanStopped() ||
+      dom.SpScanFailed() ||
+      dom.SpBackendOffline() => false,
+    };
     if (!affectsBalance) return;
     // Skip the per-event balance read during a scan to avoid churn; the
     // ScanCompleted event reconciles the balance once the scan ends.
@@ -561,19 +567,24 @@ class BwkSpAccountRepository implements SpAccountRepository {
   // runs on a background thread (returns immediately), so the scanning window is
   // ScanStarted..ScanCompleted, which gates WalletBloc from disposing mid-scan.
   void _recordNotification(dom.SpNotification n) {
-    if (n is dom.SpScanStarted) {
-      _scanning = true;
-    } else if (n is dom.SpScanCompleted ||
-        n is dom.SpScanStopped ||
-        n is dom.SpScanFailed) {
-      _scanning = false;
-    }
+    _scanning = switch (n) {
+      dom.SpScanStarted() => true,
+      dom.SpScanCompleted() ||
+      dom.SpScanStopped() ||
+      dom.SpScanFailed() => false,
+      dom.SpScanReceiveProgress() ||
+      dom.SpScanSpendProgress() ||
+      dom.SpNewOutput() ||
+      dom.SpOutputSpent() ||
+      dom.SpElectrumTx() ||
+      dom.SpBackendOffline() => _scanning,
+    };
     final line = SpNotifLogLine(
       time: DateTime.now(),
       text: formatSpNotification(n),
     );
     _notifLog.add(line);
-    if (_notifLog.length > _notifLogCap) _notifLog.removeAt(0);
+    if (_notifLog.length > spNotifLogCap) _notifLog.removeAt(0);
     if (!_notifLogController.isClosed) _notifLogController.add(line);
   }
 
