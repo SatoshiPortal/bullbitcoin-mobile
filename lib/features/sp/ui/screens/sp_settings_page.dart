@@ -102,11 +102,15 @@ class _BackendConfigSection extends StatelessWidget {
         const Gap(8),
         SpBackendConfigForm<SpSettingsState>(
           state: state,
-          cubit: cubit,
           isBusy: state.isSaving,
           header: const _BackendStatusLine(),
           blindbitFieldKey: ValueKey('settings_blindbit_${state.formRevision}'),
           electrumFieldKey: ValueKey('settings_electrum_${state.formRevision}'),
+          onFetchDefaults: cubit.fetchRegtestDefaults,
+          onBlindbitChanged: cubit.setBlindbitUrl,
+          onTestBlindbit: cubit.testBlindbit,
+          onElectrumChanged: cubit.setElectrumUrl,
+          onTestElectrum: cubit.testElectrum,
           // Network is fixed once the wallet exists: changing it would be a
           // different wallet. Read-only in settings; only editable at creation.
           networkField: TextFormField(

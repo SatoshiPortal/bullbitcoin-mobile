@@ -12,7 +12,8 @@ import 'package:gap/gap.dart';
 /// header, the (page-supplied) network field, the regtest-defaults button, the
 /// two backend URL fields, the (page-supplied) submit action, and the inline
 /// error. Reads values through the [SpBackendFormState] mixin and drives edits
-/// through the [SpBackendFormCubit] mixin, so both pages get one form.
+/// through the page-supplied callbacks (like sibling [SpBackendUrlField]), so
+/// it never holds a cubit reference.
 class SpBackendConfigForm<S extends SpBackendFormState<S>>
     extends StatelessWidget {
   const SpBackendConfigForm({
@@ -20,10 +21,14 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
     this.header,
     required this.networkField,
     required this.state,
-    required this.cubit,
     required this.isBusy,
     required this.blindbitFieldKey,
     required this.electrumFieldKey,
+    required this.onFetchDefaults,
+    required this.onBlindbitChanged,
+    required this.onTestBlindbit,
+    required this.onElectrumChanged,
+    required this.onTestElectrum,
     required this.submit,
   });
 
@@ -34,13 +39,18 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
   final Widget networkField;
 
   final S state;
-  final SpBackendFormCubit<S> cubit;
 
   /// True while creating/saving; disables the fetch button and URL fields.
   final bool isBusy;
 
   final Key blindbitFieldKey;
   final Key electrumFieldKey;
+
+  final VoidCallback onFetchDefaults;
+  final ValueChanged<String> onBlindbitChanged;
+  final VoidCallback onTestBlindbit;
+  final ValueChanged<String> onElectrumChanged;
+  final VoidCallback onTestElectrum;
 
   /// The submit action (Create at setup, Save in settings).
   final Widget submit;
@@ -55,8 +65,7 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
         const Gap(16),
         if (state.network == SpNetwork.regtest) ...[
           BBButton.big(
-            onPressed:
-                state.isFetchingDefaults ? () {} : cubit.fetchRegtestDefaults,
+            onPressed: state.isFetchingDefaults ? () {} : onFetchDefaults,
             label: context.loc.spFetchRegtestDefaults,
             bgColor: context.appColors.surface,
             textColor: context.appColors.onSurface,
@@ -68,10 +77,10 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
           label: context.loc.spBlindbitUrlLabel,
           fieldKey: blindbitFieldKey,
           initialValue: state.blindbitUrl,
-          onChanged: cubit.setBlindbitUrl,
+          onChanged: onBlindbitChanged,
           test: state.blindbitTest,
           testError: state.blindbitTestError,
-          onTest: cubit.testBlindbit,
+          onTest: onTestBlindbit,
           enabled: !isBusy,
         ),
         const Gap(12),
@@ -79,10 +88,10 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
           label: context.loc.spElectrumUrlLabel,
           fieldKey: electrumFieldKey,
           initialValue: state.electrumUrl,
-          onChanged: cubit.setElectrumUrl,
+          onChanged: onElectrumChanged,
           test: state.electrumTest,
           testError: state.electrumTestError,
-          onTest: cubit.testElectrum,
+          onTest: onTestElectrum,
           enabled: !isBusy,
         ),
         const Gap(24),

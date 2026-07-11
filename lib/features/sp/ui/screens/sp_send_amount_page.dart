@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/feerate_preset_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
@@ -83,7 +84,9 @@ class _SpSendAmountPageState extends State<SpSendAmountPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.loc.amountLabel, style: context.font.headlineMedium),
-          bottom: const SpSendAppBarProgress(),
+          bottom: SpSendAppBarProgress(
+            isLoading: context.select((SpSendCubit c) => c.state.isLoading),
+          ),
         ),
         body: SafeArea(
           child: ScrollableColumn(
@@ -167,7 +170,11 @@ class _SpSendAmountPageState extends State<SpSendAmountPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SpSendErrorText(),
+                  BlocSelector<SpSendCubit, SpSendState, SpFailure?>(
+                    selector: (s) => s.error,
+                    builder: (context, failure) =>
+                        SpSendErrorText(failure: failure),
+                  ),
                   DialPad(
                     onlyDigits: true,
                     onNumberPressed: _onDigit,

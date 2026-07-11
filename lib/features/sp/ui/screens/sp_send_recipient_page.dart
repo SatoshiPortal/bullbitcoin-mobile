@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/features/send/ui/screens/full_screen_scanner_page.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_address_kind.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_send_state.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_appbar_progress.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_error_text.dart';
@@ -62,7 +64,9 @@ class _SpSendRecipientPageState extends State<SpSendRecipientPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.loc.spSend, style: context.font.headlineMedium),
-          bottom: const SpSendAppBarProgress(),
+          bottom: SpSendAppBarProgress(
+            isLoading: context.select((SpSendCubit c) => c.state.isLoading),
+          ),
         ),
         backgroundColor: context.appColors.secondaryFixedDim,
         body: Column(
@@ -122,7 +126,11 @@ class _SpSendRecipientPageState extends State<SpSendRecipientPage> {
                       const Gap(8),
                       _AddressTypeBadge(input: _controller.text),
                       const Gap(16),
-                      const SpSendErrorText(),
+                      BlocSelector<SpSendCubit, SpSendState, SpFailure?>(
+                        selector: (s) => s.error,
+                        builder: (context, failure) =>
+                            SpSendErrorText(failure: failure),
+                      ),
                       const Gap(16),
                       BBButton.big(
                         label: context.loc.continueButton,

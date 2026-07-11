@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_state.dart';
@@ -42,7 +43,9 @@ class SpSendConfirmPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.confirmButton, style: context.font.headlineMedium),
-        bottom: const SpSendAppBarProgress(),
+        bottom: SpSendAppBarProgress(
+          isLoading: context.select((SpSendCubit c) => c.state.isLoading),
+        ),
       ),
       body: SafeArea(
         child: ScrollableColumn(
@@ -141,7 +144,11 @@ class SpSendConfirmPage extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SpSendErrorText(),
+                BlocSelector<SpSendCubit, SpSendState, SpFailure?>(
+                  selector: (s) => s.error,
+                  builder: (context, failure) =>
+                      SpSendErrorText(failure: failure),
+                ),
                 BlocSelector<SpSendCubit, SpSendState, bool>(
                   selector: (s) => s.isLoading,
                   builder: (context, isLoading) => BBButton.big(

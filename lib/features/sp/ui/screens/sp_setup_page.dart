@@ -32,10 +32,14 @@ class SpSetupPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: SpBackendConfigForm<SpSetupState>(
                     state: state,
-                    cubit: cubit,
                     isBusy: state.isCreating,
                     blindbitFieldKey: ValueKey('blindbit_${state.network.name}'),
                     electrumFieldKey: ValueKey('electrum_${state.network.name}'),
+                    onFetchDefaults: cubit.fetchRegtestDefaults,
+                    onBlindbitChanged: cubit.setBlindbitUrl,
+                    onTestBlindbit: cubit.testBlindbit,
+                    onElectrumChanged: cubit.setElectrumUrl,
+                    onTestElectrum: cubit.testElectrum,
                     networkField: DropdownButtonFormField<SpNetwork>(
                       key: ValueKey('network_${state.network.name}'),
                       initialValue: state.network,
