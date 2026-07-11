@@ -98,7 +98,6 @@ void main() {
     final mockCubit = _MockSpCubit();
     when(() => mockCubit.state).thenReturn(const SpState(isLoading: true));
     when(() => mockCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(() => mockCubit.setReceiveTab(any())).thenReturn(null);
 
     await tester.pumpWidget(_buildMockPage(mockCubit));
     await tester.pump();
@@ -114,7 +113,6 @@ void main() {
     final mockCubit = _MockSpCubit();
     when(() => mockCubit.state).thenReturn(const SpState());
     when(() => mockCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(() => mockCubit.setReceiveTab(any())).thenReturn(null);
 
     await tester.pumpWidget(_buildMockPage(mockCubit));
     await tester.pump();

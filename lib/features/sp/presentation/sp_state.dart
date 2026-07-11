@@ -47,9 +47,6 @@ sealed class SpState with _$SpState {
     // Chain tip + earliest scannable height; bound the start-height chooser.
     int? chainTip,
     int? minBirthdayHeight,
-
-    // Receive tab (persists across navigation)
-    @Default(0) int receiveTabIndex,
   }) = _SpState;
   const SpState._();
 

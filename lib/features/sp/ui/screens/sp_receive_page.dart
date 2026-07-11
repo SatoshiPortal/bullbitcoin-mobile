@@ -17,8 +17,8 @@ class SpReceivePage extends StatefulWidget {
 }
 
 class _SpReceivePageState extends State<SpReceivePage> {
-  // Selected tab. Two tabs (segwit dropped); clamp any previously-stored index.
-  late int _index = context.read<SpCubit>().state.receiveTabIndex.clamp(0, 1);
+  // Selected tab (local widget state). Two tabs: silent payment (0), taproot (1).
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,6 @@ class _SpReceivePageState extends State<SpReceivePage> {
                 onSelected: (selected) {
                   final i = selected == spLabel ? 0 : 1;
                   setState(() => _index = i);
-                  context.read<SpCubit>().setReceiveTab(i);
                 },
               ),
             ),

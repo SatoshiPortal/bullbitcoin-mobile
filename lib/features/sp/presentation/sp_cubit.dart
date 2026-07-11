@@ -311,10 +311,6 @@ class SpCubit extends Cubit<SpState> {
     }
   }
 
-  void setReceiveTab(int index) {
-    emit(state.copyWith(receiveTabIndex: index));
-  }
-
   Future<void> revokeWallet() async {
     // The usecase writes the `.revoked` sentinel and notifies observers even on
     // its dir-delete failure path, so the wallet is already unloadable. Ignore

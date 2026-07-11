@@ -75,13 +75,6 @@ void main() {
       await cubit.load();
       await settle();
 
-      // Navigating the receive tabs (SP / segwit / taproot) must not scan.
-      cubit.setReceiveTab(0);
-      cubit.setReceiveTab(1);
-      cubit.setReceiveTab(2);
-      cubit.setReceiveTab(0);
-      await settle();
-
       expect(fakeRepo.scanOnceCount, 0);
     });
 
