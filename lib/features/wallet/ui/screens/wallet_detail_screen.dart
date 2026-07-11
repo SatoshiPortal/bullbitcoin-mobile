@@ -10,12 +10,16 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,9 +71,19 @@ class WalletDetailScreen extends StatelessWidget {
                 slivers: [
                   SliverToBoxAdapter(
                     child: WalletDetailBalanceCard(
-                      balanceSat: wallet.balanceSat.toInt(),
                       isLiquid: wallet.isLiquid,
                       signer: wallet.signer,
+                      balanceText: CurrencyText(
+                        wallet.balanceSat.toInt(),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(color: context.appColors.onPrimary),
+                        showFiat: false,
+                      ),
+                      eyeToggle: const EyeToggle(),
+                      fiatBalance: HomeFiatBalance(
+                        balanceSat: wallet.balanceSat.toInt(),
+                      ),
+                      syncingIndicator: const TxsSyncingIndicator(),
                     ),
                   ),
                   if (wallet.isBitcoin) ...[

@@ -1,9 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -11,21 +7,23 @@ import 'package:gap/gap.dart';
 class WalletDetailBalanceCard extends StatelessWidget {
   const WalletDetailBalanceCard({
     super.key,
-    required this.balanceSat,
     required this.isLiquid,
     required this.signer,
-    this.hasSyncingIndicator = true,
+    required this.balanceText,
+    required this.fiatBalance,
+    this.eyeToggle,
+    this.syncingIndicator,
   });
 
-  final int balanceSat;
   final bool isLiquid;
   final SignerEntity signer;
-  final bool hasSyncingIndicator;
+  final Widget balanceText;
+  final Widget fiatBalance;
+  final Widget? eyeToggle;
+  final Widget? syncingIndicator;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       height: 185,
       decoration: BoxDecoration(
@@ -54,7 +52,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          if (hasSyncingIndicator) const TxsSyncingIndicator(),
+          ?syncingIndicator,
           Center(
             child: Column(
               mainAxisSize: .min,
@@ -63,20 +61,13 @@ class WalletDetailBalanceCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: .center,
                   children: [
-                    const Gap(16),
-                    CurrencyText(
-                      balanceSat,
-                      style: theme.textTheme.displaySmall?.copyWith(
-                        color: context.appColors.onPrimary,
-                      ),
-                      showFiat: false,
-                    ),
-                    const Gap(16),
-                    const EyeToggle(),
+                    if (eyeToggle != null) const Gap(16),
+                    balanceText,
+                    if (eyeToggle != null) ...[const Gap(16), eyeToggle!],
                   ],
                 ),
                 const Gap(12),
-                HomeFiatBalance(balanceSat: balanceSat),
+                fiatBalance,
               ],
             ),
           ),

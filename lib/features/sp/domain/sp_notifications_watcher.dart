@@ -22,7 +22,6 @@ class SpNotificationsWatcher {
     required this._ensureSpSessionUsecase,
   });
 
-
   static const int _maxRapidResubscribes = 5;
   static const Duration _resubscribeBackoff = Duration(seconds: 2);
   static const Duration _resubscribeHealthyGap = Duration(seconds: 30);

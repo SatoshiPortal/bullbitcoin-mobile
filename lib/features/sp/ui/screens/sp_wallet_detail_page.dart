@@ -4,13 +4,16 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
+import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -47,10 +50,19 @@ class SpWalletDetailPage extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: WalletDetailBalanceCard(
-                balanceSat: state.totalBalance.toInt(),
                 isLiquid: false,
                 signer: SignerEntity.local,
-                hasSyncingIndicator: false,
+                balanceText: CurrencyText(
+                  state.totalBalance.toInt(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: context.appColors.onPrimary,
+                  ),
+                  showFiat: false,
+                ),
+                eyeToggle: const EyeToggle(),
+                fiatBalance: HomeFiatBalance(
+                  balanceSat: state.totalBalance.toInt(),
+                ),
               ),
             ),
             if (state.isLoading)
