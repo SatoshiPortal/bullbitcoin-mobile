@@ -6,8 +6,11 @@ enum SpAddressKind {
   /// Mainnet silent payment (`sp1...`).
   silentPaymentMainnet,
 
-  /// Testnet/regtest silent payment (`tsp1...`).
+  /// Testnet/signet silent payment (`tsp1...`, the hrp shared by both).
   silentPaymentTestnet,
+
+  /// Regtest silent payment (`sprt1...`).
+  silentPaymentRegtest,
 
   /// A standard bitcoin address (bech32 or legacy).
   bitcoin,
@@ -16,16 +19,22 @@ enum SpAddressKind {
   unrecognized;
 
   bool get isSilentPayment =>
-      this == silentPaymentMainnet || this == silentPaymentTestnet;
+      this == silentPaymentMainnet ||
+      this == silentPaymentTestnet ||
+      this == silentPaymentRegtest;
 }
 
 /// Classify [input] by its address prefix. Prefix-only: full checksum/format
 /// validation is deferred to the Rust side at prepare time.
 SpAddressKind classifySpAddress(String input) {
   final lower = input.trim().toLowerCase();
-  if (lower.startsWith('sp1')) return SpAddressKind.silentPaymentMainnet;
+  // `sprt1` and `tsp1` are checked before `sp1` so the shorter mainnet prefix
+  // does not swallow them (it does not, but the order keeps the intent clear).
+  if (lower.startsWith('sprt1')) return SpAddressKind.silentPaymentRegtest;
   if (lower.startsWith('tsp1')) return SpAddressKind.silentPaymentTestnet;
-  if (lower.startsWith('bc1') ||
+  if (lower.startsWith('sp1')) return SpAddressKind.silentPaymentMainnet;
+  if (lower.startsWith('bcrt1') ||
+      lower.startsWith('bc1') ||
       lower.startsWith('tb1') ||
       lower.startsWith('1') ||
       lower.startsWith('m') ||

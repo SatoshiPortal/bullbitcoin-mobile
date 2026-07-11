@@ -193,7 +193,8 @@ class _AddressTypeBadge extends StatelessWidget {
     if (input.trim().isEmpty) return const SizedBox.shrink();
     final (label, color) = switch (classifySpAddress(input)) {
       SpAddressKind.silentPaymentMainnet ||
-      SpAddressKind.silentPaymentTestnet => (
+      SpAddressKind.silentPaymentTestnet ||
+      SpAddressKind.silentPaymentRegtest => (
         context.loc.spAddressTypeSilentPayment,
         context.appColors.success,
       ),
