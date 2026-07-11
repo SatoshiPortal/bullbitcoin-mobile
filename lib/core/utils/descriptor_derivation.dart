@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 
 class DescriptorDerivation {

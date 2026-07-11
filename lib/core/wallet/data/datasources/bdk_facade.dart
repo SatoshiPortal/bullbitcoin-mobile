@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 class BdkFacade {

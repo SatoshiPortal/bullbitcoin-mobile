@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "2.0.1"
   bdk_dart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
@@ -134,10 +134,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip32_keys
-      sha256: d7080d6dda5457ea55d0a25cdbaa1f681576e88276e8c8e8e16817996fd11ae7
+      sha256: "40f3bcdbb6dac449d95405d58aa203706a917a27eca76cea10b54715aebd53c6"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "3.1.4"
   bip39_mnemonic:
     dependency: "direct main"
     description:
@@ -167,10 +167,10 @@ packages:
     dependency: "direct main"
     description:
       name: bitcoin_base
-      sha256: "88be48282b67f61918c12586df3f23d9ff40b032c5cfe755dd802f2866a0a768"
+      sha256: "9d7b3e4028b912a8070c62da00f5eae5e0548335d790cf53e7861aeaf9a7c62d"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.2.0"
   bloc:
     dependency: transitive
     description:
@@ -191,10 +191,10 @@ packages:
     dependency: transitive
     description:
       name: blockchain_utils
-      sha256: "9129a7b13e50c692387b69f24ca82c06360a75094dd0d286e21430c5b1492707"
+      sha256: d24d5054f0e595289375c00e8ecfeb85605a7d3ee8f69b14725e602f9571cccd
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.0"
+    version: "7.0.0"
   bluez:
     dependency: transitive
     description:
@@ -249,10 +249,10 @@ packages:
     dependency: transitive
     description:
       name: build
-      sha256: a156715e7cd728130c592f30552575908aae5b100005fbc1f0fb16b3c03a3d10
+      sha256: "45d14a0fb23e018d8287c32fc98d726ce466b231928ed9b9200f29bd3ccd39ae"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.6"
+    version: "4.0.7"
   build_cli_annotations:
     dependency: transitive
     description:
@@ -265,26 +265,26 @@ packages:
     dependency: transitive
     description:
       name: build_config
-      sha256: "4070d2a59f8eec34c97c86ceb44403834899075f66e8a9d59706f8e7834f6f71"
+      sha256: f2c223156a26eea323e6244b85141d76413a80aeee9fe0b380773789fabaf8ae
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.1"
   build_daemon:
     dependency: transitive
     description:
       name: build_daemon
-      sha256: bf05f6e12cfea92d3c09308d7bcdab1906cd8a179b023269eed00c071004b957
+      sha256: fd754058c342243718d5171a95f352cfc9fcf0cba8cfa26df67cb13a5836db78
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.1"
+    version: "4.1.2"
   build_runner:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "1523ce62448ebac2c15a8ba5fbad8acac169788658a7dd2a1c2d9c2a9318b9a6"
+      sha256: "5367e521935b102bdf1e735d2aab461e36b2edca6517662d088dd04cc39f8d16"
       url: "https://pub.dev"
     source: hosted
-    version: "2.15.0"
+    version: "2.15.1"
   built_collection:
     dependency: transitive
     description:
@@ -305,43 +305,43 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
-      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      resolved-ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
     dependency: transitive
     description:
       name: camera
-      sha256: "034c38cb8014d29698dcae6d20276688a1bf74e6487dfeb274d70ea05d5f7777"
+      sha256: "558230d6ce6ccea856b32d390db7e7b557adf4d9320aa614481bd3f2f608953f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.0+1"
+    version: "0.12.0+2"
   camera_android_camerax:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: e20c1e92ce6797d9ae9b1db1e09a4c1039a04827d0b24985f5da3840b96948ac
+      sha256: cf6c248ef3d3c4846e99e488de9487d95927437e083c396e5fed2c1ece7f93a7
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.2+1"
+    version: "0.7.4+1"
   camera_avfoundation:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: "90e4cc3fde331581a3b2d35d83be41dbb7393af0ab857eb27b732174289cb96d"
+      sha256: "866e9cd8370f8055d005c0413937a52dc1d7a472687f0ee3ce02392955aababa"
       url: "https://pub.dev"
     source: hosted
-    version: "0.10.1"
+    version: "0.10.2"
   camera_platform_interface:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "7ac852d77699acee79f0d438b793feee26721841e50973576419ff5c6d95e9b7"
+      sha256: "4524ca6eb4176b066864036ad4fe02c3e4863e63b77eadc21a5bf56824f43498"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.0"
+    version: "2.13.1"
   camera_web:
     dependency: transitive
     description:
@@ -394,10 +394,10 @@ packages:
     dependency: transitive
     description:
       name: cli_launcher
-      sha256: "35cf15a3ffaeb9c11849eaa0afba761bb76dceb42d050532bfd3e1299c9748cd"
+      sha256: "96883f87648524292e24e2cc6a369fbdf64883473fe3e3ddadd3d857bf16a484"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3+1"
+    version: "0.3.3+2"
   cli_util:
     dependency: transitive
     description:
@@ -474,10 +474,10 @@ packages:
     dependency: transitive
     description:
       name: cross_file
-      sha256: "28bb3ae56f117b5aec029d702a90f57d285cd975c3c5c281eaca38dbc47c5937"
+      sha256: "92c9c43c383bfa1c32079d3bc492d55d6d4318044b7b47edaff8971cbb555c51"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.5+2"
+    version: "0.3.5+4"
   crypto:
     dependency: "direct main"
     description:
@@ -546,10 +546,10 @@ packages:
     dependency: transitive
     description:
       name: dbus
-      sha256: "0ce9b0a839e6dee59a37a623d2fc26a35bbbe6404213e419b0d6411023d62645"
+      sha256: "792974a4007974fbc5c1b5433eb2330a9db3e368c3f906253af4c007d0f49a91"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.14"
+    version: "0.7.13"
   decimal:
     dependency: "direct main"
     description:
@@ -716,18 +716,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_gen_core
-      sha256: "1413fbd0b67f76ac17800989013438caec3b64564c9ffd1eea6cd7e170d9b0e5"
+      sha256: "8ccb1f809642b34eb4857d8d7c4e5b41430a8cba8206177aae2ffe9d72b5eef3"
       url: "https://pub.dev"
     source: hosted
-    version: "5.14.1"
+    version: "5.15.0"
   flutter_gen_runner:
     dependency: "direct dev"
     description:
       name: flutter_gen_runner
-      sha256: db00922dd5f4c1aa33aeab7f74117f1cd224e7a1e8bea1e312b8d09b8101a909
+      sha256: "2b0fff517a75a14ed2eff749c1da2d6b8b568e542ad2b1c967356669a4c29bb2"
       url: "https://pub.dev"
     source: hosted
-    version: "5.14.1"
+    version: "5.15.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -1035,10 +1035,10 @@ packages:
     dependency: transitive
     description:
       name: googleapis_auth
-      sha256: "1417d8846663df5e7b77ca56591c5edd442c66ffc9c01ab036e138a21a148e86"
+      sha256: ea53b290aaf1fdff615c8d79091b02c9150ff81c48f7f3b7460598c444f3c50a
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "2.3.3"
   graphs:
     dependency: transitive
     description:
@@ -1115,18 +1115,18 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: f9881ff4998044947ec38d098bc7c8316ae1186fa786eddffdb867b9bc94dfce
+      sha256: "6300175e00616bbc832e2fc91bfa4d776af5402c81c7151bee6905bb08473c52"
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.0"
+    version: "4.9.1"
   image_picker:
     dependency: "direct main"
     description:
       name: image_picker
-      sha256: "91c025426c2881c551100bce834e201c835a170151545f58d17da5180ca7d9ac"
+      sha256: d8402284df184bc05f4a2210c6c23983b0720f4cd87cbd05c5390a78af602667
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.2"
+    version: "1.2.3"
   image_picker_android:
     dependency: transitive
     description:
@@ -1433,10 +1433,10 @@ packages:
     dependency: "direct main"
     description:
       name: no_screenshot
-      sha256: "373cc7d9ec62f2fe0898318bfa38ad8f717e5b9729be78cd00112d3ab278cb18"
+      sha256: "2192d312e74e67b88ae6cf61cea0e0ae66aee3881127c0740dcbdcd1d4eed3e9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   node_preamble:
     dependency: transitive
     description:
@@ -1755,9 +1755,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
-      resolved-ref: "507c54893f561a339b8da787cf9b2e0cd9ab9659"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      resolved-ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
@@ -1781,18 +1781,18 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: "3311f89e0c964c4df5f65670348c8a11744c94ae2b57032c947cfb26bfd03ef0"
+      sha256: "09c573f98ff6c5e98d527f351f037eb8ea9ff684a6e9e84b2e91357144016254"
       url: "https://pub.dev"
     source: hosted
-    version: "9.22.0"
+    version: "9.24.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: efd3bebd7962438d0ecbe5c7b530de012e2e8efe14ef838b89195d7c2bb3f66c
+      sha256: "4a04b7e1901b8128df783b6d36d48706b07b0cd055e621517c998de87f5dafb9"
       url: "https://pub.dev"
     source: hosted
-    version: "9.22.0"
+    version: "9.24.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -1821,10 +1821,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: "93ae5884a9df5d3bb696825bceb3a17590754548b5d740eba51500afc8d088f5"
+      sha256: "0634e64bd719f89c012f392938e173521f535d3ecaf66558fa94a056d22b5cc7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.26"
+    version: "2.4.27"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -2228,10 +2228,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"
+      sha256: "9b129329f58692f6e6578329498a8fe9fbe98f090beb764ffbb8ee2eadd01dcd"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.3"
+    version: "4.6.0"
   vector_graphics:
     dependency: transitive
     description:
@@ -2333,10 +2333,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: e4d3474277c5043f5f3100ed27d94ad693abfd5c602b0221c719a4497e4ba1e4
+      sha256: d53e1ccf5516f25017e3c9d44c39034db352d20fa34fe200674270242c2c5111
       url: "https://pub.dev"
     source: hosted
-    version: "4.14.0"
+    version: "4.14.1"
   webview_flutter_android:
     dependency: "direct main"
     description:
@@ -2437,10 +2437,10 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: "971043b3a0d3da28727e40ed3e0b5d18b742fa5a68665cca88e74b7876d5e025"
+      sha256: "67f0aff7be013d107995e9b75bf4e7f2c3ef2dfdb2c8e68024bba0a7fd5756a4"
       url: "https://pub.dev"
     source: hosted
-    version: "6.6.1"
+    version: "7.0.1"
   yaml:
     dependency: transitive
     description:

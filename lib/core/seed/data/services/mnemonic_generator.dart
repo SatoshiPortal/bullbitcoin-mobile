@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 
 class MnemonicGenerator {
   const MnemonicGenerator();
