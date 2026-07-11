@@ -23,11 +23,34 @@ rg_scan() {
   printf '%s' "$out"
 }
 
+# Guard against anchor drift: if a guarded symbol is renamed away, its rg match
+# set goes empty and the block below would pass having checked nothing. Assert
+# the set is non-empty and still contains the symbol's canonical definition
+# file(s); exit 2 (tooling error) otherwise.
+require_anchor() {
+  local raw=$1 label=$2
+  shift 2
+  if [ -z "$(printf '%s\n' "$raw" | grep -v '^$' || true)" ]; then
+    echo "anchor drift: no '$label' matches; symbol renamed or removed" >&2
+    exit 2
+  fi
+  local anchor
+  for anchor in "$@"; do
+    printf '%s\n' "$raw" | grep -qF "$anchor" || {
+      echo "anchor drift: '$label' no longer found in $anchor" >&2
+      exit 2
+    }
+  done
+}
+
 violations=0
 
 echo '=== scanOnce call sites (must be only the port, adapter + ScanSpWalletUsecase) ==='
 scanonce_raw=$(rg_scan -nF 'scanOnce(' lib/)
 printf '%s\n' "$scanonce_raw"
+require_anchor "$scanonce_raw" 'scanOnce(' \
+  'lib/features/sp/domain/repositories/sp_account_repository.dart' \
+  'lib/features/sp/data/bwk_sp_account_repository.dart'
 bad=$(printf '%s\n' "$scanonce_raw" \
   | grep -v '^$' \
   | cut -d: -f1 | sort -u \
@@ -45,6 +68,8 @@ echo ''
 echo '=== ScanSpWalletUsecase users (must be only definition, locator, cubit, and comments) ==='
 usecase_raw=$(rg_scan -nF 'ScanSpWalletUsecase' lib/)
 printf '%s\n' "$usecase_raw"
+require_anchor "$usecase_raw" 'ScanSpWalletUsecase' \
+  'lib/features/sp/domain/usecases/scan_sp_wallet_usecase.dart'
 # Code references only: drop comment lines (// /// *) so doc comments that merely
 # name the use case (incl. FRB-generated docs) do not trip the check.
 bad=$(printf '%s\n' "$usecase_raw" \
@@ -68,6 +93,8 @@ echo '=== SpCubit.scan() call sites (must be only SP UI handlers + the cubit its
 # Scoped to files that reference SpCubit so unrelated `.scan` (ledger BLE scan,
 # import route enums) is ignored; comment/log lines are dropped.
 spcubit_files=$(rg_scan -l 'SpCubit' lib/)
+require_anchor "$spcubit_files" 'SpCubit' \
+  'lib/features/sp/presentation/sp_cubit.dart'
 scan_line_files=$(rg_scan -n '\.scan\b' lib/ \
   | rg -v '^[^:]+:[0-9]+:[[:space:]]*(///|//|\*)' \
   | cut -d: -f1 | sort -u || true)
