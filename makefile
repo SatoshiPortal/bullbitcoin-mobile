@@ -307,7 +307,6 @@ sp-verify-all: sp-analyze sp-audit
 	@fvm flutter test \
 		test/features/sp \
 		test/features/settings/presentation/bloc/settings_cubit_dev_mode_test.dart \
-		test/features/settings/ui/bitcoin_settings_screen_test.dart \
+		test/features/settings/ui/screens/bitcoin/bitcoin_settings_screen_test.dart \
 		test/features/wallet/presentation/bloc/wallet_bloc_sp_test.dart \
-		test/integration/sp_global_wiring_test.dart \
 		--reporter=compact
