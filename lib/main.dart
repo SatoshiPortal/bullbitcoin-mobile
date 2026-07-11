@@ -38,8 +38,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:payjoin_flutter/common.dart';
-
 import 'package:workmanager/workmanager.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
@@ -92,7 +90,6 @@ class Bull {
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
       BullSdk.init(),
-      PConfig.initializeApp(),
       if (Platform.isAndroid) BitBoxApi.initialize(),
     ];
 
