@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -18,8 +19,9 @@ void main() {
   });
 
   test('returns Ok(true) when pin code is set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(true));
+    when(
+      () => pinCodeRepository.isPinCodeSet(),
+    ).thenAnswer((_) async => const Ok(true));
 
     final result = await usecase.execute();
 
@@ -28,8 +30,9 @@ void main() {
   });
 
   test('returns Ok(false) when pin code is not set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(false));
+    when(
+      () => pinCodeRepository.isPinCodeSet(),
+    ).thenAnswer((_) async => const Ok(false));
 
     final result = await usecase.execute();
 
@@ -51,6 +54,25 @@ void main() {
       expect(failure, isA<AppUnlockPinCheckFailure>());
       // Raw message must not surface as a new typed failure — it stays in logMessage only
       expect(failure, isNot(isA<AppUnlockUnexpectedFailure>()));
+    },
+  );
+
+  test(
+    'lets KeychainLockedException bubble up unchanged, not wrapped in Err — '
+    'AppStartupBloc relies on this to distinguish "device locked, retry '
+    'later" from a real startup failure',
+    () async {
+      // thenAnswer + async throw (not thenThrow) so the mock fails via a
+      // rejected Future, matching PinCodeRepository.isPinCodeSet's real
+      // `async` signature rather than a synchronous throw.
+      when(() => pinCodeRepository.isPinCodeSet()).thenAnswer(
+        (_) async => throw const KeychainLockedException(),
+      );
+
+      await expectLater(
+        usecase.execute(),
+        throwsA(isA<KeychainLockedException>()),
+      );
     },
   );
 }

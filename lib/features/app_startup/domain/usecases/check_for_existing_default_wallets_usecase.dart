@@ -25,16 +25,35 @@ class CheckForExistingDefaultWalletsUsecase {
         onlyDefaults: true,
         environment: environment,
       );
-    } catch (e) {
+    } catch (e, st) {
+      // lwk errors arrive as bare Strings (lwk_facade throws e.msg), so the
+      // message embeds the error verbatim — this severe is the only place
+      // they get captured before surfacing as a generic "Startup Error".
       if (e.toString().contains('UpdateOnDifferentStatus')) {
         log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
-        await _walletRepository.deleteLwkDb();
-        log.fine('Deleted LwkDb, retrying getWallets');
-        defaultWallets = await _walletRepository.getWallets(
-          onlyDefaults: true,
-          environment: environment,
-        );
+        try {
+          await _walletRepository.deleteLwkDb();
+          log.fine('Deleted LwkDb, retrying getWallets');
+          defaultWallets = await _walletRepository.getWallets(
+            onlyDefaults: true,
+            environment: environment,
+          );
+        } catch (retryError, retrySt) {
+          log.severe(
+            message:
+                'Failed to load default wallets at startup after lwkDb '
+                'reset: $retryError',
+            error: retryError,
+            trace: retrySt,
+          );
+          rethrow;
+        }
       } else {
+        log.severe(
+          message: 'Failed to load default wallets at startup: $e',
+          error: e,
+          trace: st,
+        );
         rethrow;
       }
     }
@@ -77,8 +96,7 @@ class CheckForExistingDefaultWalletsUsecase {
         );
       } catch (e, stackTrace) {
         log.severe(
-          message:
-              'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
+          message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
           error: e,
           trace: stackTrace,
         );
