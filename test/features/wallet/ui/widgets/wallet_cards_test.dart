@@ -153,24 +153,18 @@ void main() {
       expect(find.text('Silent Payments'), findsOneWidget);
     });
 
-    testWidgets('hides the SP card when dev mode is off', (tester) async {
+    // The card gates on `isSpFeatureEnabled && isSpWalletSetup`. The bloc
+    // derives isSpFeatureEnabled from superuser + dev mode, so the card ignores
+    // the raw settings flags here; one gate-off case covers every way the gate
+    // can be false.
+    testWidgets('hides the SP card when the feature gate is off', (
+      tester,
+    ) async {
       await pumpCards(
         tester,
         isSpWalletSetup: true,
         isSpFeatureEnabled: false,
         isSuperuser: true,
-        isDevModeEnabled: false,
-      );
-
-      expect(find.text('Silent Payments'), findsNothing);
-    });
-
-    testWidgets('hides the SP card when superuser is off', (tester) async {
-      await pumpCards(
-        tester,
-        isSpWalletSetup: true,
-        isSpFeatureEnabled: false,
-        isSuperuser: false,
         isDevModeEnabled: true,
       );
 
