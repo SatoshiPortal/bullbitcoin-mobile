@@ -229,6 +229,9 @@ class SpCubit extends Cubit<SpState> {
             error: SpUnexpected('SP scan failed: $message'),
           ),
         );
+        // A partial scan may still have updated the stores; refresh so the UI
+        // reflects whatever landed before the failure (matches Completed/Stopped).
+        unawaited(_refreshWalletData());
       case SpNewOutput():
       case SpOutputSpent():
       case SpElectrumTx():

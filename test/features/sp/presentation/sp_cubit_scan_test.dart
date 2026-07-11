@@ -155,8 +155,10 @@ void main() {
     verify(() => loadUsecase.execute()).called(1);
   });
 
-  test('ScanFailed notification sets isScanning=false and sets error', () async {
+  test('ScanFailed notification sets isScanning=false, sets error, reloads data',
+      () async {
     await cubit.load();
+    clearInteractions(loadUsecase);
 
     notifController.add(const SpScanFailed('network error'));
     await Future.delayed(Duration.zero);
@@ -167,6 +169,8 @@ void main() {
       (cubit.state.error! as SpUnexpected).logMessage,
       contains('network error'),
     );
+    // A partial scan may have updated the stores; refresh once (like Completed).
+    verify(() => loadUsecase.execute()).called(1);
   });
 
   group('no auto-scan on init', () {
