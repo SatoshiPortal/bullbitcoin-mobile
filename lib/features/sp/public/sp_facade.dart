@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/refresh_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_updates_usecase.dart';
@@ -26,8 +26,8 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart' show SpFailure;
 /// Consumers must wrap this in their own feature's use case (per AGENTS.md
 /// rule #4) and never call it directly from a BLoC.
 class SpFacade {
-  final RefreshSpWalletUsecase _refreshSpWalletUsecase;
   final GetSpWalletUsecase _getSpWalletUsecase;
+  final IsSpScanningUsecase _isSpScanningUsecase;
   final CheckSpWalletSetupUsecase _checkSpWalletSetupUsecase;
   final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
@@ -35,8 +35,8 @@ class SpFacade {
   final ResyncSpListenerUsecase _resyncSpListenerUsecase;
 
   SpFacade({
-    required this._refreshSpWalletUsecase,
     required this._getSpWalletUsecase,
+    required this._isSpScanningUsecase,
     required this._checkSpWalletSetupUsecase,
     required this._getSpFeatureGateUsecase,
     required this._revokeSpWalletUsecase,
@@ -53,16 +53,18 @@ class SpFacade {
 
   /// Whether a scan is running (tracked in Dart, no FFI). Callers skip the
   /// wallet refresh while true so it never disposes the session mid-scan.
-  bool get isScanning => _refreshSpWalletUsecase.isScanning;
+  bool get isScanning => _isSpScanningUsecase.execute();
 
   /// Reads a fresh snapshot from the live session without disposing it.
   /// `Ok(null)` when SP is not set up; `Err` on failure (e.g. a dispose still
   /// holds the inner lock) so the caller leaves its state intact and retries.
-  Future<Result<SpWallet?, SpFailure>> refresh() =>
-      _refreshSpWalletUsecase.execute();
-
-  /// Load the current snapshot without tearing down the session first.
-  Future<SpWallet?> getWallet() => _getSpWalletUsecase.execute();
+  Future<Result<SpWallet?, SpFailure>> refresh() async {
+    try {
+      return Ok(await _getSpWalletUsecase.execute());
+    } catch (e) {
+      return Err(SpUnexpected('SP refresh failed: $e'));
+    }
+  }
 
   /// Revoke the SP wallet (sentinel + on-disk delete + config delete). `Err`
   /// when the on-disk delete failed; the sentinel is already written so the

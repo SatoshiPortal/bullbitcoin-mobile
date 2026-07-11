@@ -17,10 +17,10 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecas
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_balance_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_network_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/refresh_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -170,11 +170,8 @@ class SpLocator {
         ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
       ),
     );
-    locator.registerFactory<RefreshSpWalletUsecase>(
-      () => RefreshSpWalletUsecase(
-        repository: locator<SpAccountRepository>(),
-        getSpWalletUsecase: locator<GetSpWalletUsecase>(),
-      ),
+    locator.registerFactory<IsSpScanningUsecase>(
+      () => IsSpScanningUsecase(repository: locator<SpAccountRepository>()),
     );
     locator.registerFactory<CreateSpWalletUsecase>(
       () => CreateSpWalletUsecase(
@@ -213,8 +210,8 @@ class SpLocator {
   static void _registerFacade(GetIt locator) {
     locator.registerLazySingleton<SpFacade>(
       () => SpFacade(
-        refreshSpWalletUsecase: locator<RefreshSpWalletUsecase>(),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
+        isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),
         getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
