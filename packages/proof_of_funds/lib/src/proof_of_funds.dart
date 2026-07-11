@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bip322/bip322.dart' as bip322;
@@ -91,12 +90,13 @@ class ProofOfFunds {
   /// Verifies a `pof` [signature] over [message] for [challengeAddress].
   ///
   /// Runs the offline cryptographic check, then — when [chain] is supplied —
-  /// decodes the PSBT to recover each proven input's CLAIMED output
-  /// (scriptPubKey + amount) and compares it against the real on-chain output,
-  /// also checking it is unspent. This on-chain comparison is essential: the
-  /// offline check alone does not bind a listed outpoint to the script that
-  /// was actually signed, so a proof could otherwise claim an outpoint it does
-  /// not control.
+  /// compares each proven input's CLAIMED output (the scriptPubKey + amount its
+  /// signature actually committed to, exposed by `bip322.ProvenUtxo`) against
+  /// the real on-chain output, also checking it is unspent. This on-chain
+  /// comparison is essential: the offline check alone attests only that the
+  /// prover signed over the data it supplied, not that that data matches the
+  /// real UTXO, so a proof could otherwise claim an outpoint it does not
+  /// control.
   ///
   /// Never throws for malformed signature data — that resolves to
   /// [ProofStatus.invalid]. Throws [UnsupportedScriptError] for an
@@ -127,9 +127,9 @@ class ProofOfFunds {
       return ProofResult(
         status: status,
         proven: [
-          for (final op in result.provenUtxos)
+          for (final u in result.provenUtxos)
             ProvenUtxo(
-              outpoint: _fromOutpoint(op),
+              outpoint: _fromOutpoint(u.outPoint),
               onChain: OnChainStatus.notChecked,
             ),
         ],
@@ -140,19 +140,19 @@ class ProofOfFunds {
       );
     }
 
-    // On-chain path: recover each proven input's claimed TxOut from the PSBT
-    // and compare against the live UTXO set.
-    final claimed = _claimedOutputs(signature, result.provenUtxos);
+    // On-chain path: each proven input now carries the (scriptPubKey, amount)
+    // its signature actually committed to (bip322.ProvenUtxo). Compare that
+    // claimed output against the live UTXO set — no PSBT re-decode needed.
     final proven = <ProvenUtxo>[];
     var downgraded = false;
-    for (final op in result.provenUtxos) {
-      final onchain = await chain.lookup(_fromOutpoint(op));
-      final claim = claimed[_key(op)];
+    for (final u in result.provenUtxos) {
+      final outpoint = _fromOutpoint(u.outPoint);
+      final onchain = await chain.lookup(outpoint);
       final OnChainStatus s;
-      if (onchain == null || claim == null) {
+      if (onchain == null) {
         s = OnChainStatus.mismatchOrMissing;
-      } else if (!_bytesEqual(onchain.scriptPubKey, claim.scriptPubKey) ||
-          onchain.amountSat != claim.amountSat) {
+      } else if (!_bytesEqual(onchain.scriptPubKey, u.scriptPubKey) ||
+          onchain.amountSat != BigInt.from(u.amount)) {
         s = OnChainStatus.mismatchOrMissing;
       } else if (!onchain.unspent) {
         s = OnChainStatus.spent;
@@ -160,7 +160,7 @@ class ProofOfFunds {
         s = OnChainStatus.confirmedUnspent;
       }
       if (s != OnChainStatus.confirmedUnspent) downgraded = true;
-      proven.add(ProvenUtxo(outpoint: _fromOutpoint(op), onChain: s));
+      proven.add(ProvenUtxo(outpoint: outpoint, onChain: s));
     }
 
     return ProofResult(
@@ -182,38 +182,6 @@ class ProofOfFunds {
     return bip322.Bip322.addressFromScriptPubKey(scriptPubKey, network: net);
   }
 
-  /// Decodes the finalized PSBT and pairs each proven outpoint with the
-  /// output (scriptPubKey + amount) the proof CLAIMS for it. Returns an empty
-  /// map if the PSBT can't be decoded (verification already produced a status
-  /// from the crypto check; a decode failure here just leaves claims unknown).
-  Map<String, ChainUtxo> _claimedOutputs(
-    String signature,
-    List<bip322.OutPoint> proven,
-  ) {
-    final provenKeys = {for (final op in proven) _key(op)};
-    try {
-      final psbtBytes = base64.decode(
-        base64.normalize(signature.substring(3)), // strip the `pof` prefix
-      );
-      final decoded = bip322.decodePsbt(psbtBytes);
-      final out = <String, ChainUtxo>{};
-      for (var i = 0; i < decoded.transaction.inputs.length; i++) {
-        final prevout = decoded.transaction.inputs[i].prevout;
-        final key = _key(prevout);
-        if (!provenKeys.contains(key)) continue; // skip input 0 (challenge)
-        final txout = decoded.utxos[i].resolve(prevout.index);
-        out[key] = ChainUtxo(
-          scriptPubKey: Uint8List.fromList(txout.scriptPubKey.bytes),
-          amountSat: BigInt.from(txout.value),
-          unspent: true, // not meaningful here; only script/amount are used
-        );
-      }
-      return out;
-    } catch (_) {
-      return const {};
-    }
-  }
-
   bip322.Network _network(ProofNetwork n) => switch (n) {
     ProofNetwork.mainnet => bip322.Network.mainnet,
     ProofNetwork.testnet => bip322.Network.testnet,
@@ -232,8 +200,6 @@ class ProofOfFunds {
     final be = HEX.encode(op.hash.reversed.toList());
     return ProofOutpoint(txId: be, vout: op.index);
   }
-
-  String _key(bip322.OutPoint op) => '${HEX.encode(op.hash)}:${op.index}';
 
   void _assertSupportedType(bip322.AddressType type) {
     switch (type) {

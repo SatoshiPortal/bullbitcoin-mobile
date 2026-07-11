@@ -126,8 +126,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: d94e80f64cc98b6d15b481f64ea132ddd4cbef99
-      resolved-ref: d94e80f64cc98b6d15b481f64ea132ddd4cbef99
+      ref: d836d2f
+      resolved-ref: d836d2fc05ec17708791d3b6211930f1a4b72ddc
       url: "https://github.com/ethicnology/dart-bip322-proof-of-funds.git"
     source: git
     version: "1.0.0"
