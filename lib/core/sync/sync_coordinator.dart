@@ -62,6 +62,17 @@ class SyncCoordinator {
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final RestartSwapWatcherUsecase _restartSwaps;
+  // Restarts the SP taproot electrum listener on foreground. Wired from the
+  // composition root (SpLocator) via [resyncSpListener] so this core
+  // orchestrator never imports the SP feature; a no-op until then.
+  Future<void> Function() _resyncSp = _noopResync;
+
+  static Future<void> _noopResync() async {}
+
+  /// Register the SP listener resync callback. Called from `SpLocator` so core
+  /// stays feature-agnostic (rule #7).
+  set resyncSpListener(Future<void> Function() callback) =>
+      _resyncSp = callback;
 
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
@@ -91,7 +102,7 @@ class SyncCoordinator {
   /// every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
-  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps).
+  /// order follows the [SyncKind] enum declaration (bitcoin -> liquid -> swaps).
   ///
   /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
@@ -234,6 +245,8 @@ class SyncCoordinator {
         }
       case SyncKind.swaps:
         await _restartSwaps.execute();
+      case SyncKind.sp:
+        await _resyncSp();
     }
   }
 

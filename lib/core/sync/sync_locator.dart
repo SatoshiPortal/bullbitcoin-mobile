@@ -8,6 +8,9 @@ class SyncLocator {
   /// Foreground-only. The background-task isolate uses its own GetIt and
   /// must not register the coordinator (its lifecycle listener has no
   /// widget binding to attach to in that isolate).
+  ///
+  /// The SP listener resync callback is wired later by `SpLocator` so core
+  /// never imports the SP feature (rule #7).
   static void setup(GetIt locator) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(

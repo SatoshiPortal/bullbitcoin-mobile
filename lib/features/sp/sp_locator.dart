@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
@@ -47,6 +48,16 @@ class SpLocator {
     _registerUseCases(locator);
     _registerFacade(locator);
     _registerPresentation(locator);
+    _wireSyncListener(locator);
+  }
+
+  // Wire the SP electrum-listener resync into the core sync coordinator here,
+  // so core never imports the SP feature (rule #7). The coordinator is
+  // foreground-only, so it may be absent (e.g. the background isolate).
+  static void _wireSyncListener(GetIt locator) {
+    if (!locator.isRegistered<SyncCoordinator>()) return;
+    locator<SyncCoordinator>().resyncSpListener = () =>
+        locator<SpFacade>().resyncListener();
   }
 
   static void _registerAdapters(GetIt locator) {
