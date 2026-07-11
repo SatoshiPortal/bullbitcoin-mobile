@@ -74,8 +74,8 @@ void main() {
         isSpWalletSetup: false,
       );
 
-      expect(find.text('Create SP Wallet'), findsOneWidget);
-      expect(find.text('SP Wallet Settings'), findsNothing);
+      expect(find.text('Create Silent Payments Wallet'), findsOneWidget);
+      expect(find.text('Silent Payments Wallet Settings'), findsNothing);
     });
 
     testWidgets('setup shows SP Wallet Settings only', (tester) async {
@@ -86,8 +86,8 @@ void main() {
         isSpWalletSetup: true,
       );
 
-      expect(find.text('SP Wallet Settings'), findsOneWidget);
-      expect(find.text('Create SP Wallet'), findsNothing);
+      expect(find.text('Silent Payments Wallet Settings'), findsOneWidget);
+      expect(find.text('Create Silent Payments Wallet'), findsNothing);
     });
 
     testWidgets('refreshes the SP setup flag on entry', (tester) async {
@@ -114,8 +114,8 @@ void main() {
           isSpWalletSetup: isSpWalletSetup,
         );
 
-        expect(find.text('Create SP Wallet'), findsNothing);
-        expect(find.text('SP Wallet Settings'), findsNothing);
+        expect(find.text('Create Silent Payments Wallet'), findsNothing);
+        expect(find.text('Silent Payments Wallet Settings'), findsNothing);
       });
 
       testWidgets('dev mode off (setup=$isSpWalletSetup)', (tester) async {
@@ -126,8 +126,8 @@ void main() {
           isSpWalletSetup: isSpWalletSetup,
         );
 
-        expect(find.text('Create SP Wallet'), findsNothing);
-        expect(find.text('SP Wallet Settings'), findsNothing);
+        expect(find.text('Create Silent Payments Wallet'), findsNothing);
+        expect(find.text('Silent Payments Wallet Settings'), findsNothing);
       });
     }
   });

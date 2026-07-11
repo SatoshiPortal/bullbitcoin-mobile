@@ -113,7 +113,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Backend config'), findsOneWidget);
+    expect(find.text('Server settings'), findsOneWidget);
     expect(find.text('Wallet management'), findsOneWidget);
     expect(find.text('Network'), findsOneWidget);
     expect(find.text('Blindbit URL'), findsOneWidget);
@@ -121,7 +121,7 @@ void main() {
     expect(find.text('Open wallet'), findsOneWidget);
     expect(find.text('Coins'), findsOneWidget);
     expect(find.text('Scan now'), findsOneWidget);
-    expect(find.text('Delete SP wallet'), findsOneWidget);
+    expect(find.text('Delete Silent Payments wallet'), findsOneWidget);
     // Wallet management rows use the shared settings row widget.
     expect(find.byType(SettingsEntryItem), findsNWidgets(4));
   });
@@ -165,7 +165,7 @@ void main() {
       _buildPage(spCubit: spCubit, settingsCubit: settingsCubit),
     );
 
-    await tester.tap(find.text('Save backend config'), warnIfMissed: false);
+    await tester.tap(find.text('Save server settings'), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     verifyNever(() => settingsCubit.saveBackendConfig());
@@ -189,12 +189,12 @@ void main() {
       _buildPage(spCubit: spCubit, settingsCubit: settingsCubit),
     );
 
-    await tester.ensureVisible(find.text('Save backend config'));
-    await tester.tap(find.text('Save backend config'), warnIfMissed: false);
+    await tester.ensureVisible(find.text('Save server settings'));
+    await tester.tap(find.text('Save server settings'), warnIfMissed: false);
     await tester.pump();
 
     verifyNever(() => settingsCubit.saveBackendConfig());
-    expect(find.text('Save backend config?'), findsNothing);
+    expect(find.text('Save server settings?'), findsNothing);
   });
 
   testWidgets('delete requires confirmation before revoke', (tester) async {
@@ -203,8 +203,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Delete SP wallet'));
-    await tester.tap(find.text('Delete SP wallet'));
+    await tester.ensureVisible(find.text('Delete Silent Payments wallet'));
+    await tester.tap(find.text('Delete Silent Payments wallet'));
     await tester.pumpAndSettle();
 
     verifyNever(() => spCubit.revokeWallet());

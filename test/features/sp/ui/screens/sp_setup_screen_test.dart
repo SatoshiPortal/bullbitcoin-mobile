@@ -75,7 +75,7 @@ void main() {
 
       await tester.pumpWidget(_buildPage(cubit));
 
-      expect(find.text('Create SP Wallet'), findsOneWidget);
+      expect(find.text('Create Silent Payments Wallet'), findsOneWidget);
       expect(find.text('Create'), findsOneWidget);
     });
 

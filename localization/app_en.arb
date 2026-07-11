@@ -4876,11 +4876,11 @@
   "@spFailureSimulationDrifted": {
     "description": "Silent Payments failure: the coin set drifted from the confirmed simulation"
   },
-  "spFailureBackendUnreachable": "Could not reach the Silent Payments backend.",
+  "spFailureBackendUnreachable": "Could not reach the Silent Payments server.",
   "@spFailureBackendUnreachable": {
     "description": "Silent Payments failure: a backend could not be reached"
   },
-  "spFailureConfigInvalid": "The Silent Payments backend settings are invalid.",
+  "spFailureConfigInvalid": "The Silent Payments server settings are invalid.",
   "@spFailureConfigInvalid": {
     "description": "Silent Payments failure: the backend config is invalid"
   },
@@ -15388,11 +15388,11 @@
   "@spTransactionIdLabel": {
     "description": "Silent Payments: transaction id label"
   },
-  "spSettingsTitle": "SP Wallet Settings",
+  "spSettingsTitle": "Silent Payments Wallet Settings",
   "@spSettingsTitle": {
     "description": "Silent Payments: settings screen title"
   },
-  "spSettingsBackendConfig": "Backend config",
+  "spSettingsBackendConfig": "Server settings",
   "@spSettingsBackendConfig": {
     "description": "Silent Payments: backend config section title"
   },
@@ -15416,15 +15416,15 @@
   "@spElectrumUrlLabel": {
     "description": "Silent Payments: electrum URL field label"
   },
-  "spSaveBackendConfigTitle": "Save backend config?",
+  "spSaveBackendConfigTitle": "Save server settings?",
   "@spSaveBackendConfigTitle": {
     "description": "Silent Payments: save backend config dialog title"
   },
-  "spSaveBackendConfigContent": "The SP wallet will be recreated with the selected backend config.",
+  "spSaveBackendConfigContent": "The Silent Payments wallet will be recreated with the selected server settings.",
   "@spSaveBackendConfigContent": {
     "description": "Silent Payments: save backend config dialog content"
   },
-  "spSaveBackendConfigButton": "Save backend config",
+  "spSaveBackendConfigButton": "Save server settings",
   "@spSaveBackendConfigButton": {
     "description": "Silent Payments: save backend config button"
   },
@@ -15440,23 +15440,23 @@
   "@spScanNow": {
     "description": "Silent Payments: scan now settings entry"
   },
-  "spDeleteWalletEntry": "Delete SP wallet",
+  "spDeleteWalletEntry": "Delete Silent Payments wallet",
   "@spDeleteWalletEntry": {
     "description": "Silent Payments: delete wallet settings entry"
   },
-  "spDeleteWalletTitle": "Delete SP wallet?",
+  "spDeleteWalletTitle": "Delete Silent Payments wallet?",
   "@spDeleteWalletTitle": {
     "description": "Silent Payments: delete wallet dialog title"
   },
-  "spDeleteWalletContent": "This removes the local SP wallet and revokes its secret.",
+  "spDeleteWalletContent": "This removes the local Silent Payments wallet and revokes its secret.",
   "@spDeleteWalletContent": {
     "description": "Silent Payments: delete wallet dialog content"
   },
-  "spBackendOnline": "Backend online",
+  "spBackendOnline": "Server online",
   "@spBackendOnline": {
     "description": "Silent Payments: backend reachable status"
   },
-  "spBackendOffline": "Backend offline",
+  "spBackendOffline": "Server offline",
   "@spBackendOffline": {
     "description": "Silent Payments: backend unreachable status"
   },
@@ -15472,7 +15472,7 @@
   "@spNoNotifications": {
     "description": "Silent Payments: empty notifications console message"
   },
-  "spSetupTitle": "Create SP Wallet",
+  "spSetupTitle": "Create Silent Payments Wallet",
   "@spSetupTitle": {
     "description": "Silent Payments: create wallet screen title"
   },
@@ -15484,7 +15484,7 @@
   "@spTestButton": {
     "description": "Silent Payments: test backend connection button"
   },
-  "spTestingConnection": "Testing connection…",
+  "spTestingConnection": "Testing connection...",
   "@spTestingConnection": {
     "description": "Silent Payments: backend connection testing status"
   },
