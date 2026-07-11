@@ -85,7 +85,7 @@ mixin SpBackendFormCubit<S extends SpBackendFormState<S>> on Cubit<S> {
     final url = _urlFor(kind);
     if (url.isEmpty) return;
     emit(state.applyConnTest(kind, SpConnTest.testing, null));
-    final err = await backendTestUsecase.test(kind, url);
+    final err = await backendTestUsecase.execute(kind, url);
     // Drop the result if the URL changed under us or the cubit closed.
     if (isClosed || _urlFor(kind) != url) return;
     emit(

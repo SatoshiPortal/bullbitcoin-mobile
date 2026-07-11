@@ -11,7 +11,7 @@ class TestSpBackendUsecase {
 
   TestSpBackendUsecase({required this._configRepository});
 
-  Future<SpFailure?> test(SpBackendKind kind, String url) async {
+  Future<SpFailure?> execute(SpBackendKind kind, String url) async {
     final result = await _configRepository.testBackend(kind, url);
     return result.fold((_) => null, (failure) => failure);
   }

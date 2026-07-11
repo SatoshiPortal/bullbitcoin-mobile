@@ -32,7 +32,7 @@ void main() {
       final usecase = TestSpBackendUsecase(
         configRepository: _FakeConfigRepository(const Ok(null)),
       );
-      expect(await usecase.test(SpBackendKind.blindbit, 'http://ok'), isNull);
+      expect(await usecase.execute(SpBackendKind.blindbit, 'http://ok'), isNull);
     });
 
     test('forwards an Err as the failure', () async {
@@ -41,7 +41,7 @@ void main() {
           const Err(SpBackendUnreachable('boom')),
         ),
       );
-      final err = await usecase.test(SpBackendKind.electrum, 'tcp://bad:1');
+      final err = await usecase.execute(SpBackendKind.electrum, 'tcp://bad:1');
       expect(err, isA<SpBackendUnreachable>());
       expect((err! as SpBackendUnreachable).logMessage, contains('boom'));
     });

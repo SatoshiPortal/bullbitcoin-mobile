@@ -8,6 +8,8 @@ class WatchSpNotificationLogUsecase {
 
   WatchSpNotificationLogUsecase({required this._repository});
 
-  List<SpNotifLogLine> current() => _repository.notificationLog;
-  Stream<SpNotifLogLine> stream() => _repository.notificationLogStream;
+  ({List<SpNotifLogLine> log, Stream<SpNotifLogLine> updates}) execute() => (
+    log: _repository.notificationLog,
+    updates: _repository.notificationLogStream,
+  );
 }

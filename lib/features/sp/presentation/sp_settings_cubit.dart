@@ -33,11 +33,11 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
     required this._loadSpBackendConfigUsecase,
     required this._getSpBackendDefaultsUsecase,
   }) : super(_initialState(_getSpBackendDefaultsUsecase)) {
-    final seed = _watchNotificationLogUsecase.current();
-    if (seed.isNotEmpty) {
-      emit(state.copyWith(console: List.unmodifiable(seed)));
+    final notifLog = _watchNotificationLogUsecase.execute();
+    if (notifLog.log.isNotEmpty) {
+      emit(state.copyWith(console: List.unmodifiable(notifLog.log)));
     }
-    _logSub = _watchNotificationLogUsecase.stream().listen((line) {
+    _logSub = notifLog.updates.listen((line) {
       final next = [...state.console, line];
       if (next.length > spNotifLogCap) next.removeAt(0);
       emit(state.copyWith(console: List.unmodifiable(next)));

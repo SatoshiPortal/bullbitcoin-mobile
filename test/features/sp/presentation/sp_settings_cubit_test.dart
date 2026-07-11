@@ -73,8 +73,8 @@ void main() {
     Future<int> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
   }) {
-    when(() => logUsecase.current()).thenReturn(seed);
-    when(() => logUsecase.stream()).thenAnswer((_) => logController.stream);
+    when(() => logUsecase.execute())
+        .thenReturn((log: seed, updates: logController.stream));
     final configRepo = _MockSpBackendConfigRepository();
     when(() => configRepo.fetch())
         .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
@@ -160,8 +160,8 @@ void main() {
     test(
       'initFromNetwork loads the stored custom config over defaults',
       () async {
-        when(() => logUsecase.current()).thenReturn(const []);
-        when(() => logUsecase.stream()).thenAnswer((_) => logController.stream);
+        when(() => logUsecase.execute())
+            .thenReturn((log: const [], updates: logController.stream));
         final configRepo = _MockSpBackendConfigRepository();
         when(() => configRepo.fetch()).thenAnswer(
           (_) async => Ok<SpBackendConfig?, SpFailure>(
