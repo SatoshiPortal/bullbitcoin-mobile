@@ -229,9 +229,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
   /// refresh (so the data reload and `isRefreshing` transitions still happen)
-  /// and awaits the [SyncCoordinator] directly, so the returned future — and
-  /// therefore the RefreshIndicator spinner — resolves only once bitcoin,
-  /// liquid and swaps have all synced, rather than tracking the shared
+  /// and awaits the [SyncCoordinator] directly, so the returned future (and
+  /// therefore the RefreshIndicator spinner) resolves only once bitcoin,
+  /// liquid, swaps and sp have all synced, rather than tracking the shared
   /// `isRefreshing` flag (which a throttled background refresh can clear after
   /// bitcoin alone). Awaiting the coordinator also bypasses the `droppable()`
   /// event lane, so the gesture is never swallowed by an in-flight background
@@ -255,8 +255,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     emit(state.copyWith(isRefreshing: true));
     try {
-      // SyncCoordinator schedules bitcoin -> liquid -> swaps sequentially with
-      // per-kind dedup, throttling, and a lifecycle gate. A user-triggered
+      // SyncCoordinator schedules bitcoin -> liquid -> swaps -> sp sequentially
+      // with per-kind dedup, throttling, and a lifecycle gate. A user-triggered
       // refresh (pull-to-refresh) bypasses the throttle; route-driven
       // navigation triggers use SyncTrigger.automatic.
       await _syncCoordinator.sync(trigger: event.trigger);

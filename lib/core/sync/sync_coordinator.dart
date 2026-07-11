@@ -102,9 +102,10 @@ class SyncCoordinator {
   /// every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
-  /// order follows the [SyncKind] enum declaration (bitcoin -> liquid -> swaps).
+  /// order follows the [SyncKind] enum declaration (bitcoin -> liquid -> swaps
+  /// -> sp).
   ///
-  /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
+  /// Pass [SyncTrigger.user] to bypass the per-kind throttle; reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
   /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
   ///

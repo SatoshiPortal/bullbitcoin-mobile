@@ -23,7 +23,7 @@ class SpSendSuccessScreen extends StatelessWidget {
       context.goNamed(SpRoute.spWalletDetail.name);
     }
 
-    // R4: intercept system back / iOS swipe-back. Without this, the user
+    // Intercept system back / iOS swipe-back. Without this, the user
     // lands on the confirm page where a stale simulation + a second tap on
     // Sign & Broadcast could re-enter the broadcast path. The cubit-side
     // fix (clearing simulation on success) is the bedrock; this PopScope is
