@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 
@@ -19,5 +21,15 @@ class RefreshSpWalletUsecase {
   /// Whether a scan is running (tracked in Dart, no FFI).
   bool get isScanning => _repository.isScanningCached;
 
-  Future<SpWallet?> execute() => _getSpWalletUsecase.execute();
+  /// `Ok(null)` when SP is not set up (gated / revoked); `Ok(wallet)` with the
+  /// current snapshot otherwise. `Err` when establishing/reading the session
+  /// failed (e.g. a dispose still holds the inner lock): the caller keeps its
+  /// state intact and retries later.
+  Future<Result<SpWallet?, SpFailure>> execute() async {
+    try {
+      return Ok(await _getSpWalletUsecase.execute());
+    } catch (e) {
+      return Err(SpUnexpected('SP refresh failed: $e'));
+    }
+  }
 }

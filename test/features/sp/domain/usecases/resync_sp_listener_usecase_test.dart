@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -39,5 +41,15 @@ void main() {
     await usecase.execute();
 
     verifyNever(() => repository.restartElectrum());
+  });
+
+  test('maps a restart failure to Err', () async {
+    when(() => repository.hasSession).thenReturn(true);
+    when(() => repository.isScanningCached).thenReturn(false);
+    when(() => repository.restartElectrum()).thenThrow(Exception('socket'));
+
+    final result = await usecase.execute();
+
+    expect(result, isA<Err<void, SpFailure>>());
   });
 }

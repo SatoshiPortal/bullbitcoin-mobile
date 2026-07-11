@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/refresh_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
@@ -34,14 +36,23 @@ void main() {
   });
 
   group('RefreshSpWalletUsecase', () {
-    test('A: returns the GetSpWalletUsecase snapshot', () async {
+    test('A: returns the GetSpWalletUsecase snapshot as Ok', () async {
       final wallet = _wallet();
       when(() => getSpWallet.execute()).thenAnswer((_) async => wallet);
 
       final result = await usecase.execute();
 
-      expect(result, same(wallet));
+      expect(result, isA<Ok<SpWallet?, SpFailure>>());
+      expect((result as Ok<SpWallet?, SpFailure>).value, same(wallet));
       verify(() => getSpWallet.execute()).called(1);
+    });
+
+    test('C: maps a thrown error to Err', () async {
+      when(() => getSpWallet.execute()).thenThrow(Exception('boom'));
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Err<SpWallet?, SpFailure>>());
     });
 
     test('B: never disposes the live session, even when one exists', () async {

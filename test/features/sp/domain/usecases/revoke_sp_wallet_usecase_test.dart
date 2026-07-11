@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -57,11 +59,12 @@ void main() {
     });
 
     test('when revokeOnDisk fails, the config is NOT dropped, no final notify, '
-        'and endTeardown still runs, error rethrown', () async {
+        'and endTeardown still runs, error returned as Err', () async {
       when(() => accountRepo.revokeOnDisk()).thenThrow(Exception('delete boom'));
 
-      await expectLater(usecase.execute(), throwsA(isA<Exception>()));
+      final result = await usecase.execute();
 
+      expect(result, isA<Err<void, SpFailure>>());
       verifyNever(() => configRepo.delete());
       verifyNever(() => accountRepo.notifySetupChanged());
       verify(() => accountRepo.endTeardown()).called(1);

@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -168,12 +169,10 @@ class SettingsCubit extends Cubit<SettingsState> {
           trace: StackTrace.current,
         );
       }
-      try {
-        // The revoke use case disposes the live session, deletes the wallet,
-        // and emits SpSetupChanged; the WalletBloc observes that and refreshes
-        // itself, so settings never drives the wallet for SP.
-        await _revokeSpWalletUsecase.execute();
-      } catch (e) {
+      // The revoke use case disposes the live session, deletes the wallet, and
+      // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
+      // so settings never drives the wallet for SP.
+      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
         // RevokeSpWalletUsecase writes a `.revoked` sentinel BEFORE attempting
         // the recursive delete, so even if delete failed the partial state is
         // no longer dangerous: GetSpWalletUsecase refuses to load any wallet
@@ -183,7 +182,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         // show a generic retry prompt. The raw cause stays in the log only.
         log.severe(
           message: 'Failed to revoke SP wallet (sentinel left in place)',
-          error: e,
+          error: failure,
           trace: StackTrace.current,
         );
         revokeSpFailed = true;

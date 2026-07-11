@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
@@ -86,7 +88,9 @@ void main() {
     walletBloc = _MockWalletBloc();
 
     when(() => setIsDevModeUsecase.execute(any())).thenAnswer((_) async {});
-    when(() => revokeSpWalletUsecase.execute()).thenAnswer((_) async {});
+    when(
+      () => revokeSpWalletUsecase.execute(),
+    ).thenAnswer((_) async => const Ok(null));
     when(() => revokeArkUsecase.execute()).thenAnswer((_) async {});
     when(() => walletBloc.add(any())).thenReturn(null);
 
@@ -172,7 +176,7 @@ void main() {
     );
 
     test('dev-mode toggle-off still flips devmode AND surfaces revoke error in '
-        'state when RevokeSpWalletUsecase throws', () async {
+        'state when RevokeSpWalletUsecase returns Err', () async {
       // The sentinel written by RevokeSpWalletUsecase BEFORE its delete
       // attempt makes it safe to flip dev mode off even when delete fails:
       // GetSpWalletUsecase keys off that sentinel and will refuse to load.
@@ -180,7 +184,7 @@ void main() {
       // error so the UI can warn the user.
       when(
         () => revokeSpWalletUsecase.execute(),
-      ).thenThrow(Exception('file locked'));
+      ).thenAnswer((_) async => const Err(SpUnexpected('file locked')));
       cubit.emit(
         cubit.state.copyWith(storedSettings: _settings(isDevModeEnabled: true)),
       );

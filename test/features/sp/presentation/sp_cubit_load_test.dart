@@ -197,16 +197,20 @@ void main() {
 
   group('revokeWallet', () {
     test('delegates to the revoke usecase', () async {
-      when(() => revokeUsecase.execute()).thenAnswer((_) async {});
+      when(
+        () => revokeUsecase.execute(),
+      ).thenAnswer((_) async => const Ok(null));
 
       await cubit.revokeWallet();
 
       verify(() => revokeUsecase.execute()).called(1);
     });
 
-    test('does not throw when the usecase fails (UI must still navigate)',
+    test('completes when the usecase returns Err (UI must still navigate)',
         () async {
-      when(() => revokeUsecase.execute()).thenThrow(Exception('delete failed'));
+      when(
+        () => revokeUsecase.execute(),
+      ).thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
 
       // The usecase already makes the wallet unloadable (sentinel) even on its
       // failure path, so revokeWallet must complete instead of propagating.

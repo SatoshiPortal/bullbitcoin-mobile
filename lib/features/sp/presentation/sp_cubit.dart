@@ -317,12 +317,10 @@ class SpCubit extends Cubit<SpState> {
 
   Future<void> revokeWallet() async {
     // The usecase writes the `.revoked` sentinel and notifies observers even on
-    // its dir-delete failure path, so the wallet is already unloadable. Swallow
-    // any error here so the UI always navigates away instead of getting stuck.
-    try {
-      await _revokeSpWalletUsecase.execute();
-    } catch (e) {
-      log.warning('SpCubit.revokeWallet: $e');
+    // its dir-delete failure path, so the wallet is already unloadable. Ignore
+    // a failure here so the UI always navigates away instead of getting stuck.
+    if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
+      log.warning('SpCubit.revokeWallet: ${failure.logMessage}');
     }
   }
 

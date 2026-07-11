@@ -13,6 +13,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
@@ -222,7 +224,7 @@ void main() {
         final wallet = _spWallet(5000);
 
         when(() => checkSetup.execute()).thenAnswer((_) async => true);
-        when(() => refreshSp.execute()).thenAnswer((_) async => wallet);
+        when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
         final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
@@ -246,7 +248,9 @@ void main() {
 
       // Not set up: setup check false, refresh returns null (gated/revoked).
       when(() => checkSetup.execute()).thenAnswer((_) async => false);
-      when(() => refreshSp.execute()).thenAnswer((_) async => null);
+      when(() => refreshSp.execute()).thenAnswer(
+        (_) async => const Ok<SpWallet?, SpFailure>(null),
+      );
 
       final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
@@ -291,7 +295,7 @@ void main() {
       final wallet = _spWallet(200);
 
       when(() => checkSetup.execute()).thenAnswer((_) async => true);
-      when(() => refreshSp.execute()).thenAnswer((_) async => wallet);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
       final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
@@ -307,7 +311,7 @@ void main() {
     });
 
     test(
-      'E: refresh throwing leaves state and clears loading',
+      'E: refresh failing leaves state and clears loading',
       () async {
         // refresh can throw an FFI error while reading the snapshot. The bloc
         // must leave the existing snapshot intact and clear the loading flag.
@@ -316,7 +320,7 @@ void main() {
         final wallet = _spWallet(7777);
 
         when(() => checkSetup.execute()).thenAnswer((_) async => true);
-        when(() => refreshSp.execute()).thenAnswer((_) async => wallet);
+        when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
         final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
@@ -325,9 +329,9 @@ void main() {
         expect(bloc.state.spWallet, same(wallet));
         expect(bloc.state.spBalanceSat, 7777);
 
-        // Now make refresh throw.
+        // Now make refresh fail.
         when(() => refreshSp.execute()).thenAnswer(
-          (_) async => throw 'FFI error reading SP snapshot',
+          (_) async => const Err(SpUnexpected('FFI error reading SP snapshot')),
         );
 
         await drive(bloc, const RefreshSpWallet());
@@ -336,7 +340,7 @@ void main() {
         expect(
           bloc.state.spWallet,
           same(wallet),
-          reason: 'state.spWallet must remain unchanged when refresh throws',
+          reason: 'state.spWallet must remain unchanged when refresh fails',
         );
         expect(
           bloc.state.spBalanceSat,
@@ -385,7 +389,7 @@ void main() {
       final wallet = _spWallet(3000);
 
       when(() => checkSetup.execute()).thenAnswer((_) async => true);
-      when(() => refreshSp.execute()).thenAnswer((_) async => wallet);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
       final bloc = _makeBloc(
         refreshSp: refreshSp,
@@ -419,7 +423,7 @@ void main() {
       // Hold the refresh open so the burst lands while the first handler is in
       // flight; droppable() must drop the queued events instead of stacking
       // loading passes on top of each other.
-      final gate = Completer<SpWallet?>();
+      final gate = Completer<Result<SpWallet?, SpFailure>>();
       when(() => checkSetup.execute()).thenAnswer((_) async => true);
       when(() => refreshSp.execute()).thenAnswer((_) => gate.future);
 
@@ -430,7 +434,7 @@ void main() {
       bloc.add(const RefreshSpWallet());
       await pumpEventQueue(times: 100);
 
-      gate.complete(wallet);
+      gate.complete(Ok(wallet));
       await pumpEventQueue(times: 100);
 
       verify(() => refreshSp.execute()).called(1);
@@ -447,7 +451,9 @@ void main() {
         final checkSetup = _MockCheckSpWalletSetupForWallet();
         // Stubbed but must NOT be consulted on a pure balance change.
         when(() => checkSetup.execute()).thenAnswer((_) async => true);
-        when(() => refreshSp.execute()).thenAnswer((_) async => _spWallet(0));
+        when(
+          () => refreshSp.execute(),
+        ).thenAnswer((_) async => Ok(_spWallet(0)));
 
         final controller = StreamController<SpUpdate>.broadcast();
         addTearDown(controller.close);
@@ -487,7 +493,7 @@ void main() {
       final checkSetup = _MockCheckSpWalletSetupForWallet();
       final wallet = _spWallet(4321);
       when(() => checkSetup.execute()).thenAnswer((_) async => true);
-      when(() => refreshSp.execute()).thenAnswer((_) async => wallet);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
       final controller = StreamController<SpUpdate>.broadcast();
       addTearDown(controller.close);

@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -669,41 +670,46 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    // The whole handler runs inside one try so a setup-check or refresh throw
+    // The setup check still returns a bool and can throw; guard it so a throw
     // settles the SP card (clears loading) instead of escaping as an unhandled
     // bloc error that leaves the card stuck.
+    final bool isSpWalletSetup;
     try {
-      final isSpWalletSetup =
-          await _checkSpWalletSetupForWalletUsecase.execute();
-      emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
-
-      // While a scan runs the live session holds the inner lock; refreshing now
-      // would block on a snapshot read or time out in dispose() and tear the
-      // session down. Skip and keep the current snapshot; the scan's
-      // ScanCompleted refresh updates it.
-      if (_checkSpScanningForWalletUsecase.execute()) return;
-
-      emit(state.copyWith(isSpWalletLoading: true));
-
-      // `execute()` (via SpFacade) reads a fresh snapshot from the live session
-      // WITHOUT disposing it: the scanner updates the stores in place, so the
-      // snapshot is already current. It returns null when SP is not set up
-      // (gated / `.revoked` sentinel).
-      final spWallet = await _refreshSpWalletForWalletUsecase.execute();
-      emit(
-        state.copyWith(
-          spWallet: spWallet,
-          spBalanceSat: spWallet?.confirmedSat.toInt() ?? 0,
-          isSpWalletLoading: false,
-        ),
-      );
+      isSpWalletSetup = await _checkSpWalletSetupForWalletUsecase.execute();
     } catch (e) {
-      // The refresh rethrows "dispose timed out" when a long-running
-      // lock-holder still owns the inner mutex, and the setup check can throw
-      // too. Leave the existing snapshot intact and clear the loading flag; the
-      // next user-triggered refresh retries once the operation completes.
-      log.warning('[WalletBloc] SP refresh deferred: $e');
+      log.warning('[WalletBloc] SP setup check failed: $e');
       emit(state.copyWith(isSpWalletLoading: false));
+      return;
+    }
+    emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
+
+    // While a scan runs the live session holds the inner lock; refreshing now
+    // would block on a snapshot read or time out in dispose() and tear the
+    // session down. Skip and keep the current snapshot; the scan's
+    // ScanCompleted refresh updates it.
+    if (_checkSpScanningForWalletUsecase.execute()) return;
+
+    emit(state.copyWith(isSpWalletLoading: true));
+
+    // `execute()` (via SpFacade) reads a fresh snapshot from the live session
+    // WITHOUT disposing it: the scanner updates the stores in place, so the
+    // snapshot is already current. Ok(null) when SP is not set up (gated /
+    // `.revoked` sentinel).
+    switch (await _refreshSpWalletForWalletUsecase.execute()) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            spWallet: value,
+            spBalanceSat: value?.confirmedSat.toInt() ?? 0,
+            isSpWalletLoading: false,
+          ),
+        );
+      case Err(:final failure):
+        // A failed refresh (e.g. a long-running lock-holder still owns the
+        // inner mutex) leaves the existing snapshot intact; the next
+        // user-triggered refresh retries once the operation completes.
+        log.warning('[WalletBloc] SP refresh deferred: ${failure.logMessage}');
+        emit(state.copyWith(isSpWalletLoading: false));
     }
   }
 
