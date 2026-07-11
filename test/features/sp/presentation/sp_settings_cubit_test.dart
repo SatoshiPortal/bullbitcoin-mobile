@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.da
 import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notification_log_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
@@ -139,21 +140,25 @@ void main() {
     test('initial regtest state pre-fills default URLs', () async {
       final cubit = build();
       expect(cubit.state.network, SpNetwork.regtest);
-      expect(cubit.state.blindbitUrl, isNotEmpty);
-      expect(cubit.state.electrumUrl, isNotEmpty);
+      // Regtest defaults come from fetchRegtestDefaults(), stubbed in build().
+      expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
+      expect(cubit.state.electrumUrl, 'tcp://127.0.0.1:50001');
       await cubit.close();
     });
 
     test('setNetwork to regtest pre-fills default URLs', () async {
       final cubit = build();
       cubit.setNetwork(SpNetwork.bitcoin);
-      expect(cubit.state.blindbitUrl, isNotEmpty);
+      expect(
+        cubit.state.blindbitUrl,
+        SpConfig.defaultBlindbitUrl[SpNetwork.bitcoin],
+      );
 
       cubit.setNetwork(SpNetwork.regtest);
 
       expect(cubit.state.network, SpNetwork.regtest);
-      expect(cubit.state.blindbitUrl, isNotEmpty);
-      expect(cubit.state.electrumUrl, isNotEmpty);
+      expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
+      expect(cubit.state.electrumUrl, 'tcp://127.0.0.1:50001');
       await cubit.close();
     });
 
