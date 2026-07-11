@@ -16,9 +16,9 @@ import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_state.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/coin_source_label.dart';
+import 'package:bb_mobile/features/sp/ui/widgets/sp_badge.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_appbar_progress.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_error_text.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBadge;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -192,12 +192,11 @@ class _RecipientTypeBadge extends StatelessWidget {
     if (recipient == null) return const SizedBox.shrink();
     final isSp = recipient is SpRecipientSp;
     final color = isSp ? context.appColors.success : context.appColors.primary;
-    return BullBadge(
-      label: isSp ? context.loc.spAddressTypeSilentPayment : context.loc.spBitcoin,
-      background: color.withValues(alpha: 0.15),
-      foreground: color,
-      radius: 4,
-      border: Border.all(color: color),
+    return SpBadge(
+      label: isSp
+          ? context.loc.spAddressTypeSilentPayment
+          : context.loc.spBitcoin,
+      color: color,
     );
   }
 }
@@ -217,12 +216,9 @@ class _CoinInputRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        BullBadge(
+        SpBadge(
           label: coin.source.shortLabel(context),
-          background: sourceColor.withValues(alpha: 0.15),
-          foreground: sourceColor,
-          radius: 4,
-          border: Border.all(color: sourceColor),
+          color: sourceColor,
         ),
         const Gap(8),
         Text(

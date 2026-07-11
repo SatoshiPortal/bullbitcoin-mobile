@@ -8,9 +8,9 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_send_state.dart';
 import 'package:bb_mobile/features/sp/router.dart';
+import 'package:bb_mobile/features/sp/ui/widgets/sp_badge.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_appbar_progress.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_send_error_text.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBadge;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -199,28 +199,7 @@ class _AddressTypeBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (input.trim().isEmpty) return const SizedBox.shrink();
-    final (label, color) = switch (classifySpAddress(input)) {
-      SpAddressKind.silentPaymentMainnet ||
-      SpAddressKind.silentPaymentTestnet ||
-      SpAddressKind.silentPaymentRegtest => (
-        context.loc.spAddressTypeSilentPayment,
-        context.appColors.success,
-      ),
-      SpAddressKind.bitcoin => (
-        context.loc.spAddressTypeBitcoin,
-        context.appColors.primary,
-      ),
-      SpAddressKind.unrecognized => (
-        context.loc.spAddressTypeUnrecognized,
-        context.appColors.error,
-      ),
-    };
-    return BullBadge(
-      label: label,
-      background: color.withValues(alpha: 0.15),
-      foreground: color,
-      radius: 4,
-      border: Border.all(color: color),
-    );
+    final (label, color) = spAddressKindBadge(context, classifySpAddress(input));
+    return SpBadge(label: label, color: color);
   }
 }

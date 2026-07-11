@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/coin_source_label.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBadge;
+import 'package:bb_mobile/features/sp/ui/widgets/sp_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -53,12 +53,9 @@ class _SpCoinTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = coin.source.sourceColor(context);
     return ListTile(
-      leading: BullBadge(
+      leading: SpBadge(
         label: coin.source.shortLabel(context),
-        background: color.withValues(alpha: 0.15),
-        foreground: color,
-        radius: 4,
-        border: Border.all(color: color),
+        color: color,
       ),
       title: Text(
         context.loc.spSendSatsAmount(
