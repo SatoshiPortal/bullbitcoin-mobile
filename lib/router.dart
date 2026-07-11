@@ -75,6 +75,7 @@ class AppRouter {
         isSuperuser: settingsState.isSuperuser ?? false,
         isDevModeEnabled: settingsState.isDevModeEnabled ?? false,
         isSpWalletSetup: context.read<WalletBloc>().state.isSpWalletSetup,
+        gateClosedRedirectPath: WalletRoute.walletHome.path,
       );
     },
     routes: [

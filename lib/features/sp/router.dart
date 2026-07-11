@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/sp/ui/screens/sp_settings_page.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_setup_page.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_page.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_page.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,14 +28,19 @@ bool isSpPath(String path) =>
 /// because `WalletBloc.state.isSpWalletSetup` can stay stale for a beat after
 /// dev mode is toggled off. Returns the path to redirect to, or null to allow
 /// the navigation. Non-SP paths always return null.
+///
+/// [gateClosedRedirectPath] is the destination when the superuser/dev-mode gate
+/// is closed; the composition root supplies it (the wallet home) so this pure
+/// gate never imports the wallet feature's router.
 String? spRedirect(
   String path, {
   required bool isSuperuser,
   required bool isDevModeEnabled,
   required bool isSpWalletSetup,
+  required String gateClosedRedirectPath,
 }) {
   if (!isSpPath(path)) return null;
-  if (!isSuperuser || !isDevModeEnabled) return WalletRoute.walletHome.path;
+  if (!isSuperuser || !isDevModeEnabled) return gateClosedRedirectPath;
   if (!isSpWalletSetup) return SpSetupRoute.spSetup.path;
   return null;
 }

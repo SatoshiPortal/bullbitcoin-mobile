@@ -20,6 +20,7 @@ void main() {
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
+    gateClosedRedirectPath: walletHome,
   );
 
   group('non-SP paths are always allowed', () {
