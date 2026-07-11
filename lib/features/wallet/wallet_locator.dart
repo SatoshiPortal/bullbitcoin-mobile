@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/refresh_sp_wallet_for_wallet_usecase.dart';
@@ -42,6 +42,9 @@ class WalletLocator {
     );
     locator.registerFactory<CheckSpWalletSetupForWalletUsecase>(
       () => CheckSpWalletSetupForWalletUsecase(spFacade: locator<SpFacade>()),
+    );
+    locator.registerFactory<CheckSpFeatureGateForWalletUsecase>(
+      () => CheckSpFeatureGateForWalletUsecase(spFacade: locator<SpFacade>()),
     );
     locator.registerFactory<CheckSpScanningForWalletUsecase>(
       () => CheckSpScanningForWalletUsecase(spFacade: locator<SpFacade>()),
@@ -88,7 +91,8 @@ class WalletLocator {
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         ensureSwapMasterKeyUsecase: locator<EnsureSwapMasterKeyUsecase>(),
-        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        checkSpFeatureGateForWalletUsecase:
+            locator<CheckSpFeatureGateForWalletUsecase>(),
       ),
     );
   }

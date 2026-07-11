@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_wallet_setup_f
 import 'package:bb_mobile/features/wallet/domain/usecase/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
@@ -71,7 +71,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
     required this._ensureSwapMasterKeyUsecase,
-    required this._getSpFeatureGateUsecase,
+    required this._checkSpFeatureGateForWalletUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -117,7 +117,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
-  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
+  final CheckSpFeatureGateForWalletUsecase _checkSpFeatureGateForWalletUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -659,7 +659,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // Refresh the SP feature gate (superuser + dev mode) so the wallet card
     // shows exactly when SP is enabled.
     try {
-      final enabled = await _getSpFeatureGateUsecase.execute();
+      final enabled = await _checkSpFeatureGateForWalletUsecase.execute();
       emit(state.copyWith(isSpFeatureEnabled: enabled));
     } catch (e) {
       log.warning('[WalletBloc] SP feature gate refresh failed: $e');

@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -104,7 +104,8 @@ class _MockCheckSpScanningForWallet extends Mock
 
 class _MockSeedStoreType extends Mock implements SeedStoreTypeDatasource {}
 
-class _MockGetSpFeatureGate extends Mock implements GetSpFeatureGateUsecase {}
+class _MockCheckSpFeatureGate extends Mock
+    implements CheckSpFeatureGateForWalletUsecase {}
 
 class _MockWatchSpWallet extends Mock implements WatchSpWalletUsecase {}
 
@@ -162,8 +163,8 @@ WalletBloc _makeBloc({
   when(() => checkWalletSyncing.execute()).thenReturn(false);
   when(() => seedStoreType.read()).thenAnswer((_) async => null);
 
-  final getSpFeatureGate = _MockGetSpFeatureGate();
-  when(() => getSpFeatureGate.execute()).thenAnswer((_) async => true);
+  final checkSpFeatureGate = _MockCheckSpFeatureGate();
+  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => true);
 
   return WalletBloc(
     getWalletsUsecase: getWallets,
@@ -190,7 +191,7 @@ WalletBloc _makeBloc({
     refreshSpWalletForWalletUsecase: refreshSp,
     watchSpWalletUsecase: watchSp,
     seedStoreTypeDatasource: seedStoreType,
-    getSpFeatureGateUsecase: getSpFeatureGate,
+    checkSpFeatureGateForWalletUsecase: checkSpFeatureGate,
   );
 }
 

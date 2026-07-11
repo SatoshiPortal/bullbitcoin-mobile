@@ -197,6 +197,7 @@ class SpLocator {
         refreshSpWalletUsecase: locator<RefreshSpWalletUsecase>(),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
         watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
         resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),

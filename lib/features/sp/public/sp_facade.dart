@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/refresh_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
@@ -28,6 +29,7 @@ class SpFacade {
   final RefreshSpWalletUsecase _refreshSpWalletUsecase;
   final GetSpWalletUsecase _getSpWalletUsecase;
   final CheckSpWalletSetupUsecase _checkSpWalletSetupUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
   final WatchSpUpdatesUsecase _watchSpUpdatesUsecase;
   final ResyncSpListenerUsecase _resyncSpListenerUsecase;
@@ -36,10 +38,15 @@ class SpFacade {
     required this._refreshSpWalletUsecase,
     required this._getSpWalletUsecase,
     required this._checkSpWalletSetupUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._revokeSpWalletUsecase,
     required this._watchSpUpdatesUsecase,
     required this._resyncSpListenerUsecase,
   });
+
+  /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
+  /// consumers (the wallet) read the gate through here instead of the settings.
+  Future<bool> isFeatureEnabled() => _getSpFeatureGateUsecase.execute();
 
   /// Whether the SP wallet is set up (gated + sentinel-aware).
   Future<bool> isSetUp() => _checkSpWalletSetupUsecase.execute();
