@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_balance_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_network_usecase.dart';
@@ -76,6 +78,9 @@ class MockRevokeSpWalletUsecase extends Mock implements RevokeSpWalletUsecase {}
 class MockGenerateTaprootAddressUsecase extends Mock
     implements GenerateTaprootAddressUsecase {}
 
+class MockEnsureSpSessionUsecase extends Mock
+    implements EnsureSpSessionUsecase {}
+
 class MockPrepareSpPaymentUsecase extends Mock
     implements PrepareSpPaymentUsecase {}
 
@@ -92,19 +97,28 @@ class MockSpAccountRepository extends Mock implements SpAccountRepository {}
 class SpCubitHarness {
   final loadUsecase = MockLoadSpWalletDataUsecase();
   final watchUsecase = MockWatchSpNotificationsUsecase();
+  final ensureUsecase = MockEnsureSpSessionUsecase();
   final scanUsecase = MockScanSpWalletUsecase();
   final stopUsecase = MockStopSpScanUsecase();
   final revokeUsecase = MockRevokeSpWalletUsecase();
   final generateUsecase = MockGenerateTaprootAddressUsecase();
 
-  SpCubit build() => SpCubit(
-    loadSpWalletDataUsecase: loadUsecase,
-    watchSpNotificationsUsecase: watchUsecase,
-    scanSpWalletUsecase: scanUsecase,
-    stopSpScanUsecase: stopUsecase,
-    revokeSpWalletUsecase: revokeUsecase,
-    generateTaprootAddressUsecase: generateUsecase,
-  );
+  SpCubit build() {
+    // Default: a re-establish (only fired when the notification stream closes)
+    // finds no wallet, so the watcher does not re-subscribe. Tests override it.
+    when(() => ensureUsecase.execute()).thenAnswer((_) async => null);
+    return SpCubit(
+      loadSpWalletDataUsecase: loadUsecase,
+      spNotificationsWatcher: SpNotificationsWatcher(
+        watchSpNotificationsUsecase: watchUsecase,
+        ensureSpSessionUsecase: ensureUsecase,
+      ),
+      scanSpWalletUsecase: scanUsecase,
+      stopSpScanUsecase: stopUsecase,
+      revokeSpWalletUsecase: revokeUsecase,
+      generateTaprootAddressUsecase: generateUsecase,
+    );
+  }
 }
 
 /// Holds the three SpSendCubit collaborator mocks and builds the cubit.

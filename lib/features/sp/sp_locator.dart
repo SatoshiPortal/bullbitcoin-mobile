@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/key_value_sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
@@ -163,6 +164,12 @@ class SpLocator {
         repository: locator<SpAccountRepository>(),
       ),
     );
+    locator.registerFactory<SpNotificationsWatcher>(
+      () => SpNotificationsWatcher(
+        watchSpNotificationsUsecase: locator<WatchSpNotificationsUsecase>(),
+        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+      ),
+    );
     locator.registerFactory<RefreshSpWalletUsecase>(
       () => RefreshSpWalletUsecase(
         repository: locator<SpAccountRepository>(),
@@ -221,7 +228,7 @@ class SpLocator {
     locator.registerFactory<SpCubit>(
       () => SpCubit(
         loadSpWalletDataUsecase: locator<LoadSpWalletDataUsecase>(),
-        watchSpNotificationsUsecase: locator<WatchSpNotificationsUsecase>(),
+        spNotificationsWatcher: locator<SpNotificationsWatcher>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         stopSpScanUsecase: locator<StopSpScanUsecase>(),
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),

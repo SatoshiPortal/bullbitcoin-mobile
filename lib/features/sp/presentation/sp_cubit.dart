@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecas
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notifications_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
@@ -19,7 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// layer behind the `SpAccountRepository` port.
 class SpCubit extends Cubit<SpState> {
   final LoadSpWalletDataUsecase _loadSpWalletDataUsecase;
-  final WatchSpNotificationsUsecase _watchSpNotificationsUsecase;
+  final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final StopSpScanUsecase _stopSpScanUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
@@ -34,19 +34,9 @@ class SpCubit extends Cubit<SpState> {
   // past the state check. This flag closes it at tap time.
   bool _scanInFlight = false;
 
-  // Guards against a flapping session busy-looping the self-heal: a stream that
-  // completes right after each re-establish would otherwise re-subscribe with no
-  // delay or bound. A recycle after a healthy stretch stays immediate.
-  Timer? _resubscribeTimer;
-  int _rapidResubscribes = 0;
-  DateTime? _lastResubscribeAt;
-  static const int _maxRapidResubscribes = 5;
-  static const Duration _resubscribeBackoff = Duration(seconds: 2);
-  static const Duration _resubscribeHealthyGap = Duration(seconds: 30);
-
   SpCubit({
     required this._loadSpWalletDataUsecase,
-    required this._watchSpNotificationsUsecase,
+    required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
     required this._stopSpScanUsecase,
     required this._revokeSpWalletUsecase,
@@ -109,51 +99,15 @@ class SpCubit extends Cubit<SpState> {
   void _subscribeToNotifications() {
     try {
       unawaited(_notificationSub?.cancel());
-      _notificationSub = _watchSpNotificationsUsecase.execute().listen(
-        _onNotification,
-        // The singleton session can be recycled out from under us (a wallet-
-        // side full refresh after a network change disposes it). When that
-        // closes the notification stream, re-establish + re-subscribe via
-        // load() instead of leaving a dead screen. A genuinely revoked wallet
-        // makes load() emit an error and not re-subscribe, so this can't loop.
-        onDone: _reestablishSession,
-        onError: (Object e) {
-          log.warning('SpCubit: notification stream error: $e');
-          _reestablishSession();
-        },
-      );
+      // The watcher owns the self-heal policy (re-establish + backoff + flap
+      // cap); the cubit only maps events to state. On reconnect it reloads the
+      // wallet data the new session exposes.
+      _notificationSub = _spNotificationsWatcher
+          .watch(onReconnect: () => unawaited(_refreshWalletData()))
+          .listen(_onNotification);
     } catch (e) {
       log.warning('SpCubit: notification subscribe failed: $e');
     }
-  }
-
-  void _reestablishSession() {
-    if (isClosed) return;
-    final now = DateTime.now();
-    final previous = _lastResubscribeAt;
-    _lastResubscribeAt = now;
-    // A recycle after a healthy stretch (e.g. a network-change dispose) is a
-    // one-off: re-establish at once and forget earlier attempts.
-    if (previous == null || now.difference(previous) > _resubscribeHealthyGap) {
-      _rapidResubscribes = 0;
-      unawaited(load());
-      return;
-    }
-    // Rapid repeats mean the backend is flapping. Cap the attempts and space
-    // them out so a stream that closes right after every re-establish can't
-    // busy-loop.
-    _rapidResubscribes++;
-    if (_rapidResubscribes > _maxRapidResubscribes) {
-      log.warning(
-        'SpCubit: notification stream flapping; stopped re-subscribing',
-      );
-      return;
-    }
-    _resubscribeTimer?.cancel();
-    _resubscribeTimer = Timer(_resubscribeBackoff, () {
-      if (isClosed) return;
-      unawaited(load());
-    });
   }
 
   void _onNotification(SpNotification n) {
@@ -324,8 +278,8 @@ class SpCubit extends Cubit<SpState> {
 
   @override
   Future<void> close() async {
-    _resubscribeTimer?.cancel();
     await _notificationSub?.cancel();
+    await _spNotificationsWatcher.dispose();
     return super.close();
   }
 }

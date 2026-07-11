@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
+import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
@@ -165,7 +166,10 @@ void main() {
     ).thenAnswer((_) => repository.notifications);
     cubit = SpCubit(
       loadSpWalletDataUsecase: loadSpWalletDataUsecase,
-      watchSpNotificationsUsecase: harness.watchUsecase,
+      spNotificationsWatcher: SpNotificationsWatcher(
+        watchSpNotificationsUsecase: harness.watchUsecase,
+        ensureSpSessionUsecase: ensureSpSessionUsecase,
+      ),
       scanSpWalletUsecase: harness.scanUsecase,
       stopSpScanUsecase: harness.stopUsecase,
       revokeSpWalletUsecase: harness.revokeUsecase,

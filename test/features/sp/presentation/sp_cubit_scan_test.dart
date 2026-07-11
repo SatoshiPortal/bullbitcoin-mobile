@@ -384,14 +384,22 @@ void main() {
       expect(emitted, isEmpty);
     });
 
-    test('self-heals when its notification stream closes: re-subscribes via '
-        'load() (the #2 session-recycle regression)', () async {
+    test('self-heals when its notification stream closes: the watcher '
+        're-establishes and the cubit reloads (session-recycle regression)',
+        () async {
+      // A re-establish finds a live wallet, so the watcher re-subscribes and
+      // signals reconnect (which reloads the wallet data).
+      when(
+        () => harness.ensureUsecase.execute(),
+      ).thenAnswer((_) async => buildData().wallet);
+
       await cubit.load();
 
       // After the session is recycled, watching yields a fresh (open) stream;
       // mirror the real adapter, which establishes a new broadcast stream for
       // the new session. Left open so re-subscription does not loop.
       final freshController = StreamController<SpNotification>.broadcast();
+      addTearDown(freshController.close);
       when(
         () => watchUsecase.execute(),
       ).thenAnswer((_) => freshController.stream);
@@ -400,12 +408,11 @@ void main() {
       // (e.g. a wallet-side full refresh after a network change): its stream
       // completes.
       await notifController.close();
-      await Future.delayed(Duration.zero);
+      await Future.delayed(const Duration(milliseconds: 10));
 
-      // The cubit must have re-established by reloading + re-subscribing rather
-      // than leaving a dead screen: load() ran on entry and again on self-heal,
-      // and notifications were watched on each (verify counts cumulatively as
-      // these methods are verified only here).
+      // The watcher re-established (watched a fresh stream) and the reconnect
+      // reloaded the wallet data, so neither loadUsecase nor watchUsecase ran
+      // only once (both verified cumulatively, only here).
       verify(() => loadUsecase.execute()).called(greaterThanOrEqualTo(2));
       verify(() => watchUsecase.execute()).called(greaterThanOrEqualTo(2));
     });
