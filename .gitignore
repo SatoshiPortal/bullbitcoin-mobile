@@ -120,3 +120,6 @@ integration_test/all_test.dart
 
 # Generated swap debug log export (written during test runs)
 bull_logs.tsv
+
+# Xcode SPM resolution lockfile — regenerated on every build
+**/xcshareddata/swiftpm/
