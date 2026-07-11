@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_us
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notification_log_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -32,7 +33,7 @@ SpNotifLogLine _line(String text) =>
 void main() {
   setUpAll(() {
     registerFallbackValue(SpNetwork.regtest);
-    registerFallbackValue(BackendKind.blindbit);
+    registerFallbackValue(SpBackendKind.blindbit);
   });
 
   // Stub the mock repo's backend test to run the injected blindbit/electrum
@@ -43,15 +44,15 @@ void main() {
     Future<void> Function({required String url})? testElectrum,
   }) {
     when(() => configRepo.testBackend(any(), any())).thenAnswer((inv) async {
-      final kind = inv.positionalArguments[0] as BackendKind;
+      final kind = inv.positionalArguments[0] as SpBackendKind;
       final url = inv.positionalArguments[1] as String;
       try {
         switch (kind) {
-          case BackendKind.blindbit:
+          case SpBackendKind.blindbit:
             await (testBlindbit ?? (({required String url}) async => 0))(
               url: url,
             );
-          case BackendKind.electrum:
+          case SpBackendKind.electrum:
             await (testElectrum ?? (({required String url}) async {}))(url: url);
         }
         return const Ok<void, SpFailure>(null);

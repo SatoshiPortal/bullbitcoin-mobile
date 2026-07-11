@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,10 +31,10 @@ mixin SpBackendFormState<S> {
   S applyDefaults(SpBackendDefaults defaults);
 
   /// Set one backend URL and reset that backend's connection test.
-  S applyUrl(BackendKind kind, String url);
+  S applyUrl(SpBackendKind kind, String url);
 
   /// Record a connection-test outcome for one backend.
-  S applyConnTest(BackendKind kind, SpConnTest test, SpFailure? error);
+  S applyConnTest(SpBackendKind kind, SpConnTest test, SpFailure? error);
 
   /// Enter the "fetching defaults" state.
   S startFetching();
@@ -71,16 +72,16 @@ mixin SpBackendFormCubit<S extends SpBackendFormState<S>> on Cubit<S> {
   }
 
   void setBlindbitUrl(String url) =>
-      emit(state.applyUrl(BackendKind.blindbit, url));
+      emit(state.applyUrl(SpBackendKind.blindbit, url));
 
   void setElectrumUrl(String url) =>
-      emit(state.applyUrl(BackendKind.electrum, url));
+      emit(state.applyUrl(SpBackendKind.electrum, url));
 
-  Future<void> testBlindbit() => _testBackend(BackendKind.blindbit);
+  Future<void> testBlindbit() => _testBackend(SpBackendKind.blindbit);
 
-  Future<void> testElectrum() => _testBackend(BackendKind.electrum);
+  Future<void> testElectrum() => _testBackend(SpBackendKind.electrum);
 
-  Future<void> _testBackend(BackendKind kind) async {
+  Future<void> _testBackend(SpBackendKind kind) async {
     final url = _urlFor(kind);
     if (url.isEmpty) return;
     emit(state.applyConnTest(kind, SpConnTest.testing, null));
@@ -96,6 +97,6 @@ mixin SpBackendFormCubit<S extends SpBackendFormState<S>> on Cubit<S> {
     );
   }
 
-  String _urlFor(BackendKind kind) =>
-      kind == BackendKind.blindbit ? state.blindbitUrl : state.electrumUrl;
+  String _urlFor(SpBackendKind kind) =>
+      kind == SpBackendKind.blindbit ? state.blindbitUrl : state.electrumUrl;
 }

@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
@@ -33,14 +34,14 @@ class _FakeBackendConfigRepo implements SpBackendConfigRepository {
 
   @override
   Future<Result<void, SpFailure>> testBackend(
-    BackendKind kind,
+    SpBackendKind kind,
     String url,
   ) async {
     try {
       switch (kind) {
-        case BackendKind.blindbit:
+        case SpBackendKind.blindbit:
           await _testBlindbit(url: url);
-        case BackendKind.electrum:
+        case SpBackendKind.electrum:
           await _testElectrum(url: url);
       }
       return const Ok(null);

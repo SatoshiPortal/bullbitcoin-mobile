@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -13,7 +13,7 @@ class _FakeConfigRepository implements SpBackendConfigRepository {
   _FakeConfigRepository(this._result);
 
   @override
-  Future<Result<void, SpFailure>> testBackend(BackendKind kind, String url) async =>
+  Future<Result<void, SpFailure>> testBackend(SpBackendKind kind, String url) async =>
       _result;
 
   @override
@@ -32,7 +32,7 @@ void main() {
       final usecase = TestSpBackendUsecase(
         configRepository: _FakeConfigRepository(const Ok(null)),
       );
-      expect(await usecase.test(BackendKind.blindbit, 'http://ok'), isNull);
+      expect(await usecase.test(SpBackendKind.blindbit, 'http://ok'), isNull);
     });
 
     test('forwards an Err as the failure', () async {
@@ -41,7 +41,7 @@ void main() {
           const Err(SpBackendUnreachable('boom')),
         ),
       );
-      final err = await usecase.test(BackendKind.electrum, 'tcp://bad:1');
+      final err = await usecase.test(SpBackendKind.electrum, 'tcp://bad:1');
       expect(err, isA<SpBackendUnreachable>());
       expect((err! as SpBackendUnreachable).logMessage, contains('boom'));
     });

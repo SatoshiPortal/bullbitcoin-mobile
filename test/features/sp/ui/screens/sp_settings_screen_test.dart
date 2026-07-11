@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';

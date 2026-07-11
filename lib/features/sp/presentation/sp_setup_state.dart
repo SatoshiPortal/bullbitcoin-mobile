@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -57,14 +57,14 @@ sealed class SpSetupState
   );
 
   @override
-  SpSetupState applyUrl(BackendKind kind, String url) => switch (kind) {
-    BackendKind.blindbit => copyWith(
+  SpSetupState applyUrl(SpBackendKind kind, String url) => switch (kind) {
+    SpBackendKind.blindbit => copyWith(
       blindbitUrl: url,
       blindbitTest: SpConnTest.untested,
       blindbitTestError: null,
       error: null,
     ),
-    BackendKind.electrum => copyWith(
+    SpBackendKind.electrum => copyWith(
       electrumUrl: url,
       electrumTest: SpConnTest.untested,
       electrumTestError: null,
@@ -74,15 +74,15 @@ sealed class SpSetupState
 
   @override
   SpSetupState applyConnTest(
-    BackendKind kind,
+    SpBackendKind kind,
     SpConnTest test,
     SpFailure? error,
   ) => switch (kind) {
-    BackendKind.blindbit => copyWith(
+    SpBackendKind.blindbit => copyWith(
       blindbitTest: test,
       blindbitTestError: error,
     ),
-    BackendKind.electrum => copyWith(
+    SpBackendKind.electrum => copyWith(
       electrumTest: test,
       electrumTestError: error,
     ),

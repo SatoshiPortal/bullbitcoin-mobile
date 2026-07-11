@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart';
 import 'package:bb_mobile/features/sp/data/models/sp_backend_config_model.dart';
-import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
@@ -58,14 +58,14 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
 
   @override
   Future<Result<void, SpFailure>> testBackend(
-    BackendKind kind,
+    SpBackendKind kind,
     String url,
   ) async {
     try {
       switch (kind) {
-        case BackendKind.blindbit:
+        case SpBackendKind.blindbit:
           await _testBlindbit(url: url);
-        case BackendKind.electrum:
+        case SpBackendKind.electrum:
           await _testElectrum(url: url);
       }
       return const Ok(null);
