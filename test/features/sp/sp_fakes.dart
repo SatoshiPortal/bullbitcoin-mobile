@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
@@ -234,6 +235,12 @@ class FakeSpBackendConfigRepository implements SpBackendConfigRepository {
   Future<void> delete() async {
     _config = null;
   }
+
+  @override
+  Future<Result<void, SpFailure>> testBackend(
+    BackendKind kind,
+    String url,
+  ) async => const Ok(null);
 
   @override
   SpBackendDefaults fetchRegtestDefaults() => const SpBackendDefaults.failed(

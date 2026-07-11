@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart';
 import 'package:bb_mobile/features/sp/data/models/sp_backend_config_model.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
@@ -15,7 +16,17 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
 
   final KeyValueStorageDatasource<String> _storage;
 
-  KeyValueSpBackendConfigRepository({required this._storage});
+  // bwk connection-test free functions, injectable so `testBackend` can be
+  // unit-tested without a real backend.
+  final Future<int> Function({required String url}) _testBlindbit;
+  final Future<void> Function({required String url}) _testElectrum;
+
+  KeyValueSpBackendConfigRepository({
+    required this._storage,
+    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testElectrum,
+  }) : _testBlindbit = testBlindbit ?? testBlindbitUrl,
+       _testElectrum = testElectrum ?? testElectrumUrl;
 
   @override
   Future<void> save(SpBackendConfig config) => _storage.saveValue(
@@ -44,6 +55,24 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
 
   @override
   Future<void> delete() => _storage.deleteValue(_storageKey);
+
+  @override
+  Future<Result<void, SpFailure>> testBackend(
+    BackendKind kind,
+    String url,
+  ) async {
+    try {
+      switch (kind) {
+        case BackendKind.blindbit:
+          await _testBlindbit(url: url);
+        case BackendKind.electrum:
+          await _testElectrum(url: url);
+      }
+      return const Ok(null);
+    } catch (e) {
+      return Err(SpBackendUnreachable('SP backend test failed ($url): $e'));
+    }
+  }
 
   @override
   SpBackendDefaults fetchRegtestDefaults() {

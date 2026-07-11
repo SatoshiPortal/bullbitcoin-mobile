@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -18,6 +19,13 @@ abstract interface class SpBackendConfigRepository {
   Future<Result<SpBackendConfig?, SpFailure>> fetch();
 
   Future<void> delete();
+
+  /// Test one backend URL by actually connecting (standalone, no live SP
+  /// session). `Ok(null)` when it connects; `Err` with [SpBackendUnreachable]
+  /// carrying the raw reason as `logMessage` (never shown to the user)
+  /// otherwise. This is a try/catch boundary.
+  @useResult
+  Future<Result<void, SpFailure>> testBackend(BackendKind kind, String url);
 
   /// Resolve the regtest backend defaults from the running regtest infra
   /// (FFI). Returns a failed [SpBackendDefaults] when the infra is unreachable.

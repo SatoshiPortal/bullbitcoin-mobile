@@ -1,44 +1,49 @@
-import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
+import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class _FakeConfigRepository implements SpBackendConfigRepository {
+  final Result<void, SpFailure> _result;
+
+  _FakeConfigRepository(this._result);
+
+  @override
+  Future<Result<void, SpFailure>> testBackend(BackendKind kind, String url) async =>
+      _result;
+
+  @override
+  Future<void> save(SpBackendConfig config) => throw UnimplementedError();
+  @override
+  Future<Result<SpBackendConfig?, SpFailure>> fetch() => throw UnimplementedError();
+  @override
+  Future<void> delete() => throw UnimplementedError();
+  @override
+  SpBackendDefaults fetchRegtestDefaults() => throw UnimplementedError();
+}
 
 void main() {
   group('TestSpBackendUsecase', () {
-    test('blindbit returns null on success', () async {
+    test('forwards an Ok as null', () async {
       final usecase = TestSpBackendUsecase(
-        testBlindbit: ({required String url}) async => 42,
-        testElectrum: ({required String url}) async {},
+        configRepository: _FakeConfigRepository(const Ok(null)),
       );
       expect(await usecase.test(BackendKind.blindbit, 'http://ok'), isNull);
     });
 
-    test('blindbit returns the error message on failure', () async {
+    test('forwards an Err as the failure', () async {
       final usecase = TestSpBackendUsecase(
-        testBlindbit: ({required String url}) async => throw Exception('boom'),
-        testElectrum: ({required String url}) async {},
-      );
-      final err = await usecase.test(BackendKind.blindbit, 'http://bad');
-      expect(err, isA<SpBackendUnreachable>());
-      expect((err! as SpBackendUnreachable).logMessage, contains('boom'));
-    });
-
-    test('electrum returns null on success', () async {
-      final usecase = TestSpBackendUsecase(
-        testBlindbit: ({required String url}) async => 0,
-        testElectrum: ({required String url}) async {},
-      );
-      expect(await usecase.test(BackendKind.electrum, 'tcp://ok:1'), isNull);
-    });
-
-    test('electrum returns the error message on failure', () async {
-      final usecase = TestSpBackendUsecase(
-        testBlindbit: ({required String url}) async => 0,
-        testElectrum: ({required String url}) async =>
-            throw Exception('no route'),
+        configRepository: _FakeConfigRepository(
+          const Err(SpBackendUnreachable('boom')),
+        ),
       );
       final err = await usecase.test(BackendKind.electrum, 'tcp://bad:1');
       expect(err, isA<SpBackendUnreachable>());
-      expect((err! as SpBackendUnreachable).logMessage, contains('no route'));
+      expect((err! as SpBackendUnreachable).logMessage, contains('boom'));
     });
   });
 }

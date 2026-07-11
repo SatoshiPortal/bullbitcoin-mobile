@@ -184,7 +184,11 @@ class SpLocator {
     locator.registerFactory<ResyncSpListenerUsecase>(
       () => ResyncSpListenerUsecase(repository: locator<SpAccountRepository>()),
     );
-    locator.registerFactory<TestSpBackendUsecase>(() => TestSpBackendUsecase());
+    locator.registerFactory<TestSpBackendUsecase>(
+      () => TestSpBackendUsecase(
+        configRepository: locator<SpBackendConfigRepository>(),
+      ),
+    );
   }
 
   static void _registerFacade(GetIt locator) {

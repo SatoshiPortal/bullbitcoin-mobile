@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -31,7 +32,36 @@ SpNotifLogLine _line(String text) =>
 void main() {
   setUpAll(() {
     registerFallbackValue(SpNetwork.regtest);
+    registerFallbackValue(BackendKind.blindbit);
   });
+
+  // Stub the mock repo's backend test to run the injected blindbit/electrum
+  // probes, mirroring the real adapter's try/catch mapping.
+  void stubTestBackend(
+    _MockSpBackendConfigRepository configRepo, {
+    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testElectrum,
+  }) {
+    when(() => configRepo.testBackend(any(), any())).thenAnswer((inv) async {
+      final kind = inv.positionalArguments[0] as BackendKind;
+      final url = inv.positionalArguments[1] as String;
+      try {
+        switch (kind) {
+          case BackendKind.blindbit:
+            await (testBlindbit ?? (({required String url}) async => 0))(
+              url: url,
+            );
+          case BackendKind.electrum:
+            await (testElectrum ?? (({required String url}) async {}))(url: url);
+        }
+        return const Ok<void, SpFailure>(null);
+      } catch (e) {
+        return Err<void, SpFailure>(
+          SpBackendUnreachable('SP backend test failed ($url): $e'),
+        );
+      }
+    });
+  }
 
   late _MockWatchSpNotificationLogUsecase logUsecase;
   late StreamController<SpNotifLogLine> logController;
@@ -53,14 +83,16 @@ void main() {
         electrumUrl: 'tcp://127.0.0.1:50001',
       ),
     );
+    stubTestBackend(
+      configRepo,
+      testBlindbit: testBlindbit,
+      testElectrum: testElectrum,
+    );
     recreateUsecase = _MockRecreateSpWalletUsecase();
     return SpSettingsCubit(
       recreateSpWalletUsecase: recreateUsecase,
       watchNotificationLogUsecase: logUsecase,
-      testSpBackendUsecase: TestSpBackendUsecase(
-        testBlindbit: testBlindbit ?? (({required String url}) async => 0),
-        testElectrum: testElectrum ?? (({required String url}) async {}),
-      ),
+      testSpBackendUsecase: TestSpBackendUsecase(configRepository: configRepo),
       loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
         configRepository: configRepo,
       ),
@@ -145,12 +177,12 @@ void main() {
             electrumUrl: 'tcp://127.0.0.1:50001',
           ),
         );
+        stubTestBackend(configRepo);
         final cubit = SpSettingsCubit(
           recreateSpWalletUsecase: _MockRecreateSpWalletUsecase(),
           watchNotificationLogUsecase: logUsecase,
           testSpBackendUsecase: TestSpBackendUsecase(
-            testBlindbit: ({required String url}) async => 0,
-            testElectrum: ({required String url}) async {},
+            configRepository: configRepo,
           ),
           loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
             configRepository: configRepo,

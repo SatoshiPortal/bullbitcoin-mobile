@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -13,15 +14,40 @@ import 'package:mocktail/mocktail.dart';
 
 class MockCreateSpWalletUsecase extends Mock implements CreateSpWalletUsecase {}
 
-/// Stubs only the regtest-defaults path the setup cubit exercises; the static
-/// networks come from [SpConfig] inside the real usecase.
+/// Stubs the regtest-defaults + backend-test paths the setup cubit exercises;
+/// the static networks come from [SpConfig] inside the real usecase.
 class _FakeBackendConfigRepo implements SpBackendConfigRepository {
-  _FakeBackendConfigRepo(this._regtest);
+  _FakeBackendConfigRepo(
+    this._regtest, {
+    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testElectrum,
+  }) : _testBlindbit = testBlindbit ?? (({required String url}) async => 0),
+       _testElectrum = testElectrum ?? (({required String url}) async {});
 
   final SpBackendDefaults _regtest;
+  final Future<int> Function({required String url}) _testBlindbit;
+  final Future<void> Function({required String url}) _testElectrum;
 
   @override
   SpBackendDefaults fetchRegtestDefaults() => _regtest;
+
+  @override
+  Future<Result<void, SpFailure>> testBackend(
+    BackendKind kind,
+    String url,
+  ) async {
+    try {
+      switch (kind) {
+        case BackendKind.blindbit:
+          await _testBlindbit(url: url);
+        case BackendKind.electrum:
+          await _testElectrum(url: url);
+      }
+      return const Ok(null);
+    } catch (e) {
+      return Err(SpBackendUnreachable('SP backend test failed ($url): $e'));
+    }
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -45,16 +71,20 @@ void main() {
     Future<int> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
     SpBackendDefaults? regtest,
-  }) => SpSetupCubit(
-    createSpWalletUsecase: mockCreate,
-    testSpBackendUsecase: TestSpBackendUsecase(
-      testBlindbit: testBlindbit ?? (({required String url}) async => 0),
-      testElectrum: testElectrum ?? (({required String url}) async {}),
-    ),
-    getSpBackendDefaultsUsecase: GetSpBackendDefaultsUsecase(
-      configRepository: _FakeBackendConfigRepo(regtest ?? regtestDefaults),
-    ),
-  );
+  }) {
+    final configRepo = _FakeBackendConfigRepo(
+      regtest ?? regtestDefaults,
+      testBlindbit: testBlindbit,
+      testElectrum: testElectrum,
+    );
+    return SpSetupCubit(
+      createSpWalletUsecase: mockCreate,
+      testSpBackendUsecase: TestSpBackendUsecase(configRepository: configRepo),
+      getSpBackendDefaultsUsecase: GetSpBackendDefaultsUsecase(
+        configRepository: configRepo,
+      ),
+    );
+  }
 
   setUp(() {
     mockCreate = MockCreateSpWalletUsecase();
