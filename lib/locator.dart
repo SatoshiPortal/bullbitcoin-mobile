@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/ark/locator.dart';
+import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -77,6 +78,9 @@ class AppLocator {
     OnboardingLocator.setup(locator);
     LegacySeedViewLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
+    // SP must register before settings/wallet: their wrapper use cases
+    // resolve locator<SpFacade>().
+    SpLocator.setup(locator);
     SettingsLocator.setup(locator);
     BitcoinPriceLocator.setup(locator);
     WalletLocator.setup(locator);
