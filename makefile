@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check sp-analyze sp-audit sp-verify-all
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -293,3 +293,21 @@ catalogue:
 	@cd packages/bull_ui_catalogue && \
 		fvm dart run build_runner build --delete-conflicting-outputs && \
 		fvm flutter run -d chrome
+
+# Reuses the strict `analyze` target (--fatal-warnings --fatal-infos) so local SP
+# analysis matches CI; build-runner first so generated sources exist.
+sp-analyze: build-runner analyze
+
+sp-audit:
+	@echo "🔒 Running SP invariant audit"
+	@bash scripts/audit-sp-invariant.sh
+
+sp-verify-all: sp-analyze sp-audit
+	@echo "🧪 Running SP Flutter tests"
+	@fvm flutter test \
+		test/features/sp \
+		test/features/settings/presentation/bloc/settings_cubit_dev_mode_test.dart \
+		test/features/settings/ui/bitcoin_settings_screen_test.dart \
+		test/features/wallet/presentation/bloc/wallet_bloc_sp_test.dart \
+		test/integration/sp_global_wiring_test.dart \
+		--reporter=compact
