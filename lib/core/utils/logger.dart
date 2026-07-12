@@ -128,8 +128,14 @@ class Logger {
   Future<List<String>> readLogs() async {
     try {
       await flush();
-      final foreground = await _readFileLines(_foregroundFile);
-      final background = await _readFileLines(_backgroundFile);
+      // Ordered against prune via _opChain (see _enqueueOrdered) — without
+      // this, a read landing mid-_pruneFile rewrite can return a torn file.
+      final (foreground, background) = await _enqueueOrdered(() async {
+        return (
+          await _readFileLines(_foregroundFile),
+          await _readFileLines(_backgroundFile),
+        );
+      });
       if (background.isEmpty) return foreground;
       final all = <String>[...foreground, ...background];
       all.sort((a, b) {
@@ -426,6 +432,18 @@ class Logger {
       }
     });
     return _opChain;
+  }
+
+  /// Like [_enqueue], but for reads: waits its turn behind queued writes
+  /// (prune, sink-open) and returns the operation's actual result, letting
+  /// the caller's own try/catch see failures instead of swallowing them —
+  /// [_enqueue] swallows so a failed fire-and-forget write never breaks the
+  /// chain for the next queued op, which would be wrong for a read the
+  /// caller is awaiting directly.
+  Future<T> _enqueueOrdered<T>(Future<T> Function() operation) {
+    final result = _opChain.catchError((_) {}).then((_) => operation());
+    _opChain = result.then((_) {}, onError: (_) {});
+    return result;
   }
 
   void _queueWrite(String log, {bool flush = false}) {
