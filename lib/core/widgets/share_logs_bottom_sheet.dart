@@ -66,10 +66,19 @@ Future<void> shareLogsAsFile(List<String> logs) async {
     (await getTemporaryDirectory()).path,
     _timestampedLogFileName(),
   );
-  await File(path).writeAsString(logs.join('\n'));
-  await SharePlus.instance.share(
-    ShareParams(files: [XFile(path)], subject: 'bull_logs.tsv'),
-  );
+  final file = File(path);
+  await file.writeAsString(logs.join('\n'));
+  try {
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(path)], subject: 'bull_logs.tsv'),
+    );
+  } finally {
+    // share() only resolves once the OS-level hand-off completes, so the
+    // receiving app has already read the file by this point. Without this,
+    // every share (a user mid-support-conversation may do this repeatedly)
+    // leaves a ~100-200KB copy in temp storage that nothing else cleans up.
+    if (await file.exists()) await file.delete();
+  }
 }
 
 /// Returns true if the file was saved, false if the user cancelled.

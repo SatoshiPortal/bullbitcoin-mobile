@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
@@ -56,7 +57,22 @@ class PinCodeSettingBloc
     PinCodeSettingInitialized event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    final result = await _isPinCodeSetUsecase.execute();
+    final Result<bool, PinCodeFailure> result;
+    try {
+      result = await _isPinCodeSetUsecase.execute();
+    } on KeychainLockedException {
+      // isPinCodeSet() rethrows this instead of wrapping it in Err (see its
+      // own doc comment); this screen is only reachable post-startup with an
+      // already-unlocked keychain, but fall back to the pre-existing failure
+      // state rather than letting it escape the handler unhandled.
+      emit(
+        state.copyWith(
+          status: PinCodeSettingStatus.failure,
+          failure: const PinCodeUnexpectedFailure('Keychain locked'),
+        ),
+      );
+      return;
+    }
     switch (result) {
       case Ok(:final value):
         if (!value) {
@@ -92,7 +108,18 @@ class PinCodeSettingBloc
     PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    final result = await _isPinCodeSetUsecase.execute();
+    final Result<bool, PinCodeFailure> result;
+    try {
+      result = await _isPinCodeSetUsecase.execute();
+    } on KeychainLockedException {
+      emit(
+        state.copyWith(
+          status: PinCodeSettingStatus.failure,
+          failure: const PinCodeUnexpectedFailure('Keychain locked'),
+        ),
+      );
+      return;
+    }
     switch (result) {
       case Ok(:final value):
         emit(

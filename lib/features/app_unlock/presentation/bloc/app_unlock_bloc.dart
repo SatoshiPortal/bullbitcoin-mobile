@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
@@ -43,7 +44,23 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockStarted event,
     Emitter<AppUnlockState> emit,
   ) async {
-    switch (await _checkPinCodeExistsUsecase.execute()) {
+    final Result<bool, AppUnlockFailure> pinCheckResult;
+    try {
+      pinCheckResult = await _checkPinCodeExistsUsecase.execute();
+    } on KeychainLockedException {
+      // isPinCodeSet() rethrows this instead of wrapping it in Err (see its
+      // own doc comment); this bloc has no splash-and-retry path like
+      // AppStartupBloc, so fall back to the pre-existing failure state
+      // rather than letting it escape the handler unhandled.
+      emit(
+        state.copyWith(
+          status: AppUnlockStatus.failure,
+          failure: const AppUnlockPinCheckFailure(),
+        ),
+      );
+      return;
+    }
+    switch (pinCheckResult) {
       case Err(:final failure):
         emit(state.copyWith(status: AppUnlockStatus.failure, failure: failure));
       case Ok(:final value) when !value:

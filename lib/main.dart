@@ -145,7 +145,11 @@ class Bull {
     // under a prior app version (bitcoinSync/liquidSync/swapsSync/
     // logsPrune all shipped as registered tasks at one point or
     // another) so an existing install never keeps firing a stale
-    // schedule after an upgrade.
+    // schedule after an upgrade. On iOS this only cancels what
+    // `ios/Runner/AppDelegate.swift`'s native registration (which runs
+    // before this line, on every launch, even if `Bull.init` fails before
+    // reaching this call) already re-armed — see that file, which is
+    // paused in lockstep with this one.
     await Workmanager().cancelAll();
     // `registerPeriodicTask` for `logsPrune` is intentionally NOT
     // called. The BG isolate spawned to run it can run concurrently
@@ -155,7 +159,8 @@ class Bull {
     // is landing separately; until it has shipped and proven stable
     // for a few releases, we avoid the background engine altogether
     // as defense-in-depth. Re-enable by uncommenting the `tasks.dart`
-    // import above and the `registerPeriodicTask` call below:
+    // import above and the `registerPeriodicTask` call below — AND the
+    // matching native registrations in AppDelegate.swift:
     //
     // await Workmanager().registerPeriodicTask(
     //   BackgroundTask.logsPrune.id,

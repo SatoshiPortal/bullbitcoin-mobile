@@ -23,23 +23,35 @@ import workmanager_apple
       GeneratedPluginRegistrant.register(with: registry)
     }
 
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.liquid-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.swaps-sync-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
-    
+    // Intentionally NOT registered. This ran unconditionally on every native
+    // launch — before Dart's `Bull.init()` (and its `Workmanager().cancelAll()`
+    // in `initWorkmanager`, see lib/main.dart) ever executes — so these four
+    // background tasks kept firing on iOS regardless of the Dart-side pause,
+    // including `bitcoin-sync`/`liquid-sync`/`swaps-sync`, which really do
+    // call `syncWalletUsecase` and can touch the same Liquid wallet cache
+    // directory as the foreground engine: the same cross-isolate concurrency
+    // bug (lwk_wollet `UpdateOnDifferentStatus`, see LwkDirGuard) the Dart
+    // pause exists to avoid. Re-enable only alongside the Dart-side
+    // `registerPeriodicTask` call once the lock fix has shipped and proven
+    // stable for a few releases:
+    //
+    // WorkmanagerPlugin.registerPeriodicTask(
+    //   withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",
+    //   frequency: NSNumber(value: 20 * 60)
+    // )
+    // WorkmanagerPlugin.registerPeriodicTask(
+    //   withIdentifier: "com.bullbitcoin.mobile.liquid-sync-id",
+    //   frequency: NSNumber(value: 20 * 60)
+    // )
+    // WorkmanagerPlugin.registerPeriodicTask(
+    //   withIdentifier: "com.bullbitcoin.mobile.swaps-sync-id",
+    //   frequency: NSNumber(value: 20 * 60)
+    // )
+    // WorkmanagerPlugin.registerPeriodicTask(
+    //   withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
+    //   frequency: NSNumber(value: 20 * 60)
+    // )
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

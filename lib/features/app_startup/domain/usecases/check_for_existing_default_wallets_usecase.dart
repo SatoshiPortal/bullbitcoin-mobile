@@ -26,9 +26,10 @@ class CheckForExistingDefaultWalletsUsecase {
         environment: environment,
       );
     } catch (e, st) {
-      // lwk errors arrive as bare Strings (lwk_facade throws e.msg), so the
-      // message embeds the error verbatim — this severe is the only place
-      // they get captured before surfacing as a generic "Startup Error".
+      // lwk errors arrive as bare Strings (LwkWalletDatasource converts the
+      // raw LwkError to e.msg), so the message embeds the error verbatim —
+      // this severe is the only place they get captured before surfacing as
+      // a generic "Startup Error".
       if (e.toString().contains('UpdateOnDifferentStatus')) {
         log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
         try {
