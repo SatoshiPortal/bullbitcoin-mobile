@@ -1141,11 +1141,11 @@
   "@paymentPageHeaderHint": {
     "description": "Hint for the Donation Page title field"
   },
-  "paymentPageDescriptionLabel": "Description",
+  "paymentPageDescriptionLabel": "Short description",
   "@paymentPageDescriptionLabel": {
     "description": "Label for the Donation Page description field"
   },
-  "paymentPageDescriptionHint": "Tell visitors what their support funds",
+  "paymentPageDescriptionHint": "Shown on your Donation Page and when its link is shared.",
   "@paymentPageDescriptionHint": {
     "description": "Hint for the Donation Page description field"
   },
@@ -1165,7 +1165,7 @@
   "@paymentPageHeaderError": {
     "description": "Per-field error shown when the Donation Page title is empty or too long"
   },
-  "paymentPageDescriptionError": "Enter a description",
+  "paymentPageDescriptionError": "Enter a description of 1–120 characters",
   "@paymentPageDescriptionError": {
     "description": "Per-field error shown when the Donation Page description is empty or too long"
   },
@@ -1191,7 +1191,15 @@
   },
   "paymentPageByteCounter": "{count}/{max}",
   "@paymentPageByteCounter": {
-    "description": "Byte counter shown under a Donation Page text field",
+    "description": "Current and maximum length counter shown under a Donation Page text field",
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "paymentPageDescriptionByteLimit": "Some characters use extra space. Shorten this description ({count}/{max} bytes).",
+  "@paymentPageDescriptionByteLimit": {
+    "description": "Error shown when a short Donation Page description exceeds the UTF-8 safety ceiling despite fitting the visible-character limit",
     "placeholders": {
       "count": {"type": "int"},
       "max": {"type": "int"}

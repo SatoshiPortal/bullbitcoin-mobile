@@ -8,6 +8,7 @@ void main() {
   group('header byte boundaries', () {
     test('accepts 1..=80 bytes and rejects empty / over-cap', () {
       expect(isValidPaymentPageHeader(''), isFalse);
+      expect(isValidPaymentPageHeader('   '), isFalse);
       expect(isValidPaymentPageHeader('a'), isTrue);
       expect(isValidPaymentPageHeader('a' * 80), isTrue);
       expect(isValidPaymentPageHeader('a' * 81), isFalse);
@@ -24,11 +25,31 @@ void main() {
     });
   });
 
-  group('description byte boundaries', () {
-    test('accepts 1..=280 bytes', () {
+  group('short description boundaries', () {
+    test('requires 1..=120 visible characters', () {
       expect(isValidPaymentPageDescription(''), isFalse);
-      expect(isValidPaymentPageDescription('a' * 280), isTrue);
-      expect(isValidPaymentPageDescription('a' * 281), isFalse);
+      expect(isValidPaymentPageDescription('   '), isFalse);
+      expect(isValidPaymentPageDescription('a' * 120), isTrue);
+      expect(isValidPaymentPageDescription('a' * 121), isFalse);
+    });
+
+    test('counts composed emoji as user-perceived characters', () {
+      final emoji = '😀' * 120;
+      expect(paymentPageCharacterLength(emoji), 120);
+      expect(paymentPageByteLength(emoji), 480);
+      expect(isValidPaymentPageDescription(emoji), isTrue);
+      expect(isValidPaymentPageDescription('$emoji😀'), isFalse);
+    });
+
+    test('also enforces the server byte safety ceiling', () {
+      const family = '👨‍👩‍👧‍👦';
+      final withinByteCap = family * 20;
+      final overByteCap = family * 21;
+      expect(paymentPageCharacterLength(overByteCap), 21);
+      expect(paymentPageByteLength(withinByteCap) <= 512, isTrue);
+      expect(paymentPageByteLength(overByteCap) > 512, isTrue);
+      expect(isValidPaymentPageDescription(withinByteCap), isTrue);
+      expect(isValidPaymentPageDescription(overByteCap), isFalse);
     });
   });
 

@@ -16,6 +16,7 @@ workspace:
 dependencies:
   flutter:
     sdk: flutter
+  characters: ^1.4.1
   bull_ui:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3

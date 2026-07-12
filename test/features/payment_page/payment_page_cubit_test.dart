@@ -21,10 +21,13 @@ void main() {
     updateWalletBehavior: updateWalletBehavior,
   );
 
-  PaymentPage buildPage({bool archived = false}) => PaymentPage(
+  PaymentPage buildPage({
+    bool archived = false,
+    String description = 'Support my work',
+  }) => PaymentPage(
     nym: 'alice',
     header: 'Tip me',
-    description: 'Support my work',
+    description: description,
     displayCurrency: 'USD',
     enabled: true,
     isArchived: archived,
@@ -209,6 +212,28 @@ void main() {
       expect(facade.saveCallCount, 0);
       expect(cubit.state.failure?.kind, PaymentPageErrorKind.invalidInput);
     });
+
+    test(
+      'legacy archived content can be corrected before reactivation',
+      () async {
+        la.status = const LightningAddressStatus(nym: 'alice', active: true);
+        facade.page = buildPage(archived: true, description: 'a' * 121);
+        final cubit = build();
+        await cubit.load();
+
+        expect(cubit.state.status, PaymentPageStatus.archived);
+        expect(cubit.state.canSubmit, isFalse);
+        await cubit.save();
+        expect(facade.saveCallCount, 0);
+
+        cubit.descriptionChanged('A new short description');
+        facade.savedPage = buildPage(description: 'A new short description');
+        await cubit.save();
+
+        expect(facade.saveCallCount, 1);
+        expect(cubit.state.status, PaymentPageStatus.edit);
+      },
+    );
 
     test('a double-tap yields exactly one wire call', () async {
       la.status = const LightningAddressStatus(nym: 'alice', active: true);

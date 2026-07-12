@@ -76,6 +76,15 @@ degrades: an existing page keeps its stored currency (read-only) and a new page
 defaults to CAD with a retry affordance. The list is never hardcoded (the
 prototype's INR drift bug).
 
+## Social-preview description
+
+The existing signed `description` field is the Donation Page's short description; there is no separate social-only wire field.
+The editor requires 1-120 user-perceived Unicode characters and applies the server's 512-byte safety ceiling.
+It explains that the text appears on the Page and when its link is shared.
+Bullnym owns image rendering and always adds the fixed Bull Bitcoin logo; mobile neither uploads nor signs image bytes.
+
+Archived legacy Pages remain editable before re-publication so descriptions that predate the 120-character contract can be shortened instead of stranding the Page in an unrecoverable archived state.
+
 ## Anti-scope
 
 No POS (`kind=pos`, index 103) anything; no Invoices or dashboard hub; no image

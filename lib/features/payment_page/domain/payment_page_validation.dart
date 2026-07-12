@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/features/payment_page/domain/payment_page_error.dart';
+import 'package:characters/characters.dart';
 
-// Byte caps mirror the server exactly (src/donation_page.rs). The server
-// measures `String::len()` (UTF-8 bytes), NOT characters, so validation here is
-// byte-based too — a multibyte header can fail the client pre-filter at fewer
-// than 80 visible characters.
+// Caps mirror the server exactly (src/donation_page.rs / src/og_image.rs).
+// Header and link limits remain UTF-8 byte based.
+// The social-preview description has a merchant-facing grapheme limit plus a defensive byte cap.
 const int paymentPageHeaderMaxBytes = 80; // MAX_HEADER_LEN
-const int paymentPageDescriptionMaxBytes = 280; // MAX_DESCRIPTION_LEN
+const int paymentPageDescriptionMaxCharacters = 120;
+const int paymentPageDescriptionMaxBytes = 512;
 const int paymentPageWebsiteMaxBytes = 200; // MAX_SOCIAL_LINK_LEN
 const int paymentPageSocialHandleMaxBytes = 50; // MAX_SOCIAL_HANDLE_LEN
 
@@ -19,14 +20,19 @@ final RegExp _instagramHandleRegExp = RegExp(r'^[A-Za-z0-9._]{1,50}$');
 /// UTF-8 byte length — the unit the server validates in.
 int paymentPageByteLength(String value) => utf8.encode(value).length;
 
+/// User-perceived Unicode characters (extended grapheme clusters), matching the server's Payment Page social-preview validation.
+int paymentPageCharacterLength(String value) => value.characters.length;
+
 bool isValidPaymentPageHeader(String value) {
   final bytes = paymentPageByteLength(value);
-  return bytes >= 1 && bytes <= paymentPageHeaderMaxBytes;
+  return value.trim().isNotEmpty && bytes <= paymentPageHeaderMaxBytes;
 }
 
 bool isValidPaymentPageDescription(String value) {
-  final bytes = paymentPageByteLength(value);
-  return bytes >= 1 && bytes <= paymentPageDescriptionMaxBytes;
+  return value.trim().isNotEmpty &&
+      paymentPageCharacterLength(value) <=
+          paymentPageDescriptionMaxCharacters &&
+      paymentPageByteLength(value) <= paymentPageDescriptionMaxBytes;
 }
 
 bool isValidPaymentPageWebsite(String value) {
