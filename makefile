@@ -278,11 +278,11 @@ unit-test:
 # invocation, so running this one file builds + launches once for the whole
 # suite (instead of failing every file but the first, as `flutter test
 # integration_test/` does). all_test.dart is a generated, gitignored artifact —
-# tool/gen_all_test.dart regenerates it from disk below, so adding a test file
+# tools/gen_all_test.dart regenerates it from disk below, so adding a test file
 # needs no manual wiring.
 integration-test:
 	@echo "🧪 integration tests"
-	@fvm dart run tool/gen_all_test.dart
+	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
 
 # Build & render the bull_ui design-system catalogue (Widgetbook) locally in the
