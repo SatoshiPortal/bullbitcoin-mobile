@@ -42,21 +42,20 @@ sealed class SpSettingsState
       !isSaving;
 
   @override
-  SpSettingsState applyNetwork(SpNetwork network, SpBackendDefaults defaults) {
-    final base = defaults.isOk
-        ? SpSettingsState(
-            initialized: true,
-            network: network,
-            blindbitUrl: defaults.blindbitUrl,
-            electrumUrl: defaults.electrumUrl,
-          )
-        : SpSettingsState(
-            initialized: true,
-            network: network,
-            error: defaults.failure,
-          );
-    return base.copyWith(console: console, formRevision: formRevision + 1);
-  }
+  SpSettingsState applyNetwork(SpNetwork network) => copyWith(
+    initialized: true,
+    network: network,
+    isFetchingDefaults: true,
+    blindbitUrl: '',
+    electrumUrl: '',
+    formRevision: formRevision + 1,
+    blindbitTest: SpConnTest.untested,
+    electrumTest: SpConnTest.untested,
+    blindbitTestError: null,
+    electrumTestError: null,
+    saved: false,
+    error: null,
+  );
 
   @override
   SpSettingsState applyDefaults(SpBackendDefaults defaults) => copyWith(

@@ -79,10 +79,12 @@ void main() {
     final configRepo = _MockSpBackendConfigRepository();
     when(() => configRepo.fetch())
         .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
-    when(() => configRepo.fetchRegtestDefaults()).thenReturn(
-      const SpBackendDefaults.ok(
-        blindbitUrl: 'http://127.0.0.1:8000',
-        electrumUrl: 'tcp://127.0.0.1:50001',
+    when(() => configRepo.fetchRegtestDefaults()).thenAnswer(
+      (_) async => const Ok<SpBackendDefaults, SpFailure>(
+        SpBackendDefaults(
+          blindbitUrl: 'http://127.0.0.1:8000',
+          electrumUrl: 'tcp://127.0.0.1:50001',
+        ),
       ),
     );
     stubTestBackend(
@@ -137,24 +139,32 @@ void main() {
   tearDown(() => logController.close());
 
   group('SpSettingsCubit', () {
-    test('initial regtest state pre-fills default URLs', () async {
+    test('initial state is a placeholder that fetches regtest defaults async',
+        () async {
       final cubit = build();
+      // Construction does not block on the FFI: URLs are empty and the fetching
+      // flag is set until the async regtest defaults land.
       expect(cubit.state.network, SpNetwork.regtest);
-      // Regtest defaults come from fetchRegtestDefaults(), stubbed in build().
+      expect(cubit.state.blindbitUrl, isEmpty);
+      expect(cubit.state.isFetchingDefaults, isTrue);
+
+      await cubit.setNetwork(SpNetwork.regtest);
+
       expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
       expect(cubit.state.electrumUrl, 'tcp://127.0.0.1:50001');
+      expect(cubit.state.isFetchingDefaults, isFalse);
       await cubit.close();
     });
 
     test('setNetwork to regtest pre-fills default URLs', () async {
       final cubit = build();
-      cubit.setNetwork(SpNetwork.bitcoin);
+      await cubit.setNetwork(SpNetwork.bitcoin);
       expect(
         cubit.state.blindbitUrl,
         SpConfig.defaultBlindbitUrl[SpNetwork.bitcoin],
       );
 
-      cubit.setNetwork(SpNetwork.regtest);
+      await cubit.setNetwork(SpNetwork.regtest);
 
       expect(cubit.state.network, SpNetwork.regtest);
       expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
@@ -177,10 +187,12 @@ void main() {
             ),
           ),
         );
-        when(() => configRepo.fetchRegtestDefaults()).thenReturn(
-          const SpBackendDefaults.ok(
-            blindbitUrl: 'http://127.0.0.1:8000',
-            electrumUrl: 'tcp://127.0.0.1:50001',
+        when(() => configRepo.fetchRegtestDefaults()).thenAnswer(
+          (_) async => const Ok<SpBackendDefaults, SpFailure>(
+            SpBackendDefaults(
+              blindbitUrl: 'http://127.0.0.1:8000',
+              electrumUrl: 'tcp://127.0.0.1:50001',
+            ),
           ),
         );
         stubTestBackend(configRepo);
@@ -228,7 +240,7 @@ void main() {
 
     test('console survives a network change', () async {
       final cubit = build(seed: [_line('ScanCompleted')]);
-      cubit.setNetwork(SpNetwork.bitcoin);
+      await cubit.setNetwork(SpNetwork.bitcoin);
       expect(cubit.state.console.map((l) => l.text), ['ScanCompleted']);
       await cubit.close();
     });
@@ -245,7 +257,9 @@ void main() {
     test('success sets saved and clears isSaving', () async {
       final cubit = build();
       stubRecreate();
-      // Pass both connection tests so canSave is satisfied.
+      // Fill the URLs from the regtest defaults, then pass both connection
+      // tests so canSave is satisfied.
+      await cubit.setNetwork(SpNetwork.regtest);
       await cubit.testBlindbit();
       await cubit.testElectrum();
       expect(cubit.state.canSave, isTrue);
@@ -267,6 +281,7 @@ void main() {
     test('a throwing recreate usecase sets error and clears isSaving', () async {
       final cubit = build();
       stubRecreate(failure: const SpUnexpected('recreate failed'));
+      await cubit.setNetwork(SpNetwork.regtest);
       await cubit.testBlindbit();
       await cubit.testElectrum();
 
@@ -282,6 +297,7 @@ void main() {
         'passed', () async {
       final cubit = build();
       stubRecreate();
+      await cubit.setNetwork(SpNetwork.regtest);
       // No testBlindbit()/testElectrum(): the conn tests stay untested.
       expect(cubit.state.canSave, isFalse);
 
@@ -302,6 +318,7 @@ void main() {
             throw Exception('blindbit down'),
       );
       stubRecreate();
+      await cubit.setNetwork(SpNetwork.regtest);
 
       await cubit.testBlindbit();
       await cubit.testElectrum();
@@ -324,6 +341,7 @@ void main() {
             throw Exception('electrum down'),
       );
       stubRecreate();
+      await cubit.setNetwork(SpNetwork.regtest);
 
       await cubit.testBlindbit();
       await cubit.testElectrum();

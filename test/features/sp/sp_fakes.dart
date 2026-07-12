@@ -280,7 +280,6 @@ class FakeSpBackendConfigRepository implements SpBackendConfigRepository {
   ) async => const Ok(null);
 
   @override
-  SpBackendDefaults fetchRegtestDefaults() => const SpBackendDefaults.failed(
-    SpUnexpected('fetchRegtestDefaults not used in tests'),
-  );
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() async =>
+      const Err(SpUnexpected('fetchRegtestDefaults not used in tests'));
 }

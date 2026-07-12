@@ -75,14 +75,16 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
   }
 
   @override
-  SpBackendDefaults fetchRegtestDefaults() {
-    final defaults = getRegtestDefaults();
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() async {
+    final defaults = await getRegtestDefaults();
     if (!defaults.isOk) {
-      return SpBackendDefaults.failed(SpBackendUnreachable(defaults.error));
+      return Err(SpBackendUnreachable(defaults.error));
     }
-    return SpBackendDefaults.ok(
-      blindbitUrl: defaults.blindbitUrl,
-      electrumUrl: defaults.electrumUrl,
+    return Ok(
+      SpBackendDefaults(
+        blindbitUrl: defaults.blindbitUrl,
+        electrumUrl: defaults.electrumUrl,
+      ),
     );
   }
 }

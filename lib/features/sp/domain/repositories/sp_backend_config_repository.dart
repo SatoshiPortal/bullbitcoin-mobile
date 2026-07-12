@@ -27,9 +27,11 @@ abstract interface class SpBackendConfigRepository {
   @useResult
   Future<Result<void, SpFailure>> testBackend(SpBackendKind kind, String url);
 
-  /// Resolve the regtest backend defaults from the running regtest infra
-  /// (FFI). Returns a failed [SpBackendDefaults] when the infra is unreachable.
-  SpBackendDefaults fetchRegtestDefaults();
+  /// Resolve the regtest backend defaults from the running regtest infra over
+  /// FFI. Awaits the fetch off the UI isolate; `Err` with [SpBackendUnreachable]
+  /// when the infra is unreachable.
+  @useResult
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults();
 }
 
 extension SpBackendConfigRepositoryX on SpBackendConfigRepository {

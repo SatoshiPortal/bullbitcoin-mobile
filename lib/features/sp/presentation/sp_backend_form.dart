@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
@@ -24,8 +25,9 @@ mixin SpBackendFormState<S> {
   bool get isFetchingDefaults;
   SpFailure? get error;
 
-  /// Rebuild for a freshly chosen network from its backend defaults.
-  S applyNetwork(SpNetwork network, SpBackendDefaults defaults);
+  /// Select a network and enter the "fetching defaults" state, clearing the
+  /// old URLs and tests. The fetched defaults land later via [applyDefaults].
+  S applyNetwork(SpNetwork network);
 
   /// Fill both URLs from fetched defaults and reset the connection tests.
   S applyDefaults(SpBackendDefaults defaults);
@@ -51,23 +53,24 @@ mixin SpBackendFormCubit<S extends SpBackendFormState<S>> on Cubit<S> {
   GetSpBackendDefaultsUsecase get getBackendDefaultsUsecase;
 
   Future<void> setNetwork(SpNetwork network) async {
-    emit(
-      state.applyNetwork(network, getBackendDefaultsUsecase.execute(network)),
-    );
+    emit(state.applyNetwork(network));
+    await _landDefaults(network);
   }
 
   Future<void> fetchRegtestDefaults() async {
     emit(state.startFetching());
-    try {
-      final defaults = getBackendDefaultsUsecase.execute(SpNetwork.regtest);
-      final failure = defaults.failure;
-      if (failure != null) {
+    await _landDefaults(SpNetwork.regtest);
+  }
+
+  /// Await the async defaults fetch and land it via the shared transitions.
+  Future<void> _landDefaults(SpNetwork network) async {
+    final result = await getBackendDefaultsUsecase.execute(network);
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(state.applyDefaults(value));
+      case Err(:final failure):
         emit(state.failFetching(failure));
-        return;
-      }
-      emit(state.applyDefaults(defaults));
-    } catch (e) {
-      emit(state.failFetching(SpBackendUnreachable('SP defaults fetch: $e')));
     }
   }
 

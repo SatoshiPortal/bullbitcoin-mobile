@@ -25,12 +25,13 @@ class _FakeBackendConfigRepo implements SpBackendConfigRepository {
   }) : _testBlindbit = testBlindbit ?? (({required String url}) async => 0),
        _testElectrum = testElectrum ?? (({required String url}) async {});
 
-  final SpBackendDefaults _regtest;
+  final Result<SpBackendDefaults, SpFailure> _regtest;
   final Future<int> Function({required String url}) _testBlindbit;
   final Future<void> Function({required String url}) _testElectrum;
 
   @override
-  SpBackendDefaults fetchRegtestDefaults() => _regtest;
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() async =>
+      _regtest;
 
   @override
   Future<Result<void, SpFailure>> testBackend(
@@ -63,15 +64,17 @@ void main() {
   late SpSetupCubit cubit;
   late MockCreateSpWalletUsecase mockCreate;
 
-  const regtestDefaults = SpBackendDefaults.ok(
-    blindbitUrl: 'http://127.0.0.1:8000',
-    electrumUrl: 'tcp://127.0.0.1:50001',
+  const regtestDefaults = Ok<SpBackendDefaults, SpFailure>(
+    SpBackendDefaults(
+      blindbitUrl: 'http://127.0.0.1:8000',
+      electrumUrl: 'tcp://127.0.0.1:50001',
+    ),
   );
 
   SpSetupCubit buildSetup({
     Future<int> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
-    SpBackendDefaults? regtest,
+    Result<SpBackendDefaults, SpFailure>? regtest,
   }) {
     final configRepo = _FakeBackendConfigRepo(
       regtest ?? regtestDefaults,
@@ -87,7 +90,7 @@ void main() {
     );
   }
 
-  setUp(() {
+  setUp(() async {
     mockCreate = MockCreateSpWalletUsecase();
 
     when(
@@ -99,6 +102,9 @@ void main() {
     ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
     cubit = buildSetup();
+    // The cubit fetches regtest defaults asynchronously after construction;
+    // wait for that to land so tests start from the resolved defaults.
+    await cubit.stream.firstWhere((s) => !s.isFetchingDefaults);
   });
 
   tearDown(() => cubit.close());
@@ -294,6 +300,9 @@ void main() {
             throw Exception('blindbit down'),
       );
       addTearDown(c.close);
+      // Wait for the async regtest-defaults init to land before simulating user
+      // input; otherwise the late applyDefaults resets the URLs and conn tests.
+      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
       c.setBlindbitUrl('http://blindbit.local');
       c.setElectrumUrl('tcp://electrum.local:60001');
 
@@ -323,6 +332,9 @@ void main() {
             throw Exception('electrum down'),
       );
       addTearDown(c.close);
+      // Wait for the async regtest-defaults init to land before simulating user
+      // input; otherwise the late applyDefaults resets the URLs and conn tests.
+      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
       c.setBlindbitUrl('http://blindbit.local');
       c.setElectrumUrl('tcp://electrum.local:60001');
 
@@ -367,8 +379,8 @@ void main() {
     test('fetchRegtestDefaults failure sets error and clears the fetching flag',
         () async {
       final c = buildSetup(
-        regtest: SpBackendDefaults.failed(
-          const SpBackendUnreachable('regtest infra unreachable'),
+        regtest: const Err<SpBackendDefaults, SpFailure>(
+          SpBackendUnreachable('regtest infra unreachable'),
         ),
       );
       addTearDown(c.close);

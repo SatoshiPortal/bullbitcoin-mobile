@@ -23,7 +23,8 @@ class _FakeConfigRepository implements SpBackendConfigRepository {
   @override
   Future<void> delete() => throw UnimplementedError();
   @override
-  SpBackendDefaults fetchRegtestDefaults() => throw UnimplementedError();
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() =>
+      throw UnimplementedError();
 }
 
 void main() {

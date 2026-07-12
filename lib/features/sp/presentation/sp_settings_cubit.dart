@@ -32,7 +32,7 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
     required this._testSpBackendUsecase,
     required this._loadSpBackendConfigUsecase,
     required this._getSpBackendDefaultsUsecase,
-  }) : super(_initialState(_getSpBackendDefaultsUsecase)) {
+  }) : super(const SpSettingsState(isFetchingDefaults: true)) {
     final notifLog = _watchNotificationLogUsecase.execute();
     if (notifLog.log.isNotEmpty) {
       emit(state.copyWith(console: List.unmodifiable(notifLog.log)));
@@ -80,12 +80,8 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
         ),
       );
     } else if (network != null) {
-      emit(
-        state.applyNetwork(
-          network,
-          _getSpBackendDefaultsUsecase.execute(network),
-        ),
-      );
+      await setNetwork(network);
+      if (isClosed) return;
     } else {
       return;
     }
@@ -116,15 +112,5 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
   Future<void> close() async {
     await _logSub?.cancel();
     return super.close();
-  }
-
-  static SpSettingsState _initialState(GetSpBackendDefaultsUsecase defaults) {
-    final resolved = defaults.execute(SpNetwork.regtest);
-    return resolved.isOk
-        ? SpSettingsState(
-            blindbitUrl: resolved.blindbitUrl,
-            electrumUrl: resolved.electrumUrl,
-          )
-        : SpSettingsState(error: resolved.failure);
   }
 }

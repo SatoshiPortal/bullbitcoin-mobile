@@ -36,14 +36,17 @@ sealed class SpSetupState
       !isCreating;
 
   @override
-  SpSetupState applyNetwork(SpNetwork network, SpBackendDefaults defaults) =>
-      defaults.isOk
-      ? SpSetupState(
-          network: network,
-          blindbitUrl: defaults.blindbitUrl,
-          electrumUrl: defaults.electrumUrl,
-        )
-      : SpSetupState(network: network, error: defaults.failure);
+  SpSetupState applyNetwork(SpNetwork network) => copyWith(
+    network: network,
+    isFetchingDefaults: true,
+    blindbitUrl: '',
+    electrumUrl: '',
+    blindbitTest: SpConnTest.untested,
+    electrumTest: SpConnTest.untested,
+    blindbitTestError: null,
+    electrumTestError: null,
+    error: null,
+  );
 
   @override
   SpSetupState applyDefaults(SpBackendDefaults defaults) => copyWith(

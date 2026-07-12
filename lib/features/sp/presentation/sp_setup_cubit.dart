@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
@@ -22,7 +24,11 @@ class SpSetupCubit extends Cubit<SpSetupState>
     required this._createSpWalletUsecase,
     required this._testSpBackendUsecase,
     required this._getSpBackendDefaultsUsecase,
-  }) : super(_initialState(_getSpBackendDefaultsUsecase));
+  }) : super(const SpSetupState(isFetchingDefaults: true)) {
+    // Regtest defaults come from the infra over FFI; fetch them off the UI
+    // isolate once the cubit exists instead of blocking construction.
+    unawaited(setNetwork(SpNetwork.regtest));
+  }
 
   @override
   TestSpBackendUsecase get backendTestUsecase => _testSpBackendUsecase;
@@ -50,10 +56,4 @@ class SpSetupCubit extends Cubit<SpSetupState>
         emit(state.copyWith(isCreating: false, error: failure));
     }
   }
-
-  static SpSetupState _initialState(GetSpBackendDefaultsUsecase defaults) =>
-      const SpSetupState().applyNetwork(
-        SpNetwork.regtest,
-        defaults.execute(SpNetwork.regtest),
-      );
 }
