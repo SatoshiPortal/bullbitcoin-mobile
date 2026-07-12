@@ -55,16 +55,14 @@ abstract class SpConfig {
   /// safe). Must match bwk persist's lock filename.
   static const String lockFile = '.lock';
 
-  // FIXME: these production blindbit/electrum URLs are unconfirmed. Verify each
-  // network's real endpoint before any mainnet use.
   static const Map<SpNetwork, String> defaultBlindbitUrl = {
-    SpNetwork.bitcoin: 'https://blindbit.bullbitcoin.com',
+    SpNetwork.bitcoin: 'https://blindbit.pythcoiner.dev',
     SpNetwork.signet: 'https://blindbit-signet.bullbitcoin.com',
     SpNetwork.testnet: 'https://blindbit-testnet.bullbitcoin.com',
   };
 
   static const Map<SpNetwork, String> defaultElectrumUrl = {
-    SpNetwork.bitcoin: 'ssl://electrum.bullbitcoin.com:50002',
+    SpNetwork.bitcoin: 'ssl://electrum.pythcoiner.dev:50002',
     SpNetwork.signet: 'ssl://electrum-signet.bullbitcoin.com:50002',
     SpNetwork.testnet: 'ssl://electrum-testnet.bullbitcoin.com:50002',
   };

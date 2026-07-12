@@ -90,8 +90,8 @@ void main() {
         initialized: true,
         form: SpBackendForm(
           network: SpNetwork.bitcoin,
-          blindbitUrl: 'https://blindbit.bullbitcoin.com',
-          electrumUrl: 'ssl://electrum.bullbitcoin.com:50002',
+          blindbitUrl: 'https://blindbit.pythcoiner.dev',
+          electrumUrl: 'ssl://electrum.pythcoiner.dev:50002',
           blindbitTest: SpConnTest.ok,
           electrumTest: SpConnTest.ok,
         ),
