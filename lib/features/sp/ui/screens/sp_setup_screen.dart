@@ -33,8 +33,6 @@ class SpSetupScreen extends StatelessWidget {
                   child: SpBackendConfigForm<SpSetupState>(
                     state: state,
                     isBusy: state.isCreating,
-                    blindbitFieldKey: ValueKey('blindbit_${state.network.name}'),
-                    electrumFieldKey: ValueKey('electrum_${state.network.name}'),
                     onFetchDefaults: cubit.fetchRegtestDefaults,
                     onBlindbitChanged: cubit.setBlindbitUrl,
                     onTestBlindbit: cubit.testBlindbit,

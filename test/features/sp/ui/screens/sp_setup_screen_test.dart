@@ -21,6 +21,10 @@ class _MockSpSetupCubit extends Mock implements SpSetupCubit {}
 class _FakeSpSetupCubit extends Cubit<SpSetupState> implements SpSetupCubit {
   _FakeSpSetupCubit(super.initialState);
 
+  // Drives a programmatic state change (defaults landing, network switch) so a
+  // test can assert the URL fields follow the state.
+  void pushState(SpSetupState state) => emit(state);
+
   @override
   Future<void> create() async {}
 
@@ -154,6 +158,68 @@ void main() {
       expect(find.byType(TextFormField), findsNWidgets(2));
     });
 
+    testWidgets('URL fields fill when defaults land programmatically', (
+      tester,
+    ) async {
+      final cubit = _FakeSpSetupCubit(
+        const SpSetupState(isFetchingDefaults: true),
+      );
+
+      await tester.pumpWidget(_buildPage(cubit));
+      expect(find.widgetWithText(TextFormField, 'http://b.default'), findsNothing);
+
+      cubit.pushState(
+        const SpSetupState(
+          blindbitUrl: 'http://b.default',
+          electrumUrl: 'tcp://e.default:1',
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.widgetWithText(TextFormField, 'http://b.default'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(TextFormField, 'tcp://e.default:1'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('URL fields follow a network switch', (tester) async {
+      final cubit = _FakeSpSetupCubit(
+        const SpSetupState(
+          network: SpNetwork.regtest,
+          blindbitUrl: 'http://regtest.blindbit',
+          electrumUrl: 'tcp://regtest.electrum:1',
+        ),
+      );
+
+      await tester.pumpWidget(_buildPage(cubit));
+      expect(
+        find.widgetWithText(TextFormField, 'http://regtest.blindbit'),
+        findsOneWidget,
+      );
+
+      cubit.pushState(
+        const SpSetupState(
+          network: SpNetwork.bitcoin,
+          blindbitUrl: 'http://bitcoin.blindbit',
+          electrumUrl: 'ssl://bitcoin.electrum:2',
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.widgetWithText(TextFormField, 'http://regtest.blindbit'),
+        findsNothing,
+      );
+      expect(
+        find.widgetWithText(TextFormField, 'http://bitcoin.blindbit'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('Create button is visible', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
@@ -232,7 +298,7 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      final field = find.byKey(ValueKey('blindbit_${SpNetwork.regtest.name}'));
+      final field = find.widgetWithText(TextFormField, 'Blindbit URL');
       expect(field, findsOneWidget);
       await tester.enterText(field, 'http://typed.blindbit');
 
@@ -246,7 +312,7 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      final field = find.byKey(ValueKey('electrum_${SpNetwork.regtest.name}'));
+      final field = find.widgetWithText(TextFormField, 'Electrum URL');
       expect(field, findsOneWidget);
       await tester.enterText(field, 'tcp://typed.electrum:50001');
 

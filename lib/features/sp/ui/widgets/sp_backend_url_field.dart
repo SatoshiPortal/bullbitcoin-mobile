@@ -13,8 +13,7 @@ class SpBackendUrlField extends StatelessWidget {
   const SpBackendUrlField({
     super.key,
     required this.label,
-    required this.fieldKey,
-    required this.initialValue,
+    required this.controller,
     required this.onChanged,
     required this.test,
     required this.testError,
@@ -23,8 +22,7 @@ class SpBackendUrlField extends StatelessWidget {
   });
 
   final String label;
-  final Key fieldKey;
-  final String initialValue;
+  final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final SpConnTest test;
   final SpFailure? testError;
@@ -42,8 +40,7 @@ class SpBackendUrlField extends StatelessWidget {
           children: [
             Expanded(
               child: TextFormField(
-                key: fieldKey,
-                initialValue: initialValue,
+                controller: controller,
                 enabled: enabled && !testing,
                 decoration: InputDecoration(labelText: label),
                 onChanged: onChanged,
@@ -51,7 +48,7 @@ class SpBackendUrlField extends StatelessWidget {
             ),
             const Gap(8),
             TextButton(
-              onPressed: (enabled && !testing && initialValue.isNotEmpty)
+              onPressed: (enabled && !testing && controller.text.isNotEmpty)
                   ? onTest
                   : null,
               child: testing

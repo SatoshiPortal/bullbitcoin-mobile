@@ -105,8 +105,6 @@ class _BackendConfigSection extends StatelessWidget {
           state: state,
           isBusy: state.isSaving,
           header: const _BackendStatusLine(),
-          blindbitFieldKey: ValueKey('settings_blindbit_${state.formRevision}'),
-          electrumFieldKey: ValueKey('settings_electrum_${state.formRevision}'),
           onFetchDefaults: cubit.fetchRegtestDefaults,
           onBlindbitChanged: cubit.setBlindbitUrl,
           onTestBlindbit: cubit.testBlindbit,

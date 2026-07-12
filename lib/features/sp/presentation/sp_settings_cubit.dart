@@ -73,12 +73,7 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
         blindbitUrl: stored.blindbitUrl,
         electrumUrl: stored.electrumUrl,
       );
-      emit(
-        base.copyWith(
-          console: state.console,
-          formRevision: state.formRevision + 1,
-        ),
-      );
+      emit(base.copyWith(console: state.console));
     } else if (network != null) {
       await setNetwork(network);
       if (isClosed) return;

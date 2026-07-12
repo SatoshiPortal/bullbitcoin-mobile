@@ -18,9 +18,6 @@ sealed class SpSettingsState
     @Default(SpNetwork.regtest) SpNetwork network,
     @Default('') String blindbitUrl,
     @Default('') String electrumUrl,
-    // Bumped on programmatic URL changes (load/fetch/network) so the text fields
-    // (keyed on it) rebuild; NOT bumped on user typing, to preserve the cursor.
-    @Default(0) int formRevision,
     @Default(SpConnTest.untested) SpConnTest blindbitTest,
     @Default(SpConnTest.untested) SpConnTest electrumTest,
     SpFailure? blindbitTestError,
@@ -48,7 +45,6 @@ sealed class SpSettingsState
     isFetchingDefaults: true,
     blindbitUrl: '',
     electrumUrl: '',
-    formRevision: formRevision + 1,
     blindbitTest: SpConnTest.untested,
     electrumTest: SpConnTest.untested,
     blindbitTestError: null,
@@ -63,7 +59,6 @@ sealed class SpSettingsState
     isFetchingDefaults: false,
     blindbitUrl: defaults.blindbitUrl,
     electrumUrl: defaults.electrumUrl,
-    formRevision: formRevision + 1,
     blindbitTest: SpConnTest.untested,
     electrumTest: SpConnTest.untested,
     blindbitTestError: null,
