@@ -15,6 +15,12 @@ import 'package:synchronized/synchronized.dart';
 /// (the workmanager background isolate runs in the same process as the
 /// foreground engine, where an in-process Lock alone cannot serialize two
 /// isolates) via a freshness-gated marker file.
+///
+/// [run] is not reentrant for the same [dbPath] within one isolate: nesting
+/// a second [run] call for the same wallet inside the first's `action`
+/// (directly or transitively) deadlocks on the underlying [Lock]. No current
+/// call site nests — `action` callbacks always run a single facade operation
+/// to completion before returning.
 class LwkDirGuard {
   static final Map<String, Lock> _dirLocks = {};
 
@@ -40,6 +46,14 @@ class LwkDirGuard {
 /// refreshes while working. Waiters poll until the marker is gone or stale.
 /// The stale TTL keeps a crashed holder from wedging the app, and the wait
 /// deadline prefers a (rare, recoverable) collision over blocking forever.
+///
+/// Acquisition is check-then-write, not atomic: two isolates can both
+/// observe no fresh holder and both write the marker, so this narrows the
+/// cross-isolate race rather than closing it. That's acceptable today only
+/// because the workmanager background task is unregistered elsewhere in this
+/// codebase, leaving a single isolate in practice — revisit with a truly
+/// atomic acquire (e.g. `File.create(exclusive: true)`) before that task is
+/// ever re-enabled.
 class CrossIsolateDirMarker {
   static const staleAfter = Duration(seconds: 60);
   static const maxWait = Duration(seconds: 45);
@@ -89,9 +103,16 @@ class CrossIsolateDirMarker {
   Future<String?> _freshHolder() async {
     final content = await _readContent();
     if (content == null) return null;
+    final owner = content['owner'] as String?;
+    // Both engines that could ever hold this marker share one OS process, so
+    // an owner id whose pid prefix differs from ours can only be a crashed
+    // process's leftover — treat it as stale immediately instead of waiting
+    // out `staleAfter`, which is what let a leftover marker freeze this exact
+    // startup path for up to `maxWait`.
+    if (owner == null || !owner.startsWith('$pid-')) return null;
     final ts = DateTime.tryParse(content['ts'] as String? ?? '');
     if (ts == null || DateTime.now().difference(ts) > staleAfter) return null;
-    return content['owner'] as String?;
+    return owner;
   }
 
   Future<Map<String, dynamic>?> _readContent() async {

@@ -12,6 +12,7 @@ class PinCodeRepository {
       'securityKey'; // Use same key as in AuthCubit to stay backward compatible
 
   static const _healedMarkerKey = 'securityKeyAccessibilityHealedV1';
+  static const _healBackupKey = 'securityKeyHealBackupV1';
 
   bool _accessibilityHealAttempted = false;
 
@@ -19,7 +20,7 @@ class PinCodeRepository {
 
   Future<Result<bool, PinCodeFailure>> isPinCodeSet() async {
     try {
-      final pin = await _storage.getValue(_key);
+      final pin = await _readPinRestoringFromHealBackupIfNeeded();
       if (pin != null) {
         await _healLegacyKeychainAccessibility(pin);
       }
@@ -44,6 +45,11 @@ class PinCodeRepository {
   Future<Result<Null, PinCodeFailure>> setPinCode(String pinCode) async {
     try {
       await _storage.saveValue(key: _key, value: pinCode);
+      // A prior heal's backup would otherwise be stale (its pin no longer
+      // matches [_key]); harmless to leave in this instance since restore
+      // only fires when [_key] is absent, but a later deletePinCode()
+      // wiping [_key] must not resurrect this old value.
+      await _deleteHealBackupBestEffort();
       return const Ok(null);
     } on KeychainLockedException {
       return const Err(PinCodeSaveFailure());
@@ -59,7 +65,7 @@ class PinCodeRepository {
 
   Future<Result<bool, PinCodeFailure>> verifyPinCode(String pinCode) async {
     try {
-      final pin = await _storage.getValue(_key);
+      final pin = await _readPinRestoringFromHealBackupIfNeeded();
 
       if (pin == null) return const Err(PinCodeNotSetFailure());
       await _healLegacyKeychainAccessibility(pin);
@@ -85,9 +91,13 @@ class PinCodeRepository {
   // update dictionary containing only kSecValueData — the configured
   // accessibility is only part of the search query, so it is never applied
   // to the stored item. Only SecItemAdd applies it, so the item must be
-  // deleted and re-added. Between delete and save the PIN exists only in
-  // [pin]; a failed save would silently disable the PIN lock, hence the
-  // retry and log.severe.
+  // deleted and re-added.
+  //
+  // Between delete and re-add, [pin] is backed up under [_healBackupKey]
+  // first and only cleared once [_key] is confirmed re-added and the healed
+  // marker is written — so a crash (or force-quit) in that window leaves a
+  // recoverable backup rather than silently disabling the PIN lock; the next
+  // read restores [_key] from it via [_readPinRestoringFromHealBackupIfNeeded].
   Future<void> _healLegacyKeychainAccessibility(String pin) async {
     if (defaultTargetPlatform != TargetPlatform.iOS) return;
     if (_accessibilityHealAttempted) return;
@@ -97,6 +107,7 @@ class PinCodeRepository {
       final healed = await _storage.getValue(_healedMarkerKey);
       if (healed != null) return;
 
+      await _storage.saveValue(key: _healBackupKey, value: pin);
       await _storage.deleteValue(_key);
       try {
         await _storage.saveValue(key: _key, value: pin);
@@ -107,7 +118,8 @@ class PinCodeRepository {
           log.severe(
             message:
                 'PIN keychain accessibility heal deleted the PIN item but '
-                'failed to re-save it twice — PIN lock is now disabled',
+                'failed to re-save it twice — recoverable from backup on '
+                'the next read',
             error: e,
             trace: st,
           );
@@ -115,14 +127,52 @@ class PinCodeRepository {
         }
       }
       await _storage.saveValue(key: _healedMarkerKey, value: '1');
+      await _deleteHealBackupBestEffort();
     } catch (e) {
       log.warning('PIN keychain accessibility heal failed', error: e);
+    }
+  }
+
+  // Reads [_key], restoring it from [_healBackupKey] first if the heal
+  // above crashed between deleting [_key] and re-adding it. Idempotent and
+  // safe to call on every read: the backup is absent for the overwhelming
+  // majority of reads (no PIN, or already healed) and this is a single
+  // local keychain lookup.
+  Future<String?> _readPinRestoringFromHealBackupIfNeeded() async {
+    final pin = await _storage.getValue(_key);
+    if (pin != null) return pin;
+
+    final backup = await _storage.getValue(_healBackupKey);
+    if (backup == null) return null;
+
+    try {
+      await _storage.saveValue(key: _key, value: backup);
+    } catch (e, st) {
+      log.warning(
+        'Failed to restore PIN from heal backup — will retry next read',
+        error: e,
+        trace: st,
+      );
+      // Still report this call's actual PIN correctly; only the durable
+      // restore failed, not the pin lookup itself.
+    }
+    return backup;
+  }
+
+  Future<void> _deleteHealBackupBestEffort() async {
+    try {
+      await _storage.deleteValue(_healBackupKey);
+    } catch (e) {
+      log.warning('Failed to delete PIN heal backup', error: e);
     }
   }
 
   Future<Result<Null, PinCodeFailure>> deletePinCode() async {
     try {
       await _storage.deleteValue(_key);
+      // Otherwise a stale heal backup from before this delete would
+      // resurrect the old PIN on the next read.
+      await _deleteHealBackupBestEffort();
       return const Ok(null);
     } on KeychainLockedException {
       return const Err(PinCodeDeleteFailure());

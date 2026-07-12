@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_dir_guard.dart';
@@ -119,5 +120,35 @@ void main() {
       ).timeout(const Duration(seconds: 5));
       expect(result, 'recovered');
     });
+
+    test(
+      'a marker left by a dead process (different pid) is treated as stale '
+      "immediately, not after CrossIsolateDirMarker.maxWait's 45s",
+      () async {
+        final dbPath = '${tempDir.path}/wallet-e';
+        await File('$dbPath.lwkguard').writeAsString(
+          jsonEncode({
+            'owner': '${pid + 1}-999-123456', // a pid that cannot be ours
+            'ts': DateTime.now().toIso8601String(),
+          }),
+        );
+
+        final stopwatch = Stopwatch()..start();
+        final result = await LwkDirGuard.run(
+          dbPath,
+          () async => 'acquired',
+        ).timeout(const Duration(seconds: 5));
+        stopwatch.stop();
+
+        expect(result, 'acquired');
+        expect(
+          stopwatch.elapsed,
+          lessThan(const Duration(seconds: 2)),
+          reason:
+              'a leftover marker from a different pid must not force the '
+              'full maxWait/staleAfter wait — it can only be a dead process',
+        );
+      },
+    );
   });
 }

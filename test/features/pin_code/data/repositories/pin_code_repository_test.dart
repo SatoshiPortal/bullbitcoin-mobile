@@ -15,6 +15,7 @@ void main() {
 
   const key = 'securityKey';
   const markerKey = 'securityKeyAccessibilityHealedV1';
+  const backupKey = 'securityKeyHealBackupV1';
   const pin = '040593';
 
   setUp(() {
@@ -56,13 +57,93 @@ void main() {
     );
   });
 
+  group('heal backup crash-safety', () {
+    setUp(() {
+      when(
+        () => storage.saveValue(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((_) async {});
+      when(() => storage.deleteValue(any())).thenAnswer((_) async {});
+    });
+
+    test(
+      'restores the PIN from the heal backup when the primary key is '
+      'missing, so a crash mid-heal never reports "no PIN set"',
+      () async {
+        when(() => storage.getValue(key)).thenAnswer((_) async => null);
+        when(() => storage.getValue(backupKey)).thenAnswer((_) async => pin);
+
+        final result = await repository.isPinCodeSet();
+
+        expect(
+          result,
+          isA<Ok<bool, PinCodeFailure>>().having((r) => r.value, 'value', true),
+        );
+        verify(() => storage.saveValue(key: key, value: pin)).called(1);
+      },
+    );
+
+    test(
+      'returns false when neither the primary key nor the backup exist',
+      () async {
+        when(() => storage.getValue(key)).thenAnswer((_) async => null);
+        when(() => storage.getValue(backupKey)).thenAnswer((_) async => null);
+
+        final result = await repository.isPinCodeSet();
+
+        expect(
+          result,
+          isA<Ok<bool, PinCodeFailure>>().having(
+            (r) => r.value,
+            'value',
+            false,
+          ),
+        );
+      },
+    );
+
+    test(
+      'a failed restore write still returns the correct pin for this call',
+      () async {
+        when(() => storage.getValue(key)).thenAnswer((_) async => null);
+        when(() => storage.getValue(backupKey)).thenAnswer((_) async => pin);
+        when(
+          () => storage.saveValue(key: key, value: pin),
+        ).thenThrow(Exception('boom'));
+
+        final result = await repository.isPinCodeSet();
+
+        expect(
+          result,
+          isA<Ok<bool, PinCodeFailure>>().having((r) => r.value, 'value', true),
+        );
+      },
+    );
+
+    test('setPinCode clears a stale heal backup', () async {
+      await repository.setPinCode(pin);
+
+      verify(() => storage.saveValue(key: key, value: pin)).called(1);
+      verify(() => storage.deleteValue(backupKey)).called(1);
+    });
+
+    test('deletePinCode clears the heal backup too', () async {
+      await repository.deletePinCode();
+
+      verify(() => storage.deleteValue(key)).called(1);
+      verify(() => storage.deleteValue(backupKey)).called(1);
+    });
+  });
+
   group('legacy keychain accessibility heal', () {
     void stubStoredPin({String? markerValue}) {
       when(() => storage.getValue(key)).thenAnswer((_) async => pin);
       when(
         () => storage.getValue(markerKey),
       ).thenAnswer((_) async => markerValue);
-      when(() => storage.deleteValue(key)).thenAnswer((_) async {});
+      when(() => storage.deleteValue(any())).thenAnswer((_) async {});
       when(
         () => storage.saveValue(
           key: any(named: 'key'),
@@ -71,9 +152,9 @@ void main() {
       ).thenAnswer((_) async {});
     }
 
-    test('on iOS with no healed marker, a successful read deletes and re-saves '
-        'the same pin so the item is re-added under the current accessibility '
-        'class, then writes the marker', () async {
+    test('on iOS with no healed marker, a successful read backs up the pin, '
+        'deletes and re-saves it so the item is re-added under the current '
+        'accessibility class, writes the marker, then clears the backup', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       stubStoredPin();
 
@@ -85,9 +166,11 @@ void main() {
       );
       verifyInOrder([
         () => storage.getValue(markerKey),
+        () => storage.saveValue(key: backupKey, value: pin),
         () => storage.deleteValue(key),
         () => storage.saveValue(key: key, value: pin),
         () => storage.saveValue(key: markerKey, value: '1'),
+        () => storage.deleteValue(backupKey),
       ]);
     });
 
@@ -141,6 +224,7 @@ void main() {
     test('does not run when no pin is stored', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       when(() => storage.getValue(key)).thenAnswer((_) async => null);
+      when(() => storage.getValue(backupKey)).thenAnswer((_) async => null);
 
       final result = await repository.isPinCodeSet();
 
@@ -195,8 +279,8 @@ void main() {
       },
     );
 
-    test('a delete failure is swallowed, does not affect the result, and does '
-        'not write the marker', () async {
+    test('a delete failure is swallowed, does not affect the result, backs '
+        'up the pin first, and does not write the marker', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       stubStoredPin();
       when(() => storage.deleteValue(key)).thenThrow(Exception('boom'));
@@ -207,17 +291,14 @@ void main() {
         result,
         isA<Ok<bool, PinCodeFailure>>().having((r) => r.value, 'value', true),
       );
-      verifyNever(
-        () => storage.saveValue(
-          key: any(named: 'key'),
-          value: any(named: 'value'),
-        ),
-      );
+      verify(() => storage.saveValue(key: backupKey, value: pin)).called(1);
+      verifyNever(() => storage.saveValue(key: key, value: pin));
+      verifyNever(() => storage.saveValue(key: markerKey, value: '1'));
     });
 
     test('a save failure after delete is retried once and swallowed, does not '
-        'affect the result, and does not write the marker so the next launch '
-        'retries the heal', () async {
+        'affect the result, leaves the backup in place, and does not write '
+        'the marker so the next launch retries the heal', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       stubStoredPin();
       when(
@@ -230,8 +311,10 @@ void main() {
         result,
         isA<Ok<bool, PinCodeFailure>>().having((r) => r.value, 'value', true),
       );
+      verify(() => storage.saveValue(key: backupKey, value: pin)).called(1);
       verify(() => storage.saveValue(key: key, value: pin)).called(2);
       verifyNever(() => storage.saveValue(key: markerKey, value: '1'));
+      verifyNever(() => storage.deleteValue(backupKey));
     });
   });
 }
