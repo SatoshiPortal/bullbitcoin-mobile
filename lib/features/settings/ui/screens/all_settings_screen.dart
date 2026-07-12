@@ -135,6 +135,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     context.pushNamed(SettingsRoute.btcMap.name);
                   },
                 ),
+                if (isSuperuser)
+                  SettingsEntryItem(
+                    icon: Icons.shuffle,
+                    title: context.loc.joinstrTitle,
+                    onTap: () {
+                      context.pushNamed(SettingsRoute.joinstr.name);
+                    },
+                  ),
                 SettingsEntryItem(
                   icon: Icons.description,
                   title: context.loc.settingsTermsOfServiceTitle,

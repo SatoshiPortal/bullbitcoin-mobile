@@ -451,6 +451,123 @@
   "@settingsBtcMapTitle": {
     "description": "Title for the Map screen in the settings menu"
   },
+  "joinstrTitle": "Joinstr coinjoin",
+  "@joinstrTitle": {
+    "description": "Title for the joinstr coinjoin screen"
+  },
+  "joinstrExperimentalNotice": "Experimental. Joinstr traffic is not routed over Tor yet, so the relay and Electrum server can see your IP address alongside the coin you are mixing. Testnet wallets only.",
+  "@joinstrExperimentalNotice": {
+    "description": "Banner explaining that joinstr is experimental and testnet-only"
+  },
+  "joinstrAvailablePools": "Available pools",
+  "@joinstrAvailablePools": {
+    "description": "Heading above the list of joinstr pools advertised on the relay"
+  },
+  "joinstrNoPools": "No pools advertised on the relay right now. Create one below, or refresh.",
+  "@joinstrNoPools": {
+    "description": "Shown when the relay returned no joinstr pools"
+  },
+  "joinstrPoolSummary": "{denominationSat} sat · {peers} peers",
+  "@joinstrPoolSummary": {
+    "description": "One-line summary of a joinstr pool: its denomination and required peer count",
+    "placeholders": {
+      "denominationSat": {
+        "type": "int"
+      },
+      "peers": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrPoolDetail": "{feeRate} sat/vB · expires in {secondsLeft}s",
+  "@joinstrPoolDetail": {
+    "description": "Secondary line of a joinstr pool tile: fee rate and seconds until the pool expires",
+    "placeholders": {
+      "feeRate": {
+        "type": "int"
+      },
+      "secondsLeft": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrJoin": "Join",
+  "@joinstrJoin": {
+    "description": "Button that joins the selected joinstr pool"
+  },
+  "joinstrCreatePool": "Create a pool",
+  "@joinstrCreatePool": {
+    "description": "Heading and button for announcing a new joinstr pool"
+  },
+  "joinstrDenomination": "Denomination (sats)",
+  "@joinstrDenomination": {
+    "description": "Label for the joinstr pool denomination input"
+  },
+  "joinstrPeers": "Peers (min 2)",
+  "@joinstrPeers": {
+    "description": "Label for the joinstr pool peer count input"
+  },
+  "joinstrFeeRate": "Fee rate (sat/vB)",
+  "@joinstrFeeRate": {
+    "description": "Label for the joinstr pool fee rate input"
+  },
+  "joinstrRunning": "Waiting for peers. This holds until the coinjoin broadcasts or the pool times out, and cannot be cancelled.",
+  "@joinstrRunning": {
+    "description": "Shown while a joinstr coinjoin round is in flight"
+  },
+  "joinstrBroadcast": "Coinjoin broadcast",
+  "@joinstrBroadcast": {
+    "description": "Shown with the txid once the coinjoin transaction is broadcast"
+  },
+  "joinstrErrorBitcoinOnly": "Joinstr is only available for Bitcoin wallets.",
+  "@joinstrErrorBitcoinOnly": {
+    "description": "Error when joinstr is attempted with a Liquid wallet"
+  },
+  "joinstrErrorMainnet": "Joinstr is limited to testnet until its traffic can be routed over Tor.",
+  "@joinstrErrorMainnet": {
+    "description": "Error when joinstr is attempted on a mainnet wallet"
+  },
+  "joinstrErrorWatchOnly": "Joinstr needs a wallet that signs on this device. Watch-only and hardware wallets cannot take part.",
+  "@joinstrErrorWatchOnly": {
+    "description": "Error when the wallet has no local mnemonic for joinstr to sign with"
+  },
+  "joinstrErrorScriptType": "Joinstr only supports native segwit (BIP84) wallets.",
+  "@joinstrErrorScriptType": {
+    "description": "Error when the wallet is not BIP84, which joinstr's wpkh signer requires"
+  },
+  "joinstrErrorNoEligibleCoin": "No coin between {min} and {max} sats. A joinstr transaction has no change output, so the coin must nearly match the denomination.",
+  "@joinstrErrorNoEligibleCoin": {
+    "description": "Error when no wallet coin falls inside the pool's required input value window",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrErrorElectrum": "No usable Electrum server for this network.",
+  "@joinstrErrorElectrum": {
+    "description": "Error when no Electrum server could be resolved for joinstr"
+  },
+  "joinstrErrorPoolConfig": "Enter a denomination above zero, at least 2 peers, and a fee rate of at least 1 sat/vB.",
+  "@joinstrErrorPoolConfig": {
+    "description": "Error when the create-pool form values are out of range"
+  },
+  "joinstrErrorPoolNotFound": "That pool is no longer advertised on the relay.",
+  "@joinstrErrorPoolNotFound": {
+    "description": "Error when the selected joinstr pool has disappeared"
+  },
+  "joinstrErrorFailed": "The coinjoin did not complete: {detail}",
+  "@joinstrErrorFailed": {
+    "description": "Error when a joinstr round fails or the pool times out before filling",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
   "settingsTermsOfServiceTitle": "Terms of Service",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"

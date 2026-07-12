@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/joinstr/presentation/joinstr_cubit.dart';
+import 'package:bb_mobile/features/joinstr/ui/screens/joinstr_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
@@ -86,7 +88,8 @@ enum SettingsRoute {
   autoswapSettings('autoswap-settings'),
   swapRestore('swap-restore'),
   swapRescue('swap-rescue'),
-  btcMap('btc-map');
+  btcMap('btc-map'),
+  joinstr('joinstr');
 
   final String path;
 
@@ -328,6 +331,14 @@ class SettingsRouter {
         path: SettingsRoute.btcMap.path,
         name: SettingsRoute.btcMap.name,
         builder: (context, state) => const BtcMapScreen(),
+      ),
+      GoRoute(
+        path: SettingsRoute.joinstr.path,
+        name: SettingsRoute.joinstr.name,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<JoinstrCubit>()..load(),
+          child: const JoinstrScreen(),
+        ),
       ),
     ],
   );
