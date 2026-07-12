@@ -40,15 +40,22 @@ sealed class SpBackendForm with _$SpBackendForm {
     error: null,
   );
 
-  /// Fill both URLs from fetched defaults and reset the connection tests.
-  SpBackendForm applyDefaults(SpBackendDefaults defaults) => copyWith(
+  /// Fill both URLs from fetched defaults and reset the connection tests. Keeps
+  /// a field (and its test) the user edited while the fetch was in flight
+  /// ([keepBlindbit] / [keepElectrum]) so a slow fetch does not overwrite typed
+  /// input.
+  SpBackendForm applyDefaults(
+    SpBackendDefaults defaults, {
+    bool keepBlindbit = false,
+    bool keepElectrum = false,
+  }) => copyWith(
     isFetchingDefaults: false,
-    blindbitUrl: defaults.blindbitUrl,
-    electrumUrl: defaults.electrumUrl,
-    blindbitTest: SpConnTest.untested,
-    electrumTest: SpConnTest.untested,
-    blindbitTestError: null,
-    electrumTestError: null,
+    blindbitUrl: keepBlindbit ? blindbitUrl : defaults.blindbitUrl,
+    electrumUrl: keepElectrum ? electrumUrl : defaults.electrumUrl,
+    blindbitTest: keepBlindbit ? blindbitTest : SpConnTest.untested,
+    electrumTest: keepElectrum ? electrumTest : SpConnTest.untested,
+    blindbitTestError: keepBlindbit ? blindbitTestError : null,
+    electrumTestError: keepElectrum ? electrumTestError : null,
   );
 
   /// Set one backend URL and reset that backend's connection test.

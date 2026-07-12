@@ -25,13 +25,25 @@ mixin SpBackendFormCubit<S extends SpBackendFormState<S>> on Cubit<S> {
     await _landDefaults(SpNetwork.regtest);
   }
 
-  /// Await the async defaults fetch and land it via the shared transitions.
+  /// Await the async defaults fetch and land it via the shared transitions. A
+  /// URL the user edited while the fetch was in flight is kept, so a slow fetch
+  /// resolving late does not overwrite typed input.
   Future<void> _landDefaults(SpNetwork network) async {
+    final blindbitAtStart = state.form.blindbitUrl;
+    final electrumAtStart = state.form.electrumUrl;
     final result = await getBackendDefaultsUsecase.execute(network);
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
-        emit(state.withForm(state.form.applyDefaults(value)));
+        emit(
+          state.withForm(
+            state.form.applyDefaults(
+              value,
+              keepBlindbit: state.form.blindbitUrl != blindbitAtStart,
+              keepElectrum: state.form.electrumUrl != electrumAtStart,
+            ),
+          ),
+        );
       case Err(:final failure):
         emit(state.withForm(state.form.failFetching(failure)));
     }

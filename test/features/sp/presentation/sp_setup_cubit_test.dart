@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
@@ -22,16 +24,24 @@ class _FakeBackendConfigRepo implements SpBackendConfigRepository {
     this._regtest, {
     Future<int> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
+    Future<void>? regtestGate,
   }) : _testBlindbit = testBlindbit ?? (({required String url}) async => 0),
-       _testElectrum = testElectrum ?? (({required String url}) async {});
+       _testElectrum = testElectrum ?? (({required String url}) async {}),
+       _regtestGate = regtestGate ?? Future<void>.value();
 
   final Result<SpBackendDefaults, SpFailure> _regtest;
   final Future<int> Function({required String url}) _testBlindbit;
   final Future<void> Function({required String url}) _testElectrum;
+  // The regtest fetch blocks on this before resolving; a test passes a gate it
+  // releases later to simulate a slow fetch that lands after the user typed. It
+  // defaults to an already-completed future, so an ungated fetch resolves at once.
+  final Future<void> _regtestGate;
 
   @override
-  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() async =>
-      _regtest;
+  Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() async {
+    await _regtestGate;
+    return _regtest;
+  }
 
   @override
   Future<Result<void, SpFailure>> testBackend(
@@ -75,11 +85,13 @@ void main() {
     Future<int> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
     Result<SpBackendDefaults, SpFailure>? regtest,
+    Future<void>? regtestGate,
   }) {
     final configRepo = _FakeBackendConfigRepo(
       regtest ?? regtestDefaults,
       testBlindbit: testBlindbit,
       testElectrum: testElectrum,
+      regtestGate: regtestGate,
     );
     return SpSetupCubit(
       createSpWalletUsecase: mockCreate,
@@ -389,6 +401,28 @@ void main() {
 
       expect(c.state.error, isA<SpBackendUnreachable>());
       expect(c.state.isFetchingDefaults, isFalse);
+    });
+
+    test('a late defaults fetch keeps a url the user edited during the wait',
+        () async {
+      final gate = Completer<void>();
+      final c = buildSetup(regtestGate: gate.future);
+      addTearDown(c.close);
+      // The constructor kicked off the regtest fetch; it is blocked on the gate,
+      // so the form is still fetching with empty URLs.
+      expect(c.state.isFetchingDefaults, isTrue);
+
+      // User types a blindbit URL while the fetch is in flight; electrum is left
+      // untouched.
+      c.setBlindbitUrl('http://user.typed.blindbit');
+
+      // The slow fetch resolves only now.
+      gate.complete();
+      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
+
+      // The typed URL survives; the untouched electrum takes the fetched default.
+      expect(c.state.blindbitUrl, 'http://user.typed.blindbit');
+      expect(c.state.electrumUrl, 'tcp://127.0.0.1:50001');
     });
   });
 }
