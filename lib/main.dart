@@ -32,6 +32,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_sdk/bull_sdk.dart';
+import 'package:joinstr_flutter/joinstr_flutter.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,7 @@ class Bull {
     final initTasks = [
       BullSdk.init(),
       PConfig.initializeApp(),
+      JoinstrFlutter.init(),
       if (Platform.isAndroid) BitBoxApi.initialize(),
     ];
 
