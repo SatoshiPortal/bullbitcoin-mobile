@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
@@ -87,11 +88,13 @@ void main() {
     when(() => settingsCubit.state).thenReturn(
       const SpSettingsState(
         initialized: true,
-        network: SpNetwork.bitcoin,
-        blindbitUrl: 'https://blindbit.bullbitcoin.com',
-        electrumUrl: 'ssl://electrum.bullbitcoin.com:50002',
-        blindbitTest: SpConnTest.ok,
-        electrumTest: SpConnTest.ok,
+        form: SpBackendForm(
+          network: SpNetwork.bitcoin,
+          blindbitUrl: 'https://blindbit.bullbitcoin.com',
+          electrumUrl: 'ssl://electrum.bullbitcoin.com:50002',
+          blindbitTest: SpConnTest.ok,
+          electrumTest: SpConnTest.ok,
+        ),
       ),
     );
     when(
@@ -142,9 +145,11 @@ void main() {
     when(() => settingsCubit.state).thenReturn(
       const SpSettingsState(
         initialized: true,
-        network: SpNetwork.regtest,
-        blindbitUrl: 'http://127.0.0.1:8000',
-        electrumUrl: 'tcp://127.0.0.1:50001',
+        form: SpBackendForm(
+          network: SpNetwork.regtest,
+          blindbitUrl: 'http://127.0.0.1:8000',
+          electrumUrl: 'tcp://127.0.0.1:50001',
+        ),
       ),
     );
 
@@ -179,9 +184,11 @@ void main() {
     when(() => settingsCubit.state).thenReturn(
       const SpSettingsState(
         initialized: true,
-        network: SpNetwork.bitcoin,
-        blindbitUrl: '',
-        electrumUrl: '',
+        form: SpBackendForm(
+          network: SpNetwork.bitcoin,
+          blindbitUrl: '',
+          electrumUrl: '',
+        ),
       ),
     );
 

@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notification_log_
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_backend_form_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,7 +33,9 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
     required this._testSpBackendUsecase,
     required this._loadSpBackendConfigUsecase,
     required this._getSpBackendDefaultsUsecase,
-  }) : super(const SpSettingsState(isFetchingDefaults: true)) {
+  }) : super(
+         const SpSettingsState(form: SpBackendForm(isFetchingDefaults: true)),
+       ) {
     final notifLog = _watchNotificationLogUsecase.execute();
     if (notifLog.log.isNotEmpty) {
       emit(state.copyWith(console: List.unmodifiable(notifLog.log)));
@@ -63,17 +66,21 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
       case Ok(:final value):
         stored = value;
       case Err(:final failure):
-        emit(state.copyWith(error: failure));
+        emit(state.copyWith(form: state.form.copyWith(error: failure)));
         return;
     }
     if (stored != null) {
-      final base = SpSettingsState(
-        initialized: true,
-        network: stored.network,
-        blindbitUrl: stored.blindbitUrl,
-        electrumUrl: stored.electrumUrl,
+      emit(
+        state.copyWith(
+          initialized: true,
+          form: state.form.copyWith(
+            network: stored.network,
+            blindbitUrl: stored.blindbitUrl,
+            electrumUrl: stored.electrumUrl,
+            isFetchingDefaults: false,
+          ),
+        ),
       );
-      emit(base.copyWith(console: state.console));
     } else if (network != null) {
       await setNetwork(network);
       if (isClosed) return;
@@ -88,7 +95,13 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
 
   Future<void> saveBackendConfig() async {
     if (!state.canSave) return;
-    emit(state.copyWith(isSaving: true, saved: false, error: null));
+    emit(
+      state.copyWith(
+        isSaving: true,
+        saved: false,
+        form: state.form.copyWith(error: null),
+      ),
+    );
     final result = await _recreateSpWalletUsecase.execute(
       network: state.network,
       blindbitUrl: state.blindbitUrl,
@@ -99,7 +112,12 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
       case Ok():
         emit(state.copyWith(isSaving: false, saved: true));
       case Err(:final failure):
-        emit(state.copyWith(isSaving: false, error: failure));
+        emit(
+          state.copyWith(
+            isSaving: false,
+            form: state.form.copyWith(error: failure),
+          ),
+        );
     }
   }
 

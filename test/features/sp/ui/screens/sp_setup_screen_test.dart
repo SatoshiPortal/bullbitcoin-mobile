@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
@@ -72,8 +73,10 @@ void main() {
     testWidgets('renders title and Create button', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          blindbitUrl: 'http://b.local',
-          electrumUrl: 'tcp://e.local:1',
+          form: SpBackendForm(
+            blindbitUrl: 'http://b.local',
+            electrumUrl: 'tcp://e.local:1',
+          ),
         ),
       );
 
@@ -95,7 +98,7 @@ void main() {
       tester,
     ) async {
       final cubit = _FakeSpSetupCubit(
-        const SpSetupState(network: SpNetwork.regtest),
+        const SpSetupState(form: SpBackendForm(network: SpNetwork.regtest)),
       );
 
       await tester.pumpWidget(_buildPage(cubit));
@@ -107,7 +110,7 @@ void main() {
       tester,
     ) async {
       final cubit = _FakeSpSetupCubit(
-        const SpSetupState(network: SpNetwork.bitcoin),
+        const SpSetupState(form: SpBackendForm(network: SpNetwork.bitcoin)),
       );
 
       await tester.pumpWidget(_buildPage(cubit));
@@ -128,8 +131,10 @@ void main() {
     ) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          network: SpNetwork.regtest,
-          isFetchingDefaults: true,
+          form: SpBackendForm(
+            network: SpNetwork.regtest,
+            isFetchingDefaults: true,
+          ),
         ),
       );
 
@@ -140,7 +145,9 @@ void main() {
 
     testWidgets('shows error banner when error is non-null', (tester) async {
       final cubit = _FakeSpSetupCubit(
-        const SpSetupState(error: SpUnexpected('diagnostic detail')),
+        const SpSetupState(
+          form: SpBackendForm(error: SpUnexpected('diagnostic detail')),
+        ),
       );
 
       await tester.pumpWidget(_buildPage(cubit));
@@ -162,7 +169,7 @@ void main() {
       tester,
     ) async {
       final cubit = _FakeSpSetupCubit(
-        const SpSetupState(isFetchingDefaults: true),
+        const SpSetupState(form: SpBackendForm(isFetchingDefaults: true)),
       );
 
       await tester.pumpWidget(_buildPage(cubit));
@@ -170,8 +177,10 @@ void main() {
 
       cubit.pushState(
         const SpSetupState(
-          blindbitUrl: 'http://b.default',
-          electrumUrl: 'tcp://e.default:1',
+          form: SpBackendForm(
+            blindbitUrl: 'http://b.default',
+            electrumUrl: 'tcp://e.default:1',
+          ),
         ),
       );
       await tester.pump();
@@ -189,9 +198,11 @@ void main() {
     testWidgets('URL fields follow a network switch', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          network: SpNetwork.regtest,
-          blindbitUrl: 'http://regtest.blindbit',
-          electrumUrl: 'tcp://regtest.electrum:1',
+          form: SpBackendForm(
+            network: SpNetwork.regtest,
+            blindbitUrl: 'http://regtest.blindbit',
+            electrumUrl: 'tcp://regtest.electrum:1',
+          ),
         ),
       );
 
@@ -203,9 +214,11 @@ void main() {
 
       cubit.pushState(
         const SpSetupState(
-          network: SpNetwork.bitcoin,
-          blindbitUrl: 'http://bitcoin.blindbit',
-          electrumUrl: 'ssl://bitcoin.electrum:2',
+          form: SpBackendForm(
+            network: SpNetwork.bitcoin,
+            blindbitUrl: 'http://bitcoin.blindbit',
+            electrumUrl: 'ssl://bitcoin.electrum:2',
+          ),
         ),
       );
       await tester.pump();
@@ -223,8 +236,10 @@ void main() {
     testWidgets('Create button is visible', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          blindbitUrl: 'http://b.local',
-          electrumUrl: 'tcp://e.local:1',
+          form: SpBackendForm(
+            blindbitUrl: 'http://b.local',
+            electrumUrl: 'tcp://e.local:1',
+          ),
         ),
       );
 
@@ -275,10 +290,12 @@ void main() {
       // Create button is only enabled when both URLs are non-empty and tested.
       seed(
         const SpSetupState(
-          blindbitUrl: 'http://b.local',
-          electrumUrl: 'tcp://e.local:1',
-          blindbitTest: SpConnTest.ok,
-          electrumTest: SpConnTest.ok,
+          form: SpBackendForm(
+            blindbitUrl: 'http://b.local',
+            electrumUrl: 'tcp://e.local:1',
+            blindbitTest: SpConnTest.ok,
+            electrumTest: SpConnTest.ok,
+          ),
         ),
       );
 
@@ -322,7 +339,7 @@ void main() {
     });
 
     testWidgets('selecting a network calls cubit.setNetwork', (tester) async {
-      seed(const SpSetupState(network: SpNetwork.regtest));
+      seed(const SpSetupState(form: SpBackendForm(network: SpNetwork.regtest)));
 
       await tester.pumpWidget(buildMockPage(cubit));
 
@@ -341,7 +358,7 @@ void main() {
     testWidgets('tapping Fetch regtest defaults calls fetchRegtestDefaults', (
       tester,
     ) async {
-      seed(const SpSetupState(network: SpNetwork.regtest));
+      seed(const SpSetupState(form: SpBackendForm(network: SpNetwork.regtest)));
 
       await tester.pumpWidget(buildMockPage(cubit));
 

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_backend_form_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +25,7 @@ class SpSetupCubit extends Cubit<SpSetupState>
     required this._createSpWalletUsecase,
     required this._testSpBackendUsecase,
     required this._getSpBackendDefaultsUsecase,
-  }) : super(const SpSetupState(isFetchingDefaults: true)) {
+  }) : super(const SpSetupState(form: SpBackendForm(isFetchingDefaults: true))) {
     // Regtest defaults come from the infra over FFI; fetch them off the UI
     // isolate once the cubit exists instead of blocking construction.
     unawaited(setNetwork(SpNetwork.regtest));
@@ -39,7 +40,7 @@ class SpSetupCubit extends Cubit<SpSetupState>
 
   Future<void> create() async {
     if (!state.canCreate) return;
-    emit(state.copyWith(isCreating: true, error: null));
+    emit(state.copyWith(isCreating: true, form: state.form.copyWith(error: null)));
     final result = await _createSpWalletUsecase.execute(
       network: state.network,
       blindbitUrl: state.blindbitUrl,
@@ -53,7 +54,12 @@ class SpSetupCubit extends Cubit<SpSetupState>
         // wallet bloc.
         emit(state.copyWith(isCreating: false, created: true));
       case Err(:final failure):
-        emit(state.copyWith(isCreating: false, error: failure));
+        emit(
+          state.copyWith(
+            isCreating: false,
+            form: state.form.copyWith(error: failure),
+          ),
+        );
     }
   }
 }
