@@ -1,0 +1,26 @@
+name: coldcard_firmware
+description: >-
+  Pure-Dart library to discover, download and verify Coldcard firmware
+  against Coinkite's PGP-signed release manifest. No Flutter dependency.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+
+dependencies:
+  crypto: ^3.0.7
+  # Pinned exact: this package is the PGP trust anchor for firmware
+  # verification and is unaudited upstream. Bump only deliberately, with
+  # review of the upstream diff — never via caret range.
+  # 2.0.0 (not 2.1.0) because 2.1.0 requires pointycastle ^4.0.0 which
+  # conflicts with ledger_bitcoin (^3.7.4); the 2.1.0 diff is only that
+  # bump plus removal of cipher engines this package never uses.
+  dart_pg: 2.0.0
+  dio: ^5.9.0
+  meta: ^1.16.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3

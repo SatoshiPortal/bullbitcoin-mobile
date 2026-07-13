@@ -518,6 +518,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.0"
+  dart_pg:
+    dependency: transitive
+    description:
+      name: dart_pg
+      sha256: "644741ad511448c1cb96c311108a944ae81060727fdf231a15fed6e0399cf25e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   dart_style:
     dependency: transitive
     description:
@@ -1606,6 +1614,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.2"
+  pinenacl:
+    dependency: transitive
+    description:
+      name: pinenacl
+      sha256: "57e907beaacbc3c024a098910b6240758e899674de07d6949a67b52fd984cbdf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   platform:
     dependency: transitive
     description:
@@ -1793,6 +1809,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.22.0"
+  sha3:
+    dependency: transitive
+    description:
+      name: sha3
+      sha256: efa0ad944b950965e7014ab02f407f0a62a64626259983af0e2f98cd39a73a8a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -1905,6 +1929,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  sign_dart:
+    dependency: transitive
+    description:
+      name: sign_dart
+      sha256: ac9303a03c7cca834568f6502b11031e2a5b92141d764c9314d7b4b455780721
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
