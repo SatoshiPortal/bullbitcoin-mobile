@@ -27,7 +27,16 @@ class PayjoinLocator {
     );
 
     locator.registerLazySingleton<PdkPayjoinDatasource>(
-      () => PdkPayjoinDatasource(dio: Dio()),
+      // Timeouts bound how long a single directory/relay poll can hang, so a
+      // slow OHTTP relay can't hold a polling session in flight for long.
+      () => PdkPayjoinDatasource(
+        dio: Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 30),
+          ),
+        ),
+      ),
     );
   }
 

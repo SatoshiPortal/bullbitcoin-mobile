@@ -25,6 +25,13 @@ class PdkPayjoinDatasource {
   final Map<String, Timer> _receiverTimers = {};
   final Map<String, Timer> _senderTimers = {};
 
+  // In-flight guards: Timer.periodic doesn't await its async callback, so a
+  // slow poll (e.g. an unresponsive OHTTP relay) could otherwise overlap with
+  // the next tick and process the same session twice — double-emitting the
+  // request/proposal and cancelling the payjoin downstream.
+  final Set<String> _receiverPollsInFlight = {};
+  final Set<String> _senderPollsInFlight = {};
+
   PdkPayjoinDatasource({
     this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required this._dio,
@@ -559,8 +566,16 @@ class PdkPayjoinDatasource {
     PayjoinReceiverModel receiverModel,
     Timer timer,
   ) async {
+    if (!_receiverPollsInFlight.add(receiverModel.id)) return;
     log('[receiver poll] checking for request for ${receiverModel.id}');
     try {
+      // Local expiry backstop: don't rely solely on the PDK surfacing an
+      // "expired" error — bound polling by the session's own expiry time.
+      if (receiverModel.isExpiryTimePassed) {
+        throw PayjoinExpiredException(
+          'Payjoin receiver ${receiverModel.id} expiry time passed',
+        );
+      }
       final persister = InMemoryJsonReceiverSessionPersister.fromJson(
         receiverModel.receiver,
       );
@@ -584,9 +599,6 @@ class PdkPayjoinDatasource {
         return;
       }
 
-      timer.cancel();
-      _receiverTimers.remove(receiverModel.id);
-
       final maybeInputsOwned = unchecked.assumeInteractiveReceiver().save(
         persister: persister,
       );
@@ -606,14 +618,23 @@ class PdkPayjoinDatasource {
         originalTxId: originalTx.txid,
         amountSat: amountSat,
       );
+      // Only stop polling and emit once all fallible work has succeeded: a
+      // throw above leaves the timer armed so the next tick retries. Skip
+      // the emit if this session's polling was stopped in the meantime.
+      if (!timer.isActive) return;
+      timer.cancel();
+      _receiverTimers.remove(receiverModel.id);
       _payjoinRequestedController.add(updatedModel);
     } on PayjoinExpiredException catch (e) {
       logger.log.info('[receiver poll] expired for ${receiverModel.id}: $e');
+      if (!timer.isActive) return;
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _expiredController.add(receiverModel.copyWith(isExpired: true));
     } catch (e) {
       logger.log.info('[receiver poll] ${receiverModel.id}: $e');
+    } finally {
+      _receiverPollsInFlight.remove(receiverModel.id);
     }
   }
 
@@ -621,8 +642,16 @@ class PdkPayjoinDatasource {
     PayjoinSenderModel senderModel,
     Timer timer,
   ) async {
+    if (!_senderPollsInFlight.add(senderModel.id)) return;
     log('[sender poll] checking for proposal for ${senderModel.id}');
     try {
+      // Local expiry backstop: don't rely solely on the PDK surfacing an
+      // "expired" error — bound polling by the session's own expiry time.
+      if (senderModel.isExpiryTimePassed) {
+        throw PayjoinExpiredException(
+          'Payjoin sender ${senderModel.id} expiry time passed',
+        );
+      }
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
         senderModel.sender,
       );
@@ -640,9 +669,6 @@ class PdkPayjoinDatasource {
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
       if (proposalPsbt == null) return;
 
-      timer.cancel();
-      _senderTimers.remove(senderModel.id);
-
       log('[sender poll] proposal found for ${senderModel.id}');
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
@@ -650,14 +676,23 @@ class PdkPayjoinDatasource {
         proposalPsbt: proposalPsbt,
         txId: txId,
       );
+      // Only stop polling and emit once all fallible work has succeeded: a
+      // throw above leaves the timer armed so the next tick retries. Skip
+      // the emit if this session's polling was stopped in the meantime.
+      if (!timer.isActive) return;
+      timer.cancel();
+      _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException catch (e) {
       logger.log.info('[sender poll] expired for ${senderModel.id}: $e');
+      if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
     } catch (e) {
       logger.log.info('[sender poll] ${senderModel.id}: $e');
+    } finally {
+      _senderPollsInFlight.remove(senderModel.id);
     }
   }
 
