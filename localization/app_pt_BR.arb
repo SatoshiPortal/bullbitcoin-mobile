@@ -763,10 +763,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "ledgerErrorUnknownOccurred": "O erro desconhecido ocorreu",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "arkSessionDuration": "Duração da sessão",
   "@arkSessionDuration": {
     "description": "Label for session duration field"
@@ -6212,10 +6208,6 @@
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
   },
-  "ledgerErrorMissingDerivationPathSign": "O caminho de derivação é necessário para assinar",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "advancedOptionsTitle": "Opções avançadas",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
@@ -7190,10 +7182,6 @@
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
   },
-  "ledgerErrorMissingScriptTypeSign": "O tipo de script é necessário para assinar",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
@@ -7985,10 +7973,6 @@
   "@withdrawRecipientsFilterAll": {
     "description": "Filter option for all recipient types"
   },
-  "ledgerErrorMissingDerivationPathVerify": "O caminho de derivação é necessário para verificação",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
@@ -8549,6 +8533,10 @@
   "exchangeBitcoinWalletsLightningAddressLabel": "Relâmpago (endereço LN)",
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
+  },
+  "ledgerErrorDeviceBusy": "Outro programa está usando o seu Ledger. Por favor, feche-o (por exemplo, o Ledger Live) e tente novamente.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
   },
   "ledgerErrorNoConnection": "Não há conexão Ledger disponível",
   "@ledgerErrorNoConnection": {
@@ -10629,10 +10617,6 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "ledgerErrorMissingScriptTypeVerify": "O tipo de script é necessário para verificação",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "exchangeAppSettingsPreferredLanguageLabel": "Língua preferencial",
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
@@ -10654,6 +10638,14 @@
     "description": "Label for mnemonic words display"
   },
   "ledgerErrorUnknown": "Erro desconhecido",
+  "ledgerErrorPermissionDenied": "São necessárias permissões de Bluetooth para conectar aos dispositivos Ledger.",
+  "ledgerErrorNoDevicesFound": "Nenhum dispositivo Ledger encontrado. Verifique se o seu dispositivo está ligado e com o Bluetooth ativado.",
+  "ledgerErrorMultipleDevicesFound": "Vários dispositivos Ledger encontrados. Certifique-se de que apenas um dispositivo esteja por perto.",
+  "ledgerErrorDeviceNotFound": "Dispositivo Ledger não encontrado.",
+  "ledgerErrorDeviceMismatch": "Incompatibilidade de dispositivo detectada.",
+  "ledgerErrorInvalidPsbt": "Formato PSBT inválido detectado.",
+  "ledgerErrorMissingDerivationPath": "O caminho de derivação é obrigatório",
+  "ledgerErrorMissingScriptType": "O tipo de script é obrigatório",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

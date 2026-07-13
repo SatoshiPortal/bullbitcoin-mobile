@@ -8658,12 +8658,20 @@
     "description": "Subtext shown while connecting to Ledger"
   },
   "ledgerErrorUnknown": "অজ্ঞাত ত্ৰুটি",
+  "ledgerErrorPermissionDenied": "Ledger ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ব্লুটুথ অনুমতি প্ৰয়োজন।",
+  "ledgerErrorNoDevicesFound": "কোনো Ledger ডিভাইচ পোৱা নগ'ল। আপোনাৰ ডিভাইচটো চালু আছে আৰু ব্লুটুথ সক্ষম আছে বুলি নিশ্চিত কৰক।",
+  "ledgerErrorMultipleDevicesFound": "একাধিক Ledger ডিভাইচ পোৱা গ'ল। অনুগ্ৰহ কৰি ওচৰত কেৱল এটা ডিভাইচ থকাটো নিশ্চিত কৰক।",
+  "ledgerErrorDeviceNotFound": "Ledger ডিভাইচ পোৱা নগ'ল।",
+  "ledgerErrorDeviceMismatch": "ডিভাইচৰ অমিল ধৰা পৰিছে।",
+  "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
+  "ledgerErrorMissingDerivationPath": "ডেৰিভেশ্যন পাথ প্ৰয়োজন",
+  "ledgerErrorMissingScriptType": "স্ক্ৰিপ্ট প্ৰকাৰ প্ৰয়োজন",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
-  "ledgerErrorUnknownOccurred": "অজ্ঞাত ত্ৰুটি ঘটিছে",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
+  "ledgerErrorDeviceBusy": "আন এটা প্ৰগ্ৰামে আপোনাৰ Ledger ব্যৱহাৰ কৰি আছে। অনুগ্ৰহ কৰি ইয়াক বন্ধ কৰক (উদাহৰণস্বৰূপে, Ledger Live) আৰু পুনৰ চেষ্টা কৰক।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
   },
   "ledgerErrorNoConnection": "কোনো Ledger সংযোগ উপলব্ধ নাই",
   "@ledgerErrorNoConnection": {
@@ -8685,25 +8693,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "চহিৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "চহিৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "যাচাইৰ বাবে ঠিকনা আৱশ্যক",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "যাচাইৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "যাচাইৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "পুনৰ চেষ্টা কৰক",
   "@ledgerButtonTryAgain": {

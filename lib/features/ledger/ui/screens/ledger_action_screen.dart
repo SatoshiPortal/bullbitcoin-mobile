@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
-import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
+import 'package:bb_mobile/core/ledger/domain/errors/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -24,6 +25,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
+import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,7 +108,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           } else if (state.isError) {
             SnackBarUtils.showSnackBar(
               context,
-              _getErrorMessage(context, state.errorMessage),
+              _getErrorMessage(context, state.failure),
             );
           }
         },
@@ -222,8 +224,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
-          if (state.errorMessage ==
-              const LedgerError.permissionDenied().message) ...[
+          if (state.failure is LedgerPermissionDeniedFailure) ...[
             const Gap(16),
             BBButton.big(
               onPressed: () => _openAppSettings(),
@@ -455,7 +456,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case LedgerOperationStatus.success:
         return widget.action.getSuccessSubtext(context);
       case LedgerOperationStatus.error:
-        return _getErrorMessage(context, state.errorMessage);
+        return _getErrorMessage(context, state.failure);
     }
   }
 
@@ -465,14 +466,16 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       final connectedDevice = cubit.connectedDevice;
 
       if (connectedDevice == null) {
-        throw Exception(context.loc.ledgerErrorNoConnection);
+        return Future.value(const Err(LedgerNoConnectionFailure()));
       }
 
       return _executeAction(connectedDevice);
     });
   }
 
-  Future<dynamic> _executeAction(LedgerDeviceEntity device) {
+  Future<Result<dynamic, LedgerFailure>> _executeAction(
+    LedgerDeviceEntity device,
+  ) {
     switch (widget.action) {
       case ImportWalletLedgerAction():
         return _executeImportWallet(device);
@@ -483,7 +486,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     }
   }
 
-  Future<WatchOnlyWalletEntity> _executeImportWallet(
+  Future<Result<WatchOnlyWalletEntity, LedgerFailure>> _executeImportWallet(
     LedgerDeviceEntity device,
   ) {
     return locator<GetLedgerWatchOnlyWalletUsecase>().execute(
@@ -493,47 +496,50 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     );
   }
 
-  Future<String> _executeSignTransaction(LedgerDeviceEntity device) {
+  Future<Result<String, LedgerFailure>> _executeSignTransaction(
+    LedgerDeviceEntity device,
+  ) async {
     final psbt = widget.parameters?.psbt;
     final derivationPath = widget.parameters?.derivationPath;
     final scriptType = widget.parameters?.scriptType;
 
     if (psbt == null) {
-      throw Exception(context.loc.ledgerErrorMissingPsbt);
+      return const Err(LedgerMissingPsbtFailure());
     }
 
     if (derivationPath == null) {
-      throw Exception(context.loc.ledgerErrorMissingDerivationPathSign);
+      return const Err(LedgerMissingDerivationPathFailure());
     }
 
     if (scriptType == null) {
-      throw Exception(context.loc.ledgerErrorMissingScriptTypeSign);
+      return const Err(LedgerMissingScriptTypeFailure());
     }
 
-    final result = locator<SignPsbtLedgerUsecase>().execute(
+    return locator<SignPsbtLedgerUsecase>().execute(
       device,
       psbt: psbt,
       derivationPath: derivationPath,
       scriptType: scriptType,
     );
-    return result;
   }
 
-  Future<bool> _executeVerifyAddress(LedgerDeviceEntity device) {
+  Future<Result<bool, LedgerFailure>> _executeVerifyAddress(
+    LedgerDeviceEntity device,
+  ) async {
     final address = widget.parameters?.address;
     final derivationPath = widget.parameters?.derivationPath;
     final scriptType = widget.parameters?.scriptType;
 
     if (address == null) {
-      throw Exception(context.loc.ledgerErrorMissingAddress);
+      return const Err(LedgerMissingAddressFailure());
     }
 
     if (derivationPath == null) {
-      throw Exception(context.loc.ledgerErrorMissingDerivationPathVerify);
+      return const Err(LedgerMissingDerivationPathFailure());
     }
 
     if (scriptType == null) {
-      throw Exception(context.loc.ledgerErrorMissingScriptTypeVerify);
+      return const Err(LedgerMissingScriptTypeFailure());
     }
 
     return locator<VerifyAddressLedgerUsecase>().execute(
@@ -585,24 +591,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     }
   }
 
-  String _getErrorMessage(BuildContext context, String? errorMessage) {
-    if (errorMessage == null) {
-      return context.loc.ledgerErrorUnknown;
-    }
-
-    // Check if the error message is a localization key from the cubit
-    switch (errorMessage) {
-      case 'LEDGER_ERROR_REJECTED_BY_USER':
-        return context.loc.ledgerErrorRejectedByUser;
-      case 'LEDGER_ERROR_DEVICE_LOCKED':
-        return context.loc.ledgerErrorDeviceLocked;
-      case 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN':
-        return context.loc.ledgerErrorBitcoinAppNotOpen;
-      default:
-        // Return the error message as-is if it's not a localization key
-        return errorMessage.isEmpty
-            ? context.loc.ledgerErrorUnknown
-            : errorMessage;
-    }
+  String _getErrorMessage(BuildContext context, LedgerFailure? failure) {
+    // Translate only: the typed failure carries no raw text, and the raw
+    // device/SDK reason was already logged at the repository boundary.
+    return failure?.toTranslated(context) ?? context.loc.ledgerErrorUnknown;
   }
 }

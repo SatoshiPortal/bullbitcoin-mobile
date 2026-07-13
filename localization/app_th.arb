@@ -879,10 +879,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "ความผิดพลาดที่เป็นที่รู้จัก",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "ลงทะเบียน",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6922,10 +6918,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "กฎระเบียบที่จําเป็นสําหรับการลงทะเบียน",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "การสํารองข้อมูลกระเป๋าสตางค์ของคุณ",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -8143,17 +8135,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "กฎระเบียบที่จําเป็นสําหรับการตรวจสอบ",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault ไม่ได้ตั้งค่า",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "ประเภทสคริปต์จะต้องลงทะเบียน",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "อ่านต่อ",
   "@dcaSetupContinue": {
@@ -9943,6 +9927,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "โปรแกรมอื่นกำลังใช้งาน Ledger ของคุณ โปรดปิดโปรแกรมนั้น (เช่น Ledger Live) แล้วลองอีกครั้ง",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "ไม่มีการเชื่อมต่อ LED",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -10397,10 +10385,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "ประเภทสคริปต์จําเป็นต้องตรวจสอบ",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "สํารองข้อมูลด้วยการเข้ารหัสที่แข็งแกร่งโดยใช้ระบบคลาวด์ของคุณ.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -10496,6 +10480,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "ความคิดเห็น",
+  "ledgerErrorPermissionDenied": "ต้องมีสิทธิ์ Bluetooth เพื่อเชื่อมต่อกับอุปกรณ์ Ledger",
+  "ledgerErrorNoDevicesFound": "ไม่พบอุปกรณ์ Ledger โปรดตรวจสอบว่าอุปกรณ์ของคุณเปิดอยู่และเปิดใช้งาน Bluetooth แล้ว",
+  "ledgerErrorMultipleDevicesFound": "พบอุปกรณ์ Ledger หลายเครื่อง โปรดตรวจสอบว่ามีอุปกรณ์เพียงเครื่องเดียวอยู่ใกล้ๆ",
+  "ledgerErrorDeviceNotFound": "ไม่พบอุปกรณ์ Ledger",
+  "ledgerErrorDeviceMismatch": "ตรวจพบอุปกรณ์ไม่ตรงกัน",
+  "ledgerErrorInvalidPsbt": "ตรวจพบรูปแบบ PSBT ที่ไม่ถูกต้อง",
+  "ledgerErrorMissingDerivationPath": "ต้องระบุเส้นทางการอนุพันธ์",
+  "ledgerErrorMissingScriptType": "ต้องระบุประเภทสคริปต์",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

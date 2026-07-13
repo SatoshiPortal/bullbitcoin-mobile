@@ -851,10 +851,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "خطأ غير معروف",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "العنوان الاستلامي",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6495,10 +6491,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "لا بد من المسار الباعث للتوقيع",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "دعم محفظتك",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -7638,17 +7630,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "لا بد من وجود مسار للتحقّق",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "الخزنة ليست جاهزة",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "النوع المطلوب للتوقيع",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "استمر",
   "@dcaSetupContinue": {
@@ -9318,6 +9302,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "برنامج آخر يستخدم جهاز Ledger الخاص بك. الرجاء إغلاقه (على سبيل المثال، Ledger Live) والمحاولة مرة أخرى.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "No Ledger connection available",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -9742,10 +9730,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "مطلوب نوع محدد للتحقق",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "دعم مجهول مع تشفير قوي باستخدام سحابتك.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -9837,6 +9821,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "خطأ غير معروف",
+  "ledgerErrorPermissionDenied": "أذونات البلوتوث مطلوبة للاتصال بأجهزة Ledger.",
+  "ledgerErrorNoDevicesFound": "لم يتم العثور على أجهزة Ledger. تأكد من أن جهازك قيد التشغيل وأن البلوتوث مُفعّل.",
+  "ledgerErrorMultipleDevicesFound": "تم العثور على عدة أجهزة Ledger. يرجى التأكد من وجود جهاز واحد فقط بالقرب منك.",
+  "ledgerErrorDeviceNotFound": "لم يتم العثور على جهاز Ledger.",
+  "ledgerErrorDeviceMismatch": "تم اكتشاف عدم تطابق الجهاز.",
+  "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
+  "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
+  "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },

@@ -879,10 +879,6 @@
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
   },
-  "ledgerErrorUnknownOccurred": "अज्ञात त्रुटि हुई",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
-  },
   "receiveAddress": "प्राप्ति पता",
   "@receiveAddress": {
     "description": "Label for generated address"
@@ -6922,10 +6918,6 @@
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
-  "ledgerErrorMissingDerivationPathSign": "हस्ताक्षर करने के लिए डेरिवेशन पथ की आवश्यकता होती है",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
   "backupWalletTitle": "अपने वॉलेट को बैकअप करें",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -8147,17 +8139,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "सत्यापन के लिए डेरिवेशन पथ की आवश्यकता होती है",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "वॉल्ट सेट नहीं है",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
-  },
-  "ledgerErrorMissingScriptTypeSign": "हस्ताक्षर करने के लिए स्क्रिप्ट प्रकार की आवश्यकता होती है",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
   },
   "dcaSetupContinue": "जारी",
   "@dcaSetupContinue": {
@@ -9951,6 +9935,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "कोई अन्य प्रोग्राम आपके Ledger का उपयोग कर रहा है। कृपया उसे बंद करें (उदाहरण के लिए, Ledger Live) और फिर से कोशिश करें।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "कोई लेजर कनेक्शन उपलब्ध नहीं",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -10405,10 +10393,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "सत्यापन के लिए स्क्रिप्ट प्रकार की आवश्यकता होती है",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "अपने क्लाउड का उपयोग करके मजबूत एन्क्रिप्शन के साथ अनाम बैकअप।।",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -10504,6 +10488,14 @@
     "description": "Description for ongoing transfers section"
   },
   "ledgerErrorUnknown": "अज्ञात त्रुटि",
+  "ledgerErrorPermissionDenied": "Ledger डिवाइस से कनेक्ट करने के लिए ब्लूटूथ अनुमतियाँ आवश्यक हैं।",
+  "ledgerErrorNoDevicesFound": "कोई Ledger डिवाइस नहीं मिला। सुनिश्चित करें कि आपका डिवाइस चालू है और ब्लूटूथ सक्षम है।",
+  "ledgerErrorMultipleDevicesFound": "कई Ledger डिवाइस मिले। कृपया सुनिश्चित करें कि पास में केवल एक ही डिवाइस है।",
+  "ledgerErrorDeviceNotFound": "Ledger डिवाइस नहीं मिला।",
+  "ledgerErrorDeviceMismatch": "डिवाइस बेमेल का पता चला।",
+  "ledgerErrorInvalidPsbt": "अमान्य PSBT प्रारूप का पता चला।",
+  "ledgerErrorMissingDerivationPath": "व्युत्पत्ति पथ आवश्यक है",
+  "ledgerErrorMissingScriptType": "स्क्रिप्ट प्रकार आवश्यक है",
   "@ledgerErrorUnknown": {
     "description": "Generic error message for unknown Ledger errors"
   },
