@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:payjoin/payjoin.dart';
+
+class _MockDio extends Mock implements Dio {}
 
 // A valid, statically-generated OHTTP key config (offline test fixture, no
 // real relay behind it). Generated once via the vendored `bitcoin-ohttp`
@@ -142,9 +145,13 @@ void main() {
       final notAList = InMemoryJsonReceiverSessionPersister.fromJson(
         jsonEncode({'not': 'a list'}),
       );
+      final listOfNonStrings = InMemoryJsonReceiverSessionPersister.fromJson(
+        jsonEncode([1, 2, 3]),
+      );
 
       expect(notJson.load(), isEmpty);
       expect(notAList.load(), isEmpty);
+      expect(listOfNonStrings.load(), isEmpty);
     });
   });
 
@@ -199,9 +206,13 @@ void main() {
       final notAList = InMemoryJsonSenderSessionPersister.fromJson(
         jsonEncode({'not': 'a list'}),
       );
+      final listOfNonStrings = InMemoryJsonSenderSessionPersister.fromJson(
+        jsonEncode([1, 2, 3]),
+      );
 
       expect(notJson.load(), isEmpty);
       expect(notAList.load(), isEmpty);
+      expect(listOfNonStrings.load(), isEmpty);
     });
   });
 
@@ -282,6 +293,84 @@ void main() {
       );
 
       expect(seenDirectories, {'https://my-directory.example'});
+    });
+  });
+
+  group('PdkPayjoinDatasource.postBytes', () {
+    // Every OHTTP relay call (in fetchOhttpKeyAndRelay's sibling relay-loop
+    // functions: postOriginalProposal, _getUncheckedOriginalPayload,
+    // _getProposalPsbt, _sendPayjoinProposal) funnels through this single
+    // choke point, and PayjoinLocator configures its Dio's
+    // connect/receiveTimeout specifically so an unresponsive relay can't
+    // stall a poll indefinitely. These verify the plumbing a real timeout
+    // exercises: postBytes neither swallows nor transforms the failure, so
+    // the relay loops' existing catch-and-try-next-relay handling applies to
+    // it exactly like any other network error — without needing a live relay
+    // or a signed PSBT/session fixture, which (per the receiver/sender
+    // typestate walk) isn't practical to construct offline.
+
+    setUpAll(() {
+      registerFallbackValue(RequestOptions(path: 'https://relay.example.com'));
+      registerFallbackValue(Options());
+    });
+
+    test('propagates a Dio receive-timeout unwrapped, so relay-loop callers '
+        'can catch it and fall back to the next relay', () async {
+      final dio = _MockDio();
+      when(
+        () => dio.post<List<int>>(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: 'https://relay.example.com'),
+          type: DioExceptionType.receiveTimeout,
+        ),
+      );
+
+      expect(
+        () => PdkPayjoinDatasource.postBytes(
+          dio,
+          'https://relay.example.com',
+          Uint8List.fromList([1, 2, 3]),
+          'message/ohttp-req',
+        ),
+        throwsA(
+          isA<DioException>().having(
+            (e) => e.type,
+            'type',
+            DioExceptionType.receiveTimeout,
+          ),
+        ),
+      );
+    });
+
+    test('returns the response bytes on success', () async {
+      final dio = _MockDio();
+      when(
+        () => dio.post<List<int>>(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: 'https://relay.example.com'),
+          data: [4, 5, 6],
+          statusCode: 200,
+        ),
+      );
+
+      final result = await PdkPayjoinDatasource.postBytes(
+        dio,
+        'https://relay.example.com',
+        Uint8List.fromList([1, 2, 3]),
+        'message/ohttp-req',
+      );
+
+      expect(result, Uint8List.fromList([4, 5, 6]));
     });
   });
 }
