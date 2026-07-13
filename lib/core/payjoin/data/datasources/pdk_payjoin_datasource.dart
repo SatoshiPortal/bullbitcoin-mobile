@@ -58,6 +58,7 @@ class PdkPayjoinDatasource {
         );
         return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
+        log('fetchOhttpKeys via $ohttpRelayUrl failed: $e');
         continue;
       }
     }
@@ -456,7 +457,12 @@ class PdkPayjoinDatasource {
     try {
       chosen = inner.tryPreservingPrivacy(candidateInputs: candidates);
     } catch (e) {
-      throw StateError('No inputs available to contribute to payjoin');
+      // Include the PDK's own rejection reason (e.g. "no candidates
+      // available for selection" when none of the wallet's UTXOs make a
+      // privacy-preserving decoy for this payment) rather than a fixed
+      // generic message, so callers/logs can tell this apart from a genuine
+      // bug in candidate construction.
+      throw StateError('No inputs available to contribute to payjoin: $e');
     }
     final next = inner
         .contributeInputs(replacementInputs: [chosen])
@@ -902,6 +908,13 @@ List<String> _decodeEvents(String? raw) {
     if (decoded is List) {
       return decoded.cast<String>();
     }
-  } catch (_) {}
+    logger.log.warning(
+      'Persisted payjoin session event log is not a list; starting empty',
+    );
+  } catch (e) {
+    logger.log.warning(
+      'Failed to decode persisted payjoin session event log: $e',
+    );
+  }
   return const [];
 }
