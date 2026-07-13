@@ -481,9 +481,14 @@ void _cmdDelete(List<String> args) {
   }
 
   // All-or-nothing: a typo in a batch must abort before anything is removed.
-  final notFound = keys
-      .where((k) => !files.any((f) => _readMap(f).containsKey(k)))
-      .toList();
+  // A key counts as found if its @metadata exists, so a leftover orphan @key
+  // (the state `add` refuses and points at `delete` for) stays deletable.
+  final notFound = keys.where((k) {
+    return !files.any((f) {
+      final map = _readMap(f);
+      return map.containsKey(k) || map.containsKey('@$k');
+    });
+  }).toList();
   if (notFound.isNotEmpty) {
     throw ArbException(
       'Key(s) not found in any locale: ${notFound.join(', ')}. '
