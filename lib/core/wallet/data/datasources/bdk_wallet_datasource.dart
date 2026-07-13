@@ -162,7 +162,14 @@ class BdkWalletDatasource {
     final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
     return (String psbtBase64) {
       final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      final isFinalized = bdkWallet.sign(
+      // Unlike signPsbt (the sender signing a complete transaction, where a
+      // non-finalized result is a genuine anomaly), this signs only the
+      // receiver's own contributed input into a multi-party payjoin
+      // proposal — the sender's inputs are still unsigned at this point by
+      // protocol design, so bdk's whole-PSBT finalization check is always
+      // false here. Don't log it: it isn't an error, and logging it on every
+      // successful payjoin would read like one.
+      bdkWallet.sign(
         psbt: psbt,
         signOptions: bdk.SignOptions(
           trustWitnessUtxo: true,
@@ -173,9 +180,6 @@ class BdkWalletDatasource {
           allowGrinding: true,
         ),
       );
-      if (!isFinalized) {
-        log.info('Signed PSBT is not finalized');
-      }
       return psbt.serialize();
     };
   }

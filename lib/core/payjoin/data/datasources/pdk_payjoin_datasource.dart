@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
@@ -11,6 +10,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' as logger;
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:payjoin/payjoin.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
 
@@ -126,7 +126,12 @@ class PdkPayjoinDatasource {
               )
               as PayjoinReceiverModel;
 
-      // Start listening for a payjoin request from the sender
+      // Start listening for a payjoin request from the sender. This starts
+      // polling before the repository persists `model` to the local DB
+      // (PayjoinRepositoryImpl.createPayjoinReceiver awaits this call, then
+      // stores the result) — benign today since the first tick is a full
+      // directoryPollingInterval away, giving the upsert plenty of time, but
+      // fragile enough to flag: don't start polling any earlier than this.
       startListeningForRequest(model);
 
       return model;
@@ -185,7 +190,9 @@ class PdkPayjoinDatasource {
             )
             as PayjoinSenderModel;
 
-    // Start listening for a payjoin proposal from the receiver
+    // Start listening for a payjoin proposal from the receiver. Same
+    // ordering caveat as startListeningForRequest above: this runs before
+    // the repository persists `model`, benign given the polling interval.
     startListeningForProposal(model);
 
     return model;
@@ -200,7 +207,7 @@ class PdkPayjoinDatasource {
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final reqCtx = withReplyKey.createV2PostRequest(ohttpRelay: relay);
-        final body = await _postBytes(
+        final body = await postBytes(
           _dio,
           reqCtx.request.url,
           reqCtx.request.body,
@@ -218,6 +225,10 @@ class PdkPayjoinDatasource {
       }
     }
     if (!posted) {
+      logger.log.warning(
+        'Failed to post original PSBT to any OHTTP relay',
+        error: lastError,
+      );
       throw SendCreationException(
         'Failed to post original PSBT to any OHTTP relay: $lastError',
       );
@@ -257,7 +268,7 @@ class PdkPayjoinDatasource {
     );
 
     logger.log.info(
-      'Payjoin request processed and proposal sent for ${receiverModel.id}: $proposalPsbt',
+      'Payjoin request processed and proposal sent for ${receiverModel.id}',
     );
 
     return updatedModel;
@@ -518,7 +529,7 @@ class PdkPayjoinDatasource {
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final req = proposal.createPostRequest(ohttpRelay: relay);
-        final body = await _postBytes(
+        final body = await postBytes(
           _dio,
           req.request.url,
           req.request.body,
@@ -536,12 +547,28 @@ class PdkPayjoinDatasource {
         continue;
       }
     }
+    logger.log.warning(
+      'Failed to post payjoin proposal to any OHTTP relay',
+      error: lastError,
+    );
     throw PayjoinNotFoundException(
       'Failed to post payjoin proposal: $lastError',
     );
   }
 
   InputPair _buildInputPair(PayjoinInputPairModel input) {
+    // A missing value must never silently become 0: the witness UTXO amount
+    // is committed in the segwit sighash, so signing over a wrong (zero)
+    // amount produces an invalid signature. The failure would then surface
+    // far away, as a generic broadcast rejection that silently cancels the
+    // payjoin via the original-transaction fallback. Fail loudly instead.
+    final value = input.value;
+    if (value == null) {
+      throw StateError(
+        'Cannot build a payjoin input pair without a value for '
+        '${input.txId}:${input.vout}',
+      );
+    }
     return InputPair(
       txin: TxIn(
         previousOutput: OutPoint(txid: input.txId, vout: input.vout),
@@ -551,7 +578,7 @@ class PdkPayjoinDatasource {
       ),
       psbtin: PsbtInput(
         witnessUtxo: TxOut(
-          valueSat: (input.value ?? BigInt.zero).toInt(),
+          valueSat: value.toInt(),
           scriptPubkey: input.scriptPubkey,
         ),
         redeemScript: input.redeemScriptRawOutputScript.isEmpty
@@ -723,7 +750,7 @@ class PdkPayjoinDatasource {
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final poll = initialized.createPollRequest(ohttpRelay: relay);
-        final body = await _postBytes(
+        final body = await postBytes(
           _dio,
           poll.request.url,
           poll.request.body,
@@ -758,7 +785,7 @@ class PdkPayjoinDatasource {
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final poll = polling.createPollRequest(ohttpRelay: relay);
-        final body = await _postBytes(
+        final body = await postBytes(
           _dio,
           poll.request.url,
           poll.request.body,
@@ -793,7 +820,14 @@ class PdkPayjoinDatasource {
   static bool _isExpiredString(Object error) =>
       error.toString().toLowerCase().contains('expired');
 
-  static Future<Uint8List> _postBytes(
+  /// Posts [body] to [url] via [dio] and returns the raw response bytes. The
+  /// single choke point every OHTTP relay call funnels through — exposed for
+  /// testing so the relay-loop functions' handling of a network failure
+  /// (including a timeout from the Dio instance's configured
+  /// connect/receiveTimeout, see PayjoinLocator) can be exercised directly,
+  /// without needing a live relay or a signed PSBT/session fixture.
+  @visibleForTesting
+  static Future<Uint8List> postBytes(
     Dio dio,
     String url,
     Uint8List body,
@@ -825,10 +859,6 @@ class NoValidPayjoinBip21Exception extends BullException {
 
 class PayjoinExpiredException extends BullException {
   PayjoinExpiredException(super.message);
-}
-
-class OhttpRelaysUnavailableException extends BullException {
-  OhttpRelaysUnavailableException(super.message);
 }
 
 class SendCreationException extends BullException {
@@ -919,7 +949,11 @@ List<String> _decodeEvents(String? raw) {
   try {
     final decoded = jsonDecode(raw);
     if (decoded is List) {
-      return decoded.cast<String>();
+      // Eagerly validate every element here, inside the try/catch: `.cast()`
+      // is a lazy view, so a list containing a non-string entry would slip
+      // through uncaught and only throw later, deep inside
+      // replayReceiverEventLog on every poll tick.
+      return List<String>.from(decoded);
     }
     logger.log.warning(
       'Persisted payjoin session event log is not a list; starting empty',

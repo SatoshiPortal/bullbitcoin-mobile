@@ -356,7 +356,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         final updatedModel = model.copyWith(isExpired: true);
         await _localPayjoinDatasource.update(updatedModel);
         // Notify the repository layers that the payjoin has expired
-        _payjoinStreamController.add(model.toEntity());
+        _payjoinStreamController.add(updatedModel.toEntity());
       } else if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
