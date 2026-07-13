@@ -1,18 +1,22 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
     show BullnymAuthSigner;
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
+import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
+import 'package:meta/meta.dart';
 
 /// The invoices feature's view of the pay-service. Implementations wrap the
-/// shared `bullnym` client, map its `BullnymException` to `InvoicesException`,
-/// and return DOMAIN types only — a bullnym DTO never crosses this boundary.
+/// shared `bullnym` client, map its raw exceptions to [InvoicesFailure], and
+/// return domain types only — a Bullnym DTO never crosses this boundary.
 ///
 /// The payout addresses are supplied by the caller (the create usecase); this
 /// port performs NO wallet derivation.
 abstract interface class InvoicesPayServicePort {
-  Future<CreateInvoiceResult> createInvoice({
+  @useResult
+  Future<Result<CreateInvoiceResult, InvoicesFailure>> createInvoice({
     required BullnymAuthSigner signer,
     required CreateInvoiceCommand command,
     String? bitcoinAddress,
@@ -20,16 +24,21 @@ abstract interface class InvoicesPayServicePort {
     String? liquidBlindingKeyHex,
   });
 
-  Future<CancelInvoiceResult> cancelInvoice({
+  @useResult
+  Future<Result<CancelInvoiceResult, InvoicesFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     required CancelInvoiceCommand command,
   });
 
-  Future<ListInvoicesResult> listInvoices({
+  @useResult
+  Future<Result<ListInvoicesResult, InvoicesFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required ListInvoicesCommand command,
   });
 
   /// UNSIGNED public status poll by id (§3.12).
-  Future<InvoiceStatusSnapshot> getInvoiceStatus(InvoiceId invoiceId);
+  @useResult
+  Future<Result<InvoiceStatusSnapshot, InvoicesFailure>> getInvoiceStatus(
+    InvoiceId invoiceId,
+  );
 }

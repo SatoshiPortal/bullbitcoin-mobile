@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_state.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoices_failure_l10n.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/invoices/ui/widgets/invoice_list_item.dart';
 import 'package:flutter/material.dart';
@@ -79,8 +80,11 @@ class InvoiceDetailScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _row(context, context.loc.invoiceStatusLabel,
-              invoiceStatusText(context, status)),
+          _row(
+            context,
+            context.loc.invoiceStatusLabel,
+            invoiceStatusText(context, status),
+          ),
           const Divider(),
           _row(
             context,
@@ -91,14 +95,23 @@ class InvoiceDetailScreen extends StatelessWidget {
           _expiry(context, snapshot),
           const Divider(),
           if (snapshot.lightningPr != null)
-            _copyBlock(context, context.loc.invoicePaymentLightningLabel,
-                snapshot.lightningPr!),
+            _copyBlock(
+              context,
+              context.loc.invoicePaymentLightningLabel,
+              snapshot.lightningPr!,
+            ),
           if (snapshot.liquidAddress != null)
-            _copyBlock(context, context.loc.invoicePaymentLiquidLabel,
-                snapshot.liquidAddress!),
+            _copyBlock(
+              context,
+              context.loc.invoicePaymentLiquidLabel,
+              snapshot.liquidAddress!,
+            ),
           if (snapshot.bitcoinAddress != null)
-            _copyBlock(context, context.loc.invoicePaymentBitcoinLabel,
-                snapshot.bitcoinAddress!),
+            _copyBlock(
+              context,
+              context.loc.invoicePaymentBitcoinLabel,
+              snapshot.bitcoinAddress!,
+            ),
           const Gap(24),
           if (state.canCancel)
             BBButton.big(
@@ -114,8 +127,8 @@ class InvoiceDetailScreen extends StatelessWidget {
   }
 
   Widget _expiry(BuildContext context, InvoiceStatusSnapshot snapshot) {
-    final expired = snapshot.timeUntilExpiry(DateTime.now().toUtc()) ==
-        Duration.zero;
+    final expired =
+        snapshot.timeUntilExpiry(DateTime.now().toUtc()) == Duration.zero;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

@@ -12,7 +12,7 @@ enum InvoiceCreateField { amount, currency }
 class InvoiceCreateState {
   final bool submitting;
   final CreateInvoiceResult? result;
-  final InvoicesException? failure;
+  final InvoicesFailure? failure;
 
   // Amount (one-of).
   final InvoiceAmountMode amountMode;
@@ -69,7 +69,7 @@ class InvoiceCreateState {
   InvoiceCreateState copyWith({
     bool? submitting,
     CreateInvoiceResult? result,
-    InvoicesException? failure,
+    InvoicesFailure? failure,
     InvoiceAmountMode? amountMode,
     String? amountInput,
     String? fiatCurrency,
@@ -105,7 +105,9 @@ class InvoiceCreateState {
       currencies: currencies ?? this.currencies,
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
-      invalidField: clearInvalidField ? null : invalidField ?? this.invalidField,
+      invalidField: clearInvalidField
+          ? null
+          : invalidField ?? this.invalidField,
     );
   }
 }

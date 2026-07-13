@@ -26,16 +26,16 @@ class _StubListCubit extends Cubit<InvoicesListState>
 }
 
 Invoice _invoice(String id, InvoiceStatus status) => Invoice(
-      id: InvoiceId(id),
-      status: status,
-      amountSat: 1000,
-      remainingAmountSat: 1000,
-      acceptBtc: false,
-      acceptLn: false,
-      acceptLiquid: true,
-      createdAt: DateTime.utc(2026),
-      expiresAt: DateTime.utc(2030),
-    );
+  id: InvoiceId(id),
+  status: status,
+  amountSat: 1000,
+  remainingAmountSat: 1000,
+  acceptBtc: false,
+  acceptLn: false,
+  acceptLiquid: true,
+  createdAt: DateTime.utc(2026),
+  expiresAt: DateTime.utc(2030),
+);
 
 Future<void> _pump(WidgetTester tester, InvoicesListState state) async {
   await tester.pumpWidget(
@@ -54,7 +54,10 @@ Future<void> _pump(WidgetTester tester, InvoicesListState state) async {
 
 void main() {
   testWidgets('loading shows the shimmer placeholder', (tester) async {
-    await _pump(tester, const InvoicesListState(status: InvoicesListStatus.loading));
+    await _pump(
+      tester,
+      const InvoicesListState(status: InvoicesListStatus.loading),
+    );
     expect(find.byType(LoadingBoxContent), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -88,7 +91,7 @@ void main() {
       tester,
       const InvoicesListState(
         status: InvoicesListStatus.error,
-        failure: InvoicesException.network(),
+        failure: InvoicesFailure.network(),
       ),
     );
     expect(tester.takeException(), isNull);

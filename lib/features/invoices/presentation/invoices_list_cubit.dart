@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class InvoicesListCubit extends Cubit<InvoicesListState> {
   final InvoicesFacade _facade;
 
-  InvoicesListCubit({required this._facade})
-    : super(const InvoicesListState());
+  InvoicesListCubit({required this._facade}) : super(const InvoicesListState());
 
   Future<void> load() => _fetch();
 
@@ -27,29 +26,24 @@ class InvoicesListCubit extends Cubit<InvoicesListState> {
   }
 
   Future<void> _fetch() async {
-    emit(state.copyWith(status: InvoicesListStatus.loading, clearFailure: true));
-    try {
-      final result = await _facade.list(const ListInvoicesCommand());
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: InvoicesListStatus.loaded,
-          invoices: result.invoices,
-          hasMore: result.hasMore,
-        ),
-      );
-    } on InvoicesException catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: InvoicesListStatus.error, failure: e));
-    } catch (e, stack) {
-      log.warning('Invoices list load failed', error: e, trace: stack);
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: InvoicesListStatus.error,
-          failure: const InvoicesException.unexpected(),
-        ),
-      );
+    emit(
+      state.copyWith(status: InvoicesListStatus.loading, clearFailure: true),
+    );
+    final result = await _facade.list(const ListInvoicesCommand());
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            status: InvoicesListStatus.loaded,
+            invoices: value.invoices,
+            hasMore: value.hasMore,
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(status: InvoicesListStatus.error, failure: failure),
+        );
     }
   }
 }

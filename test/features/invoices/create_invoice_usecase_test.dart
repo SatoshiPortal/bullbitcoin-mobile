@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
-import 'package:bb_mobile/features/invoices/domain/invoices_error.dart';
+import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -35,6 +35,17 @@ class _MockGetSettings extends Mock implements GetSettingsUsecase {}
 class _MockWallet extends Mock implements Wallet {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
+
+T _unwrap<T>(Result<T, InvoicesFailure> result) => result.fold(
+  (value) => value,
+  (failure) => throw TestFailure('expected Ok, got $failure'),
+);
+
+InvoicesFailure _unwrapFailure<T>(Result<T, InvoicesFailure> result) =>
+    result.fold(
+      (_) => throw TestFailure('expected Err, got Ok'),
+      (failure) => failure,
+    );
 
 void main() {
   final signer = BullnymAuthSigner(
@@ -122,7 +133,7 @@ void main() {
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
-    when(() => identity.getSigningHandle()).thenAnswer((_) async => signer);
+    when(() => identity.getSigningHandle()).thenAnswer((_) async => Ok(signer));
 
     when(() => btcWallet.id).thenReturn('btc-default');
     when(() => liquidWallet.id).thenReturn('liquid-default');
@@ -141,9 +152,8 @@ void main() {
     });
 
     when(
-      () => addrRepo.generateNewReceiveAddress(
-        walletId: any(named: 'walletId'),
-      ),
+      () =>
+          addrRepo.generateNewReceiveAddress(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => btcWalletAddress);
     when(
       () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
@@ -164,7 +174,7 @@ void main() {
         liquidAddress: any(named: 'liquidAddress'),
         liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
       ),
-    ).thenAnswer((_) async => result);
+    ).thenAnswer((_) async => Ok(result));
 
     // Labels store/trash default to success: the address reservation (system
     // label) written at generation persists, and any release is a no-op.
@@ -194,7 +204,7 @@ void main() {
 
   group('payout discipline (DG-I2 / §8.1/§8.2)', () {
     test('sources addresses ONLY from onlyDefaults wallets', () async {
-      await usecase.execute(command(acceptLiquid: true));
+      _unwrap(await usecase.execute(command(acceptLiquid: true)));
 
       final calls = verify(
         () => walletRepo.getWallets(
@@ -208,51 +218,58 @@ void main() {
       expect(calls, everyElement(isTrue));
     });
 
-    test('Liquid rail: fresh confidential address + its blinding key supplied',
-        () async {
-      await usecase.execute(command(acceptLiquid: true));
+    test(
+      'Liquid rail: fresh confidential address + its blinding key supplied',
+      () async {
+        _unwrap(await usecase.execute(command(acceptLiquid: true)));
 
-      final captured = verify(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: captureAny(named: 'bitcoinAddress'),
-          liquidAddress: captureAny(named: 'liquidAddress'),
-          liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
-        ),
-      ).captured;
-      expect(captured[0], isNull); // no BTC address for a Liquid-only invoice
-      expect(captured[1], 'lq1qfresh');
-      expect(captured[2], 'deadbeef');
-      verify(
-        () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
-          walletId: 'liquid-default',
-        ),
-      ).called(1);
-    });
+        final captured = verify(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: any(named: 'command'),
+            bitcoinAddress: captureAny(named: 'bitcoinAddress'),
+            liquidAddress: captureAny(named: 'liquidAddress'),
+            liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
+          ),
+        ).captured;
+        expect(captured[0], isNull); // no BTC address for a Liquid-only invoice
+        expect(captured[1], 'lq1qfresh');
+        expect(captured[2], 'deadbeef');
+        verify(
+          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+            walletId: 'liquid-default',
+          ),
+        ).called(1);
+      },
+    );
 
-    test('LN-only invoice supplies the Liquid address WITHOUT the blinding key',
-        () async {
-      await usecase.execute(
-        command(acceptLn: true, acceptLiquid: false),
-      );
+    test(
+      'LN-only invoice supplies the Liquid address WITHOUT the blinding key',
+      () async {
+        _unwrap(
+          await usecase.execute(command(acceptLn: true, acceptLiquid: false)),
+        );
 
-      final captured = verify(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: captureAny(named: 'liquidAddress'),
-          liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
-        ),
-      ).captured;
-      expect(captured[0], 'lq1qfresh');
-      expect(captured[1], isNull); // §3.5/§3.19: key sent only when acceptLiquid
-    });
+        final captured = verify(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: any(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: captureAny(named: 'liquidAddress'),
+            liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
+          ),
+        ).captured;
+        expect(captured[0], 'lq1qfresh');
+        expect(
+          captured[1],
+          isNull,
+        ); // §3.5/§3.19: key sent only when acceptLiquid
+      },
+    );
 
     test('BTC rail: fresh address from the DEFAULT bitcoin wallet', () async {
-      await usecase.execute(
-        command(acceptBtc: true, acceptLiquid: false),
+      _unwrap(
+        await usecase.execute(command(acceptBtc: true, acceptLiquid: false)),
       );
 
       verify(
@@ -272,52 +289,75 @@ void main() {
   });
 
   group('orchestration order + linked-vs-unlinked', () {
-    test('validates → signer → addresses → wire (signer resolved once)',
-        () async {
-      await usecase.execute(command(acceptLiquid: true));
-      verify(() => identity.getSigningHandle()).called(1);
-      verify(
-        () => payService.createInvoice(
-          signer: signer,
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-        ),
-      ).called(1);
-    });
+    test(
+      'validates → signer → addresses → wire (signer resolved once)',
+      () async {
+        _unwrap(await usecase.execute(command(acceptLiquid: true)));
+        verify(() => identity.getSigningHandle()).called(1);
+        verify(
+          () => payService.createInvoice(
+            signer: signer,
+            command: any(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: any(named: 'liquidAddress'),
+            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+          ),
+        ).called(1);
+      },
+    );
 
-    test('v1 is unlinked: the command carries no nym (linkToPageNym null)',
-        () async {
-      await usecase.execute(command(acceptLiquid: true));
-      final captured = verify(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: captureAny(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-        ),
-      ).captured;
-      final sent = captured.single as CreateInvoiceCommand;
-      expect(sent.linkToPageNym, isNull);
-    });
+    test(
+      'v1 is unlinked: the command carries no nym (linkToPageNym null)',
+      () async {
+        _unwrap(await usecase.execute(command(acceptLiquid: true)));
+        final captured = verify(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: captureAny(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: any(named: 'liquidAddress'),
+            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+          ),
+        ).captured;
+        final sent = captured.single as CreateInvoiceCommand;
+        expect(sent.linkToPageNym, isNull);
+      },
+    );
+
+    test(
+      'identity failure short-circuits before settings and wire work',
+      () async {
+        when(
+          () => identity.getSigningHandle(),
+        ).thenAnswer((_) async => const Err(InvoicesFailure.signingFailed()));
+
+        final failure = _unwrapFailure(
+          await usecase.execute(command(acceptLiquid: true)),
+        );
+
+        expect(failure.kind, InvoicesFailureKind.signingFailed);
+        verifyNever(() => getSettings.execute());
+        verifyNever(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: any(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: any(named: 'liquidAddress'),
+            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+          ),
+        );
+      },
+    );
   });
 
   group('local pre-validation (§3.6/§3.8)', () {
     test('no rail selected → invalidInput, zero wire calls', () async {
-      await expectLater(
-        usecase.execute(
+      final failure = _unwrapFailure(
+        await usecase.execute(
           command(acceptBtc: false, acceptLn: false, acceptLiquid: false),
         ),
-        throwsA(
-          isA<InvoicesException>().having(
-            (e) => e.kind,
-            'kind',
-            InvoicesErrorKind.invalidInput,
-          ),
-        ),
       );
+      expect(failure.kind, InvoicesFailureKind.invalidInput);
       verifyNever(() => identity.getSigningHandle());
       verifyNever(
         () => payService.createInvoice(
@@ -328,19 +368,19 @@ void main() {
     });
 
     test('both amount forms → invalidInput', () async {
-      await expectLater(
-        usecase.execute(
+      final failure = _unwrapFailure(
+        await usecase.execute(
           command(amountSat: 1000, fiatAmountMinor: 500, fiatCurrency: 'CAD'),
         ),
-        throwsA(isA<InvoicesException>()),
       );
+      expect(failure.kind, InvoicesFailureKind.invalidInput);
     });
 
     test('neither amount form → invalidInput', () async {
-      await expectLater(
-        usecase.execute(command(amountSat: null)),
-        throwsA(isA<InvoicesException>()),
+      final failure = _unwrapFailure(
+        await usecase.execute(command(amountSat: null)),
       );
+      expect(failure.kind, InvoicesFailureKind.invalidInput);
     });
   });
 
@@ -355,16 +395,10 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      await expectLater(
-        usecase.execute(command(acceptBtc: true, acceptLiquid: false)),
-        throwsA(
-          isA<InvoicesException>().having(
-            (e) => e.kind,
-            'kind',
-            InvoicesErrorKind.noDefaultBitcoinWallet,
-          ),
-        ),
+      final failure = _unwrapFailure(
+        await usecase.execute(command(acceptBtc: true, acceptLiquid: false)),
       );
+      expect(failure.kind, InvoicesFailureKind.noDefaultBitcoinWallet);
     });
 
     test('Liquid rail with no default liquid wallet → typed error', () async {
@@ -377,16 +411,10 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      await expectLater(
-        usecase.execute(command(acceptLiquid: true)),
-        throwsA(
-          isA<InvoicesException>().having(
-            (e) => e.kind,
-            'kind',
-            InvoicesErrorKind.noDefaultLiquidWallet,
-          ),
-        ),
+      final failure = _unwrapFailure(
+        await usecase.execute(command(acceptLiquid: true)),
       );
+      expect(failure.kind, InvoicesFailureKind.noDefaultLiquidWallet);
     });
   });
 
@@ -403,11 +431,13 @@ void main() {
         ),
       ).thenAnswer((_) async {
         call++;
-        if (call == 1) throw const InvoicesException.reusedLiquidAddress();
-        return result;
+        if (call == 1) {
+          return const Err(InvoicesFailure.reusedLiquidAddress());
+        }
+        return Ok(result);
       });
 
-      final r = await usecase.execute(command(acceptLiquid: true));
+      final r = _unwrap(await usecase.execute(command(acceptLiquid: true)));
 
       expect(r.invoiceId.value, 'inv-1');
       // one initial + one regenerate = two address derivations.
@@ -418,135 +448,137 @@ void main() {
       ).called(2);
     });
 
-    test('a SECOND reuse propagates the typed error (no infinite loop)',
-        () async {
-      when(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-        ),
-      ).thenThrow(const InvoicesException.reusedLiquidAddress());
-
-      await expectLater(
-        usecase.execute(command(acceptLiquid: true)),
-        throwsA(
-          isA<InvoicesException>().having(
-            (e) => e.kind,
-            'kind',
-            InvoicesErrorKind.reusedLiquidAddress,
+    test(
+      'a SECOND reuse propagates the typed error (no infinite loop)',
+      () async {
+        when(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: any(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: any(named: 'liquidAddress'),
+            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
           ),
-        ),
-      );
-      verify(
-        () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
-          walletId: 'liquid-default',
-        ),
-      ).called(2);
-    });
+        ).thenAnswer(
+          (_) async => const Err(InvoicesFailure.reusedLiquidAddress()),
+        );
+
+        final failure = _unwrapFailure(
+          await usecase.execute(command(acceptLiquid: true)),
+        );
+        expect(failure.kind, InvoicesFailureKind.reusedLiquidAddress);
+        verify(
+          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+            walletId: 'liquid-default',
+          ),
+        ).called(2);
+      },
+    );
   });
 
   group('private memo (§3.14)', () {
     test('stored as a local memo label AFTER a successful create', () async {
-      final r = await usecase.execute(
-        command(acceptLiquid: true, privateMemo: 'rent'),
+      final r = _unwrap(
+        await usecase.execute(command(acceptLiquid: true, privateMemo: 'rent')),
       );
 
       expect(r.invoiceId.value, 'inv-1');
       // The memo label (distinct from the reservation) is stored exactly once,
       // keyed on the created invoice's Liquid address.
-      final memoStores = verify(() => labels.store(captureAny()))
-          .captured
-          .cast<NewLabel>()
-          .where((l) => l.label == 'rent')
-          .toList();
+      final memoStores = verify(
+        () => labels.store(captureAny()),
+      ).captured.cast<NewLabel>().where((l) => l.label == 'rent').toList();
       expect(memoStores, hasLength(1));
       expect(memoStores.single.reference, 'lq1qfresh');
     });
 
-    test('a memo label store failure never fails the create (§3.14 / AD-3)',
-        () async {
-      // ONLY the best-effort memo store throws; the reservation still succeeds.
-      when(
-        () => labels.store(any(that: isMemoLabel())),
-      ).thenThrow(StateError('labels down'));
+    test(
+      'a memo label store failure never fails the create (§3.14 / AD-3)',
+      () async {
+        // ONLY the best-effort memo store throws; the reservation still succeeds.
+        when(
+          () => labels.store(any(that: isMemoLabel())),
+        ).thenThrow(const FormatException('labels down'));
 
-      final r = await usecase.execute(
-        command(acceptLiquid: true, privateMemo: 'rent'),
-      );
+        final r = _unwrap(
+          await usecase.execute(
+            command(acceptLiquid: true, privateMemo: 'rent'),
+          ),
+        );
 
-      expect(r.invoiceId.value, 'inv-1');
-    });
+        expect(r.invoiceId.value, 'inv-1');
+      },
+    );
 
-    test('no memo → only the reservation label is stored (no memo label)',
-        () async {
-      await usecase.execute(command(acceptLiquid: true));
-      final stored = verify(() => labels.store(captureAny()))
-          .captured
-          .cast<NewLabel>();
-      // Exactly the reservation, never a memo label.
-      expect(stored, hasLength(1));
-      expect(stored.single.label, LabelSystem.invoice.label);
-    });
+    test(
+      'no memo → only the reservation label is stored (no memo label)',
+      () async {
+        _unwrap(await usecase.execute(command(acceptLiquid: true)));
+        final stored = verify(
+          () => labels.store(captureAny()),
+        ).captured.cast<NewLabel>();
+        // Exactly the reservation, never a memo label.
+        expect(stored, hasLength(1));
+        expect(stored.single.label, LabelSystem.invoice.label);
+      },
+    );
   });
 
   group('Liquid address reservation (back-to-back collision fix)', () {
-    test('reserves the issued Liquid address with a system label at generation',
-        () async {
-      await usecase.execute(command(acceptLiquid: true));
+    test(
+      'reserves the issued Liquid address with a system label at generation',
+      () async {
+        _unwrap(await usecase.execute(command(acceptLiquid: true)));
 
-      final reservation = verify(() => labels.store(captureAny()))
-          .captured
-          .cast<NewLabel>()
-          .firstWhere((l) => l.label == LabelSystem.invoice.label);
-      expect(reservation.reference, 'lq1qfresh');
-      expect(reservation.type, LabelType.address);
-      expect(reservation.origin, 'invoice');
-    });
+        final reservation = verify(() => labels.store(captureAny())).captured
+            .cast<NewLabel>()
+            .firstWhere((l) => l.label == LabelSystem.invoice.label);
+        expect(reservation.reference, 'lq1qfresh');
+        expect(reservation.type, LabelType.address);
+        expect(reservation.origin, 'invoice');
+      },
+    );
 
-    test('an LN-only invoice (acceptLiquid false) still reserves its address',
-        () async {
-      await usecase.execute(command(acceptLn: true, acceptLiquid: false));
+    test(
+      'an LN-only invoice (acceptLiquid false) still reserves its address',
+      () async {
+        _unwrap(
+          await usecase.execute(command(acceptLn: true, acceptLiquid: false)),
+        );
 
-      final reservations = verify(() => labels.store(captureAny()))
-          .captured
-          .cast<NewLabel>()
-          .where((l) => l.label == LabelSystem.invoice.label)
-          .toList();
-      expect(reservations, hasLength(1));
-      expect(reservations.single.reference, 'lq1qfresh');
-    });
+        final reservations = verify(() => labels.store(captureAny())).captured
+            .cast<NewLabel>()
+            .where((l) => l.label == LabelSystem.invoice.label)
+            .toList();
+        expect(reservations, hasLength(1));
+        expect(reservations.single.reference, 'lq1qfresh');
+      },
+    );
 
-    test('a reservation store FAILURE fails the create loudly (never silent)',
-        () async {
-      when(() => labels.store(any(that: isReservationLabel()))).thenAnswer(
-        (_) async =>
-            const Err<Label, LabelFailure>(LabelUnexpectedFailure('down')),
-      );
+    test(
+      'a reservation store FAILURE fails the create loudly (never silent)',
+      () async {
+        when(() => labels.store(any(that: isReservationLabel()))).thenAnswer(
+          (_) async =>
+              const Err<Label, LabelFailure>(LabelUnexpectedFailure('down')),
+        );
 
-      await expectLater(
-        usecase.execute(command(acceptLiquid: true)),
-        throwsA(
-          isA<InvoicesException>().having(
-            (e) => e.kind,
-            'kind',
-            InvoicesErrorKind.unexpected,
+        final failure = _unwrapFailure(
+          await usecase.execute(command(acceptLiquid: true)),
+        );
+        expect(failure.kind, InvoicesFailureKind.unexpected);
+        // The reservation is correctness-critical: the wire create is never made.
+        verifyNever(
+          () => payService.createInvoice(
+            signer: any(named: 'signer'),
+            command: any(named: 'command'),
+            bitcoinAddress: any(named: 'bitcoinAddress'),
+            liquidAddress: any(named: 'liquidAddress'),
+            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
           ),
-        ),
-      );
-      // The reservation is correctness-critical: the wire create is never made.
-      verifyNever(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('releases the reservation when the create ultimately fails', () async {
       when(
@@ -557,12 +589,14 @@ void main() {
           liquidAddress: any(named: 'liquidAddress'),
           liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
         ),
-      ).thenThrow(const InvoicesException.server(retryable: true));
-
-      await expectLater(
-        usecase.execute(command(acceptLiquid: true)),
-        throwsA(isA<InvoicesException>()),
+      ).thenAnswer(
+        (_) async => const Err(InvoicesFailure.server(retryable: true)),
       );
+
+      final failure = _unwrapFailure(
+        await usecase.execute(command(acceptLiquid: true)),
+      );
+      expect(failure.kind, InvoicesFailureKind.server);
       // The index burned during this failed create is handed back.
       verify(() => labels.trash(any())).called(1);
     });

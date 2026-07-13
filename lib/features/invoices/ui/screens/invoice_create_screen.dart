@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_state.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoices_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -86,7 +87,11 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Icon(Icons.check_circle_outline, size: 56, color: context.appColors.success),
+        Icon(
+          Icons.check_circle_outline,
+          size: 56,
+          color: context.appColors.success,
+        ),
         const Gap(16),
         Text(context.loc.invoiceShareLabel, style: context.font.titleLarge),
         const Gap(12),

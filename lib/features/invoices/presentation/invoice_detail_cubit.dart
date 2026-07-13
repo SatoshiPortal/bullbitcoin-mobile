@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,68 +41,50 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
   Future<void> cancel() async {
     if (state.cancelling || !state.canCancel) return;
     emit(state.copyWith(cancelling: true, clearCancelFailure: true));
-    try {
-      final result = await _facade.cancel(
-        CancelInvoiceCommand(
-          invoiceId: _invoiceId,
-          nymOwner: state.invoice?.nymOwner,
-        ),
-      );
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          cancelling: false,
-          cancelFinalStatus: result.finalStatus,
-        ),
-      );
-      // Reflect the settled state (and stop polling once terminal).
-      await _fetch();
-    } on InvoicesException catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(cancelling: false, cancelFailure: e));
-      await _fetch();
-    } catch (e, stack) {
-      log.warning('Invoice cancel failed', error: e, trace: stack);
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          cancelling: false,
-          cancelFailure: const InvoicesException.unexpected(),
-        ),
-      );
+    final result = await _facade.cancel(
+      CancelInvoiceCommand(
+        invoiceId: _invoiceId,
+        nymOwner: state.invoice?.nymOwner,
+      ),
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            cancelling: false,
+            cancelFinalStatus: value.finalStatus,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(cancelling: false, cancelFailure: failure));
     }
+    // Reflect the settled state after either outcome (and stop polling once
+    // terminal).
+    await _fetch();
   }
 
   Future<void> _fetch() async {
-    try {
-      final snapshot = await _facade.status(_invoiceId);
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: InvoiceDetailStatus.loaded,
-          snapshot: snapshot,
-          clearFailure: true,
-        ),
-      );
-    } on InvoicesException catch (e) {
-      if (isClosed) return;
-      // Keep a prior snapshot visible; only flip to error on the first load.
-      if (state.snapshot == null) {
-        emit(state.copyWith(status: InvoiceDetailStatus.error, failure: e));
-      } else {
-        emit(state.copyWith(failure: e));
-      }
-    } catch (e, stack) {
-      log.warning('Invoice status load failed', error: e, trace: stack);
-      if (isClosed) return;
-      if (state.snapshot == null) {
+    final result = await _facade.status(_invoiceId);
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
         emit(
           state.copyWith(
-            status: InvoiceDetailStatus.error,
-            failure: const InvoicesException.unexpected(),
+            status: InvoiceDetailStatus.loaded,
+            snapshot: value,
+            clearFailure: true,
           ),
         );
-      }
+      case Err(:final failure):
+        // Keep a prior snapshot visible; only flip to error on the first load.
+        if (state.snapshot == null) {
+          emit(
+            state.copyWith(status: InvoiceDetailStatus.error, failure: failure),
+          );
+        } else {
+          emit(state.copyWith(failure: failure));
+        }
     }
   }
 

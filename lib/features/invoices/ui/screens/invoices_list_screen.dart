@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoices_list_state.dart';
+import 'package:bb_mobile/features/invoices/presentation/invoices_failure_l10n.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
 import 'package:bb_mobile/features/invoices/ui/widgets/invoice_list_item.dart';
@@ -44,18 +45,17 @@ class InvoicesListScreen extends StatelessWidget {
         child: BlocBuilder<InvoicesListCubit, InvoicesListState>(
           builder: (context, state) => switch (state.status) {
             InvoicesListStatus.initial ||
-            InvoicesListStatus.loading =>
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    LoadingBoxContent(height: 72),
-                    LoadingLineContent(),
-                    LoadingLineContent(width: 220),
-                  ],
-                ),
+            InvoicesListStatus.loading => const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LoadingBoxContent(height: 72),
+                  LoadingLineContent(),
+                  LoadingLineContent(width: 220),
+                ],
               ),
+            ),
             InvoicesListStatus.error => _error(context),
             InvoicesListStatus.loaded => _loaded(context, state),
           },
@@ -155,11 +155,7 @@ class InvoicesListScreen extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       children: [
         const Gap(48),
-        Icon(
-          Icons.receipt_long,
-          size: 56,
-          color: context.appColors.textMuted,
-        ),
+        Icon(Icons.receipt_long, size: 56, color: context.appColors.textMuted),
         const Gap(16),
         Text(
           context.loc.invoicesEmptyTitle,

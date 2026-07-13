@@ -1,14 +1,19 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
+    show BullnymAuthSigner;
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_port.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
-import 'package:bb_mobile/features/invoices/domain/invoices_error.dart';
+import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:meta/meta.dart';
 
 /// Orchestrates a wallet-origin invoice create (§3.5). The PAYOUT addresses come
 /// ONLY from the user's DEFAULT wallets (never a reserved Get Paid descriptor
@@ -32,19 +37,35 @@ class CreateInvoiceUsecase {
     required this._getSettings,
   });
 
-  Future<CreateInvoiceResult> execute(CreateInvoiceCommand command) async {
+  @useResult
+  Future<Result<CreateInvoiceResult, InvoicesFailure>> execute(
+    CreateInvoiceCommand command,
+  ) async {
     // Local pre-validation (server echo, §3.6/§3.8): fail before any wire call.
     if (!command.hasAnyRail) {
-      throw const InvoicesException.invalidInput(code: 'NoRailSelected');
+      return const Err(InvoicesFailure.invalidInput(code: 'NoRailSelected'));
     }
     if (!command.hasExactlyOneAmount) {
-      throw const InvoicesException.invalidInput(code: 'AmountNotOneOf');
+      return const Err(InvoicesFailure.invalidInput(code: 'AmountNotOneOf'));
     }
 
     // Identity signer from the default-wallet xprv, resolved at point of use.
-    final signer = await _identity.getSigningHandle();
+    final signerResult = await _identity.getSigningHandle();
+    final BullnymAuthSigner signer;
+    switch (signerResult) {
+      case Ok(:final value):
+        signer = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
 
-    final environment = (await _getSettings.execute()).environment;
+    final Environment environment;
+    try {
+      environment = (await _getSettings.execute()).environment;
+    } on Exception catch (error, stack) {
+      log.warning('Invoice settings lookup failed', error: error, trace: stack);
+      return const Err(InvoicesFailure.unexpected());
+    }
 
     // System labels written to RESERVE the Liquid payout address(es) issued
     // during THIS create (see [_freshLiquidAddress]). On total failure they are
@@ -56,7 +77,12 @@ class CreateInvoiceUsecase {
       String? bitcoinWalletId;
       String? bitcoinAddress;
       if (command.acceptBtc) {
-        bitcoinWalletId = await _defaultBitcoinWalletId(environment);
+        switch (await _defaultBitcoinWalletId(environment)) {
+          case Ok(:final value):
+            bitcoinWalletId = value;
+          case Err(:final failure):
+            return Err(failure);
+        }
         bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
       }
 
@@ -64,50 +90,77 @@ class CreateInvoiceUsecase {
       String? liquidAddress;
       String? liquidBlindingKeyHex;
       if (command.needsLiquidAddress) {
-        liquidWalletId = await _defaultLiquidWalletId(environment);
-        final generated = await _freshLiquidAddress(
+        switch (await _defaultLiquidWalletId(environment)) {
+          case Ok(:final value):
+            liquidWalletId = value;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        final generatedResult = await _freshLiquidAddress(
           liquidWalletId,
           reservedLabelIds,
         );
-        liquidAddress = generated.$1;
-        // The blinding key is sent ONLY when the Liquid rail itself is accepted;
-        // an LN-only invoice supplies the address without the key (§3.5/§3.19).
-        liquidBlindingKeyHex = command.acceptLiquid ? generated.$2 : null;
+        switch (generatedResult) {
+          case Ok(:final value):
+            liquidAddress = value.$1;
+            // The blinding key is sent ONLY when the Liquid rail itself is
+            // accepted; an LN-only invoice supplies the address without the
+            // key (§3.5/§3.19).
+            liquidBlindingKeyHex = command.acceptLiquid ? value.$2 : null;
+          case Err(:final failure):
+            await _releaseReservations(reservedLabelIds);
+            return Err(failure);
+        }
       }
 
-      CreateInvoiceResult result;
-      try {
-        result = await _payService.createInvoice(
-          signer: signer,
-          command: command,
-          bitcoinAddress: bitcoinAddress,
-          liquidAddress: liquidAddress,
-          liquidBlindingKeyHex: liquidBlindingKeyHex,
-        );
-      } on InvoicesException catch (e) {
-        // Single regenerate-and-retry on a used-address rejection (§7.2). A
-        // second reuse on the retry propagates as the typed reused* error.
-        if (e.kind == InvoicesErrorKind.reusedBitcoinAddress &&
-            bitcoinWalletId != null) {
-          bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
-        } else if (e.kind == InvoicesErrorKind.reusedLiquidAddress &&
-            liquidWalletId != null) {
-          final regenerated = await _freshLiquidAddress(
-            liquidWalletId,
-            reservedLabelIds,
-          );
-          liquidAddress = regenerated.$1;
-          liquidBlindingKeyHex = command.acceptLiquid ? regenerated.$2 : null;
-        } else {
-          rethrow;
-        }
-        result = await _payService.createInvoice(
-          signer: signer,
-          command: command,
-          bitcoinAddress: bitcoinAddress,
-          liquidAddress: liquidAddress,
-          liquidBlindingKeyHex: liquidBlindingKeyHex,
-        );
+      final firstCreate = await _payService.createInvoice(
+        signer: signer,
+        command: command,
+        bitcoinAddress: bitcoinAddress,
+        liquidAddress: liquidAddress,
+        liquidBlindingKeyHex: liquidBlindingKeyHex,
+      );
+      final CreateInvoiceResult result;
+      switch (firstCreate) {
+        case Ok(:final value):
+          result = value;
+        case Err(:final failure):
+          // Single regenerate-and-retry on a used-address rejection (§7.2). A
+          // second reuse on the retry propagates as the typed reused* error.
+          if (failure.kind == InvoicesFailureKind.reusedBitcoinAddress &&
+              bitcoinWalletId != null) {
+            bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
+          } else if (failure.kind == InvoicesFailureKind.reusedLiquidAddress &&
+              liquidWalletId != null) {
+            final regenerated = await _freshLiquidAddress(
+              liquidWalletId,
+              reservedLabelIds,
+            );
+            switch (regenerated) {
+              case Ok(:final value):
+                liquidAddress = value.$1;
+                liquidBlindingKeyHex = command.acceptLiquid ? value.$2 : null;
+              case Err(:final failure):
+                await _releaseReservations(reservedLabelIds);
+                return Err(failure);
+            }
+          } else {
+            await _releaseReservations(reservedLabelIds);
+            return Err(failure);
+          }
+          switch (await _payService.createInvoice(
+            signer: signer,
+            command: command,
+            bitcoinAddress: bitcoinAddress,
+            liquidAddress: liquidAddress,
+            liquidBlindingKeyHex: liquidBlindingKeyHex,
+          )) {
+            case Ok(:final value):
+              result = value;
+            case Err(:final failure):
+              await _releaseReservations(reservedLabelIds);
+              return Err(failure);
+          }
       }
 
       await _storePrivateMemo(
@@ -117,38 +170,47 @@ class CreateInvoiceUsecase {
         liquidAddress: liquidAddress,
       );
 
-      return result;
-    } catch (_) {
+      return Ok(result);
+    } on Exception catch (error, stack) {
       // The create failed for good (all attempts): release the reservations so
       // the next attempt reuses the same unfunded indices instead of walking
       // the gap forward on every failure. Best-effort — never mask the error.
       await _releaseReservations(reservedLabelIds);
-      rethrow;
+      log.warning(
+        'Invoice create preparation failed',
+        error: error,
+        trace: stack,
+      );
+      return const Err(InvoicesFailure.unexpected());
     }
   }
 
-  Future<String> _defaultBitcoinWalletId(Environment environment) async {
+  Future<Result<String, InvoicesFailure>> _defaultBitcoinWalletId(
+    Environment environment,
+  ) async {
     final wallets = await _walletRepository.getWallets(
       environment: environment,
       onlyDefaults: true,
       onlyBitcoin: true,
     );
     if (wallets.isEmpty) {
-      throw const InvoicesException.noDefaultBitcoinWallet();
+      return const Err(InvoicesFailure.noDefaultBitcoinWallet());
     }
-    return wallets.first.id;
+    return Ok(wallets.first.id);
   }
 
-  Future<String> _defaultLiquidWalletId(Environment environment) async {
+  Future<Result<String, InvoicesFailure>> _defaultLiquidWalletId(
+    Environment environment,
+  ) async {
     final wallets = await _walletRepository.getWallets(
       environment: environment,
       onlyDefaults: true,
       onlyLiquid: true,
     );
     if (wallets.isEmpty) {
-      throw const InvoicesException.noDefaultLiquidWallet();
+      return const Err(InvoicesFailure.noDefaultLiquidWallet());
     }
-    return wallets.first.id;
+    return Ok(wallets.first.id);
   }
 
   Future<String> _freshBitcoinAddress(String walletId) async {
@@ -168,7 +230,7 @@ class CreateInvoiceUsecase {
   // best-effort private memo, this reservation is correctness-critical, so a
   // persistence failure MUST fail the create (it is caught by [execute] and the
   // label released). The stored label id is appended to [reservedLabelIds].
-  Future<(String, String)> _freshLiquidAddress(
+  Future<Result<(String, String), InvoicesFailure>> _freshLiquidAddress(
     String walletId,
     List<int> reservedLabelIds,
   ) async {
@@ -181,12 +243,13 @@ class CreateInvoiceUsecase {
         origin: 'invoice',
       ),
     );
-    final reserved = reservation.fold(
-      (label) => label,
-      (_) => throw const InvoicesException.unexpected(),
-    );
-    reservedLabelIds.add(reserved.id);
-    return (generated.address, generated.blindingKeyHex);
+    switch (reservation) {
+      case Ok(:final value):
+        reservedLabelIds.add(value.id);
+        return Ok((generated.address, generated.blindingKeyHex));
+      case Err():
+        return const Err(InvoicesFailure.unexpected());
+    }
   }
 
   // Best-effort release of the address reservations written during a create
@@ -196,7 +259,7 @@ class CreateInvoiceUsecase {
     for (final id in labelIds) {
       try {
         await _labels.trash(id);
-      } catch (_) {
+      } on Exception {
         // Best-effort cleanup only.
       }
     }
@@ -219,7 +282,7 @@ class CreateInvoiceUsecase {
         await _labels.store(
           NewLabel.addr(address: address, label: memo, origin: origin),
         );
-      } catch (_) {
+      } on Exception {
         // Best-effort only (§3.14 / AD-3 post-commitment).
       }
     }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,7 +96,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
     if (!state.hasAnyRail) {
       emit(
         state.copyWith(
-          failure: const InvoicesException.invalidInput(code: 'NoRailSelected'),
+          failure: const InvoicesFailure.invalidInput(code: 'NoRailSelected'),
         ),
       );
       return;
@@ -117,7 +118,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
       if (fiatCurrency.isEmpty) {
         emit(
           state.copyWith(
-            failure: const InvoicesException.invalidInput(
+            failure: const InvoicesFailure.invalidInput(
               code: 'CurrencyRequired',
             ),
             invalidField: InvoiceCreateField.currency,
@@ -155,28 +156,19 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
       privateMemo: _nullIfBlank(state.privateMemo),
     );
 
-    try {
-      final result = await _facade.create(command);
-      if (isClosed || op != _operationId) return;
-      emit(state.copyWith(submitting: false, result: result));
-    } on InvoicesException catch (e) {
-      if (isClosed || op != _operationId) return;
-      emit(state.copyWith(submitting: false, failure: e));
-    } catch (e, stack) {
-      log.warning('Invoice create failed', error: e, trace: stack);
-      if (isClosed || op != _operationId) return;
-      emit(
-        state.copyWith(
-          submitting: false,
-          failure: const InvoicesException.unexpected(),
-        ),
-      );
+    final result = await _facade.create(command);
+    if (isClosed || op != _operationId) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(state.copyWith(submitting: false, result: value));
+      case Err(:final failure):
+        emit(state.copyWith(submitting: false, failure: failure));
     }
   }
 
   void _emitInvalidAmount() => emit(
     state.copyWith(
-      failure: const InvoicesException.invalidInput(code: 'AmountInvalid'),
+      failure: const InvoicesFailure.invalidInput(code: 'AmountInvalid'),
       invalidField: InvoiceCreateField.amount,
     ),
   );

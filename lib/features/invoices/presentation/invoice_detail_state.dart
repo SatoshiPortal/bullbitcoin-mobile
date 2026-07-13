@@ -11,11 +11,11 @@ class InvoiceDetailState {
   final InvoiceDetailStatus status;
   final Invoice? invoice;
   final InvoiceStatusSnapshot? snapshot;
-  final InvoicesException? failure;
+  final InvoicesFailure? failure;
 
   final bool cancelling;
   final InvoiceStatus? cancelFinalStatus;
-  final InvoicesException? cancelFailure;
+  final InvoicesFailure? cancelFailure;
 
   const InvoiceDetailState({
     this.status = InvoiceDetailStatus.loading,
@@ -43,10 +43,10 @@ class InvoiceDetailState {
     InvoiceDetailStatus? status,
     Invoice? invoice,
     InvoiceStatusSnapshot? snapshot,
-    InvoicesException? failure,
+    InvoicesFailure? failure,
     bool? cancelling,
     InvoiceStatus? cancelFinalStatus,
-    InvoicesException? cancelFailure,
+    InvoicesFailure? cancelFailure,
     bool clearFailure = false,
     bool clearCancelFailure = false,
   }) {
@@ -57,8 +57,9 @@ class InvoiceDetailState {
       failure: clearFailure ? null : failure ?? this.failure,
       cancelling: cancelling ?? this.cancelling,
       cancelFinalStatus: cancelFinalStatus ?? this.cancelFinalStatus,
-      cancelFailure:
-          clearCancelFailure ? null : cancelFailure ?? this.cancelFailure,
+      cancelFailure: clearCancelFailure
+          ? null
+          : cancelFailure ?? this.cancelFailure,
     );
   }
 }

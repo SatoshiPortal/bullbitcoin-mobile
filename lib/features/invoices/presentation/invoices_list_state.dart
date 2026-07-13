@@ -11,7 +11,7 @@ class InvoicesListState {
   final List<Invoice> invoices;
   final InvoiceStatus? filter;
   final bool hasMore;
-  final InvoicesException? failure;
+  final InvoicesFailure? failure;
 
   const InvoicesListState({
     this.status = InvoicesListStatus.initial,
@@ -36,7 +36,7 @@ class InvoicesListState {
     List<Invoice>? invoices,
     InvoiceStatus? filter,
     bool? hasMore,
-    InvoicesException? failure,
+    InvoicesFailure? failure,
     bool clearFilter = false,
     bool clearFailure = false,
   }) {

@@ -1,10 +1,11 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_port.dart';
-import 'package:bb_mobile/features/invoices/domain/invoices_error.dart';
+import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 
 /// Resolves the Get Paid signing identity for invoices. Unlinked v1 needs ONLY
@@ -26,48 +27,40 @@ class InvoicesIdentityDatasource implements InvoicesIdentityPort {
   });
 
   @override
-  Future<BullnymAuthSigner> getSigningHandle() async {
-    final xprvBase58 = await _deriveDefaultWalletXprv();
-    final String npubHex;
+  Future<Result<BullnymAuthSigner, InvoicesFailure>> getSigningHandle() async {
     try {
-      npubHex = _nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(
-        xprvBase58,
+      final settings = await _getSettings.execute();
+      final wallets = await _walletRepository.getWallets(
+        environment: settings.environment,
+        onlyDefaults: true,
+        onlyBitcoin: true,
       );
-    } catch (_) {
-      throw const InvoicesException.signingFailed();
-    }
-    return BullnymAuthSigner(
-      npubHex: npubHex,
-      signHashHex: (messageHashHex) =>
-          _nostrIdentity.signBullnymServerAuthHashFromXprv(
-            xprvBase58: xprvBase58,
-            messageHashHex: messageHashHex,
-          ),
-    );
-  }
-
-  Future<String> _deriveDefaultWalletXprv() async {
-    final settings = await _getSettings.execute();
-    final wallets = await _walletRepository.getWallets(
-      environment: settings.environment,
-      onlyDefaults: true,
-      onlyBitcoin: true,
-    );
-    if (wallets.isEmpty) {
-      // No default wallet to bind the Get Paid identity to.
-      throw const InvoicesException.noDefaultBitcoinWallet();
-    }
-    final defaultWallet = wallets.first;
-    try {
+      if (wallets.isEmpty) {
+        return const Err(InvoicesFailure.noDefaultBitcoinWallet());
+      }
+      final defaultWallet = wallets.first;
       final seed = await _seedRepository.get(defaultWallet.masterFingerprint);
-      return Bip32Derivation.getXprvFromSeed(
+      final xprvBase58 = Bip32Derivation.getXprvFromSeed(
         seed.bytes,
         defaultWallet.network,
       );
-    } on InvoicesException {
-      rethrow;
-    } catch (_) {
-      throw const InvoicesException.signingFailed();
+      final npubHex = _nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(
+        xprvBase58,
+      );
+      return Ok(
+        BullnymAuthSigner(
+          npubHex: npubHex,
+          signHashHex: (messageHashHex) =>
+              _nostrIdentity.signBullnymServerAuthHashFromXprv(
+                xprvBase58: xprvBase58,
+                messageHashHex: messageHashHex,
+              ),
+        ),
+      );
+    } on Exception {
+      // Do not attach raw seed/derivation diagnostics to this failure. The
+      // signing path handles key material and must remain non-observable.
+      return const Err(InvoicesFailure.signingFailed());
     }
   }
 }
