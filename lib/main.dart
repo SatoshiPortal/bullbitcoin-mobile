@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
-import 'package:bb_mobile/core/background_tasks/tasks.dart';
+// import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
@@ -114,16 +114,23 @@ class Bull {
       // intentionally per-isolate (see the comment above its
       // definition — cross-isolate truncation races with the other
       // isolate's open IOSink and can destroy recently-buffered
-      // lines). FG file pruning therefore only happens here; the BG
-      // file is pruned by the `logs-prune` workmanager fire. Long
-      // FG-only sessions (rare cold restarts, no BG fires) can let
-      // the FG file grow past the cap until the next cold launch —
+      // lines). Long FG-only sessions (rare cold restarts) can let the
+      // FG file grow past the cap until the next cold launch —
       // acceptable: worst case is a few hundred KB until the user
       // restarts.
       //
       // Fire-and-forget: prune serializes against writes via
       // `_enqueue` and is a no-op if the file is small.
       unawaited(log.prune());
+      // The `logs-prune` workmanager task (which used to own pruning
+      // `bull_background_logs.tsv`) is temporarily unregistered — see
+      // `initWorkmanager` below. That leaves nothing writing to the BG
+      // file, so it's now safe for the FG isolate to prune it too (see
+      // `Logger.pruneBackgroundFile`'s doc comment for why this
+      // wouldn't have been safe while the BG task was still live).
+      // This also clears any backlog an existing install already
+      // accumulated from the BG task's fires before this change.
+      unawaited(log.pruneBackgroundFile());
     }
   }
 
@@ -134,18 +141,44 @@ class Bull {
 
   static Future<void> initWorkmanager() async {
     await Workmanager().initialize(backgroundTasksHandler);
+    // `cancelAll` clears any periodic task a device may have scheduled
+    // under a prior app version (bitcoinSync/liquidSync/swapsSync/
+    // logsPrune all shipped as registered tasks at one point or
+    // another) so an existing install never keeps firing a stale
+    // schedule after an upgrade. On iOS this only cancels what
+    // `ios/Runner/AppDelegate.swift`'s native registration (which runs
+    // before this line, on every launch, even if `Bull.init` fails before
+    // reaching this call) already re-armed — see that file, which is
+    // paused in lockstep with this one.
     await Workmanager().cancelAll();
-    await Workmanager().registerPeriodicTask(
-      BackgroundTask.logsPrune.id,
-      BackgroundTask.logsPrune.name,
-      frequency: const Duration(minutes: 15),
-      constraints: Constraints(
-        requiresBatteryNotLow: true,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        requiresCharging: false,
-      ),
-    );
+    // `registerPeriodicTask` for `logsPrune` is intentionally NOT
+    // called. The BG isolate spawned to run it can run concurrently
+    // with the FG engine and both were found touching the same Liquid
+    // wallet at once, tripping lwk_wollet's `UpdateOnDifferentStatus`
+    // and crashing the app on launch. A proper lock fix for that race
+    // is landing separately; until it has shipped and proven stable
+    // for a few releases, we avoid the background engine altogether
+    // as defense-in-depth. Re-enable by uncommenting the `tasks.dart`
+    // import above and the `registerPeriodicTask` call below — AND the
+    // matching native registrations in AppDelegate.swift and the permitted
+    // identifiers in Info.plist. First close the hardening checklist on
+    // `CrossIsolateDirMarker` in lwk_dir_guard.dart (gaps found in the
+    // 2026-07 pre-merge review — non-atomic acquire, Android's
+    // workmanager_android hard-killing the isolate without releasing the
+    // marker, the native LWK wallet handle never being disposed
+    // explicitly, and thin cross-isolate test coverage):
+    //
+    // await Workmanager().registerPeriodicTask(
+    //   BackgroundTask.logsPrune.id,
+    //   BackgroundTask.logsPrune.name,
+    //   frequency: const Duration(minutes: 15),
+    //   constraints: Constraints(
+    //     requiresBatteryNotLow: true,
+    //     requiresStorageNotLow: false,
+    //     requiresDeviceIdle: false,
+    //     requiresCharging: false,
+    //   ),
+    // );
   }
 }
 

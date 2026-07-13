@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.12.1+192
+version: 6.12.8+199
 
 environment:
   sdk: "3.12.2"
@@ -175,6 +175,7 @@ dev_dependencies:
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  path_provider_platform_interface: ^2.1.2
   melos: ^7.8.1
 
 # Melos monorepo workspace. Today the app is a single package living at the repo

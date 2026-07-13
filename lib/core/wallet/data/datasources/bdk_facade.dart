@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -66,8 +67,13 @@ class BdkFacade {
             );
 
       return wallet;
-    } catch (e) {
+    } catch (e, st) {
       // If there's any error (corrupted db, etc.), delete and recreate
+      log.severe(
+        message: 'BdkFacade: wallet load failed, recreating from descriptor',
+        error: e,
+        trace: st,
+      );
       if (await dbFile.exists()) {
         await dbFile.delete();
       }
@@ -164,8 +170,13 @@ class BdkFacade {
             );
 
       return wallet;
-    } catch (e) {
+    } catch (e, st) {
       // If there's any error (corrupted db, etc.), delete and recreate
+      log.severe(
+        message: 'BdkFacade: wallet load failed, recreating from descriptor',
+        error: e,
+        trace: st,
+      );
       if (await dbFile.exists()) {
         await dbFile.delete();
       }

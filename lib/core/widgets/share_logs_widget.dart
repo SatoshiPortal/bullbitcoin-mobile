@@ -17,8 +17,16 @@ class ShareLogsWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
           tileColor: context.appColors.transparent,
           title: Text(context.loc.shareLogsLabel),
-          onTap: () => _onShareTapped(context),
+          onTap: () => _shareLogs(context),
           trailing: const Icon(Icons.share_sharp),
+        ),
+        const Gap(8),
+        ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+          tileColor: context.appColors.transparent,
+          title: Text(context.loc.logsShareOptionExport),
+          onTap: () => _exportLogs(context),
+          trailing: const Icon(Icons.file_download_outlined),
         ),
         const Gap(8),
         GestureDetector(
@@ -46,19 +54,10 @@ class ShareLogsWidget extends StatelessWidget {
     SnackBarUtils.showSnackBar(context, context.loc.logsDeletedMessage);
   }
 
-  Future<void> _onShareTapped(BuildContext context) async {
-    await showLogsShareSheet(
-      context: context,
-      onShare: () => _shareLogs(context),
-      onExport: () => _exportLogs(context),
-    );
-  }
-
   Future<void> _shareLogs(BuildContext context) async {
     try {
       final logs = await log.readLogs();
-      if (!context.mounted) return;
-      await shareLogsAsText(logs);
+      await shareLogsAsFile(logs);
     } catch (e) {
       if (!context.mounted) return;
       SnackBarUtils.showSnackBar(

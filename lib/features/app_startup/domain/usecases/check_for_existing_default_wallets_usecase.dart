@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -25,16 +26,43 @@ class CheckForExistingDefaultWalletsUsecase {
         onlyDefaults: true,
         environment: environment,
       );
-    } catch (e) {
+    } catch (e, st) {
+      if (e is KeychainLockedException) {
+        // Routine pre-first-unlock condition, not an error — AppStartupBloc
+        // has a dedicated catch that retries once the device unlocks, so
+        // this must not file a Sentry event on every normal cold boot.
+        log.warning('Keychain locked while loading default wallets', error: e);
+        rethrow;
+      }
+      // lwk errors arrive as bare Strings (LwkWalletDatasource converts the
+      // raw LwkError to e.msg), so the message embeds the error verbatim —
+      // this severe is the only place they get captured before surfacing as
+      // a generic "Startup Error".
       if (e.toString().contains('UpdateOnDifferentStatus')) {
         log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
-        await _walletRepository.deleteLwkDb();
-        log.fine('Deleted LwkDb, retrying getWallets');
-        defaultWallets = await _walletRepository.getWallets(
-          onlyDefaults: true,
-          environment: environment,
-        );
+        try {
+          await _walletRepository.deleteLwkDb();
+          log.fine('Deleted LwkDb, retrying getWallets');
+          defaultWallets = await _walletRepository.getWallets(
+            onlyDefaults: true,
+            environment: environment,
+          );
+        } catch (retryError, retrySt) {
+          log.severe(
+            message:
+                'Failed to load default wallets at startup after lwkDb '
+                'reset: $retryError',
+            error: retryError,
+            trace: retrySt,
+          );
+          rethrow;
+        }
       } else {
+        log.severe(
+          message: 'Failed to load default wallets at startup: $e',
+          error: e,
+          trace: st,
+        );
         rethrow;
       }
     }
@@ -77,8 +105,7 @@ class CheckForExistingDefaultWalletsUsecase {
         );
       } catch (e, stackTrace) {
         log.severe(
-          message:
-              'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
+          message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
           error: e,
           trace: stackTrace,
         );
