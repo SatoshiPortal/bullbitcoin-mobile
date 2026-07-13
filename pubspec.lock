@@ -1537,10 +1537,10 @@ packages:
     dependency: "direct main"
     description:
       name: payjoin
-      sha256: a2047b2f2ecb40543f1a8b0d5ea93cf377151ac72463df4096aa73a443cef42e
+      sha256: "2b8e3f2c0f78e2054fcee9c25a8ce670df3fb4bec7ea66c4524dbac5e5b654eb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.2"
   permission_handler:
     dependency: "direct main"
     description:
