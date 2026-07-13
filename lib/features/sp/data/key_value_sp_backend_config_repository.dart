@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'dart:developer' as developer;
+
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart';
 import 'package:bb_mobile/features/sp/data/models/sp_backend_config_model.dart';
@@ -18,12 +21,12 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
 
   // bwk connection-test free functions, injectable so `testBackend` can be
   // unit-tested without a real backend.
-  final Future<int> Function({required String url}) _testBlindbit;
+  final Future<void> Function({required String url}) _testBlindbit;
   final Future<void> Function({required String url}) _testElectrum;
 
   KeyValueSpBackendConfigRepository({
     required this._storage,
-    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
   }) : _testBlindbit = testBlindbit ?? testBlindbitUrl,
        _testElectrum = testElectrum ?? testElectrumUrl;
@@ -70,6 +73,11 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
       }
       return const Ok(null);
     } catch (e) {
+      developer.log(
+        'SP backend test failed ($kind, $url): $e',
+        name: 'SP',
+      );
+      log.warning('SP backend test failed ($kind, $url)', error: e);
       return Err(SpBackendUnreachable('SP backend test failed ($url): $e'));
     }
   }

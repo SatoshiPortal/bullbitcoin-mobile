@@ -22,15 +22,15 @@ class MockCreateSpWalletUsecase extends Mock implements CreateSpWalletUsecase {}
 class _FakeBackendConfigRepo implements SpBackendConfigRepository {
   _FakeBackendConfigRepo(
     this._regtest, {
-    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
     Future<void>? regtestGate,
-  }) : _testBlindbit = testBlindbit ?? (({required String url}) async => 0),
+  }) : _testBlindbit = testBlindbit ?? (({required String url}) async {}),
        _testElectrum = testElectrum ?? (({required String url}) async {}),
        _regtestGate = regtestGate ?? Future<void>.value();
 
   final Result<SpBackendDefaults, SpFailure> _regtest;
-  final Future<int> Function({required String url}) _testBlindbit;
+  final Future<void> Function({required String url}) _testBlindbit;
   final Future<void> Function({required String url}) _testElectrum;
   // The regtest fetch blocks on this before resolving; a test passes a gate it
   // releases later to simulate a slow fetch that lands after the user typed. It
@@ -82,7 +82,7 @@ void main() {
   );
 
   SpSetupCubit buildSetup({
-    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
     Result<SpBackendDefaults, SpFailure>? regtest,
     Future<void>? regtestGate,

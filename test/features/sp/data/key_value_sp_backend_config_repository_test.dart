@@ -31,16 +31,16 @@ class _InMemoryStorage implements KeyValueStorageDatasource<String> {
 void main() {
   group('KeyValueSpBackendConfigRepository.testBackend', () {
     KeyValueSpBackendConfigRepository build({
-      Future<int> Function({required String url})? testBlindbit,
+      Future<void> Function({required String url})? testBlindbit,
       Future<void> Function({required String url})? testElectrum,
     }) => KeyValueSpBackendConfigRepository(
       storage: _InMemoryStorage(),
-      testBlindbit: testBlindbit ?? ({required String url}) async => 0,
+      testBlindbit: testBlindbit ?? ({required String url}) async {},
       testElectrum: testElectrum ?? ({required String url}) async {},
     );
 
     test('blindbit returns Ok on success', () async {
-      final repo = build(testBlindbit: ({required String url}) async => 42);
+      final repo = build(testBlindbit: ({required String url}) async {});
       final result = await repo.testBackend(SpBackendKind.blindbit, 'http://ok');
       expect(result, isA<Ok<void, SpFailure>>());
     });

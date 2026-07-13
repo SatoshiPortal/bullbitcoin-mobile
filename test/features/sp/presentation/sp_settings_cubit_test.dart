@@ -41,7 +41,7 @@ void main() {
   // probes, mirroring the real adapter's try/catch mapping.
   void stubTestBackend(
     _MockSpBackendConfigRepository configRepo, {
-    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
   }) {
     when(() => configRepo.testBackend(any(), any())).thenAnswer((inv) async {
@@ -50,7 +50,7 @@ void main() {
       try {
         switch (kind) {
           case SpBackendKind.blindbit:
-            await (testBlindbit ?? (({required String url}) async => 0))(
+            await (testBlindbit ?? (({required String url}) async {}))(
               url: url,
             );
           case SpBackendKind.electrum:
@@ -71,7 +71,7 @@ void main() {
 
   SpSettingsCubit build({
     List<SpNotifLogLine> seed = const [],
-    Future<int> Function({required String url})? testBlindbit,
+    Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
   }) {
     when(() => logUsecase.execute())
