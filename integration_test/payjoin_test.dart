@@ -491,7 +491,7 @@ Future<void> main({bool isInitialized = false}) async {
         },
         timeout: const Timeout(
           Duration(
-            minutes:
+            seconds:
                 PayjoinConstants.directoryPollingInterval *
                 3 *
                 numberOfPayjoins,
