@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
@@ -39,9 +41,63 @@ Future<void> main({bool isInitialized = false}) async {
   final receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
   final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
   final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
+  final signBitcoinTxUsecase = locator<SignBitcoinTxUsecase>();
+  final broadcastBitcoinTxUsecase =
+      locator<BroadcastBitcoinTransactionUsecase>();
 
-  final receiverMnemonic = Platform.environment['TEST_ALICE_MNEMONIC'];
-  final senderMnemonic = Platform.environment['TEST_BOB_MNEMONIC'];
+  // Sweeps every UTXO of [walletId] into a single fresh one. rust-payjoin's
+  // `WantsInputs::try_preserving_privacy` (the receiver's decoy-input
+  // selection) has a real upstream bug: its documented fallback ("a simple
+  // consolidation is otherwise chosen if available") never actually runs,
+  // because the UIH-avoidance pass it falls back from already drains the
+  // candidate iterator before returning its error — see
+  // `payjoin::receive::v1::WantsInputs::avoid_uih`/`select_first_candidate`
+  // (payjoin crate 0.23.0). So a receiver wallet whose UTXO set is a
+  // scattered mix of dust and mismatched sizes (which is exactly what this
+  // test's own repeated runs otherwise produce over time) can permanently
+  // fail to find *any* selection, even though the wallet holds plenty of
+  // funds. Keeping both wallets down to a single UTXO sidesteps needing that
+  // broken fallback at all, by giving the heuristic a single, unambiguous,
+  // appropriately-sized candidate up front.
+  Future<void> consolidateUtxos(String walletId) async {
+    final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
+    if (utxos.length <= 1) return;
+
+    final selfAddress = await addressRepository.generateNewReceiveAddress(
+      walletId: walletId,
+    );
+    final prepared = await prepareBitcoinSendUsecase.execute(
+      walletId: walletId,
+      address: selfAddress.address,
+      drain: true,
+      networkFee: NetworkFee.relativeFromSatPerVbyte(1000.0),
+    );
+    final signed = await signBitcoinTxUsecase.execute(
+      psbt: prepared.unsignedPsbt,
+      walletId: walletId,
+    );
+    await broadcastBitcoinTxUsecase.execute(signed.signedPsbt, isPsbt: true);
+
+    // Give the new consolidated utxo a moment to be visible on next sync.
+    await Future.delayed(const Duration(seconds: 3));
+    await walletRepository.getWallets(sync: true);
+  }
+
+  // The funded-testnet mnemonics come from the environment, via two channels:
+  // - CI / desktop (`-d linux`): real process env vars, read through
+  //   Platform.environment (see analyze_and_test.yml, which exports them
+  //   from repo secrets).
+  // - Physical device (`-d <android-id>`): the app process does NOT inherit
+  //   the CLI's env, so pass them as --dart-define instead, read through
+  //   String.fromEnvironment (compile-time constants baked into the build).
+  const aliceDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
+  const bobDefine = String.fromEnvironment('TEST_BOB_MNEMONIC');
+  final receiverMnemonic = aliceDefine.isNotEmpty
+      ? aliceDefine
+      : Platform.environment['TEST_ALICE_MNEMONIC'];
+  final senderMnemonic = bobDefine.isNotEmpty
+      ? bobDefine
+      : Platform.environment['TEST_BOB_MNEMONIC'];
 
   if (receiverMnemonic == null || receiverMnemonic.isEmpty) {
     throw Exception('TEST_ALICE_MNEMONIC environment variable is not set');
@@ -168,80 +224,90 @@ Future<void> main({bool isInitialized = false}) async {
         });
       });
 
-      test('should work with one receiver and one sender', () async {
-        // Generate receiver address
-        final address = await addressRepository.generateNewReceiveAddress(
-          walletId: receiverWallet.id,
-        );
-        debugPrint('Receive address generated: ${address.address}');
+      test(
+        'should work with one receiver and one sender',
+        () async {
+          // See consolidateUtxos' doc comment: give the receiver's decoy-input
+          // selection an unambiguous, appropriately-sized candidate so it
+          // doesn't hit the rust-payjoin fallback-selection bug.
+          await consolidateUtxos(receiverWallet.id);
+          await consolidateUtxos(senderWallet.id);
 
-        // Start a receiver session
-        final payjoin = await receiveWithPayjoinUsecase.execute(
-          walletId: receiverWallet.id,
-          address: address.address,
-        );
-        debugPrint('Payjoin receiver created: ${payjoin.id}');
+          // Generate receiver address
+          final address = await addressRepository.generateNewReceiveAddress(
+            walletId: receiverWallet.id,
+          );
+          debugPrint('Receive address generated: ${address.address}');
 
-        expect(payjoin.status, PayjoinStatus.started);
-        // Check that the payjoin uri is correct
-        final pjUri = Uri.parse(payjoin.pjUri);
-        expect(pjUri.scheme, 'bitcoin');
-        expect(pjUri.path, address.address);
-        expect(pjUri.queryParameters.containsKey('pj'), true);
+          // Start a receiver session
+          final payjoin = await receiveWithPayjoinUsecase.execute(
+            walletId: receiverWallet.id,
+            address: address.address,
+          );
+          debugPrint('Payjoin receiver created: ${payjoin.id}');
 
-        // Build the psbt with the sender wallet
-        const amountSat = 10000;
-        const networkFeesSatPerVb = 1000.0;
-        final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
-          walletId: senderWallet.id,
-          address: address.address,
-          amountSat: amountSat,
-          networkFee: NetworkFee.relativeFromSatPerVbyte(networkFeesSatPerVb),
-        );
+          expect(payjoin.status, PayjoinStatus.started);
+          // Check that the payjoin uri is correct
+          final pjUri = Uri.parse(payjoin.pjUri);
+          expect(pjUri.scheme, 'bitcoin');
+          expect(pjUri.path, address.address);
+          expect(pjUri.queryParameters.containsKey('pj'), true);
 
-        final payjoinSender = await sendWithPayjoinUsecase.execute(
-          walletId: senderWallet.id,
-          isTestnet: senderWallet.isTestnet,
-          bip21: pjUri.toString(),
-          unsignedOriginalPsbt: preparedBitcoinSend.unsignedPsbt,
-          amountSat: amountSat,
-          networkFeesSatPerVb: networkFeesSatPerVb,
-        );
-        debugPrint('Payjoin sender created: ${payjoinSender.id}');
-        expect(payjoinSender.status, PayjoinStatus.requested);
+          // Build the psbt with the sender wallet
+          const amountSat = 10000;
+          const networkFeesSatPerVb = 1000.0;
+          final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
+            walletId: senderWallet.id,
+            address: address.address,
+            amountSat: amountSat,
+            networkFee: NetworkFee.relativeFromSatPerVbyte(networkFeesSatPerVb),
+          );
 
-        // Once the request is sent by the sender, it is automatically fetched
-        //  by the receiver the next time it polls the payjoin directory.
-        //  The receiver will process the request automatically and sends a
-        //  payjoin proposal back to the payjoin directory which should complete
-        //  the payjoin session for the receiver's side.
-        final didReceiverPropose = await Future.any([
-          payjoinReceiverProposedEvent.future,
-          Future.delayed(
-            const Duration(
-              seconds: PayjoinConstants.directoryPollingInterval * 3,
+          final payjoinSender = await sendWithPayjoinUsecase.execute(
+            walletId: senderWallet.id,
+            isTestnet: senderWallet.isTestnet,
+            bip21: pjUri.toString(),
+            unsignedOriginalPsbt: preparedBitcoinSend.unsignedPsbt,
+            amountSat: amountSat,
+            networkFeesSatPerVb: networkFeesSatPerVb,
+          );
+          debugPrint('Payjoin sender created: ${payjoinSender.id}');
+          expect(payjoinSender.status, PayjoinStatus.requested);
+
+          // Once the request is sent by the sender, it is automatically fetched
+          //  by the receiver the next time it polls the payjoin directory.
+          //  The receiver will process the request automatically and sends a
+          //  payjoin proposal back to the payjoin directory which should complete
+          //  the payjoin session for the receiver's side.
+          final didReceiverPropose = await Future.any([
+            payjoinReceiverProposedEvent.future,
+            Future.delayed(
+              const Duration(
+                seconds: PayjoinConstants.directoryPollingInterval * 3,
+              ),
+              () => false,
             ),
-            () => false,
-          ),
-        ]);
-        expect(didReceiverPropose, true);
+          ]);
+          expect(didReceiverPropose, true);
 
-        // Once the proposal is sent by the receiver, it is automatically fetched
-        //  by the sender the next time it polls the payjoin directory.
-        // The sender will process the proposal automatically and broadcast the
-        //  final transaction to the network which should complete the payjoin
-        //  session for the sender's side.
-        final didSenderComplete = await Future.any([
-          payjoinSenderCompletedEvent.future,
-          Future.delayed(
-            const Duration(
-              seconds: PayjoinConstants.directoryPollingInterval * 3,
+          // Once the proposal is sent by the receiver, it is automatically fetched
+          //  by the sender the next time it polls the payjoin directory.
+          // The sender will process the proposal automatically and broadcast the
+          //  final transaction to the network which should complete the payjoin
+          //  session for the sender's side.
+          final didSenderComplete = await Future.any([
+            payjoinSenderCompletedEvent.future,
+            Future.delayed(
+              const Duration(
+                seconds: PayjoinConstants.directoryPollingInterval * 3,
+              ),
+              () => false,
             ),
-            () => false,
-          ),
-        ]);
-        expect(didSenderComplete, true);
-      });
+          ]);
+          expect(didSenderComplete, true);
+        },
+        timeout: const Timeout(Duration(seconds: 120)),
+      );
 
       test('should successfully resume after a restart', () {});
 
