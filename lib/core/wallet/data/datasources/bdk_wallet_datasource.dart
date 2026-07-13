@@ -153,24 +153,29 @@ class BdkWalletDatasource {
   }
 
   /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
-  /// wallet.
+  /// wallet. Uses the same sign options as [signPsbt] — in particular
+  /// `allowAllSighashes: false`, since this signs the wallet's contribution
+  /// to an externally-supplied transaction (a payjoin proposal).
   Future<String Function(String)> createPsbtSigner({
     required PrivateBdkWalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
     return (String psbtBase64) {
       final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      bdkWallet.sign(
+      final isFinalized = bdkWallet.sign(
         psbt: psbt,
         signOptions: bdk.SignOptions(
           trustWitnessUtxo: true,
           assumeHeight: null,
-          allowAllSighashes: true,
+          allowAllSighashes: false,
           tryFinalize: true,
           signWithTapInternalKey: false,
           allowGrinding: true,
         ),
       );
+      if (!isFinalized) {
+        log.info('Signed PSBT is not finalized');
+      }
       return psbt.serialize();
     };
   }
