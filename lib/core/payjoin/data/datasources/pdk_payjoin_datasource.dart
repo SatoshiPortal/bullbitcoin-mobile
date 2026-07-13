@@ -14,9 +14,20 @@ import 'package:dio/dio.dart';
 import 'package:payjoin/payjoin.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
 
+/// Fetches the OHTTP key config published by [directoryUrl] through
+/// [ohttpRelayUrl]. Matches the signature of `payjoin/http.dart`'s top-level
+/// `fetchOhttpKeys`, which is the default implementation used in production;
+/// tests can inject a fake to exercise the relay fallback logic offline.
+typedef OhttpKeysFetcher =
+    Future<OhttpKeys> Function({
+      required String ohttpRelayUrl,
+      required String directoryUrl,
+    });
+
 class PdkPayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
+  final OhttpKeysFetcher _fetchOhttpKeys;
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
   final StreamController<PayjoinSenderModel> _proposalSentController;
   final StreamController<PayjoinModel> _expiredController;
@@ -35,7 +46,9 @@ class PdkPayjoinDatasource {
   PdkPayjoinDatasource({
     this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required this._dio,
-  }) : _payjoinRequestedController = StreamController.broadcast(),
+    OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
+  }) : _fetchOhttpKeys = ohttpKeysFetcher,
+       _payjoinRequestedController = StreamController.broadcast(),
        _proposalSentController = StreamController.broadcast(),
        _expiredController = StreamController.broadcast();
 
@@ -52,7 +65,7 @@ class PdkPayjoinDatasource {
   }) async {
     for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
       try {
-        final ohttpKeys = await fetchOhttpKeys(
+        final ohttpKeys = await _fetchOhttpKeys(
           ohttpRelayUrl: ohttpRelayUrl,
           directoryUrl: payjoinDirectory,
         );
