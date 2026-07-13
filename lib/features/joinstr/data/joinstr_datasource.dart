@@ -8,15 +8,28 @@ import 'package:joinstr_flutter/joinstr_flutter.dart' as jns;
 class JoinstrDatasource {
   const JoinstrDatasource();
 
+  /// Runs an FFI call, translating the binding's `JoinstrError` into a domain
+  /// [JoinstrException] that carries its real message. Without this the error
+  /// surfaces as `JoinstrError.toString()`, i.e. "Instance of 'JoinstrError'".
+  Future<T> _call<T>(Future<T> Function() ffi) async {
+    try {
+      return await ffi();
+    } on jns.JoinstrError catch (e) {
+      throw JoinstrException(JoinstrIssue.coinjoinFailed, detail: e.message);
+    }
+  }
+
   Future<List<JoinstrPool>> listPools({
     required String relay,
     required Duration back,
     required Duration wait,
   }) async {
-    final pools = await jns.listPools(
-      back: BigInt.from(back.inSeconds),
-      timeout: BigInt.from(wait.inMicroseconds),
-      relay: relay,
+    final pools = await _call(
+      () => jns.listPools(
+        back: BigInt.from(back.inSeconds),
+        timeout: BigInt.from(wait.inMicroseconds),
+        relay: relay,
+      ),
     );
 
     // `FfiPool.network` is not trustworthy: pools published by the rust
@@ -47,16 +60,17 @@ class JoinstrDatasource {
     required String outputAddress,
     required String electrumUrl,
   }) async {
-    final peer = await _peerConfig(
-      wallet: wallet,
-      mnemonic: mnemonic,
-      outputAddress: outputAddress,
-      electrumUrl: electrumUrl,
-      relay: pool.relay,
-      denominationSat: pool.denominationSat,
-    );
-
-    return jns.joinCoinjoin(poolRawJson: pool.rawJson, peer: peer);
+    return _call(() async {
+      final peer = await _peerConfig(
+        wallet: wallet,
+        mnemonic: mnemonic,
+        outputAddress: outputAddress,
+        electrumUrl: electrumUrl,
+        relay: pool.relay,
+        denominationSat: pool.denominationSat,
+      );
+      return jns.joinCoinjoin(poolRawJson: pool.rawJson, peer: peer);
+    });
   }
 
   Future<String> initiatePool({
@@ -70,25 +84,26 @@ class JoinstrDatasource {
     required int peers,
     required Duration maxDuration,
   }) async {
-    final peer = await _peerConfig(
-      wallet: wallet,
-      mnemonic: mnemonic,
-      outputAddress: outputAddress,
-      electrumUrl: electrumUrl,
-      relay: relay,
-      denominationSat: denominationSat,
-    );
-
-    return jns.initiateCoinjoin(
-      config: jns.FfiPoolConfig(
-        denominationBtc: Joinstr.denominationBtc(denominationSat),
-        fee: feeRateSatPerVb,
-        maxDuration: BigInt.from(maxDuration.inSeconds),
-        peers: peers,
-        network: _network(wallet.network),
-      ),
-      peer: peer,
-    );
+    return _call(() async {
+      final peer = await _peerConfig(
+        wallet: wallet,
+        mnemonic: mnemonic,
+        outputAddress: outputAddress,
+        electrumUrl: electrumUrl,
+        relay: relay,
+        denominationSat: denominationSat,
+      );
+      return jns.initiateCoinjoin(
+        config: jns.FfiPoolConfig(
+          denominationBtc: Joinstr.denominationBtc(denominationSat),
+          fee: feeRateSatPerVb,
+          maxDuration: BigInt.from(maxDuration.inSeconds),
+          peers: peers,
+          network: _network(wallet.network),
+        ),
+        peer: peer,
+      );
+    });
   }
 
   Future<jns.FfiPeerConfig> _peerConfig({
