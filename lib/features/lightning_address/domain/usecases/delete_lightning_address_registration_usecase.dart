@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_nym_validation.dart';
@@ -34,9 +35,18 @@ class DeleteLightningAddressRegistrationUsecase {
               messageHashHex: messageHashHex,
             ),
       );
-      await _bullnym.deleteRegistration(signer: signer, nym: nym);
-    } on BullnymException catch (e) {
-      throw mapBullnymToLightningAddressException(e);
+      final result = await _bullnym.deleteRegistration(
+        signer: signer,
+        nym: nym,
+      );
+      switch (result) {
+        case Ok():
+          return;
+        case Err(:final failure):
+          throw mapBullnymToLightningAddressException(failure);
+      }
+    } on LightningAddressException {
+      rethrow;
     } catch (_) {
       throw const LightningAddressException.unexpected();
     }

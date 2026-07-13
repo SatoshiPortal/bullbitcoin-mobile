@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/invoices/application/usecases/cancel_invoice_
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
+import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
 import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
@@ -72,8 +73,12 @@ class InvoicesFacade {
   Future<PrivateInvoiceLink?> privateLink(InvoiceId invoiceId) =>
       _getPrivateLink.execute(invoiceId);
 
-  Future<BullnymSupportedCurrencies> supportedCurrencies() =>
-      _bullnym.getSupportedCurrencies();
+  @useResult
+  Future<Result<BullnymSupportedCurrencies, InvoicesFailure>>
+  supportedCurrencies() async {
+    final result = await _bullnym.getSupportedCurrencies();
+    return result.mapErr(mapBullnymFailureToInvoices);
+  }
 
   @override
   String toString() => 'InvoicesFacade';

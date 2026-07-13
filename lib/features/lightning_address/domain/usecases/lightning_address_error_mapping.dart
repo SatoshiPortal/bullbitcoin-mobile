@@ -2,37 +2,39 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_error.dart';
 
 LightningAddressException mapBullnymToLightningAddressException(
-  BullnymException error,
+  BullnymFailure failure,
 ) {
-  return switch (error.kind) {
-    BullnymErrorKind.invalidInput =>
+  return switch (failure.kind) {
+    BullnymFailureKind.invalidInput =>
       LightningAddressException.invalidRegistrationInput(
-        code: error.code,
-        retryable: error.retryable,
+        code: failure.code,
+        retryable: failure.retryable,
       ),
-    BullnymErrorKind.network => LightningAddressNetworkException(
-      code: error.code,
-      retryable: error.retryable,
+    BullnymFailureKind.network => LightningAddressNetworkException(
+      code: failure.code,
+      retryable: failure.retryable,
     ),
-    BullnymErrorKind.timeout => LightningAddressTimeoutException(
-      code: error.code,
-      retryable: error.retryable,
+    BullnymFailureKind.timeout => LightningAddressTimeoutException(
+      code: failure.code,
+      retryable: failure.retryable,
     ),
-    BullnymErrorKind.serverRejectedRequest =>
+    BullnymFailureKind.serverRejectedRequest =>
       LightningAddressServerRejectedRequestException(
-        code: error.code,
-        retryable: error.retryable,
+        code: failure.code,
+        retryable: failure.retryable,
       ),
-    BullnymErrorKind.unexpectedHttpStatus ||
-    BullnymErrorKind.emptyResponse ||
-    BullnymErrorKind.invalidServerResponse =>
+    BullnymFailureKind.unexpectedHttpStatus ||
+    BullnymFailureKind.emptyResponse ||
+    BullnymFailureKind.invalidServerResponse =>
       LightningAddressInvalidServerResponseException(
-        code: error.code,
-        retryable: error.retryable,
+        code: failure.code,
+        retryable: failure.retryable,
       ),
-    BullnymErrorKind.signingFailed => LightningAddressSigningFailedException(
-      code: error.code,
-      retryable: error.retryable,
+    BullnymFailureKind.signingFailed => LightningAddressSigningFailedException(
+      code: failure.code,
+      retryable: failure.retryable,
     ),
+    BullnymFailureKind.unexpected =>
+      const LightningAddressException.unexpected(),
   };
 }

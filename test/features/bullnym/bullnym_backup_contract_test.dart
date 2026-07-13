@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
@@ -238,53 +239,56 @@ final class _RecordingClient implements BullnymClientPort {
   }
 
   @override
-  Future<void> deleteRegistration(BullnymDeleteRegistrationRequest request) =>
-      throw UnimplementedError();
+  Future<Result<void, BullnymFailure>> deleteRegistration(
+    BullnymDeleteRegistrationRequest request,
+  ) => throw UnimplementedError();
 
   @override
-  Future<BullnymLookupResult> lookupRegistration({required String npubHex}) =>
-      throw UnimplementedError();
+  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
+    required String npubHex,
+  }) => throw UnimplementedError();
 
   @override
-  Future<BullnymRegisterResult> register(BullnymRegisterRequest request) =>
-      throw UnimplementedError();
+  Future<Result<BullnymRegisterResult, BullnymFailure>> register(
+    BullnymRegisterRequest request,
+  ) => throw UnimplementedError();
 
   @override
-  Future<BullnymDonationPage> getDonationPage({
+  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
     required String nym,
     required String kind,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymDonationPage> saveDonationPage(
+  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage(
     BullnymSaveDonationPageRequest request,
   ) => throw UnimplementedError();
 
   @override
-  Future<BullnymDonationPage> archiveDonationPage(
+  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage(
     BullnymArchiveDonationPageRequest request,
   ) => throw UnimplementedError();
 
   @override
-  Future<BullnymSupportedCurrencies> getSupportedCurrencies() =>
-      throw UnimplementedError();
+  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
+  getSupportedCurrencies() => throw UnimplementedError();
 
   @override
-  Future<BullnymCreateInvoiceResponse> createInvoice({
+  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required BullnymCreateInvoiceFields fields,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required String invoiceId,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymListInvoicesResponse> listInvoices({
+  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required int page,
     required int pageSize,
@@ -292,6 +296,7 @@ final class _RecordingClient implements BullnymClientPort {
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId}) =>
-      throw UnimplementedError();
+  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
+    required String invoiceId,
+  }) => throw UnimplementedError();
 }

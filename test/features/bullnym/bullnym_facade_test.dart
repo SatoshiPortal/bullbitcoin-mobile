@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/data/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
@@ -248,10 +249,12 @@ void main() {
         nowSecs: () => timestamp,
       );
 
-      final response = await facade.register(
-        signer: signer,
-        nym: 'alice',
-        ctDescriptor: 'ct-desc',
+      final response = _unwrap(
+        await facade.register(
+          signer: signer,
+          nym: 'alice',
+          ctDescriptor: 'ct-desc',
+        ),
       );
 
       expect(response.nym, 'alice');
@@ -294,7 +297,7 @@ void main() {
       nowSecs: () => timestamp,
     );
 
-    await facade.deleteRegistration(signer: signer, nym: 'alice');
+    _unwrap(await facade.deleteRegistration(signer: signer, nym: 'alice'));
 
     final request = stub.captured.requests.single;
     expect(request.method, 'DELETE');
@@ -327,7 +330,7 @@ void main() {
       nowSecs: () => timestamp,
     );
 
-    await facade.deleteRegistration(signer: signer, nym: 'alice');
+    _unwrap(await facade.deleteRegistration(signer: signer, nym: 'alice'));
 
     final request = stub.captured.requests.single;
     expect(request.method, 'DELETE');
@@ -340,7 +343,9 @@ void main() {
     ]);
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-    final response = await facade.lookupRegistration(npubHex: 'aa' * 32);
+    final response = _unwrap(
+      await facade.lookupRegistration(npubHex: 'aa' * 32),
+    );
 
     expect(response.nym, 'alice');
     expect(response.active, isFalse);
@@ -357,13 +362,14 @@ void main() {
     ]);
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
+    final failure = _unwrapFailure(
+      await facade.lookupRegistration(npubHex: 'not-hex'),
+    );
     expect(
-      () => facade.lookupRegistration(npubHex: 'not-hex'),
-      throwsA(
-        isA<BullnymException>()
-            .having((e) => e.kind, 'kind', BullnymErrorKind.invalidInput)
-            .having((e) => e.retryable, 'retryable', false),
-      ),
+      failure,
+      isA<BullnymFailure>()
+          .having((e) => e.kind, 'kind', BullnymFailureKind.invalidInput)
+          .having((e) => e.retryable, 'retryable', false),
     );
     expect(stub.captured.requests, isEmpty);
   });
@@ -374,7 +380,9 @@ void main() {
     ]);
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-    final response = await facade.lookupRegistration(npubHex: 'aa' * 32);
+    final response = _unwrap(
+      await facade.lookupRegistration(npubHex: 'aa' * 32),
+    );
 
     expect(response.nym, 'alice');
     expect(response.active, isTrue);
@@ -390,24 +398,21 @@ void main() {
     );
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
+    final failure = _unwrapFailure(
+      await facade.lookupRegistration(npubHex: 'aa' * 32),
+    );
     expect(
-      () => facade.lookupRegistration(npubHex: 'aa' * 32),
-      throwsA(
-        isA<BullnymException>()
-            .having(
-              (e) => e.kind,
-              'kind',
-              BullnymErrorKind.serverRejectedRequest,
-            )
-            .having((e) => e.code, 'code', 'NymReserved')
-            .having(
-              (e) => e.diagnosticReason,
-              'diagnosticReason',
-              'reserved nym',
-            )
-            .having((e) => e.retryable, 'retryable', false)
-            .having((e) => e.statusCode, 'statusCode', 409),
-      ),
+      failure,
+      isA<BullnymFailure>()
+          .having(
+            (e) => e.kind,
+            'kind',
+            BullnymFailureKind.serverRejectedRequest,
+          )
+          .having((e) => e.code, 'code', 'NymReserved')
+          .having((e) => e.logMessage, 'logMessage', 'reserved nym')
+          .having((e) => e.retryable, 'retryable', false)
+          .having((e) => e.statusCode, 'statusCode', 409),
     );
   });
 
@@ -424,18 +429,19 @@ void main() {
     );
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
+    final failure = _unwrapFailure(
+      await facade.lookupRegistration(npubHex: 'aa' * 32),
+    );
     expect(
-      () => facade.lookupRegistration(npubHex: 'aa' * 32),
-      throwsA(
-        isA<BullnymException>()
-            .having(
-              (e) => e.kind,
-              'kind',
-              BullnymErrorKind.serverRejectedRequest,
-            )
-            .having((e) => e.retryable, 'retryable', true)
-            .having((e) => e.statusCode, 'statusCode', 503),
-      ),
+      failure,
+      isA<BullnymFailure>()
+          .having(
+            (e) => e.kind,
+            'kind',
+            BullnymFailureKind.serverRejectedRequest,
+          )
+          .having((e) => e.retryable, 'retryable', true)
+          .having((e) => e.statusCode, 'statusCode', 503),
     );
   });
 
@@ -445,18 +451,19 @@ void main() {
     ]);
     final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-    expect(
-      () => facade.register(
+    final failure = _unwrapFailure(
+      await facade.register(
         signer: signer,
         nym: 'alice',
         ctDescriptor: 'ct-desc',
       ),
-      throwsA(
-        isA<BullnymException>().having(
-          (e) => e.kind,
-          'kind',
-          BullnymErrorKind.invalidServerResponse,
-        ),
+    );
+    expect(
+      failure,
+      isA<BullnymFailure>().having(
+        (e) => e.kind,
+        'kind',
+        BullnymFailureKind.invalidServerResponse,
       ),
     );
   });
@@ -470,17 +477,18 @@ void main() {
       nowSecs: () => timestamp,
     );
 
-    expect(
-      () => facade.register(
+    final failure = _unwrapFailure(
+      await facade.register(
         signer: signer,
         nym: 'ali\u0000ce',
         ctDescriptor: 'ct-desc',
       ),
-      throwsA(
-        isA<BullnymException>()
-            .having((e) => e.kind, 'kind', BullnymErrorKind.invalidInput)
-            .having((e) => e.retryable, 'retryable', false),
-      ),
+    );
+    expect(
+      failure,
+      isA<BullnymFailure>()
+          .having((e) => e.kind, 'kind', BullnymFailureKind.invalidInput)
+          .having((e) => e.retryable, 'retryable', false),
     );
     expect(stub.captured.requests, isEmpty);
   });
@@ -494,14 +502,14 @@ void main() {
       nowSecs: () => timestamp,
     );
 
-    expect(
-      () => facade.register(
+    final failure = _unwrapFailure(
+      await facade.register(
         signer: signer,
         nym: 'alice',
         ctDescriptor: 'ct\u0000desc',
       ),
-      throwsA(isA<BullnymException>()),
     );
+    expect(failure, isA<BullnymFailure>());
     expect(stub.captured.requests, isEmpty);
   });
 
@@ -518,26 +526,27 @@ void main() {
       signHashHex: (_) => throw Exception('xprv-secret-leak'),
     );
 
-    await expectLater(
-      () => facade.register(
+    final failure = _unwrapFailure(
+      await facade.register(
         signer: throwingSigner,
         nym: 'alice',
         ctDescriptor: 'ct-desc',
       ),
-      throwsA(
-        isA<BullnymException>()
-            .having((e) => e.kind, 'kind', BullnymErrorKind.signingFailed)
-            .having(
-              (e) => e.diagnosticReason,
-              'diagnosticReason',
-              isNot(contains('xprv-secret-leak')),
-            )
-            .having(
-              (e) => e.toString(),
-              'toString',
-              isNot(contains('xprv-secret-leak')),
-            ),
-      ),
+    );
+    expect(
+      failure,
+      isA<BullnymFailure>()
+          .having((e) => e.kind, 'kind', BullnymFailureKind.signingFailed)
+          .having(
+            (e) => e.logMessage,
+            'logMessage',
+            isNot(contains('xprv-secret-leak')),
+          )
+          .having(
+            (e) => e.toString(),
+            'toString',
+            isNot(contains('xprv-secret-leak')),
+          ),
     );
     expect(stub.captured.requests, isEmpty);
   });
@@ -553,14 +562,15 @@ void main() {
       );
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
+      final failure = _unwrapFailure(
+        await facade.lookupRegistration(npubHex: 'aa' * 32),
+      );
       expect(
-        () => facade.lookupRegistration(npubHex: 'aa' * 32),
-        throwsA(
-          isA<BullnymException>().having(
-            (e) => e.kind,
-            'kind',
-            BullnymErrorKind.invalidServerResponse,
-          ),
+        failure,
+        isA<BullnymFailure>().having(
+          (e) => e.kind,
+          'kind',
+          BullnymFailureKind.invalidServerResponse,
         ),
       );
     },
@@ -581,12 +591,14 @@ void main() {
     expected.addAll(utf8.encode(timestamp.toString()));
 
     expect(
-      buildBullpaySchnorrMessage(
-        action: bullpayActionRegister,
-        npubHex: 'npub',
-        nymOrEmpty: 'alice',
-        payloadFields: const ['ct-desc'],
-        timestampSecs: timestamp,
+      _unwrap(
+        buildBullpaySchnorrMessage(
+          action: bullpayActionRegister,
+          npubHex: 'npub',
+          nymOrEmpty: 'alice',
+          payloadFields: const ['ct-desc'],
+          timestampSecs: timestamp,
+        ),
       ),
       expected,
     );
@@ -630,12 +642,14 @@ void _expectSignatureValid({
   required List<String> payloadFields,
   required int timestampSecs,
 }) {
-  final message = buildBullpaySchnorrMessage(
-    action: action,
-    npubHex: handle.publicKeyHex,
-    nymOrEmpty: nymOrEmpty,
-    payloadFields: payloadFields,
-    timestampSecs: timestampSecs,
+  final message = _unwrap(
+    buildBullpaySchnorrMessage(
+      action: action,
+      npubHex: handle.publicKeyHex,
+      nymOrEmpty: nymOrEmpty,
+      payloadFields: payloadFields,
+      timestampSecs: timestampSecs,
+    ),
   );
   final digest = sha256.convert(message).bytes;
   final pub = ECPublic.fromHex('02${handle.publicKeyHex}');
@@ -648,3 +662,14 @@ void _expectSignatureValid({
     isTrue,
   );
 }
+
+T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
+};
+
+BullnymFailure _unwrapFailure<T>(Result<T, BullnymFailure> result) =>
+    switch (result) {
+      Ok() => throw StateError('Expected Err, got Ok'),
+      Err(:final failure) => failure,
+    };

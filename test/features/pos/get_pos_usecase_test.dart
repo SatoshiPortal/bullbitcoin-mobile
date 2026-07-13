@@ -76,7 +76,7 @@ void main() {
   );
 
   test('find rethrows a non-notFound failure (loud degrade)', () async {
-    client.getError = const BullnymException.network(diagnosticReason: 'x');
+    client.getError = const BullnymFailure.network(logMessage: 'x');
 
     await expectLater(
       findPos.execute(nym: 'alice'),

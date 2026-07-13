@@ -9,9 +9,9 @@ void main() {
     test('maps every stable server code to its variant', () {
       PosException fromCode(String code, {bool retryable = false}) {
         return PosException.fromBullnym(
-          BullnymException.serverRejectedRequest(
+          BullnymFailure.serverRejectedRequest(
             code: code,
-            diagnosticReason: 'diagnostic only',
+            logMessage: 'diagnostic only',
             retryable: retryable,
           ),
         );
@@ -34,33 +34,33 @@ void main() {
     test('maps transport error kinds through', () {
       expect(
         PosException.fromBullnym(
-          const BullnymException.network(diagnosticReason: 'x'),
+          const BullnymFailure.network(logMessage: 'x'),
         ).kind,
         PosErrorKind.network,
       );
       expect(
         PosException.fromBullnym(
-          const BullnymException.timeout(diagnosticReason: 'x'),
+          const BullnymFailure.timeout(logMessage: 'x'),
         ).kind,
         PosErrorKind.timeout,
       );
       expect(
         PosException.fromBullnym(
-          const BullnymException.invalidServerResponse(),
+          const BullnymFailure.invalidServerResponse(),
         ).kind,
         PosErrorKind.invalidServerResponse,
       );
       expect(
-        PosException.fromBullnym(const BullnymException.signingFailed()).kind,
+        PosException.fromBullnym(const BullnymFailure.signingFailed()).kind,
         PosErrorKind.signingFailed,
       );
     });
 
     test('never surfaces the server reason string', () {
       final error = PosException.fromBullnym(
-        const BullnymException.serverRejectedRequest(
+        const BullnymFailure.serverRejectedRequest(
           code: 'DonationPageInvalid',
-          diagnosticReason: 'ct_descriptor empty: secret-diagnostic',
+          logMessage: 'ct_descriptor empty: secret-diagnostic',
           retryable: false,
         ),
       );

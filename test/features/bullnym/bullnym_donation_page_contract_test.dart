@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/data/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
@@ -140,6 +141,31 @@ void main() {
       );
 
       expect(
+        _unwrap(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionDonationPageSave,
+            npubHex: 'npub',
+            nymOrEmpty: 'alice',
+            payloadFields: const [
+              'Tip me',
+              'Support my work',
+              'CAD',
+              'https://example.com',
+              'me',
+              '',
+              '1',
+              'ct(desc)',
+              'payment_page',
+            ],
+            timestampSecs: timestamp,
+          ),
+        ),
+        oracle,
+      );
+    });
+
+    test('disabled save signs enabled slot as "0"', () {
+      final message = _unwrap(
         buildBullpaySchnorrMessage(
           action: bullpayActionDonationPageSave,
           npubHex: 'npub',
@@ -148,36 +174,15 @@ void main() {
             'Tip me',
             'Support my work',
             'CAD',
-            'https://example.com',
-            'me',
             '',
-            '1',
+            '',
+            '',
+            '0',
             'ct(desc)',
             'payment_page',
           ],
           timestampSecs: timestamp,
         ),
-        oracle,
-      );
-    });
-
-    test('disabled save signs enabled slot as "0"', () {
-      final message = buildBullpaySchnorrMessage(
-        action: bullpayActionDonationPageSave,
-        npubHex: 'npub',
-        nymOrEmpty: 'alice',
-        payloadFields: const [
-          'Tip me',
-          'Support my work',
-          'CAD',
-          '',
-          '',
-          '',
-          '0',
-          'ct(desc)',
-          'payment_page',
-        ],
-        timestampSecs: timestamp,
       );
       // The enabled slot ('0') is the 7th payload field.
       expect(
@@ -202,12 +207,14 @@ void main() {
       );
 
       expect(
-        buildBullpaySchnorrMessage(
-          action: bullpayActionDonationPageArchive,
-          npubHex: 'npub',
-          nymOrEmpty: 'alice',
-          payloadFields: const ['payment_page'],
-          timestampSecs: timestamp,
+        _unwrap(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionDonationPageArchive,
+            npubHex: 'npub',
+            nymOrEmpty: 'alice',
+            payloadFields: const ['payment_page'],
+            timestampSecs: timestamp,
+          ),
         ),
         oracle,
       );
@@ -223,18 +230,20 @@ void main() {
         nowSecs: () => timestamp,
       );
 
-      final page = await facade.saveDonationPage(
-        signer: signer,
-        nym: 'alice',
-        ctDescriptor: 'ct(desc)',
-        header: 'Tip me',
-        description: 'Support my work',
-        displayCurrency: 'CAD',
-        website: 'https://example.com',
-        twitter: 'me',
-        instagram: '',
-        enabled: true,
-        kind: 'payment_page',
+      final page = _unwrap(
+        await facade.saveDonationPage(
+          signer: signer,
+          nym: 'alice',
+          ctDescriptor: 'ct(desc)',
+          header: 'Tip me',
+          description: 'Support my work',
+          displayCurrency: 'CAD',
+          website: 'https://example.com',
+          twitter: 'me',
+          instagram: '',
+          enabled: true,
+          kind: 'payment_page',
+        ),
       );
 
       expect(page.nym, 'alice');
@@ -294,10 +303,12 @@ void main() {
         nowSecs: () => timestamp,
       );
 
-      final page = await facade.archiveDonationPage(
-        signer: signer,
-        nym: 'alice',
-        kind: 'payment_page',
+      final page = _unwrap(
+        await facade.archiveDonationPage(
+          signer: signer,
+          nym: 'alice',
+          kind: 'payment_page',
+        ),
       );
 
       expect(page.isArchived, isTrue);
@@ -333,9 +344,8 @@ void main() {
         final stub = _stubDio([_donationPageView()]);
         final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-        final page = await facade.getDonationPage(
-          nym: 'alice',
-          kind: 'payment_page',
+        final page = _unwrap(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
         );
 
         expect(page.header, 'Tip me');
@@ -355,7 +365,9 @@ void main() {
       final stub = _stubDio([_donationPageView(kind: 'pos')]);
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-      final page = await facade.getDonationPage(nym: 'alice', kind: 'pos');
+      final page = _unwrap(
+        await facade.getDonationPage(nym: 'alice', kind: 'pos'),
+      );
 
       expect(page.kind, bullnymDonationPageKindPos);
       expect(page.posMode, isTrue);
@@ -368,16 +380,10 @@ void main() {
       final stub = _stubDio([view]);
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-      expect(
-        () => facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
-        throwsA(
-          isA<BullnymException>().having(
-            (e) => e.kind,
-            'kind',
-            BullnymErrorKind.invalidServerResponse,
-          ),
-        ),
+      final failure = _unwrapFailure(
+        await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
       );
+      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
     });
 
     test('maps DonationPageNotFound envelope to a typed rejection', () async {
@@ -390,18 +396,11 @@ void main() {
       ]);
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-      expect(
-        () => facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
-        throwsA(
-          isA<BullnymException>()
-              .having(
-                (e) => e.kind,
-                'kind',
-                BullnymErrorKind.serverRejectedRequest,
-              )
-              .having((e) => e.code, 'code', 'DonationPageNotFound'),
-        ),
+      final failure = _unwrapFailure(
+        await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
       );
+      expect(failure.kind, BullnymFailureKind.serverRejectedRequest);
+      expect(failure.code, 'DonationPageNotFound');
     });
 
     test(
@@ -422,8 +421,8 @@ void main() {
           nowSecs: () => timestamp,
         );
 
-        expect(
-          () => facade.saveDonationPage(
+        final failure = _unwrapFailure(
+          await facade.saveDonationPage(
             signer: signer,
             nym: 'alice',
             ctDescriptor: 'ct(desc)',
@@ -436,17 +435,10 @@ void main() {
             enabled: true,
             kind: 'payment_page',
           ),
-          throwsA(
-            isA<BullnymException>()
-                .having(
-                  (e) => e.kind,
-                  'kind',
-                  BullnymErrorKind.serverRejectedRequest,
-                )
-                .having((e) => e.code, 'code', 'AuthError')
-                .having((e) => e.statusCode, 'statusCode', 401),
-          ),
         );
+        expect(failure.kind, BullnymFailureKind.serverRejectedRequest);
+        expect(failure.code, 'AuthError');
+        expect(failure.statusCode, 401);
       },
     );
   });
@@ -463,7 +455,7 @@ void main() {
       ]);
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-      final currencies = await facade.getSupportedCurrencies();
+      final currencies = _unwrap(await facade.getSupportedCurrencies());
 
       expect(currencies.currencies.map((c) => c.code), ['CAD', 'COP']);
       expect(currencies.currencies.last.precision, 0);
@@ -478,16 +470,8 @@ void main() {
       ]);
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
-      expect(
-        facade.getSupportedCurrencies,
-        throwsA(
-          isA<BullnymException>().having(
-            (e) => e.kind,
-            'kind',
-            BullnymErrorKind.invalidServerResponse,
-          ),
-        ),
-      );
+      final failure = _unwrapFailure(await facade.getSupportedCurrencies());
+      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
     });
   });
 
@@ -521,22 +505,24 @@ void main() {
         );
 
         expect(
-          buildBullpaySchnorrMessage(
-            action: bullpayActionDonationPageSave,
-            npubHex: 'npub',
-            nymOrEmpty: 'alice',
-            payloadFields: const [
-              'My Till',
-              '',
-              'CAD',
-              '',
-              '',
-              '',
-              '1',
-              'ct(desc)',
-              'pos',
-            ],
-            timestampSecs: timestamp,
+          _unwrap(
+            buildBullpaySchnorrMessage(
+              action: bullpayActionDonationPageSave,
+              npubHex: 'npub',
+              nymOrEmpty: 'alice',
+              payloadFields: const [
+                'My Till',
+                '',
+                'CAD',
+                '',
+                '',
+                '',
+                '1',
+                'ct(desc)',
+                'pos',
+              ],
+              timestampSecs: timestamp,
+            ),
           ),
           oracle,
         );
@@ -556,12 +542,14 @@ void main() {
       );
 
       expect(
-        buildBullpaySchnorrMessage(
-          action: bullpayActionDonationPageArchive,
-          npubHex: 'npub',
-          nymOrEmpty: 'alice',
-          payloadFields: const ['pos'],
-          timestampSecs: timestamp,
+        _unwrap(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionDonationPageArchive,
+            npubHex: 'npub',
+            nymOrEmpty: 'alice',
+            payloadFields: const ['pos'],
+            timestampSecs: timestamp,
+          ),
         ),
         oracle,
       );
@@ -576,18 +564,20 @@ void main() {
         nowSecs: () => timestamp,
       );
 
-      final page = await facade.saveDonationPage(
-        signer: signer,
-        nym: 'alice',
-        ctDescriptor: 'ct(desc)',
-        header: 'My Till',
-        description: '',
-        displayCurrency: 'CAD',
-        website: '',
-        twitter: '',
-        instagram: '',
-        enabled: true,
-        kind: bullnymDonationPageKindPos,
+      final page = _unwrap(
+        await facade.saveDonationPage(
+          signer: signer,
+          nym: 'alice',
+          ctDescriptor: 'ct(desc)',
+          header: 'My Till',
+          description: '',
+          displayCurrency: 'CAD',
+          website: '',
+          twitter: '',
+          instagram: '',
+          enabled: true,
+          kind: bullnymDonationPageKindPos,
+        ),
       );
 
       expect(page.kind, bullnymDonationPageKindPos);
@@ -633,10 +623,12 @@ void main() {
         nowSecs: () => timestamp,
       );
 
-      final page = await facade.archiveDonationPage(
-        signer: signer,
-        nym: 'alice',
-        kind: bullnymDonationPageKindPos,
+      final page = _unwrap(
+        await facade.archiveDonationPage(
+          signer: signer,
+          nym: 'alice',
+          kind: bullnymDonationPageKindPos,
+        ),
       );
 
       expect(page.isArchived, isTrue);
@@ -714,3 +706,14 @@ void _expectSignatureValid({
     isTrue,
   );
 }
+
+T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
+};
+
+BullnymFailure _unwrapFailure<T>(Result<T, BullnymFailure> result) =>
+    switch (result) {
+      Ok() => throw StateError('Expected Err, got Ok'),
+      Err(:final failure) => failure,
+    };

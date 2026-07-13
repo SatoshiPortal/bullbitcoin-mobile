@@ -39,7 +39,8 @@ class BullnymCreateInvoiceFields {
 }
 
 /// The signed-create response (`CreateSignedResponse`): only the id and the
-/// public share URL. Pricing/status live on the separate status shape.
+/// fragmentless construction URL. Pricing/status live on the separate status
+/// shape; Mobile appends the private viewing-key fragment locally.
 class BullnymCreateInvoiceResponse {
   final String invoiceId;
   final String invoiceUrl;
@@ -114,6 +115,37 @@ class BullnymInvoiceListItem {
   });
 }
 
+/// One raw Bitcoin-chain observation in the public invoice-status response.
+/// Interpretation belongs to the invoices settlement domain; Bullnym only
+/// preserves the deployed server contract and validates its wire types.
+class BullnymBitcoinDirectObservation {
+  final String source;
+  final String rail;
+  final String txid;
+  final int vout;
+  final String address;
+  final int amountSat;
+  final int confirmations;
+  final int? blockHeight;
+  final String state;
+  final int firstSeenAtUnix;
+  final int lastSeenAtUnix;
+
+  const BullnymBitcoinDirectObservation({
+    required this.source,
+    required this.rail,
+    required this.txid,
+    required this.vout,
+    required this.address,
+    required this.amountSat,
+    required this.confirmations,
+    this.blockHeight,
+    required this.state,
+    required this.firstSeenAtUnix,
+    required this.lastSeenAtUnix,
+  });
+}
+
 /// The npub-keyed list response (`ListInvoicesResponse`). `pageSize` keeps the
 /// server's camelCase wire key.
 class BullnymListInvoicesResponse {
@@ -135,6 +167,7 @@ class BullnymListInvoicesResponse {
 /// merge explicitly, they never conflate the two.
 class BullnymInvoiceStatus {
   final String status;
+  final String? presentationStatus;
   final String pricingMode;
   final String settlementStatus;
   final int amountSat;
@@ -156,9 +189,11 @@ class BullnymInvoiceStatus {
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
+  final List<BullnymBitcoinDirectObservation> bitcoinDirectObservations;
 
   const BullnymInvoiceStatus({
     required this.status,
+    this.presentationStatus,
     required this.pricingMode,
     required this.settlementStatus,
     required this.amountSat,
@@ -180,5 +215,6 @@ class BullnymInvoiceStatus {
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
+    required this.bitcoinDirectObservations,
   });
 }

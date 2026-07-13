@@ -62,22 +62,26 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
   }
 
   Future<void> _loadCurrencies() async {
-    try {
-      final supported = await _facade.supportedCurrencies();
-      if (isClosed) return;
-      final currencies = supported.currencies;
-      emit(
-        state.copyWith(
-          currencies: currencies,
-          currenciesUnavailable: false,
-          fiatCurrency: state.fiatCurrency.isEmpty && currencies.isNotEmpty
-              ? currencies.first.code
-              : state.fiatCurrency,
-        ),
-      );
-    } catch (error, stack) {
-      log.warning('Invoice currency fetch failed', error: error, trace: stack);
-      if (!isClosed) emit(state.copyWith(currenciesUnavailable: true));
+    final result = await _facade.supportedCurrencies();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        final currencies = value.currencies;
+        emit(
+          state.copyWith(
+            currencies: currencies,
+            currenciesUnavailable: false,
+            fiatCurrency: state.fiatCurrency.isEmpty && currencies.isNotEmpty
+                ? currencies.first.code
+                : state.fiatCurrency,
+          ),
+        );
+      case Err(:final failure):
+        log.warning(
+          'Invoice currency fetch failed',
+          error: failure.logMessage ?? failure.code,
+        );
+        emit(state.copyWith(currenciesUnavailable: true));
     }
   }
 

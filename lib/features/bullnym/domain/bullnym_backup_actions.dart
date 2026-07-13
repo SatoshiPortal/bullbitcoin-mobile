@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
@@ -27,7 +28,7 @@ Uint8List buildWalletBackupSchnorrMessage({
   required int ciphertextBytes,
   required int timestampSecs,
 }) {
-  validateBullnymNpubHex(npubHex);
+  _validateBackupNpubHex(npubHex);
   if (action != walletBackupFetchAction &&
       action != walletBackupStoreAction &&
       action != walletBackupDeleteAction) {
@@ -71,7 +72,7 @@ String computeWalletBackupEtag({
   required int generation,
   required String ciphertextSha256,
 }) {
-  validateBullnymNpubHex(npubHex);
+  _validateBackupNpubHex(npubHex);
   if (generation <= 0) {
     throw const BullnymException.invalidInput(
       'Backup ETag generation must be positive',
@@ -125,5 +126,16 @@ void _validateOptionalHash(String value, String description) {
     throw BullnymException.invalidInput(
       '$description must be empty or 32-byte lowercase hex',
     );
+  }
+}
+
+void _validateBackupNpubHex(String npubHex) {
+  switch (validateBullnymNpubHex(npubHex)) {
+    case Ok():
+      return;
+    case Err():
+      throw const BullnymException.invalidInput(
+        'Backup identity must be 32-byte lowercase hex',
+      );
   }
 }

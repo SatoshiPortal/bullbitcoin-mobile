@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_facade.dart';
@@ -74,7 +75,7 @@ class ProvisionPosUsecase {
       }
 
       try {
-        final view = await _bullnym.saveDonationPage(
+        final result = await _bullnym.saveDonationPage(
           signer: identity.signer,
           nym: identity.nym,
           ctDescriptor: ctDescriptor,
@@ -87,11 +88,12 @@ class ProvisionPosUsecase {
           enabled: true,
           kind: bullnymDonationPageKindPos,
         );
-        return PosTerminal.fromBullnym(view, baseUrl: _terminalBaseUrl);
-      } on BullnymException catch (e) {
-        throw PosProvisionException.submission(
-          cause: PosException.fromBullnym(e),
-        );
+        switch (result) {
+          case Ok(:final value):
+            return PosTerminal.fromBullnym(value, baseUrl: _terminalBaseUrl);
+          case Err(:final failure):
+            throw PosException.fromBullnym(failure);
+        }
       } on PosException catch (e) {
         throw PosProvisionException.submission(cause: e);
       }

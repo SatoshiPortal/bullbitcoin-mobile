@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/payment_page/domain/payment_page_error.dart';
 
@@ -18,15 +19,13 @@ class GetSupportedDisplayCurrenciesUsecase {
   const GetSupportedDisplayCurrenciesUsecase(this._bullnym);
 
   Future<List<DisplayCurrency>> execute() async {
-    try {
-      final response = await _bullnym.getSupportedCurrencies();
-      return response.currencies
-          .map((c) => DisplayCurrency(code: c.code, precision: c.precision))
-          .toList();
-    } on BullnymException catch (e) {
-      throw PaymentPageException.fromBullnym(e);
-    } catch (_) {
-      throw const PaymentPageException.unexpected();
-    }
+    final result = await _bullnym.getSupportedCurrencies();
+    return switch (result) {
+      Ok(:final value) =>
+        value.currencies
+            .map((c) => DisplayCurrency(code: c.code, precision: c.precision))
+            .toList(),
+      Err(:final failure) => throw PaymentPageException.fromBullnym(failure),
+    };
   }
 }

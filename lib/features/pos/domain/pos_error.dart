@@ -63,32 +63,33 @@ sealed class PosException implements Exception {
 
   const factory PosException.unexpected() = PosUnexpectedException;
 
-  /// Map a shared-client [BullnymException] to the pos family. The server
+  /// Map a shared-client [BullnymFailure] to the pos family. The server
   /// `reason` string is diagnostic-only and never surfaced to the user (charter
   /// C3); only the stable `code` drives the mapping. A descriptorless kind=pos
   /// save is hard-rejected by the server as `DonationPageInvalid` (KR-1, no
   /// LA-cursor fallback), which lands here as `rejected`.
-  factory PosException.fromBullnym(BullnymException error) {
-    return switch (error.kind) {
-      BullnymErrorKind.invalidInput => PosException.invalidInput(
-        code: error.code,
+  factory PosException.fromBullnym(BullnymFailure failure) {
+    return switch (failure.kind) {
+      BullnymFailureKind.invalidInput => PosException.invalidInput(
+        code: failure.code,
       ),
-      BullnymErrorKind.network => const PosException.network(),
-      BullnymErrorKind.timeout => const PosException.timeout(),
-      BullnymErrorKind.serverRejectedRequest => switch (error.code) {
+      BullnymFailureKind.network => const PosException.network(),
+      BullnymFailureKind.timeout => const PosException.timeout(),
+      BullnymFailureKind.serverRejectedRequest => switch (failure.code) {
         'DonationPageNotFound' => const PosException.notFound(),
-        'DonationPageInvalid' => PosException.rejected(code: error.code),
+        'DonationPageInvalid' => PosException.rejected(code: failure.code),
         'AuthError' => const PosException.authError(),
         _ =>
-          error.retryable
+          failure.retryable
               ? const PosException.server(retryable: true)
-              : PosException.rejected(code: error.code),
+              : PosException.rejected(code: failure.code),
       },
-      BullnymErrorKind.unexpectedHttpStatus ||
-      BullnymErrorKind.emptyResponse ||
-      BullnymErrorKind.invalidServerResponse =>
+      BullnymFailureKind.unexpectedHttpStatus ||
+      BullnymFailureKind.emptyResponse ||
+      BullnymFailureKind.invalidServerResponse =>
         const PosException.invalidServerResponse(),
-      BullnymErrorKind.signingFailed => const PosException.signingFailed(),
+      BullnymFailureKind.signingFailed => const PosException.signingFailed(),
+      BullnymFailureKind.unexpected => const PosException.unexpected(),
     };
   }
 

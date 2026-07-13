@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
@@ -16,6 +18,7 @@ import 'package:bb_mobile/features/bullnym/domain/usecases/lookup_bullnym_regist
 import 'package:bb_mobile/features/bullnym/domain/usecases/register_bullnym_usecase.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/save_donation_page_usecase.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/store_bullnym_backup_usecase.dart';
+import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 export 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart'
@@ -23,8 +26,10 @@ export 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart'
 export 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
+export 'package:bb_mobile/features/bullnym/presentation/bullnym_failure_l10n.dart';
 
 class BullnymFacade {
   final BullnymClientPort _client;
@@ -54,7 +59,8 @@ class BullnymFacade {
        _archiveDonationPage = ArchiveDonationPageUsecase(client, nowSecs),
        _getSupportedCurrencies = GetSupportedCurrenciesUsecase(client);
 
-  Future<BullnymRegisterResult> register({
+  @useResult
+  Future<Result<BullnymRegisterResult, BullnymFailure>> register({
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
@@ -66,14 +72,18 @@ class BullnymFacade {
     );
   }
 
-  Future<void> deleteRegistration({
+  @useResult
+  Future<Result<void, BullnymFailure>> deleteRegistration({
     required BullnymAuthSigner signer,
     required String nym,
   }) {
     return _deleteRegistration.execute(signer: signer, nym: nym);
   }
 
-  Future<BullnymLookupResult> lookupRegistration({required String npubHex}) {
+  @useResult
+  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
+    required String npubHex,
+  }) {
     return _lookupRegistration.execute(npubHex: npubHex);
   }
 
@@ -104,7 +114,8 @@ class BullnymFacade {
     currentHead: currentHead,
   );
 
-  Future<BullnymDonationPage> getDonationPage({
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
     required String nym,
     required String kind,
   }) {
@@ -113,7 +124,8 @@ class BullnymFacade {
 
   // `kind` is surfaced (not pinned) so the future POS surface reuses this
   // client; the payment_page feature pins `kind = payment_page`.
-  Future<BullnymDonationPage> saveDonationPage({
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage({
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
@@ -141,7 +153,8 @@ class BullnymFacade {
     );
   }
 
-  Future<BullnymDonationPage> archiveDonationPage({
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage({
     required BullnymAuthSigner signer,
     required String nym,
     required String kind,
@@ -149,14 +162,17 @@ class BullnymFacade {
     return _archiveDonationPage.execute(signer: signer, nym: nym, kind: kind);
   }
 
-  Future<BullnymSupportedCurrencies> getSupportedCurrencies() {
+  @useResult
+  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
+  getSupportedCurrencies() {
     return _getSupportedCurrencies.execute();
   }
 
   // Invoice methods sign in the client (the `invoice-*` actions) and delegate
   // straight through. `nym` stays nullable (default null = the unlinked v1
   // path) so the facade is linked-capable when DG-I1 later flips it on.
-  Future<BullnymCreateInvoiceResponse> createInvoice({
+  @useResult
+  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required BullnymCreateInvoiceFields fields,
@@ -164,7 +180,8 @@ class BullnymFacade {
     return _client.createInvoice(signer: signer, nym: nym, fields: fields);
   }
 
-  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+  @useResult
+  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required String invoiceId,
@@ -176,7 +193,8 @@ class BullnymFacade {
     );
   }
 
-  Future<BullnymListInvoicesResponse> listInvoices({
+  @useResult
+  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required int page,
     required int pageSize,
@@ -190,7 +208,10 @@ class BullnymFacade {
     );
   }
 
-  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId}) {
+  @useResult
+  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
+    required String invoiceId,
+  }) {
     return _client.getInvoiceStatus(invoiceId: invoiceId);
   }
 

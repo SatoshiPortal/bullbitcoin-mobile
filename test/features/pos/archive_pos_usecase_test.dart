@@ -52,9 +52,9 @@ void main() {
   test(
     'maps a second archive (DonationPageNotFound) to a benign null',
     () async {
-      client.archiveError = const BullnymException.serverRejectedRequest(
+      client.archiveError = const BullnymFailure.serverRejectedRequest(
         code: 'DonationPageNotFound',
-        diagnosticReason: 'nothing to archive',
+        logMessage: 'nothing to archive',
         statusCode: 200,
         retryable: false,
       );
@@ -66,9 +66,9 @@ void main() {
   );
 
   test('rethrows a genuine server rejection', () async {
-    client.archiveError = const BullnymException.serverRejectedRequest(
+    client.archiveError = const BullnymFailure.serverRejectedRequest(
       code: 'AuthError',
-      diagnosticReason: 'inactive',
+      logMessage: 'inactive',
       statusCode: 401,
       retryable: false,
     );

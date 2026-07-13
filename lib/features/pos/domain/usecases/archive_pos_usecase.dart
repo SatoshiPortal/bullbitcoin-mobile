@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/pos/domain/pos_error.dart';
 import 'package:bb_mobile/features/pos/domain/pos_terminal.dart';
@@ -23,20 +24,21 @@ class ArchivePosUsecase {
   /// absent.
   Future<PosTerminal?> execute() async {
     final identity = await _resolveIdentity.execute();
-    try {
-      final view = await _bullnym.archiveDonationPage(
-        signer: identity.signer,
-        nym: identity.nym,
-        kind: bullnymDonationPageKindPos,
-      );
-      return PosTerminal.fromBullnym(view, baseUrl: _terminalBaseUrl);
-    } on BullnymException catch (e) {
-      final mapped = PosException.fromBullnym(e);
-      if (mapped.kind == PosErrorKind.notFound) {
-        // Double archive / nothing to archive - benign.
-        return null;
-      }
-      throw mapped;
+    final result = await _bullnym.archiveDonationPage(
+      signer: identity.signer,
+      nym: identity.nym,
+      kind: bullnymDonationPageKindPos,
+    );
+    switch (result) {
+      case Ok(:final value):
+        return PosTerminal.fromBullnym(value, baseUrl: _terminalBaseUrl);
+      case Err(:final failure):
+        final mapped = PosException.fromBullnym(failure);
+        if (mapped.kind == PosErrorKind.notFound) {
+          // Double archive / nothing to archive - benign.
+          return null;
+        }
+        throw mapped;
     }
   }
 }

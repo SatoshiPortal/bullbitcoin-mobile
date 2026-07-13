@@ -223,7 +223,7 @@ void main() {
 
   test('wraps a timeout on the PUT as an uncertain submission', () async {
     stubPrepared();
-    client.saveError = const BullnymException.timeout(diagnosticReason: 'slow');
+    client.saveError = const BullnymFailure.timeout(logMessage: 'slow');
 
     await expectLater(
       usecase.execute(label: 'My Till', displayCurrency: 'CAD'),
@@ -243,9 +243,9 @@ void main() {
   test('surfaces a pre-release server AuthError as a non-uncertain submission '
       '(fail-closed, KR-2)', () async {
     stubPrepared();
-    client.saveError = const BullnymException.serverRejectedRequest(
+    client.saveError = const BullnymFailure.serverRejectedRequest(
       code: 'AuthError',
-      diagnosticReason: 'signature mismatch',
+      logMessage: 'signature mismatch',
       statusCode: 401,
       retryable: false,
     );

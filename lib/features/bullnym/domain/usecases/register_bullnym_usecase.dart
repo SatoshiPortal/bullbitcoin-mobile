@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
+import 'package:meta/meta.dart';
 
 typedef BullnymNowSecs = int Function();
 
@@ -15,33 +17,35 @@ class RegisterBullnymUsecase {
     this._nowSecs = currentBullpayTimestampSecs,
   ]);
 
-  Future<BullnymRegisterResult> execute({
+  @useResult
+  Future<Result<BullnymRegisterResult, BullnymFailure>> execute({
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
   }) async {
     final timestamp = _nowSecs();
-    try {
-      validateBullnymNpubHex(signer.npubHex);
-      return _client.register(
-        BullnymRegisterRequest(
-          nym: nym,
-          ctDescriptor: ctDescriptor,
-          npubHex: signer.npubHex,
-          signatureHex: await signBullpayAction(
-            signer: signer,
-            action: bullpayActionRegister,
-            nymOrEmpty: nym,
-            payloadFields: [ctDescriptor],
-            timestampSecs: timestamp,
-          ),
-          timestamp: timestamp,
-        ),
-      );
-    } on BullnymException {
-      rethrow;
-    } catch (_) {
-      throw const BullnymException.signingFailed();
+    final signatureResult = await signBullpayAction(
+      signer: signer,
+      action: bullpayActionRegister,
+      nymOrEmpty: nym,
+      payloadFields: [ctDescriptor],
+      timestampSecs: timestamp,
+    );
+    final String signatureHex;
+    switch (signatureResult) {
+      case Ok(:final value):
+        signatureHex = value;
+      case Err(:final failure):
+        return Err(failure);
     }
+    return _client.register(
+      BullnymRegisterRequest(
+        nym: nym,
+        ctDescriptor: ctDescriptor,
+        npubHex: signer.npubHex,
+        signatureHex: signatureHex,
+        timestamp: timestamp,
+      ),
+    );
   }
 }

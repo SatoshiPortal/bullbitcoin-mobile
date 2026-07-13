@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/delete_lightning_address_registration_usecase.dart';
@@ -166,8 +167,8 @@ void main() {
   });
 
   test('maps Bullnym errors without leaking diagnostics', () async {
-    bullnym.registerError = const BullnymException.timeout(
-      diagnosticReason: 'server diagnostic',
+    bullnym.registerError = const BullnymFailure.timeout(
+      logMessage: 'server diagnostic',
     );
     final usecase = RegisterLightningAddressUsecase(bullnym, nostrIdentity);
 
@@ -187,7 +188,7 @@ void main() {
   });
 
   test('maps Bullnym invalid input without blaming local nym validation', () {
-    bullnym.registerError = const BullnymException.invalidInput(
+    bullnym.registerError = const BullnymFailure.invalidInput(
       'server diagnostic',
     );
     final usecase = RegisterLightningAddressUsecase(bullnym, nostrIdentity);
@@ -225,39 +226,42 @@ class _FakeBullnymFacade implements BullnymFacade {
     nym: 'alice',
     active: true,
   );
-  BullnymException? registerError;
+  BullnymFailure? registerError;
 
   @override
-  Future<BullnymRegisterResult> register({
+  Future<Result<BullnymRegisterResult, BullnymFailure>> register({
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
   }) async {
     final error = registerError;
-    if (error != null) throw error;
+    if (error != null) return Err(error);
     registerNym = nym;
     registerCtDescriptor = ctDescriptor;
     registerNpubHex = signer.npubHex;
     registerSignatureHex = await signer.signHashHex(_messageHashHex);
-    return BullnymRegisterResult(nym: nym, lightningAddress: '$nym@bullpay.ca');
+    return Ok(
+      BullnymRegisterResult(nym: nym, lightningAddress: '$nym@bullpay.ca'),
+    );
   }
 
   @override
-  Future<void> deleteRegistration({
+  Future<Result<void, BullnymFailure>> deleteRegistration({
     required BullnymAuthSigner signer,
     required String nym,
   }) async {
     deleteNym = nym;
     deleteNpubHex = signer.npubHex;
     deleteSignatureHex = await signer.signHashHex(_messageHashHex);
+    return const Ok(null);
   }
 
   @override
-  Future<BullnymLookupResult> lookupRegistration({
+  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
     required String npubHex,
   }) async {
     lookupNpubHex = npubHex;
-    return lookupResult;
+    return Ok(lookupResult);
   }
 
   @override
@@ -283,13 +287,13 @@ class _FakeBullnymFacade implements BullnymFacade {
 
   // Donation-page surface — not exercised by the Lightning Address usecases.
   @override
-  Future<BullnymDonationPage> getDonationPage({
+  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
     required String nym,
     required String kind,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymDonationPage> saveDonationPage({
+  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage({
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
@@ -304,33 +308,33 @@ class _FakeBullnymFacade implements BullnymFacade {
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymDonationPage> archiveDonationPage({
+  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage({
     required BullnymAuthSigner signer,
     required String nym,
     required String kind,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymSupportedCurrencies> getSupportedCurrencies() =>
-      throw UnimplementedError();
+  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
+  getSupportedCurrencies() => throw UnimplementedError();
 
   // Invoice surface — not exercised by the Lightning Address usecases.
   @override
-  Future<BullnymCreateInvoiceResponse> createInvoice({
+  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required BullnymCreateInvoiceFields fields,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required String invoiceId,
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymListInvoicesResponse> listInvoices({
+  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required int page,
     required int pageSize,
@@ -338,8 +342,9 @@ class _FakeBullnymFacade implements BullnymFacade {
   }) => throw UnimplementedError();
 
   @override
-  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId}) =>
-      throw UnimplementedError();
+  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
+    required String invoiceId,
+  }) => throw UnimplementedError();
 }
 
 String _zeroMnemonicXprv() {

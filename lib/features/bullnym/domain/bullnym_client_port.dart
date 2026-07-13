@@ -1,16 +1,28 @@
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
+import 'package:meta/meta.dart';
 
 abstract interface class BullnymClientPort {
-  Future<BullnymRegisterResult> register(BullnymRegisterRequest request);
+  @useResult
+  Future<Result<BullnymRegisterResult, BullnymFailure>> register(
+    BullnymRegisterRequest request,
+  );
 
-  Future<void> deleteRegistration(BullnymDeleteRegistrationRequest request);
+  @useResult
+  Future<Result<void, BullnymFailure>> deleteRegistration(
+    BullnymDeleteRegistrationRequest request,
+  );
 
-  Future<BullnymLookupResult> lookupRegistration({required String npubHex});
+  @useResult
+  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
+    required String npubHex,
+  });
 
   Future<BullnymBackupHead> fetchBackup(BullnymBackupFetchRequest request);
 
@@ -22,29 +34,35 @@ abstract interface class BullnymClientPort {
     BullnymBackupDeleteRequest request,
   );
 
-  /// Public read of the current donation-page row for `nym`/`kind`. Throws a
-  /// `serverRejectedRequest` with code `DonationPageNotFound` when absent.
-  Future<BullnymDonationPage> getDonationPage({
+  /// Public read of the current donation-page row for `nym`/`kind`. Returns a
+  /// server-rejected failure with code `DonationPageNotFound` when absent.
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
     required String nym,
     required String kind,
   });
 
-  Future<BullnymDonationPage> saveDonationPage(
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage(
     BullnymSaveDonationPageRequest request,
   );
 
-  Future<BullnymDonationPage> archiveDonationPage(
+  @useResult
+  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage(
     BullnymArchiveDonationPageRequest request,
   );
 
-  Future<BullnymSupportedCurrencies> getSupportedCurrencies();
+  @useResult
+  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
+  getSupportedCurrencies();
 
   /// Create a Schnorr-signed recipient invoice. `nym == null` (v1 default)
   /// targets the UNLINKED endpoint `POST /api/v1/invoices` and signs
   /// `nym_or_empty=""`; a non-null nym targets the linked
   /// `POST /api/v1/:nym/invoices`. The client signs the `invoice-create`
   /// action with [signer] at the point of the call.
-  Future<BullnymCreateInvoiceResponse> createInvoice({
+  @useResult
+  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required BullnymCreateInvoiceFields fields,
@@ -53,7 +71,8 @@ abstract interface class BullnymClientPort {
   /// Cancel an invoice by id (signed `invoice-cancel`). `nym == null` hits the
   /// unlinked `DELETE /api/v1/invoices/:id`. Ownership is enforced server-side
   /// against the signing npub (a non-owner surfaces as `InvoiceNotFound`).
-  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+  @useResult
+  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required String invoiceId,
@@ -62,7 +81,8 @@ abstract interface class BullnymClientPort {
   /// List the signing npub's invoices (signed `invoice-list`,
   /// `GET /api/v1/invoices`). The list is npub-wide (both linked and unlinked
   /// rows); `nym_or_empty` is ALWAYS empty in the signed bytes.
-  Future<BullnymListInvoicesResponse> listInvoices({
+  @useResult
+  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required int page,
     required int pageSize,
@@ -71,7 +91,10 @@ abstract interface class BullnymClientPort {
 
   /// Public, UNSIGNED status/detail poll by id
   /// (`GET /api/v1/invoices/:id/status`). Anyone holding the id can poll it.
-  Future<BullnymInvoiceStatus> getInvoiceStatus({required String invoiceId});
+  @useResult
+  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
+    required String invoiceId,
+  });
 }
 
 class BullnymBackupFetchRequest {

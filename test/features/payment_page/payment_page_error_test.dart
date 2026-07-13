@@ -9,9 +9,9 @@ void main() {
     test('maps every stable server code to its variant', () {
       PaymentPageException fromCode(String code, {bool retryable = false}) {
         return PaymentPageException.fromBullnym(
-          BullnymException.serverRejectedRequest(
+          BullnymFailure.serverRejectedRequest(
             code: code,
-            diagnosticReason: 'diagnostic only',
+            logMessage: 'diagnostic only',
             retryable: retryable,
           ),
         );
@@ -38,25 +38,25 @@ void main() {
     test('maps transport error kinds through', () {
       expect(
         PaymentPageException.fromBullnym(
-          const BullnymException.network(diagnosticReason: 'x'),
+          const BullnymFailure.network(logMessage: 'x'),
         ).kind,
         PaymentPageErrorKind.network,
       );
       expect(
         PaymentPageException.fromBullnym(
-          const BullnymException.timeout(diagnosticReason: 'x'),
+          const BullnymFailure.timeout(logMessage: 'x'),
         ).kind,
         PaymentPageErrorKind.timeout,
       );
       expect(
         PaymentPageException.fromBullnym(
-          const BullnymException.invalidServerResponse(),
+          const BullnymFailure.invalidServerResponse(),
         ).kind,
         PaymentPageErrorKind.invalidServerResponse,
       );
       expect(
         PaymentPageException.fromBullnym(
-          const BullnymException.signingFailed(),
+          const BullnymFailure.signingFailed(),
         ).kind,
         PaymentPageErrorKind.signingFailed,
       );
@@ -64,9 +64,9 @@ void main() {
 
     test('never surfaces the server reason string', () {
       final error = PaymentPageException.fromBullnym(
-        const BullnymException.serverRejectedRequest(
+        const BullnymFailure.serverRejectedRequest(
           code: 'DonationPageInvalid',
-          diagnosticReason: 'header too long: secret-diagnostic',
+          logMessage: 'header too long: secret-diagnostic',
           retryable: false,
         ),
       );

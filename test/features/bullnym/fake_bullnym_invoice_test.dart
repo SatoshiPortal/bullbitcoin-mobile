@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,69 +29,57 @@ void main() {
   setUp(() => client = FakeBullnymClient());
 
   test('create → list → status → cancel round-trip (unlinked)', () async {
-    final created = await client.createInvoice(
-      signer: alice,
-      fields: _lnLiquid(),
+    final created = _unwrap(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
     expect(created.invoiceUrl, contains('/invoice/'));
 
-    final list = await client.listInvoices(
-      signer: alice,
-      page: 1,
-      pageSize: 100,
+    final list = _unwrap(
+      await client.listInvoices(signer: alice, page: 1, pageSize: 100),
     );
     expect(list.invoices.single.id, created.invoiceId);
     expect(list.invoices.single.nymOwner, isNull);
 
-    final status = await client.getInvoiceStatus(invoiceId: created.invoiceId);
+    final status = _unwrap(
+      await client.getInvoiceStatus(invoiceId: created.invoiceId),
+    );
     expect(status.status, 'unpaid');
 
-    final cancelled = await client.cancelInvoice(
-      signer: alice,
-      invoiceId: created.invoiceId,
+    final cancelled = _unwrap(
+      await client.cancelInvoice(signer: alice, invoiceId: created.invoiceId),
     );
     expect(cancelled.status, 'cancelled');
 
     // Cancel is benign on an already-terminal invoice.
-    final again = await client.cancelInvoice(
-      signer: alice,
-      invoiceId: created.invoiceId,
+    final again = _unwrap(
+      await client.cancelInvoice(signer: alice, invoiceId: created.invoiceId),
     );
     expect(again.status, 'cancelled');
   });
 
   test('the invoice store is independent of a bob-owned invoice', () async {
-    await client.createInvoice(signer: alice, fields: _lnLiquid());
-    final bobList = await client.listInvoices(
-      signer: bob,
-      page: 1,
-      pageSize: 100,
+    _unwrap(await client.createInvoice(signer: alice, fields: _lnLiquid()));
+    final bobList = _unwrap(
+      await client.listInvoices(signer: bob, page: 1, pageSize: 100),
     );
     expect(bobList.invoices, isEmpty);
   });
 
   test('cancel of a non-owner id surfaces InvoiceNotFound', () async {
-    final created = await client.createInvoice(
-      signer: alice,
-      fields: _lnLiquid(),
+    final created = _unwrap(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
-    expect(
-      () => client.cancelInvoice(signer: bob, invoiceId: created.invoiceId),
-      throwsA(
-        isA<BullnymException>().having(
-          (e) => e.code,
-          'code',
-          'InvoiceNotFound',
-        ),
-      ),
+    final failure = _unwrapFailure(
+      await client.cancelInvoice(signer: bob, invoiceId: created.invoiceId),
     );
+    expect(failure.code, 'InvoiceNotFound');
   });
 
   test(
     'create enforces at-least-one-rail and rail↔address coherence',
     () async {
-      expect(
-        () => client.createInvoice(
+      final noRailFailure = _unwrapFailure(
+        await client.createInvoice(
           signer: alice,
           fields: BullnymCreateInvoiceFields(
             amountSat: 1,
@@ -102,16 +91,10 @@ void main() {
             expiresAtUnix: 1710086400,
           ),
         ),
-        throwsA(
-          isA<BullnymException>().having(
-            (e) => e.code,
-            'code',
-            'InvalidAmount',
-          ),
-        ),
       );
-      expect(
-        () => client.createInvoice(
+      expect(noRailFailure.code, 'InvalidAmount');
+      final noAddressFailure = _unwrapFailure(
+        await client.createInvoice(
           signer: alice,
           fields: BullnymCreateInvoiceFields(
             amountSat: 1,
@@ -123,85 +106,66 @@ void main() {
             expiresAtUnix: 1710086400,
           ),
         ),
-        throwsA(
-          isA<BullnymException>().having(
-            (e) => e.code,
-            'code',
-            'InvalidAmount',
-          ),
-        ),
       );
+      expect(noAddressFailure.code, 'InvalidAmount');
     },
   );
 
   test('reusedLiquidAddressOnce fires once then clears', () async {
     client.invoiceMode = FakeInvoiceMode.reusedLiquidAddressOnce;
-    expect(
-      () => client.createInvoice(signer: alice, fields: _lnLiquid()),
-      throwsA(
-        isA<BullnymException>().having(
-          (e) => e.code,
-          'code',
-          'LiquidAddressAlreadyUsed',
-        ),
-      ),
+    final failure = _unwrapFailure(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
+    expect(failure.code, 'LiquidAddressAlreadyUsed');
     // The mode cleared itself; the retry succeeds.
-    final retry = await client.createInvoice(
-      signer: alice,
-      fields: _lnLiquid(),
+    final retry = _unwrap(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
     expect(retry.invoiceId, isNotEmpty);
   });
 
   test('featureDisabled makes signed create fail closed (404-class)', () async {
     client.invoiceMode = FakeInvoiceMode.featureDisabled;
-    expect(
-      () => client.createInvoice(signer: alice, fields: _lnLiquid()),
-      throwsA(
-        isA<BullnymException>().having(
-          (e) => e.kind,
-          'kind',
-          BullnymErrorKind.unexpectedHttpStatus,
-        ),
-      ),
+    final failure = _unwrapFailure(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
+    expect(failure.kind, BullnymFailureKind.unexpectedHttpStatus);
   });
 
   test('list applies status filter and paging has_more', () async {
     for (var i = 0; i < 3; i++) {
-      await client.createInvoice(signer: alice, fields: _lnLiquid(i + 1));
+      _unwrap(
+        await client.createInvoice(signer: alice, fields: _lnLiquid(i + 1)),
+      );
     }
-    final firstPage = await client.listInvoices(
-      signer: alice,
-      page: 1,
-      pageSize: 2,
+    final firstPage = _unwrap(
+      await client.listInvoices(signer: alice, page: 1, pageSize: 2),
     );
     expect(firstPage.invoices.length, 2);
     expect(firstPage.hasMore, isTrue);
-    final unpaid = await client.listInvoices(
-      signer: alice,
-      page: 1,
-      pageSize: 100,
-      status: 'paid',
+    final unpaid = _unwrap(
+      await client.listInvoices(
+        signer: alice,
+        page: 1,
+        pageSize: 100,
+        status: 'paid',
+      ),
     );
     expect(unpaid.invoices, isEmpty);
   });
 
   test('same request id is idempotent and changed payload conflicts', () async {
-    final first = await client.createInvoice(
-      signer: alice,
-      fields: _lnLiquid(),
+    final first = _unwrap(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
-    final retry = await client.createInvoice(
-      signer: alice,
-      fields: _lnLiquid(),
+    final retry = _unwrap(
+      await client.createInvoice(signer: alice, fields: _lnLiquid()),
     );
     expect(retry.invoiceId, first.invoiceId);
 
     final changed = _lnLiquid();
-    expect(
-      () => client.createInvoice(
+    final failure = _unwrapFailure(
+      await client.createInvoice(
         signer: alice,
         fields: BullnymCreateInvoiceFields(
           amountSat: 25001,
@@ -215,13 +179,18 @@ void main() {
           expiresAtUnix: changed.expiresAtUnix,
         ),
       ),
-      throwsA(
-        isA<BullnymException>().having(
-          (error) => error.code,
-          'code',
-          'InvoiceCreateConflict',
-        ),
-      ),
     );
+    expect(failure.code, 'InvoiceCreateConflict');
   });
 }
+
+T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
+};
+
+BullnymFailure _unwrapFailure<T>(Result<T, BullnymFailure> result) =>
+    switch (result) {
+      Ok() => throw StateError('Expected Err, got Ok'),
+      Err(:final failure) => failure,
+    };

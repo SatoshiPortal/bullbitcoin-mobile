@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
+import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
@@ -16,7 +17,7 @@ import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice
 
 /// Implements [InvoicesPayServicePort] over the shared `bullnym` client.
 /// It maps commands → wire DTOs and DTOs → domain entities, and translates
-/// every recoverable exception into an [InvoicesFailure] so no wire type or
+/// every recoverable Bullnym failure into an [InvoicesFailure] so no wire type or
 /// server diagnostic escapes upward.
 class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
   final BullnymFacade _bullnym;
@@ -49,11 +50,18 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
         liquidBlindingKeyHex: operation.liquidBlindingKeyHex,
         expiresAtUnix: operation.expiresAtUnix,
       );
-      final response = await _bullnym.createInvoice(
+      final responseResult = await _bullnym.createInvoice(
         signer: signer,
         nym: operation.linkToPageNym,
         fields: fields,
       );
+      final BullnymCreateInvoiceResponse response;
+      switch (responseResult) {
+        case Ok(:final value):
+          response = value;
+        case Err(:final failure):
+          return Err(mapBullnymFailureToInvoices(failure));
+      }
       final invoiceId = _invoiceId(response.invoiceId);
       return Ok(
         CreateInvoiceResult(
@@ -66,12 +74,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           ),
         ),
       );
-    } on BullnymException catch (e) {
-      return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception {
-      return _unexpectedFailure('create');
+    } on Exception catch (error, stack) {
+      return _unexpectedFailure('create', error, stack);
     }
   }
 
@@ -81,11 +87,18 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     required CancelInvoiceCommand command,
   }) async {
     try {
-      final response = await _bullnym.cancelInvoice(
+      final responseResult = await _bullnym.cancelInvoice(
         signer: signer,
         nym: command.nymOwner,
         invoiceId: command.invoiceId.value,
       );
+      final BullnymCancelInvoiceResponse response;
+      switch (responseResult) {
+        case Ok(:final value):
+          response = value;
+        case Err(:final failure):
+          return Err(mapBullnymFailureToInvoices(failure));
+      }
       final parsedStatus = _invoiceStatus(response.status, operation: 'cancel');
       return Ok(
         CancelInvoiceResult(
@@ -93,12 +106,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           finalStatus: parsedStatus,
         ),
       );
-    } on BullnymException catch (e) {
-      return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception {
-      return _unexpectedFailure('cancel');
+    } on Exception catch (error, stack) {
+      return _unexpectedFailure('cancel', error, stack);
     }
   }
 
@@ -108,12 +119,19 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     required ListInvoicesCommand command,
   }) async {
     try {
-      final response = await _bullnym.listInvoices(
+      final responseResult = await _bullnym.listInvoices(
         signer: signer,
         page: command.page,
         pageSize: command.pageSize,
         status: command.status?.wire,
       );
+      final BullnymListInvoicesResponse response;
+      switch (responseResult) {
+        case Ok(:final value):
+          response = value;
+        case Err(:final failure):
+          return Err(mapBullnymFailureToInvoices(failure));
+      }
       return Ok(
         ListInvoicesResult(
           invoices: response.invoices.map(_toInvoice).toList(),
@@ -122,12 +140,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           hasMore: response.hasMore,
         ),
       );
-    } on BullnymException catch (e) {
-      return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception {
-      return _unexpectedFailure('list');
+    } on Exception catch (error, stack) {
+      return _unexpectedFailure('list', error, stack);
     }
   }
 
@@ -136,9 +152,16 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     InvoiceId invoiceId,
   ) async {
     try {
-      final status = await _bullnym.getInvoiceStatus(
+      final statusResult = await _bullnym.getInvoiceStatus(
         invoiceId: invoiceId.value,
       );
+      final BullnymInvoiceStatus status;
+      switch (statusResult) {
+        case Ok(:final value):
+          status = value;
+        case Err(:final failure):
+          return Err(mapBullnymFailureToInvoices(failure));
+      }
       final parsedStatus = _invoiceStatus(status.status, operation: 'status');
       return Ok(
         InvoiceStatusSnapshot(
@@ -168,12 +191,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           acceptLiquid: status.acceptLiquid,
         ),
       );
-    } on BullnymException catch (e) {
-      return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception {
-      return _unexpectedFailure('status');
+    } on Exception catch (error, stack) {
+      return _unexpectedFailure('status', error, stack);
     }
   }
 
@@ -217,39 +238,16 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     return status;
   }
 
-  Result<T, InvoicesFailure> _unexpectedFailure<T>(String operation) {
-    log.warning('Invoice $operation request failed unexpectedly');
+  Result<T, InvoicesFailure> _unexpectedFailure<T>(
+    String operation,
+    Exception error,
+    StackTrace stack,
+  ) {
+    log.warning(
+      'Invoice $operation request failed unexpectedly',
+      error: error,
+      trace: stack,
+    );
     return const Err(InvoicesFailure.unexpected());
-  }
-
-  InvoicesFailure _mapBullnymFailure(BullnymException error) {
-    return switch (error.kind) {
-      BullnymErrorKind.invalidInput => InvoicesFailure.invalidInput(
-        code: error.code,
-      ),
-      BullnymErrorKind.network => const InvoicesFailure.network(),
-      BullnymErrorKind.timeout => const InvoicesFailure.timeout(),
-      BullnymErrorKind.serverRejectedRequest => switch (error.code) {
-        'InvoiceNotFound' => const InvoicesFailure.notFound(),
-        'InvalidAmount' => InvoicesFailure.invalidInput(code: error.code),
-        'AuthError' => const InvoicesFailure.authError(),
-        'BitcoinAddressAlreadyUsed' =>
-          const InvoicesFailure.reusedBitcoinAddress(),
-        'LiquidAddressAlreadyUsed' =>
-          const InvoicesFailure.reusedLiquidAddress(),
-        'InvoiceCreateConflict' => const InvoicesFailure.createConflict(),
-        'RateLimitedSender' ||
-        'RateLimitedRecipient' ||
-        'RateLimitedNetwork' => const InvoicesFailure.rateLimited(),
-        _ => InvoicesFailure.server(retryable: error.retryable),
-      },
-      BullnymErrorKind.unexpectedHttpStatus => const InvoicesFailure.server(
-        retryable: true,
-      ),
-      BullnymErrorKind.emptyResponse ||
-      BullnymErrorKind.invalidServerResponse =>
-        const InvoicesFailure.invalidServerResponse(),
-      BullnymErrorKind.signingFailed => const InvoicesFailure.signingFailed(),
-    };
   }
 }

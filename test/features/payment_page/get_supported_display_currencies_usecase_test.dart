@@ -29,8 +29,8 @@ void main() {
   });
 
   test('propagates a typed failure', () async {
-    client.currenciesError = const BullnymException.network(
-      diagnosticReason: 'offline',
+    client.currenciesError = const BullnymFailure.network(
+      logMessage: 'offline',
     );
 
     await expectLater(

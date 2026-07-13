@@ -1,19 +1,22 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
-import 'package:dio/dio.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 
 const Duration bullnymConnectTimeout = Duration(seconds: 10);
 const Duration bullnymReceiveTimeout = Duration(seconds: 15);
@@ -63,283 +66,314 @@ class BullnymHttpClient implements BullnymClientPort {
   }
 
   @override
-  Future<BullnymRegisterResult> register(BullnymRegisterRequest request) async {
-    final response = await _postMap(
-      '/register',
-      data: {
-        'nym': request.nym,
-        'ct_descriptor': request.ctDescriptor,
-        'npub': request.npubHex,
-        'signature': request.signatureHex,
-        'timestamp': request.timestamp,
-      },
-    );
-    return _parseRegisterResponse(response);
+  Future<Result<BullnymRegisterResult, BullnymFailure>> register(
+    BullnymRegisterRequest request,
+  ) {
+    return _guard(() async {
+      final response = await _postMap(
+        '/register',
+        data: {
+          'nym': request.nym,
+          'ct_descriptor': request.ctDescriptor,
+          'npub': request.npubHex,
+          'signature': request.signatureHex,
+          'timestamp': request.timestamp,
+        },
+      );
+      return _parseRegisterResponse(response);
+    });
   }
 
   @override
-  Future<void> deleteRegistration(
+  Future<Result<void, BullnymFailure>> deleteRegistration(
     BullnymDeleteRegistrationRequest request,
-  ) async {
-    await _deleteSuccess(
-      '/register',
-      data: {
-        'nym': request.nym,
-        'npub': request.npubHex,
-        'signature': request.signatureHex,
-        'timestamp': request.timestamp,
-      },
-    );
+  ) {
+    return _guard(() async {
+      await _deleteSuccess(
+        '/register',
+        data: {
+          'nym': request.nym,
+          'npub': request.npubHex,
+          'signature': request.signatureHex,
+          'timestamp': request.timestamp,
+        },
+      );
+    });
   }
 
   @override
-  Future<BullnymLookupResult> lookupRegistration({
+  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
     required String npubHex,
-  }) async {
-    final response = await _getMap(
-      '/register/lookup',
-      queryParameters: {'npub': npubHex},
-    );
-    return _parseLookupResponse(response);
+  }) {
+    return _guard(() async {
+      final response = await _getMap(
+        '/register/lookup',
+        queryParameters: {'npub': npubHex},
+      );
+      return _parseLookupResponse(response);
+    });
   }
 
   @override
   Future<BullnymBackupHead> fetchBackup(
     BullnymBackupFetchRequest request,
   ) async {
-    final response = await _postMap(
-      '/api/v1/wallet-backups/fetch',
-      data: {
-        'version': 1,
-        'stream': request.stream.wireName,
-        'npub': request.npubHex,
-        'timestamp': request.timestamp,
-        'signature': request.signatureHex,
-      },
-    );
-    return _parseBackupHead(response, request);
+    return _guardBackup(() async {
+      final response = await _postMap(
+        '/api/v1/wallet-backups/fetch',
+        data: {
+          'version': 1,
+          'stream': request.stream.wireName,
+          'npub': request.npubHex,
+          'timestamp': request.timestamp,
+          'signature': request.signatureHex,
+        },
+      );
+      return _parseBackupHead(response, request);
+    });
   }
 
   @override
   Future<BullnymBackupStoreReceipt> storeBackup(
     BullnymBackupStoreRequest request,
   ) async {
-    final response = await _putMap(
-      '/api/v1/wallet-backups',
-      data: {
-        'version': 1,
-        'stream': request.stream.wireName,
-        'npub': request.npubHex,
-        'generation': request.generation,
-        'expected_etag': request.expectedEtag,
-        'ciphertext': request.ciphertext.value,
-        'ciphertext_sha256': request.ciphertextSha256,
-        'ciphertext_bytes': request.ciphertext.byteLength,
-        'timestamp': request.timestamp,
-        'signature': request.signatureHex,
-      },
-    );
-    _requireBackupResponseVersion(response);
-    return BullnymBackupStoreReceipt(
-      generation: _requiredInt(response, 'generation'),
-      etag: _requiredString(response, 'etag'),
-    );
+    return _guardBackup(() async {
+      final response = await _putMap(
+        '/api/v1/wallet-backups',
+        data: {
+          'version': 1,
+          'stream': request.stream.wireName,
+          'npub': request.npubHex,
+          'generation': request.generation,
+          'expected_etag': request.expectedEtag,
+          'ciphertext': request.ciphertext.value,
+          'ciphertext_sha256': request.ciphertextSha256,
+          'ciphertext_bytes': request.ciphertext.byteLength,
+          'timestamp': request.timestamp,
+          'signature': request.signatureHex,
+        },
+      );
+      _requireBackupResponseVersion(response);
+      return BullnymBackupStoreReceipt(
+        generation: _requiredInt(response, 'generation'),
+        etag: _requiredString(response, 'etag'),
+      );
+    });
   }
 
   @override
   Future<BullnymBackupDeleteReceipt> deleteBackup(
     BullnymBackupDeleteRequest request,
   ) async {
-    final response = await _deleteMap(
-      '/api/v1/wallet-backups',
-      data: {
-        'version': 1,
-        'stream': request.stream.wireName,
-        'npub': request.npubHex,
-        'generation': request.generation,
-        'expected_etag': request.expectedEtag,
-        'timestamp': request.timestamp,
-        'signature': request.signatureHex,
-      },
-    );
-    _requireBackupResponseVersion(response);
-    return BullnymBackupDeleteReceipt(
-      generation: _requiredInt(response, 'generation'),
-      etag: _requiredString(response, 'etag'),
-    );
+    return _guardBackup(() async {
+      final response = await _deleteMap(
+        '/api/v1/wallet-backups',
+        data: {
+          'version': 1,
+          'stream': request.stream.wireName,
+          'npub': request.npubHex,
+          'generation': request.generation,
+          'expected_etag': request.expectedEtag,
+          'timestamp': request.timestamp,
+          'signature': request.signatureHex,
+        },
+      );
+      _requireBackupResponseVersion(response);
+      return BullnymBackupDeleteReceipt(
+        generation: _requiredInt(response, 'generation'),
+        etag: _requiredString(response, 'etag'),
+      );
+    });
   }
 
   @override
-  Future<BullnymDonationPage> getDonationPage({
+  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
     required String nym,
     required String kind,
-  }) async {
-    final response = await _getMap(
-      '/donation-page/${Uri.encodeComponent(nym)}',
-      queryParameters: {'kind': kind},
-    );
-    return _parseDonationPageResponse(response);
+  }) {
+    return _guard(() async {
+      final response = await _getMap(
+        '/donation-page/${Uri.encodeComponent(nym)}',
+        queryParameters: {'kind': kind},
+      );
+      return _parseDonationPageResponse(response);
+    });
   }
 
   @override
-  Future<BullnymDonationPage> saveDonationPage(
+  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage(
     BullnymSaveDonationPageRequest request,
-  ) async {
-    final response = await _putMap(
-      '/donation-page',
-      data: {
-        'nym': request.nym,
-        'npub': request.npubHex,
-        'ct_descriptor': request.ctDescriptor,
-        'header': request.header,
-        'description': request.description,
-        'display_currency': request.displayCurrency,
-        'website': request.website,
-        'twitter': request.twitter,
-        'instagram': request.instagram,
-        'enabled': request.enabled,
-        'kind': request.kind,
-        'timestamp': request.timestamp,
-        'signature': request.signatureHex,
-      },
-    );
-    return _parseDonationPageResponse(response);
+  ) {
+    return _guard(() async {
+      final response = await _putMap(
+        '/donation-page',
+        data: {
+          'nym': request.nym,
+          'npub': request.npubHex,
+          'ct_descriptor': request.ctDescriptor,
+          'header': request.header,
+          'description': request.description,
+          'display_currency': request.displayCurrency,
+          'website': request.website,
+          'twitter': request.twitter,
+          'instagram': request.instagram,
+          'enabled': request.enabled,
+          'kind': request.kind,
+          'timestamp': request.timestamp,
+          'signature': request.signatureHex,
+        },
+      );
+      return _parseDonationPageResponse(response);
+    });
   }
 
   @override
-  Future<BullnymDonationPage> archiveDonationPage(
+  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage(
     BullnymArchiveDonationPageRequest request,
-  ) async {
-    final response = await _deleteMap(
-      '/donation-page',
-      data: {
-        'nym': request.nym,
-        'npub': request.npubHex,
-        'kind': request.kind,
-        'timestamp': request.timestamp,
-        'signature': request.signatureHex,
-      },
-    );
-    return _parseDonationPageResponse(response);
+  ) {
+    return _guard(() async {
+      final response = await _deleteMap(
+        '/donation-page',
+        data: {
+          'nym': request.nym,
+          'npub': request.npubHex,
+          'kind': request.kind,
+          'timestamp': request.timestamp,
+          'signature': request.signatureHex,
+        },
+      );
+      return _parseDonationPageResponse(response);
+    });
   }
 
   @override
-  Future<BullnymSupportedCurrencies> getSupportedCurrencies() async {
-    final response = await _getMap('/api/v1/supported-currencies');
-    return _parseSupportedCurrenciesResponse(response);
+  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
+  getSupportedCurrencies() {
+    return _guard(() async {
+      final response = await _getMap('/api/v1/supported-currencies');
+      return _parseSupportedCurrenciesResponse(response);
+    });
   }
 
   @override
-  Future<BullnymCreateInvoiceResponse> createInvoice({
+  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required BullnymCreateInvoiceFields fields,
-  }) async {
-    final timestamp = _nowSecs();
-    final signatureHex = await _signInvoiceAction(
-      signer: signer,
-      action: bullpayActionInvoiceCreate,
-      nymOrEmpty: nym ?? '',
-      payloadFields: buildInvoiceCreatePayloadFields(fields),
-      timestampSecs: timestamp,
-    );
-    final response = await _postMap(
-      _invoicesPath(nym),
-      data: {
-        'npub': signer.npubHex,
-        'amount_sat': fields.amountSat,
-        'fiat_amount_minor': fields.fiatAmountMinor,
-        'fiat_currency': fields.fiatCurrency,
-        'client_request_id': fields.clientRequestId,
-        'presentation_envelope': fields.presentationEnvelope,
-        'accept_btc': fields.acceptBtc,
-        'accept_ln': fields.acceptLn,
-        'accept_liquid': fields.acceptLiquid,
-        'bitcoin_address': fields.bitcoinAddress,
-        'liquid_address': fields.liquidAddress,
-        'liquid_blinding_key_hex': fields.liquidBlindingKeyHex,
-        'expires_at_unix': fields.expiresAtUnix,
-        'timestamp': timestamp,
-        'signature': signatureHex,
-      },
-    );
-    return BullnymCreateInvoiceResponse(
-      invoiceId: _requiredString(response, 'invoice_id'),
-      invoiceUrl: _requiredString(response, 'invoice_url'),
-    );
+  }) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      final signatureHex = await _signInvoiceAction(
+        signer: signer,
+        action: bullpayActionInvoiceCreate,
+        nymOrEmpty: nym ?? '',
+        payloadFields: buildInvoiceCreatePayloadFields(fields),
+        timestampSecs: timestamp,
+      );
+      final response = await _postMap(
+        _invoicesPath(nym),
+        data: {
+          'npub': signer.npubHex,
+          'amount_sat': fields.amountSat,
+          'fiat_amount_minor': fields.fiatAmountMinor,
+          'fiat_currency': fields.fiatCurrency,
+          'client_request_id': fields.clientRequestId,
+          'presentation_envelope': fields.presentationEnvelope,
+          'accept_btc': fields.acceptBtc,
+          'accept_ln': fields.acceptLn,
+          'accept_liquid': fields.acceptLiquid,
+          'bitcoin_address': fields.bitcoinAddress,
+          'liquid_address': fields.liquidAddress,
+          'liquid_blinding_key_hex': fields.liquidBlindingKeyHex,
+          'expires_at_unix': fields.expiresAtUnix,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return BullnymCreateInvoiceResponse(
+        invoiceId: _requiredString(response, 'invoice_id'),
+        invoiceUrl: _requiredString(response, 'invoice_url'),
+      );
+    });
   }
 
   @override
-  Future<BullnymCancelInvoiceResponse> cancelInvoice({
+  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
     required BullnymAuthSigner signer,
     String? nym,
     required String invoiceId,
-  }) async {
-    final timestamp = _nowSecs();
-    final signatureHex = await _signInvoiceAction(
-      signer: signer,
-      action: bullpayActionInvoiceCancel,
-      nymOrEmpty: nym ?? '',
-      payloadFields: buildInvoiceCancelPayloadFields(invoiceId),
-      timestampSecs: timestamp,
-    );
-    final response = await _deleteMap(
-      '${_invoicesPath(nym)}/${Uri.encodeComponent(invoiceId)}',
-      data: {
-        'npub': signer.npubHex,
-        'timestamp': timestamp,
-        'signature': signatureHex,
-      },
-    );
-    return BullnymCancelInvoiceResponse(
-      invoiceId: _requiredString(response, 'invoice_id'),
-      status: _requiredString(response, 'status'),
-    );
+  }) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      final signatureHex = await _signInvoiceAction(
+        signer: signer,
+        action: bullpayActionInvoiceCancel,
+        nymOrEmpty: nym ?? '',
+        payloadFields: buildInvoiceCancelPayloadFields(invoiceId),
+        timestampSecs: timestamp,
+      );
+      final response = await _deleteMap(
+        '${_invoicesPath(nym)}/${Uri.encodeComponent(invoiceId)}',
+        data: {
+          'npub': signer.npubHex,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return BullnymCancelInvoiceResponse(
+        invoiceId: _requiredString(response, 'invoice_id'),
+        status: _requiredString(response, 'status'),
+      );
+    });
   }
 
   @override
-  Future<BullnymListInvoicesResponse> listInvoices({
+  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
     required BullnymAuthSigner signer,
     required int page,
     required int pageSize,
     String? status,
-  }) async {
-    final timestamp = _nowSecs();
-    // The list is npub-wide: the signed nym slot is ALWAYS empty.
-    final signatureHex = await _signInvoiceAction(
-      signer: signer,
-      action: bullpayActionInvoiceList,
-      nymOrEmpty: '',
-      payloadFields: buildInvoiceListPayloadFields(
-        page: page,
-        pageSize: pageSize,
-        status: status,
-      ),
-      timestampSecs: timestamp,
-    );
-    final response = await _getMap(
-      '/api/v1/invoices',
-      queryParameters: {
-        'npub': signer.npubHex,
-        'timestamp': timestamp,
-        'signature': signatureHex,
-        'page': page,
-        'pageSize': pageSize,
-        if (status != null && status.isNotEmpty) 'status': status,
-      },
-    );
-    return _parseListInvoicesResponse(response);
+  }) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      // The list is npub-wide: the signed nym slot is ALWAYS empty.
+      final signatureHex = await _signInvoiceAction(
+        signer: signer,
+        action: bullpayActionInvoiceList,
+        nymOrEmpty: '',
+        payloadFields: buildInvoiceListPayloadFields(
+          page: page,
+          pageSize: pageSize,
+          status: status,
+        ),
+        timestampSecs: timestamp,
+      );
+      final response = await _getMap(
+        '/api/v1/invoices',
+        queryParameters: {
+          'npub': signer.npubHex,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+          'page': page,
+          'pageSize': pageSize,
+          if (status != null && status.isNotEmpty) 'status': status,
+        },
+      );
+      return _parseListInvoicesResponse(response);
+    });
   }
 
   @override
-  Future<BullnymInvoiceStatus> getInvoiceStatus({
+  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
     required String invoiceId,
-  }) async {
-    // Public, UNSIGNED: no signer, no signature — by id only.
-    final response = await _getMap(
-      '/api/v1/invoices/${Uri.encodeComponent(invoiceId)}/status',
-    );
-    return _parseInvoiceStatusResponse(response);
+  }) {
+    return _guard(() async {
+      // Public, UNSIGNED: no signer, no signature — by id only.
+      final response = await _getMap(
+        '/api/v1/invoices/${Uri.encodeComponent(invoiceId)}/status',
+      );
+      return _parseInvoiceStatusResponse(response);
+    });
   }
 
   // `nym == null` → the unlinked collection; a nym → the linked collection.
@@ -355,20 +389,86 @@ class BullnymHttpClient implements BullnymClientPort {
     required List<String> payloadFields,
     required int timestampSecs,
   }) async {
+    final result = await signBullpayAction(
+      signer: signer,
+      action: action,
+      nymOrEmpty: nymOrEmpty,
+      payloadFields: payloadFields,
+      timestampSecs: timestampSecs,
+    );
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw _BullnymClientException(failure),
+    };
+  }
+
+  Future<Result<T, BullnymFailure>> _guard<T>(
+    Future<T> Function() operation,
+  ) async {
     try {
-      validateBullnymNpubHex(signer.npubHex);
-      return await signBullpayAction(
-        signer: signer,
-        action: action,
-        nymOrEmpty: nymOrEmpty,
-        payloadFields: payloadFields,
-        timestampSecs: timestampSecs,
+      return Ok(await operation());
+    } on _BullnymClientException catch (e, stack) {
+      log.warning(
+        'Bullnym request failed',
+        error: e.failure.logMessage ?? e.failure.code,
+        trace: stack,
       );
-    } on BullnymException {
-      rethrow;
-    } catch (_) {
-      throw const BullnymException.signingFailed();
+      return Err(e.failure);
+    } on Exception catch (e, stack) {
+      // Foreign library exceptions stop at this data boundary. Dart [Error]s
+      // intentionally remain uncaught because they signal programmer bugs.
+      log.warning(
+        'Bullnym request failed unexpectedly',
+        error: e,
+        trace: stack,
+      );
+      return const Err(BullnymFailure.unexpected());
     }
+  }
+
+  Future<T> _guardBackup<T>(Future<T> Function() operation) async {
+    try {
+      return await operation();
+    } on _BullnymClientException catch (e) {
+      throw _backupExceptionFromFailure(e.failure);
+    }
+  }
+
+  BullnymException _backupExceptionFromFailure(BullnymFailure failure) {
+    return switch (failure.kind) {
+      BullnymFailureKind.invalidInput => BullnymException.invalidInput(
+        failure.logMessage ?? 'Invalid backup request',
+      ),
+      BullnymFailureKind.network => BullnymException.network(
+        diagnosticReason: failure.logMessage ?? 'Network request failed',
+      ),
+      BullnymFailureKind.timeout => BullnymException.timeout(
+        diagnosticReason: failure.logMessage ?? 'Network request timed out',
+      ),
+      BullnymFailureKind.serverRejectedRequest =>
+        BullnymException.serverRejectedRequest(
+          code: failure.code,
+          diagnosticReason: failure.logMessage ?? failure.code,
+          statusCode: failure.statusCode,
+          retryable: failure.retryable,
+        ),
+      BullnymFailureKind.unexpectedHttpStatus =>
+        BullnymException.unexpectedHttpStatus(statusCode: failure.statusCode),
+      BullnymFailureKind.emptyResponse => BullnymException.emptyResponse(
+        statusCode: failure.statusCode,
+      ),
+      BullnymFailureKind.invalidServerResponse =>
+        BullnymException.invalidServerResponse(
+          diagnosticReason:
+              failure.logMessage ?? 'Invalid Bullnym backup response',
+          statusCode: failure.statusCode,
+        ),
+      BullnymFailureKind.signingFailed =>
+        const BullnymException.signingFailed(),
+      BullnymFailureKind.unexpected => BullnymException.invalidServerResponse(
+        diagnosticReason: failure.logMessage ?? 'Unexpected backup failure',
+      ),
+    };
   }
 
   Future<Map<String, dynamic>> _getMap(
@@ -399,7 +499,7 @@ class BullnymHttpClient implements BullnymClientPort {
     _throwIfBullnymError(response);
     final statusCode = response.statusCode;
     if (statusCode == null || statusCode < 200 || statusCode >= 300) {
-      throw _httpExceptionFromResponse(response);
+      throw _BullnymClientException(_httpFailureFromResponse(response));
     }
   }
 
@@ -417,40 +517,44 @@ class BullnymHttpClient implements BullnymClientPort {
     } on DioException catch (e) {
       final response = e.response;
       if (response != null) return response;
-      throw _networkException(e);
+      throw _BullnymClientException(_networkFailure(e));
     }
   }
 
-  BullnymException _networkException(DioException e) {
+  BullnymFailure _networkFailure(DioException e) {
     final isTimeout =
         e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.receiveTimeout;
     final diagnosticReason = e.message ?? 'Network request failed';
     if (isTimeout) {
-      return BullnymException.timeout(diagnosticReason: diagnosticReason);
+      return BullnymFailure.timeout(logMessage: diagnosticReason);
     }
-    return BullnymException.network(diagnosticReason: diagnosticReason);
+    return BullnymFailure.network(logMessage: diagnosticReason);
   }
 
   Map<String, dynamic> _decodeMap(Response<dynamic> response) {
     _throwIfBullnymError(response);
     final statusCode = response.statusCode;
     if (statusCode == null || statusCode < 200 || statusCode >= 300) {
-      throw _httpExceptionFromResponse(response);
+      throw _BullnymClientException(_httpFailureFromResponse(response));
     }
     final data = _requireJson(response);
     if (data is Map<String, dynamic>) return data;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server returned an unexpected response shape',
-      statusCode: response.statusCode,
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server returned an unexpected response shape',
+        statusCode: response.statusCode,
+      ),
     );
   }
 
   dynamic _requireJson(Response<dynamic> response) {
     final data = response.data;
     if (data == null) {
-      throw BullnymException.emptyResponse(statusCode: response.statusCode);
+      throw _BullnymClientException(
+        BullnymFailure.emptyResponse(statusCode: response.statusCode),
+      );
     }
     return data;
   }
@@ -458,33 +562,29 @@ class BullnymHttpClient implements BullnymClientPort {
   void _throwIfBullnymError(Response<dynamic> response) {
     final data = response.data;
     if (data is Map<String, dynamic> && data['status'] == 'ERROR') {
-      throw _serverErrorExceptionFromResponse(response);
+      throw _BullnymClientException(_serverFailureFromResponse(response));
     }
   }
 
-  BullnymException _serverErrorExceptionFromResponse(
-    Response<dynamic> response,
-  ) {
+  BullnymFailure _serverFailureFromResponse(Response<dynamic> response) {
     final data = response.data;
     if (data is Map<String, dynamic> && data['status'] == 'ERROR') {
       final code = data['code'];
       final reason = data['reason'];
       if (reason is! String) {
-        return BullnymException.invalidServerResponse(
-          diagnosticReason: 'Server error response is missing reason',
+        return BullnymFailure.invalidServerResponse(
+          logMessage: 'Server error response is missing reason',
           statusCode: response.statusCode,
         );
       }
-      return BullnymException.serverRejectedRequest(
+      return BullnymFailure.serverRejectedRequest(
         code: code is String ? code : 'ServerRejectedRequest',
-        diagnosticReason: reason,
+        logMessage: reason,
         statusCode: response.statusCode,
         retryable: _isRetryableStatus(response.statusCode),
       );
     }
-    return BullnymException.unexpectedHttpStatus(
-      statusCode: response.statusCode,
-    );
+    return BullnymFailure.unexpectedHttpStatus(statusCode: response.statusCode);
   }
 
   bool _isRetryableStatus(int? statusCode) {
@@ -499,13 +599,11 @@ class BullnymHttpClient implements BullnymClientPort {
         uri.host == '::1';
   }
 
-  BullnymException _httpExceptionFromResponse(Response<dynamic> response) {
+  BullnymFailure _httpFailureFromResponse(Response<dynamic> response) {
     if (response.data is Map<String, dynamic>) {
-      return _serverErrorExceptionFromResponse(response);
+      return _serverFailureFromResponse(response);
     }
-    return BullnymException.unexpectedHttpStatus(
-      statusCode: response.statusCode,
-    );
+    return BullnymFailure.unexpectedHttpStatus(statusCode: response.statusCode);
   }
 
   BullnymRegisterResult _parseRegisterResponse(Map<String, dynamic> json) {
@@ -526,16 +624,20 @@ class BullnymHttpClient implements BullnymClientPort {
   String _requiredString(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is String) return value;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server response is missing string field $key',
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response is missing string field $key',
+      ),
     );
   }
 
   bool _requiredBool(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is bool) return value;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server response is missing bool field $key',
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response is missing bool field $key',
+      ),
     );
   }
 
@@ -543,16 +645,20 @@ class BullnymHttpClient implements BullnymClientPort {
     final value = json[key];
     if (value == null) return null;
     if (value is String) return value;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server response field $key is not a string',
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is not a string',
+      ),
     );
   }
 
   int _requiredInt(Map<String, dynamic> json, String key) {
     final value = json[key];
-    if (value is int && value >= 0) return value;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server response is missing integer field $key',
+    if (value is int) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response is missing int field $key',
+      ),
     );
   }
 
@@ -636,8 +742,10 @@ class BullnymHttpClient implements BullnymClientPort {
     final value = json[key];
     if (value == null) return null;
     if (value is int) return value;
-    throw BullnymException.invalidServerResponse(
-      diagnosticReason: 'Server response field $key is not an int',
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is not an int',
+      ),
     );
   }
 
@@ -668,15 +776,19 @@ class BullnymHttpClient implements BullnymClientPort {
   ) {
     final rawCurrencies = json['currencies'];
     if (rawCurrencies is! List) {
-      throw BullnymException.invalidServerResponse(
-        diagnosticReason: 'Server response is missing currencies list',
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response is missing currencies list',
+        ),
       );
     }
     final currencies = <BullnymSupportedCurrency>[];
     for (final raw in rawCurrencies) {
       if (raw is! Map<String, dynamic>) {
-        throw BullnymException.invalidServerResponse(
-          diagnosticReason: 'Server currency entry has an unexpected shape',
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Server currency entry has an unexpected shape',
+          ),
         );
       }
       currencies.add(
@@ -696,15 +808,19 @@ class BullnymHttpClient implements BullnymClientPort {
   ) {
     final rawInvoices = json['invoices'];
     if (rawInvoices is! List) {
-      throw BullnymException.invalidServerResponse(
-        diagnosticReason: 'Server response is missing invoices list',
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response is missing invoices list',
+        ),
       );
     }
     final invoices = <BullnymInvoiceListItem>[];
     for (final raw in rawInvoices) {
       if (raw is! Map<String, dynamic>) {
-        throw BullnymException.invalidServerResponse(
-          diagnosticReason: 'Server invoice entry has an unexpected shape',
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Server invoice entry has an unexpected shape',
+          ),
         );
       }
       invoices.add(_parseInvoiceListItem(raw));
@@ -747,6 +863,7 @@ class BullnymHttpClient implements BullnymClientPort {
   BullnymInvoiceStatus _parseInvoiceStatusResponse(Map<String, dynamic> json) {
     return BullnymInvoiceStatus(
       status: _requiredString(json, 'status'),
+      presentationStatus: _optionalString(json, 'presentation_status'),
       pricingMode: _requiredString(json, 'pricing_mode'),
       settlementStatus: _requiredString(json, 'settlement_status'),
       amountSat: _requiredInt(json, 'amount_sat'),
@@ -768,6 +885,50 @@ class BullnymHttpClient implements BullnymClientPort {
       acceptBtc: _requiredBool(json, 'accept_btc'),
       acceptLn: _requiredBool(json, 'accept_ln'),
       acceptLiquid: _requiredBool(json, 'accept_liquid'),
+      bitcoinDirectObservations: _parseBitcoinDirectObservations(json),
     );
   }
+
+  List<BullnymBitcoinDirectObservation> _parseBitcoinDirectObservations(
+    Map<String, dynamic> json,
+  ) {
+    final rawObservations = json['bitcoin_direct_observations'];
+    if (rawObservations is! List) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage:
+              'Server response is missing bitcoin_direct_observations list',
+        ),
+      );
+    }
+    return [
+      for (final raw in rawObservations)
+        if (raw is Map<String, dynamic>)
+          BullnymBitcoinDirectObservation(
+            source: _requiredString(raw, 'source'),
+            rail: _requiredString(raw, 'rail'),
+            txid: _requiredString(raw, 'txid'),
+            vout: _requiredInt(raw, 'vout'),
+            address: _requiredString(raw, 'address'),
+            amountSat: _requiredInt(raw, 'amount_sat'),
+            confirmations: _requiredInt(raw, 'confirmations'),
+            blockHeight: _optionalInt(raw, 'block_height'),
+            state: _requiredString(raw, 'state'),
+            firstSeenAtUnix: _requiredInt(raw, 'first_seen_at_unix'),
+            lastSeenAtUnix: _requiredInt(raw, 'last_seen_at_unix'),
+          )
+        else
+          throw const _BullnymClientException(
+            BullnymFailure.invalidServerResponse(
+              logMessage: 'Server bitcoin observation has an unexpected shape',
+            ),
+          ),
+    ];
+  }
+}
+
+final class _BullnymClientException implements Exception {
+  final BullnymFailure failure;
+
+  const _BullnymClientException(this.failure);
 }

@@ -74,14 +74,14 @@ void main() {
       );
 
   group('createInvoice', () {
-    Future<InvoicesFailure> mapCreateFailure(BullnymException error) async {
+    Future<InvoicesFailure> mapCreateFailure(BullnymFailure error) async {
       when(
         () => bullnym.createInvoice(
           signer: any(named: 'signer'),
           nym: any(named: 'nym'),
           fields: any(named: 'fields'),
         ),
-      ).thenThrow(error);
+      ).thenAnswer((_) async => Err(error));
 
       return _unwrapFailure(
         await datasource.createInvoice(
@@ -101,9 +101,11 @@ void main() {
             fields: any(named: 'fields'),
           ),
         ).thenAnswer(
-          (_) async => const BullnymCreateInvoiceResponse(
-            invoiceId: 'inv-1',
-            invoiceUrl: 'https://bullpay.ca/invoice/inv-1',
+          (_) async => const Ok(
+            BullnymCreateInvoiceResponse(
+              invoiceId: 'inv-1',
+              invoiceUrl: 'https://bullpay.ca/invoice/inv-1',
+            ),
           ),
         );
 
@@ -158,9 +160,11 @@ void main() {
             fields: any(named: 'fields'),
           ),
         ).thenAnswer(
-          (_) async => const BullnymCreateInvoiceResponse(
-            invoiceId: 'inv-1',
-            invoiceUrl: 'http://evil.example/invoice/inv-1',
+          (_) async => const Ok(
+            BullnymCreateInvoiceResponse(
+              invoiceId: 'inv-1',
+              invoiceUrl: 'http://evil.example/invoice/inv-1',
+            ),
           ),
         );
 
@@ -177,9 +181,9 @@ void main() {
     test('maps every stable invoice server code to its failure', () async {
       Future<InvoicesFailure> fromCode(String code, {bool retryable = false}) =>
           mapCreateFailure(
-            BullnymException.serverRejectedRequest(
+            BullnymFailure.serverRejectedRequest(
               code: code,
-              diagnosticReason: 'diagnostic only',
+              logMessage: 'diagnostic only',
               retryable: retryable,
             ),
           );
@@ -224,38 +228,38 @@ void main() {
       () async {
         expect(
           (await mapCreateFailure(
-            const BullnymException.network(diagnosticReason: 'secret-network'),
+            const BullnymFailure.network(logMessage: 'secret-network'),
           )).kind,
           InvoicesFailureKind.network,
         );
         expect(
           (await mapCreateFailure(
-            const BullnymException.timeout(diagnosticReason: 'secret-timeout'),
+            const BullnymFailure.timeout(logMessage: 'secret-timeout'),
           )).kind,
           InvoicesFailureKind.timeout,
         );
 
         final failClosed = await mapCreateFailure(
-          const BullnymException.unexpectedHttpStatus(statusCode: 404),
+          const BullnymFailure.unexpectedHttpStatus(statusCode: 404),
         );
         expect(failClosed.kind, InvoicesFailureKind.server);
         expect(failClosed.retryable, isTrue);
 
         expect(
           (await mapCreateFailure(
-            const BullnymException.invalidServerResponse(),
+            const BullnymFailure.invalidServerResponse(),
           )).kind,
           InvoicesFailureKind.invalidServerResponse,
         );
         expect(
-          (await mapCreateFailure(const BullnymException.signingFailed())).kind,
+          (await mapCreateFailure(const BullnymFailure.signingFailed())).kind,
           InvoicesFailureKind.signingFailed,
         );
 
         final sanitized = await mapCreateFailure(
-          const BullnymException.serverRejectedRequest(
+          const BullnymFailure.serverRejectedRequest(
             code: 'InvalidAmount',
-            diagnosticReason: 'secret-diagnostic-detail',
+            logMessage: 'secret-diagnostic-detail',
             retryable: false,
           ),
         );
@@ -297,21 +301,24 @@ void main() {
         when(
           () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
         ).thenAnswer(
-          (_) async => const BullnymInvoiceStatus(
-            status: 'paid',
-            pricingMode: 'sat',
-            settlementStatus: 'settled',
-            amountSat: 1000,
-            remainingAmountSat: 0,
-            paymentToleranceSat: 5,
-            rateLocksUntilUnix: 1893456000,
-            expiresAtUnix: 1893456000,
-            paidVia: 'lightning',
-            paidAtUnix: 1893450000,
-            paidAmountSat: 1000,
-            acceptBtc: false,
-            acceptLn: true,
-            acceptLiquid: true,
+          (_) async => const Ok(
+            BullnymInvoiceStatus(
+              status: 'paid',
+              pricingMode: 'sat',
+              settlementStatus: 'settled',
+              amountSat: 1000,
+              remainingAmountSat: 0,
+              paymentToleranceSat: 5,
+              rateLocksUntilUnix: 1893456000,
+              expiresAtUnix: 1893456000,
+              paidVia: 'lightning',
+              paidAtUnix: 1893450000,
+              paidAmountSat: 1000,
+              acceptBtc: false,
+              acceptLn: true,
+              acceptLiquid: true,
+              bitcoinDirectObservations: [],
+            ),
           ),
         );
 
@@ -330,12 +337,14 @@ void main() {
     test('a bullnym error maps to notFound', () async {
       when(
         () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
-      ).thenThrow(
-        const BullnymException.serverRejectedRequest(
-          code: 'InvoiceNotFound',
-          diagnosticReason: 'no such invoice',
-          statusCode: 404,
-          retryable: false,
+      ).thenAnswer(
+        (_) async => const Err(
+          BullnymFailure.serverRejectedRequest(
+            code: 'InvoiceNotFound',
+            logMessage: 'no such invoice',
+            statusCode: 404,
+            retryable: false,
+          ),
         ),
       );
 
@@ -351,18 +360,21 @@ void main() {
         when(
           () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
         ).thenAnswer(
-          (_) async => const BullnymInvoiceStatus(
-            status: 'needs_manual_reconciliation',
-            pricingMode: 'sat',
-            settlementStatus: 'pending',
-            amountSat: 1000,
-            remainingAmountSat: 1000,
-            paymentToleranceSat: 5,
-            rateLocksUntilUnix: 1893456000,
-            expiresAtUnix: 1893456000,
-            acceptBtc: true,
-            acceptLn: true,
-            acceptLiquid: true,
+          (_) async => const Ok(
+            BullnymInvoiceStatus(
+              status: 'needs_manual_reconciliation',
+              pricingMode: 'sat',
+              settlementStatus: 'pending',
+              amountSat: 1000,
+              remainingAmountSat: 1000,
+              paymentToleranceSat: 5,
+              rateLocksUntilUnix: 1893456000,
+              expiresAtUnix: 1893456000,
+              acceptBtc: true,
+              acceptLn: true,
+              acceptLiquid: true,
+              bitcoinDirectObservations: [],
+            ),
           ),
         );
 
@@ -387,26 +399,28 @@ void main() {
           status: any(named: 'status'),
         ),
       ).thenAnswer(
-        (_) async => const BullnymListInvoicesResponse(
-          invoices: [
-            BullnymInvoiceListItem(
-              id: 'inv-1',
-              origin: 'wallet',
-              status: 'unpaid',
-              pricingMode: 'sat',
-              settlementStatus: 'pending',
-              amountSat: 1000,
-              remainingAmountSat: 1000,
-              acceptBtc: false,
-              acceptLn: false,
-              acceptLiquid: true,
-              createdAtUnix: 1893450000,
-              expiresAtUnix: 1893456000,
-            ),
-          ],
-          page: 1,
-          pageSize: 100,
-          hasMore: false,
+        (_) async => const Ok(
+          BullnymListInvoicesResponse(
+            invoices: [
+              BullnymInvoiceListItem(
+                id: 'inv-1',
+                origin: 'wallet',
+                status: 'unpaid',
+                pricingMode: 'sat',
+                settlementStatus: 'pending',
+                amountSat: 1000,
+                remainingAmountSat: 1000,
+                acceptBtc: false,
+                acceptLn: false,
+                acceptLiquid: true,
+                createdAtUnix: 1893450000,
+                expiresAtUnix: 1893456000,
+              ),
+            ],
+            page: 1,
+            pageSize: 100,
+            hasMore: false,
+          ),
         ),
       );
 
@@ -435,26 +449,28 @@ void main() {
             status: any(named: 'status'),
           ),
         ).thenAnswer(
-          (_) async => const BullnymListInvoicesResponse(
-            invoices: [
-              BullnymInvoiceListItem(
-                id: 'inv-1',
-                origin: 'wallet',
-                status: 'requires_operator_review',
-                pricingMode: 'sat',
-                settlementStatus: 'pending',
-                amountSat: 1000,
-                remainingAmountSat: 1000,
-                acceptBtc: true,
-                acceptLn: true,
-                acceptLiquid: true,
-                createdAtUnix: 1893450000,
-                expiresAtUnix: 1893456000,
-              ),
-            ],
-            page: 1,
-            pageSize: 100,
-            hasMore: false,
+          (_) async => const Ok(
+            BullnymListInvoicesResponse(
+              invoices: [
+                BullnymInvoiceListItem(
+                  id: 'inv-1',
+                  origin: 'wallet',
+                  status: 'requires_operator_review',
+                  pricingMode: 'sat',
+                  settlementStatus: 'pending',
+                  amountSat: 1000,
+                  remainingAmountSat: 1000,
+                  acceptBtc: true,
+                  acceptLn: true,
+                  acceptLiquid: true,
+                  createdAtUnix: 1893450000,
+                  expiresAtUnix: 1893456000,
+                ),
+              ],
+              page: 1,
+              pageSize: 100,
+              hasMore: false,
+            ),
           ),
         );
 

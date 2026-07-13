@@ -32,8 +32,8 @@ void main() {
   );
 
   test('maps a server failure into the pos error family', () async {
-    client.currenciesError = const BullnymException.network(
-      diagnosticReason: 'offline',
+    client.currenciesError = const BullnymFailure.network(
+      logMessage: 'offline',
     );
 
     await expectLater(

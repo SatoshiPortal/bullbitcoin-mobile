@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/pos/domain/pos_error.dart';
 import 'package:bb_mobile/features/pos/domain/pos_terminal.dart';
@@ -13,13 +14,17 @@ class GetPosUsecase {
 
   Future<PosTerminal> execute({required String nym}) async {
     try {
-      final row = await _bullnym.getDonationPage(
+      final result = await _bullnym.getDonationPage(
         nym: nym,
         kind: bullnymDonationPageKindPos,
       );
-      return PosTerminal.fromBullnym(row, baseUrl: _terminalBaseUrl);
-    } on BullnymException catch (e) {
-      throw PosException.fromBullnym(e);
+      return switch (result) {
+        Ok(:final value) => PosTerminal.fromBullnym(
+          value,
+          baseUrl: _terminalBaseUrl,
+        ),
+        Err(:final failure) => throw PosException.fromBullnym(failure),
+      };
     } on PosException {
       rethrow;
     } catch (_) {
