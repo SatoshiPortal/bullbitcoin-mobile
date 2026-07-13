@@ -42,6 +42,8 @@ void main(List<String> args) {
         _cmdCheck(rest);
       case 'missing':
         _cmdMissing(rest);
+      case 'orphans':
+        _cmdOrphans(rest);
       case 'dead':
         _cmdDead(rest);
       case 'add':
@@ -177,6 +179,55 @@ void _cmdMissing(List<String> args) {
       '\nPass --list to print the missing keys, or --locale <code> to '
       'focus on one locale.',
     );
+  }
+}
+
+void _cmdOrphans(List<String> args) {
+  final extra = _positional(args);
+  if (extra.isNotEmpty) {
+    throw UsageException(
+      'orphans takes no positional arguments; got "${extra.join(' ')}". '
+      'To focus on one locale use `orphans --locale ${extra.first}`.',
+    );
+  }
+  final localeFilter = _option(args, '--locale');
+  final list = _flag(args, '--list');
+  if (localeFilter != null) {
+    _requireLocale(localeFilter);
+    if (localeFilter == templateLocale) {
+      throw UsageException(
+        'The template locale ("$templateLocale") defines the key set; it '
+        'cannot have orphans relative to itself.',
+      );
+    }
+  }
+
+  final templateKeys = _realKeys(_readMap(_fileFor(templateLocale)));
+  final locales = (localeFilter != null ? [localeFilter] : _allLocales())
+      .where((l) => l != templateLocale)
+      .toList();
+
+  var total = 0;
+  for (final locale in locales) {
+    final keys = _realKeys(_readMap(_fileFor(locale)));
+    final orphans = keys.where((k) => !templateKeys.contains(k)).toList()
+      ..sort();
+    total += orphans.length;
+    print('$locale: ${orphans.length} orphaned (in locale, not in template)');
+    if (list) {
+      for (final k in orphans) {
+        print('  $k');
+      }
+    }
+  }
+  if (total > 0) {
+    print(
+      '\ngen-l10n only reads template keys, so orphans are unreachable '
+      'dead weight. Remove them with `delete KEY...`.',
+    );
+    if (!list) {
+      print('Pass --list to print them.');
+    }
   }
 }
 
@@ -409,33 +460,48 @@ void _cmdRename(List<String> args) {
 }
 
 void _cmdDelete(List<String> args) {
-  final positional = _positional(args);
-  if (positional.length != 1) {
-    throw UsageException('delete expects exactly one KEY argument.');
+  final keys = _positional(args).toSet().toList();
+  if (keys.isEmpty) {
+    throw UsageException('delete expects one or more KEY arguments.');
   }
-  final key = positional.first;
-  if (_isMetaKey(key)) {
-    throw UsageException('Delete the base key; its @metadata is removed too.');
+  for (final key in keys) {
+    if (_isMetaKey(key)) {
+      throw UsageException(
+        'Delete the base key "${key.substring(1)}"; its @metadata is '
+        'removed too.',
+      );
+    }
   }
 
   // Pre-flight every file so a layout problem aborts before any deletion,
-  // rather than removing the key from only some locales.
+  // rather than removing keys from only some locales.
   final files = _allLocales().map(_fileFor).toList();
   for (final file in files) {
     _assertInvariant(file);
   }
 
+  // All-or-nothing: a typo in a batch must abort before anything is removed.
+  final notFound = keys
+      .where((k) => !files.any((f) => _readMap(f).containsKey(k)))
+      .toList();
+  if (notFound.isNotEmpty) {
+    throw ArbException(
+      'Key(s) not found in any locale: ${notFound.join(', ')}. '
+      'Nothing was deleted.',
+    );
+  }
+
   var removedFrom = 0;
   for (final file in files) {
-    // Removes both the value key and its @metadata (template only); order is
-    // irrelevant since _removeKeys recomputes blocks per key.
-    final removed = _removeKeys(file, [key, '@$key']);
+    // Removes both the value keys and their @metadata (template only); order
+    // is irrelevant since _removeKeys recomputes blocks per key.
+    final removed = _removeKeys(file, [
+      for (final key in keys) ...[key, '@$key'],
+    ]);
     if (removed) removedFrom++;
   }
-  if (removedFrom == 0) {
-    throw ArbException('Key "$key" not found in any locale.');
-  }
-  print('deleted $key (and any @$key metadata) from $removedFrom file(s)');
+  final what = keys.length == 1 ? keys.first : '${keys.length} keys';
+  print('deleted $what (and any @metadata) from $removedFrom file(s)');
 }
 
 void _cmdValidate(List<String> args) {
@@ -451,7 +517,10 @@ void _cmdValidate(List<String> args) {
     try {
       final map = _readMap(file);
       _assertInvariant(file);
-      print('${_basename(file)}: ok (${map.length} keys)');
+      print(
+        '${_basename(file)}: ok (${_realKeys(map).length} message keys, '
+        '${map.length} entries incl. @metadata)',
+      );
     } catch (e) {
       ok = false;
       print('${_basename(file)}: FAILED — $e');
@@ -878,6 +947,7 @@ const _commandOptions = <String, Set<String>>{
   'get': {'--locale'},
   'check': {},
   'missing': {'--locale', '--list'},
+  'orphans': {'--locale', '--list'},
   'dead': {'--list'},
   'add': {
     '--translations',
@@ -1073,12 +1143,18 @@ Read commands:
       Report keys present in the template (en) but missing per locale.
       --locale focuses on one locale; --list prints the missing keys.
 
+  orphans [--locale L] [--list]
+      Report keys present in a locale file but absent from the template (en).
+      gen-l10n only reads template keys, so orphans are unreachable.
+
   dead [--list]
       List template keys with no apparent reference in lib/ or test/
       (heuristic).
 
   validate
       Parse every .arb file and confirm the 2-space layout invariant.
+      Reports message keys and total entries (messages + @metadata)
+      separately; missing/orphans/dead counts refer to message keys.
 
 Write commands (surgical; other keys are left byte-for-byte unchanged):
   add KEY --translations '{"en":"...","fr":"..."}'
@@ -1099,8 +1175,9 @@ Write commands (surgical; other keys are left byte-for-byte unchanged):
       Rename a key across every locale in place, preserving all values and
       metadata (NEW must not already exist).
 
-  delete KEY
-      Remove KEY (and its @KEY metadata) from every locale file.
+  delete KEY [KEY...]
+      Remove the given keys (and their @KEY metadata) from every locale file.
+      Aborts before deleting anything if any key is unknown.
 
 Every write command accepts --dry-run: it runs all checks and reports which
 files would change, without writing anything.

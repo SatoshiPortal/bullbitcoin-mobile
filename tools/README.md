@@ -21,6 +21,7 @@ Read:
 | `get KEY [--locale L]` | Print the description and the value across locales |
 | `check KEY` | Which locales have KEY, which are missing it |
 | `missing [--locale L] [--list]` | Keys in the `en` template absent from a locale |
+| `orphans [--locale L] [--list]` | Keys in a locale absent from the template (unreachable — gen-l10n only reads template keys) |
 | `dead [--list]` | Template keys with no apparent reference in `lib/` or `test/` (heuristic) |
 | `validate` | Parse every file and confirm the layout invariant |
 
@@ -32,7 +33,7 @@ Write (other keys left untouched):
 | `set KEY LOCALE VALUE` | Set or update one locale's value (KEY must already be in the template) |
 | `set-meta KEY [--description ...] [--placeholders '{...}']` | Update an existing key's template metadata in place, without touching translations |
 | `rename OLD NEW` | Rename a key across every locale in place, preserving values + metadata |
-| `delete KEY` | Remove KEY and its `@KEY` metadata from every file |
+| `delete KEY [KEY...]` | Remove keys and their `@KEY` metadata from every file (all-or-nothing: aborts if any key is unknown) |
 
 Unknown options are rejected rather than ignored, so a typo fails loudly — and
 an option that isn't valid for the specific command (e.g. `get KEY --description
