@@ -87,10 +87,24 @@
 		</array>
 		<key>BGTaskSchedulerPermittedIdentifiers</key>
 		<array>
+			<!--
+			bitcoin-sync-id / liquid-sync-id / swaps-sync-id / logs-prune-id are
+			commented out in lockstep with the native registration in
+			AppDelegate.swift and the Dart-side registerPeriodicTask call in
+			main.dart's initWorkmanager (see those files) — all three are paused
+			together as defense-in-depth against the lwk_wollet cross-isolate
+			concurrency bug (see LwkDirGuard). Leaving a permitted identifier
+			declared here with nothing registering it is harmless (iOS just never
+			schedules it), so this array is left declaring them rather than
+			removing/re-adding on every toggle. Re-enable here only alongside the
+			other two files, and only after closing the hardening checklist on
+			CrossIsolateDirMarker in lwk_dir_guard.dart:
+
 			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
 			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
 			<string>com.bullbitcoin.mobile.swaps-sync-id</string>
 			<string>com.bullbitcoin.mobile.logs-prune-id</string>
+			-->
 			<string>com.bullbitcoin.mobile.services-check-id</string>
 		</array>
 	</dict>

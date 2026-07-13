@@ -129,12 +129,53 @@ void main() {
       verify(() => storage.deleteValue(backupKey)).called(1);
     });
 
-    test('deletePinCode clears the heal backup too', () async {
-      await repository.deletePinCode();
+    test(
+      'deletePinCode clears the heal backup BEFORE the live key, so a '
+      'crash between the two never leaves key-absent/backup-present — '
+      'the exact state that would resurrect the old pin',
+      () async {
+        await repository.deletePinCode();
 
-      verify(() => storage.deleteValue(key)).called(1);
-      verify(() => storage.deleteValue(backupKey)).called(1);
-    });
+        verifyInOrder([
+          () => storage.deleteValue(backupKey),
+          () => storage.deleteValue(key),
+        ]);
+      },
+    );
+
+    test(
+      'a backup-delete failure is retried once, and the live key is still '
+      'deleted once the backup is confirmed gone',
+      () async {
+        var backupDeleteAttempts = 0;
+        when(() => storage.deleteValue(backupKey)).thenAnswer((_) async {
+          backupDeleteAttempts++;
+          if (backupDeleteAttempts == 1) throw Exception('boom');
+        });
+
+        final result = await repository.deletePinCode();
+
+        expect(result, isA<Ok<Null, PinCodeFailure>>());
+        verify(() => storage.deleteValue(backupKey)).called(2);
+        verify(() => storage.deleteValue(key)).called(1);
+      },
+    );
+
+    test(
+      'a backup-delete failure twice refuses to delete the live key, so '
+      'the pin is never left resurrectable',
+      () async {
+        when(
+          () => storage.deleteValue(backupKey),
+        ).thenThrow(Exception('boom'));
+
+        final result = await repository.deletePinCode();
+
+        expect(result, isA<Err<Null, PinCodeFailure>>());
+        verify(() => storage.deleteValue(backupKey)).called(2);
+        verifyNever(() => storage.deleteValue(key));
+      },
+    );
   });
 
   group('legacy keychain accessibility heal', () {

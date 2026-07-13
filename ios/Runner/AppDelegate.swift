@@ -33,7 +33,9 @@ import workmanager_apple
     // bug (lwk_wollet `UpdateOnDifferentStatus`, see LwkDirGuard) the Dart
     // pause exists to avoid. Re-enable only alongside the Dart-side
     // `registerPeriodicTask` call once the lock fix has shipped and proven
-    // stable for a few releases:
+    // stable for a few releases — see the hardening checklist on
+    // `CrossIsolateDirMarker` in lwk_dir_guard.dart (gaps found in the
+    // 2026-07 pre-merge review that should close before that) first:
     //
     // WorkmanagerPlugin.registerPeriodicTask(
     //   withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",

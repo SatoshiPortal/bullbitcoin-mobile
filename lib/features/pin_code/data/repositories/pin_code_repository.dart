@@ -169,10 +169,35 @@ class PinCodeRepository {
 
   Future<Result<Null, PinCodeFailure>> deletePinCode() async {
     try {
+      // Clear the heal backup BEFORE deleting the live key, not after:
+      // deleting [_key] while [_healBackupKey] still holds the old pin is
+      // exactly the state [_readPinRestoringFromHealBackupIfNeeded] would
+      // resurrect on the next read — whether from a crash between the two
+      // deletes, or this backup delete simply failing on its own. Retry
+      // once like the heal's own re-save does; if the backup still can't
+      // be cleared, refuse to delete the live key so this fails loudly
+      // instead of silently setting up a future resurrection.
+      try {
+        await _storage.deleteValue(_healBackupKey);
+      } on KeychainLockedException {
+        rethrow;
+      } catch (_) {
+        try {
+          await _storage.deleteValue(_healBackupKey);
+        } on KeychainLockedException {
+          rethrow;
+        } catch (e, st) {
+          log.severe(
+            message:
+                'Failed to clear PIN heal backup twice — refusing to '
+                'delete the live PIN to avoid a stale-backup resurrection',
+            error: e,
+            trace: st,
+          );
+          return Err(PinCodeUnexpectedFailure(e.toString()));
+        }
+      }
       await _storage.deleteValue(_key);
-      // Otherwise a stale heal backup from before this delete would
-      // resurrect the old PIN on the next read.
-      await _deleteHealBackupBestEffort();
       return const Ok(null);
     } on KeychainLockedException {
       return const Err(PinCodeDeleteFailure());

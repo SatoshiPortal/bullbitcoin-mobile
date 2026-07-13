@@ -51,9 +51,45 @@ class LwkDirGuard {
 /// observe no fresh holder and both write the marker, so this narrows the
 /// cross-isolate race rather than closing it. That's acceptable today only
 /// because the workmanager background task is unregistered elsewhere in this
-/// codebase, leaving a single isolate in practice — revisit with a truly
-/// atomic acquire (e.g. `File.create(exclusive: true)`) before that task is
-/// ever re-enabled.
+/// codebase (see `ios/Runner/AppDelegate.swift`, `ios/Runner/Info.plist`'s
+/// `BGTaskSchedulerPermittedIdentifiers`, and `Bull.initWorkmanager` in
+/// main.dart — all three paused in lockstep with this), leaving a single
+/// isolate in practice.
+///
+/// We do want to bring background sync back eventually, just hardened first.
+/// Before re-registering that task anywhere, close these gaps found during
+/// the final pre-merge review of the lock (2026-07):
+///
+///  1. Acquisition here is check-then-write, not atomic — replace with a
+///     truly atomic acquire (e.g. `File.create(exclusive: true)`) so two
+///     isolates can't both observe no holder and both write the marker.
+///  2. `workmanager_android` hard-destroys its per-task `FlutterEngine` on
+///     `onStopped()` (lost constraints, OS memory pressure, a racing
+///     `cancelAll()`) without unwinding the Dart stack, so [release]'s
+///     `finally` never runs. The leftover marker's owner id still carries
+///     the live `$pid-` prefix (same OS process), so [_freshHolder]'s
+///     crashed-process fast path can't catch it — the next caller waits out
+///     the full [maxWait] instead of proceeding immediately. iOS's
+///     `workmanager_apple` only cancels an `NSOperation`, so this is
+///     Android-only. Needs either a WorkManager-side `onStopped` hook that
+///     releases the marker, or a cheaper stale check on Android.
+///  3. The native `lwk.Wallet` handle (a `RustOpaque` wrapping
+///     `Mutex<lwk_wollet::Wollet>`, which keeps the cache directory open) is
+///     never explicitly `dispose()`d in `LwkFacade` — it only becomes
+///     GC-eligible when the local variable goes out of scope, and actual
+///     native cleanup depends on an unpredictable `NativeFinalizer` run. A
+///     background task firing back-to-back with a foreground call could
+///     reacquire this guard and open a fresh `Wollet` on the same `dbPath`
+///     before the previous handle's finalizer has actually run, reproducing
+///     a narrower version of `UpdateOnDifferentStatus`. Call `dispose()`
+///     explicitly inside `LwkFacade`'s guarded callbacks instead of relying
+///     on GC.
+///  4. `test/core_test/wallet/data/datasources/lwk_dir_guard_test.dart` only
+///     exercises same-isolate/happy-path acquisition — no test drives a
+///     genuine second owner contending for the marker, the refresh-timer
+///     keep-alive across a long hold, or the [maxWait]-exceeded
+///     proceed-anyway fallback. Add those before trusting this under real
+///     cross-isolate load.
 class CrossIsolateDirMarker {
   static const staleAfter = Duration(seconds: 60);
   static const maxWait = Duration(seconds: 45);

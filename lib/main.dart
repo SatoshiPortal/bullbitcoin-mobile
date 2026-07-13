@@ -160,7 +160,13 @@ class Bull {
     // for a few releases, we avoid the background engine altogether
     // as defense-in-depth. Re-enable by uncommenting the `tasks.dart`
     // import above and the `registerPeriodicTask` call below — AND the
-    // matching native registrations in AppDelegate.swift:
+    // matching native registrations in AppDelegate.swift and the permitted
+    // identifiers in Info.plist. First close the hardening checklist on
+    // `CrossIsolateDirMarker` in lwk_dir_guard.dart (gaps found in the
+    // 2026-07 pre-merge review — non-atomic acquire, Android's
+    // workmanager_android hard-killing the isolate without releasing the
+    // marker, the native LWK wallet handle never being disposed
+    // explicitly, and thin cross-isolate test coverage):
     //
     // await Workmanager().registerPeriodicTask(
     //   BackgroundTask.logsPrune.id,
