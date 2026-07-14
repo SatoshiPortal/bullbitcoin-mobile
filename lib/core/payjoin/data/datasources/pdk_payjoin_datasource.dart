@@ -686,7 +686,13 @@ class PdkPayjoinDatasource {
         persister,
       );
       if (unchecked == null) {
-        log('[receiver poll] no request yet for ${receiverModel.id}');
+        // logger INFO (console-only), not dart:developer log(): stasis is
+        // the heartbeat that proves long-polling against the directory is
+        // healthy, and it must be visible in adb logcat during on-device
+        // debugging (dart:developer messages never reach logcat).
+        logger.log.info(
+          '[receiver poll] no request yet for ${receiverModel.id} (stasis)',
+        );
         return;
       }
 
@@ -699,10 +705,9 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      log(
-        '[receiver poll] request found for ${receiverModel.id}: '
-        'txid=${originalTx.txid} amount=$amountSat',
-      );
+      // Deliberately no txid or amount here: even console-only log output
+      // gets copy-pasted into issues, and both identify the payment on-chain.
+      logger.log.info('[receiver poll] request found for ${receiverModel.id}');
       final updatedModel = receiverModel.copyWith(
         receiver: persister.toJson(),
         originalTxBytes: originalTxBytes,
@@ -744,13 +749,15 @@ class PdkPayjoinDatasource {
     Timer timer,
   ) async {
     if (!_senderPollsInFlight.add(senderModel.id)) return;
-    log('[sender poll] checking for proposal for ${senderModel.id}');
+    log('[sender poll] checking for proposal for ${senderModel.logRef}');
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
+      // The exception message carries logRef, not id: a sender id is the
+      // full BIP21 URI and this message ends up in shareable logs.
       if (senderModel.isExpiryTimePassed) {
         throw PayjoinExpiredException(
-          'Payjoin sender ${senderModel.id} expiry time passed',
+          'Payjoin sender ${senderModel.logRef} expiry time passed',
         );
       }
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
@@ -768,9 +775,16 @@ class PdkPayjoinDatasource {
       if (state is! PollingForProposalSendSession) return;
 
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
-      if (proposalPsbt == null) return;
+      if (proposalPsbt == null) {
+        // See the receiver-poll stasis note: INFO so the long-poll heartbeat
+        // shows up in adb logcat during on-device debugging.
+        logger.log.info(
+          '[sender poll] no proposal yet for ${senderModel.logRef} (stasis)',
+        );
+        return;
+      }
 
-      log('[sender poll] proposal found for ${senderModel.id}');
+      logger.log.info('[sender poll] proposal found for ${senderModel.logRef}');
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
@@ -785,7 +799,7 @@ class PdkPayjoinDatasource {
       _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException catch (e) {
-      logger.log.info('[sender poll] expired for ${senderModel.id}: $e');
+      logger.log.info('[sender poll] expired for ${senderModel.logRef}: $e');
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
@@ -794,14 +808,14 @@ class PdkPayjoinDatasource {
       // Unrecoverable: stop polling and retire the session as expired so the
       // repository runs its terminal handling once, instead of looping.
       logger.log.warning(
-        '[sender poll] corrupt session for ${senderModel.id}: $e',
+        '[sender poll] corrupt session for ${senderModel.logRef}: $e',
       );
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
     } catch (e) {
-      logger.log.info('[sender poll] ${senderModel.id}: $e');
+      logger.log.info('[sender poll] ${senderModel.logRef}: $e');
     } finally {
       _senderPollsInFlight.remove(senderModel.id);
     }

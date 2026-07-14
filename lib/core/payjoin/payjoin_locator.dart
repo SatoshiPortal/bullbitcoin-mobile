@@ -37,12 +37,24 @@ class PayjoinLocator {
       // never runs, the session id is never removed from the in-flight set,
       // and every later tick is skipped). sendTimeout bounds the request-body
       // upload phase — OHTTP bodies are small, so 10s is ample.
+      //
+      // receiveTimeout MUST comfortably exceed the payjoin directory's
+      // long-poll hold: payjo.in (payjoin-mailroom) keeps an empty-mailbox
+      // poll open for 30s before answering 202 Accepted (config.rs,
+      // `timeout: Duration::from_secs(30)`). A 30s client timeout raced that
+      // hold and lost every time — each empty poll aborted just before the
+      // 202, was misread as a relay failure, and cascaded through all three
+      // relays (~90s per poll cycle), so with the 5-minute session expiry a
+      // payjoin effectively never completed and every send fell back to the
+      // original transaction. 60s = the 30s hold + generous headroom for
+      // relay forwarding and OHTTP/TLS overhead; long-polling then works as
+      // designed, delivering the counterparty's message the moment it lands.
       () => PdkPayjoinDatasource(
         dio: Dio(
           BaseOptions(
             connectTimeout: const Duration(seconds: 10),
             sendTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 60),
           ),
         ),
       ),
