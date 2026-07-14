@@ -8,7 +8,7 @@ const bullnymPublicBaseUrlEnvironmentKey = 'BULLNYM_PUBLIC_BASE_URL';
 
 const bullnymDefaultBaseUrl = String.fromEnvironment(
   bullnymBaseUrlEnvironmentKey,
-  defaultValue: 'https://bullpay.ca',
+  defaultValue: 'https://pay2.bull-wallet.com',
 );
 
 /// Explicit trust origin for server-returned Payment Page and POS URLs. It may

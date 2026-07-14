@@ -123,18 +123,30 @@ void main() {
   group('BullnymPublicUrl', () {
     final nym = BullnymPublicName('alice');
     final alias = BullnymPublicName('coffee');
-    final production = Uri.parse('https://bullpay.ca');
+    final production = Uri.parse('https://pay2.bull-wallet.com');
 
     test('accepts canonical nym and alias URLs for both surface kinds', () {
       final cases = [
-        (value: 'https://bullpay.ca/alice', alias: null, kind: 'payment_page'),
-        (value: 'https://bullpay.ca/alice/pos', alias: null, kind: 'pos'),
         (
-          value: 'https://bullpay.ca/a/coffee',
+          value: 'https://pay2.bull-wallet.com/alice',
+          alias: null,
+          kind: 'payment_page',
+        ),
+        (
+          value: 'https://pay2.bull-wallet.com/alice/pos',
+          alias: null,
+          kind: 'pos',
+        ),
+        (
+          value: 'https://pay2.bull-wallet.com/a/coffee',
           alias: alias,
           kind: 'payment_page',
         ),
-        (value: 'https://bullpay.ca/a/coffee/pos', alias: alias, kind: 'pos'),
+        (
+          value: 'https://pay2.bull-wallet.com/a/coffee/pos',
+          alias: alias,
+          kind: 'pos',
+        ),
       ];
 
       for (final item in cases) {
@@ -166,14 +178,14 @@ void main() {
 
     test('rejects hostile origins and non-canonical paths', () {
       for (final value in [
-        'http://bullpay.ca/alice',
+        'http://pay2.bull-wallet.com/alice',
         'https://evil.example/alice',
-        'https://attacker@bullpay.ca/alice',
-        'https://bullpay.ca/alice?next=evil',
-        'https://bullpay.ca/alice#fragment',
-        'https://bullpay.ca/alice/pos',
-        'https://bullpay.ca/a/coffee',
-        'https://bullpay.ca/a/alice',
+        'https://attacker@pay2.bull-wallet.com/alice',
+        'https://pay2.bull-wallet.com/alice?next=evil',
+        'https://pay2.bull-wallet.com/alice#fragment',
+        'https://pay2.bull-wallet.com/alice/pos',
+        'https://pay2.bull-wallet.com/a/coffee',
+        'https://pay2.bull-wallet.com/a/alice',
       ]) {
         expect(
           () => BullnymPublicUrl.validated(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/data/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
+import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
@@ -55,7 +56,7 @@ Map<String, dynamic> _capableLookup({
   return {
     'nym': 'alice',
     'active': active,
-    'lightning_address': active ? 'alice@bullpay.ca' : null,
+    'lightning_address': active ? 'alice@pay2.bull-wallet.com' : null,
     'lightning_address_online': lightningAddressOnline,
     'alias': alias,
     'public_name_policy': bullnymPermanentNamesV1Policy,
@@ -123,6 +124,36 @@ void main() {
         BullnymFailureKind.invalidServerResponse,
       );
     });
+
+    test(
+      'capable server reaches first-claim flow when lookup is unregistered',
+      () async {
+        final stub = _stubDio([
+          {'public_name_policy': bullnymPermanentNamesV1Policy},
+          {
+            'status': 'ERROR',
+            'code': 'NymNotFound',
+            'reason': 'not registered',
+          },
+        ]);
+        final facade = BullnymFacade(
+          client: BullnymHttpClient.withDio(stub.dio),
+        );
+
+        final version = _unwrap(await facade.getVersion());
+        final lookupFailure = _unwrapFailure(
+          await facade.lookupRegistration(npubHex: 'aa' * 32),
+        );
+
+        expect(version.supportsPermanentNamesV1, isTrue);
+        expect(lookupFailure.code, 'NymNotFound');
+        expect(lookupFailure.statusCode, 200);
+        expect(stub.captured.requests.map((request) => request.path), [
+          '/version',
+          '/register/lookup',
+        ]);
+      },
+    );
   });
 
   group('registration permanent-name status', () {
@@ -236,7 +267,7 @@ void main() {
         final stub = _stubDio([
           {
             'nym': 'alice',
-            'lightning_address': 'alice@bullpay.ca',
+            'lightning_address': 'alice@pay2.bull-wallet.com',
             'quota': {'used': 1, 'cap': 1, 'remaining': 0},
           },
         ]);
@@ -315,7 +346,7 @@ void main() {
               'status': 'ERROR',
               'code': 'NymAlreadyAssigned',
               'reason': 'do not show this reason',
-              'details': {'nym': 'alice', 'domain': 'bullpay.ca'},
+              'details': {'nym': 'alice', 'domain': 'pay2.bull-wallet.com'},
             },
           ],
           statuses: [statusCode],
@@ -331,7 +362,7 @@ void main() {
 
         expect(failure.code, 'NymAlreadyAssigned');
         expect(details.nym, BullnymPublicName('alice'));
-        expect(details.domain, 'bullpay.ca');
+        expect(details.domain, 'pay2.bull-wallet.com');
         expect(failure.toString(), isNot(contains('do not show')));
       });
 
@@ -431,6 +462,11 @@ void main() {
   });
 
   group('trusted public origin configuration', () {
+    test('defaults API and public trust to the production Bullnym origin', () {
+      expect(bullnymDefaultBaseUrl, 'https://pay2.bull-wallet.com');
+      expect(bullnymDefaultPublicBaseUrl, bullnymDefaultBaseUrl);
+    });
+
     test('accepts a separate HTTPS public origin and local fixture origin', () {
       expect(
         BullnymHttpClient(publicBaseUrl: 'https://public.bullpay.test'),

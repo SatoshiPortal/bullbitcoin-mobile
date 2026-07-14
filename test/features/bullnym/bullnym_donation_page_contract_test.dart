@@ -87,6 +87,8 @@ Map<String, dynamic> _donationPageView({
   bool enabled = true,
   bool isArchived = false,
   String kind = 'payment_page',
+  String? alias,
+  String? publicUrl,
 }) {
   return {
     'nym': nym,
@@ -97,11 +99,22 @@ Map<String, dynamic> _donationPageView({
     'twitter': 'me',
     'instagram': null,
     'kind': kind,
+    'pos_mode': false,
     'enabled': enabled,
     'is_archived': isArchived,
     'avatar_sha256': null,
     'og_sha256': null,
-    'public_url': 'https://bullpay.ca/alice',
+    'alias': alias,
+    'public_url':
+        publicUrl ??
+        switch ((kind, alias)) {
+          ('pos', final String claimedAlias) =>
+            'https://pay2.bull-wallet.com/a/$claimedAlias/pos',
+          (_, final String claimedAlias) =>
+            'https://pay2.bull-wallet.com/a/$claimedAlias',
+          ('pos', null) => 'https://pay2.bull-wallet.com/$nym/pos',
+          (_, null) => 'https://pay2.bull-wallet.com/$nym',
+        },
   };
 }
 
@@ -247,7 +260,7 @@ void main() {
       );
 
       expect(page.nym, 'alice');
-      expect(page.publicUrl, 'https://bullpay.ca/alice');
+      expect(page.publicUrl, 'https://pay2.bull-wallet.com/alice');
 
       final request = stub.captured.requests.single;
       expect(request.method, 'PUT');
@@ -293,6 +306,88 @@ void main() {
         timestampSecs: timestamp,
       );
     });
+
+    for (final item in [
+      (
+        kind: bullnymDonationPageKindPaymentPage,
+        expectedUrl: 'https://pay2.bull-wallet.com/a/coffee',
+      ),
+      (
+        kind: bullnymDonationPageKindPos,
+        expectedUrl: 'https://pay2.bull-wallet.com/a/coffee/pos',
+      ),
+    ]) {
+      test(
+        '${item.kind} first claim appends alias after kind and sends the key',
+        () async {
+          final stub = _stubDio([
+            _donationPageView(kind: item.kind, alias: 'coffee'),
+          ]);
+          final facade = _facadeForClient(
+            BullnymHttpClient.withDio(stub.dio),
+            nowSecs: () => timestamp,
+          );
+
+          final page = _unwrap(
+            await facade.saveDonationPage(
+              signer: signer,
+              nym: 'alice',
+              ctDescriptor: 'ct(desc)',
+              header: 'Tip me',
+              description: 'Support my work',
+              displayCurrency: 'CAD',
+              website: 'https://example.com',
+              twitter: 'me',
+              instagram: '',
+              enabled: true,
+              kind: item.kind,
+              aliasIntent: BullnymAliasIntent.claim(
+                BullnymPublicName.aliasClaim('coffee'),
+              ),
+            ),
+          );
+
+          expect(page.alias, 'coffee');
+          expect(page.publicUrl, item.expectedUrl);
+          final body =
+              stub.captured.requests.single.data as Map<String, dynamic>;
+          expect(body['alias'], 'coffee');
+          expect(body.containsKey('pos_mode'), isFalse);
+
+          final oracleFields = [
+            'Tip me',
+            'Support my work',
+            'CAD',
+            'https://example.com',
+            'me',
+            '',
+            '1',
+            'ct(desc)',
+            item.kind,
+            'coffee',
+          ];
+          final oracle = _oracleMessageBytes(
+            action: bullpayActionDonationPageSave,
+            npubHex: handle.publicKeyHex,
+            nymOrEmpty: 'alice',
+            payloadFields: oracleFields,
+            timestampSecs: timestamp,
+          );
+          expect(
+            utf8.decode(oracle).contains('${item.kind}\u0000coffee\u0000'),
+            isTrue,
+          );
+          _expectSignatureValid(
+            handle: handle,
+            signatureHex: body['signature'] as String,
+            action: bullpayActionDonationPageSave,
+            nymOrEmpty: 'alice',
+            payloadFields: oracleFields,
+            timestampSecs: timestamp,
+          );
+        },
+      );
+    }
   });
 
   group('T-DP-CLIENT archive', () {
@@ -351,7 +446,6 @@ void main() {
         expect(page.header, 'Tip me');
         expect(page.displayCurrency, 'CAD');
         expect(page.instagram, isNull);
-        expect(page.posMode, isFalse);
         expect(page.enabled, isTrue);
         expect(page.isArchived, isFalse);
         final request = stub.captured.requests.single;
@@ -360,31 +454,6 @@ void main() {
         expect(request.queryParameters['kind'], 'payment_page');
       },
     );
-
-    test('derives posMode from kind=pos without a pos_mode field', () async {
-      final stub = _stubDio([_donationPageView(kind: 'pos')]);
-      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
-
-      final page = _unwrap(
-        await facade.getDonationPage(nym: 'alice', kind: 'pos'),
-      );
-
-      expect(page.kind, bullnymDonationPageKindPos);
-      expect(page.posMode, isTrue);
-      final request = stub.captured.requests.single;
-      expect(request.queryParameters['kind'], bullnymDonationPageKindPos);
-    });
-
-    test('rejects a donation-page view missing kind', () async {
-      final view = _donationPageView()..remove('kind');
-      final stub = _stubDio([view]);
-      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
-
-      final failure = _unwrapFailure(
-        await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
-      );
-      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
-    });
 
     test('maps DonationPageNotFound envelope to a typed rejection', () async {
       final stub = _stubDio([
@@ -399,8 +468,16 @@ void main() {
       final failure = _unwrapFailure(
         await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
       );
-      expect(failure.kind, BullnymFailureKind.serverRejectedRequest);
-      expect(failure.code, 'DonationPageNotFound');
+      expect(
+        failure,
+        isA<BullnymFailure>()
+            .having(
+              (e) => e.kind,
+              'kind',
+              BullnymFailureKind.serverRejectedRequest,
+            )
+            .having((e) => e.code, 'code', 'DonationPageNotFound'),
+      );
     });
 
     test(
@@ -436,11 +513,126 @@ void main() {
             kind: 'payment_page',
           ),
         );
-        expect(failure.kind, BullnymFailureKind.serverRejectedRequest);
-        expect(failure.code, 'AuthError');
-        expect(failure.statusCode, 401);
+        expect(
+          failure,
+          isA<BullnymFailure>()
+              .having(
+                (e) => e.kind,
+                'kind',
+                BullnymFailureKind.serverRejectedRequest,
+              )
+              .having((e) => e.code, 'code', 'AuthError')
+              .having((e) => e.statusCode, 'statusCode', 401),
+        );
       },
     );
+
+    test('parses both absent and null alias as no lifetime claim', () async {
+      final absent = _donationPageView()..remove('alias');
+      final stub = _stubDio([absent, _donationPageView()]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      expect(
+        _unwrap(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        ).alias,
+        isNull,
+      );
+      expect(
+        _unwrap(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        ).alias,
+        isNull,
+      );
+    });
+
+    test(
+      'parses a claimed alias and tolerates unknown response keys',
+      () async {
+        final response = _donationPageView(alias: 'coffee')
+          ..['future_server_field'] = {'ignored': true};
+        final stub = _stubDio([response]);
+        final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+        final page = _unwrap(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        );
+
+        expect(page.alias, 'coffee');
+        expect(page.publicUrl, 'https://pay2.bull-wallet.com/a/coffee');
+      },
+    );
+
+    test('accepts an explicitly configured separate public origin', () async {
+      final stub = _stubDio([
+        _donationPageView(publicUrl: 'https://public.example/alice'),
+      ]);
+      final facade = _facadeForClient(
+        BullnymHttpClient.withDio(
+          stub.dio,
+          publicBaseUrl: 'https://public.example',
+        ),
+      );
+
+      expect(
+        _unwrap(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        ).publicUrl,
+        'https://public.example/alice',
+      );
+    });
+
+    test(
+      'accepts HTTP only for an explicitly configured local fixture',
+      () async {
+        final stub = _stubDio([
+          _donationPageView(publicUrl: 'http://localhost:3000/alice'),
+        ]);
+        final facade = _facadeForClient(
+          BullnymHttpClient.withDio(
+            stub.dio,
+            publicBaseUrl: 'http://localhost:3000',
+          ),
+        );
+
+        expect(
+          _unwrap(
+            await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+          ).publicUrl,
+          'http://localhost:3000/alice',
+        );
+      },
+    );
+
+    test('rejects hostile or mismatched server-returned public URLs', () async {
+      final hostileUrls = [
+        'http://pay2.bull-wallet.com/alice',
+        'https://bullpay.ca/alice',
+        'https://evil.example/alice',
+        'https://attacker@pay2.bull-wallet.com/alice',
+        'https://pay2.bull-wallet.com/alice?next=evil',
+        'https://pay2.bull-wallet.com/alice#fragment',
+        'https://pay2.bull-wallet.com/bob',
+        'https://pay2.bull-wallet.com/alice/pos',
+        'https://pay2.bull-wallet.com/a/coffee',
+        'https://pay2.bull-wallet.com/${'a' * BullnymPublicUrl.maxLength}',
+      ];
+      final stub = _stubDio([
+        for (final url in hostileUrls) _donationPageView(publicUrl: url),
+      ]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      for (var index = 0; index < hostileUrls.length; index += 1) {
+        final failure = _unwrapFailure(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        );
+        expect(
+          failure.kind,
+          BullnymFailureKind.invalidServerResponse,
+          reason: hostileUrls[index],
+        );
+      }
+    });
   });
 
   group('T-DP-CLIENT supported currencies', () {
@@ -471,68 +663,75 @@ void main() {
       final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
       final failure = _unwrapFailure(await facade.getSupportedCurrencies());
-      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+      expect(
+        failure,
+        isA<BullnymFailure>().having(
+          (e) => e.kind,
+          'kind',
+          BullnymFailureKind.invalidServerResponse,
+        ),
+      );
     });
   });
 
-  // The POS surface uses the same donation-page save/archive wire actions as
-  // Payment Page; only the kind differs. These vectors are append-only so any
-  // shared-layout regression breaks both product contracts.
+  // T-POS-SIGN (pr26): the POS surface rides the SAME donation-page save/archive
+  // wire actions as the page; only `kind` differs ('pos'). These vectors are
+  // APPEND-ONLY - the payment_page vectors above are untouched (KR-3 tripwire:
+  // any reorder of the shared layout breaks BOTH the page and POS at once).
   group('T-POS-SIGN save byte layout', () {
     test('kind constant is the deployed wire value', () {
       expect(bullnymDonationPageKindPos, 'pos');
     });
 
-    test(
-      'pins label, empty socials, descriptor, and kind last without pos_mode',
-      () {
-        final oracle = _oracleMessageBytes(
-          action: 'donation-page-save',
-          npubHex: 'npub',
-          nymOrEmpty: 'alice',
-          payloadFields: const [
-            'My Till',
-            '',
-            'CAD',
-            '',
-            '',
-            '',
-            '1',
-            'ct(desc)',
-            'pos',
-          ],
-          timestampSecs: timestamp,
-        );
+    test('pins the pos save layout: label in header, socials empty, '
+        'kind="pos" LAST, no pos_mode', () {
+      final oracle = _oracleMessageBytes(
+        action: 'donation-page-save',
+        npubHex: 'npub',
+        nymOrEmpty: 'alice',
+        payloadFields: const [
+          'My Till', // label maps to the header slot
+          '', // description empty for POS
+          'CAD', // display_currency
+          '', // website empty
+          '', // twitter empty
+          '', // instagram empty
+          '1', // enabled
+          'ct(desc)', // wallet-103 descriptor, always present (KR-1)
+          'pos', // kind LAST
+        ],
+        timestampSecs: timestamp,
+      );
 
-        expect(
-          _unwrap(
-            buildBullpaySchnorrMessage(
-              action: bullpayActionDonationPageSave,
-              npubHex: 'npub',
-              nymOrEmpty: 'alice',
-              payloadFields: const [
-                'My Till',
-                '',
-                'CAD',
-                '',
-                '',
-                '',
-                '1',
-                'ct(desc)',
-                'pos',
-              ],
-              timestampSecs: timestamp,
-            ),
+      expect(
+        _unwrap(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionDonationPageSave,
+            npubHex: 'npub',
+            nymOrEmpty: 'alice',
+            payloadFields: const [
+              'My Till',
+              '',
+              'CAD',
+              '',
+              '',
+              '',
+              '1',
+              'ct(desc)',
+              'pos',
+            ],
+            timestampSecs: timestamp,
           ),
-          oracle,
-        );
-        expect(utf8.decode(oracle).contains('pos_mode'), isFalse);
-      },
-    );
+        ),
+        oracle,
+      );
+      // pos_mode never enters the signed bytes.
+      expect(utf8.decode(oracle).contains('pos_mode'), isFalse);
+    });
   });
 
   group('T-POS-SIGN archive byte layout', () {
-    test('pins the pos archive layout to the kind field only', () {
+    test('pins the pos archive layout: [kind] only, kind="pos"', () {
       final oracle = _oracleMessageBytes(
         action: 'donation-page-archive',
         npubHex: 'npub',
@@ -557,66 +756,69 @@ void main() {
   });
 
   group('T-POS-CLIENT save', () {
-    test('PUTs the pos body and signs its exact layout', () async {
-      final stub = _stubDio([_donationPageView(kind: 'pos')]);
-      final facade = _facadeForClient(
-        BullnymHttpClient.withDio(stub.dio),
-        nowSecs: () => timestamp,
-      );
+    test(
+      'PUTs the pos body (kind=pos, socials empty) and signs the layout',
+      () async {
+        final stub = _stubDio([_donationPageView(kind: 'pos')]);
+        final facade = _facadeForClient(
+          BullnymHttpClient.withDio(stub.dio),
+          nowSecs: () => timestamp,
+        );
 
-      final page = _unwrap(
-        await facade.saveDonationPage(
-          signer: signer,
-          nym: 'alice',
-          ctDescriptor: 'ct(desc)',
-          header: 'My Till',
-          description: '',
-          displayCurrency: 'CAD',
-          website: '',
-          twitter: '',
-          instagram: '',
-          enabled: true,
-          kind: bullnymDonationPageKindPos,
-        ),
-      );
+        final page = _unwrap(
+          await facade.saveDonationPage(
+            signer: signer,
+            nym: 'alice',
+            ctDescriptor: 'ct(desc)',
+            header: 'My Till',
+            description: '',
+            displayCurrency: 'CAD',
+            website: '',
+            twitter: '',
+            instagram: '',
+            enabled: true,
+            kind: bullnymDonationPageKindPos,
+          ),
+        );
 
-      expect(page.kind, bullnymDonationPageKindPos);
-      expect(page.posMode, isTrue);
-      final request = stub.captured.requests.single;
-      expect(request.method, 'PUT');
-      expect(request.path, '/donation-page');
-      final body = request.data as Map<String, dynamic>;
-      expect(body.containsKey('pos_mode'), isFalse);
-      expect(body['ct_descriptor'], 'ct(desc)');
-      expect(body['kind'], bullnymDonationPageKindPos);
-      expect(body['description'], '');
-      expect(body['website'], '');
-      expect(body['twitter'], '');
-      expect(body['instagram'], '');
+        expect(page.kind, 'pos');
 
-      _expectSignatureValid(
-        handle: handle,
-        signatureHex: body['signature'] as String,
-        action: bullpayActionDonationPageSave,
-        nymOrEmpty: 'alice',
-        payloadFields: const [
-          'My Till',
-          '',
-          'CAD',
-          '',
-          '',
-          '',
-          '1',
-          'ct(desc)',
-          'pos',
-        ],
-        timestampSecs: timestamp,
-      );
-    });
+        final request = stub.captured.requests.single;
+        expect(request.method, 'PUT');
+        expect(request.path, '/donation-page');
+        final body = request.data as Map<String, dynamic>;
+        expect(body.containsKey('pos_mode'), isFalse);
+        expect(body['ct_descriptor'], 'ct(desc)');
+        expect(body['kind'], 'pos');
+        expect(body['description'], '');
+        expect(body['website'], '');
+        expect(body['twitter'], '');
+        expect(body['instagram'], '');
+
+        _expectSignatureValid(
+          handle: handle,
+          signatureHex: body['signature'] as String,
+          action: bullpayActionDonationPageSave,
+          nymOrEmpty: 'alice',
+          payloadFields: const [
+            'My Till',
+            '',
+            'CAD',
+            '',
+            '',
+            '',
+            '1',
+            'ct(desc)',
+            'pos',
+          ],
+          timestampSecs: timestamp,
+        );
+      },
+    );
   });
 
   group('T-POS-CLIENT archive', () {
-    test('DELETEs with kind=pos and signs that kind', () async {
+    test('DELETEs with kind=pos and signs [pos]', () async {
       final stub = _stubDio([_donationPageView(kind: 'pos', isArchived: true)]);
       final facade = _facadeForClient(
         BullnymHttpClient.withDio(stub.dio),
@@ -632,12 +834,11 @@ void main() {
       );
 
       expect(page.isArchived, isTrue);
-      expect(page.posMode, isTrue);
       final request = stub.captured.requests.single;
       expect(request.method, 'DELETE');
       final body = request.data as Map<String, dynamic>;
       expect(body.containsKey('pos_mode'), isFalse);
-      expect(body['kind'], bullnymDonationPageKindPos);
+      expect(body['kind'], 'pos');
 
       _expectSignatureValid(
         handle: handle,
@@ -650,6 +851,17 @@ void main() {
     });
   });
 }
+
+T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
+};
+
+BullnymFailure _unwrapFailure<T>(Result<T, BullnymFailure> result) =>
+    switch (result) {
+      Ok() => throw StateError('Expected Err, got Ok'),
+      Err(:final failure) => failure,
+    };
 
 BullnymFacade _facadeForClient(
   BullnymHttpClient client, {
@@ -706,14 +918,3 @@ void _expectSignatureValid({
     isTrue,
   );
 }
-
-T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
-  Ok(:final value) => value,
-  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
-};
-
-BullnymFailure _unwrapFailure<T>(Result<T, BullnymFailure> result) =>
-    switch (result) {
-      Ok() => throw StateError('Expected Err, got Ok'),
-      Err(:final failure) => failure,
-    };
