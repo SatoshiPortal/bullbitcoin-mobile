@@ -351,12 +351,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
       if (model.isExpiryTimePassed) {
-        // If the payjoin is expired, we should update the model and
-        //  store it as expired so it won't be processed again unnecessarily.
-        final updatedModel = model.copyWith(isExpired: true);
-        await _localPayjoinDatasource.update(updatedModel);
-        // Notify the repository layers that the payjoin has expired
-        _payjoinStreamController.add(updatedModel.toEntity());
+        // A session whose expiry elapsed while the app was closed. Route it
+        //  through the same handler as a live expiry so the receiver's
+        //  original-transaction fallback still fires — otherwise an
+        //  expired-while-closed receiver that already had the sender's
+        //  original tx would silently drop it, leaving the sender's payment
+        //  in limbo (neither payjoin nor fallback ever hits the chain).
+        await _processExpiredPayjoin(model.copyWith(isExpired: true));
       } else if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
