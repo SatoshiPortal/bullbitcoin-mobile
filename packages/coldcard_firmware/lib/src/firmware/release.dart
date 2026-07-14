@@ -65,6 +65,33 @@ final class FirmwareRelease {
   /// SHA-256 (lowercase hex) for [filename] from the PGP-verified signatures.txt, for display. This is a claim, not a verdict — only a `VerifiedFirmware` represents a completed check.
   final String expectedSha256Hex;
 
+  static final RegExp _timestampPattern = RegExp(
+    r'^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})$',
+  );
+
+  /// Release timestamp parsed from the timezone-less wall-clock components encoded in the filename, represented as UTC to avoid local daylight-saving normalization, or null when [timestampRaw] is malformed.
+  DateTime? get releasedAt {
+    final match = _timestampPattern.firstMatch(timestampRaw);
+    if (match == null) return null;
+
+    final year = int.parse(match.group(1)!);
+    final month = int.parse(match.group(2)!);
+    final day = int.parse(match.group(3)!);
+    final hour = int.parse(match.group(4)!);
+    final minute = int.parse(match.group(5)!);
+
+    // UTC preserves the filename's wall-clock components even when the same local time would fall inside a daylight-saving gap; it does not assert that upstream published the release in UTC.
+    final releasedAt = DateTime.utc(year, month, day, hour, minute);
+    if (releasedAt.year != year ||
+        releasedAt.month != month ||
+        releasedAt.day != day ||
+        releasedAt.hour != hour ||
+        releasedAt.minute != minute) {
+      return null;
+    }
+    return releasedAt;
+  }
+
   @override
   String toString() => '$filename (${model.displayName} $version)';
 }

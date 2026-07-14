@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:coldcard_firmware/coldcard_firmware.dart';
+import 'package:coldcard_firmware/src/firmware/client.dart'
+    show createColdcardFirmwareClientForTesting;
 import 'package:coldcard_firmware/src/firmware/manifest.dart'
     show ManifestVerifier;
 import 'package:crypto/crypto.dart';
@@ -51,7 +53,7 @@ void main() {
   tearDown(() => server.close(force: true));
 
   ColdcardFirmwareClient buildClient() {
-    return ColdcardFirmwareClient.withOverrides(
+    return createColdcardFirmwareClientForTesting(
       dio: Dio(),
       baseUrl: baseUrl,
       manifestUrl: '$baseUrl/manifest/signatures.txt',

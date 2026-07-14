@@ -16,7 +16,6 @@ export 'src/firmware/failures.dart'
         ManifestWrongKeyException,
         ReleaseNotInManifestException,
         ResponseTooLargeException;
-export 'src/firmware/manifest.dart' show VerifiedManifest;
 export 'src/firmware/model.dart' show ColdcardModel;
 export 'src/firmware/release.dart' show FirmwareRelease, FirmwareVersion;
 export 'src/firmware/trusted_key.dart'

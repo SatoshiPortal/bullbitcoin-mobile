@@ -26,7 +26,8 @@ final class ManifestVerifier {
     : trustedKeyArmored = trustedSignerKeyArmored,
       expectedFingerprintHex = trustedSignerFingerprintHex;
 
-  /// Test-only: verify against a different anchor so this package's tests can exercise wrong-key and end-to-end paths with a throwaway key. The analyzer rejects use outside this package's tests.
+  /// Test-only: verify against a different anchor so this package's tests can exercise wrong-key and end-to-end paths with a throwaway key.
+  /// This class is internal to the package and is not exported by the public barrel.
   @visibleForTesting
   ManifestVerifier.withTrustAnchor({
     required this.trustedKeyArmored,

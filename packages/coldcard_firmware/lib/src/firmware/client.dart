@@ -58,11 +58,9 @@ final class VerifiedFirmware {
 final class ColdcardFirmwareClient {
   /// [dio] is optional so the app can supply its own configured instance (interceptors, proxy, later Tor). When omitted, a private instance with connect/receive timeouts is used. Endpoints and the trust anchor are not parameters here by design.
   ColdcardFirmwareClient({Dio? dio})
-    : this.withOverrides(dio: dio ?? _defaultDio());
+    : this._withOverrides(dio: dio ?? _defaultDio());
 
-  /// Test-only constructor: lets this package's own tests point the client at a local server and a throwaway signing key. The analyzer rejects use outside this package's tests.
-  @visibleForTesting
-  ColdcardFirmwareClient.withOverrides({
+  ColdcardFirmwareClient._withOverrides({
     Dio? dio,
     String baseUrl = ReleasePageScraper.defaultBaseUrl,
     this.manifestUrl = defaultManifestUrl,
@@ -211,4 +209,23 @@ final class ColdcardFirmwareClient {
       signerFingerprintHex: manifest.signerFingerprintHex,
     );
   }
+}
+
+/// Creates a client with test endpoints and a test signing key.
+///
+/// This is intentionally absent from the package's public barrel.
+/// Package-owned tests import this source library explicitly; production callers should use [ColdcardFirmwareClient.new].
+@visibleForTesting
+ColdcardFirmwareClient createColdcardFirmwareClientForTesting({
+  Dio? dio,
+  String baseUrl = ReleasePageScraper.defaultBaseUrl,
+  String manifestUrl = ColdcardFirmwareClient.defaultManifestUrl,
+  ManifestVerifier? manifestVerifier,
+}) {
+  return ColdcardFirmwareClient._withOverrides(
+    dio: dio,
+    baseUrl: baseUrl,
+    manifestUrl: manifestUrl,
+    manifestVerifier: manifestVerifier,
+  );
 }

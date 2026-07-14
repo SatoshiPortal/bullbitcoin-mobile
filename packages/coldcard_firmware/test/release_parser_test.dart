@@ -181,4 +181,53 @@ void main() {
       expect(const FirmwareVersion(5, 5, 1).toString(), 'v5.5.1');
     });
   });
+
+  group('FirmwareRelease.releasedAt', () {
+    FirmwareRelease release(String timestampRaw) {
+      return FirmwareRelease(
+        model: ColdcardModel.mk4,
+        version: const FirmwareVersion(5, 5, 1),
+        timestampRaw: timestampRaw,
+        filename: '$timestampRaw-v5.5.1-mk-coldcard.dfu',
+        downloadUrl: 'https://example.com/firmware.dfu',
+        expectedSha256Hex: '0' * 64,
+      );
+    }
+
+    test('preserves the filename timestamp components in UTC', () {
+      final releasedAt = release('2026-07-01T1729').releasedAt;
+
+      expect(releasedAt, isNotNull);
+      expect(releasedAt!.isUtc, isTrue);
+      expect(
+        [
+          releasedAt.year,
+          releasedAt.month,
+          releasedAt.day,
+          releasedAt.hour,
+          releasedAt.minute,
+        ],
+        [2026, 7, 1, 17, 29],
+      );
+    });
+
+    test('does not normalize a timestamp that is a local DST gap', () {
+      expect(
+        release('2026-03-08T0230').releasedAt,
+        DateTime.utc(2026, 3, 8, 2, 30),
+      );
+    });
+
+    test('returns null for malformed or invalid timestamps', () {
+      for (final timestamp in [
+        '',
+        '2026-07-01T17:29',
+        '2026-13-01T1729',
+        '2026-02-30T1729',
+        '2026-07-01T2460',
+      ]) {
+        expect(release(timestamp).releasedAt, isNull, reason: timestamp);
+      }
+    });
+  });
 }
