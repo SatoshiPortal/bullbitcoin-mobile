@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -58,6 +59,10 @@ class PayjoinLocator {
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        // Resolved lazily: the labels facade is registered after this eager
+        // singleton (see core_locator ordering), and is only used once a
+        // payjoin completes, well after startup.
+        labelsFacade: () => locator<LabelsFacade>(),
       ),
     );
   }

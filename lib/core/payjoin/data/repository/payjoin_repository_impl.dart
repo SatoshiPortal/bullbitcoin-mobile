@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -32,6 +33,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _serversPort;
+  // Resolved lazily via a closure: this repository is an eager singleton
+  // constructed before the labels facade is registered (see core_locator
+  // ordering — registerRepositories runs before registerFacades). It is only
+  // ever called after a payjoin completes, well after startup.
+  final LabelsFacade Function() _labelsFacade;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
@@ -45,6 +51,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required this._serversPort,
+    required this._labelsFacade,
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _blockchain = blockchainDatasource,
@@ -248,6 +255,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
       final completedModel = model.copyWith(isCompleted: true);
       await _localPayjoinDatasource.update(completedModel);
+      // The payjoin negotiation didn't complete (we fell back to the original
+      // transaction), so the tx that actually landed on-chain is the ORIGINAL
+      // one — label originalTxId, not txId (which is the payjoin proposal tx
+      // and is typically null on this fallback path). The tx still originates
+      // from a payjoin flow, so tag it for consistent traceability.
+      final originalTxId = completedModel.originalTxId;
+      if (originalTxId != null) {
+        await _labelPayjoinTransaction(
+          txId: originalTxId,
+          walletId: completedModel.walletId,
+        );
+      }
 
       return completedModel.toEntity();
     } catch (e) {
@@ -470,8 +489,36 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
     final completedModel = model.copyWith(isCompleted: true);
     await _localPayjoinDatasource.update(completedModel);
+    if (completedModel.txId != null) {
+      await _labelPayjoinTransaction(
+        txId: completedModel.txId!,
+        walletId: completedModel.walletId,
+      );
+    }
 
     return completedModel.toEntity() as PayjoinSender;
+  }
+
+  /// Tags a completed payjoin transaction with the payjoin system label so it
+  /// is recognisable as a payjoin in the transaction list. Best-effort: a
+  /// labelling failure must never fail the (already broadcast) payjoin, so it
+  /// is logged and swallowed. Idempotent — the labels store dedupes on
+  /// (label, reference).
+  Future<void> _labelPayjoinTransaction({
+    required String txId,
+    required String walletId,
+  }) async {
+    final result = await _labelsFacade().store(
+      NewLabel.tx(
+        transactionId: txId,
+        label: LabelSystem.payjoin.label,
+        origin: walletId,
+      ),
+    );
+    result.fold(
+      (_) {},
+      (failure) => log.warning('Failed to label payjoin transaction $txId'),
+    );
   }
 }
 
