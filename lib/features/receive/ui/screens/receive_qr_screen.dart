@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -651,36 +652,55 @@ class _PayjoinSwitch extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: toggle,
-          borderRadius: BorderRadius.circular(8),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: context.appColors.onSecondary,
+      child: Column(
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: toggle,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: context.appColors.secondaryFixedDim),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: BBText(
-                      context.loc.receivePayjoinActivated,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.secondary,
-                    ),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: context.appColors.onSecondary,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: context.appColors.secondaryFixedDim,
                   ),
-                  AbsorbPointer(
-                    child: Switch(value: isOn, onChanged: (_) {}),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 4,
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: BBText(
+                          context.loc.receivePayjoinActivated,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                      AbsorbPointer(
+                        child: Switch(value: isOn, onChanged: (_) {}),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          // When payjoin is active, disclose that accepting it reveals one of
+          // the wallet's UTXOs to the sender (see UTXO probing, BIP78).
+          if (isOn) ...[
+            const Gap(8),
+            InfoCard(
+              description: context.loc.receivePayjoinUtxoDisclosure,
+              tagColor: context.appColors.secondary,
+              bgColor: context.appColors.onSecondary,
+            ),
+          ],
+        ],
       ),
     );
   }

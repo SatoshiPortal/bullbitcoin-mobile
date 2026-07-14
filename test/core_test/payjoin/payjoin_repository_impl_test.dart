@@ -13,6 +13,10 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,6 +39,13 @@ class _MockBdkBitcoinBlockchainDatasource extends Mock
 class _MockElectrumServersPort extends Mock implements ElectrumServersPort {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
+
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockWalletTransactionRepository extends Mock
+    implements WalletTransactionRepository {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockLabel extends Mock implements Label {}
 
@@ -81,6 +92,15 @@ PayjoinSenderModel _senderModel({
       )
       as PayjoinSenderModel;
 }
+
+WalletUtxoModel _utxo(String txId, int vout) => WalletUtxoModel.bitcoin(
+  txId: txId,
+  vout: vout,
+  amountSat: BigInt.from(50000),
+  scriptPubkey: Uint8List(0),
+  address: 'tb1qtest',
+  isExternalKeyChain: false,
+);
 
 void main() {
   late _MockLocalPayjoinDatasource local;
@@ -138,6 +158,9 @@ void main() {
       bdkWalletDatasource: _MockBdkWalletDatasource(),
       blockchainDatasource: blockchain,
       serversPort: serversPort,
+      walletRepository: _MockWalletRepository.new,
+      walletTransactionRepository: _MockWalletTransactionRepository.new,
+      settingsRepository: _MockSettingsRepository(),
       labelsFacade: () => labels,
     );
   });
@@ -232,6 +255,9 @@ void main() {
         bdkWalletDatasource: _MockBdkWalletDatasource(),
         blockchainDatasource: blockchain,
         serversPort: serversPort,
+        walletRepository: _MockWalletRepository.new,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
         labelsFacade: () => labels,
       );
     });
@@ -310,6 +336,9 @@ void main() {
         bdkWalletDatasource: _MockBdkWalletDatasource(),
         blockchainDatasource: blockchain,
         serversPort: serversPort,
+        walletRepository: _MockWalletRepository.new,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
         labelsFacade: () => labels,
       );
     });
@@ -364,5 +393,199 @@ void main() {
       expect(emitted.last.isExpired, isTrue);
       await sub.cancel();
     });
+  });
+
+  group('PayjoinRepositoryImpl.filterAvailableUtxos', () {
+    test('excludes locked UTXOs', () {
+      final unspent = [_utxo('a', 0), _utxo('b', 1)];
+      final locked = [(txId: 'a', vout: 0)];
+
+      final result = PayjoinRepositoryImpl.filterAvailableUtxos(
+        unspent,
+        locked,
+        const {},
+      );
+
+      expect(result, hasLength(1));
+      expect(result.single.txId, 'b');
+    });
+
+    test('drops non-bitcoin (liquid) UTXOs', () {
+      final unspent = [
+        _utxo('a', 0),
+        WalletUtxoModel.liquid(
+          txId: 'liquid',
+          vout: 0,
+          amountSat: BigInt.from(50000),
+          scriptPubkey: 'x',
+          standardAddress: 'x',
+          confidentialAddress: 'x',
+        ),
+      ];
+
+      final result = PayjoinRepositoryImpl.filterAvailableUtxos(
+        unspent,
+        const [],
+        const {},
+      );
+
+      expect(result, hasLength(1));
+      expect(result.single.txId, 'a');
+    });
+
+    test('prefers already-exposed UTXOs first (reuse over fresh)', () {
+      final unspent = [
+        _utxo('fresh', 0),
+        _utxo('exposed', 1),
+        _utxo('fresh2', 2),
+      ];
+      final exposed = {'exposed:1'};
+
+      final result = PayjoinRepositoryImpl.filterAvailableUtxos(
+        unspent,
+        const [],
+        exposed,
+      );
+
+      // The exposed UTXO must sort ahead of the fresh ones so it is the
+      // preferred contribution.
+      expect(result.first.txId, 'exposed');
+      expect(result, hasLength(3));
+    });
+
+    test('keeps all fresh UTXOs when none are exposed', () {
+      final unspent = [_utxo('a', 0), _utxo('b', 1)];
+
+      final result = PayjoinRepositoryImpl.filterAvailableUtxos(
+        unspent,
+        const [],
+        const {},
+      );
+
+      expect(result.map((e) => e.txId), containsAll(['a', 'b']));
+    });
+
+    test('an exposed UTXO that is also locked is still excluded', () {
+      final unspent = [_utxo('exposed', 0)];
+
+      final result = PayjoinRepositoryImpl.filterAvailableUtxos(
+        unspent,
+        [(txId: 'exposed', vout: 0)],
+        {'exposed:0'},
+      );
+
+      expect(result, isEmpty);
+    });
+  });
+
+  group('PayjoinRepositoryImpl.isBelowPayjoinMinimum', () {
+    test('is true when the received amount is strictly below the minimum', () {
+      expect(
+        PayjoinRepositoryImpl.isBelowPayjoinMinimum(
+          amountSat: 9999,
+          minAmountSat: 10000,
+        ),
+        isTrue,
+      );
+    });
+
+    test('is false at exactly the minimum (boundary is inclusive)', () {
+      expect(
+        PayjoinRepositoryImpl.isBelowPayjoinMinimum(
+          amountSat: 10000,
+          minAmountSat: 10000,
+        ),
+        isFalse,
+      );
+    });
+
+    test('is false above the minimum', () {
+      expect(
+        PayjoinRepositoryImpl.isBelowPayjoinMinimum(
+          amountSat: 50000,
+          minAmountSat: 10000,
+        ),
+        isFalse,
+      );
+    });
+
+    test('a null (unknown) amount is never treated as below-minimum', () {
+      expect(
+        PayjoinRepositoryImpl.isBelowPayjoinMinimum(
+          amountSat: null,
+          minAmountSat: 10000,
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  group('PayjoinRepositoryImpl.retryOnTransient', () {
+    test('returns the result on first success without retrying', () async {
+      var calls = 0;
+      final result = await PayjoinRepositoryImpl.retryOnTransient(() async {
+        calls++;
+        return 'ok';
+      }, delay: Duration.zero);
+
+      expect(result, 'ok');
+      expect(calls, 1);
+    });
+
+    test('retries a transient relay failure then succeeds', () async {
+      var calls = 0;
+      final result = await PayjoinRepositoryImpl.retryOnTransient(
+        () async {
+          calls++;
+          if (calls < 3) {
+            throw PayjoinNotFoundException('relay blip');
+          }
+          return 'ok';
+        },
+        maxAttempts: 3,
+        delay: Duration.zero,
+      );
+
+      expect(result, 'ok');
+      expect(calls, 3);
+    });
+
+    test('rethrows after exhausting maxAttempts on persistent transient '
+        'failure', () async {
+      var calls = 0;
+      await expectLater(
+        PayjoinRepositoryImpl.retryOnTransient(
+          () async {
+            calls++;
+            throw PayjoinNotFoundException('always down');
+          },
+          maxAttempts: 3,
+          delay: Duration.zero,
+        ),
+        throwsA(isA<PayjoinNotFoundException>()),
+      );
+      expect(calls, 3);
+    });
+
+    test(
+      'rethrows a non-transient error immediately without retrying',
+      () async {
+        var calls = 0;
+        await expectLater(
+          PayjoinRepositoryImpl.retryOnTransient(
+            () async {
+              calls++;
+              throw StateError('not transient');
+            },
+            maxAttempts: 3,
+            delay: Duration.zero,
+          ),
+          throwsA(isA<StateError>()),
+        );
+        // Non-transient errors must not be retried — the caller's fallback
+        // should fire without waiting out the retry budget.
+        expect(calls, 1);
+      },
+    );
   });
 }

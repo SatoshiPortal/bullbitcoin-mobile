@@ -43,6 +43,8 @@ class PdkPayjoinDatasource {
   final Set<String> _receiverPollsInFlight = {};
   final Set<String> _senderPollsInFlight = {};
 
+  bool _disposed = false;
+
   PdkPayjoinDatasource({
     this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required this._dio,
@@ -59,6 +61,32 @@ class PdkPayjoinDatasource {
       _proposalSentController.stream;
 
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
+
+  /// Cancels every polling timer and closes the event streams. Individual
+  /// poll timers self-cancel on success/expiry, but a session that never
+  /// resolves (a relay permanently down) would otherwise leave a
+  /// [Timer.periodic] firing forever plus three unclosed broadcast
+  /// controllers. The production singleton lives for the whole app session,
+  /// but tests (and any future teardown) need a clean exit; the repository's
+  /// own dispose delegates here. Idempotent: a second call is a no-op (closing
+  /// an already-closed controller would otherwise throw).
+  Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    for (final timer in _receiverTimers.values) {
+      timer.cancel();
+    }
+    _receiverTimers.clear();
+    for (final timer in _senderTimers.values) {
+      timer.cancel();
+    }
+    _senderTimers.clear();
+    _receiverPollsInFlight.clear();
+    _senderPollsInFlight.clear();
+    await _payjoinRequestedController.close();
+    await _proposalSentController.close();
+    await _expiredController.close();
+  }
 
   Future<(OhttpKeys?, String?)> fetchOhttpKeyAndRelay({
     required String payjoinDirectory,
@@ -235,6 +263,17 @@ class PdkPayjoinDatasource {
     }
   }
 
+  // NOTE on isolates: the review suggested wrapping this typestate walk in
+  // Isolate.run to keep it off the UI isolate. It can't be moved cleanly:
+  // the walk is interleaved with network I/O (the proposal POST to the OHTTP
+  // relays happens mid-walk) and drives back into non-transferable
+  // callbacks — the `hasOwnedInputs`/`processPsbt` closures capture a native
+  // BDK wallet handle, and the PDK session typestates are FFI handles bound
+  // to this isolate. None of these cross an isolate boundary. Because the
+  // walk is dominated by that relay round-trip (I/O wait, not CPU), a plain
+  // 1–2 input proposal completes in milliseconds of actual compute, so it
+  // does not block frames in practice. Revisit only if profiling shows the
+  // synchronous FFI portions themselves janking.
   Future<PayjoinReceiverModel> proposePayjoin({
     required PayjoinReceiverModel receiverModel,
     required bool Function(Uint8List) hasOwnedInputs,
@@ -242,6 +281,12 @@ class PdkPayjoinDatasource {
     required List<PayjoinInputPairModel> inputPairs,
     required String Function(String) processPsbt,
   }) async {
+    // A CorruptPayjoinSessionException thrown here (unlike in the polls, which
+    // catch it and retire the session as expired) propagates up through
+    // _proposePayjoin to the repository's generic catch, which falls back to
+    // broadcasting the original transaction — a safe terminal outcome (the
+    // receiver is still paid), just via the broadcast-original path rather than
+    // the emit-expired one.
     final persister = InMemoryJsonReceiverSessionPersister.fromJson(
       receiverModel.receiver,
     );
@@ -677,6 +722,16 @@ class PdkPayjoinDatasource {
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _expiredController.add(receiverModel.copyWith(isExpired: true));
+    } on CorruptPayjoinSessionException catch (e) {
+      // Unrecoverable: stop polling and retire the session as expired so the
+      // repository runs its terminal handling once, instead of looping.
+      logger.log.warning(
+        '[receiver poll] corrupt session for ${receiverModel.id}: $e',
+      );
+      if (!timer.isActive) return;
+      timer.cancel();
+      _receiverTimers.remove(receiverModel.id);
+      _expiredController.add(receiverModel.copyWith(isExpired: true));
     } catch (e) {
       logger.log.info('[receiver poll] ${receiverModel.id}: $e');
     } finally {
@@ -731,6 +786,16 @@ class PdkPayjoinDatasource {
       _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException catch (e) {
       logger.log.info('[sender poll] expired for ${senderModel.id}: $e');
+      if (!timer.isActive) return;
+      timer.cancel();
+      _senderTimers.remove(senderModel.id);
+      _expiredController.add(senderModel.copyWith(isExpired: true));
+    } on CorruptPayjoinSessionException catch (e) {
+      // Unrecoverable: stop polling and retire the session as expired so the
+      // repository runs its terminal handling once, instead of looping.
+      logger.log.warning(
+        '[sender poll] corrupt session for ${senderModel.id}: $e',
+      );
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
@@ -861,6 +926,14 @@ class PayjoinExpiredException extends BullException {
   PayjoinExpiredException(super.message);
 }
 
+/// A persisted payjoin session whose stored event log can no longer be
+/// decoded (corrupt or schema-incompatible JSON). Terminal: the session
+/// cannot be replayed, so polling retires it rather than resurrecting it
+/// empty.
+class CorruptPayjoinSessionException extends BullException {
+  CorruptPayjoinSessionException(super.message);
+}
+
 class SendCreationException extends BullException {
   SendCreationException(super.message);
 }
@@ -948,20 +1021,22 @@ List<String> _decodeEvents(String? raw) {
   if (raw == null || raw.isEmpty) return const [];
   try {
     final decoded = jsonDecode(raw);
-    if (decoded is List) {
-      // Eagerly validate every element here, inside the try/catch: `.cast()`
-      // is a lazy view, so a list containing a non-string entry would slip
-      // through uncaught and only throw later, deep inside
-      // replayReceiverEventLog on every poll tick.
-      return List<String>.from(decoded);
+    if (decoded is! List) {
+      throw const FormatException('event log is not a JSON list');
     }
-    logger.log.warning(
-      'Persisted payjoin session event log is not a list; starting empty',
-    );
+    // Eagerly validate every element here, inside the try/catch: `.cast()`
+    // is a lazy view, so a list containing a non-string entry would slip
+    // through uncaught and only throw later, deep inside
+    // replayReceiverEventLog on every poll tick.
+    return List<String>.from(decoded);
   } catch (e) {
-    logger.log.warning(
+    // A persisted session whose event log won't decode is unrecoverable:
+    // silently starting empty would resurrect it as a brand-new session and
+    // re-poll/re-emit indefinitely. Surface it as a typed corruption so the
+    // caller can retire the session (the polls treat it as terminal, like an
+    // expiry) instead of resetting it.
+    throw CorruptPayjoinSessionException(
       'Failed to decode persisted payjoin session event log: $e',
     );
   }
-  return const [];
 }

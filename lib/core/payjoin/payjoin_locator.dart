@@ -17,6 +17,8 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -59,9 +61,17 @@ class PayjoinLocator {
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
-        // Resolved lazily: the labels facade is registered after this eager
-        // singleton (see core_locator ordering), and is only used once a
-        // payjoin completes, well after startup.
+        // wallet repositories and the labels facade are registered AFTER this
+        // eager singleton (see CoreLocator ordering), so they must be passed
+        // as lazy closures — resolving them here would throw. They're only
+        // called from broadcast watchers, well after startup.
+        walletRepository: () => locator<WalletRepository>(),
+        walletTransactionRepository: () =>
+            locator<WalletTransactionRepository>(),
+        // SettingsRepository is registered just BEFORE payjoin, so it already
+        // exists and can be resolved eagerly here. (If the locator ordering
+        // ever moves payjoin ahead of settings, switch this to a closure too.)
+        settingsRepository: locator<SettingsRepository>(),
         labelsFacade: () => locator<LabelsFacade>(),
       ),
     );

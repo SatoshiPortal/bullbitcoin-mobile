@@ -138,20 +138,26 @@ void main() {
       expect(persister.load(), isEmpty);
     });
 
-    test('fromJson gracefully handles malformed input', () {
-      final notJson = InMemoryJsonReceiverSessionPersister.fromJson(
-        'not valid json',
+    test('fromJson rejects malformed input as a corrupt session', () {
+      // A persisted log that won't decode is unrecoverable: it must surface
+      // as a typed corruption (so polling can retire the session) rather than
+      // silently resetting to empty and resurrecting the session.
+      expect(
+        () => InMemoryJsonReceiverSessionPersister.fromJson('not valid json'),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
-      final notAList = InMemoryJsonReceiverSessionPersister.fromJson(
-        jsonEncode({'not': 'a list'}),
+      expect(
+        () => InMemoryJsonReceiverSessionPersister.fromJson(
+          jsonEncode({'not': 'a list'}),
+        ),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
-      final listOfNonStrings = InMemoryJsonReceiverSessionPersister.fromJson(
-        jsonEncode([1, 2, 3]),
+      expect(
+        () => InMemoryJsonReceiverSessionPersister.fromJson(
+          jsonEncode([1, 2, 3]),
+        ),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
-
-      expect(notJson.load(), isEmpty);
-      expect(notAList.load(), isEmpty);
-      expect(listOfNonStrings.load(), isEmpty);
     });
   });
 
@@ -199,20 +205,44 @@ void main() {
       expect(persister.load(), isEmpty);
     });
 
-    test('fromJson gracefully handles malformed input', () {
-      final notJson = InMemoryJsonSenderSessionPersister.fromJson(
-        'not valid json',
+    test('fromJson rejects malformed input as a corrupt session', () {
+      expect(
+        () => InMemoryJsonSenderSessionPersister.fromJson('not valid json'),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
-      final notAList = InMemoryJsonSenderSessionPersister.fromJson(
-        jsonEncode({'not': 'a list'}),
+      expect(
+        () => InMemoryJsonSenderSessionPersister.fromJson(
+          jsonEncode({'not': 'a list'}),
+        ),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
-      final listOfNonStrings = InMemoryJsonSenderSessionPersister.fromJson(
-        jsonEncode([1, 2, 3]),
+      expect(
+        () =>
+            InMemoryJsonSenderSessionPersister.fromJson(jsonEncode([1, 2, 3])),
+        throwsA(isA<CorruptPayjoinSessionException>()),
       );
+    });
+  });
 
-      expect(notJson.load(), isEmpty);
-      expect(notAList.load(), isEmpty);
-      expect(listOfNonStrings.load(), isEmpty);
+  group('PdkPayjoinDatasource.dispose', () {
+    test('closes the event streams', () async {
+      final datasource = PdkPayjoinDatasource(dio: Dio());
+
+      await datasource.dispose();
+
+      // A closed broadcast stream completes immediately with no events.
+      await expectLater(datasource.requestsForReceivers, emitsDone);
+      await expectLater(datasource.proposalsForSenders, emitsDone);
+      await expectLater(datasource.expiredPayjoins, emitsDone);
+    });
+
+    test('is idempotent (a second dispose is a no-op)', () async {
+      final datasource = PdkPayjoinDatasource(dio: Dio());
+
+      await datasource.dispose();
+      // Without the _disposed guard this would throw on re-closing a closed
+      // controller.
+      await expectLater(datasource.dispose(), completes);
     });
   });
 

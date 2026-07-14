@@ -82,7 +82,13 @@ class PayjoinConstants {
 
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
-  static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
+  // Short receiver/sender session lifetime: a payjoin is an interactive,
+  // synchronous exchange (scan, pay, done), so a long window buys nothing but
+  // a longer period during which a probing sender can hold an exposed UTXO
+  // and cheaply replace the original transaction. 5 minutes leaves ample
+  // headroom for a real exchange over a slow relay while bounding that window
+  // (see the receiver-side UTXO probing attack, BIP78).
+  static const defaultExpireAfterSec = 60 * 5; // 5 minutes
 }
 
 class ApiServiceConstants {

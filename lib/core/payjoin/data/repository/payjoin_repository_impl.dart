@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
@@ -21,8 +22,11 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -33,15 +37,32 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _serversPort;
-  // Resolved lazily via a closure: this repository is an eager singleton
-  // constructed before the labels facade is registered (see core_locator
-  // ordering — registerRepositories runs before registerFacades). It is only
-  // ever called after a payjoin completes, well after startup.
+  // Wallet repositories and the labels facade are resolved lazily (via
+  // closures, not injected instances) because this repository is an eager
+  // singleton constructed BEFORE WalletLocator / the labels facade register
+  // them (see core_locator.dart ordering). They are only ever called well
+  // after startup, from broadcast / proposal / completion handlers.
+  final WalletRepository Function() _walletRepository;
+  final WalletTransactionRepository Function() _walletTransactionRepository;
+  // SettingsRepository is registered before payjoin, so it can be injected
+  // directly (not as a closure).
+  final SettingsRepository _settingsRepository;
   final LabelsFacade Function() _labelsFacade;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
   final StreamController<Payjoin> _payjoinStreamController;
+
+  // Per-session subscriptions watching for a completed payjoin transaction to
+  // appear on-chain, keyed by payjoin id. Kept so each can be cancelled once
+  // its transaction is seen (the underlying watch stream re-emits on every
+  // sync), on expiry, or on teardown. This is the only long-lived
+  // subscription state in this otherwise fire-and-forget singleton, so its
+  // hygiene lives entirely in _watchForBroadcast / _stopWatching / dispose.
+  final Map<String, StreamSubscription<void>> _broadcastWatchers = {};
+
+  // Datasource stream subscriptions, cancelled on dispose.
+  final List<StreamSubscription<void>> _datasourceSubscriptions = [];
 
   PayjoinRepositoryImpl({
     required this._localPayjoinDatasource,
@@ -51,6 +72,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required this._serversPort,
+    required this._walletRepository,
+    required this._walletTransactionRepository,
+    required this._settingsRepository,
     required this._labelsFacade,
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
@@ -58,13 +82,35 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
        _lock = Lock(),
        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the datasource and process them
-    _pdkPayjoinDatasource.requestsForReceivers.listen(_processPayjoinRequest);
-    _pdkPayjoinDatasource.proposalsForSenders.listen(_processPayjoinProposal);
-    _pdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin);
+    _datasourceSubscriptions.addAll([
+      _pdkPayjoinDatasource.requestsForReceivers.listen(_processPayjoinRequest),
+      _pdkPayjoinDatasource.proposalsForSenders.listen(_processPayjoinProposal),
+      _pdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin),
+    ]);
 
     // Now that the listeners are set up, we can resume processing of possible
     //  ongoing payjoins.
     _resumePayjoins();
+  }
+
+  /// Releases all long-lived subscriptions and closes the payjoin stream.
+  /// The production singleton lives for the whole app session and is never
+  /// disposed, but tests (and any future teardown) need a clean exit.
+  ///
+  /// Also tears down the datasource so its per-session polling timers and
+  /// event controllers don't outlive this repository — this repository owns
+  /// the datasource's lifecycle (it's the sole subscriber to its streams).
+  Future<void> dispose() async {
+    for (final sub in _broadcastWatchers.values) {
+      await sub.cancel();
+    }
+    _broadcastWatchers.clear();
+    for (final sub in _datasourceSubscriptions) {
+      await sub.cancel();
+    }
+    _datasourceSubscriptions.clear();
+    await _pdkPayjoinDatasource.dispose();
+    await _payjoinStreamController.close();
   }
 
   @override
@@ -289,12 +335,39 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Notify higher layers that a new payjoin request was received
     _payjoinStreamController.add(payjoin);
 
-    // Now try to process the request
+    // Below the configured minimum, don't payjoin at all: just broadcast the
+    // sender's original transaction. A small payment isn't worth exposing a
+    // decoy UTXO for, and requiring a minimum stake per attempt is a
+    // deliberate anti-probing lever (see UTXO probing attack, BIP78). The
+    // sender is still paid normally.
+    final settings = await _settingsRepository.fetch();
+    if (isBelowPayjoinMinimum(
+      amountSat: model.amountSat,
+      minAmountSat: settings.payjoinMinAmountSat,
+    )) {
+      log.info(
+        'Payjoin request ${model.id} below minimum '
+        '(${settings.payjoinMinAmountSat} sat); broadcasting original instead',
+      );
+      final result =
+          (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
+      if (result != null) _payjoinStreamController.add(result);
+      return;
+    }
+
+    // Now try to process the request. A transient network failure while
+    // posting the proposal to the OHTTP relays (PayjoinNotFoundException) is
+    // retried a few times before giving up: the receiver request event fires
+    // only once (its poll timer is cancelled on emit), so without an in-place
+    // retry a momentary relay blip would fall straight through to the
+    // original-transaction fallback and irrevocably cancel the payjoin.
     PayjoinReceiver? result;
     try {
       final wallet = await _loadWallet(model.walletId);
       final unspentUtxos = await _bdkWallet.getUtxos(wallet: wallet);
-      result = await _proposePayjoin(model, wallet, unspentUtxos);
+      result = await retryOnTransient(
+        () => _proposePayjoin(model, wallet, unspentUtxos),
+      );
     } catch (e) {
       log.severe(
         message: 'Error processing payjoin request',
@@ -307,6 +380,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     if (result != null) {
       _payjoinStreamController.add(result);
+      // A proposal was sent: from here the sender finalizes and broadcasts
+      // the payjoin transaction. Watch for that txid to land on-chain so we
+      // can mark the receiver session completed and label the transaction.
+      if (result.proposalPsbt != null && result.txId != null) {
+        _watchForBroadcast(
+          payjoinId: result.id,
+          walletId: result.walletId,
+          txId: result.txId!,
+        );
+      }
     }
   }
 
@@ -369,13 +452,25 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Update the local database with the expired payjoin
     await _localPayjoinDatasource.update(payjoinModel);
 
+    // A session can only be watched while unfinished; stop any broadcast
+    // watcher now that it has expired to avoid leaking the subscription.
+    await _stopWatching(payjoinModel.id);
+
     final payjoin = payjoinModel.toEntity();
 
     // TODO: Unfreeze the utxo used in the payjoin
 
-    if (payjoin is PayjoinReceiver && payjoin.originalTxBytes != null) {
-      // If the payjoin is a receiver and it has the original transaction bytes
-      //  at expiration, we broadcast the original transaction automatically.
+    if (payjoin is PayjoinReceiver &&
+        payjoin.originalTxBytes != null &&
+        payjoin.proposalPsbt == null) {
+      // We received the sender's original transaction but never sent a
+      //  proposal before expiring, so broadcast that original automatically —
+      //  the receiver still gets paid, and (per BIP78) doing so imposes the
+      //  mining-fee cost that makes UTXO probing non-free.
+      // Guard on proposalPsbt == null: once a proposal has gone out, the
+      //  sender owns finalizing/broadcasting the payjoin transaction, which
+      //  spends the same inputs. Broadcasting the original here would just
+      //  race our own in-flight payjoin for no benefit.
       _payjoinStreamController.add(payjoin);
       await tryBroadcastOriginalTransaction(payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
@@ -398,6 +493,103 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
   }
 
+  /// Watches for the receiver's payjoin transaction [txId] to appear in
+  /// [walletId] after a wallet sync, then marks the session completed, labels
+  /// the transaction, and stops watching.
+  ///
+  /// The underlying sync-finished stream re-emits on every sync, so the first
+  /// successful hit cancels this watcher to make the completion side effect
+  /// one-shot. Idempotent: a session already being watched (live path then
+  /// resume, or duplicate resume) is not re-subscribed.
+  void _watchForBroadcast({
+    required String payjoinId,
+    required String walletId,
+    required String txId,
+  }) {
+    if (_broadcastWatchers.containsKey(payjoinId)) return;
+
+    final subscription = _walletRepository().walletSyncFinishedStream
+        .where((wallet) => wallet.id == walletId)
+        .asyncMap((_) async {
+          try {
+            return await _walletTransactionRepository().getWalletTransaction(
+              txId,
+              walletId: walletId,
+            );
+          } catch (e) {
+            log.warning('Payjoin broadcast watch lookup failed: $e');
+            return null;
+          }
+        })
+        .where((tx) => tx != null)
+        .listen((_) => _onPayjoinTransactionSeen(payjoinId));
+
+    _broadcastWatchers[payjoinId] = subscription;
+  }
+
+  Future<void> _onPayjoinTransactionSeen(String payjoinId) async {
+    // Stop first: the watch stream re-emits on every sync, and completion is
+    // a one-shot side effect.
+    await _stopWatching(payjoinId);
+
+    final model = await _localPayjoinDatasource.fetchReceiver(payjoinId);
+    if (model == null || model.isCompleted) return;
+
+    final completedModel = model.copyWith(isCompleted: true);
+    await _localPayjoinDatasource.update(completedModel);
+    if (completedModel.txId != null) {
+      await _labelPayjoinTransaction(
+        txId: completedModel.txId!,
+        walletId: completedModel.walletId,
+      );
+    }
+    _payjoinStreamController.add(completedModel.toEntity());
+    log.info('Payjoin receiver completed on broadcast: $payjoinId');
+  }
+
+  Future<void> _stopWatching(String payjoinId) async {
+    final subscription = _broadcastWatchers.remove(payjoinId);
+    await subscription?.cancel();
+  }
+
+  /// Whether a received payjoin [amountSat] falls below the configured
+  /// [minAmountSat] threshold, i.e. the request should be declined as a
+  /// payjoin (and the original transaction broadcast instead). A null amount
+  /// (not yet known) is never treated as below-minimum. Pure and static so
+  /// the anti-probing threshold decision is unit-testable in isolation.
+  @visibleForTesting
+  static bool isBelowPayjoinMinimum({
+    required int? amountSat,
+    required int minAmountSat,
+  }) {
+    return amountSat != null && amountSat < minAmountSat;
+  }
+
+  /// Runs [action], retrying up to [maxAttempts] times with a fixed [delay]
+  /// when it fails with a transient relay error (all OHTTP relays momentarily
+  /// unreachable). Non-transient errors are rethrown immediately so the
+  /// caller's fallback still fires without waiting out the retries. Static so
+  /// the retry policy is unit-testable without the repository's collaborators.
+  @visibleForTesting
+  static Future<T> retryOnTransient<T>(
+    Future<T> Function() action, {
+    int maxAttempts = 3,
+    Duration delay = const Duration(seconds: 2),
+  }) async {
+    for (var attempt = 1; ; attempt++) {
+      try {
+        return await action();
+      } on PayjoinNotFoundException catch (e) {
+        if (attempt >= maxAttempts) rethrow;
+        log.info(
+          'Transient payjoin relay failure (attempt $attempt/$maxAttempts), '
+          'retrying: $e',
+        );
+        await Future<void>.delayed(delay);
+      }
+    }
+  }
+
   Future<void> _resumePayjoins() async {
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
@@ -407,7 +599,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         //  original-transaction fallback still fires — otherwise an
         //  expired-while-closed receiver that already had the sender's
         //  original tx would silently drop it, leaving the sender's payment
-        //  in limbo (neither payjoin nor fallback ever hits the chain).
+        //  in limbo (neither payjoin nor fallback ever hits the chain). With
+        //  the short 5-minute expiry this is now the common case, not an edge.
         await _processExpiredPayjoin(model.copyWith(isExpired: true));
       } else if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
@@ -419,8 +612,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           //  it means the receiver has already received a payjoin request and
           //  it should be processed.
           await _processPayjoinRequest(model);
-        } else {
-          // Todo: listen for the broadcast of the transaction
+        } else if (model.txId != null) {
+          // A proposal was already sent before the app closed. Resume watching
+          //  for the payjoin transaction to appear on-chain so the session can
+          //  be completed and its transaction labelled.
+          _watchForBroadcast(
+            payjoinId: model.id,
+            walletId: model.walletId,
+            txId: model.txId!,
+          );
         }
       } else if (model is PayjoinSenderModel) {
         if (model.proposalPsbt == null) {
@@ -461,7 +661,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ) {
     return _lock.synchronized(() async {
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
-      final inputPairs = _filterAvailableUtxos(unspentUtxos, lockedUtxos);
+      final exposedRefs = await _exposedUtxoRefs();
+      final inputPairs = filterAvailableUtxos(
+        unspentUtxos,
+        lockedUtxos,
+        exposedRefs,
+      );
 
       if (inputPairs.isEmpty) {
         throw NoInputsToPayjoinException(
@@ -485,19 +690,95 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
 
       await _localPayjoinDatasource.update(updatedModel);
+      // Label the UTXO(s) we just exposed to the sender. If the payjoin never
+      // completes, this lets a later proposal prefer re-contributing the same
+      // already-exposed coin instead of burning a fresh one (BIP78's
+      // "reuse the exposed UTXO" mitigation).
+      await _labelExposedUtxos(
+        candidates: inputPairs,
+        proposalPsbt: updatedModel.proposalPsbt,
+        walletId: payjoin.walletId,
+      );
       return updatedModel.toEntity() as PayjoinReceiver;
     });
   }
 
-  List<PayjoinInputPairModel> _filterAvailableUtxos(
+  /// The `txid:vout` references of this wallet's UTXOs already exposed by a
+  /// prior payjoin proposal, tagged with the payjoin system output label.
+  /// Best-effort: a labels read failure degrades to "no preference".
+  Future<Set<String>> _exposedUtxoRefs() async {
+    final labels = await _labelsFacade().fetchAll();
+    return labels
+        .where(
+          (l) =>
+              l.type == LabelType.output &&
+              l.label == LabelSystem.payjoin.label,
+        )
+        .map((l) => l.reference)
+        .toSet();
+  }
+
+  /// Filters out locked UTXOs and orders the rest so already-exposed coins
+  /// are preferred. Pure and static so it can be unit-tested without the
+  /// repository's collaborators.
+  @visibleForTesting
+  static List<PayjoinInputPairModel> filterAvailableUtxos(
     List<WalletUtxoModel> unspent,
     List<({String txId, int vout})> locked,
+    Set<String> exposedRefs,
   ) {
-    return unspent
-        .where((u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout))
-        .whereType<BitcoinWalletUtxoModel>()
+    final available =
+        unspent
+            .where(
+              (u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout),
+            )
+            .whereType<BitcoinWalletUtxoModel>()
+            .toList()
+          // Prefer already-exposed UTXOs so we don't reveal a fresh one when
+          // an earlier proposal already burned the privacy of this coin.
+          ..sort((a, b) {
+            final aExposed = exposedRefs.contains('${a.txId}:${a.vout}');
+            final bExposed = exposedRefs.contains('${b.txId}:${b.vout}');
+            if (aExposed == bExposed) return 0;
+            return aExposed ? -1 : 1;
+          });
+    return available
         .map((u) => PayjoinInputPairModel.fromWalletUtxoModel(u))
         .toList();
+  }
+
+  /// Tags every candidate UTXO that ended up as an input of [proposalPsbt]
+  /// (i.e. the coins the receiver actually contributed and thereby exposed)
+  /// with the payjoin system output label. Best-effort and idempotent (the
+  /// labels table dedupes on (label, reference)).
+  Future<void> _labelExposedUtxos({
+    required List<PayjoinInputPairModel> candidates,
+    required String? proposalPsbt,
+    required String walletId,
+  }) async {
+    if (proposalPsbt == null) return;
+    try {
+      final proposalTx = await BitcoinTx.fromPsbt(proposalPsbt);
+      final proposalInputs = proposalTx.inputs
+          .map((i) => '${i.txid}:${i.vout}')
+          .toSet();
+      final candidateRefs = candidates
+          .map((c) => '${c.txId}:${c.vout}')
+          .toSet();
+      final exposed = proposalInputs.intersection(candidateRefs);
+      for (final ref in exposed) {
+        await _labelsFacade().store(
+          NewLabel(
+            type: LabelType.output,
+            label: LabelSystem.payjoin.label,
+            reference: ref,
+            origin: walletId,
+          ),
+        );
+      }
+    } catch (e) {
+      log.warning('Failed to label exposed payjoin UTXOs: $e');
+    }
   }
 
   Future<PayjoinSender> _broadcastPsbt({
