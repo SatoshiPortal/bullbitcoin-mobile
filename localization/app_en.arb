@@ -14783,5 +14783,9 @@
   "receivePayjoinExpiredSubtext": "The payjoin window closed. The payment is being received as a regular transaction instead.",
   "@receivePayjoinExpiredSubtext": {
     "description": "Subtext shown under receivePayjoinExpired explaining that the automatic plain-broadcast fallback is handling the payment"
+  },
+  "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
+  "@sendSentWithoutPayjoin": {
+    "description": "Notice under the success message on the send screen when a Payjoin was attempted but the payment fell back to a plain (non-payjoin) transaction."
   }
 }
