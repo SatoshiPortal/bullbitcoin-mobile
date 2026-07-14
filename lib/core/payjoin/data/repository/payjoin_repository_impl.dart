@@ -25,6 +25,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/foundation.dart';
@@ -61,6 +62,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // subscription state in this otherwise fire-and-forget singleton, so its
   // hygiene lives entirely in _watchForBroadcast / _stopWatching / dispose.
   final Map<String, StreamSubscription<void>> _broadcastWatchers = {};
+
+  // Per-session active-poll timers complementing _broadcastWatchers: each one
+  // periodically forces a sync'd wallet-transaction lookup so completion does
+  // not depend on some unrelated wallet sync happening to run (see
+  // _watchForBroadcast). Keyed by payjoin id, cancelled together with the
+  // passive watcher in _stopWatching / dispose.
+  final Map<String, Timer> _broadcastPollTimers = {};
 
   // Datasource stream subscriptions, cancelled on dispose.
   final List<StreamSubscription<void>> _datasourceSubscriptions = [];
@@ -107,6 +115,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// event controllers don't outlive this repository — this repository owns
   /// the datasource's lifecycle (it's the sole subscriber to its streams).
   Future<void> dispose() async {
+    for (final timer in _broadcastPollTimers.values) {
+      timer.cancel();
+    }
+    _broadcastPollTimers.clear();
     for (final sub in _broadcastWatchers.values) {
       await sub.cancel();
     }
@@ -328,7 +340,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  watcher would keep doing a wallet-transaction lookup on every sync
       //  for the rest of the app's lifetime. A no-op for a sender (or a
       //  receiver with no watcher registered).
-      await _stopWatching(payjoin.id);
+      _stopWatching(payjoin.id);
 
       return completedModel.toEntity();
     } catch (e) {
@@ -502,7 +514,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  resumePayjoinsOnStartup sees isExpiryTimePassed still true and
       //  retries the fallback — persisting isExpired here would instead
       //  permanently exclude it from onlyUnfinished and drop the retry.
-      await _stopWatching(payjoinModel.id);
+      _stopWatching(payjoinModel.id);
       final result = await tryBroadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
@@ -522,7 +534,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  Same reasoning as the receiver branch above for not persisting the
       //  expired flag up front: a failed broadcast must remain retryable on
       //  the next resume.
-      await _stopWatching(payjoinModel.id);
+      _stopWatching(payjoinModel.id);
       final result = await tryBroadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else {
@@ -543,14 +555,40 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
   }
 
+  /// Delay before the first active broadcast poll of [_watchForBroadcast].
+  /// The sender typically finalizes and broadcasts within seconds of
+  /// receiving the proposal, so the first forced lookup comes quickly.
+  @visibleForTesting
+  static const broadcastPollInitialDelay = Duration(seconds: 5);
+
+  /// Cap for the exponential backoff between active broadcast polls.
+  @visibleForTesting
+  static const broadcastPollMaxDelay = Duration(minutes: 5);
+
+  /// Number of active broadcast polls before giving up on forcing syncs
+  /// ourselves (≈35 minutes with the initial delay doubling up to the cap).
+  /// The passive sync-driven watcher stays armed afterwards, so a very late
+  /// broadcast is still caught by the next organic wallet sync — this bound
+  /// only stops a stranded session from forcing network syncs forever.
+  @visibleForTesting
+  static const broadcastPollMaxAttempts = 12;
+
   /// Watches for the receiver's payjoin transaction [txId] to appear in
-  /// [walletId] after a wallet sync, then marks the session completed, labels
-  /// the transaction, and stops watching.
+  /// [walletId], then marks the session completed, labels the transaction,
+  /// and stops watching. Two complementary triggers:
   ///
-  /// The underlying sync-finished stream re-emits on every sync, so the first
-  /// successful hit cancels this watcher to make the completion side effect
-  /// one-shot. Idempotent: a session already being watched (live path then
-  /// resume, or duplicate resume) is not re-subscribed.
+  /// - Passive: a cheap local lookup whenever a sync of this wallet finishes
+  ///   (the stream re-emits on every sync, so the first successful hit
+  ///   cancels the watcher to keep the completion side effect one-shot).
+  /// - Active: a bounded backoff of forced `sync: true` lookups. Without it,
+  ///   completion depended entirely on some unrelated sync happening to run
+  ///   while the session was live — observed live as a receiver stuck on
+  ///   "payjoin in progress" for ~9 minutes after the sender had already
+  ///   broadcast the payjoin transaction, because nothing else synced the
+  ///   wallet in the meantime.
+  ///
+  /// Idempotent: a session already being watched (live path then resume, or
+  /// duplicate resume) is not re-subscribed.
   void _watchForBroadcast({
     required String payjoinId,
     required String walletId,
@@ -575,12 +613,67 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         .listen((_) => _onPayjoinTransactionSeen(payjoinId));
 
     _broadcastWatchers[payjoinId] = subscription;
+
+    _scheduleBroadcastPoll(
+      payjoinId: payjoinId,
+      walletId: walletId,
+      txId: txId,
+      attempt: 0,
+    );
+  }
+
+  /// Arms the next active broadcast poll for [_watchForBroadcast]: after an
+  /// exponentially backed-off delay, forces a sync'd wallet-transaction
+  /// lookup and either completes the session or reschedules itself.
+  /// [_broadcastWatchers] is the single source of truth for "still watched":
+  /// once _stopWatching removed the session (completed, fallback broadcast,
+  /// or teardown), a pending poll callback becomes a no-op.
+  void _scheduleBroadcastPoll({
+    required String payjoinId,
+    required String walletId,
+    required String txId,
+    required int attempt,
+  }) {
+    if (attempt >= broadcastPollMaxAttempts) return;
+
+    var delay = broadcastPollInitialDelay * (1 << attempt.clamp(0, 30));
+    if (delay > broadcastPollMaxDelay) delay = broadcastPollMaxDelay;
+
+    _broadcastPollTimers[payjoinId] = Timer(delay, () async {
+      if (!_broadcastWatchers.containsKey(payjoinId)) return;
+
+      WalletTransaction? tx;
+      try {
+        tx = await _walletTransactionRepository().getWalletTransaction(
+          txId,
+          walletId: walletId,
+          sync: true,
+        );
+      } catch (e) {
+        log.warning('Payjoin broadcast poll failed: $e');
+      }
+
+      // Re-check: the session may have completed through the passive watcher
+      // (or been torn down) while the sync'd lookup was in flight.
+      if (!_broadcastWatchers.containsKey(payjoinId)) return;
+
+      if (tx != null) {
+        await _onPayjoinTransactionSeen(payjoinId);
+      } else {
+        _scheduleBroadcastPoll(
+          payjoinId: payjoinId,
+          walletId: walletId,
+          txId: txId,
+          attempt: attempt + 1,
+        );
+      }
+    });
   }
 
   Future<void> _onPayjoinTransactionSeen(String payjoinId) async {
     // Stop first: the watch stream re-emits on every sync, and completion is
     // a one-shot side effect.
-    await _stopWatching(payjoinId);
+    _stopWatching(payjoinId);
 
     final model = await _localPayjoinDatasource.fetchReceiver(payjoinId);
     if (model == null || model.isCompleted) return;
@@ -597,9 +690,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     log.info('Payjoin receiver completed on broadcast: $payjoinId');
   }
 
-  Future<void> _stopWatching(String payjoinId) async {
+  /// Stops both the passive watcher and the active poll of a session.
+  /// Synchronous on purpose: `StreamSubscription.cancel()` already guarantees
+  /// no further events are delivered from the moment it is CALLED, so nothing
+  /// here needs to block on its returned future (which only signals resource
+  /// cleanup) — and awaiting it would make completion latency depend on the
+  /// upstream stream's teardown.
+  void _stopWatching(String payjoinId) {
+    _broadcastPollTimers.remove(payjoinId)?.cancel();
     final subscription = _broadcastWatchers.remove(payjoinId);
-    await subscription?.cancel();
+    if (subscription != null) unawaited(subscription.cancel());
   }
 
   /// Whether a received payjoin [amountSat] falls below the configured

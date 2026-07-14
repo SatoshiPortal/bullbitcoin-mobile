@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -761,6 +762,164 @@ void main() {
       });
     },
   );
+
+  group('_watchForBroadcast active polling', () {
+    // The passive watcher only reacts to walletSyncFinishedStream, i.e. to
+    // syncs triggered by something else entirely. Observed live: a receiver
+    // stuck on "payjoin in progress" for ~9 minutes after the sender had
+    // already broadcast the payjoin tx, because nothing happened to sync the
+    // wallet. The active poll forces bounded sync'd lookups itself.
+    late _MockWalletRepository walletRepo;
+    late _MockWalletTransactionRepository walletTxRepo;
+    late StreamController<Wallet> syncController;
+
+    setUp(() {
+      walletRepo = _MockWalletRepository();
+      walletTxRepo = _MockWalletTransactionRepository();
+      syncController = StreamController<Wallet>.broadcast();
+      when(
+        () => walletRepo.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+
+      // A not-yet-expired proposal-sent receiver session, so resume arms
+      // _watchForBroadcast.
+      final model = _receiverModel(
+        id: 'pj1',
+        walletId: 'w1',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => local.fetchAll(onlyUnfinished: true),
+      ).thenAnswer((_) async => [model]);
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+    });
+
+    tearDown(() => syncController.close());
+
+    PayjoinRepositoryImpl buildRepo() => PayjoinRepositoryImpl(
+      localPayjoinDatasource: local,
+      pdkPayjoinDatasource: pdk,
+      walletMetadataDatasource: _MockWalletMetadataDatasource(),
+      seedDatasource: _MockSeedDatasource(),
+      bdkWalletDatasource: _MockBdkWalletDatasource(),
+      blockchainDatasource: blockchain,
+      serversPort: serversPort,
+      walletRepository: () => walletRepo,
+      walletTransactionRepository: () => walletTxRepo,
+      settingsRepository: _MockSettingsRepository(),
+      labelsFacade: () => labels,
+    );
+
+    test('completes the session via a forced-sync lookup when no wallet sync '
+        'ever happens, then stops polling', () {
+      fakeAsync((async) {
+        var txSeen = false;
+        when(
+          () => walletTxRepo.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).thenAnswer(
+          (_) async => txSeen
+              ? _testWalletTx(txId: 'payjoin-txid', walletId: 'w1')
+              : null,
+        );
+
+        final repo = buildRepo();
+        unawaited(repo.resumePayjoinsOnStartup());
+        async.flushMicrotasks();
+
+        final emitted = <Payjoin>[];
+        repo.payjoinStream.listen(emitted.add);
+
+        // First poll fires after the initial delay; the tx isn't visible yet.
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay);
+        expect(emitted, isEmpty);
+
+        // The sender broadcasts; the next (backed-off) poll finds the tx and
+        // completes the session — no walletSyncFinishedStream event ever
+        // fired in this entire test.
+        txSeen = true;
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay * 2);
+        async.flushMicrotasks();
+
+        expect(emitted, hasLength(1));
+        expect(emitted.single.isCompleted, isTrue);
+        verify(
+          () => walletTxRepo.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).called(2);
+
+        // Completion is one-shot: no further forced syncs afterwards.
+        async.elapse(const Duration(hours: 2));
+        verifyNever(
+          () => walletTxRepo.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        );
+      });
+    });
+
+    test('gives up active polling after the attempt budget but the passive '
+        'sync-driven watcher still completes a very late broadcast', () {
+      fakeAsync((async) {
+        var txSeen = false;
+        // Active polls never see the tx (it lands hours later).
+        when(
+          () => walletTxRepo.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).thenAnswer((_) async => null);
+        // Passive (local, non-forced) lookups see it once txSeen flips.
+        when(
+          () =>
+              walletTxRepo.getWalletTransaction('payjoin-txid', walletId: 'w1'),
+        ).thenAnswer(
+          (_) async => txSeen
+              ? _testWalletTx(txId: 'payjoin-txid', walletId: 'w1')
+              : null,
+        );
+
+        final repo = buildRepo();
+        unawaited(repo.resumePayjoinsOnStartup());
+        async.flushMicrotasks();
+
+        final emitted = <Payjoin>[];
+        repo.payjoinStream.listen(emitted.add);
+
+        // Way past the whole active-poll schedule: exactly maxAttempts
+        // forced syncs ran, then the poll chain stopped rescheduling.
+        async.elapse(const Duration(hours: 3));
+        verify(
+          () => walletTxRepo.getWalletTransaction(
+            'payjoin-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).called(PayjoinRepositoryImpl.broadcastPollMaxAttempts);
+        expect(emitted, isEmpty);
+
+        // The payjoin tx finally lands and some organic sync of this wallet
+        // finishes: the passive watcher completes the session.
+        txSeen = true;
+        syncController.add(_testWallet(origin: 'w1'));
+        async.flushMicrotasks();
+
+        expect(emitted, hasLength(1));
+        expect(emitted.single.isCompleted, isTrue);
+      });
+    });
+  });
 
   group('_processPayjoinRequest below-minimum decline flow', () {
     test('declines and broadcasts the original when the amount is below the '
