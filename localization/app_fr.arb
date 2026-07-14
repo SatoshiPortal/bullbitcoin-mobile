@@ -5083,5 +5083,9 @@
   "logsShareOptionShare": "Partager",
   "logsShareOptionExport": "Exporter",
   "logsExportedMessage": "Journaux exportés avec succès",
-  "logsExportFailedMessage": "Échec de l'exportation des journaux"
+  "logsExportFailedMessage": "Échec de l'exportation des journaux",
+  "settingsPayjoinMinAmountTitle": "Montant minimum pour le payjoin",
+  "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin n'est pas proposé et une transaction normale est envoyée à la place.",
+  "receivePayjoinUtxoDisclosure": "Recevoir avec le payjoin révèle l'un de vos UTXO à l'expéditeur.",
+  "settingsPayjoinMinAmountRangeError": "Saisissez un montant compris entre {min} et {max} sats"
 }

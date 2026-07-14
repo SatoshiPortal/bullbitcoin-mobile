@@ -13,6 +13,8 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
   IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
+  IntColumn get payjoinMinAmountSat =>
+      integer().withDefault(const Constant(10000))();
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
   BoolColumn get isErrorReportingEnabled =>
       boolean().withDefault(const Constant(false))();

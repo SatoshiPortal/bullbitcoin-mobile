@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/update_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -36,6 +37,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._revokeArkUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
+    required this._updatePayjoinMinAmountUsecase,
   }) : super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -51,6 +53,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final RevokeArkUsecase _revokeArkUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
+  final UpdatePayjoinMinAmountUsecase _updatePayjoinMinAmountUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -75,6 +78,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(environment: environment),
+      ),
+    );
+  }
+
+  Future<void> setPayjoinMinAmount(int amountSat) async {
+    await _updatePayjoinMinAmountUsecase.execute(
+      payjoinMinAmountSat: amountSat,
+    );
+    final settings = state.storedSettings;
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(payjoinMinAmountSat: amountSat),
       ),
     );
   }

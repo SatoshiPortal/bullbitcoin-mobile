@@ -34,6 +34,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
+    int payjoinMinAmountSat = 10000,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
@@ -51,6 +52,7 @@ class SettingsRepository implements domain.SettingsRepository {
         isDevModeEnabled: isDevModeEnabled,
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
+        payjoinMinAmountSat: payjoinMinAmountSat,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -73,6 +75,7 @@ class SettingsRepository implements domain.SettingsRepository {
       isDevModeEnabled: s.isDevModeEnabled,
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
+      payjoinMinAmountSat: s.payjoinMinAmountSat,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
@@ -124,6 +127,11 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setTorProxyPort(int port) async {
     await _settingsDatasource.setTorProxyPort(port);
+  }
+
+  @override
+  Future<void> setPayjoinMinAmountSat(int amountSat) async {
+    await _settingsDatasource.setPayjoinMinAmountSat(amountSat);
   }
 
   @override

@@ -14751,5 +14751,29 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "settingsPayjoinMinAmountTitle": "Payjoin minimum amount",
+  "@settingsPayjoinMinAmountTitle": {
+    "description": "Title for the payjoin minimum amount setting row in Bitcoin settings"
+  },
+  "settingsPayjoinMinAmountDescription": "Below this amount, payjoin is not offered and a normal transaction is sent instead.",
+  "@settingsPayjoinMinAmountDescription": {
+    "description": "Explanation under the payjoin minimum amount setting"
+  },
+  "receivePayjoinUtxoDisclosure": "Receiving with payjoin reveals one of your UTXOs to the sender.",
+  "@receivePayjoinUtxoDisclosure": {
+    "description": "Informational disclosure on the receive screen when payjoin is active"
+  },
+  "settingsPayjoinMinAmountRangeError": "Enter an amount between {min} and {max} sats",
+  "@settingsPayjoinMinAmountRangeError": {
+    "description": "Validation error for payjoin minimum amount input",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
   }
 }

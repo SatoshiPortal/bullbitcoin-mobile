@@ -141,6 +141,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? isDevModeEnabled,
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
+    @Default(10000) int payjoinMinAmountSat,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
     String? exchangeTestnetBasicAuthUsername,

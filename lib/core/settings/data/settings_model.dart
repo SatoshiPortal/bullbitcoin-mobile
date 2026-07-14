@@ -12,6 +12,7 @@ class SettingsModel {
   final bool isDevModeEnabled;
   final bool useTorProxy;
   final int torProxyPort;
+  final int payjoinMinAmountSat;
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
@@ -28,6 +29,7 @@ class SettingsModel {
     required this.isDevModeEnabled,
     required this.useTorProxy,
     required this.torProxyPort,
+    required this.payjoinMinAmountSat,
     required this.themeMode,
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
@@ -46,6 +48,7 @@ class SettingsModel {
       isDevModeEnabled: isDevModeEnabled,
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
+      payjoinMinAmountSat: payjoinMinAmountSat,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -65,6 +68,7 @@ class SettingsModel {
       isDevModeEnabled: row.isDevModeEnabled,
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
+      payjoinMinAmountSat: row.payjoinMinAmountSat,
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,

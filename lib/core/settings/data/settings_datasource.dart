@@ -73,6 +73,12 @@ class SettingsDatasource {
     );
   }
 
+  Future<void> setPayjoinMinAmountSat(int amountSat) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), payjoinMinAmountSat: Value(amountSat)),
+    );
+  }
+
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
