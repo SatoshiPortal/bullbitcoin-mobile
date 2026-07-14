@@ -2,18 +2,18 @@ import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.da
 import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_unreserved_bip85_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/fetch_unreserved_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
-  final FetchAllBip85DerivationsWithEntropyUsecase
-  _fetchAllBip85DerivationsWithEntropyUsecase;
-  final DeriveNextBip85MnemonicFromDefaultWalletUsecase
-  _deriveNextBip85MnemonicFromDefaultWalletUsecase;
+  final FetchUnreservedBip85DerivationsWithEntropyUsecase
+  _fetchUnreservedBip85DerivationsWithEntropyUsecase;
+  final DeriveNextUnreservedBip85MnemonicUsecase
+  _deriveNextUnreservedBip85MnemonicUsecase;
   final DeriveNextBip85HexFromDefaultWalletUsecase
   _deriveNextBip85HexFromDefaultWalletUsecase;
   final AliasBip85DerivationUsecase _aliasBip85DerivationUsecase;
@@ -21,8 +21,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final ActivateBip85DerivationUsecase _activateBip85DerivationUsecase;
 
   Bip85EntropyCubit({
-    required this._fetchAllBip85DerivationsWithEntropyUsecase,
-    required this._deriveNextBip85MnemonicFromDefaultWalletUsecase,
+    required this._fetchUnreservedBip85DerivationsWithEntropyUsecase,
+    required this._deriveNextUnreservedBip85MnemonicUsecase,
     required this._deriveNextBip85HexFromDefaultWalletUsecase,
     required this._aliasBip85DerivationUsecase,
     required this._revokeBip85DerivationUsecase,
@@ -37,7 +37,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> fetchAllDerivations() async {
     emit(state.copyWith(isLoading: true));
-    switch (await _fetchAllBip85DerivationsWithEntropyUsecase.execute()) {
+    switch (await _fetchUnreservedBip85DerivationsWithEntropyUsecase
+        .execute()) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok(:final value):
@@ -49,7 +50,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> deriveNextMnemonic() async {
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()) {
+    switch (await _deriveNextUnreservedBip85MnemonicUsecase.execute()) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
