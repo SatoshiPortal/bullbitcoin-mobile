@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+
 // Data-layer constant: the donation-page surface discriminator for the Payment
 // Page. The payment_page feature pins this; the shared client keeps `kind`
 // generic so the future POS surface reuses the same wire methods with `pos`.
@@ -29,6 +31,10 @@ class BullnymDonationPage {
   final bool isArchived;
   final String? avatarSha256;
   final String? ogSha256;
+
+  /// Permanent owner-level alias shared by Payment Page and POS. It remains
+  /// owned independently of either surface's availability.
+  final String? alias;
   final String publicUrl;
 
   const BullnymDonationPage({
@@ -45,14 +51,16 @@ class BullnymDonationPage {
     required this.isArchived,
     this.avatarSha256,
     this.ogSha256,
+    this.alias,
     required this.publicUrl,
   });
 }
 
 /// A signed `PUT /donation-page` upsert. Optional social fields serialize as
-/// empty strings (never omitted) so the signed byte layout is stable; `kind` is
-/// always present and appended LAST in the signed payload; `pos_mode` is never
-/// sent (never in the JSON body, never signed).
+/// empty strings (never omitted) so the signed byte layout is stable. `kind` is
+/// always present; a first alias claim is the newest terminal signed field.
+/// Preserve omits the alias JSON key and signed field entirely. `pos_mode` is
+/// never sent (never in the JSON body, never signed).
 class BullnymSaveDonationPageRequest {
   final String nym;
   final String ctDescriptor;
@@ -64,6 +72,7 @@ class BullnymSaveDonationPageRequest {
   final String instagram;
   final bool enabled;
   final String kind;
+  final BullnymAliasIntent aliasIntent;
   final String npubHex;
   final String signatureHex;
   final int timestamp;
@@ -79,6 +88,7 @@ class BullnymSaveDonationPageRequest {
     required this.instagram,
     required this.enabled,
     required this.kind,
+    this.aliasIntent = const BullnymAliasIntent.preserve(),
     required this.npubHex,
     required this.signatureHex,
     required this.timestamp,

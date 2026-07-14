@@ -5,10 +5,16 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class BullnymClientPort {
+  /// Public capability read. Missing/unknown policy is a valid old-server
+  /// response and leaves permanent-name behavior disabled.
+  @useResult
+  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion();
+
   @useResult
   Future<Result<BullnymRegisterResult, BullnymFailure>> register(
     BullnymRegisterRequest request,

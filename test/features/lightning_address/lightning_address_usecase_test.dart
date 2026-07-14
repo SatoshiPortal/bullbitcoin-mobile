@@ -229,6 +229,12 @@ class _FakeBullnymFacade implements BullnymFacade {
   BullnymFailure? registerError;
 
   @override
+  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() async =>
+      const Ok(
+        BullnymVersionInfo(publicNamePolicy: bullnymPermanentNamesV1Policy),
+      );
+
+  @override
   Future<Result<BullnymRegisterResult, BullnymFailure>> register({
     required BullnymAuthSigner signer,
     required String nym,
@@ -305,6 +311,7 @@ class _FakeBullnymFacade implements BullnymFacade {
     required String instagram,
     required bool enabled,
     required String kind,
+    BullnymAliasIntent aliasIntent = const BullnymAliasIntent.preserve(),
   }) => throw UnimplementedError();
 
   @override

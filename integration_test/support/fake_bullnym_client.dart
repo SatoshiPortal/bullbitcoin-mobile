@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 enum FakeBullnymMode {
@@ -116,6 +117,8 @@ class FakeBullnymClient implements BullnymClientPort {
   FakePosMode posMode = FakePosMode.normal;
   FakeInvoiceMode invoiceMode = FakeInvoiceMode.normal;
   String nym = 'alice';
+  String? permanentAlias;
+  bool permanentNamesCapable = true;
 
   final List<String> registeredNyms = [];
   final List<BullnymSaveDonationPageRequest> saveDonationPageCalls = [];
@@ -153,6 +156,15 @@ class FakeBullnymClient implements BullnymClientPort {
   String _pageKey(String nym, String kind) => '$nym|$kind';
 
   @override
+  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() async => Ok(
+    BullnymVersionInfo(
+      publicNamePolicy: permanentNamesCapable
+          ? bullnymPermanentNamesV1Policy
+          : null,
+    ),
+  );
+
+  @override
   Future<Result<BullnymRegisterResult, BullnymFailure>> register(
     BullnymRegisterRequest request,
   ) async {
@@ -167,17 +179,52 @@ class FakeBullnymClient implements BullnymClientPort {
         ),
       );
     }
+    if (mode != FakeBullnymMode.registrationMissing && request.nym != nym) {
+      return Err(
+        BullnymFailure.serverRejectedRequest(
+          code: 'NymAlreadyAssigned',
+          logMessage: 'owner already has a different permanent nym',
+          statusCode: 409,
+          retryable: false,
+          ownedNameDetails: BullnymOwnedNymDetails(
+            nym: BullnymPublicName(nym),
+            domain: 'example.invalid',
+          ),
+        ),
+      );
+    }
     nym = request.nym;
     mode = FakeBullnymMode.live;
     return Ok(
-      BullnymRegisterResult(nym: nym, lightningAddress: _lightningAddress),
+      BullnymRegisterResult(
+        nym: nym,
+        lightningAddress: _lightningAddress,
+        quota: BullnymQuota(used: 1, cap: 1, remaining: 0),
+      ),
     );
   }
 
   @override
   Future<Result<void, BullnymFailure>> deleteRegistration(
     BullnymDeleteRegistrationRequest request,
-  ) async => const Ok(null);
+  ) async {
+    if (request.nym != nym) {
+      return Err(
+        BullnymFailure.serverRejectedRequest(
+          code: 'NymAlreadyAssigned',
+          logMessage: 'owner already has a different permanent nym',
+          statusCode: 409,
+          retryable: false,
+          ownedNameDetails: BullnymOwnedNymDetails(
+            nym: BullnymPublicName(nym),
+            domain: 'example.invalid',
+          ),
+        ),
+      );
+    }
+    mode = FakeBullnymMode.inactiveWithPreviousNym;
+    return const Ok(null);
+  }
 
   @override
   Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
@@ -190,10 +237,17 @@ class FakeBullnymClient implements BullnymClientPort {
             nym: nym,
             active: true,
             lightningAddress: _lightningAddress,
+            publicNameStatus: _publicNameStatus(lightningAddressOnline: true),
           ),
         );
       case FakeBullnymMode.inactiveWithPreviousNym:
-        return Ok(BullnymLookupResult(nym: nym, active: false));
+        return Ok(
+          BullnymLookupResult(
+            nym: nym,
+            active: false,
+            publicNameStatus: _publicNameStatus(lightningAddressOnline: false),
+          ),
+        );
       case FakeBullnymMode.registrationMissing:
         return const Err(
           BullnymFailure.serverRejectedRequest(
@@ -294,7 +348,8 @@ class FakeBullnymClient implements BullnymClientPort {
         return Err(_notFound());
       }
     }
-    final page = _pages[_pageKey(nym, kind)];
+    final storedPage = _pages[_pageKey(nym, kind)];
+    final page = storedPage == null ? null : _withPermanentAlias(storedPage);
     if (page == null) return Err(_notFound());
     final archived = isPos
         ? posMode == FakePosMode.archived
@@ -323,6 +378,37 @@ class FakeBullnymClient implements BullnymClientPort {
         return Err(_serverUnreachable());
       }
     }
+    switch (request.aliasIntent) {
+      case BullnymAliasPreserve():
+        break;
+      case BullnymAliasClaim(:final alias):
+        if (alias.value == nym) {
+          return const Err(
+            BullnymFailure.serverRejectedRequest(
+              code: 'NameTaken',
+              logMessage: 'public name is already permanently allocated',
+              statusCode: 409,
+              retryable: false,
+            ),
+          );
+        }
+        final owned = permanentAlias;
+        if (owned != null && owned != alias.value) {
+          return Err(
+            BullnymFailure.serverRejectedRequest(
+              code: 'AliasAlreadyAssigned',
+              logMessage: 'owner already has a permanent alias',
+              statusCode: 409,
+              retryable: false,
+              ownedNameDetails: BullnymOwnedAliasDetails(
+                alias: BullnymPublicName(owned),
+              ),
+            ),
+          );
+        }
+        permanentAlias = alias.value;
+    }
+    final alias = permanentAlias;
     final page = BullnymDonationPage(
       nym: request.nym,
       header: request.header,
@@ -335,9 +421,15 @@ class FakeBullnymClient implements BullnymClientPort {
       posMode: request.kind == bullnymDonationPageKindPos,
       enabled: request.enabled,
       isArchived: false,
-      publicUrl: isPos
-          ? 'https://example.invalid/${request.nym}/pos'
-          : 'https://example.invalid/${request.nym}',
+      alias: alias,
+      publicUrl: switch ((isPos, alias)) {
+        (true, final String claimedAlias) =>
+          'https://example.invalid/a/$claimedAlias/pos',
+        (false, final String claimedAlias) =>
+          'https://example.invalid/a/$claimedAlias',
+        (true, null) => 'https://example.invalid/${request.nym}/pos',
+        (false, null) => 'https://example.invalid/${request.nym}',
+      },
     );
     _pages[_pageKey(request.nym, request.kind)] = page;
     return Ok(page);
@@ -360,7 +452,8 @@ class FakeBullnymClient implements BullnymClientPort {
       }
     }
     final key = _pageKey(request.nym, request.kind);
-    final page = _pages[key];
+    final storedPage = _pages[key];
+    final page = storedPage == null ? null : _withPermanentAlias(storedPage);
     if (page == null || page.isArchived) {
       // Double-archive / archive-of-missing: the server preserves nothing to
       // archive and returns DonationPageNotFound.
@@ -722,7 +815,50 @@ class FakeBullnymClient implements BullnymClientPort {
       isArchived: isArchived ?? page.isArchived,
       avatarSha256: page.avatarSha256,
       ogSha256: page.ogSha256,
+      alias: page.alias,
       publicUrl: page.publicUrl,
+    );
+  }
+
+  BullnymDonationPage _withPermanentAlias(BullnymDonationPage page) {
+    final alias = permanentAlias;
+    final isPos = page.kind == bullnymDonationPageKindPos;
+    return BullnymDonationPage(
+      nym: page.nym,
+      header: page.header,
+      description: page.description,
+      displayCurrency: page.displayCurrency,
+      website: page.website,
+      twitter: page.twitter,
+      instagram: page.instagram,
+      kind: page.kind,
+      posMode: page.posMode,
+      enabled: page.enabled,
+      isArchived: page.isArchived,
+      avatarSha256: page.avatarSha256,
+      ogSha256: page.ogSha256,
+      alias: alias,
+      publicUrl: switch ((isPos, alias)) {
+        (true, final String claimedAlias) =>
+          'https://example.invalid/a/$claimedAlias/pos',
+        (false, final String claimedAlias) =>
+          'https://example.invalid/a/$claimedAlias',
+        (true, null) => 'https://example.invalid/${page.nym}/pos',
+        (false, null) => 'https://example.invalid/${page.nym}',
+      },
+    );
+  }
+
+  BullnymPublicNameStatus? _publicNameStatus({
+    required bool lightningAddressOnline,
+  }) {
+    if (!permanentNamesCapable) return null;
+    return BullnymPublicNameStatus(
+      nym: BullnymPublicName(nym),
+      alias: permanentAlias == null ? null : BullnymPublicName(permanentAlias!),
+      lightningAddressOnline: lightningAddressOnline,
+      publicNamePolicy: bullnymPermanentNamesV1Policy,
+      quota: BullnymQuota(used: 1, cap: 1, remaining: 0),
     );
   }
 }

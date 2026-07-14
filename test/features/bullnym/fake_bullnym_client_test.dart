@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../integration_test/support/fake_bullnym_client.dart';
@@ -13,6 +15,7 @@ BullnymSaveDonationPageRequest _save({
   String ctDescriptor = 'ct(desc)',
   String header = 'My Till',
   String displayCurrency = 'CAD',
+  BullnymAliasIntent aliasIntent = const BullnymAliasIntent.preserve(),
 }) {
   return BullnymSaveDonationPageRequest(
     nym: nym,
@@ -25,6 +28,7 @@ BullnymSaveDonationPageRequest _save({
     instagram: '',
     enabled: true,
     kind: kind,
+    aliasIntent: aliasIntent,
     npubHex: 'npub',
     signatureHex: 'sig',
     timestamp: 1710000000,
@@ -178,6 +182,196 @@ void main() {
         await client.getDonationPage(nym: 'alice', kind: 'payment_page'),
       ).header,
       'Page',
+    );
+  });
+
+  group('permanent-name protocol model', () {
+    test(
+      'advertises the exact capability and can model an old server',
+      () async {
+        expect(
+          _unwrap(await client.getVersion()).supportsPermanentNamesV1,
+          isTrue,
+        );
+
+        client.permanentNamesCapable = false;
+
+        expect(
+          _unwrap(await client.getVersion()).supportsPermanentNamesV1,
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'same-nym registration reactivates but a rename is rejected',
+      () async {
+        _unwrap(
+          await client.deleteRegistration(
+            const BullnymDeleteRegistrationRequest(
+              nym: 'alice',
+              npubHex: 'npub',
+              signatureHex: 'sig',
+              timestamp: 1,
+            ),
+          ),
+        );
+        expect(
+          _unwrap(
+            await client.lookupRegistration(npubHex: 'npub'),
+          ).publicNameStatus!.lightningAddressOnline,
+          isFalse,
+        );
+
+        _unwrap(
+          await client.register(
+            const BullnymRegisterRequest(
+              nym: 'alice',
+              ctDescriptor: 'ct',
+              npubHex: 'npub',
+              signatureHex: 'sig',
+              timestamp: 2,
+            ),
+          ),
+        );
+        final failure = _unwrapFailure(
+          await client.register(
+            const BullnymRegisterRequest(
+              nym: 'bob',
+              ctDescriptor: 'ct',
+              npubHex: 'npub',
+              signatureHex: 'sig',
+              timestamp: 3,
+            ),
+          ),
+        );
+
+        expect(failure.code, 'NymAlreadyAssigned');
+        expect(
+          (failure.ownedNameDetails as BullnymOwnedNymDetails).nym.value,
+          'alice',
+        );
+        expect(client.nym, 'alice');
+      },
+    );
+
+    test(
+      'a never-registered fake accepts exactly one first nym claim',
+      () async {
+        client.mode = FakeBullnymMode.registrationMissing;
+
+        _unwrap(
+          await client.register(
+            const BullnymRegisterRequest(
+              nym: 'bob',
+              ctDescriptor: 'ct',
+              npubHex: 'npub',
+              signatureHex: 'sig',
+              timestamp: 1,
+            ),
+          ),
+        );
+
+        expect(client.nym, 'bob');
+        expect(
+          _unwrapFailure(
+            await client.register(
+              const BullnymRegisterRequest(
+                nym: 'carol',
+                ctDescriptor: 'ct',
+                npubHex: 'npub',
+                signatureHex: 'sig',
+                timestamp: 2,
+              ),
+            ),
+          ).code,
+          'NymAlreadyAssigned',
+        );
+      },
+    );
+
+    test('one alias claim is shared by Page and POS readback', () async {
+      _unwrap(
+        await client.saveDonationPage(
+          _save(kind: bullnymDonationPageKindPaymentPage),
+        ),
+      );
+      _unwrap(
+        await client.saveDonationPage(
+          _save(
+            kind: bullnymDonationPageKindPos,
+            aliasIntent: BullnymAliasIntent.claim(
+              BullnymPublicName.aliasClaim('coffee'),
+            ),
+          ),
+        ),
+      );
+
+      final page = _unwrap(
+        await client.getDonationPage(
+          nym: 'alice',
+          kind: bullnymDonationPageKindPaymentPage,
+        ),
+      );
+      final pos = _unwrap(
+        await client.getDonationPage(
+          nym: 'alice',
+          kind: bullnymDonationPageKindPos,
+        ),
+      );
+
+      expect(page.alias, 'coffee');
+      expect(page.publicUrl, 'https://example.invalid/a/coffee');
+      expect(pos.alias, 'coffee');
+      expect(pos.publicUrl, 'https://example.invalid/a/coffee/pos');
+      expect(
+        _unwrap(
+          await client.lookupRegistration(npubHex: 'npub'),
+        ).publicNameStatus!.alias,
+        BullnymPublicName('coffee'),
+      );
+    });
+
+    test(
+      'a second alias and the owned nym cannot be claimed as alias',
+      () async {
+        _unwrap(
+          await client.saveDonationPage(
+            _save(
+              kind: bullnymDonationPageKindPaymentPage,
+              aliasIntent: BullnymAliasIntent.claim(
+                BullnymPublicName.aliasClaim('coffee'),
+              ),
+            ),
+          ),
+        );
+
+        final assigned = _unwrapFailure(
+          await client.saveDonationPage(
+            _save(
+              kind: bullnymDonationPageKindPos,
+              aliasIntent: BullnymAliasIntent.claim(
+                BullnymPublicName.aliasClaim('market'),
+              ),
+            ),
+          ),
+        );
+        final nameTaken = _unwrapFailure(
+          await FakeBullnymClient().saveDonationPage(
+            _save(
+              kind: bullnymDonationPageKindPaymentPage,
+              aliasIntent: BullnymAliasIntent.claim(BullnymPublicName('alice')),
+            ),
+          ),
+        );
+
+        expect(assigned.code, 'AliasAlreadyAssigned');
+        expect(
+          (assigned.ownedNameDetails as BullnymOwnedAliasDetails).alias.value,
+          'coffee',
+        );
+        expect(nameTaken.code, 'NameTaken');
+      },
     );
   });
 }

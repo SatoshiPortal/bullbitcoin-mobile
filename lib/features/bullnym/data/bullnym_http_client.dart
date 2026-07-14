@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
@@ -24,15 +25,20 @@ const Duration bullnymReceiveTimeout = Duration(seconds: 15);
 class BullnymHttpClient implements BullnymClientPort {
   BullnymHttpClient({
     String baseUrl = bullnymDefaultBaseUrl,
+    String publicBaseUrl = bullnymDefaultPublicBaseUrl,
     this._nowSecs = currentBullpayTimestampSecs,
-  }) : _dio = _newDio(baseUrl);
+  }) : _trustedPublicOrigin = _validatePublicOrigin(publicBaseUrl),
+       _dio = _newDio(baseUrl);
 
   BullnymHttpClient.withDio(
     Dio dio, {
+    String publicBaseUrl = bullnymDefaultPublicBaseUrl,
     this._nowSecs = currentBullpayTimestampSecs,
-  }) : _dio = dio;
+  }) : _trustedPublicOrigin = _validatePublicOrigin(publicBaseUrl),
+       _dio = dio;
 
   final Dio _dio;
+  final Uri _trustedPublicOrigin;
   // Invoice actions are signed inside the client (unlike the donation-page
   // actions, which are signed in their usecases), so the client owns the
   // signing timestamp; injected for deterministic contract tests.
@@ -63,6 +69,34 @@ class BullnymHttpClient implements BullnymClientPort {
       throw ArgumentError.value(baseUrl, 'baseUrl', 'Invalid Bullnym base URL');
     }
     return normalized;
+  }
+
+  static Uri _validatePublicOrigin(String publicBaseUrl) {
+    final normalized = publicBaseUrl.trim();
+    final uri = Uri.tryParse(normalized);
+    if (normalized.isEmpty ||
+        uri == null ||
+        (uri.scheme != 'https' && !_isLocalHttpUri(uri)) ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        (uri.path.isNotEmpty && uri.path != '/')) {
+      throw ArgumentError.value(
+        publicBaseUrl,
+        'publicBaseUrl',
+        'Invalid trusted Bullnym public origin',
+      );
+    }
+    return uri;
+  }
+
+  @override
+  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() {
+    return _guard(() async {
+      final response = await _getMap('/version');
+      return _parseVersionResponse(response);
+    });
   }
 
   @override
@@ -205,24 +239,28 @@ class BullnymHttpClient implements BullnymClientPort {
     BullnymSaveDonationPageRequest request,
   ) {
     return _guard(() async {
-      final response = await _putMap(
-        '/donation-page',
-        data: {
-          'nym': request.nym,
-          'npub': request.npubHex,
-          'ct_descriptor': request.ctDescriptor,
-          'header': request.header,
-          'description': request.description,
-          'display_currency': request.displayCurrency,
-          'website': request.website,
-          'twitter': request.twitter,
-          'instagram': request.instagram,
-          'enabled': request.enabled,
-          'kind': request.kind,
-          'timestamp': request.timestamp,
-          'signature': request.signatureHex,
-        },
-      );
+      final data = <String, dynamic>{
+        'nym': request.nym,
+        'npub': request.npubHex,
+        'ct_descriptor': request.ctDescriptor,
+        'header': request.header,
+        'description': request.description,
+        'display_currency': request.displayCurrency,
+        'website': request.website,
+        'twitter': request.twitter,
+        'instagram': request.instagram,
+        'enabled': request.enabled,
+        'kind': request.kind,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      };
+      switch (request.aliasIntent) {
+        case BullnymAliasPreserve():
+          break;
+        case BullnymAliasClaim(:final alias):
+          data['alias'] = alias.value;
+      }
+      final response = await _putMap('/donation-page', data: data);
       return _parseDonationPageResponse(response);
     });
   }
@@ -577,11 +615,21 @@ class BullnymHttpClient implements BullnymClientPort {
           statusCode: response.statusCode,
         );
       }
+      final normalizedCode = code == 'NymTaken'
+          ? 'NameTaken'
+          : code is String
+          ? code
+          : 'ServerRejectedRequest';
       return BullnymFailure.serverRejectedRequest(
-        code: code is String ? code : 'ServerRejectedRequest',
+        code: normalizedCode,
         logMessage: reason,
         statusCode: response.statusCode,
         retryable: _isRetryableStatus(response.statusCode),
+        ownedNameDetails: _parseOwnedNameDetails(
+          normalizedCode,
+          data['details'],
+          response.statusCode,
+        ),
       );
     }
     return BullnymFailure.unexpectedHttpStatus(statusCode: response.statusCode);
@@ -610,15 +658,149 @@ class BullnymHttpClient implements BullnymClientPort {
     return BullnymRegisterResult(
       nym: _requiredString(json, 'nym'),
       lightningAddress: _requiredString(json, 'lightning_address'),
+      quota: json.containsKey('quota') ? _parseQuota(json['quota']) : null,
+    );
+  }
+
+  BullnymVersionInfo _parseVersionResponse(Map<String, dynamic> json) {
+    return BullnymVersionInfo(
+      publicNamePolicy: _optionalString(json, 'public_name_policy'),
     );
   }
 
   BullnymLookupResult _parseLookupResponse(Map<String, dynamic> json) {
+    final nym = _requiredString(json, 'nym');
+    final active = _requiredBool(json, 'active');
+    final policy = _optionalString(json, 'public_name_policy');
+    BullnymPublicNameStatus? publicNameStatus;
+    if (policy == bullnymPermanentNamesV1Policy) {
+      if (!json.containsKey('alias')) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Permanent-name lookup is missing alias',
+          ),
+        );
+      }
+      final lightningAddressOnline = _requiredBool(
+        json,
+        'lightning_address_online',
+      );
+      if (active != lightningAddressOnline) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Lookup status fields are inconsistent',
+          ),
+        );
+      }
+      publicNameStatus = BullnymPublicNameStatus(
+        nym: _parsePublicName(nym, field: 'nym'),
+        alias: _parseOptionalPublicName(json['alias'], field: 'alias'),
+        lightningAddressOnline: lightningAddressOnline,
+        publicNamePolicy: bullnymPermanentNamesV1Policy,
+        quota: _parseQuota(json['quota']),
+      );
+    }
     return BullnymLookupResult(
-      nym: _requiredString(json, 'nym'),
-      active: _requiredBool(json, 'active'),
+      nym: nym,
+      active: active,
       lightningAddress: _optionalString(json, 'lightning_address'),
+      publicNameStatus: publicNameStatus,
     );
+  }
+
+  BullnymQuota _parseQuota(Object? value) {
+    if (value is! Map<String, dynamic>) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response is missing quota object',
+        ),
+      );
+    }
+    try {
+      return BullnymQuota(
+        used: _requiredInt(value, 'used'),
+        cap: _requiredInt(value, 'cap'),
+        remaining: _requiredInt(value, 'remaining'),
+      );
+    } on ArgumentError {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server quota is internally inconsistent',
+        ),
+      );
+    }
+  }
+
+  BullnymPublicName _parsePublicName(String value, {required String field}) {
+    try {
+      return BullnymPublicName(value);
+    } on ArgumentError {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response has invalid $field',
+        ),
+      );
+    }
+  }
+
+  BullnymPublicName? _parseOptionalPublicName(
+    Object? value, {
+    required String field,
+  }) {
+    if (value == null) return null;
+    if (value is! String) {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response field $field is not a string',
+        ),
+      );
+    }
+    return _parsePublicName(value, field: field);
+  }
+
+  BullnymOwnedNameDetails? _parseOwnedNameDetails(
+    String code,
+    Object? value,
+    int? statusCode,
+  ) {
+    if (code != 'NymAlreadyAssigned' && code != 'AliasAlreadyAssigned') {
+      return null;
+    }
+    if (value == null) return null;
+    if (value is! Map<String, dynamic>) {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server conflict details have an unexpected shape',
+          statusCode: statusCode,
+        ),
+      );
+    }
+    switch (code) {
+      case 'NymAlreadyAssigned':
+        final nym = _parsePublicName(
+          _requiredString(value, 'nym'),
+          field: 'details.nym',
+        );
+        final domain = _optionalString(value, 'domain');
+        if (domain != null && domain.isEmpty) {
+          throw _BullnymClientException(
+            BullnymFailure.invalidServerResponse(
+              logMessage: 'Server conflict domain is empty',
+              statusCode: statusCode,
+            ),
+          );
+        }
+        return BullnymOwnedNymDetails(nym: nym, domain: domain);
+      case 'AliasAlreadyAssigned':
+        return BullnymOwnedAliasDetails(
+          alias: _parsePublicName(
+            _requiredString(value, 'alias'),
+            field: 'details.alias',
+          ),
+        );
+      default:
+        return null;
+    }
   }
 
   String _requiredString(Map<String, dynamic> json, String key) {
@@ -752,9 +934,18 @@ class BullnymHttpClient implements BullnymClientPort {
   // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
   // ignored so a future server field cannot crash an older binary.
   BullnymDonationPage _parseDonationPageResponse(Map<String, dynamic> json) {
+    final nym = _parsePublicName(_requiredString(json, 'nym'), field: 'nym');
+    final alias = _parseOptionalPublicName(json['alias'], field: 'alias');
     final kind = _requiredString(json, 'kind');
+    final publicUrl = _requiredString(json, 'public_url');
+    final trustedPublicUrl = _validatePublicUrl(
+      publicUrl,
+      nym: nym,
+      alias: alias,
+      kind: kind,
+    );
     return BullnymDonationPage(
-      nym: _requiredString(json, 'nym'),
+      nym: nym.value,
       header: _requiredString(json, 'header'),
       description: _requiredString(json, 'description'),
       displayCurrency: _requiredString(json, 'display_currency'),
@@ -762,13 +953,37 @@ class BullnymHttpClient implements BullnymClientPort {
       twitter: _optionalString(json, 'twitter'),
       instagram: _optionalString(json, 'instagram'),
       kind: kind,
-      posMode: kind == bullnymDonationPageKindPos,
+      posMode: _requiredBool(json, 'pos_mode'),
       enabled: _requiredBool(json, 'enabled'),
       isArchived: _requiredBool(json, 'is_archived'),
       avatarSha256: _optionalString(json, 'avatar_sha256'),
       ogSha256: _optionalString(json, 'og_sha256'),
-      publicUrl: _requiredString(json, 'public_url'),
+      alias: alias?.value,
+      publicUrl: trustedPublicUrl.value,
     );
+  }
+
+  BullnymPublicUrl _validatePublicUrl(
+    String value, {
+    required BullnymPublicName nym,
+    required BullnymPublicName? alias,
+    required String kind,
+  }) {
+    try {
+      return BullnymPublicUrl.validated(
+        value: value,
+        trustedPublicOrigin: _trustedPublicOrigin,
+        nym: nym,
+        alias: alias,
+        kind: kind,
+      );
+    } on ArgumentError {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server returned an untrusted public URL',
+        ),
+      );
+    }
   }
 
   BullnymSupportedCurrencies _parseSupportedCurrenciesResponse(

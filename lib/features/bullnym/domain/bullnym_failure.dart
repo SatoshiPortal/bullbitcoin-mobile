@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 
 enum BullnymFailureKind {
   invalidInput,
@@ -21,12 +22,14 @@ sealed class BullnymFailure extends Failure {
   final String code;
   final int? statusCode;
   final bool retryable;
+  final BullnymOwnedNameDetails? ownedNameDetails;
 
   const BullnymFailure._({
     required this.kind,
     required this.code,
     this.statusCode,
     required this.retryable,
+    this.ownedNameDetails,
     String? logMessage,
   }) : super(logMessage);
 
@@ -44,6 +47,7 @@ sealed class BullnymFailure extends Failure {
     required String logMessage,
     int? statusCode,
     required bool retryable,
+    BullnymOwnedNameDetails? ownedNameDetails,
   }) = BullnymServerRejectedRequestFailure;
 
   const factory BullnymFailure.unexpectedHttpStatus({int? statusCode}) =
@@ -102,6 +106,7 @@ final class BullnymServerRejectedRequestFailure extends BullnymFailure {
     required String logMessage,
     super.statusCode,
     required super.retryable,
+    super.ownedNameDetails,
   }) : super._(
          kind: BullnymFailureKind.serverRejectedRequest,
          logMessage: logMessage,

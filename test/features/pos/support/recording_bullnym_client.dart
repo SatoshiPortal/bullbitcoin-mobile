@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 /// A hand fake [BullnymClientPort] for pos unit tests: it records the
@@ -36,6 +37,12 @@ class RecordingBullnymClient implements BullnymClientPort {
 
   String _backupKey(BullnymBackupStream stream, String npubHex) =>
       '${stream.wireName}|$npubHex';
+
+  @override
+  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() async =>
+      const Ok(
+        BullnymVersionInfo(publicNamePolicy: bullnymPermanentNamesV1Policy),
+      );
 
   @override
   Future<Result<BullnymRegisterResult, BullnymFailure>> register(
@@ -166,6 +173,7 @@ class RecordingBullnymClient implements BullnymClientPort {
         posMode: false,
         enabled: page?.enabled ?? true,
         isArchived: true,
+        alias: page?.alias,
         publicUrl: page?.publicUrl ?? 'https://bullpay.ca/${request.nym}/pos',
       ),
     );
@@ -216,6 +224,10 @@ class RecordingBullnymClient implements BullnymClientPort {
       );
 
   BullnymDonationPage _viewFromSave(BullnymSaveDonationPageRequest request) {
+    final alias = switch (request.aliasIntent) {
+      BullnymAliasPreserve() => storedPage?.alias,
+      BullnymAliasClaim(:final alias) => alias.value,
+    };
     return BullnymDonationPage(
       nym: request.nym,
       header: request.header,
@@ -228,7 +240,10 @@ class RecordingBullnymClient implements BullnymClientPort {
       posMode: false,
       enabled: request.enabled,
       isArchived: false,
-      publicUrl: 'https://bullpay.ca/${request.nym}/pos',
+      alias: alias,
+      publicUrl: alias == null
+          ? 'https://bullpay.ca/${request.nym}/pos'
+          : 'https://bullpay.ca/a/$alias/pos',
     );
   }
 }

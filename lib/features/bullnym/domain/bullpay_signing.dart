@@ -22,11 +22,13 @@ final _canonicalNpubHexPattern = RegExp(r'^[0-9a-f]{64}$');
 // `src/donation_page.rs`): the seven mandatory save fields (header, description,
 // display_currency, website, twitter, instagram, enabled) are always present —
 // absent optionals are signed as empty strings so the NUL-separator count is
-// invariant. The trailing fields `[pos_mode?][ct_descriptor?][kind?]` are each
-// appended only when the client sends that JSON key, and `kind` MUST stay last.
-// This client never sends `pos_mode`, always sends a non-empty `ct_descriptor`,
-// and always sends `kind`, so its save layout is the seven mandatory fields plus
-// `ct_descriptor` then `kind`. Archive signs `[kind]` only.
+// invariant. The trailing fields
+// `[pos_mode?][ct_descriptor?][kind?][alias?]` are each appended only when the
+// client sends that JSON key, and alias MUST stay last. This client never sends
+// `pos_mode`, always sends a non-empty `ct_descriptor`, and always sends `kind`,
+// so its preserve layout is the seven mandatory fields plus `ct_descriptor`
+// then `kind`. A first alias claim appends the alias after `kind`; preserving an
+// alias omits that newest field. Archive signs `[kind]` only.
 
 @useResult
 Result<Uint8List, BullnymFailure> buildBullpaySchnorrMessage({

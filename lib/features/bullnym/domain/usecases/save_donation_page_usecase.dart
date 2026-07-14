@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/register_bullnym_usecase.dart';
 import 'package:meta/meta.dart';
@@ -29,25 +30,33 @@ class SaveDonationPageUsecase {
     required String instagram,
     required bool enabled,
     required String kind,
+    BullnymAliasIntent aliasIntent = const BullnymAliasIntent.preserve(),
   }) async {
     final timestamp = _nowSecs();
-    // §3.8 signed order: the seven mandatory fields, then ct_descriptor, then
-    // kind LAST. pos_mode is never sent, so it is never signed.
+    // Signed order: the seven mandatory fields, ct_descriptor, kind, then an
+    // alias only for the first claim. Preserve is byte-for-byte the old layout.
+    final payloadFields = [
+      header,
+      description,
+      displayCurrency,
+      website,
+      twitter,
+      instagram,
+      enabled ? '1' : '0',
+      ctDescriptor,
+      kind,
+    ];
+    switch (aliasIntent) {
+      case BullnymAliasPreserve():
+        break;
+      case BullnymAliasClaim(:final alias):
+        payloadFields.add(alias.value);
+    }
     final signatureResult = await signBullpayAction(
       signer: signer,
       action: bullpayActionDonationPageSave,
       nymOrEmpty: nym,
-      payloadFields: [
-        header,
-        description,
-        displayCurrency,
-        website,
-        twitter,
-        instagram,
-        enabled ? '1' : '0',
-        ctDescriptor,
-        kind,
-      ],
+      payloadFields: payloadFields,
       timestampSecs: timestamp,
     );
     final String signatureHex;
@@ -69,6 +78,7 @@ class SaveDonationPageUsecase {
         instagram: instagram,
         enabled: enabled,
         kind: kind,
+        aliasIntent: aliasIntent,
         npubHex: signer.npubHex,
         signatureHex: signatureHex,
         timestamp: timestamp,
