@@ -71,6 +71,7 @@ graph TB
     HW_WALLETS --> CORE
     LABELS --> CORE
     PAY --> RECIPIENTS
+    PAYJOIN --> LABELS
     PAYJOIN --> UTXO_MGMT
     PIN_CODE --> CORE
     RECEIVE --> PAYJOIN
