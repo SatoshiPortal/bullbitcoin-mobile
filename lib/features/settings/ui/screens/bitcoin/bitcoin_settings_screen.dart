@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/coldcard_firmware/ui/coldcard_firmware_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -72,6 +73,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
                   onTap: () => context.pushNamed(
                     BroadcastSignedTxRoute.broadcastHome.name,
+                  ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.system_update_alt,
+                  title: context.loc.coldcardUpdateTitle,
+                  onTap: () => context.pushNamed(
+                    ColdcardFirmwareRoute.coldcardUpdate.name,
                   ),
                 ),
                 SettingsEntryItem(

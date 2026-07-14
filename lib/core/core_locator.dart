@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/core/coldcard_firmware/coldcard_firmware_locator.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
@@ -65,6 +66,7 @@ class CoreLocator {
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
+    ColdcardFirmwareCoreLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);
   }
 
@@ -92,6 +94,7 @@ class CoreLocator {
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);
+    ColdcardFirmwareCoreLocator.registerUsecases(locator);
     BitBoxCoreLocator.registerUsecases(locator);
   }
 

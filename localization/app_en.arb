@@ -14751,5 +14751,159 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "coldcardUpdateTitle": "Coldcard update",
+  "@coldcardUpdateTitle": {
+    "description": "Bitcoin settings entry and screen title for the Coldcard firmware update tool"
+  },
+  "coldcardUpdateSelectModelDescription": "Select the Coldcard model you want to update",
+  "@coldcardUpdateSelectModelDescription": {
+    "description": "Description shown above the Coldcard model selection cards"
+  },
+  "coldcardUpdateModelQSubtitle": "QWERTY keyboard, QR scanner, NFC, microSD",
+  "@coldcardUpdateModelQSubtitle": {
+    "description": "Subtitle on the COLDCARD Q model card"
+  },
+  "coldcardUpdateModelMk4Subtitle": "Numeric keypad, NFC, USB-C, microSD",
+  "@coldcardUpdateModelMk4Subtitle": {
+    "description": "Subtitle on the COLDCARD Mk4 model card"
+  },
+  "coldcardUpdateCheckingLatest": "Checking for the latest firmware...",
+  "@coldcardUpdateCheckingLatest": {
+    "description": "Shown with a spinner while the latest firmware release is being looked up"
+  },
+  "coldcardUpdateLatestFirmware": "Latest firmware available",
+  "@coldcardUpdateLatestFirmware": {
+    "description": "Header above the latest firmware release card"
+  },
+  "coldcardUpdateReleasedOn": "Released {date}",
+  "@coldcardUpdateReleasedOn": {
+    "description": "Release date line on the firmware card",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "coldcardUpdateDownloadAndVerifyButton": "Download and verify the firmware",
+  "@coldcardUpdateDownloadAndVerifyButton": {
+    "description": "Button that starts the firmware download and verification"
+  },
+  "coldcardUpdateDownloading": "Downloading firmware...",
+  "@coldcardUpdateDownloading": {
+    "description": "Shown with the progress bar while the firmware file downloads"
+  },
+  "coldcardUpdateVerifyingSignature": "Verifying signature...",
+  "@coldcardUpdateVerifyingSignature": {
+    "description": "Shown with a spinner while the PGP signature and hash are being verified"
+  },
+  "coldcardUpdateVerifiedTitle": "Firmware verified",
+  "@coldcardUpdateVerifiedTitle": {
+    "description": "Title next to the green checkmark after successful verification"
+  },
+  "coldcardUpdateVerifiedMessage": "The firmware has been downloaded and its integrity has been verified! It's ready to be installed on your Coldcard.",
+  "@coldcardUpdateVerifiedMessage": {
+    "description": "Message under the green checkmark after successful verification"
+  },
+  "coldcardUpdateSignedBy": "Signed by {signer}",
+  "@coldcardUpdateSignedBy": {
+    "description": "Shows who PGP-signed the firmware release manifest",
+    "placeholders": {
+      "signer": {
+        "type": "String"
+      }
+    }
+  },
+  "coldcardUpdateExportButton": "Export firmware",
+  "@coldcardUpdateExportButton": {
+    "description": "Button that saves the verified firmware to a folder or SD card"
+  },
+  "coldcardUpdateInstructionsButton": "Instructions",
+  "@coldcardUpdateInstructionsButton": {
+    "description": "Button that opens the install instructions bottom sheet"
+  },
+  "coldcardUpdateExportSuccess": "Firmware file saved",
+  "@coldcardUpdateExportSuccess": {
+    "description": "Snackbar shown after the firmware file was saved successfully"
+  },
+  "coldcardUpdateErrorNetwork": "Could not reach the firmware server. Check your connection and try again.",
+  "@coldcardUpdateErrorNetwork": {
+    "description": "Error when the coldcard.com download or manifest fetch fails"
+  },
+  "coldcardUpdateErrorDiscovery": "Could not determine the latest firmware version. Please try again later.",
+  "@coldcardUpdateErrorDiscovery": {
+    "description": "Error when the latest release cannot be discovered"
+  },
+  "coldcardUpdateErrorVerification": "The firmware failed verification and was discarded. Do not install it. Please try again later.",
+  "@coldcardUpdateErrorVerification": {
+    "description": "Error when the downloaded firmware fails signature or hash verification"
+  },
+  "coldcardUpdateErrorSave": "The firmware file could not be saved.",
+  "@coldcardUpdateErrorSave": {
+    "description": "Error when writing the verified firmware to the picked destination fails"
+  },
+  "coldcardUpdateInstructionsTitle": "Install on your Coldcard",
+  "@coldcardUpdateInstructionsTitle": {
+    "description": "Title of the install instructions bottom sheet"
+  },
+  "coldcardUpdateInstructionsLoadSection": "Load the firmware on your Coldcard",
+  "@coldcardUpdateInstructionsLoadSection": {
+    "description": "First section header of the install instructions"
+  },
+  "coldcardUpdateInstructionsLoadStep1": "Save the firmware file (ending in -coldcard.dfu) to your microSD card and eject the card once the file is saved.",
+  "@coldcardUpdateInstructionsLoadStep1": {
+    "description": "Install instructions, load section, step 1"
+  },
+  "coldcardUpdateInstructionsLoadStep2": "Make sure your Coldcard is turned on and unlocked, then insert the microSD card.",
+  "@coldcardUpdateInstructionsLoadStep2": {
+    "description": "Install instructions, load section, step 2"
+  },
+  "coldcardUpdateInstructionsLoadStep3": "Select Advanced/Tools > Upgrade Firmware > From MicroSD.",
+  "@coldcardUpdateInstructionsLoadStep3": {
+    "description": "Install instructions, load section, step 3"
+  },
+  "coldcardUpdateInstructionsLoadStep4": "Press OK on your Coldcard when you are prompted to pick the firmware image.",
+  "@coldcardUpdateInstructionsLoadStep4": {
+    "description": "Install instructions, load section, step 4"
+  },
+  "coldcardUpdateInstructionsLoadStep5": "Select the firmware file.",
+  "@coldcardUpdateInstructionsLoadStep5": {
+    "description": "Install instructions, load section, step 5"
+  },
+  "coldcardUpdateInstructionsLoadStep6": "The screen will say \"Loading...\". Be patient, this process takes time.",
+  "@coldcardUpdateInstructionsLoadStep6": {
+    "description": "Install instructions, load section, step 6"
+  },
+  "coldcardUpdateInstructionsRedLedNote": "When the screen changes to Verifying, the red CAUTION LED will light up and stay lit until the upgrade is complete. It lets you know changes are being made to your Coldcard. If the Coldcard is turned off after the new firmware is installed but before the first successful login, you will need to bless the firmware to turn the red LED off.",
+  "@coldcardUpdateInstructionsRedLedNote": {
+    "description": "Warning about the red caution LED during the upgrade"
+  },
+  "coldcardUpdateInstructionsPowerWarning": "Do not turn off power during the upgrade process. Doing so can put the device into a special recovery mode which requires a specially-prepared microSD card.",
+  "@coldcardUpdateInstructionsPowerWarning": {
+    "description": "Warning not to power off the Coldcard during the upgrade"
+  },
+  "coldcardUpdateInstructionsConfirmSection": "Confirm and finish the upgrade",
+  "@coldcardUpdateInstructionsConfirmSection": {
+    "description": "Second section header of the install instructions"
+  },
+  "coldcardUpdateInstructionsConfirmStep1": "Enter your PIN prefix when prompted after the Coldcard reboots.",
+  "@coldcardUpdateInstructionsConfirmStep1": {
+    "description": "Install instructions, confirm section, step 1"
+  },
+  "coldcardUpdateInstructionsConfirmStep2": "Verify that you recognize the two anti-phishing words displayed on the screen. These words are specific to your device.",
+  "@coldcardUpdateInstructionsConfirmStep2": {
+    "description": "Install instructions, confirm section, step 2"
+  },
+  "coldcardUpdateInstructionsConfirmStep3": "Enter the rest of your PIN when prompted.",
+  "@coldcardUpdateInstructionsConfirmStep3": {
+    "description": "Install instructions, confirm section, step 3"
+  },
+  "coldcardUpdateInstructionsConfirmStep4": "The Coldcard will perform another verification and the green GENUINE LED will light up.",
+  "@coldcardUpdateInstructionsConfirmStep4": {
+    "description": "Install instructions, confirm section, step 4"
+  },
+  "coldcardUpdateInstructionsConfirmStep5": "Inspect your upgrade by selecting Advanced/Tools > Upgrade Firmware > Show Version. The firmware version you loaded will be displayed.",
+  "@coldcardUpdateInstructionsConfirmStep5": {
+    "description": "Install instructions, confirm section, step 5"
   }
 }

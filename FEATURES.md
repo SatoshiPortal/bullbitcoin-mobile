@@ -18,6 +18,7 @@ graph TB
     LABELS[Labels]
     SECRETS[Secrets]
     HW_WALLETS[Hardware Wallets]
+    COLDCARD_FW[Coldcard Firmware Update]
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
     BIP85[BIP85]

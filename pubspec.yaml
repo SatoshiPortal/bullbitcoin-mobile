@@ -8,9 +8,7 @@ environment:
   flutter: "3.44.2"
 workspace:
   - packages/bull_ui
-  # Pure-Dart Coldcard firmware download/verify library. The app will
-  # depend on it from the coldcard_firmware feature (follow-up PR); listed
-  # here so the shared workspace lockfile resolves it.
+  # Pure-Dart Coldcard firmware download/verify library, consumed by the coldcard_firmware feature.
   - packages/coldcard_firmware
   # Dev-only catalogue. Listed here only so the shared workspace
   # lockfile resolves it; the app NEVER lists bull_ui_catalogue as a
@@ -21,6 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   bull_ui:
+  coldcard_firmware:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
