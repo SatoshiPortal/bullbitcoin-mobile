@@ -29,10 +29,16 @@ class PayjoinLocator {
     locator.registerLazySingleton<PdkPayjoinDatasource>(
       // Timeouts bound how long a single directory/relay poll can hang, so a
       // slow OHTTP relay can't hold a polling session in flight for long.
+      // All three phases must be bounded: the per-session in-flight guard
+      // turns any unbounded await into a permanent stall (the poll's finally
+      // never runs, the session id is never removed from the in-flight set,
+      // and every later tick is skipped). sendTimeout bounds the request-body
+      // upload phase — OHTTP bodies are small, so 10s is ample.
       () => PdkPayjoinDatasource(
         dio: Dio(
           BaseOptions(
             connectTimeout: const Duration(seconds: 10),
+            sendTimeout: const Duration(seconds: 10),
             receiveTimeout: const Duration(seconds: 30),
           ),
         ),

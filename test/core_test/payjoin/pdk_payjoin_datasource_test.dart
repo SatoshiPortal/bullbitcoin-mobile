@@ -301,7 +301,7 @@ void main() {
     // functions: postOriginalProposal, _getUncheckedOriginalPayload,
     // _getProposalPsbt, _sendPayjoinProposal) funnels through this single
     // choke point, and PayjoinLocator configures its Dio's
-    // connect/receiveTimeout specifically so an unresponsive relay can't
+    // connect/send/receiveTimeout specifically so an unresponsive relay can't
     // stall a poll indefinitely. These verify the plumbing a real timeout
     // exercises: postBytes neither swallows nor transforms the failure, so
     // the relay loops' existing catch-and-try-next-relay handling applies to
