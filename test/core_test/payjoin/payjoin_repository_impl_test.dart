@@ -10,9 +10,14 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
+    show Signer;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -945,6 +950,169 @@ void main() {
         expect(emitted, hasLength(1));
         expect(emitted.single.isCompleted, isTrue);
       });
+    });
+  });
+
+  group('payjoin labeling on the real completion paths', () {
+    // The payjoin system label must mean "this payment actually got
+    // CoinJoin-style privacy". The fallback path never labels (covered
+    // above); these cover the two paths that MUST label: the receiver seeing
+    // the payjoin tx on-chain and the sender broadcasting the finalized
+    // proposal.
+    test('labels the receiver payjoin tx once it is seen on-chain '
+        '(_onPayjoinTransactionSeen)', () async {
+      final walletRepo = _MockWalletRepository();
+      final walletTxRepo = _MockWalletTransactionRepository();
+      final syncController = StreamController<Wallet>.broadcast();
+      addTearDown(syncController.close);
+      when(
+        () => walletRepo.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+
+      final model = _receiverModel(
+        id: 'pj1',
+        walletId: 'w1',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+        expireAfterSec: 9999999999,
+      );
+      when(
+        () => local.fetchAll(onlyUnfinished: true),
+      ).thenAnswer((_) async => [model]);
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+      when(
+        () => walletTxRepo.getWalletTransaction('payjoin-txid', walletId: 'w1'),
+      ).thenAnswer(
+        (_) async => _testWalletTx(txId: 'payjoin-txid', walletId: 'w1'),
+      );
+
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: () => walletTxRepo,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+      await repo.resumePayjoinsOnStartup();
+
+      syncController.add(_testWallet(origin: 'w1'));
+      await Future<void>.delayed(Duration.zero);
+
+      final stored =
+          verify(() => labels.store(captureAny())).captured.single as NewLabel;
+      expect(stored.type, LabelType.transaction);
+      expect(stored.reference, 'payjoin-txid');
+      expect(stored.label, LabelSystem.payjoin.label);
+      expect(stored.origin, 'w1');
+    });
+
+    test('labels the sender payjoin tx after broadcasting the finalized '
+        'proposal (_broadcastPsbt)', () async {
+      final proposalController =
+          StreamController<PayjoinSenderModel>.broadcast();
+      addTearDown(proposalController.close);
+      when(
+        () => pdk.proposalsForSenders,
+      ).thenAnswer((_) => proposalController.stream);
+
+      // Full signing stack so _processPayjoinProposal reaches _broadcastPsbt
+      // instead of falling into the original-tx fallback.
+      final walletMetadata = _MockWalletMetadataDatasource();
+      final seed = _MockSeedDatasource();
+      final bdkWallet = _MockBdkWalletDatasource();
+      when(() => walletMetadata.fetch('w1')).thenAnswer(
+        (_) async => const WalletMetadataModel(
+          // A parseable origin id: bip84, bitcoin testnet, account 0.
+          id: 'wpkh([00000000/84h/1h/0h])',
+          masterFingerprint: '00000000',
+          xpubFingerprint: '11111111',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: true,
+        ),
+      );
+      when(() => seed.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(
+                  mnemonicWords: [
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'about',
+                  ],
+                )
+                as MnemonicSeedModel,
+      );
+      registerFallbackValue(
+        WalletModel.privateBdk(
+              id: 'w1',
+              scriptType: ScriptType.bip84,
+              mnemonic: 'abandon',
+              isTestnet: true,
+            )
+            as PrivateBdkWalletModel,
+      );
+      when(
+        () => bdkWallet.signPsbt(any(), wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => 'signed-psbt');
+
+      // txId was set when the proposal was received (before broadcast).
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      ).copyWith(txId: 'payjoin-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: walletMetadata,
+        seedDatasource: seed,
+        bdkWalletDatasource: bdkWallet,
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: _MockWalletRepository.new,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+
+      final emitted = <Payjoin>[];
+      final sub = repo.payjoinStream.listen(emitted.add);
+      addTearDown(sub.cancel);
+
+      proposalController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      // The session completed through the REAL payjoin broadcast, keeping
+      // the payjoin txid (a fallback would have cleared it).
+      expect(emitted.last.isCompleted, isTrue);
+      expect((emitted.last as PayjoinSender).txId, 'payjoin-txid');
+
+      final stored =
+          verify(() => labels.store(captureAny())).captured.single as NewLabel;
+      expect(stored.type, LabelType.transaction);
+      expect(stored.reference, 'payjoin-txid');
+      expect(stored.label, LabelSystem.payjoin.label);
+      expect(stored.origin, 'w1');
     });
   });
 
