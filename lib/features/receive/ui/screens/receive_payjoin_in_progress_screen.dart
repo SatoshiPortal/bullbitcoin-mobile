@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,33 +25,56 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
     final isBroadcasting = context.select(
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
-    // TODO: PopScope can be removed since we can do pop here now
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-
-        context.go(WalletRoute.walletHome.path);
+    // This screen lives on the root navigator, so the receive ShellRoute's
+    // navigation BlocListeners are unmounted while it is shown — it has to
+    // move itself out once the session reaches its happy terminal state.
+    // Without this the user stayed on "payjoin in progress" indefinitely
+    // after the payjoin completed, with the top-bar close button as the only
+    // way out. Expired is deliberately NOT navigated away from: that state
+    // still offers the manual "receive payment normally" fallback below.
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          previous.payjoin?.status != PayjoinStatus.completed &&
+          current.payjoin?.status == PayjoinStatus.completed,
+      listener: (context, state) {
+        // The payjoin-scoped details route resolves to the wallet
+        // transaction as soon as it is visible (whether the session
+        // completed with the payjoin tx or via the original-tx fallback),
+        // so it is the right landing spot for both completion flavours.
+        context.goNamed(
+          TransactionsRoute.payjoinTransactionDetails.name,
+          pathParameters: {'payjoinId': state.payjoin!.id},
+          queryParameters: {'returnHome': 'true'},
+        );
       },
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.receiveTitle,
-            actionIcon: Icons.close,
-            onAction: () => context.go(WalletRoute.walletHome.path),
-          ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(3.0),
-            child: FadingLinearProgress(
-              trigger: isBroadcasting,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
+      // TODO: PopScope can be removed since we can do pop here now
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return; // Don't allow back navigation
+
+          context.go(WalletRoute.walletHome.path);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            forceMaterialTransparency: true,
+            automaticallyImplyLeading: false,
+            flexibleSpace: TopBar(
+              title: context.loc.receiveTitle,
+              actionIcon: Icons.close,
+              onAction: () => context.go(WalletRoute.walletHome.path),
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(3.0),
+              child: FadingLinearProgress(
+                trigger: isBroadcasting,
+                backgroundColor: context.appColors.onPrimary,
+                foregroundColor: context.appColors.primary,
+              ),
             ),
           ),
+          body: const PayjoinInProgressPage(),
         ),
-        body: const PayjoinInProgressPage(),
       ),
     );
   }
