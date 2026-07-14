@@ -38,23 +38,35 @@ class PayjoinLocator {
       // and every later tick is skipped). sendTimeout bounds the request-body
       // upload phase — OHTTP bodies are small, so 10s is ample.
       //
-      // receiveTimeout MUST comfortably exceed the payjoin directory's
-      // long-poll hold: payjo.in (payjoin-mailroom) keeps an empty-mailbox
-      // poll open for 30s before answering 202 Accepted (config.rs,
-      // `timeout: Duration::from_secs(30)`). A 30s client timeout raced that
-      // hold and lost every time — each empty poll aborted just before the
-      // 202, was misread as a relay failure, and cascaded through all three
-      // relays (~90s per poll cycle), so with the 5-minute session expiry a
-      // payjoin effectively never completed and every send fell back to the
-      // original transaction. 60s = the 30s hold + generous headroom for
-      // relay forwarding and OHTTP/TLS overhead; long-polling then works as
-      // designed, delivering the counterparty's message the moment it lands.
+      // receiveTimeout MUST exceed the payjoin directory's long-poll hold:
+      // payjo.in (payjoin-mailroom) keeps an empty-mailbox poll open for 30s
+      // before answering 202 Accepted (config.rs, `timeout:
+      // Duration::from_secs(30)`). A timeout at or below that hold races it
+      // and loses every time — each empty poll aborts just before the 202,
+      // is misread as a relay failure, and cascades through all three
+      // relays, so a payjoin never completes and every send falls back to
+      // the original transaction (this was a real, previously-shipped bug —
+      // see git history on this line).
+      //
+      // 35s = the 30s hold + a minimal margin for relay forwarding and
+      // OHTTP/TLS overhead — deliberately NOT the generous 60s this used to
+      // be. PayjoinConstants.defaultExpireAfterSec is now 60s (1 minute,
+      // down from 5), so receiveTimeout must leave room for the session's
+      // own expiry check to actually run: at 60s it could not (one hung
+      // poll could alone consume the entire session budget, and 3 relays
+      // cascading at 60s each could burn 180s — three times the whole
+      // session). At 35s, a session gets one full poll cycle with a little
+      // headroom, which is what a 1-minute expiry can realistically afford;
+      // it does NOT restore multiple full cycles, so a slow counterparty is
+      // more likely to miss the window than with the old 5-minute expiry —
+      // an accepted trade for faster, more legible failure (see
+      // PayjoinConstants.defaultExpireAfterSec).
       () => PdkPayjoinDatasource(
         dio: Dio(
           BaseOptions(
             connectTimeout: const Duration(seconds: 10),
             sendTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 60),
+            receiveTimeout: const Duration(seconds: 35),
           ),
         ),
       ),

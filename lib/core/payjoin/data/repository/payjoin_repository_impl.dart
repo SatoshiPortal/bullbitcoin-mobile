@@ -363,7 +363,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       amountSat: model.amountSat,
       minAmountSat: settings.payjoinMinAmountSat,
     )) {
-      log.info(
+      // WARNING, not info: this is the anti-probing threshold actively
+      // declining a payjoin, worth a developer/operator's attention (and
+      // distinct from the routine INFO-level session lifecycle logging
+      // around it) even though the sender is still paid normally.
+      log.warning(
         'Payjoin request ${model.id} below minimum '
         '(${settings.payjoinMinAmountSat} sat); broadcasting original instead',
       );
@@ -618,11 +622,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// unreachable). Non-transient errors are rethrown immediately so the
   /// caller's fallback still fires without waiting out the retries. Static so
   /// the retry policy is unit-testable without the repository's collaborators.
+  ///
+  /// Defaults sized against [PayjoinConstants.defaultExpireAfterSec] (1
+  /// minute): this runs on the receiver AFTER its own poll already found the
+  /// request, absorbing a blip while posting the proposal (a plain POST, not
+  /// the long-poll — bounded by connectTimeout, not the 35s receiveTimeout,
+  /// so a dead relay fails fast). Worst case with all 3 relays down on every
+  /// attempt: maxAttempts × (3 relays × connectTimeout) + (maxAttempts - 1)
+  /// × delay ≈ 2 × 30s + 1s = 61s — already at the whole 1-minute session
+  /// budget, so these must stay small. The previous 3/2s (≈94s worst case)
+  /// was sized for the old 5-minute expiry and would eat the receiver's
+  /// entire budget on this retry alone under the new one.
   @visibleForTesting
   static Future<T> retryOnTransient<T>(
     Future<T> Function() action, {
-    int maxAttempts = 3,
-    Duration delay = const Duration(seconds: 2),
+    int maxAttempts = 2,
+    Duration delay = const Duration(seconds: 1),
   }) async {
     for (var attempt = 1; ; attempt++) {
       try {

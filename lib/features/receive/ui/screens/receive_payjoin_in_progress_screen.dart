@@ -74,6 +74,18 @@ class PayjoinInProgressPage extends StatelessWidget {
       (ReceiveBloc bloc) =>
           bloc.state.payjoin?.status == PayjoinStatus.completed,
     );
+    // Distinct from isBroadcasted: the session's own window closed WITHOUT
+    // the counterparty completing it. The automatic plain-broadcast
+    // fallback (PayjoinRepositoryImpl._processExpiredPayjoin) usually
+    // resolves this into isBroadcasted=true within a second or two, but if
+    // that fallback itself fails (no network at that exact moment), status
+    // stays `expired` indefinitely — without this branch the screen kept
+    // showing the same "in progress, wait" copy forever, giving the user no
+    // signal that waiting longer would not help and the manual "receive
+    // normally" button below was their only way out.
+    final isExpired = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoin?.status == PayjoinStatus.expired,
+    );
 
     return Center(
       child: Column(
@@ -87,6 +99,15 @@ class PayjoinInProgressPage extends StatelessWidget {
             Text(
               context.loc.receiveBitcoinConfirmationMessage,
               style: context.font.headlineMedium,
+            ),
+          ] else if (isExpired) ...[
+            Text(
+              context.loc.receivePayjoinExpired,
+              style: context.font.headlineLarge,
+            ),
+            Text(
+              context.loc.receivePayjoinExpiredSubtext,
+              style: context.font.bodyMedium,
             ),
           ] else ...[
             Text(

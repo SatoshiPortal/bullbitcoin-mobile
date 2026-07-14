@@ -85,10 +85,19 @@ class PayjoinConstants {
   // Short receiver/sender session lifetime: a payjoin is an interactive,
   // synchronous exchange (scan, pay, done), so a long window buys nothing but
   // a longer period during which a probing sender can hold an exposed UTXO
-  // and cheaply replace the original transaction. 5 minutes leaves ample
-  // headroom for a real exchange over a slow relay while bounding that window
-  // (see the receiver-side UTXO probing attack, BIP78).
-  static const defaultExpireAfterSec = 60 * 5; // 5 minutes
+  // and cheaply replace the original transaction (see the receiver-side UTXO
+  // probing attack, BIP78) — and, just as importantly, a longer period
+  // during which BOTH send and receive screens sit on "in progress" with no
+  // actionable feedback if the counterparty never shows up. 1 minute is a
+  // deliberate UX-first trade-off over the previous 5: the directory's own
+  // long-poll hold is ~30s (see PayjoinLocator's receiveTimeout comment), so
+  // a session only has room for one or two full poll cycles — a slow
+  // counterparty (a human scanning a QR code, a slow relay) is now more
+  // likely to miss the window and fall back to a plain broadcast than with
+  // 5 minutes of headroom. That fallback is always safe (the payment still
+  // lands), so the trade is: faster, more legible failure over a higher
+  // payjoin completion rate. Revisit if the miss rate proves too high.
+  static const defaultExpireAfterSec = 60; // 1 minute
   // Single source of truth for the payjoin minimum-receive-amount default
   // (the anti-probing threshold below which a payjoin is declined — see
   // UpdatePayjoinMinAmountUsecase). Referenced by the settings table column

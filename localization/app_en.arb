@@ -14775,5 +14775,13 @@
         "type": "int"
       }
     }
+  },
+  "receivePayjoinExpired": "Payjoin timed out",
+  "@receivePayjoinExpired": {
+    "description": "Status message shown when a payjoin session expired without the counterparty completing it, before the automatic plain-broadcast fallback is confirmed"
+  },
+  "receivePayjoinExpiredSubtext": "The payjoin window closed. The payment is being received as a regular transaction instead.",
+  "@receivePayjoinExpiredSubtext": {
+    "description": "Subtext shown under receivePayjoinExpired explaining that the automatic plain-broadcast fallback is handling the payment"
   }
 }
