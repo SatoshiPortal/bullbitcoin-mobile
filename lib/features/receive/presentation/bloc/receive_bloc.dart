@@ -762,9 +762,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final payjoin = state.payjoin;
+    // payjoin.proposalPsbt == null is required, not just originalTxBytes !=
+    // null: once a real proposal has been sent, the SENDER owns
+    // finalizing/broadcasting that transaction (which spends the same
+    // inputs as the original). Racing it with a manual broadcast of the
+    // original here isn't just redundant — the original is a lower-fee
+    // transaction competing for the same inputs as the real payjoin tx that
+    // may already be broadcast (or about to be), so the attempt is either a
+    // no-op rejected by RBF's insufficient-fee rule (observed live) or,
+    // worse, could succeed and replace/void a payment that already carried
+    // a privacy benefit. The button that triggers this event is hidden once
+    // a proposal is out (see ReceiveBroadcastPayjoinButton) — this check is
+    // the backstop against any other path still reaching it.
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
-        payjoin.originalTxBytes != null) {
+        payjoin.originalTxBytes != null &&
+        payjoin.proposalPsbt == null) {
       try {
         emit(state.copyWith(isBroadcastingOriginalTransaction: true));
         final updatedPayjoin =
