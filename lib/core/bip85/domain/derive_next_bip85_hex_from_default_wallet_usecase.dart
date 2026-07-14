@@ -59,10 +59,12 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
     } catch (e, st) {
       log.severe(
         message: 'DeriveNextBip85HexFromDefaultWalletUsecase failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return const Err(
+        Bip85UnexpectedFailure('BIP85 next-hex derivation failed'),
+      );
     }
   }
 }

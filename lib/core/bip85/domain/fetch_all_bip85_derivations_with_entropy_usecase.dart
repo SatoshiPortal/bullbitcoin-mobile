@@ -25,7 +25,7 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Failure
     >
   >
-  execute() async {
+  execute({Set<String> excludedPaths = const {}}) async {
     try {
       final defaultSeed = await _getDefaultSeedUsecase.execute();
       final xprvBase58 = Bip32Derivation.getXprvFromSeed(
@@ -37,7 +37,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
-          final derivationsWithEntropy = value.map((e) {
+          final visibleDerivations = value.where(
+            (derivation) => !excludedPaths.contains(derivation.path),
+          );
+          final derivationsWithEntropy = visibleDerivations.map((e) {
             final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
               xprvBase58: xprvBase58,
               path: bip85.Bip85HardenedPath(e.path),
@@ -49,10 +52,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     } catch (e, st) {
       log.severe(
         message: 'FetchAllBip85DerivationsWithEntropyUsecase failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return const Err(Bip85UnexpectedFailure('BIP85 entropy lookup failed'));
     }
   }
 }

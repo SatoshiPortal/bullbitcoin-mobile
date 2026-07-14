@@ -55,36 +55,40 @@ class Bip85Datasource {
     String? alias,
     bip39.Language language = bip39.Language.english,
   }) async {
-    try {
-      const application = Bip85ApplicationColumn.bip39;
-      final derivationPath =
-          "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
+    final derived = _deriveMnemonic(
+      xprvBase58: xprvBase58,
+      length: length,
+      index: index,
+      language: language,
+    );
 
-      // Ensure the xprv is valid.
-      final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
+    await _store(
+      Bip85DerivationModel(
+        path: derived.derivation,
+        xprvFingerprint: derived.xprvFingerprint,
+        alias: alias,
+        status: Bip85StatusColumn.active,
+        application: Bip85ApplicationColumn.bip39,
+      ),
+    );
 
-      final bip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
-        xprvBase58: xprvBase58,
-        language: language,
-        length: length,
-        index: index,
-      );
+    return (derivation: derived.derivation, mnemonic: derived.mnemonic);
+  }
 
-      // store the derivation into sqlite
-      await _store(
-        Bip85DerivationModel(
-          path: derivationPath,
-          xprvFingerprint: hex.encode(xprv.fingerprint),
-          alias: alias,
-          status: Bip85StatusColumn.active,
-          application: application,
-        ),
-      );
+  Future<({String derivation, bip39.Mnemonic mnemonic})> deriveMnemonicPreview({
+    required String xprvBase58,
+    required bip39.MnemonicLength length,
+    required int index,
+    bip39.Language language = bip39.Language.english,
+  }) async {
+    final derived = _deriveMnemonic(
+      xprvBase58: xprvBase58,
+      length: length,
+      index: index,
+      language: language,
+    );
 
-      return (derivation: derivationPath, mnemonic: bip85Mnemonic);
-    } catch (e) {
-      rethrow;
-    }
+    return (derivation: derived.derivation, mnemonic: derived.mnemonic);
   }
 
   Future<Bip85DerivationModel?> fetch(String path) async {
@@ -96,8 +100,9 @@ class Bip85Datasource {
   }
 
   Future<int> fetchNextIndexForApplication(
-    Bip85ApplicationColumn application,
-  ) async {
+    Bip85ApplicationColumn application, {
+    Set<int> excludedIndices = const {},
+  }) async {
     final rows = await _sqlite.managers.bip85Derivations
         .filter((b) => b.application(application))
         .get();
@@ -109,6 +114,10 @@ class Bip85Datasource {
     int nextIndex = 0;
     for (final model in models) {
       if (model.index >= nextIndex) nextIndex = model.index + 1;
+    }
+
+    while (excludedIndices.contains(nextIndex)) {
+      nextIndex++;
     }
 
     return nextIndex;
@@ -155,18 +164,46 @@ class Bip85Datasource {
 
   // We should not use _store without properly formatting the derivation path.
   Future<void> _store(Bip85DerivationModel bip85) async {
-    try {
-      await _sqlite.managers.bip85Derivations.create(
-        (b) => b(
-          path: bip85.path,
-          xprvFingerprint: bip85.xprvFingerprint,
-          alias: Value(bip85.alias),
-          status: bip85.status,
-          application: bip85.application,
-        ),
-      );
-    } catch (e) {
-      rethrow;
-    }
+    final existing = await _sqlite.managers.bip85Derivations
+        .filter((b) => b.path(bip85.path))
+        .getSingleOrNull();
+    final replaceStaleRow =
+        existing != null && existing.xprvFingerprint != bip85.xprvFingerprint;
+
+    await _sqlite.managers.bip85Derivations.create(
+      (b) => b(
+        path: bip85.path,
+        xprvFingerprint: bip85.xprvFingerprint,
+        alias: Value(bip85.alias),
+        status: bip85.status,
+        application: bip85.application,
+      ),
+      mode: replaceStaleRow ? InsertMode.insertOrReplace : InsertMode.insert,
+    );
+  }
+
+  ({String derivation, bip39.Mnemonic mnemonic, String xprvFingerprint})
+  _deriveMnemonic({
+    required String xprvBase58,
+    required bip39.MnemonicLength length,
+    required int index,
+    required bip39.Language language,
+  }) {
+    const application = Bip85ApplicationColumn.bip39;
+    final derivation =
+        "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
+    final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
+    final mnemonic = bip85.Bip85Entropy.deriveMnemonic(
+      xprvBase58: xprvBase58,
+      language: language,
+      length: length,
+      index: index,
+    );
+
+    return (
+      derivation: derivation,
+      mnemonic: mnemonic,
+      xprvFingerprint: hex.encode(xprv.fingerprint),
+    );
   }
 }

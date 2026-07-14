@@ -12,6 +12,10 @@ final class Bip85DerivationFailure extends Bip85Failure {
   const Bip85DerivationFailure([super.logMessage]);
 }
 
+final class Bip85DerivationConflictFailure extends Bip85Failure {
+  const Bip85DerivationConflictFailure([super.logMessage]);
+}
+
 final class Bip85StorageFailure extends Bip85Failure {
   const Bip85StorageFailure([super.logMessage]);
 }

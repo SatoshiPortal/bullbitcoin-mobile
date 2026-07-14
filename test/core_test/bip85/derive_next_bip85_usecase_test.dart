@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -204,5 +208,28 @@ void main() {
         expect(failure.logMessage, isNotNull);
       },
     );
+
+    test('filters excluded paths before deriving their entropy', () async {
+      final excluded = Bip85DerivationEntity(
+        path: 'not-a-valid-hardened-path',
+        xprvFingerprint: '00000000',
+        alias: 'Reserved product seed',
+        status: Bip85Status.active,
+        application: Bip85Application.bip39,
+        index: 100,
+      );
+      when(() => getDefaultSeedUsecase.execute()).thenAnswer(
+        (_) async =>
+            Seed.bytes(bytes: Uint8List(32), masterFingerprint: '00000000'),
+      );
+      when(
+        () => bip85Repository.fetchAll(),
+      ).thenAnswer((_) async => Ok([excluded]));
+
+      final result = await usecase.execute(excludedPaths: {excluded.path});
+
+      expect(result, isA<Ok<dynamic, Bip85Failure>>());
+      expect((result as Ok).value, isEmpty);
+    });
   });
 }

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/core/bip85/domain/derive_bip85_mnemonic_at_index_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
@@ -34,6 +35,14 @@ class Bip85DerivationsLocator {
 
     locator.registerFactory<DeriveNextBip85MnemonicFromDefaultWalletUsecase>(
       () => DeriveNextBip85MnemonicFromDefaultWalletUsecase(
+        bip85Repository: locator<Bip85Repository>(),
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+      ),
+    );
+
+    locator.registerFactory<DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase>(
+      () => DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
