@@ -9,7 +9,9 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -67,6 +69,7 @@ class SendCubit extends Cubit<SendState>
     required this._prepareBitcoinSendUsecase,
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
+    required this._watchPayjoinUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
     required this._createSendSwapUsecase,
@@ -117,6 +120,7 @@ class SendCubit extends Cubit<SendState>
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
+  final WatchPayjoinUsecase _watchPayjoinUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
@@ -139,6 +143,7 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
+  StreamSubscription<Payjoin>? _payjoinSubscription;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
   /// captures it before its `await` and re-checks before writing results
@@ -154,6 +159,7 @@ class SendCubit extends Cubit<SendState>
       _swapSubscription?.cancel() ?? Future.value(),
       _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
       _txSubscription?.cancel() ?? Future.value(),
+      _payjoinSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
   }
@@ -1883,16 +1889,19 @@ class SendCubit extends Cubit<SendState>
                 : 1,
             expireAfterSec: PayjoinConstants.defaultExpireAfterSec,
           );
-          // TODO: Watch the payjoin and transaction to update the txId with the
-          //  payjoin txId if it is completed.
-          final txId = payjoinSender.originalTxId;
+          // Show originalTxId provisionally; the payjoin runs asynchronously
+          //  in the repository (poll → sign → broadcast, or fallback to the
+          //  original on expiry). Watch its stream so the send flow resolves
+          //  to success with the final txid instead of hanging on the
+          //  "coordinating" screen (#2246).
           emit(
             state.copyWith(
-              txId: txId,
+              txId: payjoinSender.originalTxId,
               payjoinSender: payjoinSender,
               signingTransaction: false,
             ),
           );
+          _watchPayjoin(payjoinSender.id);
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
@@ -2146,6 +2155,52 @@ class SendCubit extends Cubit<SendState>
         }
       }
     });
+  }
+
+  /// Watches the sender side of an in-flight payjoin and resolves the send
+  /// flow once it terminates. The payjoin negotiation runs asynchronously in
+  /// the repository; without this the UI would sit on the "coordinating"
+  /// screen forever (#2246).
+  ///
+  /// - completed: the receiver responded and the payjoin transaction was
+  ///   broadcast — move to success with the payjoin txid.
+  /// - expired: the receiver never responded; the repository fell back to
+  ///   broadcasting the original transaction — move to success with the
+  ///   original txid so the payment still resolves.
+  void _watchPayjoin(String payjoinId) {
+    _payjoinSubscription?.cancel();
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(ids: [payjoinId])
+        .where((payjoin) => payjoin is PayjoinSender)
+        .cast<PayjoinSender>()
+        .listen((payjoin) {
+          log.info(
+            '[SendCubit] Watched payjoin ${payjoin.id} updated: '
+            '${payjoin.status}',
+          );
+          if (payjoin.isCompleted) {
+            emit(
+              state.copyWith(
+                payjoinSender: payjoin,
+                // Prefer the payjoin txid; fall back to the original tx that
+                //  was broadcast when the negotiation didn't complete.
+                txId: payjoin.txId ?? payjoin.originalTxId,
+                step: SendStep.success,
+              ),
+            );
+            _payjoinSubscription?.cancel();
+            unawaited(
+              _getWalletUsecase
+                  .execute(state.selectedWallet!.id, sync: true)
+                  .catchError((e) {
+                    log.warning('Failed to sync wallet after payjoin: $e');
+                    return null;
+                  }),
+            );
+          } else {
+            emit(state.copyWith(payjoinSender: payjoin));
+          }
+        });
   }
 
   void _watchWalletTransactionByTxId({

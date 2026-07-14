@@ -59,6 +59,27 @@ PayjoinReceiverModel _receiverModel({
       as PayjoinReceiverModel;
 }
 
+PayjoinSenderModel _senderModel({
+  String uri = 'bitcoin:tb1qsender?pj=https://payjo.in',
+  String walletId = 'w1',
+  String originalTxId = 'sender-orig-txid',
+  String? proposalPsbt,
+}) {
+  return PayjoinModel.sender(
+        uri: uri,
+        isTestnet: true,
+        sender: '[]',
+        walletId: walletId,
+        originalPsbt: 'cHNidP8=',
+        originalTxId: originalTxId,
+        amountSat: 50000,
+        createdAt: 0,
+        expireAfterSec: 300,
+        proposalPsbt: proposalPsbt,
+      )
+      as PayjoinSenderModel;
+}
+
 void main() {
   late _MockLocalPayjoinDatasource local;
   late _MockPdkPayjoinDatasource pdk;
@@ -103,6 +124,9 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(() => local.update(any())).thenAnswer((_) async {});
+    when(
+      () => labels.store(any()),
+    ).thenAnswer((_) async => Ok<Label, LabelFailure>(_MockLabel()));
 
     repository = PayjoinRepositoryImpl(
       localPayjoinDatasource: local,
@@ -157,6 +181,34 @@ void main() {
 
       // Best-effort labelling: the (already broadcast) payjoin still completes.
       expect(result, isNotNull);
+    });
+  });
+
+  group('tryBroadcastOriginalTransaction sender fallback (#2246)', () {
+    test('broadcasts the sender original psbt and completes', () async {
+      final model = _senderModel(originalTxId: 'sender-orig-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+
+      // The original transaction must actually be broadcast (the payment can't
+      // silently never hit the chain when the receiver doesn't respond).
+      verify(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).called(1);
+      // And the session resolves as completed so the send flow can move on.
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
+      // The original tx gets labelled as payjoin for traceability.
+      final captured =
+          verify(() => labels.store(captureAny())).captured.single as NewLabel;
+      expect(captured.label, LabelSystem.payjoin.label);
+      expect(captured.reference, 'sender-orig-txid');
     });
   });
 }

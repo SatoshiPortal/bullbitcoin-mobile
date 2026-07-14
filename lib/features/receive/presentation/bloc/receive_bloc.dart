@@ -838,14 +838,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   void _watchPayjoin(String payjoinId) {
     // Cancel the previous subscription if it exists
     _payjoinSubscription?.cancel();
-    _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
-      updatedPayjoin,
-    ) {
-      log.info(
-        '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
-      );
-      add(ReceivePayjoinUpdated(updatedPayjoin));
-    });
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(ids: [payjoinId])
+        // The receive flow only deals with the receiver side of a payjoin.
+        .where((payjoin) => payjoin is PayjoinReceiver)
+        .cast<PayjoinReceiver>()
+        .listen((updatedPayjoin) {
+          log.info(
+            '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
+          );
+          add(ReceivePayjoinUpdated(updatedPayjoin));
+        });
   }
 
   void _watchWalletTransactionToAddress({

@@ -363,6 +363,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // If the payjoin is a receiver and it has the original transaction bytes
       //  at expiration, we broadcast the original transaction automatically.
       await tryBroadcastOriginalTransaction(payjoin);
+    } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
+      // The sender never received a proposal before expiry (the receiver
+      //  didn't respond), so fall back to broadcasting the original
+      //  transaction — the payment must still go through. Emit the completed
+      //  result so the send flow can resolve to success instead of hanging on
+      //  the "coordinating" screen. Guard on proposalPsbt == null: once a
+      //  proposal arrived, _processPayjoinProposal owns finalizing/
+      //  broadcasting the payjoin transaction (same inputs).
+      final result = await tryBroadcastOriginalTransaction(payjoin);
+      if (result != null) _payjoinStreamController.add(result);
     }
   }
 
