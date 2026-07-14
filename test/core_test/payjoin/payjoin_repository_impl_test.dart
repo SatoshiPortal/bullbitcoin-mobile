@@ -14,9 +14,13 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -56,6 +60,13 @@ PayjoinReceiverModel _receiverModel({
   String walletId = 'w1',
   String? originalTxId = 'orig-txid',
   String? proposalPsbt,
+  String? txId,
+  int? amountSat,
+  // Defaults to already-elapsed (createdAt: 0) so isExpiryTimePassed is true
+  // by default, matching most tests' expectations. Pass a large value to get
+  // a not-yet-expired model instead (e.g. to exercise resume's live-session
+  // branches).
+  int expireAfterSec = 300,
 }) {
   return PayjoinModel.receiver(
         id: id,
@@ -66,13 +77,53 @@ PayjoinReceiverModel _receiverModel({
         pjUri: 'bitcoin:tb1qtest?pj=https://payjo.in',
         maxFeeRateSatPerVb: BigInt.from(10),
         createdAt: 0,
-        expireAfterSec: 300,
+        expireAfterSec: expireAfterSec,
         originalTxBytes: Uint8List.fromList([1, 2, 3]),
         originalTxId: originalTxId,
         proposalPsbt: proposalPsbt,
+        txId: txId,
+        amountSat: amountSat,
       )
       as PayjoinReceiverModel;
 }
+
+SettingsEntity _testSettings({int payjoinMinAmountSat = 10000}) =>
+    SettingsEntity(
+      environment: Environment.mainnet,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'USD',
+      payjoinMinAmountSat: payjoinMinAmountSat,
+    );
+
+Wallet _testWallet({String origin = 'w1'}) => Wallet(
+  origin: origin,
+  network: Network.bitcoinMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.zero,
+);
+
+WalletTransaction _testWalletTx({
+  required String txId,
+  required String walletId,
+}) => WalletTransaction(
+  walletId: walletId,
+  network: Network.bitcoinMainnet,
+  direction: WalletTransactionDirection.incoming,
+  status: WalletTransactionStatus.confirmed,
+  txId: txId,
+  amountSat: 50000,
+  feeSat: 500,
+  vsize: 150,
+  inputs: const [],
+  outputs: const [],
+  isRbf: false,
+);
 
 PayjoinSenderModel _senderModel({
   String uri = 'bitcoin:tb1qsender?pj=https://payjo.in',
@@ -129,8 +180,9 @@ void main() {
     serversPort = _MockElectrumServersPort();
     labels = _MockLabelsFacade();
 
-    // The constructor wires up datasource stream listeners and kicks off
-    // _resumePayjoins(); stub them so construction is inert in the test.
+    // The constructor wires up datasource stream listeners (resume is no
+    // longer fired from the constructor — see resumePayjoinsOnStartup).
+    // Stub the streams so construction is inert in the test.
     when(
       () => pdk.requestsForReceivers,
     ).thenAnswer((_) => const Stream.empty());
@@ -638,5 +690,146 @@ void main() {
         await sub.cancel();
       },
     );
+  });
+
+  group(
+    '_watchForBroadcast survives a receiver session expiring (H2 follow-up)',
+    () {
+      test('a proposal-sent receiver session that expires before the tx is '
+          'seen still completes once the tx appears on-chain', () async {
+        final walletRepo = _MockWalletRepository();
+        final walletTxRepo = _MockWalletTransactionRepository();
+        final syncController = StreamController<Wallet>.broadcast();
+        final expiredController = StreamController<PayjoinModel>.broadcast();
+        addTearDown(() async {
+          await syncController.close();
+          await expiredController.close();
+        });
+
+        when(
+          () => pdk.expiredPayjoins,
+        ).thenAnswer((_) => expiredController.stream);
+        when(
+          () => walletRepo.walletSyncFinishedStream,
+        ).thenAnswer((_) => syncController.stream);
+
+        // Not yet expired at resume time, so _resumeOne takes the
+        //  "proposal already sent, watch for broadcast" branch.
+        final model = _receiverModel(
+          id: 'pj1',
+          walletId: 'w1',
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+          txId: 'payjoin-txid',
+          expireAfterSec: 9999999999,
+        );
+        when(
+          () => local.fetchAll(onlyUnfinished: true),
+        ).thenAnswer((_) async => [model]);
+        when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+        // The tx isn't visible yet the first time it's looked up.
+        var txSeen = false;
+        when(
+          () =>
+              walletTxRepo.getWalletTransaction('payjoin-txid', walletId: 'w1'),
+        ).thenAnswer(
+          (_) async => txSeen
+              ? _testWalletTx(txId: 'payjoin-txid', walletId: 'w1')
+              : null,
+        );
+
+        final repo = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          walletMetadataDatasource: _MockWalletMetadataDatasource(),
+          seedDatasource: _MockSeedDatasource(),
+          bdkWalletDatasource: _MockBdkWalletDatasource(),
+          blockchainDatasource: blockchain,
+          serversPort: serversPort,
+          walletRepository: () => walletRepo,
+          walletTransactionRepository: () => walletTxRepo,
+          settingsRepository: _MockSettingsRepository(),
+          labelsFacade: () => labels,
+        );
+
+        // Arms _watchForBroadcast for this session.
+        await repo.resumePayjoinsOnStartup();
+
+        final emitted = <Payjoin>[];
+        final sub = repo.payjoinStream.listen(emitted.add);
+
+        // The session's own expiry fires live (proposalPsbt != null routes
+        //  to the `else` branch: persisted as expired, but the broadcast
+        //  watcher armed above is deliberately NOT stopped).
+        expiredController.add(model.copyWith(isExpired: true));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(emitted, hasLength(1));
+        expect(emitted.single.isExpired, isTrue);
+
+        // The payjoin transaction the sender broadcast now appears
+        //  on-chain, on the next wallet sync.
+        txSeen = true;
+        syncController.add(_testWallet(origin: 'w1'));
+        await Future<void>.delayed(Duration.zero);
+
+        // The session completes despite having been marked expired.
+        expect(emitted, hasLength(2));
+        expect(emitted.last.isCompleted, isTrue);
+        await sub.cancel();
+      });
+    },
+  );
+
+  group('_processPayjoinRequest below-minimum decline flow', () {
+    test('declines and broadcasts the original when the amount is below the '
+        'configured minimum', () async {
+      final requestController =
+          StreamController<PayjoinReceiverModel>.broadcast();
+      final settings = _MockSettingsRepository();
+      when(
+        () => pdk.requestsForReceivers,
+      ).thenAnswer((_) => requestController.stream);
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 10000));
+
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: _MockWalletRepository.new,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: settings,
+        labelsFacade: () => labels,
+      );
+      addTearDown(() => requestController.close());
+
+      final model = _receiverModel(originalTxId: 'orig-txid', amountSat: 500);
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      final emitted = <Payjoin>[];
+      final sub = repo.payjoinStream.listen(emitted.add);
+
+      requestController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      // Two events: the raw "requested" one, then the declined session
+      //  completed via the original-transaction fallback. The full
+      //  proposal-building flow (_proposePayjoin) must never run — if it
+      //  did, it would throw (BdkWalletDatasource/SeedDatasource are bare
+      //  mocks here) and this session would instead go through the
+      //  catch-and-fallback path, producing the same completed *shape* but
+      //  for the wrong reason; verify settings.fetch() was actually
+      //  consulted to distinguish the two.
+      expect(emitted, hasLength(2));
+      expect(emitted.last.isCompleted, isTrue);
+      verify(() => settings.fetch()).called(1);
+      await sub.cancel();
+    });
   });
 }

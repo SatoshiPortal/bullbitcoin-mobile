@@ -318,6 +318,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           walletId: completedModel.walletId,
         );
       }
+      // If this receiver session had a proposal in flight (e.g. the user
+      //  broadcast the original manually via "receive payment normally"
+      //  while _watchForBroadcast was still armed for it), stop watching now
+      //  that the session is completed via this path instead — otherwise the
+      //  watcher would keep doing a wallet-transaction lookup on every sync
+      //  for the rest of the app's lifetime. A no-op for a sender (or a
+      //  receiver with no watcher registered).
+      await _stopWatching(payjoin.id);
 
       return completedModel.toEntity();
     } catch (e) {
@@ -454,13 +462,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _processExpiredPayjoin(PayjoinModel payjoinModel) async {
-    // Update the local database with the expired payjoin
-    await _localPayjoinDatasource.update(payjoinModel);
-
-    // A session can only be watched while unfinished; stop any broadcast
-    // watcher now that it has expired to avoid leaking the subscription.
-    await _stopWatching(payjoinModel.id);
-
     final payjoin = payjoinModel.toEntity();
 
     // TODO: Unfreeze the utxo used in the payjoin
@@ -476,8 +477,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  sender owns finalizing/broadcasting the payjoin transaction, which
       //  spends the same inputs. Broadcasting the original here would just
       //  race our own in-flight payjoin for no benefit.
-      _payjoinStreamController.add(payjoin);
-      await tryBroadcastOriginalTransaction(payjoin);
+      //
+      //  Emit only the terminal outcome — mirroring the sender-expiry
+      //  fallback below — so a receive screen watching this session doesn't
+      //  see an interim "expired" state that suggests the original still
+      //  needs manual broadcasting when it's actually already in flight.
+      //
+      //  No proposal ever went out, so no broadcast watcher (armed only once
+      //  a proposal is sent — see _watchForBroadcast's call sites) can exist
+      //  for this session; stopping it here is a defensive no-op.
+      //
+      //  Deliberately do NOT persist the raw expired model first:
+      //  tryBroadcastOriginalTransaction persists isCompleted itself on
+      //  success. If the broadcast fails (e.g. no network at that exact
+      //  moment), leaving the row unfinished means the next app start's
+      //  resumePayjoinsOnStartup sees isExpiryTimePassed still true and
+      //  retries the fallback — persisting isExpired here would instead
+      //  permanently exclude it from onlyUnfinished and drop the retry.
+      await _stopWatching(payjoinModel.id);
+      final result = await tryBroadcastOriginalTransaction(payjoin);
+      _payjoinStreamController.add(result ?? payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
       // The sender never received a proposal before expiry (the receiver
       //  didn't respond), so fall back to broadcasting the original
@@ -491,9 +510,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  and don't hang on the "coordinating" screen). We deliberately do NOT
       //  emit the interim expired entity before the fallback, which would race
       //  the completed one on the stream.
+      //
+      //  Same reasoning as the receiver branch above for not persisting the
+      //  expired flag up front: a failed broadcast must remain retryable on
+      //  the next resume.
+      await _stopWatching(payjoinModel.id);
       final result = await tryBroadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else {
+      // A receiver whose proposal was already sent (proposalPsbt != null)
+      //  lands here. From here the sender owns finalizing/broadcasting the
+      //  payjoin transaction, which can still land on-chain after this
+      //  session's own expiry — deliberately do NOT stop the broadcast
+      //  watcher armed for it (_watchForBroadcast): once the tx is seen,
+      //  _onPayjoinTransactionSeen completes and labels the session even
+      //  though it's presently marked expired. Stopping the watcher here
+      //  would strand the session as permanently expired despite the payment
+      //  actually completing.
+      //
+      //  Nothing left for us to retry from this side, so persist the expired
+      //  marker now (unlike the two fallback branches above).
+      await _localPayjoinDatasource.update(payjoinModel);
       _payjoinStreamController.add(payjoin);
     }
   }
