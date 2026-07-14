@@ -87,6 +87,7 @@ class ResolvePosIdentityUsecase {
 PosException posExceptionFromLightningAddress(LightningAddressException error) {
   return switch (error.kind) {
     LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.reservedNym ||
     LightningAddressErrorKind.invalidRegistrationInput =>
       PosException.invalidInput(code: error.code),
     LightningAddressErrorKind.localPreparationFailed

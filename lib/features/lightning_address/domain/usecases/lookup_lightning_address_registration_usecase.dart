@@ -14,9 +14,22 @@ class LookupLightningAddressRegistrationUsecase {
       final result = await _bullnym.lookupRegistration(npubHex: npubHex);
       return switch (result) {
         Ok(:final value) => LightningAddressStatus(
-          nym: value.nym,
-          active: value.active,
+          nym: value.publicNameStatus?.nym.value ?? value.nym,
+          active:
+              value.publicNameStatus?.lightningAddressOnline ?? value.active,
           lightningAddress: value.lightningAddress,
+          permanentNameStatus: switch (value.publicNameStatus) {
+            final status? => LightningAddressPermanentNameStatus(
+              nym: status.nym.value,
+              lightningAddressOnline: status.lightningAddressOnline,
+              quota: LightningAddressPermanentNameQuota(
+                used: status.quota.used,
+                cap: status.quota.cap,
+                remaining: status.quota.remaining,
+              ),
+            ),
+            null => null,
+          },
         ),
         Err(:final failure) => throw mapBullnymToLightningAddressException(
           failure,

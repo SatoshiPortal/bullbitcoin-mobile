@@ -14247,6 +14247,10 @@
   "@lightningAddressInvalidNymError": {
     "description": "Validation error shown when the Lightning Address name field is empty"
   },
+  "lightningAddressReservedNymError": "That name is reserved and cannot be claimed.",
+  "@lightningAddressReservedNymError": {
+    "description": "Domain error shown when a permanent Bullnym nym is reserved."
+  },
   "lightningAddressInvalidRegistrationInputError": "The Lightning Address registration request is invalid. Check the wallet identity and try again.",
   "@lightningAddressInvalidRegistrationInputError": {
     "description": "Error shown when Bullnym rejects Lightning Address registration input that is not specifically local name validation"
@@ -15390,6 +15394,113 @@
   "lightningAddressTitle": "Lightning Address",
   "@lightningAddressTitle": {
     "description": "Title for the Lightning Address activation and status screen."
+  },
+  "lightningAddressLoadingStatus": "Checking permanent-name capability and status",
+  "@lightningAddressLoadingStatus": {
+    "description": "Accessibility announcement while Lightning Address capability and status load."
+  },
+  "lightningAddressPermanentFirstClaimTitle": "Claim your permanent name",
+  "@lightningAddressPermanentFirstClaimTitle": {
+    "description": "Title shown before the wallet owner has claimed a permanent Bullnym nym."
+  },
+  "lightningAddressPermanentFirstClaimBody": "Choose your one lifetime name. Spaces are trimmed and uppercase letters become lowercase. After you confirm, this name cannot be renamed, cleared, or replaced.",
+  "@lightningAddressPermanentFirstClaimBody": {
+    "description": "Permanent-name disclosure shown above the first-claim field."
+  },
+  "lightningAddressPermanentNymHelper": "Use 1–32 lowercase letters, numbers, or internal hyphens.",
+  "@lightningAddressPermanentNymHelper": {
+    "description": "Exact local syntax guidance for a permanent Bullnym nym."
+  },
+  "lightningAddressClaimButton": "Claim permanent name",
+  "@lightningAddressClaimButton": {
+    "description": "Button that starts the permanent nym claim confirmation."
+  },
+  "lightningAddressPermanentConfirmTitle": "Claim this permanent name?",
+  "@lightningAddressPermanentConfirmTitle": {
+    "description": "Title of the one-time permanent nym confirmation dialog."
+  },
+  "lightningAddressPermanentConfirmBody": "This is your only Lightning Address name and it cannot be renamed, cleared, or replaced. Bull Wallet will also create or reuse its dedicated Liquid receive wallet.",
+  "@lightningAddressPermanentConfirmBody": {
+    "description": "Explicit permanence disclosure in the first-claim confirmation dialog."
+  },
+  "lightningAddressPermanentNymReadOnly": "This lifetime name is permanent and read-only.",
+  "@lightningAddressPermanentNymReadOnly": {
+    "description": "Copy below an already-owned permanent nym."
+  },
+  "lightningAddressPermanentQuota": "{used} of {cap} lifetime name slots used",
+  "@lightningAddressPermanentQuota": {
+    "description": "Authoritative permanent-name quota returned by Bullnym.",
+    "placeholders": {
+      "used": {"type": "int"},
+      "cap": {"type": "int"}
+    }
+  },
+  "lightningAddressPermanentNamesUnavailableTitle": "Permanent names unavailable",
+  "@lightningAddressPermanentNamesUnavailableTitle": {
+    "description": "Title when the configured Bullnym server does not advertise the permanent-name policy."
+  },
+  "lightningAddressPermanentNamesUnavailableBody": "This server does not support permanent-name controls. Lightning Address naming is hidden, while the rest of Bull Wallet and Get Paid remain available.",
+  "@lightningAddressPermanentNamesUnavailableBody": {
+    "description": "Fail-closed legacy-server explanation."
+  },
+  "lightningAddressCapabilityUnavailableTitle": "Cannot verify permanent-name support",
+  "@lightningAddressCapabilityUnavailableTitle": {
+    "description": "Title when the Bullnym version capability check fails or conflicts with status."
+  },
+  "lightningAddressCapabilityUnavailableBody": "Permanent-name support could not be verified. Check status before claiming or changing Lightning Address availability.",
+  "@lightningAddressCapabilityUnavailableBody": {
+    "description": "Fail-closed capability error body."
+  },
+  "lightningAddressAlreadyAssignedTitle": "A permanent name is already assigned",
+  "@lightningAddressAlreadyAssignedTitle": {
+    "description": "Title shown while reconciling an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressAlreadyAssignedBody": "Bullnym reports that this wallet already owns a name. Refresh status to use that name; a different name cannot be claimed.",
+  "@lightningAddressAlreadyAssignedBody": {
+    "description": "Safe reconciliation guidance for an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressAlreadyAssigned": "This wallet already owns a permanent name. Its status is being reconciled.",
+  "@lightningAddressAlreadyAssigned": {
+    "description": "Snackbar for an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressNameTaken": "That name is already owned. Choose another available name.",
+  "@lightningAddressNameTaken": {
+    "description": "Safe message for the stable NameTaken code."
+  },
+  "lightningAddressReservedNym": "That name is reserved. Choose another name.",
+  "@lightningAddressReservedNym": {
+    "description": "Safe message for local or server NymReserved validation."
+  },
+  "lightningAddressOnlineToggleLabel": "Lightning Address online",
+  "@lightningAddressOnlineToggleLabel": {
+    "description": "Label for the same-nym Lightning Address availability switch."
+  },
+  "lightningAddressOnlineToggleBody": "This switch affects only Lightning Address payments. Your Payment Page and Point of Sale stay online and payable.",
+  "@lightningAddressOnlineToggleBody": {
+    "description": "Scope disclosure beside the Lightning Address availability switch."
+  },
+  "lightningAddressOnlineToggleSaving": "Refreshing Lightning Address availability",
+  "@lightningAddressOnlineToggleSaving": {
+    "description": "Accessibility announcement while an online/offline mutation is reconciled."
+  },
+  "lightningAddressTurnOffConfirmTitle": "Turn off Lightning Address?",
+  "@lightningAddressTurnOffConfirmTitle": {
+    "description": "Title of the Lightning Address deactivation confirmation."
+  },
+  "lightningAddressTurnOffConfirmBody": "Lightning payments to {nym} will stop until you turn the same name on again. Your Payment Page and Point of Sale stay online and payable.",
+  "@lightningAddressTurnOffConfirmBody": {
+    "description": "Scoped deactivation confirmation that explicitly preserves Page and POS.",
+    "placeholders": {
+      "nym": {"type": "String"}
+    }
+  },
+  "lightningAddressTurnOffConfirmSubmit": "Turn off",
+  "@lightningAddressTurnOffConfirmSubmit": {
+    "description": "Destructive confirmation button for Lightning Address deactivation."
+  },
+  "lightningAddressToggleUncertain": "The availability change may have reached the server. Refresh status before trying again.",
+  "@lightningAddressToggleUncertain": {
+    "description": "Message for a network or timeout failure after an online/offline submission."
   },
   "lightningAddressInactiveTitle": "Register a Lightning Address",
   "@lightningAddressInactiveTitle": {

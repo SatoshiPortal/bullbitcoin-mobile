@@ -88,6 +88,7 @@ PaymentPageException paymentPageExceptionFromLightningAddress(
 ) {
   return switch (error.kind) {
     LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.reservedNym ||
     LightningAddressErrorKind.invalidRegistrationInput =>
       PaymentPageException.invalidInput(code: error.code),
     LightningAddressErrorKind.localPreparationFailed

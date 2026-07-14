@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 
 enum LightningAddressErrorKind {
   invalidNym,
+  reservedNym,
   invalidRegistrationInput,
   localPreparationFailed,
   network,
@@ -37,6 +38,9 @@ sealed class LightningAddressException implements Exception {
   const factory LightningAddressException.invalidNym() =
       LightningAddressInvalidNymException;
 
+  const factory LightningAddressException.reservedNym() =
+      LightningAddressReservedNymException;
+
   const factory LightningAddressException.invalidRegistrationInput({
     required String code,
     required bool retryable,
@@ -53,6 +57,8 @@ sealed class LightningAddressException implements Exception {
   String toTranslated(BuildContext context) => switch (kind) {
     LightningAddressErrorKind.invalidNym =>
       context.loc.lightningAddressInvalidNymError,
+    LightningAddressErrorKind.reservedNym =>
+      context.loc.lightningAddressReservedNymError,
     LightningAddressErrorKind.invalidRegistrationInput =>
       context.loc.lightningAddressInvalidRegistrationInputError,
     LightningAddressErrorKind.localPreparationFailed
@@ -90,6 +96,16 @@ final class LightningAddressInvalidNymException
       );
 }
 
+final class LightningAddressReservedNymException
+    extends LightningAddressException {
+  const LightningAddressReservedNymException()
+    : super._(
+        kind: LightningAddressErrorKind.reservedNym,
+        code: 'NymReserved',
+        retryable: false,
+      );
+}
+
 final class LightningAddressInvalidRegistrationInputException
     extends LightningAddressException {
   const LightningAddressInvalidRegistrationInputException({
@@ -122,9 +138,12 @@ final class LightningAddressTimeoutException extends LightningAddressException {
 
 final class LightningAddressServerRejectedRequestException
     extends LightningAddressException {
+  final String? ownedNym;
+
   const LightningAddressServerRejectedRequestException({
     required super.code,
     required super.retryable,
+    this.ownedNym,
   }) : super._(kind: LightningAddressErrorKind.serverRejectedRequest);
 }
 
@@ -162,6 +181,7 @@ bool _isLightningAddressRegistrationSubmissionUncertain(
     LightningAddressErrorKind.timeout ||
     LightningAddressErrorKind.invalidServerResponse => true,
     LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.reservedNym ||
     LightningAddressErrorKind.invalidRegistrationInput ||
     LightningAddressErrorKind.serverRejectedRequest ||
     LightningAddressErrorKind.signingFailed ||
@@ -179,6 +199,7 @@ bool _canLightningAddressDescriptorHaveReachedServer(
     LightningAddressErrorKind.serverRejectedRequest ||
     LightningAddressErrorKind.invalidServerResponse => true,
     LightningAddressErrorKind.invalidNym ||
+    LightningAddressErrorKind.reservedNym ||
     LightningAddressErrorKind.invalidRegistrationInput ||
     LightningAddressErrorKind.signingFailed ||
     LightningAddressErrorKind.localPreparationFailed ||

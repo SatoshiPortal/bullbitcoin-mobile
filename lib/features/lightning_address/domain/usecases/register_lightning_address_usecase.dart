@@ -17,7 +17,7 @@ class RegisterLightningAddressUsecase {
     required String nym,
     required String ctDescriptor,
   }) async {
-    validateLightningAddressNym(nym);
+    final normalizedNym = validateLightningAddressNym(nym);
 
     try {
       final signer = BullnymAuthSigner(
@@ -32,7 +32,7 @@ class RegisterLightningAddressUsecase {
       );
       final result = await _bullnym.register(
         signer: signer,
-        nym: nym,
+        nym: normalizedNym,
         ctDescriptor: ctDescriptor,
       );
       return switch (result) {

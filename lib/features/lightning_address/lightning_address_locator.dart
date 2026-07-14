@@ -13,7 +13,10 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/lightning_address/data/default_wallet_xprv_adapter.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_default_wallet_xprv_port.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/activate_wallet_owned_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/deactivate_wallet_owned_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/delete_lightning_address_registration_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/ensure_lightning_address_registration_live_usecase.dart';
+import 'package:bb_mobile/features/lightning_address/domain/usecases/get_lightning_address_permanent_name_capability_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_receive_readiness_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_lightning_address_registration_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/lookup_wallet_owned_lightning_address_registration_usecase.dart';
@@ -52,6 +55,17 @@ class LightningAddressLocator {
     );
     locator.registerFactory<LookupLightningAddressRegistrationUsecase>(
       () => LookupLightningAddressRegistrationUsecase(locator<BullnymFacade>()),
+    );
+    locator.registerFactory<DeleteLightningAddressRegistrationUsecase>(
+      () => DeleteLightningAddressRegistrationUsecase(
+        locator<BullnymFacade>(),
+        locator<NostrIdentityFacade>(),
+      ),
+    );
+    locator.registerFactory<GetLightningAddressPermanentNameCapabilityUsecase>(
+      () => GetLightningAddressPermanentNameCapabilityUsecase(
+        locator<BullnymFacade>(),
+      ),
     );
     locator.registerFactory<RegisterWalletOwnedLightningAddressUsecase>(
       () => RegisterWalletOwnedLightningAddressUsecase(
@@ -110,9 +124,17 @@ class LightningAddressLocator {
         locator<RegisterWalletOwnedLightningAddressUsecase>(),
       ),
     );
+    locator.registerFactory<DeactivateWalletOwnedLightningAddressUsecase>(
+      () => DeactivateWalletOwnedLightningAddressUsecase(
+        defaultWalletXprv: locator<LightningAddressDefaultWalletXprvPort>(),
+        delete: locator<DeleteLightningAddressRegistrationUsecase>(),
+      ),
+    );
     locator.registerFactory<LightningAddressActivationCubit>(
       () => LightningAddressActivationCubit(
+        locator<GetLightningAddressPermanentNameCapabilityUsecase>(),
         locator<ActivateWalletOwnedLightningAddressUsecase>(),
+        locator<DeactivateWalletOwnedLightningAddressUsecase>(),
         locator<LookupLightningAddressReceiveReadinessUsecase>(),
         locator<GetGetPaidWalletBehaviorsUsecase>(),
         locator<UpdateWalletBehaviorUsecase>(),

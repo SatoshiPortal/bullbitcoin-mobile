@@ -22,6 +22,10 @@ LightningAddressException mapBullnymToLightningAddressException(
       LightningAddressServerRejectedRequestException(
         code: failure.code,
         retryable: failure.retryable,
+        ownedNym: switch (failure.ownedNameDetails) {
+          BullnymOwnedNymDetails(:final nym) => nym.value,
+          _ => null,
+        },
       ),
     BullnymFailureKind.unexpectedHttpStatus ||
     BullnymFailureKind.emptyResponse ||
