@@ -2172,9 +2172,10 @@ class SendCubit extends Cubit<SendState>
   void _watchPayjoin(String payjoinId) {
     _payjoinSubscription?.cancel();
     // Captured up front: the completion event fires arbitrarily later on a
-    // background poll, so read the wallet id now rather than force-unwrapping
-    // state.selectedWallet inside the async callback.
+    // background poll, so read these off state now rather than closing over
+    // state (which may have moved on) inside the async callback.
     final walletId = state.selectedWallet?.id;
+    final userLabel = state.label;
     _payjoinSubscription = _watchPayjoinUsecase
         .execute(ids: [payjoinId])
         .where((payjoin) => payjoin is PayjoinSender)
@@ -2207,12 +2208,31 @@ class SendCubit extends Cubit<SendState>
                 }),
               );
             }
+            // broadcastTransaction never reaches its own label-store call for
+            //  a payjoin (it early-returns because txId is already set), so
+            //  the user's typed label has to be stored here instead, once the
+            //  final txid is known.
+            // originalTxId is always set for a sender, so this is never null.
+            final finalTxId = payjoin.txId ?? payjoin.originalTxId;
+            if (userLabel.isNotEmpty && walletId != null) {
+              unawaited(
+                _labelsFacade.store(
+                  NewLabel.tx(
+                    transactionId: finalTxId,
+                    label: userLabel,
+                    origin: walletId,
+                  ),
+                ),
+              );
+            }
           } else if (payjoin.isExpired) {
-            // Terminal without a broadcast: the session expired and even the
-            // original-transaction fallback failed to broadcast (the repository
-            // emits the raw expired entity only in that case). Nothing hit the
-            // chain, so surface a broadcast failure and return to confirm so
-            // the user can retry, instead of hanging on "coordinating".
+            // Terminal without a broadcast: either the session expired and the
+            // original-transaction fallback failed too, or a received proposal
+            // failed to sign/broadcast and the original fallback also failed
+            // (the repository only emits the raw expired-marked entity on one
+            // of these unrecoverable paths). Nothing hit the chain, so surface
+            // a broadcast failure and return to confirm so the user can retry,
+            // instead of hanging on "coordinating".
             log.warning(
               '[SendCubit] Payjoin ${payjoin.id} expired without broadcast',
             );
