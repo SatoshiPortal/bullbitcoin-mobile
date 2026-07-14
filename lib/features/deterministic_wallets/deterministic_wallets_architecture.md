@@ -20,7 +20,8 @@ environment, and wallet specifications through the public facade.
 
 The fixed-index BIP85 derivation is checked against the current default Bitcoin
 wallet. Repeating an identical request reuses matching wallets. A stored BIP85
-path tied to a different root fingerprint or incompatible metadata is an
+path tied to a different root fingerprint is stale and is replaced with the
+current root's derivation. Incompatible metadata for the current root is an
 explicit conflict, never an implicit overwrite.
 
 When materialization fails, only wallets created during that attempt are
