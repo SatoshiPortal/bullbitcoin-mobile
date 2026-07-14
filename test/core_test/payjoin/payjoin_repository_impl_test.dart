@@ -281,4 +281,88 @@ void main() {
       await sub.cancel();
     });
   });
+
+  group('_processPayjoinProposal terminal emission on broadcast failure '
+      '(#2246)', () {
+    // These drive the proposalsForSenders stream directly: a received
+    // proposal whose signing/broadcast fails must still produce a terminal
+    // event, because by the time a proposal arrives the poll timer that
+    // would otherwise raise an expiry is already cancelled — nothing else
+    // will ever emit for this session again.
+    late StreamController<PayjoinSenderModel> proposalController;
+    late _MockWalletMetadataDatasource walletMetadata;
+
+    setUp(() {
+      proposalController = StreamController<PayjoinSenderModel>.broadcast();
+      walletMetadata = _MockWalletMetadataDatasource();
+      when(
+        () => pdk.proposalsForSenders,
+      ).thenAnswer((_) => proposalController.stream);
+      // _loadWallet throws when metadata is missing — the simplest way to
+      // drive _processPayjoinProposal's catch without mocking a full signing
+      // stack.
+      when(() => walletMetadata.fetch(any())).thenAnswer((_) async => null);
+      repository = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: walletMetadata,
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        labelsFacade: () => labels,
+      );
+    });
+
+    tearDown(() => proposalController.close());
+
+    test('falls back to broadcasting the original psbt and completes when '
+        'signing/broadcasting the proposal fails', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      proposalController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      // Two events: the raw "proposal received" one, then the fallback's
+      // completed terminal one (the original transaction still got
+      // broadcast, so the send flow can resolve to success).
+      expect(emitted, hasLength(2));
+      expect(emitted.last.isCompleted, isTrue);
+      await sub.cancel();
+    });
+
+    test('marks the session terminally failed when both the proposal and '
+        'the original-transaction fallback fail to broadcast', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+      when(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenThrow(Exception('broadcast failed'));
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      proposalController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      // Terminal failure, not silence: the send flow must never hang forever
+      // waiting for an event that will never arrive.
+      expect(emitted, hasLength(2));
+      expect(emitted.last.isExpired, isTrue);
+      await sub.cancel();
+    });
+  });
 }

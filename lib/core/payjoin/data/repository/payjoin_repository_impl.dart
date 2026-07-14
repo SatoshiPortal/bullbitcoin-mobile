@@ -341,11 +341,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         error: e,
         trace: StackTrace.current,
       );
-      // TODO: Handle this, maybe by sending the original transaction instead
+      // Signing or broadcasting the finalized payjoin transaction failed. By
+      //  this point the sender's poll timer that would otherwise raise an
+      //  expiry is already cancelled (it stopped the moment this proposal
+      //  arrived), so nothing else will ever emit a terminal event for this
+      //  session — fall back to broadcasting the original transaction
+      //  ourselves, mirroring the sender-expiry fallback, so the payment
+      //  still goes through and the send flow doesn't hang forever (#2246).
+      result = await tryBroadcastOriginalTransaction(payjoin) as PayjoinSender?;
     }
 
     if (result != null) {
       _payjoinStreamController.add(result);
+    } else {
+      // Both the payjoin and the original-transaction fallback failed: mark
+      //  the session terminally failed (modelled as expired, which
+      //  SendCubit._watchPayjoin already surfaces as a broadcast failure)
+      //  instead of leaving the send flow hanging on "coordinating" with no
+      //  event ever arriving again.
+      final failedModel = payjoinModel.copyWith(isExpired: true);
+      await _localPayjoinDatasource.update(failedModel);
+      _payjoinStreamController.add(failedModel.toEntity());
     }
   }
 
