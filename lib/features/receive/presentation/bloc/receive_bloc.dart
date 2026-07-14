@@ -844,6 +844,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         .where((payjoin) => payjoin is PayjoinReceiver)
         .cast<PayjoinReceiver>()
         .listen((updatedPayjoin) {
+          // The payjoin repository's underlying poll/expiry timers outlive
+          // this bloc (a session can resolve minutes after this screen was
+          // left), so an event can arrive after close(). `cancel()` in
+          // close() stops FUTURE events but not one already in flight on
+          // the microtask queue at the moment close() ran — add()-ing on a
+          // closed bloc then throws "Cannot add new events after calling
+          // close" as an uncaught SEVERE, taking down the zone instead of
+          // just dropping the stale update. Same guard as SendCubit's
+          // sender-side watcher for the identical race.
+          if (isClosed) return;
           log.info(
             '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
           );
@@ -860,6 +870,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
         .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
+          // See _watchPayjoin's guard above for why this is needed.
+          if (isClosed) return;
           add(ReceiveTransactionReceived(tx));
         });
   }
@@ -868,6 +880,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
+      // See _watchPayjoin's guard above for why this is needed.
+      if (isClosed) return;
       log.info(
         '[ReceiveBloc] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
       );
