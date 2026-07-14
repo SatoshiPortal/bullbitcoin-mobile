@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/btcpay/public/btcpay_routes.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -52,6 +53,12 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   onTap: () => context.pushNamed(
                     ImportWalletRoute.importWalletHome.name,
                   ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.storefront,
+                  title: context.loc.bitcoinSettingsBtcpayTitle,
+                  onTap: () =>
+                      context.pushNamed(BtcpayRoute.btcpaySettings.name),
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,

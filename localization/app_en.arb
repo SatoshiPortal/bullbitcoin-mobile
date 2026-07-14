@@ -771,6 +771,10 @@
   "@bitcoinSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
+  "bitcoinSettingsBtcpayTitle": "BTCPay",
+  "@bitcoinSettingsBtcpayTitle": {
+    "description": "Title for the BTCPay option in Bitcoin settings"
+  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -13350,6 +13354,157 @@
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "btcpaySettingsTitle": "BTCPay",
+  "@btcpaySettingsTitle": {
+    "description": "Title for the BTCPay settings screen"
+  },
+  "btcpayPairingUrlLabel": "SamRock pairing URL",
+  "@btcpayPairingUrlLabel": {
+    "description": "Label for the SamRock pairing URL input"
+  },
+  "btcpayPairingUrlRequired": "Enter a pairing URL",
+  "@btcpayPairingUrlRequired": {
+    "description": "Validation message when the BTCPay pairing URL is missing"
+  },
+  "btcpayPairingWalletsBitcoin": "Bitcoin wallet",
+  "@btcpayPairingWalletsBitcoin": {
+    "description": "Bitcoin wallet summary for BTCPay pairing"
+  },
+  "btcpayPairingWalletsLiquid": "Liquid wallet",
+  "@btcpayPairingWalletsLiquid": {
+    "description": "Liquid wallet summary for BTCPay pairing"
+  },
+  "btcpayPairingWalletsBitcoinAndLiquid": "Liquid and Bitcoin wallets",
+  "@btcpayPairingWalletsBitcoinAndLiquid": {
+    "description": "Bitcoin and Liquid wallet summary for BTCPay pairing"
+  },
+  "btcpayPairingSubmit": "Pair BTCPay",
+  "@btcpayPairingSubmit": {
+    "description": "Submit button text for BTCPay pairing"
+  },
+  "btcpayPairingScanQr": "Scan pairing QR",
+  "@btcpayPairingScanQr": {
+    "description": "Button text for scanning a BTCPay SamRock pairing QR code"
+  },
+  "btcpayPairingSubmitting": "Pairing...",
+  "@btcpayPairingSubmitting": {
+    "description": "Submit button text while BTCPay pairing is in progress"
+  },
+  "btcpayPairingOperationInProgress": "Wait for BTCPay pairing to finish before leaving.",
+  "@btcpayPairingOperationInProgress": {
+    "description": "Message shown when leaving BTCPay pairing is blocked during pairing"
+  },
+  "btcpayPairingSuccess": "BTCPay paired successfully.",
+  "@btcpayPairingSuccess": {
+    "description": "Success message after BTCPay pairing completes"
+  },
+  "btcpayPairingSuccessTitle": "BTCPay Server connected",
+  "@btcpayPairingSuccessTitle": {
+    "description": "Success screen title after BTCPay pairing completes"
+  },
+  "btcpayPairingGenericError": "Could not pair BTCPay Server.",
+  "@btcpayPairingGenericError": {
+    "description": "Generic error message when BTCPay pairing fails"
+  },
+  "btcpayPairingInvalidRequestError": "The SamRock pairing URL is invalid.",
+  "@btcpayPairingInvalidRequestError": {
+    "description": "Error shown when the BTCPay pairing URL cannot be parsed or is unsupported"
+  },
+  "btcpayPairingRejectedError": "BTCPay Server rejected the pairing request.",
+  "@btcpayPairingRejectedError": {
+    "description": "Error shown when BTCPay Server rejects the SamRock pairing setup"
+  },
+  "btcpayPairingUncertainError": "BTCPay pairing may have completed. Check the BTCPay Server before retrying.",
+  "@btcpayPairingUncertainError": {
+    "description": "Error shown when BTCPay pairing was submitted but completion could not be confirmed"
+  },
+  "btcpayPairingConfirmTitle": "Create BTCPay wallets?",
+  "@btcpayPairingConfirmTitle": {
+    "description": "Title for the consent dialog before BTCPay wallet descriptors are shared"
+  },
+  "btcpayPairingConfirmBody": "You are about to create or use dedicated {wallets} and share watch-only wallet descriptors with a BTCPay Server at {serverUrl}. That server can monitor payments received by these dedicated wallets. No private keys are shared. These wallets are derived from the same backup as your default wallets. Do you wish to proceed?",
+  "@btcpayPairingConfirmBody": {
+    "placeholders": {
+      "wallets": {
+        "type": "String"
+      },
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "btcpayPairingConfirmRails": "Requested rails: {rails}",
+  "@btcpayPairingConfirmRails": {
+    "placeholders": {
+      "rails": {
+        "type": "String"
+      }
+    }
+  },
+  "btcpayPairingConfirmCancel": "Cancel",
+  "@btcpayPairingConfirmCancel": {
+    "description": "Cancel button text for the BTCPay pairing consent dialog"
+  },
+  "btcpayPairingConfirmSubmit": "Create wallets and share details",
+  "@btcpayPairingConfirmSubmit": {
+    "description": "Confirm button text for the BTCPay pairing consent dialog"
+  },
+  "btcpayPairingRailBitcoin": "Bitcoin",
+  "@btcpayPairingRailBitcoin": {
+    "description": "Bitcoin rail label for BTCPay pairing"
+  },
+  "btcpayPairingRailLiquid": "Liquid",
+  "@btcpayPairingRailLiquid": {
+    "description": "Liquid rail label for BTCPay pairing"
+  },
+  "btcpayPairingRailLightning": "Lightning via Liquid/Boltz",
+  "@btcpayPairingRailLightning": {
+    "description": "Lightning rail label for BTCPay pairing through Liquid-backed Boltz setup"
+  },
+  "btcpayConnectionTitle": "Connected BTCPay Server",
+  "@btcpayConnectionTitle": {
+    "description": "Title shown when a BTCPay Server is already paired"
+  },
+  "btcpayConnectionServer": "Server",
+  "@btcpayConnectionServer": {
+    "description": "Label for the paired BTCPay Server URL"
+  },
+  "btcpayConnectionStore": "Store",
+  "@btcpayConnectionStore": {
+    "description": "Label for the paired BTCPay Server store ID"
+  },
+  "btcpayConnectionRails": "Rails",
+  "@btcpayConnectionRails": {
+    "description": "Label for the paired BTCPay payment rails"
+  },
+  "btcpayConnectionWallets": "Wallets",
+  "@btcpayConnectionWallets": {
+    "description": "Label for the wallets shared with a paired BTCPay Server"
+  },
+  "btcpayConnectionPairedAt": "Paired",
+  "@btcpayConnectionPairedAt": {
+    "description": "Label for when the BTCPay Server was paired"
+  },
+  "btcpayConnectionUpdatedAt": "Updated",
+  "@btcpayConnectionUpdatedAt": {
+    "description": "Label for when the BTCPay pairing state was last updated"
+  },
+  "btcpayConnectionUncertainTitle": "Pairing status uncertain",
+  "@btcpayConnectionUncertainTitle": {
+    "description": "Title shown when BTCPay pairing may have completed but the app could not confirm it"
+  },
+  "btcpayConnectionUncertainBody": "BTCPay pairing was submitted, but the app could not confirm completion. Check the BTCPay Server before retrying.",
+  "@btcpayConnectionUncertainBody": {
+    "description": "Body shown when BTCPay pairing may have completed but the app could not confirm it"
+  },
+  "btcpayPairNew": "Pair new BTCPay",
+  "@btcpayPairNew": {
+    "description": "Button text to pair another BTCPay Server"
+  },
+  "deterministicWalletsGenericError": "Something went wrong preparing wallets.",
+  "@deterministicWalletsGenericError": {
+    "description": "Generic error message when deterministic wallet preparation fails"
   },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
   "@exchangeSettingsDeleteAccountTitle": {
