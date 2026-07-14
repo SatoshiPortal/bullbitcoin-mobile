@@ -2,9 +2,6 @@ name: Analyze and Test
 
 on:
   pull_request:
-    branches:
-      - main
-      - develop
     # Docs-only PRs skip both jobs entirely. Safe because develop has no
     # required status checks (verified via the API) — a skipped run can't
     # strand a PR on "Expected — waiting". If checks are ever made required,
@@ -145,6 +142,7 @@ jobs:
         uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 
       - name: Install Linux desktop for integration tests
+        if: ${{ github.base_ref == 'main' || github.base_ref == 'develop' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -166,6 +164,7 @@ jobs:
       # secret is unset (e.g. on forks) the var is empty and the funded-testnet
       # groups skip themselves — "use the mnemonic if available".
       - name: Integration tests (Linux desktop)
+        if: ${{ github.base_ref == 'main' || github.base_ref == 'develop' }}
         env:
           TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
           TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
