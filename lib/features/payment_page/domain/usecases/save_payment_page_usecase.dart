@@ -36,6 +36,7 @@ class SavePaymentPageUsecase {
     String website = '',
     String twitter = '',
     String instagram = '',
+    String? aliasClaim,
     bool publishBackupSnapshot = true,
   }) async {
     // Local pre-filter (UX; the server remains the authority). A validation
@@ -47,7 +48,11 @@ class SavePaymentPageUsecase {
       website: website,
       twitter: twitter,
       instagram: instagram,
+      aliasClaim: aliasClaim,
     ).validate();
+    final normalizedAliasClaim = aliasClaim == null
+        ? null
+        : normalizePaymentPageAlias(aliasClaim);
 
     var walletCreated = false;
     var walletPrepared = false;
@@ -88,10 +93,21 @@ class SavePaymentPageUsecase {
           instagram: instagram,
           enabled: true,
           kind: bullnymDonationPageKindPaymentPage,
+          aliasIntent: normalizedAliasClaim == null
+              ? const BullnymAliasIntent.preserve()
+              : BullnymAliasIntent.claim(
+                  BullnymPublicName.aliasClaim(normalizedAliasClaim),
+                ),
         );
         switch (result) {
           case Ok(:final value):
-            return PaymentPage.fromBullnym(value);
+            final page = PaymentPage.fromBullnym(value);
+            if (page.nym != identity.nym ||
+                (normalizedAliasClaim != null &&
+                    page.alias != normalizedAliasClaim)) {
+              throw const PaymentPageException.invalidServerResponse();
+            }
+            return page;
           case Err(:final failure):
             throw PaymentPageException.fromBullnym(failure);
         }

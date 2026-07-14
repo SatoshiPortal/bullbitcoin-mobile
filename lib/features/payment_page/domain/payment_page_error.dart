@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 enum PaymentPageErrorKind {
   invalidInput,
+  aliasTaken,
+  aliasAlreadyAssigned,
   noNym,
   noDefaultBitcoinWallet,
   localPreparationFailed,
@@ -22,15 +24,24 @@ sealed class PaymentPageException implements Exception {
   final PaymentPageErrorKind kind;
   final String code;
   final bool retryable;
+  final String? ownedAlias;
 
   const PaymentPageException._({
     required this.kind,
     required this.code,
     required this.retryable,
+    this.ownedAlias,
   });
 
   const factory PaymentPageException.invalidInput({required String code}) =
       PaymentPageInvalidInputException;
+
+  const factory PaymentPageException.aliasTaken() =
+      PaymentPageAliasTakenException;
+
+  const factory PaymentPageException.aliasAlreadyAssigned({
+    required String ownedAlias,
+  }) = PaymentPageAliasAlreadyAssignedException;
 
   const factory PaymentPageException.noNym() = PaymentPageNoNymException;
 
@@ -77,6 +88,12 @@ sealed class PaymentPageException implements Exception {
       BullnymFailureKind.timeout => const PaymentPageException.timeout(),
       BullnymFailureKind.serverRejectedRequest => switch (failure.code) {
         'DonationPageNotFound' => const PaymentPageException.notFound(),
+        'NameTaken' => const PaymentPageException.aliasTaken(),
+        'AliasAlreadyAssigned' => switch (failure.ownedNameDetails) {
+          BullnymOwnedAliasDetails(:final alias) =>
+            PaymentPageException.aliasAlreadyAssigned(ownedAlias: alias.value),
+          _ => const PaymentPageException.invalidServerResponse(),
+        },
         'DonationPageInvalid' => PaymentPageException.rejected(
           code: failure.code,
         ),
@@ -99,6 +116,9 @@ sealed class PaymentPageException implements Exception {
   String toTranslated(BuildContext context) => switch (kind) {
     PaymentPageErrorKind.invalidInput =>
       context.loc.paymentPageErrorInvalidInput,
+    PaymentPageErrorKind.aliasTaken => context.loc.paymentPageAliasTaken,
+    PaymentPageErrorKind.aliasAlreadyAssigned =>
+      context.loc.paymentPageAliasAlreadyAssigned,
     PaymentPageErrorKind.noNym => context.loc.paymentPageErrorNoNym,
     PaymentPageErrorKind.noDefaultBitcoinWallet =>
       context.loc.paymentPageErrorNoDefaultWallet,
@@ -122,6 +142,25 @@ sealed class PaymentPageException implements Exception {
 final class PaymentPageInvalidInputException extends PaymentPageException {
   const PaymentPageInvalidInputException({required super.code})
     : super._(kind: PaymentPageErrorKind.invalidInput, retryable: false);
+}
+
+final class PaymentPageAliasTakenException extends PaymentPageException {
+  const PaymentPageAliasTakenException()
+    : super._(
+        kind: PaymentPageErrorKind.aliasTaken,
+        code: 'NameTaken',
+        retryable: false,
+      );
+}
+
+final class PaymentPageAliasAlreadyAssignedException
+    extends PaymentPageException {
+  const PaymentPageAliasAlreadyAssignedException({required super.ownedAlias})
+    : super._(
+        kind: PaymentPageErrorKind.aliasAlreadyAssigned,
+        code: 'AliasAlreadyAssigned',
+        retryable: false,
+      );
 }
 
 final class PaymentPageNoNymException extends PaymentPageException {
@@ -238,6 +277,8 @@ bool _isPaymentPageSubmissionUncertain(PaymentPageException cause) {
     PaymentPageErrorKind.server ||
     PaymentPageErrorKind.invalidServerResponse => true,
     PaymentPageErrorKind.invalidInput ||
+    PaymentPageErrorKind.aliasTaken ||
+    PaymentPageErrorKind.aliasAlreadyAssigned ||
     PaymentPageErrorKind.noNym ||
     PaymentPageErrorKind.noDefaultBitcoinWallet ||
     PaymentPageErrorKind.localPreparationFailed ||
@@ -260,12 +301,22 @@ final class PaymentPageSaveException extends PaymentPageException {
   PaymentPageSaveException.localPreparation({required this.cause})
     : phase = PaymentPageSaveFailurePhase.localPreparation,
       submissionMayBeUncertain = false,
-      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+      super._(
+        kind: cause.kind,
+        code: cause.code,
+        retryable: cause.retryable,
+        ownedAlias: cause.ownedAlias,
+      );
 
   PaymentPageSaveException.submission({required this.cause})
     : phase = PaymentPageSaveFailurePhase.submission,
       submissionMayBeUncertain = _isPaymentPageSubmissionUncertain(cause),
-      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+      super._(
+        kind: cause.kind,
+        code: cause.code,
+        retryable: cause.retryable,
+        ownedAlias: cause.ownedAlias,
+      );
 
   @override
   String toTranslated(BuildContext context) => cause.toTranslated(context);

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/payment_page/domain/payment_page_error.dart';
 import 'package:characters/characters.dart';
 
@@ -73,9 +74,22 @@ String stripHandleAt(String value) {
   return trimmed;
 }
 
+String normalizePaymentPageAlias(String value) => value.trim().toLowerCase();
+
+bool isValidPaymentPageAliasClaim(String? value) {
+  if (value == null) return true;
+  try {
+    BullnymPublicName.aliasClaim(normalizePaymentPageAlias(value));
+    return true;
+  } on ArgumentError {
+    return false;
+  }
+}
+
 /// The fields the editor collects, in the order the form presents them; used to
 /// point per-field validation at the failing input.
 enum PaymentPageField {
+  alias,
   header,
   description,
   displayCurrency,
@@ -94,6 +108,7 @@ class SavePaymentPageCommand {
   final String website;
   final String twitter;
   final String instagram;
+  final String? aliasClaim;
 
   const SavePaymentPageCommand({
     required this.header,
@@ -102,10 +117,14 @@ class SavePaymentPageCommand {
     this.website = '',
     this.twitter = '',
     this.instagram = '',
+    this.aliasClaim,
   });
 
   /// The first field that fails validation, or null when the command is valid.
   PaymentPageField? firstInvalidField() {
+    if (!isValidPaymentPageAliasClaim(aliasClaim)) {
+      return PaymentPageField.alias;
+    }
     if (!isValidPaymentPageHeader(header)) return PaymentPageField.header;
     if (!isValidPaymentPageDescription(description)) {
       return PaymentPageField.description;
@@ -118,6 +137,9 @@ class SavePaymentPageCommand {
     }
     return null;
   }
+
+  String? get normalizedAliasClaim =>
+      aliasClaim == null ? null : normalizePaymentPageAlias(aliasClaim!);
 
   bool get isValid => firstInvalidField() == null;
 

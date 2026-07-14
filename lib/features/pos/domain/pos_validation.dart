@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/pos/domain/pos_error.dart';
 
 // Byte cap mirrors the server exactly (src/donation_page.rs MAX_HEADER_LEN):
@@ -18,9 +19,21 @@ bool isValidPosLabel(String value) {
   return bytes >= 1 && bytes <= posLabelMaxBytes;
 }
 
+String normalizePosAlias(String value) => value.trim().toLowerCase();
+
+bool isValidPosAliasClaim(String? value) {
+  if (value == null) return true;
+  try {
+    BullnymPublicName.aliasClaim(normalizePosAlias(value));
+    return true;
+  } on ArgumentError {
+    return false;
+  }
+}
+
 /// The fields the POS provisioning form collects, in the order it presents them;
 /// used to point per-field validation at the failing input.
-enum PosField { label, displayCurrency }
+enum PosField { alias, label, displayCurrency }
 
 /// A validating value object for a POS provision/edit. Local validation is a UX
 /// pre-filter - the server remains the authority - but it mirrors the server
@@ -28,18 +41,24 @@ enum PosField { label, displayCurrency }
 class PosProvisionCommand {
   final String label;
   final String displayCurrency;
+  final String? aliasClaim;
 
   const PosProvisionCommand({
     required this.label,
     required this.displayCurrency,
+    this.aliasClaim,
   });
 
   /// The first field that fails validation, or null when the command is valid.
   PosField? firstInvalidField() {
+    if (!isValidPosAliasClaim(aliasClaim)) return PosField.alias;
     if (!isValidPosLabel(label)) return PosField.label;
     if (displayCurrency.isEmpty) return PosField.displayCurrency;
     return null;
   }
+
+  String? get normalizedAliasClaim =>
+      aliasClaim == null ? null : normalizePosAlias(aliasClaim!);
 
   bool get isValid => firstInvalidField() == null;
 

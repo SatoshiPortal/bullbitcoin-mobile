@@ -21,6 +21,7 @@ class LookupLightningAddressRegistrationUsecase {
           permanentNameStatus: switch (value.publicNameStatus) {
             final status? => LightningAddressPermanentNameStatus(
               nym: status.nym.value,
+              alias: status.alias?.value,
               lightningAddressOnline: status.lightningAddressOnline,
               quota: LightningAddressPermanentNameQuota(
                 used: status.quota.used,

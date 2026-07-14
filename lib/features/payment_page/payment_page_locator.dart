@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/payment_page/domain/usecases/archive_payment_
 import 'package:bb_mobile/features/payment_page/domain/usecases/ensure_payment_page_live_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/usecases/find_payment_page_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/usecases/get_payment_page_usecase.dart';
+import 'package:bb_mobile/features/payment_page/domain/usecases/get_payment_page_permanent_name_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/usecases/get_supported_display_currencies_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/usecases/prepare_payment_page_wallet_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/usecases/resolve_payment_page_identity_usecase.dart';
@@ -48,6 +49,12 @@ class PaymentPageLocator {
       () => ResolvePaymentPageIdentityUsecase(
         defaultWalletXprv: locator<PaymentPageDefaultWalletXprvPort>(),
         nostrIdentity: locator<NostrIdentityFacade>(),
+        lightningAddress: locator<LightningAddressFacade>(),
+      ),
+    );
+    locator.registerFactory<GetPaymentPagePermanentNameUsecase>(
+      () => GetPaymentPagePermanentNameUsecase(
+        bullnym: locator<BullnymFacade>(),
         lightningAddress: locator<LightningAddressFacade>(),
       ),
     );
@@ -95,6 +102,7 @@ class PaymentPageLocator {
           website: command.website,
           twitter: command.twitter,
           instagram: command.instagram,
+          aliasClaim: command.aliasClaim,
         ),
         archive: archive.execute,
         supportedCurrencies: currencies.execute,
@@ -104,7 +112,7 @@ class PaymentPageLocator {
     locator.registerFactory<PaymentPageCubit>(
       () => PaymentPageCubit(
         facade: locator<PaymentPageFacade>(),
-        lightningAddress: locator<LightningAddressFacade>(),
+        getPermanentName: locator<GetPaymentPagePermanentNameUsecase>(),
         getWalletBehaviors: locator<GetGetPaidWalletBehaviorsUsecase>(),
         updateWalletBehavior: locator<UpdateWalletBehaviorUsecase>(),
       ),

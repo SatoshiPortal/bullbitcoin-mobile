@@ -27,7 +27,11 @@ class ArchivePaymentPageUsecase {
     );
     switch (result) {
       case Ok(:final value):
-        return PaymentPage.fromBullnym(value);
+        final page = PaymentPage.fromBullnym(value);
+        if (page.nym != identity.nym) {
+          throw const PaymentPageException.invalidServerResponse();
+        }
+        return page;
       case Err(:final failure):
         final mapped = PaymentPageException.fromBullnym(failure);
         if (mapped.kind == PaymentPageErrorKind.notFound) {

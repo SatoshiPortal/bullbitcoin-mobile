@@ -28,7 +28,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
   final _website = TextEditingController();
   final _twitter = TextEditingController();
   final _instagram = TextEditingController();
-  final _nym = TextEditingController();
+  final _alias = TextEditingController();
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
     _website.dispose();
     _twitter.dispose();
     _instagram.dispose();
-    _nym.dispose();
+    _alias.dispose();
     super.dispose();
   }
 
@@ -55,7 +55,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
     if (_website.text != state.website) _website.text = state.website;
     if (_twitter.text != state.twitter) _twitter.text = state.twitter;
     if (_instagram.text != state.instagram) _instagram.text = state.instagram;
-    if (_nym.text != state.nymDraft) _nym.text = state.nymDraft;
+    if (_alias.text != state.aliasDraft) _alias.text = state.aliasDraft;
   }
 
   @override
@@ -102,7 +102,8 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           ],
         ),
       ),
-      PaymentPageStatus.needsNym => _needsNymView(context, state, cubit),
+      PaymentPageStatus.unsupported => _unsupportedView(context, state),
+      PaymentPageStatus.needsNym => _needsNymView(context, state),
       PaymentPageStatus.loadFailed => _loadFailedView(context, state, cubit),
       PaymentPageStatus.archived => _archivedView(context, state, cubit),
       PaymentPageStatus.create ||
@@ -110,48 +111,38 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
     };
   }
 
-  // --- DG-6: choose a name (delegates to the shared LA registration) ---
-  Widget _needsNymView(
-    BuildContext context,
-    PaymentPageState state,
-    PaymentPageCubit cubit,
-  ) {
+  Widget _unsupportedView(BuildContext context, PaymentPageState state) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _StatusNotice(
+          icon: Icons.visibility_off_outlined,
+          title: context.loc.paymentPagePermanentNamesUnavailableTitle,
+          body: context.loc.paymentPagePermanentNamesUnavailableBody,
+        ),
+        if (state.walletBehavior != null)
+          _WalletBehaviorControls(
+            behavior: state.walletBehavior!,
+            saving: state.walletBehaviorSaving,
+          ),
+      ],
+    );
+  }
+
+  Widget _needsNymView(BuildContext context, PaymentPageState state) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _StatusNotice(
           icon: Icons.badge_outlined,
-          title: context.loc.paymentPageNeedsNymTitle,
-          body: context.loc.paymentPageNeedsNymBody,
+          title: context.loc.paymentPageNeedsPermanentNymTitle,
+          body: context.loc.paymentPageNeedsPermanentNymBody,
         ),
-        const Gap(24),
-        TextField(
-          controller: _nym,
-          enabled: !state.submitting,
-          autocorrect: false,
-          enableSuggestions: false,
-          onChanged: cubit.nymDraftChanged,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: context.loc.paymentPageNymLabel,
-            helperText: context.loc.paymentPageNymHelper,
+        if (state.walletBehavior != null)
+          _WalletBehaviorControls(
+            behavior: state.walletBehavior!,
+            saving: state.walletBehaviorSaving,
           ),
-        ),
-        const Gap(16),
-        Text(
-          context.loc.paymentPageRoutingNotice,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.textMuted,
-          ),
-        ),
-        const Gap(24),
-        BBButton.big(
-          label: context.loc.paymentPageCreateNymButton,
-          onPressed: () => _createNym(cubit),
-          disabled: state.submitting || state.nymDraft.trim().isEmpty,
-          bgColor: context.appColors.primary,
-          textColor: context.appColors.onPrimary,
-        ),
       ],
     );
   }
@@ -228,6 +219,17 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           ),
           const Gap(16),
         ],
+        _permanentAliasSection(context, state, cubit),
+        if (!isCreate) ...[
+          const Gap(16),
+          _SurfaceOnlineControl(
+            online: !isArchived,
+            saving: state.submitting,
+            onChanged: (online) =>
+                _setOnline(cubit: cubit, state: state, online: online),
+          ),
+        ],
+        const Gap(20),
         _byteCountedField(
           context: context,
           controller: _header,
@@ -310,7 +312,7 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           label: state.submitting
               ? context.loc.paymentPageSubmitting
               : isArchived
-              ? context.loc.paymentPagePublishButton
+              ? context.loc.paymentPageSaveAndTurnOnButton
               : isCreate
               ? context.loc.paymentPageCreateButton
               : context.loc.paymentPageSaveButton,
@@ -321,22 +323,41 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
         ),
-        if (!isCreate && !isArchived) ...[
-          const Gap(12),
-          BBButton.big(
-            label: context.loc.paymentPageDeactivateButton,
-            onPressed: () => _archive(cubit),
-            disabled: state.submitting,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
-          ),
-        ],
         if (state.walletBehavior != null)
           _WalletBehaviorControls(
             behavior: state.walletBehavior!,
             saving: state.walletBehaviorSaving,
           ),
       ],
+    );
+  }
+
+  Widget _permanentAliasSection(
+    BuildContext context,
+    PaymentPageState state,
+    PaymentPageCubit cubit,
+  ) {
+    final alias = state.permanentAlias;
+    if (alias != null) {
+      return _PermanentAliasSummary(alias: alias);
+    }
+    return TextField(
+      key: const Key('payment_page_alias_field'),
+      controller: _alias,
+      enabled: !state.submitting,
+      autocorrect: false,
+      enableSuggestions: false,
+      maxLength: 32,
+      onChanged: cubit.aliasDraftChanged,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: context.loc.paymentPageAliasLabel,
+        helperText: context.loc.paymentPageAliasHelper,
+        errorText: state.invalidField == PaymentPageField.alias
+            ? context.loc.paymentPageAliasInvalid
+            : null,
+        errorMaxLines: 2,
+      ),
     );
   }
 
@@ -483,40 +504,119 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
     );
   }
 
-  Future<void> _createNym(PaymentPageCubit cubit) async {
-    await cubit.createNym();
-  }
-
   Future<void> _save(PaymentPageCubit cubit) async {
+    final state = cubit.state;
+    if (state.permanentAlias == null && state.aliasDraft.isNotEmpty) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(dialogContext.loc.paymentPageAliasConfirmTitle),
+          content: Text(
+            dialogContext.loc.paymentPageAliasConfirmBody(state.aliasDraft),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(dialogContext.loc.paymentPageAliasConfirmCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(dialogContext.loc.paymentPageAliasConfirmSubmit),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+    }
     await cubit.save();
   }
 
-  Future<void> _archive(PaymentPageCubit cubit) async {
+  Future<void> _setOnline({
+    required PaymentPageCubit cubit,
+    required PaymentPageState state,
+    required bool online,
+  }) async {
+    if (online) {
+      await _save(cubit);
+      return;
+    }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.loc.paymentPageArchiveConfirmTitle),
-        content: Text(dialogContext.loc.paymentPageArchiveConfirmBody),
+        title: Text(dialogContext.loc.paymentPageTurnOffConfirmTitle),
+        content: Text(dialogContext.loc.paymentPageTurnOffConfirmBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(dialogContext.loc.paymentPageArchiveConfirmCancel),
+            child: Text(dialogContext.loc.paymentPageTurnOffConfirmCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(dialogContext.loc.paymentPageArchiveConfirmConfirm),
+            child: Text(dialogContext.loc.paymentPageTurnOffConfirmSubmit),
           ),
         ],
       ),
     );
     if (!mounted || confirmed != true) return;
-    await cubit.archive();
+    if (!state.isOnline) return;
+    await cubit.setOnline(false);
   }
 
   Future<void> _openLink(String url) async {
     final uri = Uri.tryParse(url);
     if (uri == null) return;
     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}
+
+class _PermanentAliasSummary extends StatelessWidget {
+  final String alias;
+
+  const _PermanentAliasSummary({required this.alias});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _InfoRow(label: context.loc.paymentPageAliasLabel, value: alias),
+          const Gap(8),
+          Text(
+            context.loc.paymentPageAliasReadOnly,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SurfaceOnlineControl extends StatelessWidget {
+  final bool online;
+  final bool saving;
+  final ValueChanged<bool> onChanged;
+
+  const _SurfaceOnlineControl({
+    required this.online,
+    required this.saving,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: SwitchListTile(
+        key: const Key('payment_page_online_switch'),
+        value: online,
+        onChanged: saving ? null : onChanged,
+        title: Text(context.loc.paymentPageOnlineToggleLabel),
+        subtitle: Text(context.loc.paymentPageOnlineToggleBody),
+      ),
+    );
   }
 }
 

@@ -57,10 +57,7 @@ protocol slice publishes the seam but enables no user-facing name UI.
 
 ## Donation-page surface
 
-The shared client also carries the donation-page wire surface consumed by the
-`payment_page` feature (and, later, the POS surface — the same methods with
-`kind = pos`). The `kind` parameter is generic on this client; product features
-pin their own value.
+The shared client also carries the donation-page wire surface consumed by the `payment_page` and POS features (the same methods with distinct `kind` values). The `kind` parameter is generic on this client; product features pin their own value.
 
 - `PUT /donation-page` — signed upsert (`donation-page-save`). Body:
   `nym`, `npub`, `ct_descriptor`, `header`, `description`, `display_currency`,

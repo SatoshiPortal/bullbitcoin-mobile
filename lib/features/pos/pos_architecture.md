@@ -1,9 +1,6 @@
 # Point of Sale (`features/pos`)
 
-Provisions a **keyless PWA till terminal** from the mobile app. The merchant
-creates a POS (a `(nym, kind='pos')` row + BIP85 wallet-seed **index 103**), and
-the app hands back a **shareable terminal URL** (`{base}/{nym}/pos`). The browser
-terminal and invoice minting are entirely server-side; the app renders no till.
+Provisions a **keyless PWA till terminal** from the mobile app. The merchant creates a POS (a `(nym, kind='pos')` row + BIP85 wallet-seed **index 103**), and the app hands back a server-owned, validated **shareable terminal URL**. The browser terminal and invoice minting are entirely server-side; the app renders no till.
 
 This feature is the POS analogue of `features/payment_page` (the Donation Page).
 It is a SEPARATE flow (UX-SEP): its own hexagon, entry tile, screen, and routes.
@@ -45,17 +42,13 @@ POS-only nym (ROUTE-3W); the provisioning screen states this in product copy.
   touches only `(nym,'pos')` + wallet 103; it never reads or writes the page row,
   wallet 102, or wallet 101 (beyond the shared read-only nym lookup).
 
-## Terminal-URL source (DG-P5)
+## Permanent names, availability, and terminal URL
 
-The terminal URL is **constructed client-side** as `{bullnymBaseUrl}/{nym}/pos`
-(the base is the same value the shared bullnym client is configured with; the nym
-is our own resolved registration). No server-echoed `public_url` is trusted into
-this string, so a hostile/oversized server value can never become the terminal
-URL. `PosTerminal.fromBullnym` builds it; a server `public_url` for a kind=pos row
-is advisory only. The URL is surfaced as text + copy-to-clipboard + guarded
-external launch (`LaunchMode.externalApplication`) — never webviewed, no QR
-(DG-P4). **Server contract note:** whether the save/GET response echoes a
-`/:nym/pos` `public_url` is UNVERIFIED; client-side construction sidesteps it.
+The screen reads `/version` before ownership and exposes permanent-name and availability UX only for exact `permanent_names_v1`. It reconstructs the nym and optional alias from the authenticated Lightning Address owner lookup, regardless of whether Lightning Address itself is online. Nym claims remain owned by the Lightning Address flow. POS may make the one optional lifetime alias claim; the alias is shared with Donation Page and becomes permanently read-only. The client can express only preserve or first claim—not clear, rename, replace, release, deactivate, reactivate, or reassign.
+
+The terminal URL comes from the save/GET response and is validated by the shared Bullnym boundary against the trusted public origin, response nym/alias, and exact POS route. Without an alias it is `/:nym/pos`; with an alias it is `/a/:alias/pos`. Nym routes remain valid server-side. The product never rebuilds the URL from configuration. It surfaces the validated URL as text, copy-to-clipboard, and guarded external launch—never a webview or QR (DG-P4).
+
+The POS online switch writes only `kind=pos`: off is a signed soft archive and on is a provision/save that revives that row. Lightning Address and Donation Page availability are independent, and turning POS off never changes permanent name ownership.
 
 ## Recovery heal (DG-3, READ-ONLY)
 
@@ -70,8 +63,7 @@ publishes no backup. `HealRecoveredProductsUsecase` runs it when the restore fla
 
 ## Stateless-local (no drift table)
 
-Source of truth is the server row (read back via GET kind=pos). There is no local
-POS store, no SharedPreferences for POS content, no offline editing.
+Source of truth is the server row (read back via GET kind=pos) plus authenticated owner status for permanent names. There is no local POS/name store, no SharedPreferences for POS content or alias ownership, and no offline editing. After an app-state wipe, owner lookup reconstructs the same shared alias.
 
 ## No in-app terminal (DELTA 2)
 
@@ -81,6 +73,4 @@ rides the shared `header` slot; the other content fields are sent as `''`.
 
 ## Deploy gate (KR-2, DG-P7)
 
-The feature is inert-but-safe: `kind='pos'` saves fail CLOSED (AuthError) against
-a pre-release server. Go-live is deploy-gated on pay2 carrying the ISS-S-02
-release; that is a Francis-owned ops gate. PR26 makes zero server commits.
+The feature remains fail-closed unless pay2 advertises the exact permanent-name contract, and `kind='pos'` signing/response validation remains mandatory. Server deployment is an ops gate outside this mobile slice.

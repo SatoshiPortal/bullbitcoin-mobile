@@ -1,28 +1,25 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
-import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
-import 'package:bb_mobile/features/pos/domain/usecases/resolve_pos_identity_usecase.dart';
+import 'package:bb_mobile/features/pos/domain/usecases/get_pos_permanent_name_usecase.dart';
 import 'package:bb_mobile/features/pos/presentation/pos_state.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Drives the Point of Sale provisioning screen. Reaches other features only
-/// through the [PosFacade] and the [LightningAddressFacade] (the DG-P6 nym
-/// step). An [_operationId] guard makes double-taps and stale async completions
-/// inert. Holds NO secrets and NO descriptor.
+/// Drives the Point of Sale provisioning screen through the [PosFacade] and
+/// the feature-owned permanent-name read usecase. An [_operationId] guard makes
+/// double-taps and stale async completions inert. Holds no secrets or
+/// descriptor.
 class PosCubit extends Cubit<PosState> {
-  static const _nymNotFoundCode = 'NymNotFound';
-
   final PosFacade _facade;
-  final LightningAddressFacade _lightningAddress;
+  final GetPosPermanentNameUsecase _getPermanentName;
   final GetGetPaidWalletBehaviorsUsecase _getWalletBehaviors;
   final UpdateWalletBehaviorUsecase _updateWalletBehavior;
   int _operationId = 0;
 
   PosCubit({
     required this._facade,
-    required this._lightningAddress,
+    required this._getPermanentName,
     required this._getWalletBehaviors,
     required this._updateWalletBehavior,
   }) : super(const PosState());
@@ -43,44 +40,61 @@ class PosCubit extends Cubit<PosState> {
     final walletBehavior = await _resolveWalletBehavior();
     if (_isStale(op)) return;
 
-    final String nym;
+    final PosPermanentName permanentName;
     try {
-      final status = await _lightningAddress.lookupWalletOwnedRegistration();
-      nym = status.nym;
-    } on LightningAddressException catch (e) {
-      if (_isStale(op)) return;
-      if (e.code == _nymNotFoundCode) {
-        emit(
-          state.copyWith(
-            status: PosStatus.needsNym,
-            walletBehavior: walletBehavior,
-            clearWalletBehavior: walletBehavior == null,
-          ),
-        );
-        return;
-      }
-      emit(
-        state.copyWith(
-          status: PosStatus.loadFailed,
-          failure: posExceptionFromLightningAddress(e),
-          walletBehavior: walletBehavior,
-          clearWalletBehavior: walletBehavior == null,
-        ),
-      );
-      return;
+      permanentName = await _getPermanentName.execute();
     } catch (e, stack) {
-      log.warning('Point of Sale nym probe failed', error: e, trace: stack);
+      log.warning(
+        'Point of Sale permanent-name probe failed',
+        error: e,
+        trace: stack,
+      );
       if (_isStale(op)) return;
       emit(
         state.copyWith(
           status: PosStatus.loadFailed,
-          failure: const PosException.unexpected(),
+          failure: _asPosException(e),
           walletBehavior: walletBehavior,
           clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
     }
+    if (_isStale(op)) return;
+
+    if (!permanentName.supported) {
+      emit(
+        state.copyWith(
+          status: PosStatus.unsupported,
+          nym: '',
+          aliasDraft: '',
+          clearTerminal: true,
+          clearPermanentAlias: true,
+          clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+
+    final nym = permanentName.nym;
+    if (nym == null) {
+      emit(
+        state.copyWith(
+          status: PosStatus.needsNym,
+          nym: '',
+          aliasDraft: '',
+          clearTerminal: true,
+          clearPermanentAlias: true,
+          clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+    final permanentAlias = permanentName.alias;
 
     // Currencies degrade to the fallback rather than blocking the screen.
     var currencies = const <DisplayCurrency>[];
@@ -116,11 +130,28 @@ class PosCubit extends Cubit<PosState> {
     }
     if (_isStale(op)) return;
 
+    if (terminal != null &&
+        (terminal.nym != nym || terminal.alias != permanentAlias)) {
+      emit(
+        state.copyWith(
+          status: PosStatus.loadFailed,
+          nym: nym,
+          failure: const PosException.invalidServerResponse(),
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+
     if (terminal == null) {
       emit(
         state.copyWith(
           status: PosStatus.create,
           nym: nym,
+          permanentAlias: permanentAlias,
+          clearPermanentAlias: permanentAlias == null,
+          aliasDraft: '',
           currencies: currencies,
           currenciesUnavailable: currenciesUnavailable,
           displayCurrency: _defaultCurrency(currencies),
@@ -139,6 +170,9 @@ class PosCubit extends Cubit<PosState> {
         status: terminal.isArchived ? PosStatus.archived : PosStatus.edit,
         nym: nym,
         terminal: terminal,
+        permanentAlias: permanentAlias,
+        clearPermanentAlias: permanentAlias == null,
+        aliasDraft: '',
         currencies: currencies,
         currenciesUnavailable: currenciesUnavailable,
         label: terminal.label,
@@ -172,8 +206,13 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  void nymDraftChanged(String value) =>
-      emit(state.copyWith(nymDraft: value, clearFailure: true));
+  void aliasDraftChanged(String value) => emit(
+    state.copyWith(
+      aliasDraft: normalizePosAlias(value),
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PosField.alias,
+    ),
+  );
 
   void labelChanged(String value) => emit(
     state.copyWith(
@@ -191,30 +230,15 @@ class PosCubit extends Cubit<PosState> {
     ),
   );
 
-  /// DG-P6: register the nym (and wallet 101) through the shared Lightning
-  /// Address facade, then reload into the create form.
-  Future<void> createNym() async {
-    if (state.submitting) return;
-    emit(state.copyWith(submitting: true, clearFailure: true));
-    try {
-      await _lightningAddress.registerWalletOwned(nym: state.nymDraft.trim());
-      if (isClosed) return;
-      emit(state.copyWith(submitting: false));
-      await load();
-    } catch (e, stack) {
-      log.warning(
-        'Point of Sale nym registration failed',
-        error: e,
-        trace: stack,
-      );
-      if (isClosed) return;
-      emit(state.copyWith(submitting: false, failure: _asPosException(e)));
-    }
-  }
-
   Future<void> provision() async {
-    if (state.submitting) return;
+    if (state.submitting ||
+        (state.status != PosStatus.create &&
+            state.status != PosStatus.edit &&
+            state.status != PosStatus.archived)) {
+      return;
+    }
     final command = state.command;
+    final expectedAlias = state.permanentAlias ?? command.normalizedAliasClaim;
     final invalidField = command.firstInvalidField();
     if (invalidField != null) {
       emit(
@@ -238,6 +262,11 @@ class PosCubit extends Cubit<PosState> {
     try {
       final terminal = await _facade.provision(command);
       if (isClosed || _isStale(op)) return;
+      if (terminal.nym != state.nym || terminal.alias != expectedAlias) {
+        throw PosProvisionException.submission(
+          cause: const PosException.invalidServerResponse(),
+        );
+      }
       // Provisioning creates wallet 103, so refresh its resolved behavior.
       final walletBehavior = await _resolveWalletBehavior();
       if (isClosed || _isStale(op)) return;
@@ -246,6 +275,9 @@ class PosCubit extends Cubit<PosState> {
           submitting: false,
           status: terminal.isArchived ? PosStatus.archived : PosStatus.edit,
           terminal: terminal,
+          permanentAlias: terminal.alias,
+          clearPermanentAlias: terminal.alias == null,
+          aliasDraft: '',
           label: terminal.label,
           displayCurrency: terminal.displayCurrency,
           clearFailure: true,
@@ -255,11 +287,18 @@ class PosCubit extends Cubit<PosState> {
       );
     } on PosProvisionException catch (e) {
       if (isClosed || _isStale(op)) return;
+      final ownedAlias = e.ownedAlias;
       emit(
         state.copyWith(
           submitting: false,
           failure: e,
           submissionUncertain: e.submissionMayBeUncertain,
+          permanentAlias: ownedAlias,
+          aliasDraft: ownedAlias == null ? state.aliasDraft : '',
+          invalidField: e.kind == PosErrorKind.aliasTaken
+              ? PosField.alias
+              : null,
+          clearInvalidField: e.kind != PosErrorKind.aliasTaken,
         ),
       );
     } catch (e, stack) {
@@ -270,7 +309,7 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> archive() async {
-    if (state.submitting) return;
+    if (state.submitting || state.status != PosStatus.edit) return;
     final op = ++_operationId;
     emit(state.copyWith(submitting: true, clearFailure: true));
     try {
@@ -283,6 +322,16 @@ class PosCubit extends Cubit<PosState> {
       if (isClosed || _isStale(op)) return;
       emit(state.copyWith(submitting: false, failure: _asPosException(e)));
     }
+  }
+
+  /// Changes only POS availability. Every write remains `kind=pos`; Lightning
+  /// Address and Payment Page availability are independent.
+  Future<void> setOnline(bool online) async {
+    if (online) {
+      if (state.status == PosStatus.archived) await provision();
+      return;
+    }
+    if (state.status == PosStatus.edit) await archive();
   }
 
   /// Updates the reserved wallet's auto-sweep / hide-on-home behavior with the
@@ -363,9 +412,6 @@ class PosCubit extends Cubit<PosState> {
 
   PosException _asPosException(Object error) {
     if (error is PosException) return error;
-    if (error is LightningAddressException) {
-      return posExceptionFromLightningAddress(error);
-    }
     return const PosException.unexpected();
   }
 }

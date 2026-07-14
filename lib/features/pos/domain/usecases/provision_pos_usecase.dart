@@ -25,19 +25,18 @@ class ProvisionPosUsecase {
   final PreparePosWalletUsecase _prepareWallet;
   final BullnymFacade _bullnym;
   final GetPaidSettingsFacade _getPaidSettings;
-  final String _terminalBaseUrl;
 
   const ProvisionPosUsecase({
     required this._resolveIdentity,
     required this._prepareWallet,
     required this._bullnym,
     required this._getPaidSettings,
-    required this._terminalBaseUrl,
   });
 
   Future<PosTerminal> execute({
     required String label,
     required String displayCurrency,
+    String? aliasClaim,
     bool publishBackupSnapshot = true,
   }) async {
     // Local pre-filter (UX; the server remains the authority). A validation
@@ -45,7 +44,11 @@ class ProvisionPosUsecase {
     PosProvisionCommand(
       label: label,
       displayCurrency: displayCurrency,
+      aliasClaim: aliasClaim,
     ).validate();
+    final normalizedAliasClaim = aliasClaim == null
+        ? null
+        : normalizePosAlias(aliasClaim);
 
     var walletCreated = false;
     var walletPrepared = false;
@@ -87,10 +90,21 @@ class ProvisionPosUsecase {
           instagram: '',
           enabled: true,
           kind: bullnymDonationPageKindPos,
+          aliasIntent: normalizedAliasClaim == null
+              ? const BullnymAliasIntent.preserve()
+              : BullnymAliasIntent.claim(
+                  BullnymPublicName.aliasClaim(normalizedAliasClaim),
+                ),
         );
         switch (result) {
           case Ok(:final value):
-            return PosTerminal.fromBullnym(value, baseUrl: _terminalBaseUrl);
+            final terminal = PosTerminal.fromBullnym(value);
+            if (terminal.nym != identity.nym ||
+                (normalizedAliasClaim != null &&
+                    terminal.alias != normalizedAliasClaim)) {
+              throw const PosException.invalidServerResponse();
+            }
+            return terminal;
           case Err(:final failure):
             throw PosException.fromBullnym(failure);
         }

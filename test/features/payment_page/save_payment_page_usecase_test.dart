@@ -292,4 +292,47 @@ void main() {
       expect(saved.instagram, '');
     },
   );
+
+  test(
+    'first alias claim uses the shared typed intent and server Page URL',
+    () async {
+      stubPrepared();
+
+      final page = await usecase.execute(
+        header: 'Tip me',
+        description: 'Support my work',
+        displayCurrency: 'CAD',
+        aliasClaim: ' Shop ',
+      );
+
+      expect(client.saveCalls.single.aliasIntent, isA<BullnymAliasClaim>());
+      expect(page.alias, 'shop');
+      expect(page.publicUrl, 'https://bullpay.ca/a/shop');
+    },
+  );
+
+  test('omitted alias can only preserve the server-owned value', () async {
+    stubPrepared();
+    client.storedPage = const BullnymDonationPage(
+      nym: 'alice',
+      header: 'Old header',
+      description: 'Old description',
+      displayCurrency: 'CAD',
+      kind: 'payment_page',
+      posMode: false,
+      enabled: true,
+      isArchived: false,
+      alias: 'shop',
+      publicUrl: 'https://bullpay.ca/a/shop',
+    );
+
+    final page = await usecase.execute(
+      header: 'Tip me',
+      description: 'Support my work',
+      displayCurrency: 'CAD',
+    );
+
+    expect(client.saveCalls.single.aliasIntent, isA<BullnymAliasPreserve>());
+    expect(page.alias, 'shop');
+  });
 }

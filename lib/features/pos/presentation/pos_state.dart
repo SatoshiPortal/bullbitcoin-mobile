@@ -8,7 +8,11 @@ const String posFallbackCurrency = 'CAD';
 enum PosStatus {
   loading,
 
-  /// No Bull nym yet - the DG-P6 first step (choose a name) is shown.
+  /// Exact permanent-name capability is absent. Alias and availability
+  /// actions stay hidden.
+  unsupported,
+
+  /// No permanent nym yet - direct the user to Lightning Address settings.
   needsNym,
 
   /// A nym exists but no pos row - the create form is shown.
@@ -37,6 +41,8 @@ class PosState {
 
   final String nym;
   final PosTerminal? terminal;
+  final String? permanentAlias;
+  final String aliasDraft;
 
   // Editable form fields.
   final String label;
@@ -47,9 +53,6 @@ class PosState {
   /// The live currency list could not be fetched - the dropdown degrades to the
   /// current value only, with a retry affordance (§7.13).
   final bool currenciesUnavailable;
-
-  /// The DG-P6 choose-a-name input.
-  final String nymDraft;
 
   /// The field flagged by the last provision-time validation, for per-field
   /// highlighting (`errorText`). Cleared when that field is edited or on a new
@@ -70,11 +73,12 @@ class PosState {
     this.submissionUncertain = false,
     this.nym = '',
     this.terminal,
+    this.permanentAlias,
+    this.aliasDraft = '',
     this.label = '',
     this.displayCurrency = '',
     this.currencies = const [],
     this.currenciesUnavailable = false,
-    this.nymDraft = '',
     this.invalidField,
     this.walletBehavior,
     this.walletBehaviorSaving = false,
@@ -82,9 +86,15 @@ class PosState {
 
   bool get isLoading => status == PosStatus.loading;
   bool get isArchived => status == PosStatus.archived;
+  bool get isOnline => status == PosStatus.edit;
 
-  PosProvisionCommand get command =>
-      PosProvisionCommand(label: label, displayCurrency: displayCurrency);
+  PosProvisionCommand get command => PosProvisionCommand(
+    label: label,
+    displayCurrency: displayCurrency,
+    aliasClaim: permanentAlias == null && aliasDraft.trim().isNotEmpty
+        ? normalizePosAlias(aliasDraft)
+        : null,
+  );
 
   bool get canSubmit => !submitting && command.isValid;
 
@@ -97,16 +107,18 @@ class PosState {
     bool? submissionUncertain,
     String? nym,
     PosTerminal? terminal,
+    String? permanentAlias,
+    String? aliasDraft,
     String? label,
     String? displayCurrency,
     List<DisplayCurrency>? currencies,
     bool? currenciesUnavailable,
-    String? nymDraft,
     PosField? invalidField,
     GetPaidWalletBehavior? walletBehavior,
     bool? walletBehaviorSaving,
     bool clearFailure = false,
     bool clearTerminal = false,
+    bool clearPermanentAlias = false,
     bool clearInvalidField = false,
     bool clearWalletBehavior = false,
   }) {
@@ -117,12 +129,15 @@ class PosState {
       submissionUncertain: submissionUncertain ?? this.submissionUncertain,
       nym: nym ?? this.nym,
       terminal: clearTerminal ? null : terminal ?? this.terminal,
+      permanentAlias: clearPermanentAlias
+          ? null
+          : permanentAlias ?? this.permanentAlias,
+      aliasDraft: aliasDraft ?? this.aliasDraft,
       label: label ?? this.label,
       displayCurrency: displayCurrency ?? this.displayCurrency,
       currencies: currencies ?? this.currencies,
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
-      nymDraft: nymDraft ?? this.nymDraft,
       invalidField: clearInvalidField
           ? null
           : invalidField ?? this.invalidField,

@@ -8,7 +8,11 @@ const String paymentPageFallbackCurrency = 'CAD';
 enum PaymentPageStatus {
   loading,
 
-  /// No Bull nym yet — the DG-6 first step (choose a name) is shown.
+  /// The server does not advertise the exact permanent-name contract. No
+  /// alias or availability action is exposed.
+  unsupported,
+
+  /// No permanent nym yet — direct the user to Lightning Address settings.
   needsNym,
 
   /// A nym exists but no page row — the create form is shown.
@@ -38,6 +42,13 @@ class PaymentPageState {
   final String nym;
   final PaymentPage? page;
 
+  /// Owner-level alias reconstructed from Bullnym. Never persisted locally.
+  final String? permanentAlias;
+
+  /// Optional first alias claim. Once [permanentAlias] exists this is ignored
+  /// and the UI renders the server-owned alias read-only.
+  final String aliasDraft;
+
   // Editable form fields.
   final String header;
   final String description;
@@ -51,9 +62,6 @@ class PaymentPageState {
   /// The live currency list could not be fetched — the dropdown degrades to the
   /// current value only, with a retry affordance (§7.12).
   final bool currenciesUnavailable;
-
-  /// The DG-6 choose-a-name input.
-  final String nymDraft;
 
   /// The field flagged by the last submit-time validation, for per-field
   /// highlighting (`errorText`). Cleared when that field is edited or on a new
@@ -74,6 +82,8 @@ class PaymentPageState {
     this.submissionUncertain = false,
     this.nym = '',
     this.page,
+    this.permanentAlias,
+    this.aliasDraft = '',
     this.header = '',
     this.description = '',
     this.displayCurrency = '',
@@ -82,7 +92,6 @@ class PaymentPageState {
     this.instagram = '',
     this.currencies = const [],
     this.currenciesUnavailable = false,
-    this.nymDraft = '',
     this.invalidField,
     this.walletBehavior,
     this.walletBehaviorSaving = false,
@@ -90,6 +99,7 @@ class PaymentPageState {
 
   bool get isLoading => status == PaymentPageStatus.loading;
   bool get isArchived => status == PaymentPageStatus.archived;
+  bool get isOnline => status == PaymentPageStatus.edit;
 
   SavePaymentPageCommand get command => SavePaymentPageCommand(
     header: header,
@@ -98,6 +108,9 @@ class PaymentPageState {
     website: website,
     twitter: twitter,
     instagram: instagram,
+    aliasClaim: permanentAlias == null && aliasDraft.trim().isNotEmpty
+        ? normalizePaymentPageAlias(aliasDraft)
+        : null,
   );
 
   bool get canSubmit => !submitting && command.isValid;
@@ -111,6 +124,8 @@ class PaymentPageState {
     bool? submissionUncertain,
     String? nym,
     PaymentPage? page,
+    String? permanentAlias,
+    String? aliasDraft,
     String? header,
     String? description,
     String? displayCurrency,
@@ -119,12 +134,12 @@ class PaymentPageState {
     String? instagram,
     List<DisplayCurrency>? currencies,
     bool? currenciesUnavailable,
-    String? nymDraft,
     PaymentPageField? invalidField,
     GetPaidWalletBehavior? walletBehavior,
     bool? walletBehaviorSaving,
     bool clearFailure = false,
     bool clearPage = false,
+    bool clearPermanentAlias = false,
     bool clearInvalidField = false,
     bool clearWalletBehavior = false,
   }) {
@@ -135,6 +150,10 @@ class PaymentPageState {
       submissionUncertain: submissionUncertain ?? this.submissionUncertain,
       nym: nym ?? this.nym,
       page: clearPage ? null : page ?? this.page,
+      permanentAlias: clearPermanentAlias
+          ? null
+          : permanentAlias ?? this.permanentAlias,
+      aliasDraft: aliasDraft ?? this.aliasDraft,
       header: header ?? this.header,
       description: description ?? this.description,
       displayCurrency: displayCurrency ?? this.displayCurrency,
@@ -144,7 +163,6 @@ class PaymentPageState {
       currencies: currencies ?? this.currencies,
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
-      nymDraft: nymDraft ?? this.nymDraft,
       invalidField: clearInvalidField
           ? null
           : invalidField ?? this.invalidField,

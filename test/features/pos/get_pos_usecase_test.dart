@@ -15,11 +15,15 @@ void main() {
   setUp(() {
     client = RecordingBullnymClient();
     bullnym = BullnymFacade(client: client);
-    getPos = GetPosUsecase(bullnym, terminalBaseUrl: 'https://bullpay.ca');
+    getPos = GetPosUsecase(bullnym);
     findPos = FindPosUsecase(getPos);
   });
 
-  BullnymDonationPage row({String kind = 'pos', bool isArchived = false}) {
+  BullnymDonationPage row({
+    String kind = 'pos',
+    bool isArchived = false,
+    String? alias,
+  }) {
     return BullnymDonationPage(
       nym: 'alice',
       header: 'My Till',
@@ -29,24 +33,38 @@ void main() {
       posMode: false,
       enabled: true,
       isArchived: isArchived,
-      // A hostile/oversized server public_url is IGNORED - we construct our own.
-      publicUrl: 'javascript:alert(1)',
+      alias: alias,
+      publicUrl: alias == null
+          ? 'https://bullpay.ca/alice/pos'
+          : 'https://bullpay.ca/a/$alias/pos',
     );
   }
 
-  test('GETs the kind=pos row and maps it, constructing the terminal URL '
-      'client-side (DG-P5)', () async {
-    client.storedPage = row();
+  test(
+    'GETs kind=pos and uses the canonical URL validated by Bullnym',
+    () async {
+      client.storedPage = row();
 
-    final terminal = await getPos.execute(nym: 'alice');
+      final terminal = await getPos.execute(nym: 'alice');
 
-    expect(client.getKinds, ['pos']);
-    expect(terminal.label, 'My Till');
-    expect(terminal.displayCurrency, 'CAD');
-    // The terminal URL is built from the known base + nym, NOT the hostile
-    // server public_url.
-    expect(terminal.terminalUrl, 'https://bullpay.ca/alice/pos');
-  });
+      expect(client.getKinds, ['pos']);
+      expect(terminal.label, 'My Till');
+      expect(terminal.displayCurrency, 'CAD');
+      expect(terminal.terminalUrl, 'https://bullpay.ca/alice/pos');
+    },
+  );
+
+  test(
+    'maps shared alias and uses the server-returned POS alias URL',
+    () async {
+      client.storedPage = row(alias: 'shop');
+
+      final terminal = await getPos.execute(nym: 'alice');
+
+      expect(terminal.alias, 'shop');
+      expect(terminal.terminalUrl, 'https://bullpay.ca/a/shop/pos');
+    },
+  );
 
   test(
     'refuses a non-pos (payment_page) row body (§8.10 kind assertion)',

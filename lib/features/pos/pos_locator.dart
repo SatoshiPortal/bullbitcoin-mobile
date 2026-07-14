@@ -4,8 +4,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
-import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart'
-    show bullnymDefaultBaseUrl;
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
@@ -19,6 +17,7 @@ import 'package:bb_mobile/features/pos/domain/usecases/archive_pos_usecase.dart'
 import 'package:bb_mobile/features/pos/domain/usecases/ensure_pos_live_usecase.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/find_pos_usecase.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/get_pos_usecase.dart';
+import 'package:bb_mobile/features/pos/domain/usecases/get_pos_permanent_name_usecase.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/get_supported_display_currencies_usecase.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/prepare_pos_wallet_usecase.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/provision_pos_usecase.dart';
@@ -29,10 +28,6 @@ import 'package:get_it/get_it.dart';
 
 class PosLocator {
   static void setup(GetIt locator) {
-    // The terminal URL is constructed client-side against the SAME base the
-    // shared bullnym client is configured with (DG-P5), never a server echo.
-    const terminalBaseUrl = bullnymDefaultBaseUrl;
-
     locator.registerFactory<PosDefaultWalletXprvPort>(
       () => PosDefaultWalletXprvAdapter(
         getSettings: locator<GetSettingsUsecase>(),
@@ -57,11 +52,14 @@ class PosLocator {
         lightningAddress: locator<LightningAddressFacade>(),
       ),
     );
-    locator.registerFactory<GetPosUsecase>(
-      () => GetPosUsecase(
-        locator<BullnymFacade>(),
-        terminalBaseUrl: terminalBaseUrl,
+    locator.registerFactory<GetPosPermanentNameUsecase>(
+      () => GetPosPermanentNameUsecase(
+        bullnym: locator<BullnymFacade>(),
+        lightningAddress: locator<LightningAddressFacade>(),
       ),
+    );
+    locator.registerFactory<GetPosUsecase>(
+      () => GetPosUsecase(locator<BullnymFacade>()),
     );
     locator.registerFactory<FindPosUsecase>(
       () => FindPosUsecase(locator<GetPosUsecase>()),
@@ -72,14 +70,12 @@ class PosLocator {
         prepareWallet: locator<PreparePosWalletUsecase>(),
         bullnym: locator<BullnymFacade>(),
         getPaidSettings: locator<GetPaidSettingsFacade>(),
-        terminalBaseUrl: terminalBaseUrl,
       ),
     );
     locator.registerFactory<ArchivePosUsecase>(
       () => ArchivePosUsecase(
         resolveIdentity: locator<ResolvePosIdentityUsecase>(),
         bullnym: locator<BullnymFacade>(),
-        terminalBaseUrl: terminalBaseUrl,
       ),
     );
     locator.registerFactory<GetSupportedDisplayCurrenciesUsecase>(
@@ -102,6 +98,7 @@ class PosLocator {
         provision: (command) => provision.execute(
           label: command.label,
           displayCurrency: command.displayCurrency,
+          aliasClaim: command.aliasClaim,
         ),
         archive: archive.execute,
         supportedCurrencies: currencies.execute,
@@ -111,7 +108,7 @@ class PosLocator {
     locator.registerFactory<PosCubit>(
       () => PosCubit(
         facade: locator<PosFacade>(),
-        lightningAddress: locator<LightningAddressFacade>(),
+        getPermanentName: locator<GetPosPermanentNameUsecase>(),
         getWalletBehaviors: locator<GetGetPaidWalletBehaviorsUsecase>(),
         updateWalletBehavior: locator<UpdateWalletBehaviorUsecase>(),
       ),

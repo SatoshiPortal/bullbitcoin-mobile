@@ -4,13 +4,11 @@ import 'package:bb_mobile/features/pos/domain/pos_error.dart';
 import 'package:bb_mobile/features/pos/domain/pos_terminal.dart';
 
 /// Unsigned public GET of the Point of Sale row (kind pinned to pos). The
-/// terminal URL is constructed client-side from [terminalBaseUrl] + the nym; no
-/// server-echoed `public_url` is trusted (DG-P5).
+/// shared Bullnym client validates and returns the canonical public URL.
 class GetPosUsecase {
   final BullnymFacade _bullnym;
-  final String _terminalBaseUrl;
 
-  const GetPosUsecase(this._bullnym, {required this._terminalBaseUrl});
+  const GetPosUsecase(this._bullnym);
 
   Future<PosTerminal> execute({required String nym}) async {
     try {
@@ -19,10 +17,10 @@ class GetPosUsecase {
         kind: bullnymDonationPageKindPos,
       );
       return switch (result) {
-        Ok(:final value) => PosTerminal.fromBullnym(
-          value,
-          baseUrl: _terminalBaseUrl,
-        ),
+        Ok(:final value) => switch (PosTerminal.fromBullnym(value)) {
+          final terminal when terminal.nym == nym => terminal,
+          _ => throw const PosException.invalidServerResponse(),
+        },
         Err(:final failure) => throw PosException.fromBullnym(failure),
       };
     } on PosException {

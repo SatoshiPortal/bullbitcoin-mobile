@@ -16,9 +16,7 @@ void main() {
   setUp(() {
     client = RecordingBullnymClient();
     bullnym = BullnymFacade(client: client);
-    findPos = FindPosUsecase(
-      GetPosUsecase(bullnym, terminalBaseUrl: 'https://bullpay.ca'),
-    );
+    findPos = FindPosUsecase(GetPosUsecase(bullnym));
   });
 
   // A Lightning Address facade whose only exercised callback is

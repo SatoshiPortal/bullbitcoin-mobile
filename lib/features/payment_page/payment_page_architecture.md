@@ -14,7 +14,7 @@ There is ONE nym per seed, with three separate product wallets:
 - Donation Page → wallet **102** (`donation_pages.ct_descriptor`,
   `kind=payment_page`, keyed `(nym, kind)`). Reached via its OWN public URL and
   settles to its OWN wallet.
-- POS → wallet 103 (`kind=pos`, a future PR). Not built here.
+- POS → wallet 103 (`kind=pos`).
 
 Product copy states this explicitly: the Lightning address pays the Lightning
 Address wallet; the Donation Page has its own link and its own wallet.
@@ -45,19 +45,19 @@ recording fails, then apply the KC-6 posture (hidden on home + autosweep on).
 It is idempotent — a re-prepare returns the existing wallet without re-deriving
 or re-recording. A fundable-102-without-recovery-record state is impossible.
 
-## Single off-switch (DG-3)
+## Permanent names and exact capability gate
 
-The UI exposes ONE off-state: Deactivate = a signed archive (soft-delete;
-public URL shows a deactivation notice). Saves always send `enabled: true`;
-republishing is a save that revives the archived row. There is no separate
-`disabled` state and no `ct_descriptor: ''` code path.
+The screen reads `/version` first and exposes all name and availability UX only for the exact `permanent_names_v1` contract. Ownership is then reconstructed from the authenticated Lightning Address owner lookup; no name is stored by this feature. The nym is claimed only in Lightning Address settings. Donation Page may optionally make the account's one lifetime alias claim. That alias is shared with POS, read-only after claim, and can never be cleared, renamed, replaced, released, deactivated, reactivated, or reassigned. Omitting the alias from a save means preserve; the client has no clear/replace intent.
+
+Without an alias, the Page uses the server-returned nym route. With one, its canonical URL is the server-returned `/a/:alias` route. The shared Bullnym boundary validates the trusted origin and exact route before the product model accepts it; the mobile feature does not reconstruct public URLs.
+
+## Independent availability (DG-3)
+
+The Page's online switch writes only `kind=payment_page`: off is a signed soft archive and on is a save that revives that row. Lightning Address and POS stay as they are, and permanent nym/alias ownership never changes. Saves always send `enabled: true`; there is no separate disabled state or `ct_descriptor: ''` path.
 
 ## Stateless-local model
 
-The page's source of truth is the server row, read back via the public GET.
-There is NO local drift table and NO SharedPreferences state for page content —
-the wallet, its manifest record, and the remote row ARE the state (the Lightning
-Address model). No offline editing.
+The page's source of truth is the server row, read back via the public GET. There is NO local drift table and NO SharedPreferences state for page content or public-name ownership — the wallet, its manifest record, authenticated owner lookup, and remote row are the state. An app-state wipe therefore reconstructs the same permanent alias from Bullnym. No offline editing.
 
 ## Recovery heal (DG-3, §3.12)
 
@@ -87,8 +87,4 @@ Archived legacy Pages remain editable before re-publication so descriptions that
 
 ## Anti-scope
 
-No POS (`kind=pos`, index 103) anything; no Invoices or dashboard hub; no image
-upload (this fork does not manage the OG/avatar images); no QR / save-to-gallery
-(copy-to-clipboard + external open only). POS will reuse the shared bullnym
-donation-page client with `kind=pos` in a later PR — this feature adds the
-kind-parameterized seam but no POS values.
+No Invoices or dashboard hub; no image upload (this fork does not manage the OG/avatar images); no QR / save-to-gallery (copy-to-clipboard + external open only). POS remains a separate feature and wallet; the only shared product state is the server-owned permanent alias.

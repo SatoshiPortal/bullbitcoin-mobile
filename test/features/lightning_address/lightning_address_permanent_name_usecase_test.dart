@@ -117,6 +117,7 @@ void main() {
         expect(result.active, isTrue);
         expect(result.lightningAddress, 'alice@pay2.bull-wallet.com');
         expect(result.permanentNameStatus?.nym, 'alice');
+        expect(result.permanentNameStatus?.alias, 'coffee');
         expect(result.permanentNameStatus?.lightningAddressOnline, isTrue);
         expect(result.permanentNameStatus?.quota.used, 1);
         expect(result.permanentNameStatus?.quota.cap, 1);

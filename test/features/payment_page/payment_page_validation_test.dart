@@ -138,6 +138,27 @@ void main() {
     });
   });
 
+  group('optional permanent alias', () {
+    test('normalizes once and validates the exact shared-name contract', () {
+      expect(normalizePaymentPageAlias('  Shop-21  '), 'shop-21');
+      expect(isValidPaymentPageAliasClaim(null), isTrue);
+      expect(isValidPaymentPageAliasClaim('shop-21'), isTrue);
+      expect(isValidPaymentPageAliasClaim('-shop'), isFalse);
+      expect(isValidPaymentPageAliasClaim('pos'), isFalse);
+      expect(isValidPaymentPageAliasClaim('a' * 33), isFalse);
+    });
+
+    test('an explicit invalid alias is the first invalid field', () {
+      const command = SavePaymentPageCommand(
+        aliasClaim: 'pos',
+        header: 'Tip me',
+        description: 'Support my work',
+        displayCurrency: 'CAD',
+      );
+      expect(command.firstInvalidField(), PaymentPageField.alias);
+    });
+  });
+
   group('SavePaymentPageCommand', () {
     test('flags the first invalid field in form order', () {
       expect(
@@ -198,7 +219,7 @@ void main() {
   });
 
   group('PaymentPage.fromBullnym', () {
-    BullnymDonationPage view({String kind = 'payment_page'}) {
+    BullnymDonationPage view({String kind = 'payment_page', String? alias}) {
       return BullnymDonationPage(
         nym: 'alice',
         header: 'Tip me',
@@ -211,7 +232,10 @@ void main() {
         posMode: false,
         enabled: true,
         isArchived: false,
-        publicUrl: 'https://bullpay.ca/alice',
+        alias: alias,
+        publicUrl: alias == null
+            ? 'https://bullpay.ca/alice'
+            : 'https://bullpay.ca/a/$alias',
       );
     }
 
@@ -219,6 +243,12 @@ void main() {
       final page = PaymentPage.fromBullnym(view());
       expect(page.nym, 'alice');
       expect(page.isActive, isTrue);
+    });
+
+    test('maps the server-owned alias and canonical URL', () {
+      final page = PaymentPage.fromBullnym(view(alias: 'shop'));
+      expect(page.alias, 'shop');
+      expect(page.publicUrl, 'https://bullpay.ca/a/shop');
     });
 
     test('isActive is false when archived', () {

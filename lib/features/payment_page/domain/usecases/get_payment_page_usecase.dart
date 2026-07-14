@@ -16,7 +16,10 @@ class GetPaymentPageUsecase {
         kind: bullnymDonationPageKindPaymentPage,
       );
       return switch (result) {
-        Ok(:final value) => PaymentPage.fromBullnym(value),
+        Ok(:final value) => switch (PaymentPage.fromBullnym(value)) {
+          final page when page.nym == nym => page,
+          _ => throw const PaymentPageException.invalidServerResponse(),
+        },
         Err(:final failure) => throw PaymentPageException.fromBullnym(failure),
       };
     } on PaymentPageException {

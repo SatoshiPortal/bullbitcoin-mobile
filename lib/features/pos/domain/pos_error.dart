@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 enum PosErrorKind {
   invalidInput,
+  aliasTaken,
+  aliasAlreadyAssigned,
   noNym,
   noDefaultBitcoinWallet,
   localPreparationFailed,
@@ -22,15 +24,23 @@ sealed class PosException implements Exception {
   final PosErrorKind kind;
   final String code;
   final bool retryable;
+  final String? ownedAlias;
 
   const PosException._({
     required this.kind,
     required this.code,
     required this.retryable,
+    this.ownedAlias,
   });
 
   const factory PosException.invalidInput({required String code}) =
       PosInvalidInputException;
+
+  const factory PosException.aliasTaken() = PosAliasTakenException;
+
+  const factory PosException.aliasAlreadyAssigned({
+    required String ownedAlias,
+  }) = PosAliasAlreadyAssignedException;
 
   const factory PosException.noNym() = PosNoNymException;
 
@@ -77,6 +87,12 @@ sealed class PosException implements Exception {
       BullnymFailureKind.timeout => const PosException.timeout(),
       BullnymFailureKind.serverRejectedRequest => switch (failure.code) {
         'DonationPageNotFound' => const PosException.notFound(),
+        'NameTaken' => const PosException.aliasTaken(),
+        'AliasAlreadyAssigned' => switch (failure.ownedNameDetails) {
+          BullnymOwnedAliasDetails(:final alias) =>
+            PosException.aliasAlreadyAssigned(ownedAlias: alias.value),
+          _ => const PosException.invalidServerResponse(),
+        },
         'DonationPageInvalid' => PosException.rejected(code: failure.code),
         'AuthError' => const PosException.authError(),
         _ =>
@@ -95,6 +111,8 @@ sealed class PosException implements Exception {
 
   String toTranslated(BuildContext context) => switch (kind) {
     PosErrorKind.invalidInput => context.loc.posErrorInvalidInput,
+    PosErrorKind.aliasTaken => context.loc.posAliasTaken,
+    PosErrorKind.aliasAlreadyAssigned => context.loc.posAliasAlreadyAssigned,
     PosErrorKind.noNym => context.loc.posErrorNoNym,
     PosErrorKind.noDefaultBitcoinWallet => context.loc.posErrorNoDefaultWallet,
     PosErrorKind.localPreparationFailed => context.loc.posErrorSetupFailed,
@@ -116,6 +134,24 @@ sealed class PosException implements Exception {
 final class PosInvalidInputException extends PosException {
   const PosInvalidInputException({required super.code})
     : super._(kind: PosErrorKind.invalidInput, retryable: false);
+}
+
+final class PosAliasTakenException extends PosException {
+  const PosAliasTakenException()
+    : super._(
+        kind: PosErrorKind.aliasTaken,
+        code: 'NameTaken',
+        retryable: false,
+      );
+}
+
+final class PosAliasAlreadyAssignedException extends PosException {
+  const PosAliasAlreadyAssignedException({required super.ownedAlias})
+    : super._(
+        kind: PosErrorKind.aliasAlreadyAssigned,
+        code: 'AliasAlreadyAssigned',
+        retryable: false,
+      );
 }
 
 final class PosNoNymException extends PosException {
@@ -221,6 +257,8 @@ bool _isPosSubmissionUncertain(PosException cause) {
     PosErrorKind.server ||
     PosErrorKind.invalidServerResponse => true,
     PosErrorKind.invalidInput ||
+    PosErrorKind.aliasTaken ||
+    PosErrorKind.aliasAlreadyAssigned ||
     PosErrorKind.noNym ||
     PosErrorKind.noDefaultBitcoinWallet ||
     PosErrorKind.localPreparationFailed ||
@@ -243,12 +281,22 @@ final class PosProvisionException extends PosException {
   PosProvisionException.localPreparation({required this.cause})
     : phase = PosProvisionFailurePhase.localPreparation,
       submissionMayBeUncertain = false,
-      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+      super._(
+        kind: cause.kind,
+        code: cause.code,
+        retryable: cause.retryable,
+        ownedAlias: cause.ownedAlias,
+      );
 
   PosProvisionException.submission({required this.cause})
     : phase = PosProvisionFailurePhase.submission,
       submissionMayBeUncertain = _isPosSubmissionUncertain(cause),
-      super._(kind: cause.kind, code: cause.code, retryable: cause.retryable);
+      super._(
+        kind: cause.kind,
+        code: cause.code,
+        retryable: cause.retryable,
+        ownedAlias: cause.ownedAlias,
+      );
 
   @override
   String toTranslated(BuildContext context) => cause.toTranslated(context);

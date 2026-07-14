@@ -30,7 +30,6 @@ void main() {
     usecase = ArchivePosUsecase(
       resolveIdentity: resolveIdentity,
       bullnym: bullnym,
-      terminalBaseUrl: 'https://bullpay.ca',
     );
     when(() => resolveIdentity.execute()).thenAnswer((_) async => identity);
   });

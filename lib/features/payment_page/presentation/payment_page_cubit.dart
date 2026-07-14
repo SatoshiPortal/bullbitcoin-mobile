@@ -1,27 +1,24 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
-import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
-import 'package:bb_mobile/features/payment_page/domain/usecases/resolve_payment_page_identity_usecase.dart';
+import 'package:bb_mobile/features/payment_page/domain/usecases/get_payment_page_permanent_name_usecase.dart';
 import 'package:bb_mobile/features/payment_page/presentation/payment_page_state.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Drives the Donation Page editor. Reaches other features only through the
-/// [PaymentPageFacade] and the [LightningAddressFacade] (the DG-6 nym step). An
+/// [PaymentPageFacade] plus the feature-owned permanent-name read usecase. An
 /// [_operationId] guard makes double-taps and stale async completions inert.
 class PaymentPageCubit extends Cubit<PaymentPageState> {
-  static const _nymNotFoundCode = 'NymNotFound';
-
   final PaymentPageFacade _facade;
-  final LightningAddressFacade _lightningAddress;
+  final GetPaymentPagePermanentNameUsecase _getPermanentName;
   final GetGetPaidWalletBehaviorsUsecase _getWalletBehaviors;
   final UpdateWalletBehaviorUsecase _updateWalletBehavior;
   int _operationId = 0;
 
   PaymentPageCubit({
     required this._facade,
-    required this._lightningAddress,
+    required this._getPermanentName,
     required this._getWalletBehaviors,
     required this._updateWalletBehavior,
   }) : super(const PaymentPageState());
@@ -42,44 +39,61 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     final walletBehavior = await _resolveWalletBehavior();
     if (_isStale(op)) return;
 
-    final String nym;
+    final PaymentPagePermanentName permanentName;
     try {
-      final status = await _lightningAddress.lookupWalletOwnedRegistration();
-      nym = status.nym;
-    } on LightningAddressException catch (e) {
-      if (_isStale(op)) return;
-      if (e.code == _nymNotFoundCode) {
-        emit(
-          state.copyWith(
-            status: PaymentPageStatus.needsNym,
-            walletBehavior: walletBehavior,
-            clearWalletBehavior: walletBehavior == null,
-          ),
-        );
-        return;
-      }
-      emit(
-        state.copyWith(
-          status: PaymentPageStatus.loadFailed,
-          failure: paymentPageExceptionFromLightningAddress(e),
-          walletBehavior: walletBehavior,
-          clearWalletBehavior: walletBehavior == null,
-        ),
-      );
-      return;
+      permanentName = await _getPermanentName.execute();
     } catch (e, stack) {
-      log.warning('Donation Page nym probe failed', error: e, trace: stack);
+      log.warning(
+        'Donation Page permanent-name probe failed',
+        error: e,
+        trace: stack,
+      );
       if (_isStale(op)) return;
       emit(
         state.copyWith(
           status: PaymentPageStatus.loadFailed,
-          failure: const PaymentPageException.unexpected(),
+          failure: _asPaymentPageException(e),
           walletBehavior: walletBehavior,
           clearWalletBehavior: walletBehavior == null,
         ),
       );
       return;
     }
+    if (_isStale(op)) return;
+
+    if (!permanentName.supported) {
+      emit(
+        state.copyWith(
+          status: PaymentPageStatus.unsupported,
+          nym: '',
+          aliasDraft: '',
+          clearPage: true,
+          clearPermanentAlias: true,
+          clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+
+    final nym = permanentName.nym;
+    if (nym == null) {
+      emit(
+        state.copyWith(
+          status: PaymentPageStatus.needsNym,
+          nym: '',
+          aliasDraft: '',
+          clearPage: true,
+          clearPermanentAlias: true,
+          clearFailure: true,
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+    final permanentAlias = permanentName.alias;
 
     // Currencies degrade to the fallback rather than blocking the editor.
     var currencies = const <DisplayCurrency>[];
@@ -115,11 +129,27 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     }
     if (_isStale(op)) return;
 
+    if (page != null && (page.nym != nym || page.alias != permanentAlias)) {
+      emit(
+        state.copyWith(
+          status: PaymentPageStatus.loadFailed,
+          nym: nym,
+          failure: const PaymentPageException.invalidServerResponse(),
+          walletBehavior: walletBehavior,
+          clearWalletBehavior: walletBehavior == null,
+        ),
+      );
+      return;
+    }
+
     if (page == null) {
       emit(
         state.copyWith(
           status: PaymentPageStatus.create,
           nym: nym,
+          permanentAlias: permanentAlias,
+          clearPermanentAlias: permanentAlias == null,
+          aliasDraft: '',
           currencies: currencies,
           currenciesUnavailable: currenciesUnavailable,
           displayCurrency: _defaultCurrency(currencies),
@@ -144,6 +174,9 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
             : PaymentPageStatus.edit,
         nym: nym,
         page: page,
+        permanentAlias: permanentAlias,
+        clearPermanentAlias: permanentAlias == null,
+        aliasDraft: '',
         currencies: currencies,
         currenciesUnavailable: currenciesUnavailable,
         header: page.header,
@@ -181,8 +214,13 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     }
   }
 
-  void nymDraftChanged(String value) =>
-      emit(state.copyWith(nymDraft: value, clearFailure: true));
+  void aliasDraftChanged(String value) => emit(
+    state.copyWith(
+      aliasDraft: normalizePaymentPageAlias(value),
+      clearFailure: true,
+      clearInvalidField: state.invalidField == PaymentPageField.alias,
+    ),
+  );
 
   void headerChanged(String value) => emit(
     state.copyWith(
@@ -232,31 +270,13 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     ),
   );
 
-  /// DG-6: register the nym (and wallet 101) through the shared Lightning
-  /// Address facade, then reload into the create form.
-  Future<void> createNym() async {
-    if (state.submitting) return;
-    emit(state.copyWith(submitting: true, clearFailure: true));
-    try {
-      await _lightningAddress.registerWalletOwned(nym: state.nymDraft.trim());
-      if (isClosed) return;
-      emit(state.copyWith(submitting: false));
-      await load();
-    } catch (e, stack) {
-      log.warning(
-        'Donation Page nym registration failed',
-        error: e,
-        trace: stack,
-      );
-      if (isClosed) return;
-      emit(
-        state.copyWith(submitting: false, failure: _asPaymentPageException(e)),
-      );
-    }
-  }
-
   Future<void> save() async {
-    if (state.submitting) return;
+    if (state.submitting ||
+        (state.status != PaymentPageStatus.create &&
+            state.status != PaymentPageStatus.edit &&
+            state.status != PaymentPageStatus.archived)) {
+      return;
+    }
 
     // Normalize the website + social handles at submit time and reflect the
     // result back into form state (the user sees `aa.com` become
@@ -277,6 +297,7 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     }
 
     final command = state.command;
+    final expectedAlias = state.permanentAlias ?? command.normalizedAliasClaim;
     final invalidField = command.firstInvalidField();
     if (invalidField != null) {
       emit(
@@ -300,6 +321,11 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     try {
       final page = await _facade.save(command);
       if (isClosed || _isStale(op)) return;
+      if (page.nym != state.nym || page.alias != expectedAlias) {
+        throw PaymentPageSaveException.submission(
+          cause: const PaymentPageException.invalidServerResponse(),
+        );
+      }
       // Saving provisions wallet 102, so refresh its resolved behavior.
       final walletBehavior = await _resolveWalletBehavior();
       if (isClosed || _isStale(op)) return;
@@ -310,6 +336,9 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
               ? PaymentPageStatus.archived
               : PaymentPageStatus.edit,
           page: page,
+          permanentAlias: page.alias,
+          clearPermanentAlias: page.alias == null,
+          aliasDraft: '',
           header: page.header,
           description: page.description,
           displayCurrency: page.displayCurrency,
@@ -323,11 +352,18 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
       );
     } on PaymentPageSaveException catch (e) {
       if (isClosed || _isStale(op)) return;
+      final ownedAlias = e.ownedAlias;
       emit(
         state.copyWith(
           submitting: false,
           failure: e,
           submissionUncertain: e.submissionMayBeUncertain,
+          permanentAlias: ownedAlias,
+          aliasDraft: ownedAlias == null ? state.aliasDraft : '',
+          invalidField: e.kind == PaymentPageErrorKind.aliasTaken
+              ? PaymentPageField.alias
+              : null,
+          clearInvalidField: e.kind != PaymentPageErrorKind.aliasTaken,
         ),
       );
     } catch (e, stack) {
@@ -340,7 +376,7 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
   }
 
   Future<void> archive() async {
-    if (state.submitting) return;
+    if (state.submitting || state.status != PaymentPageStatus.edit) return;
     final op = ++_operationId;
     emit(state.copyWith(submitting: true, clearFailure: true));
     try {
@@ -355,6 +391,16 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
         state.copyWith(submitting: false, failure: _asPaymentPageException(e)),
       );
     }
+  }
+
+  /// Changes only Payment Page availability. The signed writes remain pinned
+  /// to `kind=payment_page`; Lightning Address and POS are never touched.
+  Future<void> setOnline(bool online) async {
+    if (online) {
+      if (state.status == PaymentPageStatus.archived) await save();
+      return;
+    }
+    if (state.status == PaymentPageStatus.edit) await archive();
   }
 
   /// Updates the reserved wallet's auto-sweep / hide-on-home behavior with the
@@ -435,9 +481,6 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
 
   PaymentPageException _asPaymentPageException(Object error) {
     if (error is PaymentPageException) return error;
-    if (error is LightningAddressException) {
-      return paymentPageExceptionFromLightningAddress(error);
-    }
     return const PaymentPageException.unexpected();
   }
 }

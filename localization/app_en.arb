@@ -1281,6 +1281,93 @@
   "@paymentPageCreateNymButton": {
     "description": "Button to register the nym and continue to the Donation Page form"
   },
+  "paymentPagePermanentNamesUnavailableTitle": "Donation Page unavailable",
+  "@paymentPagePermanentNamesUnavailableTitle": {
+    "description": "Title shown when the server does not advertise the exact permanent-name contract required by Donation Page"
+  },
+  "paymentPagePermanentNamesUnavailableBody": "This server does not support the permanent-name contract required to manage your Donation Page. Your wallet controls are still available.",
+  "@paymentPagePermanentNamesUnavailableBody": {
+    "description": "Fail-closed explanation shown when exact permanent-name capability support is absent"
+  },
+  "paymentPageNeedsPermanentNymTitle": "Claim your permanent name first",
+  "@paymentPageNeedsPermanentNymTitle": {
+    "description": "Title shown when Donation Page requires an existing permanent nym"
+  },
+  "paymentPageNeedsPermanentNymBody": "Claim your permanent name in Lightning Address settings, then return here. Donation Page cannot claim or change it.",
+  "@paymentPageNeedsPermanentNymBody": {
+    "description": "Explains that nym ownership is established only through Lightning Address settings"
+  },
+  "paymentPageAliasLabel": "Optional public alias",
+  "@paymentPageAliasLabel": {
+    "description": "Label for the optional first permanent alias claim on Donation Page"
+  },
+  "paymentPageAliasHelper": "One shared alias for Donation Page and Point of Sale. Once claimed, it cannot be changed, cleared, or replaced.",
+  "@paymentPageAliasHelper": {
+    "description": "Explains alias sharing and permanence before the first claim"
+  },
+  "paymentPageAliasInvalid": "Use 1–32 lowercase letters, numbers, or internal hyphens",
+  "@paymentPageAliasInvalid": {
+    "description": "Validation error for a first Donation Page alias claim"
+  },
+  "paymentPageAliasReadOnly": "Permanent alias shared with Point of Sale. It cannot be changed, cleared, or replaced.",
+  "@paymentPageAliasReadOnly": {
+    "description": "Read-only explanation shown after the shared alias is claimed"
+  },
+  "paymentPageAliasTaken": "That alias is already claimed. Choose another.",
+  "@paymentPageAliasTaken": {
+    "description": "Structured shared-namespace conflict shown when a requested alias is unavailable"
+  },
+  "paymentPageAliasAlreadyAssigned": "Your account already owns a permanent alias. Reloading the server-owned alias.",
+  "@paymentPageAliasAlreadyAssigned": {
+    "description": "Structured conflict shown when the account already has a different permanent alias"
+  },
+  "paymentPageAliasConfirmTitle": "Claim this alias permanently?",
+  "@paymentPageAliasConfirmTitle": {
+    "description": "Title of the first permanent Donation Page alias confirmation dialog"
+  },
+  "paymentPageAliasConfirmBody": "{alias} will be shared by your Donation Page and Point of Sale. This lifetime claim cannot be renamed, cleared, replaced, or reassigned. It does not change your Lightning Address.",
+  "@paymentPageAliasConfirmBody": {
+    "description": "Explains the irreversible shared alias claim",
+    "placeholders": {
+      "alias": {"type": "String"}
+    }
+  },
+  "paymentPageAliasConfirmCancel": "Review",
+  "@paymentPageAliasConfirmCancel": {
+    "description": "Cancel action for the first permanent alias confirmation"
+  },
+  "paymentPageAliasConfirmSubmit": "Claim permanently",
+  "@paymentPageAliasConfirmSubmit": {
+    "description": "Confirm action for the first permanent alias claim"
+  },
+  "paymentPageOnlineToggleLabel": "Donation Page online",
+  "@paymentPageOnlineToggleLabel": {
+    "description": "Label for the Donation Page-specific availability switch"
+  },
+  "paymentPageOnlineToggleBody": "Controls only your Donation Page. Lightning Address and Point of Sale stay as they are.",
+  "@paymentPageOnlineToggleBody": {
+    "description": "Explains independent Donation Page availability"
+  },
+  "paymentPageTurnOffConfirmTitle": "Turn off Donation Page?",
+  "@paymentPageTurnOffConfirmTitle": {
+    "description": "Title of the Donation Page-specific turn-off confirmation"
+  },
+  "paymentPageTurnOffConfirmBody": "Your Donation Page will show an offline notice. Your permanent names remain claimed, and Lightning Address and Point of Sale stay as they are.",
+  "@paymentPageTurnOffConfirmBody": {
+    "description": "Explains effects and non-effects of turning off Donation Page"
+  },
+  "paymentPageTurnOffConfirmCancel": "Keep online",
+  "@paymentPageTurnOffConfirmCancel": {
+    "description": "Cancel action for turning off Donation Page"
+  },
+  "paymentPageTurnOffConfirmSubmit": "Turn off",
+  "@paymentPageTurnOffConfirmSubmit": {
+    "description": "Confirm action for turning off Donation Page"
+  },
+  "paymentPageSaveAndTurnOnButton": "Save and turn on Donation Page",
+  "@paymentPageSaveAndTurnOnButton": {
+    "description": "Primary action that saves edits and turns an archived Donation Page back on"
+  },
   "paymentPageArchivedTitle": "Donation Page deactivated",
   "@paymentPageArchivedTitle": {
     "description": "Title of the archived Donation Page view"
@@ -1375,6 +1462,89 @@
   "posCreateNymButton": "Continue",
   "@posCreateNymButton": {
     "description": "Button to register the nym and continue to the Point of Sale form"
+  },
+  "posPermanentNamesUnavailableTitle": "Point of Sale unavailable",
+  "@posPermanentNamesUnavailableTitle": {
+    "description": "Title shown when the server does not advertise the exact permanent-name contract required by Point of Sale"
+  },
+  "posPermanentNamesUnavailableBody": "This server does not support the permanent-name contract required to manage your Point of Sale. Your wallet controls are still available.",
+  "@posPermanentNamesUnavailableBody": {
+    "description": "Fail-closed explanation shown when exact permanent-name capability support is absent"
+  },
+  "posNeedsPermanentNymTitle": "Claim your permanent name first",
+  "@posNeedsPermanentNymTitle": {
+    "description": "Title shown when Point of Sale requires an existing permanent nym"
+  },
+  "posNeedsPermanentNymBody": "Claim your permanent name in Lightning Address settings, then return here. Point of Sale cannot claim or change it.",
+  "@posNeedsPermanentNymBody": {
+    "description": "Explains that nym ownership is established only through Lightning Address settings"
+  },
+  "posAliasLabel": "Optional public alias",
+  "@posAliasLabel": {
+    "description": "Label for the optional first permanent alias claim on Point of Sale"
+  },
+  "posAliasHelper": "One shared alias for Donation Page and Point of Sale. Once claimed, it cannot be changed, cleared, or replaced.",
+  "@posAliasHelper": {
+    "description": "Explains alias sharing and permanence before the first claim"
+  },
+  "posAliasInvalid": "Use 1–32 lowercase letters, numbers, or internal hyphens",
+  "@posAliasInvalid": {
+    "description": "Validation error for a first Point of Sale alias claim"
+  },
+  "posAliasReadOnly": "Permanent alias shared with Donation Page. It cannot be changed, cleared, or replaced.",
+  "@posAliasReadOnly": {
+    "description": "Read-only explanation shown after the shared alias is claimed"
+  },
+  "posAliasTaken": "That alias is already claimed. Choose another.",
+  "@posAliasTaken": {
+    "description": "Structured shared-namespace conflict shown when a requested alias is unavailable"
+  },
+  "posAliasAlreadyAssigned": "Your account already owns a permanent alias. Reloading the server-owned alias.",
+  "@posAliasAlreadyAssigned": {
+    "description": "Structured conflict shown when the account already has a different permanent alias"
+  },
+  "posAliasConfirmTitle": "Claim this alias permanently?",
+  "@posAliasConfirmTitle": {
+    "description": "Title of the first permanent Point of Sale alias confirmation dialog"
+  },
+  "posAliasConfirmBody": "{alias} will be shared by your Donation Page and Point of Sale. This lifetime claim cannot be renamed, cleared, replaced, or reassigned. It does not change your Lightning Address.",
+  "@posAliasConfirmBody": {
+    "description": "Explains the irreversible shared alias claim",
+    "placeholders": {
+      "alias": {"type": "String"}
+    }
+  },
+  "posAliasConfirmCancel": "Review",
+  "@posAliasConfirmCancel": {
+    "description": "Cancel action for the first permanent alias confirmation"
+  },
+  "posAliasConfirmSubmit": "Claim permanently",
+  "@posAliasConfirmSubmit": {
+    "description": "Confirm action for the first permanent alias claim"
+  },
+  "posOnlineToggleLabel": "Point of Sale online",
+  "@posOnlineToggleLabel": {
+    "description": "Label for the Point of Sale-specific availability switch"
+  },
+  "posOnlineToggleBody": "Controls only your Point of Sale. Lightning Address and Donation Page stay as they are.",
+  "@posOnlineToggleBody": {
+    "description": "Explains independent Point of Sale availability"
+  },
+  "posTurnOffConfirmTitle": "Turn off Point of Sale?",
+  "@posTurnOffConfirmTitle": {
+    "description": "Title of the Point of Sale-specific turn-off confirmation"
+  },
+  "posTurnOffConfirmBody": "Your Point of Sale will show an offline notice. Your permanent names remain claimed, and Lightning Address and Donation Page stay as they are.",
+  "@posTurnOffConfirmBody": {
+    "description": "Explains effects and non-effects of turning off Point of Sale"
+  },
+  "posTurnOffConfirmCancel": "Keep online",
+  "@posTurnOffConfirmCancel": {
+    "description": "Cancel action for turning off Point of Sale"
+  },
+  "posTurnOffConfirmSubmit": "Turn off",
+  "@posTurnOffConfirmSubmit": {
+    "description": "Confirm action for turning off Point of Sale"
   },
   "posRoutingNotice": "Your Lightning address pays into your Lightning Address wallet — even with a Point of Sale. Your Point of Sale has its own till link and its own wallet.",
   "@posRoutingNotice": {

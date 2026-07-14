@@ -12,12 +12,10 @@ import 'package:bb_mobile/features/pos/domain/usecases/resolve_pos_identity_usec
 class ArchivePosUsecase {
   final ResolvePosIdentityUsecase _resolveIdentity;
   final BullnymFacade _bullnym;
-  final String _terminalBaseUrl;
 
   const ArchivePosUsecase({
     required this._resolveIdentity,
     required this._bullnym,
-    required this._terminalBaseUrl,
   });
 
   /// Returns the archived terminal, or null when it was already archived /
@@ -31,7 +29,11 @@ class ArchivePosUsecase {
     );
     switch (result) {
       case Ok(:final value):
-        return PosTerminal.fromBullnym(value, baseUrl: _terminalBaseUrl);
+        final terminal = PosTerminal.fromBullnym(value);
+        if (terminal.nym != identity.nym) {
+          throw const PosException.invalidServerResponse();
+        }
+        return terminal;
       case Err(:final failure):
         final mapped = PosException.fromBullnym(failure);
         if (mapped.kind == PosErrorKind.notFound) {

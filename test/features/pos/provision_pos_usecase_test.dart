@@ -43,7 +43,6 @@ void main() {
       prepareWallet: prepareWallet,
       bullnym: bullnym,
       getPaidSettings: getPaidSettings,
-      terminalBaseUrl: 'https://bullpay.ca',
     );
 
     when(() => resolveIdentity.execute()).thenAnswer((_) async => identity);
@@ -74,7 +73,7 @@ void main() {
 
       expect(terminal.nym, 'alice');
       expect(terminal.label, 'My Till');
-      // DG-P5: the terminal URL is constructed client-side, never the server echo.
+      // The shared client validates the server-owned canonical terminal URL.
       expect(terminal.terminalUrl, 'https://bullpay.ca/alice/pos');
       verify(() => resolveIdentity.execute()).called(1);
       verify(() => prepareWallet.execute()).called(1);
@@ -269,5 +268,46 @@ void main() {
     final saved = client.saveCalls.single;
     expect(saved.ctDescriptor, 'ct(minimal)');
     expect(saved.ctDescriptor, isNotEmpty);
+  });
+
+  test(
+    'first alias claim uses the shared typed intent and server POS URL',
+    () async {
+      stubPrepared();
+
+      final terminal = await usecase.execute(
+        label: 'My Till',
+        displayCurrency: 'CAD',
+        aliasClaim: ' Shop ',
+      );
+
+      expect(client.saveCalls.single.aliasIntent, isA<BullnymAliasClaim>());
+      expect(terminal.alias, 'shop');
+      expect(terminal.terminalUrl, 'https://bullpay.ca/a/shop/pos');
+    },
+  );
+
+  test('omitted alias can only preserve the server-owned value', () async {
+    stubPrepared();
+    client.storedPage = const BullnymDonationPage(
+      nym: 'alice',
+      header: 'Old Till',
+      description: '',
+      displayCurrency: 'CAD',
+      kind: 'pos',
+      posMode: false,
+      enabled: true,
+      isArchived: false,
+      alias: 'shop',
+      publicUrl: 'https://bullpay.ca/a/shop/pos',
+    );
+
+    final terminal = await usecase.execute(
+      label: 'My Till',
+      displayCurrency: 'CAD',
+    );
+
+    expect(client.saveCalls.single.aliasIntent, isA<BullnymAliasPreserve>());
+    expect(terminal.alias, 'shop');
   });
 }

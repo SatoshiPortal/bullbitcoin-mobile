@@ -24,11 +24,13 @@ class LightningAddressStatus {
 
 class LightningAddressPermanentNameStatus {
   final String nym;
+  final String? alias;
   final bool lightningAddressOnline;
   final LightningAddressPermanentNameQuota quota;
 
   const LightningAddressPermanentNameStatus({
     required this.nym,
+    this.alias,
     required this.lightningAddressOnline,
     required this.quota,
   });

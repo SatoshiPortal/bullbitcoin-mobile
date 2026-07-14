@@ -14,6 +14,7 @@ class PaymentPage {
   final String? instagram;
   final bool enabled;
   final bool isArchived;
+  final String? alias;
   final String publicUrl;
 
   const PaymentPage({
@@ -26,6 +27,7 @@ class PaymentPage {
     this.instagram,
     required this.enabled,
     required this.isArchived,
+    this.alias,
     required this.publicUrl,
   });
 
@@ -49,6 +51,7 @@ class PaymentPage {
       instagram: page.instagram,
       enabled: page.enabled,
       isArchived: page.isArchived,
+      alias: page.alias,
       publicUrl: page.publicUrl,
     );
   }
