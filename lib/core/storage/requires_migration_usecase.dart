@@ -36,9 +36,19 @@ class RequiresMigrationUsecase {
       return null;
     }
 
-    final fromVersion = await _migrationSecureStorageDatasource.fetch(
-      key: OldStorageKeys.version.name,
-    );
+    final String? fromVersion;
+    try {
+      fromVersion = await _migrationSecureStorageDatasource.fetch(
+        key: OldStorageKeys.version.name,
+      );
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to read legacy migration marker',
+        error: e,
+        trace: st,
+      );
+      rethrow;
+    }
     if (fromVersion == null) {
       log.fine('FINE: Migration not required');
       return null;

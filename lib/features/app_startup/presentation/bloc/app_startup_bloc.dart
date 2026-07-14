@@ -184,15 +184,20 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         'App startup blocked on keychain (device not unlocked since '
         'boot) — staying on splash, will retry on lifecycle resumed',
       );
-    } catch (e) {
+    } catch (e, st) {
+      // Log unconditionally: this is the only place the actual startup
+      // exception is captured — AppStartupFailureScreen shows a generic
+      // message with no error detail, so without this the root cause
+      // never reaches the log file (or "Share logs") at all.
+      log.severe(message: 'App startup failed', error: e, trace: st);
       bool hasBackup;
       try {
         // Check if there is a backup available
         hasBackup = await _checkBackupUsecase.execute();
-      } catch (_) {
+      } catch (backupCheckError) {
         log.severe(
           message: 'Failed to check for backup availability during app startup',
-          error: e,
+          error: backupCheckError,
           trace: StackTrace.current,
         );
         hasBackup = false;

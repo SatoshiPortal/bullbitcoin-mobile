@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppInitErrorScreen extends StatefulWidget {
@@ -24,17 +24,10 @@ class AppInitErrorScreen extends StatefulWidget {
 class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
   Language _language = Language.fromKeyboard();
 
-  Future<void> _shareLogs(BuildContext context) async {
+  Future<void> _shareLogs(BuildContext context, AppLocalizations loc) async {
     try {
       final logs = await log.readLogs();
-      if (!context.mounted) return;
-      await SharePlus.instance.share(
-        ShareParams(
-          text: logs.join('\n'),
-          subject: 'bull_logs.tsv',
-          title: 'bull_logs.tsv',
-        ),
-      );
+      await shareLogsAsFile(logs);
     } catch (e) {
       log.severe(
         message: 'Failed to share logs',
@@ -42,7 +35,29 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
         trace: StackTrace.current,
       );
       if (!context.mounted) return;
-      SnackBarUtils.showSnackBar(context, 'Failed to share logs: $e');
+      SnackBarUtils.showSnackBar(
+        context,
+        loc.errorSharingLogsMessage(e.toString()),
+      );
+    }
+  }
+
+  Future<void> _exportLogs(BuildContext context, AppLocalizations loc) async {
+    try {
+      final logs = await log.readLogs();
+      final saved = await exportLogsAsFile(logs);
+      if (!context.mounted) return;
+      if (saved) {
+        SnackBarUtils.showSnackBar(context, loc.logsExportedMessage);
+      }
+    } catch (e) {
+      log.severe(
+        message: 'Failed to export logs',
+        error: e,
+        trace: StackTrace.current,
+      );
+      if (!context.mounted) return;
+      SnackBarUtils.showSnackBar(context, loc.logsExportFailedMessage);
     }
   }
 
@@ -128,7 +143,18 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       textColor: context.appColors.text,
                       borderColor: context.appColors.border,
                       outlined: true,
-                      onPressed: () => _shareLogs(context),
+                      onPressed: () => _shareLogs(context, loc),
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: loc.logsShareOptionExport,
+                      iconData: Icons.file_download_outlined,
+                      iconFirst: true,
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.text,
+                      borderColor: context.appColors.border,
+                      outlined: true,
+                      onPressed: () => _exportLogs(context, loc),
                     ),
                     const Gap(12),
                     BBButton.big(
