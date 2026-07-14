@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -209,6 +211,74 @@ void main() {
           verify(() => labels.store(captureAny())).captured.single as NewLabel;
       expect(captured.label, LabelSystem.payjoin.label);
       expect(captured.reference, 'sender-orig-txid');
+    });
+  });
+
+  group('_processExpiredPayjoin sender terminal emission (#2246)', () {
+    // These drive the expiredPayjoins stream directly to exercise the
+    // repository's terminal-emission semantics on the send flow.
+    late StreamController<PayjoinModel> expiredController;
+
+    setUp(() {
+      expiredController = StreamController<PayjoinModel>.broadcast();
+      when(
+        () => pdk.expiredPayjoins,
+      ).thenAnswer((_) => expiredController.stream);
+      repository = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        labelsFacade: () => labels,
+      );
+    });
+
+    tearDown(() => expiredController.close());
+
+    test('emits only the completed result (no interim expired) when the '
+        'fallback broadcast succeeds', () async {
+      final model = _senderModel(originalTxId: 'sender-orig-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      expiredController.add(model.copyWith(isExpired: true));
+      await Future<void>.delayed(Duration.zero);
+
+      // Exactly one terminal event, and it is completed (not the interim
+      // expired one that would race the success on the send flow).
+      expect(emitted, hasLength(1));
+      expect(emitted.single.isCompleted, isTrue);
+      await sub.cancel();
+    });
+
+    test('emits the expired entity when the fallback broadcast fails so the '
+        'send flow does not hang', () async {
+      final model = _senderModel(originalTxId: 'sender-orig-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+      // Make the broadcast fail -> tryBroadcastOriginalTransaction returns null.
+      when(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenThrow(Exception('broadcast failed'));
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      expiredController.add(model.copyWith(isExpired: true));
+      await Future<void>.delayed(Duration.zero);
+
+      // A terminal expired event is still emitted so listeners aren't left
+      // hanging on "coordinating".
+      expect(emitted, hasLength(1));
+      expect(emitted.single.isExpired, isTrue);
+      await sub.cancel();
     });
   });
 }

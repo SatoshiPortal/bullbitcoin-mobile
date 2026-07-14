@@ -1961,19 +1961,15 @@ class SendCubit extends Cubit<SendState>
         );
         emit(state.copyWith(txId: txId));
       } else {
-        final paymentRequest = state.paymentRequest;
-        if (state.isToSelf != true &&
-            paymentRequest != null &&
-            paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.pj.isNotEmpty) {
-          emit(state.copyWith(broadcastingTransaction: false));
-        } else {
-          final txId = await _broadcastBitcoinTxUsecase.execute(
-            isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
-            isPsbt: isPsbt,
-          );
-          emit(state.copyWith(txId: txId));
-        }
+        // Payjoin sends are already broadcast asynchronously by the repository
+        // (and their state.txId is set in signTransaction), so they never
+        // reach here — the guard at the top of this method returns first. Only
+        // plain bitcoin sends broadcast at this point.
+        final txId = await _broadcastBitcoinTxUsecase.execute(
+          isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
+          isPsbt: isPsbt,
+        );
+        emit(state.copyWith(txId: txId));
       }
 
       if (state.lightningSwap != null) {
@@ -2068,11 +2064,17 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(step: SendStep.confirm));
         return;
       }
-      // Start watching the transaction to have the latest status
-      _watchWalletTransactionByTxId(
-        walletId: state.selectedWallet!.id,
-        txId: state.txId!,
-      );
+      // For a payjoin, _watchPayjoin (started in signTransaction) owns
+      // resolving the flow to success — it watches the payjoin session and
+      // sets the final txid. Starting the tx watcher here too would race it
+      // (both emit) and briefly surface the original txid. For all other
+      // sends, watch the broadcast tx for its latest status.
+      if (state.payjoinSender == null) {
+        _watchWalletTransactionByTxId(
+          walletId: state.selectedWallet!.id,
+          txId: state.txId!,
+        );
+      }
     } catch (e) {
       emit(state.copyWith(step: SendStep.confirm));
       log.severe(error: e, trace: StackTrace.current);
@@ -2169,11 +2171,19 @@ class SendCubit extends Cubit<SendState>
   ///   original txid so the payment still resolves.
   void _watchPayjoin(String payjoinId) {
     _payjoinSubscription?.cancel();
+    // Captured up front: the completion event fires arbitrarily later on a
+    // background poll, so read the wallet id now rather than force-unwrapping
+    // state.selectedWallet inside the async callback.
+    final walletId = state.selectedWallet?.id;
     _payjoinSubscription = _watchPayjoinUsecase
         .execute(ids: [payjoinId])
         .where((payjoin) => payjoin is PayjoinSender)
         .cast<PayjoinSender>()
         .listen((payjoin) {
+          // The payjoin poll lives in the repository and outlives this cubit;
+          // an event can arrive after the send flow is torn down. Never emit
+          // on a closed cubit (it throws).
+          if (isClosed) return;
           log.info(
             '[SendCubit] Watched payjoin ${payjoin.id} updated: '
             '${payjoin.status}',
@@ -2189,13 +2199,33 @@ class SendCubit extends Cubit<SendState>
               ),
             );
             _payjoinSubscription?.cancel();
-            unawaited(
-              _getWalletUsecase
-                  .execute(state.selectedWallet!.id, sync: true)
-                  .catchError((e) {
-                    log.warning('Failed to sync wallet after payjoin: $e');
-                    return null;
-                  }),
+            if (walletId != null) {
+              unawaited(
+                _getWalletUsecase.execute(walletId, sync: true).catchError((e) {
+                  log.warning('Failed to sync wallet after payjoin: $e');
+                  return null;
+                }),
+              );
+            }
+          } else if (payjoin.isExpired) {
+            // Terminal without a broadcast: the session expired and even the
+            // original-transaction fallback failed to broadcast (the repository
+            // emits the raw expired entity only in that case). Nothing hit the
+            // chain, so surface a broadcast failure and return to confirm so
+            // the user can retry, instead of hanging on "coordinating".
+            log.warning(
+              '[SendCubit] Payjoin ${payjoin.id} expired without broadcast',
+            );
+            _payjoinSubscription?.cancel();
+            emit(
+              state.copyWith(
+                payjoinSender: payjoin,
+                step: SendStep.confirm,
+                confirmTransactionException: ConfirmTransactionException(
+                  'Payjoin expired and the transaction could not be broadcast',
+                  isBroadcastFailure: true,
+                ),
+              ),
             );
           } else {
             emit(state.copyWith(payjoinSender: payjoin));

@@ -355,24 +355,30 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final payjoin = payjoinModel.toEntity();
 
-    _payjoinStreamController.add(payjoin);
-
     // TODO: Unfreeze the utxo used in the payjoin
 
     if (payjoin is PayjoinReceiver && payjoin.originalTxBytes != null) {
       // If the payjoin is a receiver and it has the original transaction bytes
       //  at expiration, we broadcast the original transaction automatically.
+      _payjoinStreamController.add(payjoin);
       await tryBroadcastOriginalTransaction(payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
       // The sender never received a proposal before expiry (the receiver
       //  didn't respond), so fall back to broadcasting the original
-      //  transaction — the payment must still go through. Emit the completed
-      //  result so the send flow can resolve to success instead of hanging on
-      //  the "coordinating" screen. Guard on proposalPsbt == null: once a
-      //  proposal arrived, _processPayjoinProposal owns finalizing/
-      //  broadcasting the payjoin transaction (same inputs).
+      //  transaction — the payment must still go through. Guard on
+      //  proposalPsbt == null: once a proposal arrived, _processPayjoinProposal
+      //  owns finalizing/broadcasting the payjoin transaction (same inputs).
+      //
+      //  Emit only the terminal outcome: the completed result on success (so
+      //  the send flow resolves to success), or the raw expired entity if the
+      //  fallback broadcast itself failed (so listeners see a terminal state
+      //  and don't hang on the "coordinating" screen). We deliberately do NOT
+      //  emit the interim expired entity before the fallback, which would race
+      //  the completed one on the stream.
       final result = await tryBroadcastOriginalTransaction(payjoin);
-      if (result != null) _payjoinStreamController.add(result);
+      _payjoinStreamController.add(result ?? payjoin);
+    } else {
+      _payjoinStreamController.add(payjoin);
     }
   }
 
