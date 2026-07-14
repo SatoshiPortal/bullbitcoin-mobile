@@ -219,23 +219,25 @@ void main() {
     );
   });
 
-  group('tryBroadcastOriginalTransaction labels the completed payjoin', () {
-    test('tags the original txid with the payjoin system label', () async {
+  // tryBroadcastOriginalTransaction is reached exclusively when no real
+  // payjoin happened: declined below the anti-probing minimum, the
+  // negotiation failed, or the session expired before a proposal was
+  // exchanged. The transaction it broadcasts is byte-for-byte the caller's
+  // own plain, single-party transaction, so it must never be tagged with the
+  // payjoin system label — that label should only ever mean "this send
+  // actually got CoinJoin-style privacy", which a plain fallback never did.
+  group('tryBroadcastOriginalTransaction never labels the fallback tx', () {
+    test('does not label a receiver fallback broadcast', () async {
       final model = _receiverModel(originalTxId: 'orig-txid');
       when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
-      when(
-        () => labels.store(any()),
-      ).thenAnswer((_) async => Ok<Label, LabelFailure>(_MockLabel()));
 
-      await repository.tryBroadcastOriginalTransaction(model.toEntity());
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
 
-      final captured =
-          verify(() => labels.store(captureAny())).captured.single as NewLabel;
-      expect(captured.label, LabelSystem.payjoin.label);
-      expect(captured.type, LabelType.transaction);
-      // The tx that actually landed on-chain is the ORIGINAL one.
-      expect(captured.reference, 'orig-txid');
-      expect(captured.origin, 'w1');
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
+      verifyNever(() => labels.store(any()));
     });
 
     test('does not label when the original txid is unknown', () async {
@@ -247,24 +249,7 @@ void main() {
       verifyNever(() => labels.store(any()));
     });
 
-    test('a labelling failure does not fail the broadcast', () async {
-      final model = _receiverModel(originalTxId: 'orig-txid');
-      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
-      when(() => labels.store(any())).thenAnswer(
-        (_) async => const Err<Label, LabelFailure>(LabelUnexpectedFailure()),
-      );
-
-      final result = await repository.tryBroadcastOriginalTransaction(
-        model.toEntity(),
-      );
-
-      // Best-effort labelling: the (already broadcast) payjoin still completes.
-      expect(result, isNotNull);
-    });
-  });
-
-  group('tryBroadcastOriginalTransaction sender fallback (#2246)', () {
-    test('broadcasts the sender original psbt and completes', () async {
+    test('does not label a sender fallback broadcast (#2246)', () async {
       final model = _senderModel(originalTxId: 'sender-orig-txid');
       when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
 
@@ -283,11 +268,7 @@ void main() {
       // And the session resolves as completed so the send flow can move on.
       expect(result, isNotNull);
       expect(result!.isCompleted, isTrue);
-      // The original tx gets labelled as payjoin for traceability.
-      final captured =
-          verify(() => labels.store(captureAny())).captured.single as NewLabel;
-      expect(captured.label, LabelSystem.payjoin.label);
-      expect(captured.reference, 'sender-orig-txid');
+      verifyNever(() => labels.store(any()));
     });
   });
 

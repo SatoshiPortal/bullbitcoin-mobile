@@ -311,18 +311,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
       final completedModel = model.copyWith(isCompleted: true);
       await _localPayjoinDatasource.update(completedModel);
-      // The payjoin negotiation didn't complete (we fell back to the original
-      // transaction), so the tx that actually landed on-chain is the ORIGINAL
-      // one — label originalTxId, not txId (which is the payjoin proposal tx
-      // and is typically null on this fallback path). The tx still originates
-      // from a payjoin flow, so tag it for consistent traceability.
-      final originalTxId = completedModel.originalTxId;
-      if (originalTxId != null) {
-        await _labelPayjoinTransaction(
-          txId: originalTxId,
-          walletId: completedModel.walletId,
-        );
-      }
+      // Deliberately NOT labelling this transaction "payjoin": every call
+      // site of this method is, by definition, a case where no real payjoin
+      // ever happened — declined below the anti-probing minimum, the
+      // negotiation failed, or the session expired before a proposal was
+      // exchanged. The tx that lands here is byte-for-byte the caller's own
+      // plain, single-party transaction; slapping a "payjoin" label on it
+      // would be misleading (e.g. to a user filtering their history by that
+      // label to see which sends actually got CoinJoin-style privacy). Only
+      // _onPayjoinTransactionSeen and _broadcastPsbt label a transaction —
+      // both reachable exclusively once a real proposal was exchanged.
       // If this receiver session had a proposal in flight (e.g. the user
       //  broadcast the original manually via "receive payment normally"
       //  while _watchForBroadcast was still armed for it), stop watching now
