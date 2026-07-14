@@ -1,32 +1,32 @@
 import 'package:bb_mobile/core/failures/failure.dart';
 
-/// Failures of the Coldcard firmware update flow. Any of these means no verified firmware: the UI must fail closed (no checkmark, no export).
+/// Failures of the Coldcard firmware update flow.
 sealed class ColdcardFirmwareFailure extends Failure {
   const ColdcardFirmwareFailure([super.logMessage]);
 }
 
-/// The firmware server or the manifest could not be reached.
+/// The firmware server or signed manifest could not be reached.
 final class ColdcardFirmwareNetworkFailure extends ColdcardFirmwareFailure {
   const ColdcardFirmwareNetworkFailure([super.logMessage]);
 }
 
-/// The latest release could not be determined (page layout changed, nothing offered for the model, or an oversized response was refused).
+/// The latest release could not be determined.
 final class ColdcardFirmwareDiscoveryFailure extends ColdcardFirmwareFailure {
   const ColdcardFirmwareDiscoveryFailure([super.logMessage]);
 }
 
-/// The downloaded firmware failed integrity verification (bad manifest signature, wrong signing key, hash mismatch, or a file not listed in the signed manifest). The bytes were discarded.
+/// Firmware verification failed, or no verified firmware is available.
 final class ColdcardFirmwareVerificationFailure
     extends ColdcardFirmwareFailure {
   const ColdcardFirmwareVerificationFailure([super.logMessage]);
 }
 
-/// The verified firmware could not be written to the destination the user picked.
+/// Verified firmware could not be written to the selected destination.
 final class ColdcardFirmwareSaveFailure extends ColdcardFirmwareFailure {
   const ColdcardFirmwareSaveFailure([super.logMessage]);
 }
 
-/// Anything unexpected; the log message carries the detail for us, the user gets a generic message.
+/// An unexpected recoverable exception crossed the data boundary.
 final class ColdcardFirmwareUnexpectedFailure extends ColdcardFirmwareFailure {
   const ColdcardFirmwareUnexpectedFailure([super.logMessage]);
 }

@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/coldcard_firmware/domain/entities/coldcard_device.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/coldcard_firmware/ui/coldcard_firmware_router.dart';
+import 'package:coldcard_firmware/coldcard_firmware.dart' show ColdcardModel;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -29,8 +29,8 @@ class ColdcardModelSelectScreen extends StatelessWidget {
                 maxLines: 3,
               ),
               const Gap(24),
-              for (final device in ColdcardDevice.values) ...[
-                _ColdcardModelCard(device: device),
+              for (final model in ColdcardModel.values) ...[
+                _ColdcardModelCard(model: model),
                 const Gap(16),
               ],
             ],
@@ -42,26 +42,26 @@ class ColdcardModelSelectScreen extends StatelessWidget {
 }
 
 class _ColdcardModelCard extends StatelessWidget {
-  const _ColdcardModelCard({required this.device});
+  const _ColdcardModelCard({required this.model});
 
-  final ColdcardDevice device;
+  final ColdcardModel model;
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = switch (device) {
-      ColdcardDevice.q => context.loc.coldcardUpdateModelQSubtitle,
-      ColdcardDevice.mk4 => context.loc.coldcardUpdateModelMk4Subtitle,
+    final subtitle = switch (model) {
+      ColdcardModel.q => context.loc.coldcardUpdateModelQSubtitle,
+      ColdcardModel.mk4 => context.loc.coldcardUpdateModelMk4Subtitle,
     };
-    final monogram = switch (device) {
-      ColdcardDevice.q => 'Q',
-      ColdcardDevice.mk4 => 'Mk4',
+    final monogram = switch (model) {
+      ColdcardModel.q => 'Q',
+      ColdcardModel.mk4 => 'Mk4',
     };
 
     return BorderedTappableTile(
       padding: const EdgeInsets.all(16),
       onTap: () => context.pushNamed(
         ColdcardFirmwareRoute.coldcardUpdateDevice.name,
-        extra: device,
+        extra: model,
       ),
       child: Row(
         children: [
@@ -84,7 +84,7 @@ class _ColdcardModelCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: .start,
               children: [
-                BBText(device.displayName, style: context.font.headlineSmall),
+                BBText(model.displayName, style: context.font.headlineSmall),
                 const Gap(4),
                 BBText(
                   subtitle,

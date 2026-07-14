@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/coldcard_firmware/domain/entities/coldcard_firmware_release_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -9,6 +8,8 @@ import 'package:bb_mobile/features/coldcard_firmware/presentation/cubit/coldcard
 import 'package:bb_mobile/features/coldcard_firmware/presentation/cubit/coldcard_firmware_state.dart';
 import 'package:bb_mobile/features/coldcard_firmware/ui/widgets/coldcard_update_instructions_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:coldcard_firmware/coldcard_firmware.dart'
+    show FirmwareRelease, trustedSignerIdentity;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -41,7 +42,7 @@ class ColdcardUpdateScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              state.device?.displayName ?? context.loc.coldcardUpdateTitle,
+              state.model?.displayName ?? context.loc.coldcardUpdateTitle,
             ),
           ),
           body: SafeArea(
@@ -128,7 +129,7 @@ class _LatestReadyView extends StatelessWidget {
 class _ReleaseCard extends StatelessWidget {
   const _ReleaseCard({required this.release});
 
-  final ColdcardFirmwareReleaseEntity release;
+  final FirmwareRelease release;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +139,7 @@ class _ReleaseCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          BBText(release.versionLabel, style: context.font.headlineLarge),
+          BBText('${release.version}', style: context.font.headlineLarge),
           if (releasedAt != null) ...[
             const Gap(4),
             BBText(
@@ -212,7 +213,7 @@ class _VerifiedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firmware = state.verifiedFirmware!;
+    final release = state.latestRelease!;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: .stretch,
@@ -245,7 +246,7 @@ class _VerifiedView extends StatelessWidget {
           ),
           const Gap(16),
           BBText(
-            '${firmware.release.versionLabel} · ${firmware.release.filename}',
+            '${release.version} · ${release.filename}',
             style: context.font.bodySmall,
             color: context.appColors.textMuted,
             textAlign: .center,
@@ -253,7 +254,7 @@ class _VerifiedView extends StatelessWidget {
           ),
           const Gap(4),
           BBText(
-            context.loc.coldcardUpdateSignedBy(firmware.signerName),
+            context.loc.coldcardUpdateSignedBy(trustedSignerIdentity),
             style: context.font.bodySmall,
             color: context.appColors.textMuted,
             textAlign: .center,

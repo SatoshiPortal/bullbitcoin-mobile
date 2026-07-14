@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/coldcard_firmware/domain/coldcard_firmware_failure.dart';
-import 'package:bb_mobile/core/coldcard_firmware/domain/entities/coldcard_device.dart';
-import 'package:bb_mobile/core/coldcard_firmware/domain/usecases/cancel_coldcard_firmware_download_usecase.dart';
-import 'package:bb_mobile/core/coldcard_firmware/domain/usecases/download_and_verify_coldcard_firmware_usecase.dart';
-import 'package:bb_mobile/core/coldcard_firmware/domain/usecases/get_latest_coldcard_firmware_usecase.dart';
-import 'package:bb_mobile/core/coldcard_firmware/domain/usecases/save_coldcard_firmware_usecase.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/coldcard_firmware_failure.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/usecases/cancel_coldcard_firmware_download_usecase.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/usecases/download_and_verify_coldcard_firmware_usecase.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/usecases/get_latest_coldcard_firmware_usecase.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/usecases/save_coldcard_firmware_usecase.dart';
 import 'package:bb_mobile/features/coldcard_firmware/presentation/cubit/coldcard_firmware_state.dart';
+import 'package:coldcard_firmware/coldcard_firmware.dart' show ColdcardModel;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
@@ -33,15 +33,21 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
     await super.close();
   }
 
-  Future<void> loadLatest(ColdcardDevice device) async {
+  Future<void> loadLatest(ColdcardModel model) async {
     emit(
       state.copyWith(
         status: ColdcardFirmwareStatus.fetchingLatest,
-        device: device,
+        model: model,
+        latestRelease: null,
+        downloadedBytes: 0,
+        totalBytes: null,
         failure: null,
+        isExporting: false,
+        exportSucceeded: false,
+        exportFailure: null,
       ),
     );
-    final result = await _getLatest.execute(device);
+    final result = await _getLatest.execute(model);
     if (isClosed) return;
     result.fold(
       (release) => emit(
@@ -60,8 +66,7 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
   }
 
   Future<void> downloadAndVerify() async {
-    final release = state.latestRelease;
-    if (release == null || state.isBusy) return;
+    if (state.latestRelease == null || state.isBusy) return;
     emit(
       state.copyWith(
         status: ColdcardFirmwareStatus.downloading,
@@ -71,7 +76,6 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
       ),
     );
     final result = await _downloadAndVerify.execute(
-      release,
       onProgress: (received, total) {
         if (isClosed) return;
         emit(state.copyWith(downloadedBytes: received, totalBytes: total));
@@ -83,12 +87,7 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
     );
     if (isClosed) return;
     result.fold(
-      (verified) => emit(
-        state.copyWith(
-          status: ColdcardFirmwareStatus.verified,
-          verifiedFirmware: verified,
-        ),
-      ),
+      (_) => emit(state.copyWith(status: ColdcardFirmwareStatus.verified)),
       (failure) => emit(
         state.copyWith(
           status: ColdcardFirmwareStatus.failure,
@@ -99,8 +98,9 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
   }
 
   Future<void> exportFirmware() async {
-    final firmware = state.verifiedFirmware;
-    if (firmware == null || state.isExporting) return;
+    if (state.status != ColdcardFirmwareStatus.verified || state.isExporting) {
+      return;
+    }
     emit(
       state.copyWith(
         isExporting: true,
@@ -108,7 +108,7 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
         exportFailure: null,
       ),
     );
-    final result = await _save.execute(firmware);
+    final result = await _save.execute();
     if (isClosed) return;
     result.fold(
       (saved) => emit(
@@ -125,13 +125,13 @@ class ColdcardFirmwareCubit extends Cubit<ColdcardFirmwareState> {
   }
 
   void retry() {
-    final device = state.device;
+    final model = state.model;
     // A discovery failure means our idea of "latest" may be stale — re-discover instead of re-downloading the same release forever.
     final mustRediscover =
         state.latestRelease == null ||
         state.failure is ColdcardFirmwareDiscoveryFailure;
     if (mustRediscover) {
-      if (device != null) loadLatest(device);
+      if (model != null) loadLatest(model);
     } else {
       downloadAndVerify();
     }

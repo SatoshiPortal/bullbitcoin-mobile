@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/coldcard_firmware/domain/coldcard_firmware_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/coldcard_firmware/domain/coldcard_firmware_failure.dart';
 import 'package:flutter/widgets.dart';
 
 extension ColdcardFirmwareFailureL10n on ColdcardFirmwareFailure {
