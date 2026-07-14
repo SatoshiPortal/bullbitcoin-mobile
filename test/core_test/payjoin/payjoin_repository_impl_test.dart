@@ -55,6 +55,7 @@ PayjoinReceiverModel _receiverModel({
   String id = 'pj1',
   String walletId = 'w1',
   String? originalTxId = 'orig-txid',
+  String? proposalPsbt,
 }) {
   return PayjoinModel.receiver(
         id: id,
@@ -68,6 +69,7 @@ PayjoinReceiverModel _receiverModel({
         expireAfterSec: 300,
         originalTxBytes: Uint8List.fromList([1, 2, 3]),
         originalTxId: originalTxId,
+        proposalPsbt: proposalPsbt,
       )
       as PayjoinReceiverModel;
 }
@@ -585,6 +587,55 @@ void main() {
         // Non-transient errors must not be retried — the caller's fallback
         // should fire without waiting out the retry budget.
         expect(calls, 1);
+      },
+    );
+  });
+
+  group('resumePayjoinsOnStartup', () {
+    test(
+      'one session failing to resume does not stop the others from resuming',
+      () async {
+        // Both models are already past expiry by construction (createdAt: 0,
+        //  expireAfterSec: 300), and both have a proposal already sent, so
+        //  _resumeOne routes them straight to _processExpiredPayjoin's
+        //  persist-and-emit else branch (no broadcast attempted).
+        final bad = _receiverModel(
+          id: 'bad',
+          originalTxId: 'bad-orig',
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        final ok = _receiverModel(
+          id: 'ok',
+          originalTxId: 'ok-orig',
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => local.fetchAll(onlyUnfinished: true),
+        ).thenAnswer((_) async => [bad, ok]);
+        // "bad"'s persist throws (e.g. a transient DB failure); "ok"'s must
+        //  still go through despite "bad" throwing first in the loop.
+        when(
+          () => local.update(
+            any(that: predicate<PayjoinModel>((m) => m.id == 'bad')),
+          ),
+        ).thenThrow(Exception('boom'));
+        when(
+          () => local.update(
+            any(that: predicate<PayjoinModel>((m) => m.id == 'ok')),
+          ),
+        ).thenAnswer((_) async {});
+
+        final emitted = <Payjoin>[];
+        final sub = repository.payjoinStream.listen(emitted.add);
+
+        await repository.resumePayjoinsOnStartup();
+        await Future<void>.delayed(Duration.zero);
+
+        // "ok" was still resumed and emitted, proving the per-session
+        //  try/catch stopped "bad"'s failure from aborting the whole loop.
+        expect(emitted, hasLength(1));
+        expect(emitted.single.id, 'ok');
+        await sub.cancel();
       },
     );
   });

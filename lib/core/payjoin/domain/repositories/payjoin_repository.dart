@@ -31,4 +31,12 @@ abstract class PayjoinRepository {
     required int expireAfterSec,
   });
   Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin);
+
+  /// Resumes polling/watching for every unfinished payjoin session left over
+  /// from a previous app run. A composition-root lifecycle hook: the
+  /// repository is constructed as an eager singleton before every dependency
+  /// it needs (wallet repositories, the labels facade) is registered, so this
+  /// must be called explicitly once locator setup has fully completed rather
+  /// than fired from the constructor — see `AppLocator.setup`.
+  Future<void> resumePayjoinsOnStartup();
 }

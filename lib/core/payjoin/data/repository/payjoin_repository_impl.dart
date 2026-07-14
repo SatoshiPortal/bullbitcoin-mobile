@@ -88,9 +88,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _pdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin),
     ]);
 
-    // Now that the listeners are set up, we can resume processing of possible
-    //  ongoing payjoins.
-    _resumePayjoins();
+    // Deliberately NOT resuming here: this is an eager singleton constructed
+    //  before WalletLocator / the labels facade register their dependencies
+    //  (see core_locator.dart ordering). A resumed session that reaches
+    //  _watchForBroadcast or the labels facade before those are registered
+    //  would throw inside this unawaited constructor call, silently aborting
+    //  resume for every remaining session. resumePayjoinsOnStartup() is
+    //  called explicitly by AppLocator.setup once locator setup is fully
+    //  done, so every dependency is guaranteed registered by then.
   }
 
   /// Releases all long-lived subscriptions and closes the payjoin stream.
@@ -590,48 +595,65 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
   }
 
-  Future<void> _resumePayjoins() async {
+  @override
+  Future<void> resumePayjoinsOnStartup() async {
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
-      if (model.isExpiryTimePassed) {
-        // A session whose expiry elapsed while the app was closed. Route it
-        //  through the same handler as a live expiry so the receiver's
-        //  original-transaction fallback still fires — otherwise an
-        //  expired-while-closed receiver that already had the sender's
-        //  original tx would silently drop it, leaving the sender's payment
-        //  in limbo (neither payjoin nor fallback ever hits the chain). With
-        //  the short 5-minute expiry this is now the common case, not an edge.
-        await _processExpiredPayjoin(model.copyWith(isExpired: true));
-      } else if (model is PayjoinReceiverModel) {
-        if (model.originalTxBytes == null) {
-          // If the original tx bytes are not present, it means the receiver
-          //  needs to listen for a payjoin request from the sender.
-          _pdkPayjoinDatasource.startListeningForRequest(model);
-        } else if (model.proposalPsbt == null) {
-          // If the original tx bytes are present but the proposal psbt is not,
-          //  it means the receiver has already received a payjoin request and
-          //  it should be processed.
-          await _processPayjoinRequest(model);
-        } else if (model.txId != null) {
-          // A proposal was already sent before the app closed. Resume watching
-          //  for the payjoin transaction to appear on-chain so the session can
-          //  be completed and its transaction labelled.
-          _watchForBroadcast(
-            payjoinId: model.id,
-            walletId: model.walletId,
-            txId: model.txId!,
-          );
-        }
-      } else if (model is PayjoinSenderModel) {
-        if (model.proposalPsbt == null) {
-          // If the proposal psbt is not present, it means the sender needs to
-          //  listen for a payjoin proposal from the receiver.
-          _pdkPayjoinDatasource.startListeningForProposal(model);
-        } else {
-          // If the proposal psbt is present, it means a payjoin proposal was
-          //  already received  and it should be processed.
-          await _processPayjoinProposal(model);
-        }
+      // Each session is independent: a bug or a transient failure resuming
+      //  one (e.g. a missing wallet, a bad persisted event log) must not
+      //  abort the loop and silently leave every other unfinished session
+      //  un-resumed.
+      try {
+        await _resumeOne(model);
+      } catch (e, st) {
+        log.severe(
+          message: 'Failed to resume payjoin session ${model.id}',
+          error: e,
+          trace: st,
+        );
+      }
+    }
+  }
+
+  Future<void> _resumeOne(PayjoinModel model) async {
+    if (model.isExpiryTimePassed) {
+      // A session whose expiry elapsed while the app was closed. Route it
+      //  through the same handler as a live expiry so the receiver's
+      //  original-transaction fallback still fires — otherwise an
+      //  expired-while-closed receiver that already had the sender's
+      //  original tx would silently drop it, leaving the sender's payment
+      //  in limbo (neither payjoin nor fallback ever hits the chain). With
+      //  the short 5-minute expiry this is now the common case, not an edge.
+      await _processExpiredPayjoin(model.copyWith(isExpired: true));
+    } else if (model is PayjoinReceiverModel) {
+      if (model.originalTxBytes == null) {
+        // If the original tx bytes are not present, it means the receiver
+        //  needs to listen for a payjoin request from the sender.
+        _pdkPayjoinDatasource.startListeningForRequest(model);
+      } else if (model.proposalPsbt == null) {
+        // If the original tx bytes are present but the proposal psbt is not,
+        //  it means the receiver has already received a payjoin request and
+        //  it should be processed.
+        await _processPayjoinRequest(model);
+      } else if (model.txId != null) {
+        // A proposal was already sent before the app closed. Resume watching
+        //  for the payjoin transaction to appear on-chain so the session can
+        //  be completed and its transaction labelled.
+        _watchForBroadcast(
+          payjoinId: model.id,
+          walletId: model.walletId,
+          txId: model.txId!,
+        );
+      }
+    } else if (model is PayjoinSenderModel) {
+      if (model.proposalPsbt == null) {
+        // If the proposal psbt is not present, it means the sender needs to
+        //  listen for a payjoin proposal from the receiver.
+        _pdkPayjoinDatasource.startListeningForProposal(model);
+      } else {
+        // If the proposal psbt is present, it means a payjoin proposal was
+        //  already received  and it should be processed.
+        await _processPayjoinProposal(model);
       }
     }
   }
