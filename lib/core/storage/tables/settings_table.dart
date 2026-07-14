@@ -13,6 +13,10 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
   IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
+  // Kept as a literal (not PayjoinConstants.defaultMinAmountSat): drift's
+  // codegen needs an inline constant expression for a column default and
+  // fails to compile against a referenced external const. This must stay in
+  // sync with PayjoinConstants.defaultMinAmountSat by hand.
   IntColumn get payjoinMinAmountSat =>
       integer().withDefault(const Constant(10000))();
   TextColumn get themeMode => text().withDefault(const Constant('system'))();

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -141,7 +142,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? isDevModeEnabled,
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
-    @Default(10000) int payjoinMinAmountSat,
+    @Default(PayjoinConstants.defaultMinAmountSat) int payjoinMinAmountSat,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
     String? exchangeTestnetBasicAuthUsername,

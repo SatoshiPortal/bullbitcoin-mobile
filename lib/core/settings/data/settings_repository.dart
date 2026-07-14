@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/report.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
@@ -34,7 +35,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
-    int payjoinMinAmountSat = 10000,
+    int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,

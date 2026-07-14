@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -20,9 +21,12 @@ class BitcoinSettingsScreen extends StatelessWidget {
 
   Future<void> _editPayjoinMinAmount(BuildContext context) async {
     final cubit = context.read<SettingsCubit>();
+    // Fall back to the actual default (not the bottom sheet's minimum bound)
+    // if settings haven't loaded yet, so the pre-filled value matches what
+    // the user actually has configured in the common case.
     final current =
         cubit.state.storedSettings?.payjoinMinAmountSat ??
-        PayjoinMinAmountBottomSheet.minSat;
+        PayjoinConstants.defaultMinAmountSat;
     final result = await PayjoinMinAmountBottomSheet.show(
       context,
       initialAmountSat: current,

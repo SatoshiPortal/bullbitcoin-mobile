@@ -110,9 +110,9 @@ class _PayjoinMinAmountBottomSheetState
               autofocus: true,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                suffixText: 'sats',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                suffixText: context.loc.sendSats,
+                border: const OutlineInputBorder(),
               ),
               validator: _validate,
               onFieldSubmitted: (_) => _save(),

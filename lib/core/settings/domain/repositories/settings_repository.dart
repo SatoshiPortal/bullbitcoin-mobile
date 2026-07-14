@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 
 abstract class SettingsRepository {
   Stream<String> get currencyChangeStream;
@@ -18,7 +19,7 @@ abstract class SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
-    int payjoinMinAmountSat = 10000,
+    int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,

@@ -89,6 +89,12 @@ class PayjoinConstants {
   // headroom for a real exchange over a slow relay while bounding that window
   // (see the receiver-side UTXO probing attack, BIP78).
   static const defaultExpireAfterSec = 60 * 5; // 5 minutes
+  // Single source of truth for the payjoin minimum-receive-amount default
+  // (the anti-probing threshold below which a payjoin is declined — see
+  // UpdatePayjoinMinAmountUsecase). Referenced by the settings table column
+  // default, the entity default, the DB seed, and the repository's default
+  // param, so they can't silently drift apart.
+  static const defaultMinAmountSat = 10000;
 }
 
 class ApiServiceConstants {

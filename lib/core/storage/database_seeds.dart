@@ -21,7 +21,7 @@ class DatabaseSeeds {
             isDevModeEnabled: false,
             useTorProxy: false,
             torProxyPort: 9050,
-            payjoinMinAmountSat: 10000,
+            payjoinMinAmountSat: PayjoinConstants.defaultMinAmountSat,
             themeMode: 'system',
             isErrorReportingEnabled: false,
           ),
