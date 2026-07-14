@@ -321,7 +321,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       if (model == null) {
         throw Exception('Payjoin not found locally');
       }
-      final completedModel = model.copyWith(isCompleted: true);
+      // txId is explicitly reset: this session is completed by the ORIGINAL
+      // transaction, so any txId persisted earlier refers to a payjoin
+      // transaction that never reached the chain. A sender's txId is set the
+      // moment a proposal is RECEIVED (before signing/broadcasting), so a
+      // proposal that later fails to sign/broadcast would otherwise leave a
+      // stale txId behind — and SendCubit prefers txId over originalTxId for
+      // the success screen and the final tx label, surfacing (and labelling)
+      // a txid that was never broadcast. This also makes `txId != null` on a
+      // completed session a reliable "a real payjoin happened" marker.
+      final completedModel = model.copyWith(isCompleted: true, txId: null);
       await _localPayjoinDatasource.update(completedModel);
       // Deliberately NOT labelling this transaction "payjoin": every call
       // site of this method is, by definition, a case where no real payjoin

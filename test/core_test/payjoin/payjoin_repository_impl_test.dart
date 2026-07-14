@@ -250,6 +250,33 @@ void main() {
       verifyNever(() => labels.store(any()));
     });
 
+    test('clears a stale payjoin txId when completing a sender via the '
+        'original-tx fallback', () async {
+      // A sender's txId is set the moment a proposal is RECEIVED, before it
+      // is signed/broadcast. When signing/broadcast then fails, the fallback
+      // broadcasts the ORIGINAL transaction — keeping the stale txId around
+      // would make SendCubit (txId ?? originalTxId) display and label a txid
+      // that never reached the chain.
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      ).copyWith(txId: 'stale-payjoin-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+
+      final persisted =
+          verify(() => local.update(captureAny())).captured.single
+              as PayjoinSenderModel;
+      expect(persisted.isCompleted, isTrue);
+      expect(persisted.txId, isNull);
+      expect(persisted.originalTxId, 'sender-orig-txid');
+      expect(result, isNotNull);
+      expect((result! as PayjoinSender).txId, isNull);
+    });
+
     test('does not label a sender fallback broadcast (#2246)', () async {
       final model = _senderModel(originalTxId: 'sender-orig-txid');
       when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
