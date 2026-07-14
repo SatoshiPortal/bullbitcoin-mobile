@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
+import 'package:bb_mobile/core/utils/log_redaction.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -295,8 +296,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
       }
+      // logRef + salted token only: a sender payjoin id is the full BIP21
+      // URI and a raw txid identifies the payment on-chain — both are
+      // off-limits in logs (user-shareable / pasted into issues).
       log.info(
-        'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.originalTxId}',
+        'Original transaction broadcasted for payjoin ${payjoin.logRef} '
+        '(tx ${logSafeToken(payjoin.originalTxId)})',
       );
 
       // Update the local database with the completed payjoin
@@ -429,7 +434,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             : Network.bitcoinMainnet,
       );
       log.info(
-        'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
+        'Payjoin proposal broadcasted for ${payjoin.logRef} '
+        '(tx ${logSafeToken(result.txId)})',
       );
     } catch (e) {
       log.severe(
@@ -643,8 +649,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       try {
         await _resumeOne(model);
       } catch (e, st) {
+        // logRef, never id: this SEVERE reaches Sentry, and a sender id is
+        // the full BIP21 URI.
         log.severe(
-          message: 'Failed to resume payjoin session ${model.id}',
+          message: 'Failed to resume payjoin session ${model.logRef}',
           error: e,
           trace: st,
         );
@@ -889,7 +897,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
     result.fold(
       (_) {},
-      (failure) => log.warning('Failed to label payjoin transaction $txId'),
+      (failure) => log.warning(
+        'Failed to label payjoin transaction ${logSafeToken(txId)}',
+      ),
     );
   }
 }

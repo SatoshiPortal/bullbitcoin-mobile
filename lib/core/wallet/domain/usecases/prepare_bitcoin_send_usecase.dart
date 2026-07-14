@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/utils/log_redaction.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -40,8 +41,11 @@ class PrepareBitcoinSendUsecase {
       // `_unspendableFor` to a single read.
       final unspendableUtxos = await _unspendableFor(walletId);
 
+      // Wallet ids embed the master fingerprint + derivation path and
+      // outpoints identify on-chain coins — log a salted token and a count.
       log.info(
-        'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
+        'Bitcoin wallet ${logSafeToken(walletId)} building psbt '
+        '(${unspendableUtxos.length} unspendable utxos)',
       );
 
       // Belt-and-suspenders: defensively strip any selected input that falls in

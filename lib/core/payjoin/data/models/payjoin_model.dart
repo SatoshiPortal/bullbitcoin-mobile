@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:crypto/crypto.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_json_converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -89,6 +91,16 @@ sealed class PayjoinModel with _$PayjoinModel {
   String get id => switch (this) {
     PayjoinReceiverModel(:final id) => id,
     PayjoinSenderModel(:final uri) => uri,
+  };
+
+  /// Privacy-safe identifier for log lines — same contract and derivation as
+  /// `Payjoin.logRef` (see the entity): the receiver id is already an opaque
+  /// sha256 prefix and passes through; the sender id is the full BIP21 URI
+  /// (address + amount) and is hashed to the same 16-hex-char shape.
+  String get logRef => switch (this) {
+    PayjoinReceiverModel(:final id) => id,
+    PayjoinSenderModel(:final uri) =>
+      sha256.convert(utf8.encode(uri)).toString().substring(0, 16),
   };
 
   PayjoinStatus get status => switch (this) {

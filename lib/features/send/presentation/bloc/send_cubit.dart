@@ -24,6 +24,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/lightning.dart';
+import 'package:bb_mobile/core/utils/log_redaction.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -1664,8 +1665,12 @@ class SendCubit extends Cubit<SendState>
           state.selectedFeeOption,
         );
         final canUseCache = cachedSlot.isCacheReady;
+        // No raw address and no amount: logs get pasted into issues and
+        // shared with support, and both identify the payment on-chain. The
+        // salted address token still shows whether consecutive builds target
+        // the same destination (cache-reuse debugging).
         log.info(
-          '[create-tx] build address=$address amount=$amount '
+          '[create-tx] build address=${logSafeToken(address)} '
           'rate=${selectedFee is RelativeFee ? selectedFee.satPerVbyte : selectedFee.value} '
           'drain=$drain selectedInputs=${state.selectedUtxos.length} '
           'rbf=${state.replaceByFee} '
@@ -2185,8 +2190,10 @@ class SendCubit extends Cubit<SendState>
           // an event can arrive after the send flow is torn down. Never emit
           // on a closed cubit (it throws).
           if (isClosed) return;
+          // logRef, never id: a sender payjoin id is the full BIP21 URI
+          // (address + amount), which must not reach logs.
           log.info(
-            '[SendCubit] Watched payjoin ${payjoin.id} updated: '
+            '[SendCubit] Watched payjoin ${payjoin.logRef} updated: '
             '${payjoin.status}',
           );
           if (payjoin.isCompleted) {
@@ -2234,7 +2241,7 @@ class SendCubit extends Cubit<SendState>
             // a broadcast failure and return to confirm so the user can retry,
             // instead of hanging on "coordinating".
             log.warning(
-              '[SendCubit] Payjoin ${payjoin.id} expired without broadcast',
+              '[SendCubit] Payjoin ${payjoin.logRef} expired without broadcast',
             );
             _payjoinSubscription?.cancel();
             emit(

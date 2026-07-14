@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/utils/log_redaction.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -79,7 +80,9 @@ class GetTransactionsByTxIdUsecase {
         throw TransactionNotFoundError();
       }
     } on TransactionNotFoundError {
-      log.warning('No Transaction with txId $txId found.');
+      // Salted token, not the raw txid: WARNING records persist to the
+      // user-shareable log file and a txid identifies the tx on-chain.
+      log.warning('No Transaction with txId ${logSafeToken(txId)} found.');
       rethrow;
     } catch (e) {
       rethrow;
