@@ -1,6 +1,6 @@
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:flutter/material.dart';
 
 class TestPhysicalBackupFlowNavigator extends StatelessWidget {

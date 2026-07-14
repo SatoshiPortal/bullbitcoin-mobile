@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_health_reminder_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -260,6 +261,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
           create: (_) =>
               locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
+        BlocProvider(create: (_) => locator<BackupHealthReminderCubit>()),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),

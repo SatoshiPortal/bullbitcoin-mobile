@@ -8558,6 +8558,22 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
+  "testBackupErrorNoWalletSelected": "No wallet selected",
+  "@testBackupErrorNoWalletSelected": {
+    "description": "Error when physical backup verification has no selected wallet"
+  },
+  "testBackupErrorVerificationFailedGeneric": "Verification could not be saved. Please try again.",
+  "@testBackupErrorVerificationFailedGeneric": {
+    "description": "Safe error shown when physical backup verification cannot be persisted"
+  },
+  "testBackupErrorLoadWalletsGeneric": "Wallets could not be loaded. Please try again.",
+  "@testBackupErrorLoadWalletsGeneric": {
+    "description": "Safe error shown when wallets cannot be loaded for physical backup verification"
+  },
+  "testBackupErrorLoadMnemonicGeneric": "Recovery words could not be loaded. Please try again.",
+  "@testBackupErrorLoadMnemonicGeneric": {
+    "description": "Safe error shown when recovery words cannot be loaded for physical backup verification"
+  },
   "testBackupErrorVerificationFailed": "Verification failed: {error}",
   "@testBackupErrorVerificationFailed": {
     "description": "Generic error message for verification failure",
@@ -8794,6 +8810,10 @@
   "recoverbullErrorVaultCreationFailed": "Vault creation failed, it can be the file or the key",
   "@recoverbullErrorVaultCreationFailed": {
     "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullErrorVaultStatusPersistenceFailed": "Your vault and recovery key were stored, but the app could not save the backup status. Please return to Backup Settings before trying again.",
+  "@recoverbullErrorVaultStatusPersistenceFailed": {
+    "description": "Error shown when vault creation completed but local backup status persistence failed"
   },
   "recoverbullErrorVaultNotSet": "Vault is not set",
   "@recoverbullErrorVaultNotSet": {
@@ -15008,5 +15028,65 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "backupHealthScheduledIntro": "It has been three months since your last backup check.",
+  "@backupHealthScheduledIntro": {
+    "description": "Introduction for a backup health reminder triggered by elapsed time"
+  },
+  "backupHealthBalanceIntro": "Your wallet balance has increased. This is a good time to check your backup.",
+  "@backupHealthBalanceIntro": {
+    "description": "Introduction for a backup health reminder triggered by a balance milestone"
+  },
+  "backupHealthRecoverbullOnlyTitle": "Add an independent backup",
+  "@backupHealthRecoverbullOnlyTitle": {
+    "description": "Title shown when Recoverbull is the only verified backup"
+  },
+  "backupHealthRecoverbullOnlyBody": "Your Recoverbull vault uses a separate vault key. During recovery, the Recoverbull key server normally retrieves that key. If the server is unavailable, automatic recovery may not work unless you saved the vault key separately. A tested physical backup gives you an independent recovery method that does not depend on the server.",
+  "@backupHealthRecoverbullOnlyBody": {
+    "description": "Explains the key-server dependency and independent physical backup option"
+  },
+  "backupHealthPhysicalOnlyTitle": "Check your physical backup",
+  "@backupHealthPhysicalOnlyTitle": {
+    "description": "Title shown when a physical backup is the only verified backup"
+  },
+  "backupHealthPhysicalOnlyBody": "Test your physical backup to make sure your recovery words are complete, readable, and stored somewhere safe.",
+  "@backupHealthPhysicalOnlyBody": {
+    "description": "Physical backup health-check guidance"
+  },
+  "backupHealthBothTitle": "Check your backups",
+  "@backupHealthBothTitle": {
+    "description": "Title shown when both backup methods are verified"
+  },
+  "backupHealthBothBody": "Periodically test your physical backup and Recoverbull vault to make sure you can still recover your wallet.",
+  "@backupHealthBothBody": {
+    "description": "Backup health-check guidance when both methods are verified"
+  },
+  "backupHealthMakePhysicalBackup": "MAKE A PHYSICAL BACKUP",
+  "@backupHealthMakePhysicalBackup": {
+    "description": "Primary action for a Recoverbull-only reminder"
+  },
+  "backupHealthTestPhysicalBackup": "TEST PHYSICAL BACKUP",
+  "@backupHealthTestPhysicalBackup": {
+    "description": "Primary action for a physical-only reminder"
+  },
+  "backupHealthReviewBackups": "REVIEW BACKUPS",
+  "@backupHealthReviewBackups": {
+    "description": "Primary action when both backup methods are verified"
+  },
+  "backupHealthUnderstandRisk": "NO, I UNDERSTAND THE RISK",
+  "@backupHealthUnderstandRisk": {
+    "description": "Acknowledgement action for a Recoverbull-only reminder"
+  },
+  "backupHealthRemindThreeMonths": "REMIND ME IN 3 MONTHS",
+  "@backupHealthRemindThreeMonths": {
+    "description": "Defers the next recurring backup health reminder"
+  },
+  "backupHealthOtherBackupOptions": "OTHER BACKUP OPTIONS",
+  "@backupHealthOtherBackupOptions": {
+    "description": "Neutral link to other backup methods from the physical health check"
+  },
+  "backupHealthSaveFailed": "Your reminder choice could not be saved. Please try again.",
+  "@backupHealthSaveFailed": {
+    "description": "Error shown when a backup reminder action cannot be persisted"
   }
 }

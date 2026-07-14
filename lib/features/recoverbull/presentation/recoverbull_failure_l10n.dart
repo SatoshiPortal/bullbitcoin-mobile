@@ -13,6 +13,8 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     KeyServerConnectionFailure() =>
       context.loc.recoverbullErrorConnectionFailed,
     VaultCreationFailure() => context.loc.recoverbullErrorVaultCreationFailed,
+    VaultStatusPersistenceFailure() =>
+      context.loc.recoverbullErrorVaultStatusPersistenceFailed,
     TorNotStartedFailure() => context.loc.recoverbullTorNotStarted,
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,

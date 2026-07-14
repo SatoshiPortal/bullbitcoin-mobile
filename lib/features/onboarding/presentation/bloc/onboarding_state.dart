@@ -10,7 +10,7 @@ sealed class OnboardingState with _$OnboardingState {
     @Default(OnboardingStep.splash) OnboardingStep step,
     @Default(OnboardingStepStatus.none)
     OnboardingStepStatus onboardingStepStatus,
-    @Default('') String statusError,
+    OnboardingFailure? failure,
     @Default(false) bool transitioning,
   }) = _OnboardingState;
   const OnboardingState._();

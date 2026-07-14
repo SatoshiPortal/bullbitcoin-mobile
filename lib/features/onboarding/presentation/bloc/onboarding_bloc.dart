@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/onboarding/domain/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -28,13 +30,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
-  Future<void> _handleError(Object error, Emitter<OnboardingState> emit) async {
+
+  void _handleError(Exception error, Emitter<OnboardingState> emit) {
     log.severe(error: error, trace: StackTrace.current);
     emit(
       state.copyWith(
         onboardingStepStatus: OnboardingStepStatus.none,
         step: OnboardingStep.splash,
-        statusError: error.toString(),
+        failure: OnboardingUnexpectedFailure(error.toString()),
       ),
     );
   }
@@ -52,13 +55,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.create,
-          statusError: '',
+          failure: null,
         ),
       );
       await _createDefaultWalletsUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
-    } catch (e) {
-      await _handleError(e, emit);
+    } on Exception catch (e) {
+      _handleError(e, emit);
     }
   }
 
@@ -73,16 +76,36 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.recover,
-          statusError: '',
+          failure: null,
         ),
       );
-      await _createDefaultWalletsUsecase.execute(
+      final restoredWallets = await _createDefaultWalletsUsecase.execute(
         mnemonicWords: event.mnemonic.words,
       );
-      await _completePhysicalBackupVerificationUsecase.execute();
+      if (restoredWallets.isEmpty) {
+        _handleError(Exception('No wallets were restored'), emit);
+        return;
+      }
+      final completed = await _completePhysicalBackupVerificationUsecase
+          .execute(masterFingerprint: restoredWallets.first.masterFingerprint);
+      if (completed case Err(:final failure)) {
+        log.severe(
+          message: failure.logMessage,
+          error: failure,
+          trace: StackTrace.current,
+        );
+        emit(
+          state.copyWith(
+            onboardingStepStatus: OnboardingStepStatus.none,
+            step: OnboardingStep.splash,
+            failure: failure,
+          ),
+        );
+        return;
+      }
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
-    } catch (e) {
-      await _handleError(e, emit);
+    } on Exception catch (e) {
+      _handleError(e, emit);
     }
   }
 }
