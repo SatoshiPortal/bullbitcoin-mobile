@@ -42,14 +42,21 @@ class LabelEntity {
   }
 
   void _validateTxid(String input) {
-    if (reference.length != 64) {
+    // Validate the given txid slice, NOT the full `reference` field: for
+    // input/output/publicKey labels, `reference` is `txid:vout` and never
+    // matches the 64-char check on its own — that shape previously made
+    // every input/output/publicKey label fail unconditionally (caught
+    // silently wherever the caller ignores the store result, e.g. the
+    // payjoin repository's "prefer re-exposing an already-exposed UTXO"
+    // anti-probing mitigation, which never actually persisted a label).
+    if (input.length != 64) {
       throw LabelValidationException(
         'Invalid transaction reference: must be 64 hex characters',
       );
     }
 
     try {
-      hex.decode(reference);
+      hex.decode(input);
     } catch (e) {
       throw LabelValidationException(
         'Invalid transaction reference: must be valid hex',
