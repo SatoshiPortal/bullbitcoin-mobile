@@ -6,7 +6,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payjoin.freezed.dart';
 
-enum PayjoinStatus { started, requested, proposed, completed, expired }
+enum PayjoinStatus {
+  started,
+  requested,
+  proposed,
+  completed,
+  fallback,
+  expired,
+}
 
 @freezed
 sealed class Payjoin with _$Payjoin {
@@ -58,18 +65,22 @@ sealed class Payjoin with _$Payjoin {
       sha256.convert(utf8.encode(uri)).toString().substring(0, 16),
   };
 
-  bool get isCompleted => status == PayjoinStatus.completed;
+  /// Terminal AND successfully broadcast — either a real payjoin
+  /// ([PayjoinStatus.completed]) or the plain-broadcast fallback
+  /// ([PayjoinStatus.fallback]). Both mean "money moved, nothing left to
+  /// do here"; [isRealPayjoinCompletion] is what tells the two apart.
+  bool get isCompleted =>
+      status == PayjoinStatus.completed || status == PayjoinStatus.fallback;
   bool get isExpired => status == PayjoinStatus.expired;
   bool get isOngoing => !isCompleted && !isExpired;
 
-  /// True once THIS session's own payjoin transaction was broadcast — as
-  /// opposed to completing via a plain fallback broadcast (declined below
-  /// the receiver's anti-probing minimum, a failed negotiation, or an
-  /// expiry with no proposal ever exchanged). [txId] can't survive stale on
-  /// a fallback completion: `tryBroadcastOriginalTransaction` always clears
-  /// it, so `txId != null` on a completed session is a reliable "a real
-  /// payjoin happened" marker for both the sender and the receiver.
-  bool get isRealPayjoinCompletion => isCompleted && txId != null;
+  /// True only for a real payjoin — as opposed to completing via the plain
+  /// fallback broadcast (declined below the receiver's anti-probing
+  /// minimum, a failed negotiation, or an expiry with no proposal ever
+  /// exchanged), which is [PayjoinStatus.fallback] instead. The two are
+  /// mutually exclusive by construction (see PayjoinModel.status), so this
+  /// no longer needs to also check [txId].
+  bool get isRealPayjoinCompletion => status == PayjoinStatus.completed;
 
   /// Whether a manual "broadcast the original transaction" action would
   /// actually do anything right now, as opposed to silently no-op'ing (see

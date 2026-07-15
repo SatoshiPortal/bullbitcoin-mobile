@@ -64,11 +64,13 @@ void main() {
     });
 
     test('true once a request has been received (requested/proposed/'
-        'completed/expired) — the payjoin flow owns navigation from here', () {
+        'completed/fallback/expired) — the payjoin flow owns navigation '
+        'from here', () {
       for (final status in [
         PayjoinStatus.requested,
         PayjoinStatus.proposed,
         PayjoinStatus.completed,
+        PayjoinStatus.fallback,
         PayjoinStatus.expired,
       ]) {
         final state = ReceiveState(

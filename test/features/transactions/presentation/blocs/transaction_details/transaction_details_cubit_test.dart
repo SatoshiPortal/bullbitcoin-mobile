@@ -160,9 +160,9 @@ void main() {
     );
 
     test('does NOT broadcast once already completed via the plain-'
-        'broadcast fallback (txId null survives — same as a real payjoin, '
-        'nothing left to do)', () async {
-      final payjoin = _sender(status: PayjoinStatus.completed);
+        'broadcast fallback (PayjoinStatus.fallback — same isCompleted as a '
+        'real payjoin, nothing left to do)', () async {
+      final payjoin = _sender(status: PayjoinStatus.fallback);
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
@@ -201,7 +201,7 @@ void main() {
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
-      final completed = _sender(status: PayjoinStatus.completed);
+      final completed = _sender(status: PayjoinStatus.fallback);
       when(
         () => broadcastOriginalTransaction.execute(any()),
       ).thenAnswer((_) async => completed);
@@ -225,7 +225,7 @@ void main() {
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
-      final completed = _sender(status: PayjoinStatus.completed);
+      final completed = _sender(status: PayjoinStatus.fallback);
       when(
         () => broadcastOriginalTransaction.execute(any()),
       ).thenAnswer((_) async => completed);
@@ -248,14 +248,16 @@ void main() {
       'payjoin" button lingering after the fallback had already broadcast)',
       () async {
         final ongoing = _sender(status: PayjoinStatus.requested);
-        final completedViaFallback = _sender(status: PayjoinStatus.completed);
+        final completedViaFallback = _sender(status: PayjoinStatus.fallback);
         final payjoinEvents = StreamController<Payjoin>.broadcast();
         addTearDown(payjoinEvents.close);
 
         var loadCount = 0;
         when(() => getTransactionsByTxId.execute(any())).thenAnswer(
           (_) async => [
-            Transaction(payjoin: loadCount++ == 0 ? ongoing : completedViaFallback),
+            Transaction(
+              payjoin: loadCount++ == 0 ? ongoing : completedViaFallback,
+            ),
           ],
         );
         when(
@@ -276,20 +278,51 @@ void main() {
       },
     );
 
+    test('a TERMINAL payjoin event with no wallet transaction on screen yet '
+        'fires a targeted sync of the wallet, so the broadcast transaction '
+        'shows up promptly instead of at the next scheduled sync', () async {
+      final ongoing = _sender(status: PayjoinStatus.requested);
+      final completedViaFallback = _sender(status: PayjoinStatus.fallback);
+      final payjoinEvents = StreamController<Payjoin>.broadcast();
+      addTearDown(payjoinEvents.close);
+
+      var loadCount = 0;
+      when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+        (_) async => [
+          Transaction(
+            payjoin: loadCount++ == 0 ? ongoing : completedViaFallback,
+          ),
+        ],
+      );
+      when(
+        () => watchPayjoin.execute(ids: [ongoing.id]),
+      ).thenAnswer((_) => payjoinEvents.stream);
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
+
+      payjoinEvents.add(completedViaFallback);
+      await pumpEventQueue();
+
+      verify(() => getWallet.execute('w1', sync: true)).called(1);
+    });
+
     test(
-      'a TERMINAL payjoin event with no wallet transaction on screen yet '
-      'fires a targeted sync of the wallet, so the broadcast transaction '
-      'shows up promptly instead of at the next scheduled sync',
+      'a NON-terminal payjoin event does not fire the targeted sync',
       () async {
         final ongoing = _sender(status: PayjoinStatus.requested);
-        final completedViaFallback = _sender(status: PayjoinStatus.completed);
+        final proposed = _sender(
+          status: PayjoinStatus.proposed,
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
         final payjoinEvents = StreamController<Payjoin>.broadcast();
         addTearDown(payjoinEvents.close);
 
         var loadCount = 0;
         when(() => getTransactionsByTxId.execute(any())).thenAnswer(
           (_) async => [
-            Transaction(payjoin: loadCount++ == 0 ? ongoing : completedViaFallback),
+            Transaction(payjoin: loadCount++ == 0 ? ongoing : proposed),
           ],
         );
         when(
@@ -300,39 +333,12 @@ void main() {
         addTearDown(cubit.close);
         await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
 
-        payjoinEvents.add(completedViaFallback);
+        payjoinEvents.add(proposed);
         await pumpEventQueue();
 
-        verify(() => getWallet.execute('w1', sync: true)).called(1);
+        expect(cubit.state.payjoin?.status, PayjoinStatus.proposed);
+        verifyNever(() => getWallet.execute(any(), sync: true));
       },
     );
-
-    test('a NON-terminal payjoin event does not fire the targeted sync', () async {
-      final ongoing = _sender(status: PayjoinStatus.requested);
-      final proposed = _sender(
-        status: PayjoinStatus.proposed,
-        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      );
-      final payjoinEvents = StreamController<Payjoin>.broadcast();
-      addTearDown(payjoinEvents.close);
-
-      var loadCount = 0;
-      when(() => getTransactionsByTxId.execute(any())).thenAnswer(
-        (_) async => [Transaction(payjoin: loadCount++ == 0 ? ongoing : proposed)],
-      );
-      when(
-        () => watchPayjoin.execute(ids: [ongoing.id]),
-      ).thenAnswer((_) => payjoinEvents.stream);
-
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
-
-      payjoinEvents.add(proposed);
-      await pumpEventQueue();
-
-      expect(cubit.state.payjoin?.status, PayjoinStatus.proposed);
-      verifyNever(() => getWallet.execute(any(), sync: true));
-    });
   });
 }

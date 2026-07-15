@@ -1005,10 +1005,12 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinStatus,
             displayValue:
-                payjoin.isCompleted ||
+                payjoin.status == PayjoinStatus.completed ||
                     (payjoin.status == PayjoinStatus.proposed &&
                         walletTransaction != null)
                 ? context.loc.transactionDetailLabelPayjoinCompleted
+                : payjoin.status == PayjoinStatus.fallback
+                ? context.loc.transactionDetailLabelPayjoinFallback
                 : payjoin.isExpired
                 ? context.loc.transactionDetailLabelPayjoinExpired
                 : payjoin.status.name,

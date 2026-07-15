@@ -218,6 +218,10 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         PayjoinStatus.requested ||
         PayjoinStatus.proposed => 'pending',
         PayjoinStatus.completed => 'completed',
+        // Financially identical to 'completed' (the payment landed either
+        // way) but distinguished for the record: no real payjoin happened,
+        // just a plain broadcast fallback.
+        PayjoinStatus.fallback => 'fallback',
         PayjoinStatus.expired => 'expired',
       };
     }

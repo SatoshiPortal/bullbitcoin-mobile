@@ -215,7 +215,7 @@ void main() {
         ),
       ).thenAnswer((_) async => requestedPayjoin);
       final completedPayjoin = _receiver(
-        status: PayjoinStatus.completed,
+        status: PayjoinStatus.fallback,
         originalTxBytes: Uint8List.fromList([1, 2, 3]),
       );
       when(

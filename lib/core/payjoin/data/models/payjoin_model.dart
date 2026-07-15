@@ -103,10 +103,17 @@ sealed class PayjoinModel with _$PayjoinModel {
       sha256.convert(utf8.encode(uri)).toString().substring(0, 16),
   };
 
+  // isCompleted is set the instant a broadcast succeeds — real payjoin or
+  // plain-broadcast fallback alike (see PayjoinRepositoryImpl.
+  // _broadcastOriginalTransaction / _onOriginalTransactionSeen). txId is the
+  // discriminator between the two: tryBroadcastOriginalTransaction and
+  // _onOriginalTransactionSeen always clear it on a fallback completion, so
+  // its presence reliably means the payjoin transaction itself was
+  // broadcast, not just the original.
   PayjoinStatus get status => switch (this) {
     PayjoinReceiverModel(:final originalTxBytes) =>
       isCompleted
-          ? PayjoinStatus.completed
+          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.fallback)
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null
@@ -116,7 +123,7 @@ sealed class PayjoinModel with _$PayjoinModel {
           : PayjoinStatus.started,
     PayjoinSenderModel() =>
       isCompleted
-          ? PayjoinStatus.completed
+          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.fallback)
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null

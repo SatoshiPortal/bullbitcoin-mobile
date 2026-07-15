@@ -108,10 +108,6 @@ class PayjoinInProgressPage extends StatelessWidget {
     final payjoinId = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.id,
     );
-    final isCompleted = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.payjoin?.status == PayjoinStatus.completed,
-    );
     // A real payjoin: the counterparty actually completed the negotiation
     // and its own transaction was broadcast. This screen auto-navigates
     // away as soon as this becomes true (see the BlocListener above), so in
@@ -121,11 +117,15 @@ class PayjoinInProgressPage extends StatelessWidget {
     );
     // Completed, but NOT via a real payjoin: the plain-broadcast fallback
     // paid the sender instead — declined below the anti-probing minimum, a
-    // failed negotiation, or an expiry with no proposal ever exchanged.
-    // Unlike isRealPayjoin, this state is NOT auto-navigated away from: the
-    // user explicitly expected a payjoin, so they get to read why one
-    // didn't happen instead of landing on transaction details unannounced.
-    final isFallbackCompleted = isCompleted && !isRealPayjoin;
+    // failed negotiation, or an expiry with no proposal ever exchanged (see
+    // PayjoinStatus.fallback). Unlike isRealPayjoin, this state is NOT
+    // auto-navigated away from: the user explicitly expected a payjoin, so
+    // they get to read why one didn't happen instead of landing on
+    // transaction details unannounced.
+    final isFallbackCompleted = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.payjoin?.status == PayjoinStatus.fallback,
+    );
     // The specific, most informative case: the request was declined solely
     // because its amount fell under the configured anti-probing threshold
     // (PayjoinRepositoryImpl.isBelowPayjoinMinimum runs before any

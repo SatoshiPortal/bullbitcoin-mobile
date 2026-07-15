@@ -40,6 +40,32 @@ PayjoinSender _sender({
         as PayjoinSender;
 
 void main() {
+  group('Payjoin.isCompleted', () {
+    test('true for a real payjoin completion', () {
+      expect(_receiver(status: PayjoinStatus.completed).isCompleted, isTrue);
+      expect(_sender(status: PayjoinStatus.completed).isCompleted, isTrue);
+    });
+
+    test('true for a plain-broadcast fallback completion too — both mean '
+        '"money moved, nothing left to do here"', () {
+      expect(_receiver(status: PayjoinStatus.fallback).isCompleted, isTrue);
+      expect(_sender(status: PayjoinStatus.fallback).isCompleted, isTrue);
+    });
+
+    test('false while ongoing or expired', () {
+      expect(_receiver(status: PayjoinStatus.requested).isCompleted, isFalse);
+      expect(_receiver(status: PayjoinStatus.proposed).isCompleted, isFalse);
+      expect(_receiver(status: PayjoinStatus.expired).isCompleted, isFalse);
+    });
+  });
+
+  group('Payjoin.isOngoing', () {
+    test('false once resolved via fallback, same as a real completion', () {
+      expect(_receiver(status: PayjoinStatus.fallback).isOngoing, isFalse);
+      expect(_sender(status: PayjoinStatus.fallback).isOngoing, isFalse);
+    });
+  });
+
   group('Payjoin.isRealPayjoinCompletion', () {
     test('false while ongoing (requested/proposed), even with a txId set '
         '(the receiver anticipates its own txid before broadcast)', () {
@@ -69,20 +95,20 @@ void main() {
       );
     });
 
-    test('false when completed via the plain-broadcast fallback (no txid — '
-        'tryBroadcastOriginalTransaction always clears it)', () {
+    test('false when completed via the plain-broadcast fallback '
+        '(PayjoinStatus.fallback, not completed)', () {
       expect(
-        _receiver(status: PayjoinStatus.completed).isRealPayjoinCompletion,
+        _receiver(status: PayjoinStatus.fallback).isRealPayjoinCompletion,
         isFalse,
       );
       expect(
-        _sender(status: PayjoinStatus.completed).isRealPayjoinCompletion,
+        _sender(status: PayjoinStatus.fallback).isRealPayjoinCompletion,
         isFalse,
       );
     });
 
-    test('true only when completed AND a payjoin txid survived — the real '
-        'payjoin transaction was broadcast', () {
+    test('true only when the status is completed — fallback is a distinct '
+        'status, so this no longer needs to also check txId', () {
       expect(
         _receiver(
           status: PayjoinStatus.completed,
@@ -139,7 +165,7 @@ void main() {
         isFalse,
       );
       expect(
-        _receiver(status: PayjoinStatus.completed).canManuallyBroadcastOriginal,
+        _receiver(status: PayjoinStatus.fallback).canManuallyBroadcastOriginal,
         isFalse,
       );
     });
@@ -171,7 +197,7 @@ void main() {
         isFalse,
       );
       expect(
-        _sender(status: PayjoinStatus.completed).canManuallyBroadcastOriginal,
+        _sender(status: PayjoinStatus.fallback).canManuallyBroadcastOriginal,
         isFalse,
       );
     });

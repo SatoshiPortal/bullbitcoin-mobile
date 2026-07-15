@@ -1443,6 +1443,234 @@ void main() {
     });
   });
 
+  group('_watchForFallback (the counterparty fell back independently)', () {
+    // Both sides hold their own copy of the original transaction and can
+    // each independently decide to broadcast it. Before this watch existed,
+    // only the side that actually broadcast it persisted isCompleted — the
+    // OTHER side had no way to find out and just kept waiting on its own
+    // session (a live negotiation, or its own not-yet-fired expiry timer).
+    test('a sender still waiting for a proposal completes once the original '
+        'transaction appears in its wallet — the receiver broadcast it '
+        'independently (e.g. declined below the anti-probing minimum) and '
+        'the sender would otherwise have waited out its own full expiry '
+        'with no signal the payment had already landed', () async {
+      final walletRepo = _MockWalletRepository();
+      final walletTxRepo = _MockWalletTransactionRepository();
+      final syncController = StreamController<Wallet>.broadcast();
+      addTearDown(syncController.close);
+      when(
+        () => walletRepo.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+
+      // Not yet expired, no proposal received yet: _resumeOne's sender
+      // branch arms _watchForFallback unconditionally (originalTxId is
+      // always known for a sender, set at session creation).
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+      ).copyWith(expireAfterSec: 9999999999);
+      when(
+        () => local.fetchAll(onlyUnfinished: true),
+      ).thenAnswer((_) async => [model]);
+      // _onOriginalTransactionSeen always tries the receiver table first.
+      when(
+        () => local.fetchReceiver('bitcoin:tb1qsender?pj=https://payjo.in'),
+      ).thenAnswer((_) async => null);
+      when(
+        () => local.fetchSender('bitcoin:tb1qsender?pj=https://payjo.in'),
+      ).thenAnswer((_) async => model);
+
+      // The original transaction is now visible in the sender's own
+      // wallet — broadcast by the receiver, not by this device.
+      when(
+        () => walletTxRepo.getWalletTransaction(
+          'sender-orig-txid',
+          walletId: 'w1',
+        ),
+      ).thenAnswer(
+        (_) async => _testWalletTx(txId: 'sender-orig-txid', walletId: 'w1'),
+      );
+
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: () => walletTxRepo,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+
+      await repo.resumePayjoinsOnStartup();
+
+      final emitted = <Payjoin>[];
+      final sub = repo.payjoinStream.listen(emitted.add);
+
+      // Some unrelated wallet sync finishes — the same passive mechanism
+      // a sender already relies on to notice its own successful payjoin
+      // broadcast.
+      syncController.add(_testWallet(origin: 'w1'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(emitted, hasLength(1));
+      expect(emitted.single.status, PayjoinStatus.fallback);
+      expect(emitted.single.isCompleted, isTrue);
+      expect((emitted.single as PayjoinSender).txId, isNull);
+      await sub.cancel();
+    });
+
+    test(
+      'idempotent: a session already completed (by whichever path got '
+      'there first) is left untouched, not re-persisted or re-emitted',
+      () async {
+        final walletRepo = _MockWalletRepository();
+        final walletTxRepo = _MockWalletTransactionRepository();
+        final syncController = StreamController<Wallet>.broadcast();
+        addTearDown(syncController.close);
+        when(
+          () => walletRepo.walletSyncFinishedStream,
+        ).thenAnswer((_) => syncController.stream);
+
+        final model = _senderModel(
+          originalTxId: 'sender-orig-txid',
+        ).copyWith(expireAfterSec: 9999999999);
+        when(
+          () => local.fetchAll(onlyUnfinished: true),
+        ).thenAnswer((_) async => [model]);
+        when(
+          () => local.fetchReceiver('bitcoin:tb1qsender?pj=https://payjo.in'),
+        ).thenAnswer((_) async => null);
+        // Already completed by the time the watch fires (e.g. this
+        // device's own attempt succeeded in the meantime).
+        final alreadyCompleted = model.copyWith(isCompleted: true);
+        when(
+          () => local.fetchSender('bitcoin:tb1qsender?pj=https://payjo.in'),
+        ).thenAnswer((_) async => alreadyCompleted);
+        when(
+          () => walletTxRepo.getWalletTransaction(
+            'sender-orig-txid',
+            walletId: 'w1',
+          ),
+        ).thenAnswer(
+          (_) async => _testWalletTx(txId: 'sender-orig-txid', walletId: 'w1'),
+        );
+
+        final repo = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          walletMetadataDatasource: _MockWalletMetadataDatasource(),
+          seedDatasource: _MockSeedDatasource(),
+          bdkWalletDatasource: _MockBdkWalletDatasource(),
+          blockchainDatasource: blockchain,
+          serversPort: serversPort,
+          walletRepository: () => walletRepo,
+          walletTransactionRepository: () => walletTxRepo,
+          settingsRepository: _MockSettingsRepository(),
+          labelsFacade: () => labels,
+        );
+
+        await repo.resumePayjoinsOnStartup();
+
+        final emitted = <Payjoin>[];
+        final sub = repo.payjoinStream.listen(emitted.add);
+
+        syncController.add(_testWallet(origin: 'w1'));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(emitted, isEmpty);
+        verifyNever(() => local.update(any()));
+        await sub.cancel();
+      },
+    );
+
+    test(
+      'a receiver session surviving a failed own-broadcast attempt still '
+      'completes once the original transaction is later observed on-chain '
+      '(the fix: _stopWatching is no longer called before attempting the '
+      'broadcast, so a failed attempt no longer strands the session)',
+      () async {
+        final requestController =
+            StreamController<PayjoinReceiverModel>.broadcast();
+        addTearDown(requestController.close);
+        final walletRepo = _MockWalletRepository();
+        final walletTxRepo = _MockWalletTransactionRepository();
+        final syncController = StreamController<Wallet>.broadcast();
+        addTearDown(syncController.close);
+        final settings = _MockSettingsRepository();
+        when(
+          () => pdk.requestsForReceivers,
+        ).thenAnswer((_) => requestController.stream);
+        when(
+          () => settings.fetch(),
+        ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 10000));
+        when(
+          () => walletRepo.walletSyncFinishedStream,
+        ).thenAnswer((_) => syncController.stream);
+
+        final repo = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          walletMetadataDatasource: _MockWalletMetadataDatasource(),
+          seedDatasource: _MockSeedDatasource(),
+          bdkWalletDatasource: _MockBdkWalletDatasource(),
+          blockchainDatasource: blockchain,
+          serversPort: serversPort,
+          walletRepository: () => walletRepo,
+          walletTransactionRepository: () => walletTxRepo,
+          settingsRepository: settings,
+          labelsFacade: () => labels,
+        );
+
+        // Below minimum, so _processPayjoinRequest attempts the fallback
+        // broadcast immediately — but the broadcast itself fails (e.g. no
+        // network at that exact moment).
+        final model = _receiverModel(originalTxId: 'orig-txid', amountSat: 500);
+        when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+        when(
+          () => serversPort.runWithFallback<void>(
+            network: any(named: 'network'),
+            operation: any(named: 'operation'),
+          ),
+        ).thenThrow(Exception('no network'));
+        when(
+          () => walletTxRepo.getWalletTransaction('orig-txid', walletId: 'w1'),
+        ).thenAnswer((_) async => null);
+
+        final emitted = <Payjoin>[];
+        final sub = repo.payjoinStream.listen(emitted.add);
+
+        requestController.add(model);
+        await Future<void>.delayed(Duration.zero);
+
+        // Own attempt failed: _processPayjoinRequest's below-minimum branch
+        // only emits on success, so just the initial "requested" event is
+        // on the stream — still not completed.
+        expect(emitted, hasLength(1));
+        expect(emitted.single.isCompleted, isFalse);
+
+        // The original transaction eventually lands anyway — a later
+        // resume's retry, or the sender broadcasting it independently. The
+        // fallback watch armed at the top of _processPayjoinRequest is what
+        // catches this: it survived the failed attempt above because
+        // _stopWatching is no longer called before attempting the broadcast.
+        when(
+          () => walletTxRepo.getWalletTransaction('orig-txid', walletId: 'w1'),
+        ).thenAnswer(
+          (_) async => _testWalletTx(txId: 'orig-txid', walletId: 'w1'),
+        );
+        syncController.add(_testWallet(origin: 'w1'));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(emitted, hasLength(2));
+        expect(emitted.last.status, PayjoinStatus.fallback);
+        await sub.cancel();
+      },
+    );
+  });
+
   group('_processPayjoinRequest below-minimum decline flow', () {
     test('declines and broadcasts the original when the amount is below the '
         'configured minimum', () async {

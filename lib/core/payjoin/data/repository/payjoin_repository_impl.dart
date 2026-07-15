@@ -70,6 +70,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // passive watcher in _stopWatching / dispose.
   final Map<String, Timer> _broadcastPollTimers = {};
 
+  // Mirrors _broadcastWatchers/_broadcastPollTimers but for the ORIGINAL
+  // transaction instead of the real payjoin one — the safety net for
+  // "the counterparty fell back independently and we'd otherwise never find
+  // out" (see _watchForFallback). Armed as soon as originalTxId is known
+  // (session creation for a sender, request-received for a receiver) and
+  // runs alongside any later _watchForBroadcast for the same session:
+  // whichever of the two lands on-chain first resolves the session, and
+  // _stopWatching tears down both together.
+  final Map<String, StreamSubscription<void>> _fallbackWatchers = {};
+  final Map<String, Timer> _fallbackPollTimers = {};
+
   // Datasource stream subscriptions, cancelled on dispose.
   final List<StreamSubscription<void>> _datasourceSubscriptions = [];
 
@@ -123,6 +134,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       await sub.cancel();
     }
     _broadcastWatchers.clear();
+    for (final timer in _fallbackPollTimers.values) {
+      timer.cancel();
+    }
+    _fallbackPollTimers.clear();
+    for (final sub in _fallbackWatchers.values) {
+      await sub.cancel();
+    }
+    _fallbackWatchers.clear();
     for (final sub in _datasourceSubscriptions) {
       await sub.cancel();
     }
@@ -271,6 +290,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     // Store the payjoin sender in the local database
     await _localPayjoinDatasource.storeSender(model);
+
+    // Arm the fallback safety net immediately: originalTxId is known from
+    // the moment this session is created (unlike the receiver, who only
+    // learns it once a request arrives — see _processPayjoinRequest), and
+    // the receiver could decline/expire and broadcast it well before this
+    // sender's own session would otherwise notice (see _watchForFallback's
+    // doc comment).
+    _watchForFallback(
+      payjoinId: model.id,
+      walletId: model.walletId,
+      originalTxId: model.originalTxId,
+    );
 
     // Return a payjoin entity with send details
     final payjoin = model.toEntity();
@@ -426,6 +457,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Notify higher layers that a new payjoin request was received
     _payjoinStreamController.add(payjoin);
 
+    // Arm the fallback safety net now that originalTxId is known: from here
+    // on, EITHER side could end up broadcasting the original transaction
+    // (this receiver declining below-minimum in a moment, a failed
+    // negotiation, or either session's own expiry), and this is the only
+    // way this side finds out if it was the OTHER one that did it (see
+    // _watchForFallback's doc comment). Left running until the session
+    // actually resolves, including through the negotiation attempted below.
+    if (model.originalTxId != null) {
+      _watchForFallback(
+        payjoinId: model.id,
+        walletId: model.walletId,
+        originalTxId: model.originalTxId!,
+      );
+    }
+
     // Below the configured minimum, don't payjoin at all: just broadcast the
     // sender's original transaction. A small payment isn't worth exposing a
     // decoy UTXO for, and requiring a minimum stake per attempt is a
@@ -568,7 +614,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //
       //  No proposal ever went out, so no broadcast watcher (armed only once
       //  a proposal is sent — see _watchForBroadcast's call sites) can exist
-      //  for this session; stopping it here is a defensive no-op.
+      //  for this session.
+      //
+      //  Deliberately do NOT call _stopWatching before attempting the
+      //  broadcast: the fallback watch armed in _processPayjoinRequest must
+      //  survive a failed attempt here (e.g. no network at that exact
+      //  moment) so it keeps watching for the original transaction to land
+      //  through ANY path — a later resume's retry, or the sender broadcasting
+      //  it independently in the meantime. _broadcastOriginalTransaction
+      //  already stops it on success; leaving it running on failure is what
+      //  fixes a session getting permanently stuck otherwise (observed live).
       //
       //  Deliberately do NOT persist the raw expired model first:
       //  tryBroadcastOriginalTransaction persists isCompleted itself on
@@ -577,7 +632,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  resumePayjoinsOnStartup sees isExpiryTimePassed still true and
       //  retries the fallback — persisting isExpired here would instead
       //  permanently exclude it from onlyUnfinished and drop the retry.
-      _stopWatching(payjoinModel.id);
       final result = await _broadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
@@ -597,7 +651,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  Same reasoning as the receiver branch above for not persisting the
       //  expired flag up front: a failed broadcast must remain retryable on
       //  the next resume.
-      _stopWatching(payjoinModel.id);
+      //
+      //  Also same reasoning as the receiver branch for NOT calling
+      //  _stopWatching before attempting: the fallback watch armed at
+      //  session creation must survive a failed attempt here.
       final result = await _broadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else {
@@ -753,16 +810,179 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     log.info('Payjoin receiver completed on broadcast: $payjoinId');
   }
 
-  /// Stops both the passive watcher and the active poll of a session.
-  /// Synchronous on purpose: `StreamSubscription.cancel()` already guarantees
-  /// no further events are delivered from the moment it is CALLED, so nothing
-  /// here needs to block on its returned future (which only signals resource
-  /// cleanup) — and awaiting it would make completion latency depend on the
-  /// upstream stream's teardown.
+  /// Watches for the ORIGINAL transaction [originalTxId] to appear in
+  /// [walletId] — the safety net for the plain-broadcast fallback landing
+  /// through a path this device didn't itself observe succeed.
+  ///
+  /// Both a sender and a receiver hold their own copy of the original
+  /// transaction and can each independently decide to broadcast it (a
+  /// receiver declining below the anti-probing minimum, either side's
+  /// session expiring with no proposal exchanged, or a sender's own
+  /// negotiation failing). Whichever side attempts the broadcast persists
+  /// `isCompleted` itself on success, but there was previously no way for
+  /// the OTHER side to find out — it just kept waiting on its own session
+  /// (a live negotiation, or its own not-yet-fired expiry timer) with no
+  /// signal that the payment had already landed via the other side's
+  /// fallback. Observed live: a receiver declining below-minimum broadcasts
+  /// the original immediately, while the sender's own session sat on
+  /// "requested" for up to a minute until ITS expiry timer independently
+  /// fired — and if that second, redundant broadcast attempt then errored
+  /// (the tx was already known to the network), the sender's session never
+  /// completed at all.
+  ///
+  /// Armed as soon as `originalTxId` is known — session creation for a
+  /// sender, request-received for a receiver — and left running alongside
+  /// any later [_watchForBroadcast] for the same session: whichever of the
+  /// real payjoin txid or this original txid lands on-chain first resolves
+  /// the session, and [_stopWatching] tears down both together. Mirrors
+  /// [_watchForBroadcast]'s passive+active polling exactly; see its doc
+  /// comment for why both triggers exist.
+  ///
+  /// Idempotent, same as [_watchForBroadcast].
+  void _watchForFallback({
+    required String payjoinId,
+    required String walletId,
+    required String originalTxId,
+  }) {
+    if (_fallbackWatchers.containsKey(payjoinId)) return;
+
+    // This is a best-effort safety net layered on top of the negotiation
+    // this method is called alongside (see call sites) — never let failing
+    // to arm it (e.g. a wallet lookup throwing synchronously) take down the
+    // request/proposal/resume handling it was called from. Same
+    // one-session-must-not-abort-the-rest philosophy as
+    // resumePayjoinsOnStartup's per-session try/catch.
+    try {
+      final subscription = _walletRepository().walletSyncFinishedStream
+          .where((wallet) => wallet.id == walletId)
+          .asyncMap((_) async {
+            try {
+              return await _walletTransactionRepository().getWalletTransaction(
+                originalTxId,
+                walletId: walletId,
+              );
+            } catch (e) {
+              log.warning('Payjoin fallback watch lookup failed: $e');
+              return null;
+            }
+          })
+          .where((tx) => tx != null)
+          .listen((_) => _onOriginalTransactionSeen(payjoinId));
+
+      _fallbackWatchers[payjoinId] = subscription;
+
+      _scheduleFallbackPoll(
+        payjoinId: payjoinId,
+        walletId: walletId,
+        originalTxId: originalTxId,
+        attempt: 0,
+      );
+    } catch (e) {
+      log.warning('Failed to arm the fallback watch for $payjoinId: $e');
+    }
+  }
+
+  /// Arms the next active poll for [_watchForFallback] — mirrors
+  /// [_scheduleBroadcastPoll] exactly, against `originalTxId` instead of the
+  /// real payjoin txid, sharing the same timing constants and bound.
+  void _scheduleFallbackPoll({
+    required String payjoinId,
+    required String walletId,
+    required String originalTxId,
+    required int attempt,
+  }) {
+    if (attempt >= broadcastPollMaxAttempts) return;
+
+    var delay = broadcastPollInitialDelay * (1 << attempt.clamp(0, 30));
+    if (delay > broadcastPollMaxDelay) delay = broadcastPollMaxDelay;
+
+    _fallbackPollTimers[payjoinId] = Timer(delay, () async {
+      if (!_fallbackWatchers.containsKey(payjoinId)) return;
+
+      WalletTransaction? tx;
+      try {
+        tx = await _walletTransactionRepository().getWalletTransaction(
+          originalTxId,
+          walletId: walletId,
+          sync: true,
+        );
+      } catch (e) {
+        log.warning('Payjoin fallback poll failed: $e');
+      }
+
+      // Re-check: the session may have completed through the passive watcher
+      // (or been torn down) while the sync'd lookup was in flight.
+      if (!_fallbackWatchers.containsKey(payjoinId)) return;
+
+      if (tx != null) {
+        await _onOriginalTransactionSeen(payjoinId);
+      } else {
+        _scheduleFallbackPoll(
+          payjoinId: payjoinId,
+          walletId: walletId,
+          originalTxId: originalTxId,
+          attempt: attempt + 1,
+        );
+      }
+    });
+  }
+
+  /// The original transaction landed on-chain — regardless of which side
+  /// actually broadcast it (this repository's own attempt, possibly already
+  /// failed, or the counterparty's independent fallback) — so this session
+  /// is resolved via the plain-broadcast fallback, never a real payjoin.
+  /// `txId` is cleared for the same reason `_broadcastOriginalTransaction`
+  /// clears it: a stale anticipated payjoin txid must never survive on a
+  /// session that completed via the original transaction instead. Never
+  /// labels the transaction "payjoin" — same reasoning as
+  /// `_broadcastOriginalTransaction` (this is by definition not a real one).
+  Future<void> _onOriginalTransactionSeen(String payjoinId) async {
+    // Stop first: the watch stream re-emits on every sync, and completion is
+    // a one-shot side effect. Whichever of the real payjoin txid or this
+    // original txid lands first resolves the session, so both watchers are
+    // torn down together.
+    _stopWatching(payjoinId);
+
+    final receiverModel = await _localPayjoinDatasource.fetchReceiver(
+      payjoinId,
+    );
+    final PayjoinModel? model =
+        receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (model == null || model.isCompleted) return;
+
+    final PayjoinModel completedModel = model is PayjoinReceiverModel
+        ? model.copyWith(isCompleted: true, txId: null)
+        : (model as PayjoinSenderModel).copyWith(isCompleted: true, txId: null);
+    await _localPayjoinDatasource.update(completedModel);
+    _syncWalletAfterBroadcast(completedModel.walletId);
+    _payjoinStreamController.add(completedModel.toEntity());
+    log.info(
+      'Payjoin ${completedModel.logRef} resolved via the original '
+      'transaction observed on-chain (fallback, not necessarily broadcast '
+      'by this device)',
+    );
+  }
+
+  /// Stops every watcher of a session — both the real-payjoin broadcast
+  /// watch ([_watchForBroadcast]) and the original-transaction fallback
+  /// watch ([_watchForFallback]) — since either resolving means there is
+  /// nothing left to watch for on the other. Synchronous on purpose:
+  /// `StreamSubscription.cancel()` already guarantees no further events are
+  /// delivered from the moment it is CALLED, so nothing here needs to block
+  /// on its returned future (which only signals resource cleanup) — and
+  /// awaiting it would make completion latency depend on the upstream
+  /// stream's teardown.
   void _stopWatching(String payjoinId) {
     _broadcastPollTimers.remove(payjoinId)?.cancel();
-    final subscription = _broadcastWatchers.remove(payjoinId);
-    if (subscription != null) unawaited(subscription.cancel());
+    final broadcastSubscription = _broadcastWatchers.remove(payjoinId);
+    if (broadcastSubscription != null) {
+      unawaited(broadcastSubscription.cancel());
+    }
+    _fallbackPollTimers.remove(payjoinId)?.cancel();
+    final fallbackSubscription = _fallbackWatchers.remove(payjoinId);
+    if (fallbackSubscription != null) {
+      unawaited(fallbackSubscription.cancel());
+    }
   }
 
   /// Whether a received payjoin [amountSat] falls below the configured
@@ -865,8 +1085,29 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           walletId: model.walletId,
           txId: model.txId!,
         );
+        // The sender still owns finalizing/broadcasting the real proposal
+        //  from here, but could instead fall back to the original
+        //  transaction on ITS side without this receiver ever being told —
+        //  resume the same safety net armed when the request first arrived
+        //  (see _watchForFallback's doc comment).
+        if (model.originalTxId != null) {
+          _watchForFallback(
+            payjoinId: model.id,
+            walletId: model.walletId,
+            originalTxId: model.originalTxId!,
+          );
+        }
       }
     } else if (model is PayjoinSenderModel) {
+      // Resume the fallback safety net regardless of which branch below is
+      //  taken: originalTxId is always known for a sender (set at creation),
+      //  and the receiver could have broadcast it independently at any point
+      //  while the app was closed (see _watchForFallback's doc comment).
+      _watchForFallback(
+        payjoinId: model.id,
+        walletId: model.walletId,
+        originalTxId: model.originalTxId,
+      );
       if (model.proposalPsbt == null) {
         // If the proposal psbt is not present, it means the sender needs to
         //  listen for a payjoin proposal from the receiver.
