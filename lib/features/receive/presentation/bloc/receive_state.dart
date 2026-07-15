@@ -237,6 +237,28 @@ abstract class ReceiveState with _$ReceiveState {
     }
   }
 
+  /// True once a Bitcoin receive's payjoin session has moved past its
+  /// initial idle state — i.e. the sender's request actually arrived — so
+  /// this session's own flow owns navigating away from here: a real payjoin
+  /// completion is auto-navigated by ReceivePayjoinInProgressScreen's own
+  /// listener, and a plain-broadcast fallback completion is left on that
+  /// same screen for the user to read why, with its "View Details" button
+  /// navigating manually.
+  ///
+  /// The receive ShellRoute's own [isPaymentReceived]-driven navigation
+  /// (straight to generic transaction details, the instant the address
+  /// watcher notices ANY matching transaction) must defer to this — it
+  /// stays mounted and reactive the whole time
+  /// ReceivePayjoinInProgressScreen is shown on the root navigator (a route
+  /// pushed with a `parentNavigatorKey` obscures the shell's page without
+  /// unmounting it), so without checking this first it raced the payjoin
+  /// screen and could whisk the user away before they got a chance to read
+  /// why there was no payjoin.
+  bool get isPayjoinFlowOwningNavigation =>
+      type == ReceiveType.bitcoin &&
+      payjoin != null &&
+      payjoin!.status != PayjoinStatus.started;
+
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
       return wallet != null &&

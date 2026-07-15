@@ -82,7 +82,12 @@ class ReceiveRouter {
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
                     previous.isPaymentReceived != true &&
-                    current.isPaymentReceived == true,
+                    current.isPaymentReceived == true &&
+                    // See ReceiveState.isPayjoinFlowOwningNavigation: a
+                    // Bitcoin receive with an ongoing or completed payjoin
+                    // session owns navigating away from here itself: don't
+                    // race it.
+                    !current.isPayjoinFlowOwningNavigation,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
@@ -100,8 +105,9 @@ class ReceiveRouter {
                     );
                     return;
                   } else {
-                    // For Bitcoin or Liquid, show the transaction details screen
-                    // when the payment is received.
+                    // For Liquid (or a watch-only Bitcoin wallet with no
+                    // payjoin session at all), show the transaction details
+                    // screen when the payment is received.
                     context.goNamed(
                       TransactionsRoute.transactionDetails.name,
                       pathParameters: {'txId': state.txId},
