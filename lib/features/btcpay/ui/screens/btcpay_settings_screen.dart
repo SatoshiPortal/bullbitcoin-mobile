@@ -78,7 +78,7 @@ class _BtcpaySettingsScreenState extends State<BtcpaySettingsScreen> {
                       urlController: _urlController,
                       isSubmitting: state.isSubmitting,
                       failureMessage: state.isFailure
-                          ? _errorMessage(context, state)
+                          ? state.failure?.toTranslated(context)
                           : null,
                       onSubmit: _submit,
                       onScan: _scanPairingCode,

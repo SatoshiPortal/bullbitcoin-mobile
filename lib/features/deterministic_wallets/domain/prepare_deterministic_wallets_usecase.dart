@@ -34,7 +34,12 @@ class PrepareDeterministicWalletsUsecase {
       alias: request.bip85Alias,
       environment: request.environment,
     );
-    final ({String derivation, bip39.Mnemonic mnemonic}) derived;
+    final ({
+      String derivation,
+      bip39.Mnemonic mnemonic,
+      String parentFingerprint,
+    })
+    derived;
     switch (derivedResult) {
       case Ok(:final value):
         derived = value;
@@ -139,6 +144,8 @@ class PrepareDeterministicWalletsUsecase {
     return Ok(
       PreparedDeterministicWallets(
         wallets: List.unmodifiable(prepared),
+        derivationPath: derived.derivation,
+        parentFingerprint: derived.parentFingerprint,
         childSeedFingerprint: seedMaterial.masterFingerprint,
         childSeedStoredDuringAttempt: seedStoredDuringAttempt,
       ),

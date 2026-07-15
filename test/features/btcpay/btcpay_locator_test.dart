@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/btcpay/domain/usecases/get_btcpay_connection_
 import 'package:bb_mobile/features/btcpay/domain/usecases/preview_btcpay_samrock_pairing_usecase.dart';
 import 'package:bb_mobile/features/btcpay/presentation/btcpay_pairing_cubit.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,6 +36,9 @@ class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockUpdateWalletBehaviorUsecase extends Mock
     implements UpdateWalletBehaviorUsecase {}
+
+class _MockKeychainManifestFacade extends Mock
+    implements KeychainManifestFacade {}
 
 void main() {
   late GetIt locator;
@@ -56,6 +60,9 @@ void main() {
     locator.registerSingleton<GetWalletsUsecase>(_MockGetWalletsUsecase());
     locator.registerSingleton<UpdateWalletBehaviorUsecase>(
       _MockUpdateWalletBehaviorUsecase(),
+    );
+    locator.registerSingleton<KeychainManifestFacade>(
+      _MockKeychainManifestFacade(),
     );
   });
 
@@ -79,18 +86,21 @@ void main() {
     expect(() => BtcpayLocator.setup(locator), throwsA(isA<ArgumentError>()));
   });
 
-  test('composition root registers BTCPay after both prerequisites', () {
+  test('composition root registers BTCPay after every prerequisite', () {
     final source = File('lib/locator.dart').readAsStringSync();
     final registry = source.indexOf('Bip85RegistryLocator.setup(locator)');
     final deterministic = source.indexOf(
       'DeterministicWalletsLocator.setup(locator)',
     );
     final wallets = source.indexOf('WalletLocator.setup(locator)');
+    final keychain = source.indexOf('KeychainManifestLocator.setup(locator)');
     final btcpay = source.indexOf('BtcpayLocator.setup(locator)');
 
     expect(registry, greaterThanOrEqualTo(0));
     expect(wallets, greaterThanOrEqualTo(0));
+    expect(keychain, greaterThan(deterministic));
     expect(deterministic, greaterThan(registry));
+    expect(btcpay, greaterThan(keychain));
     expect(btcpay, greaterThan(deterministic));
     expect(btcpay, greaterThan(wallets));
   });

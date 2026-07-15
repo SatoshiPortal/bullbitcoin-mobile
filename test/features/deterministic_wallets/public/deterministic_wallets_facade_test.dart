@@ -136,6 +136,8 @@ PreparedDeterministicWallets _preparedWallets() {
         created: true,
       ),
     ],
+    derivationPath: "39'/0'/12'/100'",
+    parentFingerprint: 'fedcba98',
     childSeedFingerprint: '3f635a63',
     childSeedStoredDuringAttempt: true,
   );

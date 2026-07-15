@@ -6689,6 +6689,7 @@ final class Schema15 extends i0.VersionedSchema {
     keychainManifestWalletBindings,
     recoverbull,
     prices,
+    frozenUtxos,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -6714,7 +6715,7 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape38 walletMetadatas = Shape38(
+  late final Shape40 walletMetadatas = Shape40(
     source: i0.VersionedTable(
       entityName: 'wallet_metadatas',
       withoutRowId: false,
@@ -6734,8 +6735,8 @@ final class Schema15 extends i0.VersionedSchema {
         _column_136,
         _column_137,
         _column_138,
-        _column_237,
-        _column_238,
+        _column_242,
+        _column_243,
         _column_139,
         _column_140,
         _column_141,
@@ -6761,7 +6762,7 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape35 settings = Shape35(
+  late final Shape37 settings = Shape37(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -6780,6 +6781,8 @@ final class Schema15 extends i0.VersionedSchema {
         _column_156,
         _column_157,
         _column_233,
+        _column_235,
+        _column_236,
       ],
       attachedDatabase: database,
     ),
@@ -6901,7 +6904,7 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape37 swaps = Shape37(
+  late final Shape38 swaps = Shape38(
     source: i0.VersionedTable(
       entityName: 'swaps',
       withoutRowId: false,
@@ -6930,9 +6933,10 @@ final class Schema15 extends i0.VersionedSchema {
         _column_205,
         _column_206,
         _column_207,
-        _column_235,
+        _column_237,
         _column_208,
-        _column_236,
+        _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6976,7 +6980,7 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape39 keychainManifestEntries = Shape39(
+  late final Shape41 keychainManifestEntries = Shape41(
     source: i0.VersionedTable(
       entityName: 'keychain_manifest_entries',
       withoutRowId: false,
@@ -6986,22 +6990,22 @@ final class Schema15 extends i0.VersionedSchema {
         'UNIQUE(parent_fingerprint, bip85_derivation_path)',
       ],
       columns: [
-        _column_239,
-        _column_240,
-        _column_241,
-        _column_242,
-        _column_243,
         _column_244,
         _column_245,
         _column_246,
-        _column_165,
         _column_247,
+        _column_248,
+        _column_249,
+        _column_250,
+        _column_251,
+        _column_165,
+        _column_252,
       ],
       attachedDatabase: database,
     ),
     alias: null,
   );
-  late final Shape40 keychainManifestWalletBindings = Shape40(
+  late final Shape42 keychainManifestWalletBindings = Shape42(
     source: i0.VersionedTable(
       entityName: 'keychain_manifest_wallet_bindings',
       withoutRowId: false,
@@ -7009,12 +7013,12 @@ final class Schema15 extends i0.VersionedSchema {
       tableConstraints: ['PRIMARY KEY(wallet_id)'],
       columns: [
         _column_161,
-        _column_248,
-        _column_249,
+        _column_244,
+        _column_253,
         _column_182,
-        _column_250,
+        _column_254,
         _column_165,
-        _column_247,
+        _column_252,
       ],
       attachedDatabase: database,
     ),
@@ -7056,10 +7060,21 @@ final class Schema15 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape39 frozenUtxos = Shape39(
+    source: i0.VersionedTable(
+      entityName: 'frozen_utxos',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
+      columns: [_column_161, _column_240, _column_241],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
 }
 
-class Shape39 extends i0.VersionedTable {
-  Shape39({required super.source, required super.alias}) : super.aliased();
+class Shape41 extends i0.VersionedTable {
+  Shape41({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get entryId =>
       columnsByName['entry_id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get parentFingerprint =>
@@ -7082,7 +7097,7 @@ class Shape39 extends i0.VersionedTable {
       columnsByName['updated_at']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_239(String aliasedName) =>
+i1.GeneratedColumn<String> _column_244(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'entry_id',
       aliasedName,
@@ -7090,7 +7105,7 @@ i1.GeneratedColumn<String> _column_239(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_240(String aliasedName) =>
+i1.GeneratedColumn<String> _column_245(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'parent_fingerprint',
       aliasedName,
@@ -7098,7 +7113,7 @@ i1.GeneratedColumn<String> _column_240(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_241(String aliasedName) =>
+i1.GeneratedColumn<String> _column_246(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'bip85_derivation_path',
       aliasedName,
@@ -7106,7 +7121,7 @@ i1.GeneratedColumn<String> _column_241(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_242(String aliasedName) =>
+i1.GeneratedColumn<String> _column_247(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'reservation_id',
       aliasedName,
@@ -7114,7 +7129,7 @@ i1.GeneratedColumn<String> _column_242(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_243(String aliasedName) =>
+i1.GeneratedColumn<String> _column_248(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'entry_type',
       aliasedName,
@@ -7122,7 +7137,7 @@ i1.GeneratedColumn<String> _column_243(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_244(String aliasedName) =>
+i1.GeneratedColumn<String> _column_249(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'owner_feature',
       aliasedName,
@@ -7130,7 +7145,7 @@ i1.GeneratedColumn<String> _column_244(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_245(String aliasedName) =>
+i1.GeneratedColumn<int> _column_250(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'bip85_application',
       aliasedName,
@@ -7138,7 +7153,7 @@ i1.GeneratedColumn<int> _column_245(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_246(String aliasedName) =>
+i1.GeneratedColumn<int> _column_251(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'bip85_index',
       aliasedName,
@@ -7146,7 +7161,7 @@ i1.GeneratedColumn<int> _column_246(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_247(String aliasedName) =>
+i1.GeneratedColumn<int> _column_252(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'updated_at',
       aliasedName,
@@ -7155,8 +7170,8 @@ i1.GeneratedColumn<int> _column_247(String aliasedName) =>
       $customConstraints: 'NOT NULL',
     );
 
-class Shape40 extends i0.VersionedTable {
-  Shape40({required super.source, required super.alias}) : super.aliased();
+class Shape42 extends i0.VersionedTable {
+  Shape42({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get walletId =>
       columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get entryId =>
@@ -7173,16 +7188,7 @@ class Shape40 extends i0.VersionedTable {
       columnsByName['updated_at']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_248(String aliasedName) =>
-    i1.GeneratedColumn<String>(
-      'entry_id',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.string,
-      $customConstraints:
-          'NOT NULL REFERENCES keychain_manifest_entries(entry_id)',
-    );
-i1.GeneratedColumn<String> _column_249(String aliasedName) =>
+i1.GeneratedColumn<String> _column_253(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'child_seed_fingerprint',
       aliasedName,
@@ -7190,7 +7196,7 @@ i1.GeneratedColumn<String> _column_249(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_250(String aliasedName) =>
+i1.GeneratedColumn<String> _column_254(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'script_type',
       aliasedName,

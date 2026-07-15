@@ -63,6 +63,7 @@ class BtcpayLocator {
         bip85Registry: locator<Bip85RegistryFacade>(),
         applyWalletBehaviorDefaults:
             locator<ApplyWalletBehaviorDefaultsUsecase>(),
+        keychainManifest: locator<KeychainManifestFacade>(),
       ),
     );
     locator.registerFactory<BtcpayPairingCubit>(

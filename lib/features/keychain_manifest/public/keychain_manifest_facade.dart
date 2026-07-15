@@ -1,5 +1,12 @@
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart'
-    show KeychainManifestException, KeychainManifestExceptionType;
+    show
+        KeychainManifestDuplicateException,
+        KeychainManifestEntryConflictException,
+        KeychainManifestException,
+        KeychainManifestExceptionType,
+        KeychainManifestGenericException,
+        KeychainManifestInvalidEntryException,
+        KeychainManifestReservationMismatchException;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart'
     show
         KeychainManifestReservedDerivationRequest,

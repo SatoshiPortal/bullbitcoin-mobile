@@ -80,7 +80,11 @@ void main() {
         environment: _request.environment,
       ),
     ).thenAnswer(
-      (_) async => Ok((derivation: "39'/0'/12'/100'", mnemonic: mnemonic)),
+      (_) async => Ok((
+        derivation: "39'/0'/12'/100'",
+        mnemonic: mnemonic,
+        parentFingerprint: 'fedcba98',
+      )),
     );
   });
 
@@ -245,6 +249,8 @@ void main() {
     final prepared = _valueOf(result);
 
     expect(prepared.wallets, [bitcoin, liquid]);
+    expect(prepared.derivationPath, "39'/0'/12'/100'");
+    expect(prepared.parentFingerprint, 'fedcba98');
     expect(prepared.childSeedStoredDuringAttempt, isFalse);
     expect(prepared.shouldDeleteChildSeedOnRollback, isFalse);
     verifyNever(() => repository.childSeedExists(any()));
@@ -417,6 +423,8 @@ void main() {
         stubDeleteSeed();
         final prepared = PreparedDeterministicWallets(
           wallets: [bitcoin, liquid],
+          derivationPath: "39'/0'/12'/100'",
+          parentFingerprint: 'fedcba98',
           childSeedFingerprint: '3f635a63',
           childSeedStoredDuringAttempt: true,
         );
@@ -436,6 +444,8 @@ void main() {
       stubDeleteWallet(created.walletId);
       final prepared = PreparedDeterministicWallets(
         wallets: [reused, created],
+        derivationPath: "39'/0'/12'/100'",
+        parentFingerprint: 'fedcba98',
         childSeedFingerprint: '3f635a63',
         childSeedStoredDuringAttempt: true,
       );
@@ -456,6 +466,8 @@ void main() {
       );
       final prepared = PreparedDeterministicWallets(
         wallets: [created],
+        derivationPath: "39'/0'/12'/100'",
+        parentFingerprint: 'fedcba98',
         childSeedFingerprint: '3f635a63',
         childSeedStoredDuringAttempt: true,
       );
@@ -472,6 +484,8 @@ void main() {
       stubDeleteSeed(result: const Err(DeterministicWalletRollbackFailure()));
       final prepared = PreparedDeterministicWallets(
         wallets: [created],
+        derivationPath: "39'/0'/12'/100'",
+        parentFingerprint: 'fedcba98',
         childSeedFingerprint: '3f635a63',
         childSeedStoredDuringAttempt: true,
       );

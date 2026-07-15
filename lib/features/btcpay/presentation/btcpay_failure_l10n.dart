@@ -8,6 +8,9 @@ extension BtcpayFailureL10n on BtcpayFailure {
       context.loc.btcpayPairingInvalidRequestError,
     BtcpayPairingRejectedFailure() => context.loc.btcpayPairingRejectedError,
     BtcpayPairingUncertainFailure() => context.loc.btcpayPairingUncertainError,
+    BtcpayLocalSetupFailure() => context.loc.btcpayPairingLocalSetupError,
+    BtcpayKeychainConflictFailure() =>
+      context.loc.btcpayPairingKeychainConflictError,
     BtcpayWalletPreparationFailure() ||
     BtcpayPayloadFailure() ||
     BtcpayStorageFailure() ||

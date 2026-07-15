@@ -85,6 +85,7 @@ void main() {
     final result = await usecase.execute(index: 77, alias: alias);
 
     expect(_value(result).derivation, derivation);
+    expect(_value(result).parentFingerprint, 'root');
     verify(
       () => bip85Repository.deriveMnemonic(
         xprvBase58: mainnetXprv,
@@ -107,6 +108,7 @@ void main() {
     final result = await usecase.execute(index: 77, alias: alias);
 
     expect(_value(result).derivation, derivation);
+    expect(_value(result).parentFingerprint, 'root');
     verifyNever(
       () => bip85Repository.deriveMnemonic(
         xprvBase58: mainnetXprv,
@@ -160,6 +162,7 @@ void main() {
     final result = await usecase.execute(index: 77, alias: alias);
 
     expect(_value(result).derivation, derivation);
+    expect(_value(result).parentFingerprint, 'root');
     verify(
       () => bip85Repository.deriveMnemonic(
         xprvBase58: mainnetXprv,
@@ -230,6 +233,7 @@ void main() {
       );
 
       expect(_value(result).derivation, derivation);
+      expect(_value(result).parentFingerprint, 'root');
       verify(
         () => walletRepository.getWallets(
           environment: Environment.testnet,
@@ -260,8 +264,12 @@ void main() {
   );
 }
 
-({String derivation, bip39.Mnemonic mnemonic}) _value(
-  Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure> result,
+({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}) _value(
+  Result<
+    ({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}),
+    Bip85Failure
+  >
+  result,
 ) {
   return switch (result) {
     Ok(:final value) => value,
@@ -269,9 +277,7 @@ void main() {
   };
 }
 
-Bip85Failure _failure(
-  Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure> result,
-) {
+Bip85Failure _failure<T>(Result<T, Bip85Failure> result) {
   return switch (result) {
     Ok() => fail('Expected Err, got Ok'),
     Err(:final failure) => failure,

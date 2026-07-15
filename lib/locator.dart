@@ -115,6 +115,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup(locator);
     Bip85RegistryLocator.setup(locator);
     DeterministicWalletsLocator.setup(locator);
+    KeychainManifestLocator.setup(locator);
     BtcpayLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);

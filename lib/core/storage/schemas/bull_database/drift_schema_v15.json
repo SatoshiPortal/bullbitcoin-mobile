@@ -598,6 +598,26 @@
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "exchange_testnet_basic_auth_username",
+            "getter_name": "exchangeTestnetBasicAuthUsername",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "exchange_testnet_basic_auth_password",
+            "getter_name": "exchangeTestnetBasicAuthPassword",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -1519,6 +1539,20 @@
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "recovered",
+            "getter_name": "recovered",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"recovered\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"recovered\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -1855,9 +1889,7 @@
     },
     {
       "id": 14,
-      "references": [
-        13
-      ],
+      "references": [],
       "type": "table",
       "data": {
         "name": "keychain_manifest_wallet_bindings",
@@ -1879,25 +1911,9 @@
             "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
-            "defaultConstraints": "REFERENCES keychain_manifest_entries (entry_id)",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "REFERENCES keychain_manifest_entries (entry_id)"
-            },
             "default_dart": null,
             "default_client_dart": null,
-            "dsl_features": [
-              {
-                "foreign_key": {
-                  "to": {
-                    "table": "keychain_manifest_entries",
-                    "column": "entry_id"
-                  },
-                  "initially_deferred": false,
-                  "on_update": null,
-                  "on_delete": null
-                }
-              }
-            ]
+            "dsl_features": []
           },
           {
             "name": "child_seed_fingerprint",
@@ -2149,6 +2165,55 @@
           ]
         ]
       }
+    },
+    {
+      "id": 17,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "frozen_utxos",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "tx_id",
+            "getter_name": "txId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vout",
+            "getter_name": "vout",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "wallet_id",
+          "tx_id",
+          "vout"
+        ]
+      }
     }
   ],
   "fixed_sql": [
@@ -2184,7 +2249,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)), \"exchange_testnet_basic_auth_username\" TEXT NULL, \"exchange_testnet_basic_auth_password\" TEXT NULL);"
         }
       ]
     },
@@ -2247,7 +2312,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"swaps\" (\"id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"direction\" TEXT NOT NULL, \"status\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"key_index\" INTEGER NOT NULL, \"creation_time\" INTEGER NOT NULL, \"completion_time\" INTEGER NULL, \"receive_wallet_id\" TEXT NULL, \"send_wallet_id\" TEXT NULL, \"invoice\" TEXT NULL, \"payment_address\" TEXT NULL, \"payment_amount\" INTEGER NULL, \"receive_address\" TEXT NULL, \"receive_txid\" TEXT NULL, \"send_txid\" TEXT NULL, \"preimage\" TEXT NULL, \"refund_address\" TEXT NULL, \"refund_txid\" TEXT NULL, \"boltz_fees\" INTEGER NULL, \"lockup_fees\" INTEGER NULL, \"claim_fees\" INTEGER NULL, \"refund_fees\" INTEGER NULL, \"server_network_fees\" INTEGER NULL, \"was_direct_payment\" INTEGER NOT NULL DEFAULT 0 CHECK (\"was_direct_payment\" IN (0, 1)), PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"swaps\" (\"id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"direction\" TEXT NOT NULL, \"status\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"key_index\" INTEGER NOT NULL, \"creation_time\" INTEGER NOT NULL, \"completion_time\" INTEGER NULL, \"receive_wallet_id\" TEXT NULL, \"send_wallet_id\" TEXT NULL, \"invoice\" TEXT NULL, \"payment_address\" TEXT NULL, \"payment_amount\" INTEGER NULL, \"receive_address\" TEXT NULL, \"receive_txid\" TEXT NULL, \"send_txid\" TEXT NULL, \"preimage\" TEXT NULL, \"refund_address\" TEXT NULL, \"refund_txid\" TEXT NULL, \"boltz_fees\" INTEGER NULL, \"lockup_fees\" INTEGER NULL, \"claim_fees\" INTEGER NULL, \"refund_fees\" INTEGER NULL, \"server_network_fees\" INTEGER NULL, \"was_direct_payment\" INTEGER NOT NULL DEFAULT 0 CHECK (\"was_direct_payment\" IN (0, 1)), \"recovered\" INTEGER NOT NULL DEFAULT 0 CHECK (\"recovered\" IN (0, 1)), PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -2283,7 +2348,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"keychain_manifest_wallet_bindings\" (\"wallet_id\" TEXT NOT NULL, \"entry_id\" TEXT NOT NULL REFERENCES keychain_manifest_entries (entry_id), \"child_seed_fingerprint\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"script_type\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"keychain_manifest_wallet_bindings\" (\"wallet_id\" TEXT NOT NULL, \"entry_id\" TEXT NOT NULL, \"child_seed_fingerprint\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"script_type\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\"));"
         }
       ]
     },
@@ -2302,6 +2367,15 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"prices\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"from_currency\" TEXT NOT NULL, \"to_currency\" TEXT NOT NULL, \"interval\" TEXT NOT NULL, \"market_price\" REAL NULL, \"price\" REAL NULL, \"price_currency\" TEXT NULL, \"precision\" INTEGER NULL, \"index_price\" REAL NULL, \"user_price\" REAL NULL, \"created_at\" TEXT NOT NULL, UNIQUE (\"from_currency\", \"to_currency\", \"interval\", \"created_at\"));"
+        }
+      ]
+    },
+    {
+      "name": "frozen_utxos",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"frozen_utxos\" (\"wallet_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\", \"tx_id\", \"vout\"));"
         }
       ]
     }

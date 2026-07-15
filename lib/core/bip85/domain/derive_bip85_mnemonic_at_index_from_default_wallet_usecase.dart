@@ -22,7 +22,12 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
   });
 
   @useResult
-  Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
+  Future<
+    Result<
+      ({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}),
+      Bip85Failure
+    >
+  >
   execute({
     required int index,
     required String alias,
@@ -50,6 +55,7 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
 
       return await _deriveForCurrentWallet(
         xprvBase58: xprv,
+        parentFingerprint: defaultWallet.masterFingerprint,
         index: index,
         alias: alias,
         length: length,
@@ -66,9 +72,15 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
     }
   }
 
-  Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
+  Future<
+    Result<
+      ({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}),
+      Bip85Failure
+    >
+  >
   _deriveForCurrentWallet({
     required String xprvBase58,
+    required String parentFingerprint,
     required int index,
     required String alias,
     required bip39.MnemonicLength length,
@@ -97,6 +109,7 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
     if (existing == null) {
       return _storeMnemonic(
         xprvBase58: xprvBase58,
+        parentFingerprint: parentFingerprint,
         index: index,
         alias: alias,
         length: length,
@@ -114,6 +127,7 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
     if (existing.xprvFingerprint != currentFingerprint) {
       return _storeMnemonic(
         xprvBase58: xprvBase58,
+        parentFingerprint: parentFingerprint,
         index: index,
         alias: alias,
         length: length,
@@ -121,22 +135,42 @@ class DeriveBip85MnemonicAtIndexFromDefaultWalletUsecase {
     }
 
     final conflict = _compatibleExistingConflict(existing, alias: alias);
-    return conflict == null ? Ok(preview) : Err(conflict);
+    return conflict == null
+        ? Ok((
+            derivation: preview.derivation,
+            mnemonic: preview.mnemonic,
+            parentFingerprint: parentFingerprint,
+          ))
+        : Err(conflict);
   }
 
-  Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
+  Future<
+    Result<
+      ({String derivation, bip39.Mnemonic mnemonic, String parentFingerprint}),
+      Bip85Failure
+    >
+  >
   _storeMnemonic({
     required String xprvBase58,
+    required String parentFingerprint,
     required int index,
     required String alias,
     required bip39.MnemonicLength length,
-  }) {
-    return _bip85Repository.deriveMnemonic(
+  }) async {
+    final result = await _bip85Repository.deriveMnemonic(
       xprvBase58: xprvBase58,
       length: length,
       index: index,
       alias: alias,
     );
+    return switch (result) {
+      Ok(:final value) => Ok((
+        derivation: value.derivation,
+        mnemonic: value.mnemonic,
+        parentFingerprint: parentFingerprint,
+      )),
+      Err(:final failure) => Err(failure),
+    };
   }
 
   Bip85DerivationConflictFailure? _compatibleExistingConflict(

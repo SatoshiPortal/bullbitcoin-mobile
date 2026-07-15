@@ -143,7 +143,7 @@ void main() {
     verifyNever(
       () => completePairing.execute(pairingUrl: any(named: 'pairingUrl')),
     );
-    await tester.tap(find.text('Create wallets and share details'));
+    await tester.tap(find.text('Pair and share details'));
     await tester.pumpAndSettle();
 
     verify(() => completePairing.execute(pairingUrl: _pairingUrl)).called(1);
@@ -162,7 +162,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField), _pairingUrl);
     await tester.tap(find.text('Pair BTCPay'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Create wallets and share details'));
+    await tester.tap(find.text('Pair and share details'));
     await tester.pumpAndSettle();
 
     await tester.binding.handlePopRoute();

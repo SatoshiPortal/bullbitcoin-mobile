@@ -26,6 +26,17 @@ final class BtcpayWalletPreparationFailure extends BtcpayFailure {
   const BtcpayWalletPreparationFailure([super.logMessage]);
 }
 
+/// Dedicated wallets were materialized, but the durable local setup did not
+/// complete before any descriptor was submitted.
+final class BtcpayLocalSetupFailure extends BtcpayFailure {
+  const BtcpayLocalSetupFailure([super.logMessage]);
+}
+
+/// Existing recovery metadata disagrees with the prepared BTCPay wallets.
+final class BtcpayKeychainConflictFailure extends BtcpayFailure {
+  const BtcpayKeychainConflictFailure([super.logMessage]);
+}
+
 final class BtcpayPayloadFailure extends BtcpayFailure {
   const BtcpayPayloadFailure([super.logMessage]);
 }
