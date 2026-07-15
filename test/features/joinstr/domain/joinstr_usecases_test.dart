@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/joinstr/domain/usecases/initiate_joinstr_pool
 import 'package:bb_mobile/features/joinstr/domain/usecases/join_joinstr_pool_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/list_joinstr_pools_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_peer_context_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/save_joinstr_relay_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -19,6 +20,8 @@ class _MockStore extends Mock implements JoinstrStore {}
 
 class _MockResolvePeerContext extends Mock
     implements ResolveJoinstrPeerContextUsecase {}
+
+class _MockResolveProxy extends Mock implements ResolveJoinstrProxyUsecase {}
 
 Wallet _wallet() => Wallet(
   origin: 'origin',
@@ -52,6 +55,7 @@ void main() {
   late _MockDatasource datasource;
   late _MockStore store;
   late _MockResolvePeerContext resolvePeerContext;
+  late _MockResolveProxy resolveProxy;
 
   setUpAll(() {
     registerFallbackValue(_wallet());
@@ -73,9 +77,11 @@ void main() {
     datasource = _MockDatasource();
     store = _MockStore();
     resolvePeerContext = _MockResolvePeerContext();
+    resolveProxy = _MockResolveProxy();
 
     when(() => store.getRelay()).thenAnswer((_) async => null);
     when(() => store.appendHistory(any())).thenAnswer((_) async {});
+    when(() => resolveProxy.execute()).thenAnswer((_) async => '127.0.0.1:9050');
     when(
       () => resolvePeerContext.execute(wallet: any(named: 'wallet')),
     ).thenAnswer(
@@ -83,13 +89,17 @@ void main() {
         mnemonic: 'mnemonic',
         electrumUrl: 'ssl://electrum.example:50002',
         outputAddress: 'tb1qaddress',
+        proxy: '127.0.0.1:9050',
       ),
     );
   });
 
   group('ListJoinstrPoolsUsecase', () {
-    ListJoinstrPoolsUsecase build() =>
-        ListJoinstrPoolsUsecase(datasource: datasource, store: store);
+    ListJoinstrPoolsUsecase build() => ListJoinstrPoolsUsecase(
+      datasource: datasource,
+      store: store,
+      resolveProxyUsecase: resolveProxy,
+    );
 
     int nowSec() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
@@ -99,6 +109,7 @@ void main() {
           relay: any(named: 'relay'),
           back: any(named: 'back'),
           wait: any(named: 'wait'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenAnswer(
         (_) async => [
@@ -117,6 +128,7 @@ void main() {
           relay: any(named: 'relay'),
           back: any(named: 'back'),
           wait: any(named: 'wait'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenAnswer(
         (_) async => [
@@ -135,6 +147,7 @@ void main() {
           relay: any(named: 'relay'),
           back: any(named: 'back'),
           wait: any(named: 'wait'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenAnswer((_) async => []);
 
@@ -144,6 +157,7 @@ void main() {
           relay: ApiServiceConstants.defaultNostrRelayUrl,
           back: any(named: 'back'),
           wait: any(named: 'wait'),
+          proxy: any(named: 'proxy'),
         ),
       ).called(1);
 
@@ -156,6 +170,7 @@ void main() {
           relay: 'wss://relay.example',
           back: any(named: 'back'),
           wait: any(named: 'wait'),
+          proxy: any(named: 'proxy'),
         ),
       ).called(1);
     });
@@ -200,6 +215,7 @@ void main() {
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
           electrumUrl: any(named: 'electrumUrl'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenAnswer((_) async => 'txid-abc');
 
@@ -225,6 +241,7 @@ void main() {
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
           electrumUrl: any(named: 'electrumUrl'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenThrow(JoinstrException(JoinstrIssue.coinjoinFailed));
 
@@ -261,6 +278,7 @@ void main() {
           feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
           peers: any(named: 'peers'),
           maxDuration: any(named: 'maxDuration'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenAnswer((_) async => 'txid-abc');
 
@@ -282,6 +300,7 @@ void main() {
           feeRateSatPerVb: 1,
           peers: 2,
           maxDuration: any(named: 'maxDuration'),
+          proxy: any(named: 'proxy'),
         ),
       ).called(1);
       final entry =
@@ -303,6 +322,7 @@ void main() {
           feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
           peers: any(named: 'peers'),
           maxDuration: any(named: 'maxDuration'),
+          proxy: any(named: 'proxy'),
         ),
       ).thenThrow(StateError('boom'));
 
