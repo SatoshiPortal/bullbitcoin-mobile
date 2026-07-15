@@ -70,6 +70,10 @@ abstract class SendState with _$SendState {
     Wallet? selectedWallet,
     @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
+    // Fail-closed default: until getCurrencies()/onCurrencyChanged() have
+    // fetched settings at least once, no payjoin is attempted. Mirrors
+    // SettingsEntity.isPayjoinEnabled.
+    @Default(false) bool payjoinGloballyEnabled,
     @Default('') String amount,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
@@ -168,6 +172,18 @@ abstract class SendState with _$SendState {
 
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
+
+  /// Single source of truth for whether a payjoin will actually be attempted
+  /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
+  /// which unifies a button's visibility and its action guard. Used BOTH to
+  /// gate `signTransaction`'s payjoin branch and to show the "a payjoin will
+  /// be attempted" indicator on the confirm screen, so the two can never
+  /// disagree.
+  bool get willAttemptPayjoin =>
+      payjoinGloballyEnabled &&
+      isToSelf != true &&
+      paymentRequest is Bip21PaymentRequest &&
+      (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
 
   String get paymentRequestAddress {
     if (paymentRequest == null) {

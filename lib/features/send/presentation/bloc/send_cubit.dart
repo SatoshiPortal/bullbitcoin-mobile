@@ -856,6 +856,7 @@ class SendCubit extends Cubit<SendState>
         exchangeRate: exchangeRate,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
+        payjoinGloballyEnabled: settings.isPayjoinEnabled,
       ),
     );
   }
@@ -949,6 +950,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> onCurrencyChanged(String currencyCode) async {
     double exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
+    bool payjoinGloballyEnabled = state.payjoinGloballyEnabled;
 
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
@@ -965,8 +967,10 @@ class SendCubit extends Cubit<SendState>
         _convertSatsToCurrencyAmountUsecase.execute(),
       ]);
 
-      fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
+      final settings = currencyValues[0] as SettingsEntity;
+      fiatCurrencyCode = settings.currencyCode;
       exchangeRate = currencyValues[1] as double;
+      payjoinGloballyEnabled = settings.isPayjoinEnabled;
     }
 
     emit(
@@ -974,6 +978,7 @@ class SendCubit extends Cubit<SendState>
         inputAmountCurrencyCode: currencyCode,
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
+        payjoinGloballyEnabled: payjoinGloballyEnabled,
         amount: '', // Clear the amount when changing the currency
       ),
     );
@@ -1878,11 +1883,8 @@ class SendCubit extends Cubit<SendState>
           state.copyWith(signedLiquidTx: signedPset, signingTransaction: false),
         );
       } else {
-        final paymentRequest = state.paymentRequest;
-        if (state.isToSelf != true &&
-            paymentRequest != null &&
-            paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.pj.isNotEmpty) {
+        if (state.willAttemptPayjoin) {
+          final paymentRequest = state.paymentRequest! as Bip21PaymentRequest;
           final payjoinSender = await _sendWithPayjoinUsecase.execute(
             walletId: state.selectedWallet!.id,
             isTestnet: state.selectedWallet!.network.isTestnet,
@@ -1892,7 +1894,6 @@ class SendCubit extends Cubit<SendState>
             networkFeesSatPerVb: state.selectedFee!.isRelative
                 ? state.selectedFee!.value as double
                 : 1,
-            expireAfterSec: PayjoinConstants.defaultExpireAfterSec,
           );
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the

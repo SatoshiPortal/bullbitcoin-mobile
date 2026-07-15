@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -305,6 +306,66 @@ void main() {
       const state = SendState();
 
       expect(state.spendableBalanceSat, 0);
+    });
+  });
+
+  group('SendState.willAttemptPayjoin', () {
+    Bip21PaymentRequest bip21WithPj({String pj = 'https://payjo.in'}) =>
+        PaymentRequest.bip21(
+              network: Network.bitcoinMainnet,
+              uri: 'bitcoin:bc1qtest?pj=$pj',
+              address: 'bc1qtest',
+              pj: pj,
+            )
+            as Bip21PaymentRequest;
+
+    test('false when payjoin is disabled globally, even with a pj= URI', () {
+      final state = SendState(
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: false,
+      );
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+
+    test(
+      'false for a self-transfer, even with a pj= URI and the setting on',
+      () {
+        final state = SendState(
+          paymentRequest: bip21WithPj(),
+          payjoinGloballyEnabled: true,
+          isToSelf: true,
+        );
+        expect(state.willAttemptPayjoin, isFalse);
+      },
+    );
+
+    test('false for a BIP21 URI without a pj= parameter', () {
+      final state = SendState(
+        paymentRequest: bip21WithPj(pj: ''),
+        payjoinGloballyEnabled: true,
+      );
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+
+    test('false for a non-BIP21 payment request', () {
+      final state = SendState(
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qtest',
+          isTestnet: false,
+        ),
+        payjoinGloballyEnabled: true,
+      );
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+
+    test('true when enabled globally, not a self-transfer, and the BIP21 URI '
+        'carries a pj= parameter', () {
+      final state = SendState(
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: true,
+        isToSelf: false,
+      );
+      expect(state.willAttemptPayjoin, isTrue);
     });
   });
 
