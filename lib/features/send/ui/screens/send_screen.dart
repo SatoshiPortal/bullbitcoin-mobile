@@ -1634,11 +1634,14 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
-    // Mirrors the receiver-side gating on canManuallyBroadcastOriginal: once
-    // a proposal has arrived (proposalPsbt != null) the repository's own
-    // handler owns finishing it, so the fallback countdown no longer applies.
+    // Same canonical getter the manual-fallback button on the transaction
+    // details screen is gated on (Payjoin.canManuallyBroadcastOriginal) —
+    // reusing it here, rather than a hand-rolled `proposalPsbt == null`
+    // check, means this countdown can never linger past the point where a
+    // proposal has arrived or the session has expired.
     final showFallbackCountdown = context.select(
-      (SendCubit cubit) => cubit.state.payjoinSender?.proposalPsbt == null,
+      (SendCubit cubit) =>
+          cubit.state.payjoinSender?.canManuallyBroadcastOriginal ?? false,
     );
     final payjoinExpiresAt = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender?.expiresAt,
