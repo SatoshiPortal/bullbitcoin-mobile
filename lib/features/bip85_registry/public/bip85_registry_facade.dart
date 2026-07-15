@@ -18,15 +18,15 @@ class Bip85RegistryFacade {
   // its entropy re-derived and exposed. Derived from the reservation list, so a
   // new wallet-seed reservation is covered automatically (KI-1/KI-2).
   Set<int> get reservedWalletSeedIndices => Set.unmodifiable(
-    Bip85Reservations.all
-        .whereType<Bip85WalletSeedReservation>()
-        .map((reservation) => reservation.walletIndex),
+    Bip85Reservations.all.whereType<Bip85WalletSeedReservation>().map(
+      (reservation) => reservation.walletIndex,
+    ),
   );
 
   Set<String> get reservedWalletSeedPaths => Set.unmodifiable(
-    Bip85Reservations.all
-        .whereType<Bip85WalletSeedReservation>()
-        .map((reservation) => reservation.scope.exactPath),
+    Bip85Reservations.all.whereType<Bip85WalletSeedReservation>().map(
+      (reservation) => reservation.scope.exactPath,
+    ),
   );
 
   Bip85Reservation? reservationById(String id) {
