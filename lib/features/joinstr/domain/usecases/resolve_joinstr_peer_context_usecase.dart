@@ -5,16 +5,22 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 
 class JoinstrPeerContext {
   final String mnemonic;
   final String electrumUrl;
   final String outputAddress;
 
+  /// SOCKS5 proxy (local Tor) every relay and electrum connection is routed
+  /// through for this round.
+  final String proxy;
+
   const JoinstrPeerContext({
     required this.mnemonic,
     required this.electrumUrl,
     required this.outputAddress,
+    required this.proxy,
   });
 }
 
@@ -25,15 +31,21 @@ class ResolveJoinstrPeerContextUsecase {
   final SeedRepository _seedRepository;
   final ElectrumServerRepository _electrumServerRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final ResolveJoinstrProxyUsecase _resolveProxy;
 
   ResolveJoinstrPeerContextUsecase({
     required this._seedRepository,
     required this._electrumServerRepository,
     required this._getReceiveAddressUsecase,
-  });
+    required ResolveJoinstrProxyUsecase resolveProxyUsecase,
+  }) : _resolveProxy = resolveProxyUsecase;
 
   Future<JoinstrPeerContext> execute({required Wallet wallet}) async {
     Joinstr.assertWalletSupported(wallet);
+
+    // Resolve Tor before anything touches the network: a round that cannot go
+    // over Tor must not proceed at all.
+    final proxy = await _resolveProxy.execute();
 
     final seed = await _seedRepository.get(wallet.masterFingerprint);
     if (seed is! MnemonicSeed) {
@@ -67,6 +79,7 @@ class ResolveJoinstrPeerContextUsecase {
       mnemonic: seed.mnemonicWords.join(' '),
       electrumUrl: electrumUrl,
       outputAddress: address.address,
+      proxy: proxy,
     );
   }
 }

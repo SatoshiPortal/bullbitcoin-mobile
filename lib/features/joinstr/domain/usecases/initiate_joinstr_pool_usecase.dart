@@ -50,6 +50,7 @@ class InitiateJoinstrPoolUsecase {
         feeRateSatPerVb: feeRateSatPerVb,
         peers: peers,
         maxDuration: maxDuration,
+        proxy: context.proxy,
       );
       // Recorded here rather than in the cubit: a round outlives the screen
       // that started it, and its outcome must reach the history regardless.

@@ -10,6 +10,7 @@ enum JoinstrIssue {
   invalidElectrumUrl,
   invalidPoolConfig,
   invalidRelayUrl,
+  torUnavailable,
   poolNotFound,
   coinjoinFailed,
 }

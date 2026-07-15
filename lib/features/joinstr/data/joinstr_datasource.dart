@@ -23,12 +23,14 @@ class JoinstrDatasource {
     required String relay,
     required Duration back,
     required Duration wait,
+    String? proxy,
   }) async {
     final pools = await _call(
       () => jns.listPools(
         back: BigInt.from(back.inSeconds),
         timeout: BigInt.from(wait.inMicroseconds),
         relay: relay,
+        proxy: proxy,
       ),
     );
 
@@ -59,6 +61,7 @@ class JoinstrDatasource {
     required String mnemonic,
     required String outputAddress,
     required String electrumUrl,
+    String? proxy,
   }) async {
     return _call(() async {
       final peer = await _peerConfig(
@@ -68,6 +71,7 @@ class JoinstrDatasource {
         electrumUrl: electrumUrl,
         relay: pool.relay,
         denominationSat: pool.denominationSat,
+        proxy: proxy,
       );
       return jns.joinCoinjoin(poolRawJson: pool.rawJson, peer: peer);
     });
@@ -83,6 +87,7 @@ class JoinstrDatasource {
     required int feeRateSatPerVb,
     required int peers,
     required Duration maxDuration,
+    String? proxy,
   }) async {
     return _call(() async {
       final peer = await _peerConfig(
@@ -92,6 +97,7 @@ class JoinstrDatasource {
         electrumUrl: electrumUrl,
         relay: relay,
         denominationSat: denominationSat,
+        proxy: proxy,
       );
       return jns.initiateCoinjoin(
         config: jns.FfiPoolConfig(
@@ -113,6 +119,7 @@ class JoinstrDatasource {
     required String electrumUrl,
     required String relay,
     required int denominationSat,
+    String? proxy,
   }) async {
     final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
     final network = _network(wallet.network);
@@ -124,6 +131,7 @@ class JoinstrDatasource {
       rangeStart: 0,
       rangeEnd: Joinstr.scanDepth,
       network: network,
+      proxy: proxy,
     );
 
     // The window is enforced by every other peer only *after* we broadcast a
@@ -148,6 +156,7 @@ class JoinstrDatasource {
       outputAddress: outputAddress,
       relay: relay,
       network: network,
+      proxy: proxy,
     );
   }
 

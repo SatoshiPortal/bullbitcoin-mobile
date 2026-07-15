@@ -37,6 +37,7 @@ class JoinJoinstrPoolUsecase {
         mnemonic: context.mnemonic,
         outputAddress: context.outputAddress,
         electrumUrl: context.electrumUrl,
+        proxy: context.proxy,
       );
       // Recorded here rather than in the cubit: a round outlives the screen
       // that started it, and its outcome must reach the history regardless.
