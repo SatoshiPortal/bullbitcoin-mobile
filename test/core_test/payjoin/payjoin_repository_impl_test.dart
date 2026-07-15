@@ -274,10 +274,18 @@ void main() {
       // broadcasts the ORIGINAL transaction — keeping the stale txId around
       // would make SendCubit (txId ?? originalTxId) display and label a txid
       // that never reached the chain.
+      //
+      // isExpired: true makes this a legitimate manual retry through the
+      // PUBLIC (guarded) entry point: the repository's own internal
+      // fallback already tried once and ALSO failed to broadcast (that is
+      // exactly how a sender session ends up isExpired with proposalPsbt
+      // still set — see _processPayjoinProposal's terminal-failure branch),
+      // so tryBroadcastOriginalTransaction's guard must let this one through
+      // rather than treat the proposal as still "in flight".
       final model = _senderModel(
         originalTxId: 'sender-orig-txid',
         proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      ).copyWith(txId: 'stale-payjoin-txid');
+      ).copyWith(txId: 'stale-payjoin-txid', isExpired: true);
       when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
 
       final result = await repository.tryBroadcastOriginalTransaction(
@@ -314,6 +322,134 @@ void main() {
       expect(result, isNotNull);
       expect(result!.isCompleted, isTrue);
       verifyNever(() => labels.store(any()));
+    });
+  });
+
+  group('tryBroadcastOriginalTransaction manual-call idempotency guard '
+      '(the public entry point only — internal fallback callers bypass it '
+      'via _broadcastOriginalTransaction)', () {
+    test('refuses a receiver already completed, and returns its current '
+        'state instead of re-broadcasting', () async {
+      final model = _receiverModel(
+        originalTxId: 'orig-txid',
+      ).copyWith(isCompleted: true, txId: null);
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+    });
+
+    test('refuses a receiver whose proposal was sent (proposed, not yet '
+        'completed) — the sender owns it for as long as that takes, with '
+        'no dead-end that would ever need a manual retry', () async {
+      final model = _receiverModel(
+        originalTxId: 'orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      await repository.tryBroadcastOriginalTransaction(model.toEntity());
+
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+    });
+
+    test('refuses a sender already completed via a real payjoin, and does '
+        'NOT race it with the lower-fee original', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      ).copyWith(isCompleted: true, txId: 'real-payjoin-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+
+      expect(result, isNotNull);
+      expect((result! as PayjoinSender).txId, 'real-payjoin-txid');
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+    });
+
+    test('refuses a sender whose proposal is still being processed '
+        '(proposalPsbt set, not yet completed or expired)', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      await repository.tryBroadcastOriginalTransaction(model.toEntity());
+
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+    });
+
+    test('allows a sender manual retry once its OWN internal fallback also '
+        'gave up (isExpired, proposalPsbt still set) — no dead-end left, so '
+        'this must not be permanently blocked', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      ).copyWith(isExpired: true);
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+
+      verify(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).called(1);
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
+    });
+
+    test('allows a receiver or sender manual retry while no proposal has '
+        'ever been received (waiting)', () async {
+      final receiverModel = _receiverModel(originalTxId: 'orig-txid');
+      when(
+        () => local.fetchReceiver('pj1'),
+      ).thenAnswer((_) async => receiverModel);
+
+      final result = await repository.tryBroadcastOriginalTransaction(
+        receiverModel.toEntity(),
+      );
+
+      verify(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      ).called(1);
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
     });
   });
 

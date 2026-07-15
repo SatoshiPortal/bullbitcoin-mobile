@@ -782,10 +782,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // a privacy benefit. The button that triggers this event is hidden once
     // a proposal is out (see ReceiveBroadcastPayjoinButton) — this check is
     // the backstop against any other path still reaching it.
+    //
+    // !payjoin.isCompleted is also required, even though proposalPsbt stays
+    // null on a receiver session completed via the plain-broadcast fallback
+    // (declined below minimum, or an expiry with no proposal ever sent):
+    // without it, a stale UI snapshot could let a second tap re-broadcast an
+    // already-completed session's original transaction (harmless only by
+    // coincidence — the exact same repository-level gap this mirrors, found
+    // live on the sender's equivalent button).
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.originalTxBytes != null &&
-        payjoin.proposalPsbt == null) {
+        payjoin.proposalPsbt == null &&
+        !payjoin.isCompleted) {
       try {
         emit(state.copyWith(isBroadcastingOriginalTransaction: true));
         final updatedPayjoin =

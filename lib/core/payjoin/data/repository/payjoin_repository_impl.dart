@@ -280,6 +280,66 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin) async {
+    // Idempotency/safety guard for MANUAL/external callers only (the
+    // BroadcastOriginalTransactionUsecase invoked from
+    // ReceiveBloc._onPayjoinOriginalTxBroadcasted and
+    // TransactionDetailsCubit.broadcastPayjoinOriginalTx) — re-checked
+    // against the freshest persisted state rather than trusting the
+    // caller's possibly-stale copy. Every one of those UI call sites SHOULD
+    // already gate on this themselves, but this is cheap insurance against a
+    // stale UI snapshot letting a tap through anyway — observed live: a
+    // sender's already-completed-via-fallback session got a second "Send
+    // without payjoin" tap ~10s later, re-broadcasting the same original
+    // psbt (harmless here only because it was byte-for-byte identical to
+    // what already confirmed). Had a REAL payjoin completed instead, this
+    // would have re-broadcast a lower-fee transaction competing for the
+    // same inputs as the already-broadcast payjoin tx — the exact dangerous
+    // RBF race ReceiveBloc's own guard exists to prevent, just reachable
+    // from a different screen.
+    //
+    // Deliberately NOT applied to this repository's own INTERNAL fallback
+    // calls (_processPayjoinRequest, _processPayjoinProposal,
+    // _processExpiredPayjoin all call _broadcastOriginalTransaction
+    // directly, bypassing this): those run precisely WHILE the freshly
+    // persisted model still has a proposal "in flight" by definition (that
+    // proposal having just failed is why they are falling back at all), so
+    // this guard would otherwise block its own legitimate fallback attempt.
+    //
+    // "Proposal in flight" is role-specific, not just proposalPsbt != null
+    // (which survives forever once set, even past a terminal state):
+    // - Receiver: once a proposal is SENT, the SENDER owns finalizing it,
+    //   for as long as that takes — _processExpiredPayjoin deliberately
+    //   never gives up on the receiver's behalf (the broadcast watcher
+    //   stays armed indefinitely), so there is no dead-end here that would
+    //   ever need a manual retry.
+    // - Sender: once a proposal is RECEIVED, _processPayjoinProposal owns
+    //   signing/broadcasting it, but if that AND its own internal fallback
+    //   both fail, the session is marked isExpired with nothing left to
+    //   retry it automatically — a manual retry must still be possible.
+    final freshModel = payjoin is PayjoinReceiver
+        ? await _localPayjoinDatasource.fetchReceiver(payjoin.id)
+        : await _localPayjoinDatasource.fetchSender(payjoin.id);
+    if (freshModel != null) {
+      final proposalInFlight = freshModel is PayjoinReceiverModel
+          ? freshModel.proposalPsbt != null
+          : freshModel.proposalPsbt != null && !freshModel.isExpired;
+      if (freshModel.isCompleted || proposalInFlight) {
+        log.warning(
+          'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
+          'already completed or a proposal is in flight',
+        );
+        return freshModel.toEntity();
+      }
+    }
+
+    return _broadcastOriginalTransaction(payjoin);
+  }
+
+  /// The actual original-transaction broadcast mechanism, shared by the
+  /// public (guarded) [tryBroadcastOriginalTransaction] entry point and this
+  /// repository's own internal fallback call sites, which intentionally
+  /// bypass that guard (see its doc comment for why).
+  Future<Payjoin?> _broadcastOriginalTransaction(Payjoin payjoin) async {
     try {
       final network = ElectrumServerNetwork.fromEnvironment(
         isTestnet: payjoin.isTestnet,
@@ -397,7 +457,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         '(${settings.payjoinMinAmountSat} sat); broadcasting original instead',
       );
       final result =
-          (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
+          (await _broadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
       if (result != null) _payjoinStreamController.add(result);
       return;
     }
@@ -422,7 +482,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         trace: StackTrace.current,
       );
       result =
-          (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
+          (await _broadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
     }
 
     if (result != null) {
@@ -479,7 +539,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  session — fall back to broadcasting the original transaction
       //  ourselves, mirroring the sender-expiry fallback, so the payment
       //  still goes through and the send flow doesn't hang forever (#2246).
-      result = await tryBroadcastOriginalTransaction(payjoin) as PayjoinSender?;
+      result = await _broadcastOriginalTransaction(payjoin) as PayjoinSender?;
     }
 
     if (result != null) {
@@ -530,7 +590,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  retries the fallback — persisting isExpired here would instead
       //  permanently exclude it from onlyUnfinished and drop the retry.
       _stopWatching(payjoinModel.id);
-      final result = await tryBroadcastOriginalTransaction(payjoin);
+      final result = await _broadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else if (payjoin is PayjoinSender && payjoin.proposalPsbt == null) {
       // The sender never received a proposal before expiry (the receiver
@@ -550,7 +610,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  expired flag up front: a failed broadcast must remain retryable on
       //  the next resume.
       _stopWatching(payjoinModel.id);
-      final result = await tryBroadcastOriginalTransaction(payjoin);
+      final result = await _broadcastOriginalTransaction(payjoin);
       _payjoinStreamController.add(result ?? payjoin);
     } else {
       // A receiver whose proposal was already sent (proposalPsbt != null)
