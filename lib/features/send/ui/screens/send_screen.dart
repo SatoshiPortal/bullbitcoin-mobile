@@ -1726,7 +1726,7 @@ class SendSendingScreen extends StatelessWidget {
                       BBText(
                         context.loc.sendPayjoinFallbackCountdown,
                         style: context.font.bodyMedium,
-                        color: context.appColors.outline,
+                        color: context.appColors.secondary,
                       ),
                       const Gap(4),
                       Countdown(

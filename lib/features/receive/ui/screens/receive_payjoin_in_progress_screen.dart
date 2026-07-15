@@ -264,7 +264,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                         BBText(
                           context.loc.receivePayjoinFallbackCountdown,
                           style: context.font.bodyMedium,
-                          color: context.appColors.outline,
+                          color: context.appColors.secondary,
                         ),
                         const Gap(4),
                         Countdown(
