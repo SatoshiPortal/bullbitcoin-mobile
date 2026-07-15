@@ -60,12 +60,16 @@ class BtcpayConnectionModel {
     }
 
     final parsedWalletIds = <String, String>{};
+    if (walletIds != null && walletIds is! Map) return null;
     if (walletIds is Map) {
       for (final entry in walletIds.entries) {
         final key = entry.key;
         final value = entry.value;
-        if (key is! String || value is! String || value.trim().isEmpty) {
-          continue;
+        if (key is! String ||
+            value is! String ||
+            value.isEmpty ||
+            value != value.trim()) {
+          return null;
         }
         parsedWalletIds[key] = value;
       }
@@ -78,6 +82,7 @@ class BtcpayConnectionModel {
       status: status,
       capabilities: List<String>.from(capabilities),
       walletNetworks: List<String>.from(walletNetworks),
+      walletIds: parsedWalletIds,
       pairedAt: pairedAt is String ? pairedAt : null,
       updatedAt: updatedAt,
       lastError: decoded['lastError'] is String

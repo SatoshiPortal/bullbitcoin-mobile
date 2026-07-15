@@ -73,6 +73,7 @@ class BtcpayConnection {
     required String storeId,
     required List<SamRockSetupCapability> capabilities,
     required List<BtcpayWalletNetwork> walletNetworks,
+    Map<BtcpayWalletNetwork, String> walletIds = const {},
     required BtcpayConnectionStatus status,
     required DateTime? pairedAt,
     required DateTime updatedAt,
@@ -85,6 +86,11 @@ class BtcpayConnection {
         capabilities.toSet().length != capabilities.length ||
         walletNetworks.isEmpty ||
         walletNetworks.toSet().length != walletNetworks.length ||
+        walletIds.keys.any((network) => !walletNetworks.contains(network)) ||
+        walletIds.values.any(
+          (walletId) => walletId.isEmpty || walletId != walletId.trim(),
+        ) ||
+        walletIds.values.toSet().length != walletIds.length ||
         !updatedAt.isUtc ||
         (pairedAt != null && !pairedAt.isUtc) ||
         (pairedAt != null && pairedAt.isAfter(updatedAt)) ||
@@ -116,6 +122,7 @@ class BtcpayConnection {
       storeId: storeId,
       capabilities: List.unmodifiable(capabilities),
       walletNetworks: List.unmodifiable(walletNetworks),
+      walletIds: Map.unmodifiable(walletIds),
       status: status,
       pairedAt: pairedAt,
       updatedAt: updatedAt,

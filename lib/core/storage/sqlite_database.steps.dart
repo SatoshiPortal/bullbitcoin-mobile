@@ -6248,6 +6248,7 @@ i1.GeneratedColumn<int> _column_241(String aliasedName) =>
       false,
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
+    );
 
 final class Schema14 extends i0.VersionedSchema {
   Schema14({required super.database}) : super(version: 14);
@@ -6268,6 +6269,7 @@ final class Schema14 extends i0.VersionedSchema {
     bip85Derivations,
     recoverbull,
     prices,
+    frozenUtxos,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -6293,7 +6295,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape38 walletMetadatas = Shape38(
+  late final Shape40 walletMetadatas = Shape40(
     source: i0.VersionedTable(
       entityName: 'wallet_metadatas',
       withoutRowId: false,
@@ -6313,8 +6315,8 @@ final class Schema14 extends i0.VersionedSchema {
         _column_136,
         _column_137,
         _column_138,
-        _column_237,
-        _column_238,
+        _column_242,
+        _column_243,
         _column_139,
         _column_140,
         _column_141,
@@ -6340,7 +6342,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape35 settings = Shape35(
+  late final Shape37 settings = Shape37(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -6359,6 +6361,8 @@ final class Schema14 extends i0.VersionedSchema {
         _column_156,
         _column_157,
         _column_233,
+        _column_235,
+        _column_236,
       ],
       attachedDatabase: database,
     ),
@@ -6480,7 +6484,7 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape37 swaps = Shape37(
+  late final Shape38 swaps = Shape38(
     source: i0.VersionedTable(
       entityName: 'swaps',
       withoutRowId: false,
@@ -6509,9 +6513,10 @@ final class Schema14 extends i0.VersionedSchema {
         _column_205,
         _column_206,
         _column_207,
-        _column_235,
+        _column_237,
         _column_208,
-        _column_236,
+        _column_238,
+        _column_239,
       ],
       attachedDatabase: database,
     ),
@@ -6591,10 +6596,21 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape39 frozenUtxos = Shape39(
+    source: i0.VersionedTable(
+      entityName: 'frozen_utxos',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(wallet_id, tx_id, vout)'],
+      columns: [_column_161, _column_240, _column_241],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
 }
 
-class Shape38 extends i0.VersionedTable {
-  Shape38({required super.source, required super.alias}) : super.aliased();
+class Shape40 extends i0.VersionedTable {
+  Shape40({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get id =>
       columnsByName['id']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get masterFingerprint =>
@@ -6635,7 +6651,7 @@ class Shape38 extends i0.VersionedTable {
       columnsByName['birthday']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<int> _column_237(String aliasedName) =>
+i1.GeneratedColumn<int> _column_242(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'hide_on_home',
       aliasedName,
@@ -6643,7 +6659,7 @@ i1.GeneratedColumn<int> _column_237(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL CHECK (hide_on_home IN (0, 1))',
     );
-i1.GeneratedColumn<int> _column_238(String aliasedName) =>
+i1.GeneratedColumn<int> _column_243(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'auto_sweep_enabled',
       aliasedName,

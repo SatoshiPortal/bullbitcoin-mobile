@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/btcpay/btcpay_locator.dart';
 import 'package:bb_mobile/features/btcpay/domain/repositories/btcpay_connection_repository.dart';
@@ -25,6 +28,14 @@ class _MockKeyValueStorageDatasource extends Mock
 class _MockDeterministicWalletsFacade extends Mock
     implements DeterministicWalletsFacade {}
 
+class _MockApplyWalletBehaviorDefaultsUsecase extends Mock
+    implements ApplyWalletBehaviorDefaultsUsecase {}
+
+class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+
+class _MockUpdateWalletBehaviorUsecase extends Mock
+    implements UpdateWalletBehaviorUsecase {}
+
 void main() {
   late GetIt locator;
 
@@ -39,6 +50,13 @@ void main() {
       _MockDeterministicWalletsFacade(),
     );
     locator.registerSingleton<Bip85RegistryFacade>(const Bip85RegistryFacade());
+    locator.registerSingleton<ApplyWalletBehaviorDefaultsUsecase>(
+      _MockApplyWalletBehaviorDefaultsUsecase(),
+    );
+    locator.registerSingleton<GetWalletsUsecase>(_MockGetWalletsUsecase());
+    locator.registerSingleton<UpdateWalletBehaviorUsecase>(
+      _MockUpdateWalletBehaviorUsecase(),
+    );
   });
 
   tearDown(() => locator.reset());
@@ -67,10 +85,13 @@ void main() {
     final deterministic = source.indexOf(
       'DeterministicWalletsLocator.setup(locator)',
     );
+    final wallets = source.indexOf('WalletLocator.setup(locator)');
     final btcpay = source.indexOf('BtcpayLocator.setup(locator)');
 
     expect(registry, greaterThanOrEqualTo(0));
+    expect(wallets, greaterThanOrEqualTo(0));
     expect(deterministic, greaterThan(registry));
     expect(btcpay, greaterThan(deterministic));
+    expect(btcpay, greaterThan(wallets));
   });
 }

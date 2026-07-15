@@ -90,6 +90,7 @@ class CompleteBtcpaySamRockPairingUsecase {
       environment: environment,
       request: request,
       walletNetworks: _walletNetworks(preparedWallets),
+      walletIds: _walletIds(preparedWallets),
       status: BtcpayConnectionStatus.uncertain,
       updatedAt: DateTime.now().toUtc(),
     );
@@ -211,10 +212,12 @@ class CompleteBtcpaySamRockPairingUsecase {
   Map<BtcpayWalletNetwork, String> _walletIds(
     PreparedDeterministicWallets preparedWallets,
   ) {
-    return {
-      for (final wallet in preparedWallets.wallets)
-        BtcpayWalletNetwork.fromSpecId(wallet.specId): wallet.walletId,
-    };
+    final walletIds = <BtcpayWalletNetwork, String>{};
+    for (final wallet in preparedWallets.wallets) {
+      final network = BtcpayWalletNetwork.tryFromSpecId(wallet.specId);
+      if (network != null) walletIds[network] = wallet.walletId;
+    }
+    return walletIds;
   }
 
   /// Applies the BTCPay wallet behavior defaults best-effort: the server has
@@ -224,7 +227,8 @@ class CompleteBtcpaySamRockPairingUsecase {
     PreparedDeterministicWallets preparedWallets,
   ) async {
     for (final prepared in preparedWallets.wallets) {
-      final network = BtcpayWalletNetwork.fromSpecId(prepared.specId);
+      final network = BtcpayWalletNetwork.tryFromSpecId(prepared.specId);
+      if (network == null) continue;
       try {
         await _applyWalletBehaviorDefaults.execute(
           walletId: prepared.walletId,

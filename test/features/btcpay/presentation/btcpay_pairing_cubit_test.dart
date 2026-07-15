@@ -40,18 +40,7 @@ void main() {
   late BtcpayPairingCubit cubit;
 
   setUpAll(() {
-    registerFallbackValue(
-      BtcpayConnection(
-        environment: Environment.mainnet,
-        serverUrl: 'https://btcpay.example.com',
-        storeId: 'store123',
-        capabilities: const [],
-        walletNetworks: const [BtcpayWalletNetwork.bitcoin],
-        status: BtcpayConnectionStatus.uncertain,
-        pairedAt: null,
-        updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
-      ),
-    );
+    registerFallbackValue(_connection());
   });
 
   setUp(() {

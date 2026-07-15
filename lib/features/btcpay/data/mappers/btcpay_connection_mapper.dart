@@ -19,6 +19,9 @@ class BtcpayConnectionMapper {
       walletNetworks: connection.walletNetworks
           .map(_walletNetworkValue)
           .toList(),
+      walletIds: connection.walletIds.map(
+        (network, walletId) => MapEntry(_walletNetworkValue(network), walletId),
+      ),
       pairedAt: connection.pairedAt?.toIso8601String(),
       updatedAt: connection.updatedAt.toIso8601String(),
       lastError: connection.lastError,
@@ -48,12 +51,20 @@ class BtcpayConnectionMapper {
       walletNetworks.add(walletNetwork);
     }
 
+    final walletIds = <BtcpayWalletNetwork, String>{};
+    for (final entry in model.walletIds.entries) {
+      final walletNetwork = _walletNetworkFromValue(entry.key);
+      if (walletNetwork == null) return null;
+      walletIds[walletNetwork] = entry.value;
+    }
+
     return BtcpayConnection.tryCreate(
       environment: environment,
       serverUrl: model.serverUrl,
       storeId: model.storeId,
       capabilities: capabilities,
       walletNetworks: walletNetworks,
+      walletIds: walletIds,
       status: status,
       pairedAt: pairedAt,
       updatedAt: updatedAt,

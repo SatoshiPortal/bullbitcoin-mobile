@@ -83,17 +83,22 @@ BtcpayConnection _connection({
   required Map<BtcpayWalletNetwork, String> walletIds,
   required List<BtcpayWalletNetwork> walletNetworks,
 }) {
-  return BtcpayConnection(
+  return BtcpayConnection.tryCreate(
     environment: Environment.mainnet,
     serverUrl: 'https://btcpay.example.com',
     storeId: 'store123',
-    capabilities: const [SamRockSetupCapability.liquidChain],
+    capabilities: [
+      if (walletNetworks.contains(BtcpayWalletNetwork.bitcoin))
+        SamRockSetupCapability.bitcoinChain,
+      if (walletNetworks.contains(BtcpayWalletNetwork.liquid))
+        SamRockSetupCapability.liquidChain,
+    ],
     walletNetworks: walletNetworks,
     walletIds: walletIds,
     status: BtcpayConnectionStatus.paired,
     pairedAt: DateTime.utc(2026),
     updatedAt: DateTime.utc(2026),
-  );
+  )!;
 }
 
 Wallet _wallet({

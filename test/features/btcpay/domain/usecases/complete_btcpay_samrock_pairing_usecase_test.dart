@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/btcpay/domain/btcpay_connection.dart';
 import 'package:bb_mobile/features/btcpay/domain/btcpay_failure.dart';
@@ -25,6 +26,9 @@ class _MockSamRockPairingServicePort extends Mock
 
 class _MockBtcpayConnectionRepository extends Mock
     implements BtcpayConnectionRepository {}
+
+class _MockApplyWalletBehaviorDefaultsUsecase extends Mock
+    implements ApplyWalletBehaviorDefaultsUsecase {}
 
 const _pairingUrl =
     'https://btcpay.example.com/plugins/store123/samrock/protocol?otp=123&setup=btc,lbtc,btcln';
@@ -271,6 +275,7 @@ class _Harness {
   final getSettings = _MockGetSettingsUsecase();
   final pairingService = _MockSamRockPairingServicePort();
   final connectionRepository = _MockBtcpayConnectionRepository();
+  final applyWalletBehaviorDefaults = _MockApplyWalletBehaviorDefaultsUsecase();
   late final CompleteBtcpaySamRockPairingUsecase usecase;
 
   _Harness(PreparedDeterministicWallets prepared) {
@@ -281,6 +286,7 @@ class _Harness {
       pairingService: pairingService,
       connectionRepository: connectionRepository,
       bip85Registry: const Bip85RegistryFacade(),
+      applyWalletBehaviorDefaults: applyWalletBehaviorDefaults,
     );
     when(() => getSettings.execute()).thenAnswer((_) async => _settings);
     when(
@@ -298,6 +304,13 @@ class _Harness {
     when(
       () => connectionRepository.saveConnection(any()),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => applyWalletBehaviorDefaults.execute(
+        walletId: any(named: 'walletId'),
+        hideOnHome: any(named: 'hideOnHome'),
+        autoSweepEnabled: any(named: 'autoSweepEnabled'),
+      ),
+    ).thenAnswer((_) async {});
   }
 }
 
