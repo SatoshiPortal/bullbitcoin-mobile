@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -156,73 +157,118 @@ class PayjoinInProgressPage extends StatelessWidget {
           bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
     );
 
-    return Center(
+    // Mirrors SendSucessScreen's layout so both terminal payment screens read
+    // the same: centered copy with horizontal margins, the amount block, and
+    // a single bottom-anchored action button.
+    return Padding(
+      padding: const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: .stretch,
         mainAxisAlignment: .center,
         children: [
-          if (isBelowMinimum) ...[
-            Text(
-              context.loc.receivePayjoinBelowMinimum,
-              style: context.font.headlineLarge,
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                if (isBelowMinimum) ...[
+                  BBText(
+                    context.loc.receivePayjoinBelowMinimum,
+                    style: context.font.headlineLarge,
+                    maxLines: 2,
+                    textAlign: .center,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    context.loc.receivePayjoinBelowMinimumSubtext,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ] else if (isFallbackCompleted) ...[
+                  BBText(
+                    context.loc.receivePayjoinFallbackCompleted,
+                    style: context.font.headlineLarge,
+                    maxLines: 2,
+                    textAlign: .center,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    context.loc.receivePayjoinFallbackCompletedSubtext,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ] else if (isRealPayjoin) ...[
+                  BBText(
+                    context.loc.receivePaymentInProgress,
+                    style: context.font.headlineLarge,
+                    maxLines: 2,
+                    textAlign: .center,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    context.loc.receiveBitcoinConfirmationMessage,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ] else if (isExpired) ...[
+                  BBText(
+                    context.loc.receivePayjoinExpired,
+                    style: context.font.headlineLarge,
+                    maxLines: 2,
+                    textAlign: .center,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    context.loc.receivePayjoinExpiredSubtext,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ] else ...[
+                  BBText(
+                    context.loc.receivePayjoinInProgress,
+                    style: context.font.headlineLarge,
+                    maxLines: 2,
+                    textAlign: .center,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    context.loc.receiveWaitForPayjoin,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ],
+                if (amountSat != null) ...[
+                  const Gap(16),
+                  CurrencyText(
+                    amountSat,
+                    showFiat: false,
+                    style: context.font.displaySmall,
+                    textAlign: .center,
+                  ),
+                  const Gap(4),
+                  BBText(
+                    '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
+                    maxLines: 4,
+                    textAlign: .center,
+                  ),
+                ],
+              ],
             ),
-            Text(
-              context.loc.receivePayjoinBelowMinimumSubtext,
-              style: context.font.bodyMedium,
-            ),
-          ] else if (isFallbackCompleted) ...[
-            Text(
-              context.loc.receivePayjoinFallbackCompleted,
-              style: context.font.headlineLarge,
-            ),
-            Text(
-              context.loc.receivePayjoinFallbackCompletedSubtext,
-              style: context.font.bodyMedium,
-            ),
-          ] else if (isRealPayjoin) ...[
-            Text(
-              context.loc.receivePaymentInProgress,
-              style: context.font.headlineLarge,
-            ),
-            Text(
-              context.loc.receiveBitcoinConfirmationMessage,
-              style: context.font.headlineMedium,
-            ),
-          ] else if (isExpired) ...[
-            Text(
-              context.loc.receivePayjoinExpired,
-              style: context.font.headlineLarge,
-            ),
-            Text(
-              context.loc.receivePayjoinExpiredSubtext,
-              style: context.font.bodyMedium,
-            ),
-          ] else ...[
-            Text(
-              context.loc.receivePayjoinInProgress,
-              style: context.font.headlineLarge,
-            ),
-            Text(
-              context.loc.receiveWaitForPayjoin,
-              style: context.font.bodyMedium,
-            ),
-          ],
-          if (amountSat != null) ...[
-            const Gap(16),
-            CurrencyText(
-              amountSat,
-              showFiat: false,
-              style: context.font.headlineLarge,
-            ),
-            const Gap(4),
-            Text(
-              '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.onSurfaceVariant,
-              ),
-            ),
-          ],
-          if (isFallbackCompleted && payjoinId != null) ...[
-            const Gap(84),
+          ),
+          const Spacer(flex: 2),
+          if (isFallbackCompleted && payjoinId != null)
             BBButton.big(
               label: context.loc.receiveViewDetails,
               onPressed: () => context.goNamed(
@@ -232,11 +278,10 @@ class PayjoinInProgressPage extends StatelessWidget {
               ),
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
-            ),
-          ] else if (canManuallyBroadcastOriginal) ...[
-            const Gap(84),
+            )
+          else if (canManuallyBroadcastOriginal)
             const ReceiveBroadcastPayjoinButton(),
-          ],
+          const Gap(32),
         ],
       ),
     );
