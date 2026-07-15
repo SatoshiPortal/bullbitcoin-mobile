@@ -770,31 +770,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final payjoin = state.payjoin;
-    // payjoin.proposalPsbt == null is required, not just originalTxBytes !=
-    // null: once a real proposal has been sent, the SENDER owns
+    // canManuallyBroadcastOriginal is the SAME canonical getter
+    // ReceivePayjoinInProgressScreen's button visibility is gated on (see
+    // its doc comment for the exact semantics), so the two can never drift
+    // out of sync: once a real proposal has been sent, the SENDER owns
     // finalizing/broadcasting that transaction (which spends the same
-    // inputs as the original). Racing it with a manual broadcast of the
-    // original here isn't just redundant — the original is a lower-fee
-    // transaction competing for the same inputs as the real payjoin tx that
-    // may already be broadcast (or about to be), so the attempt is either a
-    // no-op rejected by RBF's insufficient-fee rule (observed live) or,
-    // worse, could succeed and replace/void a payment that already carried
-    // a privacy benefit. The button that triggers this event is hidden once
-    // a proposal is out (see ReceiveBroadcastPayjoinButton) — this check is
-    // the backstop against any other path still reaching it.
-    //
-    // !payjoin.isCompleted is also required, even though proposalPsbt stays
-    // null on a receiver session completed via the plain-broadcast fallback
-    // (declined below minimum, or an expiry with no proposal ever sent):
-    // without it, a stale UI snapshot could let a second tap re-broadcast an
-    // already-completed session's original transaction (harmless only by
-    // coincidence — the exact same repository-level gap this mirrors, found
-    // live on the sender's equivalent button).
+    // inputs as the original) — racing it with a manual broadcast of the
+    // original here isn't just redundant, it's either a no-op rejected by
+    // RBF's insufficient-fee rule (observed live) or, worse, could succeed
+    // and replace/void a payment that already carried a privacy benefit.
+    // Reusing the button's own visibility check here as a backstop is what
+    // catches a stale snapshot letting a tap through anyway — the exact gap
+    // found live on the sender's equivalent button.
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.originalTxBytes != null &&
-        payjoin.proposalPsbt == null &&
-        !payjoin.isCompleted) {
+        payjoin.canManuallyBroadcastOriginal) {
       try {
         emit(state.copyWith(isBroadcastingOriginalTransaction: true));
         final updatedPayjoin =

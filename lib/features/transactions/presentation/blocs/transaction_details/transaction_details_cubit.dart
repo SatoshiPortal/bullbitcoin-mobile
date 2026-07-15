@@ -372,25 +372,17 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     try {
       final payjoin = state.payjoin;
       if (payjoin == null) return;
-      // Backstop mirroring PayjoinRepositoryImpl.tryBroadcastOriginalTransaction's
-      // own guard: once the session already resolved (real payjoin or an
-      // earlier fallback broadcast) or a proposal is still being actively
-      // processed, a manual rebroadcast of the original here would either be
-      // a no-op or, worse, race/replace an already-broadcast real payjoin
-      // transaction that spends the same inputs at a different fee. The UI
-      // is expected to already hide this button in that case (see
-      // TransactionDetailsScreen's `!isPayjoinCompleted` gate); this is the
-      // backstop against a stale snapshot letting a tap through anyway —
-      // observed live (a second "Send without payjoin" tap re-broadcast an
-      // already-completed session's original transaction). `!isExpired` is
-      // required alongside proposalPsbt != null (not just proposalPsbt !=
-      // null alone): if the repository's OWN internal fallback already tried
-      // and ALSO failed, the session is marked isExpired with nothing left
-      // to retry it automatically — a manual retry must still be possible.
-      if (payjoin.isCompleted ||
-          (payjoin.proposalPsbt != null && !payjoin.isExpired)) {
-        return;
-      }
+      // Backstop using the SAME canonical Payjoin.canManuallyBroadcastOriginal
+      // getter TransactionDetailsScreen's button visibility is gated on (see
+      // its doc comment for the exact semantics): a manual rebroadcast here
+      // would otherwise either be a no-op or, worse, race/replace an
+      // already-broadcast real payjoin transaction that spends the same
+      // inputs at a different fee. Deriving both the button's visibility and
+      // this action from the one getter means they can't drift out of sync —
+      // this is the backstop against a stale snapshot letting a tap through
+      // anyway, observed live (a second "Send without payjoin" tap
+      // re-broadcast an already-completed session's original transaction).
+      if (!payjoin.canManuallyBroadcastOriginal) return;
       emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true, err: null));
       final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
         payjoin,

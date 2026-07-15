@@ -71,6 +71,34 @@ sealed class Payjoin with _$Payjoin {
   /// payjoin happened" marker for both the sender and the receiver.
   bool get isRealPayjoinCompletion => isCompleted && txId != null;
 
+  /// Whether a manual "broadcast the original transaction" action would
+  /// actually do anything right now, as opposed to silently no-op'ing (see
+  /// PayjoinRepositoryImpl.tryBroadcastOriginalTransaction's guard, which
+  /// this mirrors exactly). This is the single source of truth for BOTH
+  /// halves of that feature — a manual-broadcast button's visibility and
+  /// the action it triggers — so the two can never drift out of sync and
+  /// show a button that would just do nothing when tapped (observed live:
+  /// a stale-looking sender button re-broadcast an already-completed
+  /// session).
+  ///
+  /// Role-specific, not just `proposalPsbt == null` (which stays true
+  /// forever once a proposal is sent, even past a terminal state):
+  /// - Receiver: once a proposal is SENT, the SENDER owns finalizing it for
+  ///   as long as that takes — there is no dead-end here that would ever
+  ///   need a manual retry.
+  /// - Sender: once a proposal is RECEIVED, the repository's own handler
+  ///   owns signing/broadcasting it, but if that AND its own internal
+  ///   fallback both fail, the session ends up isExpired with proposalPsbt
+  ///   still set and nothing left to retry it automatically — a manual
+  ///   retry must still be possible there.
+  bool get canManuallyBroadcastOriginal {
+    if (isCompleted) return false;
+    return switch (this) {
+      PayjoinReceiver() => proposalPsbt == null,
+      PayjoinSender() => proposalPsbt == null || isExpired,
+    };
+  }
+
   // Currently payjoin is always bitcoin, not liquid
   bool get isBitcoin => true;
   bool get isLiquid => false;

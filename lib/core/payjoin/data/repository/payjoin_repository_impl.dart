@@ -285,17 +285,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // ReceiveBloc._onPayjoinOriginalTxBroadcasted and
     // TransactionDetailsCubit.broadcastPayjoinOriginalTx) — re-checked
     // against the freshest persisted state rather than trusting the
-    // caller's possibly-stale copy. Every one of those UI call sites SHOULD
-    // already gate on this themselves, but this is cheap insurance against a
-    // stale UI snapshot letting a tap through anyway — observed live: a
-    // sender's already-completed-via-fallback session got a second "Send
-    // without payjoin" tap ~10s later, re-broadcasting the same original
-    // psbt (harmless here only because it was byte-for-byte identical to
-    // what already confirmed). Had a REAL payjoin completed instead, this
-    // would have re-broadcast a lower-fee transaction competing for the
-    // same inputs as the already-broadcast payjoin tx — the exact dangerous
-    // RBF race ReceiveBloc's own guard exists to prevent, just reachable
-    // from a different screen.
+    // caller's possibly-stale copy, using the SAME canonical
+    // Payjoin.canManuallyBroadcastOriginal getter those buttons' visibility
+    // is gated on, so this can never disagree with what the UI decided to
+    // show. Every one of those UI call sites SHOULD already gate on this
+    // themselves, but this is cheap insurance against a stale UI snapshot
+    // letting a tap through anyway — observed live: a sender's
+    // already-completed-via-fallback session got a second "Send without
+    // payjoin" tap ~10s later, re-broadcasting the same original psbt
+    // (harmless here only because it was byte-for-byte identical to what
+    // already confirmed). Had a REAL payjoin completed instead, this would
+    // have re-broadcast a lower-fee transaction competing for the same
+    // inputs as the already-broadcast payjoin tx — the exact dangerous RBF
+    // race this guard exists to prevent.
     //
     // Deliberately NOT applied to this repository's own INTERNAL fallback
     // calls (_processPayjoinRequest, _processPayjoinProposal,
@@ -304,31 +306,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // persisted model still has a proposal "in flight" by definition (that
     // proposal having just failed is why they are falling back at all), so
     // this guard would otherwise block its own legitimate fallback attempt.
-    //
-    // "Proposal in flight" is role-specific, not just proposalPsbt != null
-    // (which survives forever once set, even past a terminal state):
-    // - Receiver: once a proposal is SENT, the SENDER owns finalizing it,
-    //   for as long as that takes — _processExpiredPayjoin deliberately
-    //   never gives up on the receiver's behalf (the broadcast watcher
-    //   stays armed indefinitely), so there is no dead-end here that would
-    //   ever need a manual retry.
-    // - Sender: once a proposal is RECEIVED, _processPayjoinProposal owns
-    //   signing/broadcasting it, but if that AND its own internal fallback
-    //   both fail, the session is marked isExpired with nothing left to
-    //   retry it automatically — a manual retry must still be possible.
     final freshModel = payjoin is PayjoinReceiver
         ? await _localPayjoinDatasource.fetchReceiver(payjoin.id)
         : await _localPayjoinDatasource.fetchSender(payjoin.id);
     if (freshModel != null) {
-      final proposalInFlight = freshModel is PayjoinReceiverModel
-          ? freshModel.proposalPsbt != null
-          : freshModel.proposalPsbt != null && !freshModel.isExpired;
-      if (freshModel.isCompleted || proposalInFlight) {
+      final freshEntity = freshModel.toEntity();
+      if (!freshEntity.canManuallyBroadcastOriginal) {
         log.warning(
           'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
           'already completed or a proposal is in flight',
         );
-        return freshModel.toEntity();
+        return freshEntity;
       }
     }
 

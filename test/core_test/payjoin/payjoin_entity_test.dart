@@ -1,7 +1,11 @@
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-PayjoinReceiver _receiver({required PayjoinStatus status, String? txId}) =>
+PayjoinReceiver _receiver({
+  required PayjoinStatus status,
+  String? txId,
+  String? proposalPsbt,
+}) =>
     Payjoin.receiver(
           status: status,
           id: 'pj1',
@@ -11,10 +15,15 @@ PayjoinReceiver _receiver({required PayjoinStatus status, String? txId}) =>
           createdAt: DateTime(2026),
           expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
           txId: txId,
+          proposalPsbt: proposalPsbt,
         )
         as PayjoinReceiver;
 
-PayjoinSender _sender({required PayjoinStatus status, String? txId}) =>
+PayjoinSender _sender({
+  required PayjoinStatus status,
+  String? txId,
+  String? proposalPsbt,
+}) =>
     Payjoin.sender(
           status: status,
           uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
@@ -26,6 +35,7 @@ PayjoinSender _sender({required PayjoinStatus status, String? txId}) =>
           createdAt: DateTime(2026),
           expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
           txId: txId,
+          proposalPsbt: proposalPsbt,
         )
         as PayjoinSender;
 
@@ -85,6 +95,95 @@ void main() {
           status: PayjoinStatus.completed,
           txId: 'payjoin-txid',
         ).isRealPayjoinCompletion,
+        isTrue,
+      );
+    });
+  });
+
+  group('Payjoin.canManuallyBroadcastOriginal', () {
+    test('receiver: true while waiting (no proposal ever sent)', () {
+      expect(
+        _receiver(status: PayjoinStatus.requested).canManuallyBroadcastOriginal,
+        isTrue,
+      );
+    });
+
+    test('receiver: false once a proposal is sent — the sender owns it for '
+        'as long as that takes, with no dead-end that would ever need a '
+        'manual retry', () {
+      expect(
+        _receiver(
+          status: PayjoinStatus.proposed,
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        ).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+      // Still false even once the receiver's OWN session expires waiting —
+      // the broadcast watcher stays armed indefinitely on the sender's
+      // behalf (see PayjoinRepositoryImpl._processExpiredPayjoin).
+      expect(
+        _receiver(
+          status: PayjoinStatus.expired,
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        ).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+    });
+
+    test('receiver: false once completed, real payjoin or fallback alike', () {
+      expect(
+        _receiver(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+        ).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+      expect(
+        _receiver(status: PayjoinStatus.completed).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+    });
+
+    test('sender: true while waiting (no proposal ever received)', () {
+      expect(
+        _sender(status: PayjoinStatus.requested).canManuallyBroadcastOriginal,
+        isTrue,
+      );
+    });
+
+    test('sender: false while a proposal is being actively processed '
+        '(received, not yet completed or expired)', () {
+      expect(
+        _sender(
+          status: PayjoinStatus.proposed,
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        ).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+    });
+
+    test('sender: false once completed, real payjoin or fallback alike', () {
+      expect(
+        _sender(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+        ).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+      expect(
+        _sender(status: PayjoinStatus.completed).canManuallyBroadcastOriginal,
+        isFalse,
+      );
+    });
+
+    test('sender: true once its OWN internal fallback also gave up '
+        '(expired, proposalPsbt still set) — no dead-end left, a manual '
+        'retry must still be possible', () {
+      expect(
+        _sender(
+          status: PayjoinStatus.expired,
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        ).canManuallyBroadcastOriginal,
         isTrue,
       );
     });

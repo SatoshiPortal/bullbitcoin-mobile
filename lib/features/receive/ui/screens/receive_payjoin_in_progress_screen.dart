@@ -146,6 +146,15 @@ class PayjoinInProgressPage extends StatelessWidget {
     final isExpired = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.status == PayjoinStatus.expired,
     );
+    // The single source of truth ReceiveBloc's own action guard
+    // (_onPayjoinOriginalTxBroadcasted) agrees with — see
+    // Payjoin.canManuallyBroadcastOriginal's doc comment. Deriving the
+    // button's visibility from the exact same getter as the action means
+    // they can never disagree.
+    final canManuallyBroadcastOriginal = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
+    );
 
     return Center(
       child: Column(
@@ -224,7 +233,7 @@ class PayjoinInProgressPage extends StatelessWidget {
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
             ),
-          ] else if (!isCompleted) ...[
+          ] else if (canManuallyBroadcastOriginal) ...[
             const Gap(84),
             const ReceiveBroadcastPayjoinButton(),
           ],
