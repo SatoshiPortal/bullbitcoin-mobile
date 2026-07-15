@@ -14855,5 +14855,13 @@
   "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
   "@sendPayjoinWillBeAttempted": {
     "description": "Confirmation-screen indicator shown on a Bitcoin send when a payjoin will be attempted"
+  },
+  "receivePayjoinFallbackCountdown": "Falling back to a normal payment in",
+  "@receivePayjoinFallbackCountdown": {
+    "description": "Label preceding the countdown timer before automatic fallback on the receive payjoin-in-progress screen"
+  },
+  "sendPayjoinFallbackCountdown": "Falling back to a normal payment in",
+  "@sendPayjoinFallbackCountdown": {
+    "description": "Label preceding the countdown timer before automatic fallback on the send payjoin-in-progress screen"
   }
 }

@@ -4,11 +4,13 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -156,6 +158,9 @@ class PayjoinInProgressPage extends StatelessWidget {
       (ReceiveBloc bloc) =>
           bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
     );
+    final payjoinExpiresAt = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoin?.expiresAt,
+    );
 
     // Mirrors SendSucessScreen's layout so both terminal payment screens read
     // the same: centered copy with horizontal margins, the amount block, and
@@ -246,6 +251,34 @@ class PayjoinInProgressPage extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
+                  // Gated on the same canManuallyBroadcastOriginal as the
+                  // fallback button below — a single source of truth so the
+                  // countdown never outlives the action it is counting down
+                  // to (see Payjoin.canManuallyBroadcastOriginal).
+                  if (canManuallyBroadcastOriginal &&
+                      payjoinExpiresAt != null) ...[
+                    const Gap(8),
+                    Row(
+                      mainAxisAlignment: .center,
+                      children: [
+                        BBText(
+                          context.loc.receivePayjoinFallbackCountdown,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.outline,
+                        ),
+                        const Gap(4),
+                        Countdown(
+                          until: payjoinExpiresAt.add(
+                            const Duration(
+                              seconds:
+                                  PayjoinConstants.directoryPollingInterval,
+                            ),
+                          ),
+                          onTimeout: () {},
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
                 if (amountSat != null) ...[
                   const Gap(16),

@@ -5097,5 +5097,7 @@
   "settingsPayjoinDirectoryLabel": "Répertoire",
   "settingsPayjoinRelaysLabel": "Relais",
   "settingsPayjoinServersTitle": "Serveurs utilisés",
-  "sendPayjoinWillBeAttempted": "Un payjoin sera tenté pour ce paiement."
+  "sendPayjoinWillBeAttempted": "Un payjoin sera tenté pour ce paiement.",
+  "receivePayjoinFallbackCountdown": "Retour à un paiement normal dans",
+  "sendPayjoinFallbackCountdown": "Retour à un paiement normal dans"
 }

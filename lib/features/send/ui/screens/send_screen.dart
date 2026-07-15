@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -1633,6 +1634,15 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    // Mirrors the receiver-side gating on canManuallyBroadcastOriginal: once
+    // a proposal has arrived (proposalPsbt != null) the repository's own
+    // handler owns finishing it, so the fallback countdown no longer applies.
+    final showFallbackCountdown = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.proposalPsbt == null,
+    );
+    final payjoinExpiresAt = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.expiresAt,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -1705,6 +1715,28 @@ class SendSendingScreen extends StatelessWidget {
                   maxLines: 4,
                   textAlign: TextAlign.center,
                 ),
+                if (showFallbackCountdown && payjoinExpiresAt != null) ...[
+                  const Gap(8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BBText(
+                        context.loc.sendPayjoinFallbackCountdown,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.outline,
+                      ),
+                      const Gap(4),
+                      Countdown(
+                        until: payjoinExpiresAt.add(
+                          const Duration(
+                            seconds: PayjoinConstants.directoryPollingInterval,
+                          ),
+                        ),
+                        onTimeout: () {},
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ],
           ),
