@@ -48,28 +48,32 @@ void main() {
     expect(terminal.terminalUrl, 'https://bullpay.ca/alice/pos');
   });
 
-  test('refuses a non-pos (payment_page) row body (§8.10 kind assertion)',
-      () async {
-    client.storedPage = row(kind: 'payment_page');
+  test(
+    'refuses a non-pos (payment_page) row body (§8.10 kind assertion)',
+    () async {
+      client.storedPage = row(kind: 'payment_page');
 
-    await expectLater(
-      getPos.execute(nym: 'alice'),
-      throwsA(
-        isA<PosException>().having(
-          (e) => e.kind,
-          'kind',
-          PosErrorKind.invalidServerResponse,
+      await expectLater(
+        getPos.execute(nym: 'alice'),
+        throwsA(
+          isA<PosException>().having(
+            (e) => e.kind,
+            'kind',
+            PosErrorKind.invalidServerResponse,
+          ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
 
-  test('find returns null when the pos row is absent (DonationPageNotFound)',
-      () async {
-    client.storedPage = null;
+  test(
+    'find returns null when the pos row is absent (DonationPageNotFound)',
+    () async {
+      client.storedPage = null;
 
-    expect(await findPos.execute(nym: 'alice'), isNull);
-  });
+      expect(await findPos.execute(nym: 'alice'), isNull);
+    },
+  );
 
   test('find rethrows a non-notFound failure (loud degrade)', () async {
     client.getError = const BullnymException.network(diagnosticReason: 'x');

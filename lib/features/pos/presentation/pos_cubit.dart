@@ -16,10 +16,8 @@ class PosCubit extends Cubit<PosState> {
   final LightningAddressFacade _lightningAddress;
   int _operationId = 0;
 
-  PosCubit({
-    required this._facade,
-    required this._lightningAddress,
-  }) : super(const PosState());
+  PosCubit({required this._facade, required this._lightningAddress})
+    : super(const PosState());
 
   Future<void> load() async {
     if (state.submitting) return;
@@ -67,7 +65,11 @@ class PosCubit extends Cubit<PosState> {
     try {
       currencies = await _facade.supportedCurrencies();
     } catch (e, stack) {
-      log.warning('Point of Sale currency fetch failed', error: e, trace: stack);
+      log.warning(
+        'Point of Sale currency fetch failed',
+        error: e,
+        trace: stack,
+      );
       currenciesUnavailable = true;
     }
     if (_isStale(op)) return;
@@ -133,7 +135,11 @@ class PosCubit extends Cubit<PosState> {
         ),
       );
     } catch (e, stack) {
-      log.warning('Point of Sale currency retry failed', error: e, trace: stack);
+      log.warning(
+        'Point of Sale currency retry failed',
+        error: e,
+        trace: stack,
+      );
     }
   }
 
@@ -167,7 +173,11 @@ class PosCubit extends Cubit<PosState> {
       emit(state.copyWith(submitting: false));
       await load();
     } catch (e, stack) {
-      log.warning('Point of Sale nym registration failed', error: e, trace: stack);
+      log.warning(
+        'Point of Sale nym registration failed',
+        error: e,
+        trace: stack,
+      );
       if (isClosed) return;
       emit(state.copyWith(submitting: false, failure: _asPosException(e)));
     }

@@ -83,7 +83,11 @@ class HealRecoveredProductsUsecase {
     try {
       return await _pos.ensurePosLive();
     } catch (e, stack) {
-      log.warning('AUTOHEAL: point of sale heal failed', error: e, trace: stack);
+      log.warning(
+        'AUTOHEAL: point of sale heal failed',
+        error: e,
+        trace: stack,
+      );
       return const PosHealOutcome(liveness: PosLiveness.unreachable);
     }
   }

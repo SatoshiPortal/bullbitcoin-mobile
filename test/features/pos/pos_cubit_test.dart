@@ -55,19 +55,21 @@ void main() {
       expect(cubit.state.displayCurrency, 'CAD');
     });
 
-    test('existing live pos -> edit with populated fields + terminal URL',
-        () async {
-      la.status = const LightningAddressStatus(nym: 'alice', active: true);
-      facade.terminal = buildTerminal();
-      final cubit = build();
+    test(
+      'existing live pos -> edit with populated fields + terminal URL',
+      () async {
+        la.status = const LightningAddressStatus(nym: 'alice', active: true);
+        facade.terminal = buildTerminal();
+        final cubit = build();
 
-      await cubit.load();
+        await cubit.load();
 
-      expect(cubit.state.status, PosStatus.edit);
-      expect(cubit.state.label, 'My Till');
-      expect(cubit.state.displayCurrency, 'USD');
-      expect(cubit.state.terminalUrl, 'https://bullpay.ca/alice/pos');
-    });
+        expect(cubit.state.status, PosStatus.edit);
+        expect(cubit.state.label, 'My Till');
+        expect(cubit.state.displayCurrency, 'USD');
+        expect(cubit.state.terminalUrl, 'https://bullpay.ca/alice/pos');
+      },
+    );
 
     test('archived pos -> archived', () async {
       la.status = const LightningAddressStatus(nym: 'alice', active: true);
@@ -91,30 +93,34 @@ void main() {
       expect(cubit.state.status, PosStatus.loadFailed);
     });
 
-    test('currency fetch failure degrades but still reaches the form',
-        () async {
-      la.status = const LightningAddressStatus(nym: 'alice', active: true);
-      facade.terminal = null;
-      facade.currenciesError = const PosException.network();
-      final cubit = build();
+    test(
+      'currency fetch failure degrades but still reaches the form',
+      () async {
+        la.status = const LightningAddressStatus(nym: 'alice', active: true);
+        facade.terminal = null;
+        facade.currenciesError = const PosException.network();
+        final cubit = build();
 
-      await cubit.load();
+        await cubit.load();
 
-      expect(cubit.state.status, PosStatus.create);
-      expect(cubit.state.currenciesUnavailable, isTrue);
-    });
+        expect(cubit.state.status, PosStatus.create);
+        expect(cubit.state.currenciesUnavailable, isTrue);
+      },
+    );
 
-    test('a kind-mismatch body surfaces as loadFailed (invalidServerResponse)',
-        () async {
-      la.status = const LightningAddressStatus(nym: 'alice', active: true);
-      facade.findError = const PosException.invalidServerResponse();
-      final cubit = build();
+    test(
+      'a kind-mismatch body surfaces as loadFailed (invalidServerResponse)',
+      () async {
+        la.status = const LightningAddressStatus(nym: 'alice', active: true);
+        facade.findError = const PosException.invalidServerResponse();
+        final cubit = build();
 
-      await cubit.load();
+        await cubit.load();
 
-      expect(cubit.state.status, PosStatus.loadFailed);
-      expect(cubit.state.failure?.kind, PosErrorKind.invalidServerResponse);
-    });
+        expect(cubit.state.status, PosStatus.loadFailed);
+        expect(cubit.state.failure?.kind, PosErrorKind.invalidServerResponse);
+      },
+    );
   });
 
   test('createNym delegates to the LA registration then reloads', () async {
@@ -194,7 +200,8 @@ void main() {
       facade.provisionedTerminal = buildTerminal();
 
       final first = cubit.provision();
-      final second = cubit.provision(); // inert: a provision is already in flight
+      final second = cubit
+          .provision(); // inert: a provision is already in flight
       gate.complete();
       await Future.wait([first, second]);
 

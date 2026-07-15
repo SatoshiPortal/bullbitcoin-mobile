@@ -16,18 +16,20 @@ void main() {
     usecase = GetSupportedDisplayCurrenciesUsecase(bullnym);
   });
 
-  test('maps the server currency list into DisplayCurrency (code + precision)',
-      () async {
-    client.currencies = const [
-      BullnymSupportedCurrency(code: 'CAD', precision: 2),
-      BullnymSupportedCurrency(code: 'COP', precision: 0),
-    ];
+  test(
+    'maps the server currency list into DisplayCurrency (code + precision)',
+    () async {
+      client.currencies = const [
+        BullnymSupportedCurrency(code: 'CAD', precision: 2),
+        BullnymSupportedCurrency(code: 'COP', precision: 0),
+      ];
 
-    final currencies = await usecase.execute();
+      final currencies = await usecase.execute();
 
-    expect(currencies.map((c) => c.code), ['CAD', 'COP']);
-    expect(currencies.last.precision, 0);
-  });
+      expect(currencies.map((c) => c.code), ['CAD', 'COP']);
+      expect(currencies.last.precision, 0);
+    },
+  );
 
   test('maps a server failure into the pos error family', () async {
     client.currenciesError = const BullnymException.network(

@@ -48,9 +48,14 @@ void main() {
               ),
             ).captured.single
             as Set<String>;
-    expect(excluded, {"39'/0'/12'/100'", "39'/0'/12'/101'", "39'/0'/12'/102'"});
+    expect(excluded, {
+      "39'/0'/12'/100'",
+      "39'/0'/12'/101'",
+      "39'/0'/12'/102'",
+      "39'/0'/12'/103'",
+    });
     expect(
-      () => excluded.add("39'/0'/12'/103'"),
+      () => excluded.add("39'/0'/12'/104'"),
       throwsA(isA<UnsupportedError>()),
     );
   });
@@ -95,8 +100,8 @@ void main() {
               ),
             ).captured.single
             as Set<int>;
-    expect(excluded, {100, 101, 102});
-    expect(() => excluded.add(103), throwsA(isA<UnsupportedError>()));
+    expect(excluded, {100, 101, 102, 103});
+    expect(() => excluded.add(104), throwsA(isA<UnsupportedError>()));
   });
 }
 

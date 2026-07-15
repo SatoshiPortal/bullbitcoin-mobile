@@ -24,7 +24,8 @@ class PosFacade {
 
   const PosFacade({
     required Future<PosTerminal?> Function({required String nym}) find,
-    required Future<PosTerminal> Function(PosProvisionCommand command) provision,
+    required Future<PosTerminal> Function(PosProvisionCommand command)
+    provision,
     required Future<PosTerminal?> Function() archive,
     required Future<List<DisplayCurrency>> Function() supportedCurrencies,
     required Future<PosHealOutcome> Function() ensurePosLive,

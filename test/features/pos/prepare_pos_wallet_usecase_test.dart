@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/pos/domain/pos_error.dart';
 import 'package:bb_mobile/features/pos/domain/usecases/prepare_pos_wallet_usecase.dart';
@@ -67,24 +67,26 @@ void main() {
     );
   });
 
-  test('records the prepared wallet in the keychain manifest before fundable',
-      () async {
-    await usecase.execute();
+  test(
+    'records the prepared wallet in the keychain manifest before fundable',
+    () async {
+      await usecase.execute();
 
-    final request = keychainManifest.recordRequests.single;
-    expect(request.reservationId, 'pos_wallet_seed');
-    expect(request.parentFingerprint, 'parent-fp');
-    expect(request.materializations, hasLength(1));
-    final materialization = request.materializations.single;
-    expect(materialization.walletId, 'pos-wallet');
-    expect(materialization.childSeedFingerprint, 'child-fp');
-    expect(materialization.network, Network.liquidMainnet);
-    expect(materialization.scriptType, ScriptType.bip84);
-    // The manifest record happens BEFORE the posture defaults are applied
-    // (record-before-fundable): the wallet becomes recoverable before it can
-    // receive funds.
-    expect(callOrder, ['manifest', 'defaults']);
-  });
+      final request = keychainManifest.recordRequests.single;
+      expect(request.reservationId, 'pos_wallet_seed');
+      expect(request.parentFingerprint, 'parent-fp');
+      expect(request.materializations, hasLength(1));
+      final materialization = request.materializations.single;
+      expect(materialization.walletId, 'pos-wallet');
+      expect(materialization.childSeedFingerprint, 'child-fp');
+      expect(materialization.network, Network.liquidMainnet);
+      expect(materialization.scriptType, ScriptType.bip84);
+      // The manifest record happens BEFORE the posture defaults are applied
+      // (record-before-fundable): the wallet becomes recoverable before it can
+      // receive funds.
+      expect(callOrder, ['manifest', 'defaults']);
+    },
+  );
 
   test('applies KC-6 posture: hidden on home + autosweep on', () async {
     await usecase.execute();
@@ -130,24 +132,26 @@ void main() {
     expect(applyWalletBehaviorDefaults.requests, isEmpty);
   });
 
-  test('keeps prepared wallets when behavior defaults fail after manifest',
-      () async {
-    applyWalletBehaviorDefaults.error = StateError('metadata failed');
+  test(
+    'keeps prepared wallets when behavior defaults fail after manifest',
+    () async {
+      applyWalletBehaviorDefaults.error = StateError('metadata failed');
 
-    await expectLater(
-      usecase.execute(),
-      throwsA(
-        isA<PosException>().having(
-          (error) => error.kind,
-          'kind',
-          PosErrorKind.localPreparationFailed,
+      await expectLater(
+        usecase.execute(),
+        throwsA(
+          isA<PosException>().having(
+            (error) => error.kind,
+            'kind',
+            PosErrorKind.localPreparationFailed,
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(keychainManifest.recordRequests, hasLength(1));
-    expect(deterministicWallets.rollbackRequests, isEmpty);
-  });
+      expect(keychainManifest.recordRequests, hasLength(1));
+      expect(deterministicWallets.rollbackRequests, isEmpty);
+    },
+  );
 
   test('reports durable manifest failures as non-retryable', () async {
     keychainManifest.recordError = KeychainManifestEntryConflictException(
@@ -171,7 +175,8 @@ void main() {
   });
 
   test('reports generic deterministic wallet failures as retryable', () async {
-    deterministicWallets.prepareError = DeterministicWalletException.generic();
+    deterministicWallets.prepareFailure =
+        const DeterministicWalletOperationFailure();
 
     await expectLater(
       usecase.execute(),
@@ -190,8 +195,8 @@ void main() {
   });
 
   test('reports deterministic wallet mismatches as non-retryable', () async {
-    deterministicWallets.prepareError =
-        DeterministicWalletException.walletMismatch('wrong wallet');
+    deterministicWallets.prepareFailure =
+        const DeterministicWalletMismatchFailure();
 
     await expectLater(
       usecase.execute(),
@@ -221,23 +226,22 @@ class _FakeDeterministicWalletsFacade implements DeterministicWalletsFacade {
   final prepareRequests = <DeterministicWalletsRequest>[];
   final rollbackRequests = <PreparedDeterministicWallets>[];
   PreparedDeterministicWallets prepared = _prepared();
-  DeterministicWalletException? prepareError;
+  DeterministicWalletFailure? prepareFailure;
 
   @override
-  Future<PreparedDeterministicWallets> prepare(
-    DeterministicWalletsRequest request,
-  ) async {
-    final error = prepareError;
-    if (error != null) throw error;
+  Future<Result<PreparedDeterministicWallets, DeterministicWalletFailure>>
+  prepare(DeterministicWalletsRequest request) async {
     prepareRequests.add(request);
-    return prepared;
+    final failure = prepareFailure;
+    return failure == null ? Ok(prepared) : Err(failure);
   }
 
   @override
-  Future<void> rollbackCreatedWallets(
+  Future<Result<void, DeterministicWalletFailure>> rollbackCreatedWallets(
     PreparedDeterministicWallets result,
   ) async {
     rollbackRequests.add(result);
+    return const Ok(null);
   }
 }
 

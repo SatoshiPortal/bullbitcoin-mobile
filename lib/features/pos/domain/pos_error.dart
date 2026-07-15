@@ -140,7 +140,11 @@ final class PosLocalPreparationFailedException extends PosException {
 
 final class PosNetworkException extends PosException {
   const PosNetworkException()
-    : super._(kind: PosErrorKind.network, code: 'NetworkError', retryable: true);
+    : super._(
+        kind: PosErrorKind.network,
+        code: 'NetworkError',
+        retryable: true,
+      );
 }
 
 final class PosTimeoutException extends PosException {

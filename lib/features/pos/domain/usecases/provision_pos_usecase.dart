@@ -41,8 +41,10 @@ class ProvisionPosUsecase {
   }) async {
     // Local pre-filter (UX; the server remains the authority). A validation
     // failure never touches the wire or the wallet.
-    PosProvisionCommand(label: label, displayCurrency: displayCurrency)
-        .validate();
+    PosProvisionCommand(
+      label: label,
+      displayCurrency: displayCurrency,
+    ).validate();
 
     var walletCreated = false;
     var walletPrepared = false;

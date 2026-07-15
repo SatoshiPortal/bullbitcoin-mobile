@@ -109,9 +109,7 @@ void main() {
   });
 
   test('heals only the Point of Sale when only it is flagged', () async {
-    pos.outcome = const PosHealOutcome(
-      liveness: PosLiveness.needsReactivation,
-    );
+    pos.outcome = const PosHealOutcome(liveness: PosLiveness.needsReactivation);
 
     final outcome = await usecase.execute({_posReservation});
 
@@ -138,14 +136,16 @@ void main() {
     expect(outcome.pos, isNotNull);
   });
 
-  test('a Point of Sale heal failure degrades to unreachable (never throws)',
-      () async {
-    pos.error = StateError('boom');
+  test(
+    'a Point of Sale heal failure degrades to unreachable (never throws)',
+    () async {
+      pos.error = StateError('boom');
 
-    final outcome = await usecase.execute({_posReservation});
+      final outcome = await usecase.execute({_posReservation});
 
-    expect(outcome.pos?.liveness, PosLiveness.unreachable);
-  });
+      expect(outcome.pos?.liveness, PosLiveness.unreachable);
+    },
+  );
 
   test('healing the POS never touches the page (coexistence)', () async {
     final outcome = await usecase.execute({_posReservation});

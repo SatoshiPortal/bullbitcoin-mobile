@@ -104,6 +104,7 @@ Future<void> main({bool isInitialized = false}) async {
 
       await locator<LightningAddressFacade>().registerWalletOwned(nym: _nym);
 
+      // Create the page (102) first, then provision the POS (103).
       final page = await locator<PaymentPageFacade>().save(
         const SavePaymentPageCommand(
           header: 'Tip me',
@@ -117,6 +118,7 @@ Future<void> main({bool isInitialized = false}) async {
         const PosProvisionCommand(label: 'My Till', displayCurrency: 'CAD'),
       );
 
+      // Both rows coexist and are independently readable.
       final foundPage = await locator<PaymentPageFacade>().find(nym: _nym);
       final foundPos = await locator<PosFacade>().find(nym: _nym);
       expect(foundPage, isNotNull);
@@ -126,6 +128,7 @@ Future<void> main({bool isInitialized = false}) async {
       expect(foundPage.isActive, isTrue);
       expect(foundPos.isActive, isTrue);
 
+      // Archiving the POS leaves the page live and untouched (and vice-versa).
       await locator<PosFacade>().archive();
       final pageAfterPosArchive = await locator<PaymentPageFacade>().find(
         nym: _nym,

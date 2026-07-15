@@ -28,7 +28,10 @@ void main() {
 
   group('PosProvisionCommand.validate', () {
     test('valid command passes and reports no invalid field', () {
-      const command = PosProvisionCommand(label: 'My Till', displayCurrency: 'CAD');
+      const command = PosProvisionCommand(
+        label: 'My Till',
+        displayCurrency: 'CAD',
+      );
       expect(command.isValid, isTrue);
       expect(command.firstInvalidField(), isNull);
       command.validate();
@@ -48,7 +51,10 @@ void main() {
     });
 
     test('an empty display currency is invalid', () {
-      const command = PosProvisionCommand(label: 'My Till', displayCurrency: '');
+      const command = PosProvisionCommand(
+        label: 'My Till',
+        displayCurrency: '',
+      );
       expect(command.firstInvalidField(), PosField.displayCurrency);
       expect(
         () => command.validate(),

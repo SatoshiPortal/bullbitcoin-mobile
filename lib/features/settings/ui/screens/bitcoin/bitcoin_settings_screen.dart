@@ -80,8 +80,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 SettingsEntryItem(
                   icon: Icons.point_of_sale,
                   title: context.loc.bitcoinSettingsPointOfSaleTitle,
-                  onTap: () =>
-                      context.pushNamed(PosRoute.posSettings.name),
+                  onTap: () => context.pushNamed(PosRoute.posSettings.name),
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,
