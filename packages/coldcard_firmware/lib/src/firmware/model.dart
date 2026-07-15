@@ -1,18 +1,18 @@
 /// Coldcard hardware models supported for firmware download.
 ///
-/// Each model has its own downloads page and its own version space: Q firmware is versioned v1.x with a `Q` marker, the Mk4 line v5.x with none. Versions are therefore only ever compared within one model.
+/// Each model has its own downloads page and its own version space: Q firmware is versioned v1.x with a `Q` marker, the MK line v5.x with none. Versions are therefore only ever compared within one model.
 enum ColdcardModel {
   /// Coldcard Q. Files: `*-q1-coldcard.dfu`, version carries `Q` (e.g. v1.4.1Q).
   q(
-    displayName: 'Coldcard Q',
+    displayName: 'Q',
     downloadsPagePath: 'q1',
     filenameSuffixes: {'q1'},
     requiresQMarker: true,
   ),
 
-  /// Coldcard Mk4. Files: `*-mk-coldcard.dfu` since v5.5.0, `*-mk4-coldcard.dfu` before that.
+  /// The Coldcard MK line: Mk5 and Mk4 share one firmware image (coldcard.com lists them as "Mk5/Mk4"). Files: `*-mk-coldcard.dfu` since v5.5.0, `*-mk4-coldcard.dfu` before that.
   mk4(
-    displayName: 'Coldcard Mk4',
+    displayName: 'MK',
     downloadsPagePath: 'mk',
     filenameSuffixes: {'mk', 'mk4'},
     requiresQMarker: false,

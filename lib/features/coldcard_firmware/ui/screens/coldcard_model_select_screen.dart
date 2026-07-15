@@ -54,7 +54,7 @@ class _ColdcardModelCard extends StatelessWidget {
     };
     final monogram = switch (model) {
       ColdcardModel.q => 'Q',
-      ColdcardModel.mk4 => 'Mk4',
+      ColdcardModel.mk4 => 'MK',
     };
 
     return BorderedTappableTile(

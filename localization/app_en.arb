@@ -14764,9 +14764,9 @@
   "@coldcardUpdateModelQSubtitle": {
     "description": "Subtitle on the COLDCARD Q model card"
   },
-  "coldcardUpdateModelMk4Subtitle": "Numeric keypad, NFC, USB-C, microSD",
+  "coldcardUpdateModelMk4Subtitle": "For Mk5 and Mk4 \u00b7 numeric keypad, NFC, USB-C, microSD",
   "@coldcardUpdateModelMk4Subtitle": {
-    "description": "Subtitle on the COLDCARD Mk4 model card"
+    "description": "Subtitle on the COLDCARD MK model card (covers Mk5 and Mk4, which share one firmware image)"
   },
   "coldcardUpdateCheckingLatest": "Checking for the latest firmware...",
   "@coldcardUpdateCheckingLatest": {
