@@ -95,7 +95,9 @@ class TestWalletBackupBloc
       if (selectedWallet == null) {
         emit(
           state.copyWith(
-            failure: const TestWalletBackupNoWalletSelectedFailure(),
+            failure: const TestWalletBackupUnexpectedFailure(
+              'No wallet selected for physical backup verification',
+            ),
           ),
         );
         return;
@@ -143,24 +145,18 @@ class TestWalletBackupBloc
     LoadWallets event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    try {
-      emit(state.copyWith(selectedWallet: null));
+    emit(state.copyWith(selectedWallet: null));
 
-      final wallets = await _loadWalletsForNetworkUsecase.execute();
-      if (wallets.isEmpty) throw Exception('No wallets found');
-      final Wallet selected = wallets.firstWhere(
-        (w) => w.isDefault,
-        orElse: () => wallets.first,
-      );
-      emit(state.copyWith(wallets: wallets, selectedWallet: selected));
-
-      add(LoadMnemonicForWallet(wallet: selected));
-    } on Exception catch (e) {
-      emit(
-        state.copyWith(
-          failure: TestWalletBackupLoadWalletsFailure(e.toString()),
-        ),
-      );
+    switch (await _loadWalletsForNetworkUsecase.execute()) {
+      case Ok(:final value):
+        final selected = value.firstWhere(
+          (wallet) => wallet.isDefault,
+          orElse: () => value.first,
+        );
+        emit(state.copyWith(wallets: value, selectedWallet: selected));
+        add(LoadMnemonicForWallet(wallet: selected));
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
     }
   }
 
@@ -168,33 +164,24 @@ class TestWalletBackupBloc
     LoadMnemonicForWallet event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    try {
-      emit(state.copyWith(selectedWallet: null));
+    emit(state.copyWith(selectedWallet: null));
 
-      final wallet = event.wallet;
-      final (
-        mnemonicWords,
-        passphrase,
-      ) = await _getMnemonicFromFingerprintUsecase.execute(
-        wallet.masterFingerprint,
-      );
-
-      emit(
-        state.copyWith(
-          selectedWallet: wallet,
-          mnemonic: mnemonicWords,
-          passphrase: passphrase ?? '',
-          shuffledMnemonic: mnemonicWords.toList()..shuffle(),
-          reorderedMnemonic: [],
-          selectedMnemonicWords: [],
-        ),
-      );
-    } on Exception catch (e) {
-      emit(
-        state.copyWith(
-          failure: TestWalletBackupLoadMnemonicFailure(e.toString()),
-        ),
-      );
+    switch (await _getMnemonicFromFingerprintUsecase.execute(
+      event.wallet.masterFingerprint,
+    )) {
+      case Ok(value: (final mnemonicWords, final passphrase)):
+        emit(
+          state.copyWith(
+            selectedWallet: event.wallet,
+            mnemonic: mnemonicWords,
+            passphrase: passphrase ?? '',
+            shuffledMnemonic: mnemonicWords.toList()..shuffle(),
+            reorderedMnemonic: [],
+            selectedMnemonicWords: [],
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
     }
   }
 }

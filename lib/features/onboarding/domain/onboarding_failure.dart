@@ -7,3 +7,8 @@ sealed class OnboardingFailure extends Failure {
 final class OnboardingUnexpectedFailure extends OnboardingFailure {
   const OnboardingUnexpectedFailure([super.logMessage]);
 }
+
+final class OnboardingBackupVerificationPersistenceFailure
+    extends OnboardingFailure {
+  const OnboardingBackupVerificationPersistenceFailure([super.logMessage]);
+}

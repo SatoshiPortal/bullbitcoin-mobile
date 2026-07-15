@@ -18,7 +18,9 @@ class CompletePhysicalBackupVerificationUsecase {
       case Ok():
         return const Ok(null);
       case Err(:final failure):
-        return Err(OnboardingUnexpectedFailure(failure.logMessage));
+        return Err(
+          OnboardingBackupVerificationPersistenceFailure(failure.logMessage),
+        );
     }
   }
 }

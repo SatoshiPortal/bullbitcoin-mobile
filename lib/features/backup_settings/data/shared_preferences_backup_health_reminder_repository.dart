@@ -55,7 +55,9 @@ class SharedPreferencesBackupHealthReminderRepository
         error: e,
         trace: st,
       );
-      return Err(BackupSettingsPersistenceFailure(e.toString()));
+      return Ok(
+        BackupHealthReminderRecord(masterFingerprint: masterFingerprint),
+      );
     }
   }
 

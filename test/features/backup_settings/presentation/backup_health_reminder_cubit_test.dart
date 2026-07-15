@@ -112,6 +112,25 @@ void main() {
     },
   );
 
+  test('allows a failed reminder to be closed for the session', () async {
+    when(
+      () => evaluate.execute(wallets: any(named: 'wallets'), arkBalanceSat: 0),
+    ).thenAnswer((_) async => const Ok(decision));
+    when(
+      () => acknowledge.execute(decision),
+    ).thenAnswer((_) async => const Err(BackupSettingsPersistenceFailure()));
+
+    await cubit.evaluate(wallets: [wallet], arkBalanceSat: 0);
+    await cubit.acknowledge();
+    cubit.dismissFailureForSession();
+    await cubit.reevaluate();
+
+    expect(cubit.state, isA<BackupHealthReminderHidden>());
+    verify(
+      () => evaluate.execute(wallets: any(named: 'wallets'), arkBalanceSat: 0),
+    ).called(1);
+  });
+
   test(
     'a persisted primary action suppresses reevaluation for the session',
     () async {

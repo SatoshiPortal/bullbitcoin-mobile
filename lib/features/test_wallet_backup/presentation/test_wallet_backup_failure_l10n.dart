@@ -10,13 +10,12 @@ extension TestWalletBackupFailureL10n on TestWalletBackupFailure {
       context.loc.testBackupErrorSelectAllWords,
     TestWalletBackupIncorrectOrderFailure() =>
       context.loc.testBackupErrorIncorrectOrder,
-    TestWalletBackupNoWalletSelectedFailure() =>
-      context.loc.testBackupErrorNoWalletSelected,
     TestWalletBackupPersistenceFailure() =>
       context.loc.testBackupErrorVerificationFailedGeneric,
     TestWalletBackupLoadWalletsFailure() =>
       context.loc.testBackupErrorLoadWalletsGeneric,
     TestWalletBackupLoadMnemonicFailure() =>
       context.loc.testBackupErrorLoadMnemonicGeneric,
+    TestWalletBackupUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

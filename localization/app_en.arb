@@ -8558,21 +8558,17 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorNoWalletSelected": "No wallet selected",
-  "@testBackupErrorNoWalletSelected": {
-    "description": "Error when physical backup verification has no selected wallet"
-  },
-  "testBackupErrorVerificationFailedGeneric": "Verification could not be saved. Please try again.",
+  "testBackupErrorVerificationFailedGeneric": "We could not save your backup test. Please go back and try again.",
   "@testBackupErrorVerificationFailedGeneric": {
-    "description": "Safe error shown when physical backup verification cannot be persisted"
+    "description": "Localized physical-backup persistence error; never include raw exception details"
   },
-  "testBackupErrorLoadWalletsGeneric": "Wallets could not be loaded. Please try again.",
+  "testBackupErrorLoadWalletsGeneric": "We could not load your wallets. Please go back and try again.",
   "@testBackupErrorLoadWalletsGeneric": {
-    "description": "Safe error shown when wallets cannot be loaded for physical backup verification"
+    "description": "Localized wallet-loading error for physical backup verification; never include raw exception details"
   },
-  "testBackupErrorLoadMnemonicGeneric": "Recovery words could not be loaded. Please try again.",
+  "testBackupErrorLoadMnemonicGeneric": "We could not load your recovery words. Please go back and try again.",
   "@testBackupErrorLoadMnemonicGeneric": {
-    "description": "Safe error shown when recovery words cannot be loaded for physical backup verification"
+    "description": "Localized recovery-word loading error for physical backup verification; never include raw exception details"
   },
   "testBackupErrorVerificationFailed": "Verification failed: {error}",
   "@testBackupErrorVerificationFailed": {
@@ -8811,9 +8807,9 @@
   "@recoverbullErrorVaultCreationFailed": {
     "description": "Error message when overall vault creation fails"
   },
-  "recoverbullErrorVaultStatusPersistenceFailed": "Your vault and recovery key were stored, but the app could not save the backup status. Please return to Backup Settings before trying again.",
+  "recoverbullErrorVaultStatusPersistenceFailed": "Your encrypted vault and vault key were saved, but the app could not mark the backup as complete. Return to Backup Settings and test the encrypted vault before relying on it.",
   "@recoverbullErrorVaultStatusPersistenceFailed": {
-    "description": "Error shown when vault creation completed but local backup status persistence failed"
+    "description": "Partial-success message after vault and key storage succeeds but local completion persistence fails"
   },
   "recoverbullErrorVaultNotSet": "Vault is not set",
   "@recoverbullErrorVaultNotSet": {
@@ -15029,11 +15025,11 @@
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
   },
-  "backupHealthScheduledIntro": "It has been three months since your last backup check.",
+  "backupHealthScheduledIntro": "It is time to review your wallet backup again.",
   "@backupHealthScheduledIntro": {
     "description": "Introduction for a backup health reminder triggered by elapsed time"
   },
-  "backupHealthBalanceIntro": "Your wallet balance has increased. This is a good time to check your backup.",
+  "backupHealthBalanceIntro": "Your wallet now holds a significant balance. This is a good time to check your backup.",
   "@backupHealthBalanceIntro": {
     "description": "Introduction for a backup health reminder triggered by a balance milestone"
   },
@@ -15041,7 +15037,7 @@
   "@backupHealthRecoverbullOnlyTitle": {
     "description": "Title shown when Recoverbull is the only verified backup"
   },
-  "backupHealthRecoverbullOnlyBody": "Your Recoverbull vault uses a separate vault key. During recovery, the Recoverbull key server normally retrieves that key. If the server is unavailable, automatic recovery may not work unless you saved the vault key separately. A tested physical backup gives you an independent recovery method that does not depend on the server.",
+  "backupHealthRecoverbullOnlyBody": "Recoverbull normally retrieves your vault key from a key server. If that server is unavailable, automatic recovery will not work. You can still recover the encrypted vault with a separately saved vault key. A tested physical backup gives you an independent recovery method.",
   "@backupHealthRecoverbullOnlyBody": {
     "description": "Explains the key-server dependency and independent physical backup option"
   },
@@ -15085,8 +15081,16 @@
   "@backupHealthOtherBackupOptions": {
     "description": "Neutral link to other backup methods from the physical health check"
   },
-  "backupHealthSaveFailed": "Your reminder choice could not be saved. Please try again.",
+  "backupHealthSaveFailed": "Your backup reminder could not be updated. Please try again or close it for now.",
   "@backupHealthSaveFailed": {
-    "description": "Error shown when a backup reminder action cannot be persisted"
+    "description": "Retryable error when a backup reminder action cannot be persisted; never include raw exception details"
+  },
+  "backupHealthCloseForNow": "CLOSE FOR NOW",
+  "@backupHealthCloseForNow": {
+    "description": "Session-only escape shown after a backup reminder persistence failure"
+  },
+  "onboardingBackupVerificationSaveFailed": "Your wallet was restored, but the backup check could not be saved. Test your physical backup again later in Backup Settings.",
+  "@onboardingBackupVerificationSaveFailed": {
+    "description": "Partial-success message when wallet recovery succeeds but physical backup verification persistence fails"
   }
 }

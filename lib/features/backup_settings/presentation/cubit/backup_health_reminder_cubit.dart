@@ -105,4 +105,16 @@ class BackupHealthReminderCubit extends Cubit<BackupHealthReminderState> {
         return false;
     }
   }
+
+  void dismissFailureForSession() {
+    final current = state;
+    if (current is! BackupHealthReminderVisible ||
+        current.failure == null ||
+        current.isSaving) {
+      return;
+    }
+
+    _sessionSuppressed = true;
+    emit(const BackupHealthReminderHidden());
+  }
 }

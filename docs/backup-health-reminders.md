@@ -70,7 +70,9 @@ Reminder state is stored locally in a versioned SharedPreferences record keyed b
 - a pending action start time; and
 - the pending action balance tier.
 
-No mnemonic, seed, private key, vault key, or other secret is stored or logged by the reminder. Malformed or unsupported reminder records are ignored and replaced with an empty in-memory record, which favors showing another reminder over suppressing one indefinitely.
+No mnemonic, seed, private key, vault key, or other secret is stored or logged by the reminder. Malformed, unsupported, or unreadable reminder records are replaced with an empty in-memory record, which favors showing another reminder over suppressing one indefinitely. The underlying read failure is logged without exposing it to the user.
+
+If a reminder action cannot be persisted, the overlay stays visible so the user can retry. A localized "close for now" action is then available as a session-only escape; it does not acknowledge the reminder, so the app evaluates it again on the next launch.
 
 ## Architecture
 

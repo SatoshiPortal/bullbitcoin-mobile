@@ -18,11 +18,6 @@ final class TestWalletBackupIncorrectOrderFailure
   const TestWalletBackupIncorrectOrderFailure();
 }
 
-final class TestWalletBackupNoWalletSelectedFailure
-    extends TestWalletBackupFailure {
-  const TestWalletBackupNoWalletSelectedFailure();
-}
-
 final class TestWalletBackupPersistenceFailure extends TestWalletBackupFailure {
   const TestWalletBackupPersistenceFailure([super.logMessage]);
 }
@@ -34,4 +29,8 @@ final class TestWalletBackupLoadWalletsFailure extends TestWalletBackupFailure {
 final class TestWalletBackupLoadMnemonicFailure
     extends TestWalletBackupFailure {
   const TestWalletBackupLoadMnemonicFailure([super.logMessage]);
+}
+
+final class TestWalletBackupUnexpectedFailure extends TestWalletBackupFailure {
+  const TestWalletBackupUnexpectedFailure([super.logMessage]);
 }

@@ -214,6 +214,17 @@ class _BackupHealthReminderBlocker extends StatelessWidget {
                           ),
                         ),
                       ],
+                      if (state.failure != null) ...[
+                        const Gap(8),
+                        TextButton(
+                          onPressed: state.isSaving
+                              ? null
+                              : () => context
+                                    .read<BackupHealthReminderCubit>()
+                                    .dismissFailureForSession(),
+                          child: Text(context.loc.backupHealthCloseForNow),
+                        ),
+                      ],
                     ],
                   ),
                 ),
