@@ -335,8 +335,11 @@ class SettingsRouter {
       GoRoute(
         path: SettingsRoute.joinstr.path,
         name: SettingsRoute.joinstr.name,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<JoinstrCubit>()..load(),
+        // BlocProvider.value so leaving the screen does not close the cubit:
+        // it is a singleton that must keep running while a round is in
+        // flight (see JoinstrCubit).
+        builder: (context, state) => BlocProvider.value(
+          value: locator<JoinstrCubit>()..load(),
           child: const JoinstrScreen(),
         ),
       ),

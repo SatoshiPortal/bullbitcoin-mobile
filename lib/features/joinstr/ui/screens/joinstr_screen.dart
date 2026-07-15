@@ -1,71 +1,95 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:bb_mobile/features/joinstr/presentation/joinstr_cubit.dart';
 import 'package:bb_mobile/features/joinstr/presentation/joinstr_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
+/// Tab layout mirrors joinstr-kmp and floresta_wallet: Create New Pool,
+/// My Pools, View Other Pools, History.
 class JoinstrScreen extends StatelessWidget {
   const JoinstrScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.joinstrTitle),
-        actions: [
-          BlocBuilder<JoinstrCubit, JoinstrState>(
-            buildWhen: (a, b) => a.canInteract != b.canInteract,
-            builder: (context, state) => IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: state.canInteract
-                  ? () => context.read<JoinstrCubit>().refreshPools()
-                  : null,
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(context.loc.joinstrTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: () => _showRelaySettings(context),
             ),
+          ],
+          bottom: TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [
+              Tab(text: context.loc.joinstrTabCreate),
+              Tab(text: context.loc.joinstrTabMyPools),
+              Tab(text: context.loc.joinstrTabOtherPools),
+              Tab(text: context.loc.joinstrTabHistory),
+            ],
+          ),
+        ),
+        body: BlocBuilder<JoinstrCubit, JoinstrState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                const _JoinstrNotice(),
+                if (state.error != null) _JoinstrError(error: state.error!),
+                if (state.isRunning) const _JoinstrRunning(),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _CreatePoolTab(state: state),
+                      _MyPoolsTab(rounds: state.rounds),
+                      _OtherPoolsTab(state: state),
+                      _HistoryTab(history: state.history),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showRelaySettings(BuildContext context) {
+    final cubit = context.read<JoinstrCubit>();
+    final controller = TextEditingController(text: cubit.state.relay);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.loc.joinstrNostrRelay),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: 'wss://'),
+          keyboardType: TextInputType.url,
+          autocorrect: false,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(dialogContext.loc.joinstrCancel),
+          ),
+          TextButton(
+            onPressed: () {
+              cubit.relayChanged(controller.text);
+              Navigator.of(dialogContext).pop();
+            },
+            child: Text(dialogContext.loc.joinstrSave),
           ),
         ],
-      ),
-      body: BlocBuilder<JoinstrCubit, JoinstrState>(
-        builder: (context, state) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const _JoinstrNotice(),
-              const Gap(16),
-              if (state.error != null) ...[
-                _JoinstrError(error: state.error!),
-                const Gap(16),
-              ],
-              if (state.txId != null) ...[
-                _JoinstrSuccess(txId: state.txId!),
-                const Gap(16),
-              ],
-              if (state.isRunning) ...[const _JoinstrRunning(), const Gap(16)],
-              Text(
-                context.loc.joinstrAvailablePools,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const Gap(8),
-              if (state.status == JoinstrStatus.loadingPools)
-                const Center(child: CircularProgressIndicator())
-              else if (state.pools.isEmpty)
-                Text(context.loc.joinstrNoPools)
-              else
-                for (final pool in state.pools)
-                  _PoolTile(pool: pool, enabled: state.canInteract),
-              const Gap(24),
-              const Divider(),
-              const Gap(8),
-              Text(
-                context.loc.joinstrCreatePool,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const Gap(8),
-              const _CreatePoolForm(),
-            ],
-          );
-        },
       ),
     );
   }
@@ -80,6 +104,7 @@ class _JoinstrNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -100,28 +125,14 @@ class _JoinstrRunning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const LinearProgressIndicator(),
-        const Gap(8),
-        Text(context.loc.joinstrRunning, textAlign: TextAlign.center),
-      ],
-    );
-  }
-}
-
-class _JoinstrSuccess extends StatelessWidget {
-  const _JoinstrSuccess({required this.txId});
-
-  final String txId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.check_circle_outline),
-        title: Text(context.loc.joinstrBroadcast),
-        subtitle: Text(txId),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Column(
+        children: [
+          const LinearProgressIndicator(),
+          const Gap(8),
+          Text(context.loc.joinstrRunning, textAlign: TextAlign.center),
+        ],
       ),
     );
   }
@@ -134,94 +145,410 @@ class _JoinstrError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      joinstrErrorMessage(context, error),
-      style: TextStyle(color: Theme.of(context).colorScheme.error),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Text(
+        joinstrErrorMessage(context, error),
+        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      ),
     );
   }
 }
 
-class _PoolTile extends StatelessWidget {
-  const _PoolTile({required this.pool, required this.enabled});
+class _CreatePoolTab extends StatelessWidget {
+  const _CreatePoolTab({required this.state});
+
+  final JoinstrState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<JoinstrCubit>();
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          context.loc.joinstrPoolDetails,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const Gap(12),
+        _FilteredTextField(
+          value: state.denominationBtc,
+          label: context.loc.joinstrDenomination,
+          helper: context.loc.joinstrDenominationSupport,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onChanged: cubit.denominationChanged,
+        ),
+        const Gap(12),
+        _FilteredTextField(
+          value: state.peers,
+          label: context.loc.joinstrPeers,
+          keyboardType: TextInputType.number,
+          onChanged: cubit.peersChanged,
+        ),
+        const Gap(12),
+        _FilteredTextField(
+          value: state.feeRate,
+          label: context.loc.joinstrFeeRate,
+          keyboardType: TextInputType.number,
+          onChanged: cubit.feeRateChanged,
+        ),
+        const Gap(16),
+        FilledButton(
+          onPressed:
+              state.canInteract &&
+                  state.denominationBtc.isNotEmpty &&
+                  state.peers.isNotEmpty
+              ? cubit.initiatePool
+              : null,
+          child: Text(context.loc.joinstrCreate),
+        ),
+      ],
+    );
+  }
+}
+
+/// A text field that stays in sync with the cubit's filtered value: when the
+/// cubit rejects input (a letter in a numeric field), the field snaps back
+/// instead of displaying text the state does not hold.
+class _FilteredTextField extends StatefulWidget {
+  const _FilteredTextField({
+    required this.value,
+    required this.label,
+    required this.keyboardType,
+    required this.onChanged,
+    this.helper,
+  });
+
+  final String value;
+  final String label;
+  final String? helper;
+  final TextInputType keyboardType;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_FilteredTextField> createState() => _FilteredTextFieldState();
+}
+
+class _FilteredTextFieldState extends State<_FilteredTextField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(_FilteredTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.value,
+        selection: TextSelection.collapsed(offset: widget.value.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      keyboardType: widget.keyboardType,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        helperText: widget.helper,
+      ),
+      onChanged: widget.onChanged,
+    );
+  }
+}
+
+class _MyPoolsTab extends StatelessWidget {
+  const _MyPoolsTab({required this.rounds});
+
+  final List<JoinstrRound> rounds;
+
+  @override
+  Widget build(BuildContext context) {
+    if (rounds.isEmpty) {
+      return _EmptyState(message: context.loc.joinstrNoActivePools);
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: rounds.length,
+      separatorBuilder: (_, _) => const Gap(12),
+      itemBuilder: (context, index) => _RoundCard(round: rounds[index]),
+    );
+  }
+}
+
+class _RoundCard extends StatelessWidget {
+  const _RoundCard({required this.round});
+
+  final JoinstrRound round;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.loc;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              loc.joinstrDenominationLine(
+                Joinstr.formatBtc(round.denominationSat),
+              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const Gap(4),
+            Text(loc.joinstrPeersLine(round.peers)),
+            Text(
+              loc.joinstrRelayLine(round.relay),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (round.publicKey != null)
+              Text(
+                loc.joinstrPublicKeyLine(_short(round.publicKey!)),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            const Gap(4),
+            switch (round.status) {
+              JoinstrRoundStatus.waiting => _CountdownText(
+                expiresAtUnixSec: round.expiresAtUnixSec,
+              ),
+              JoinstrRoundStatus.broadcast => Text(
+                '${loc.joinstrBroadcast}: ${_short(round.txId!)}',
+              ),
+              JoinstrRoundStatus.failed => Text(
+                joinstrErrorMessage(context, round.error!),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            },
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _short(String value) =>
+      value.length <= 20 ? value : '${value.substring(0, 20)}…';
+}
+
+class _OtherPoolsTab extends StatelessWidget {
+  const _OtherPoolsTab({required this.state});
+
+  final JoinstrState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: OutlinedButton(
+            onPressed: state.canInteract
+                ? () => context.read<JoinstrCubit>().refreshPools()
+                : null,
+            child: Text(context.loc.joinstrRefresh),
+          ),
+        ),
+        Expanded(
+          child: state.status == JoinstrStatus.loadingPools
+              ? const Center(child: CircularProgressIndicator())
+              : state.pools.isEmpty
+              ? _EmptyState(message: context.loc.joinstrNoActivePools)
+              : ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: state.pools.length,
+                  separatorBuilder: (_, _) => const Gap(12),
+                  itemBuilder: (context, index) => _PoolCard(
+                    pool: state.pools[index],
+                    enabled: state.canInteract,
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PoolCard extends StatelessWidget {
+  const _PoolCard({required this.pool, required this.enabled});
 
   final JoinstrPool pool;
   final bool enabled;
 
   @override
   Widget build(BuildContext context) {
+    final loc = context.loc;
     return Card(
-      child: ListTile(
-        title: Text(
-          context.loc.joinstrPoolSummary(pool.denominationSat, pool.peers),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              loc.joinstrDenominationLine(
+                Joinstr.formatBtc(pool.denominationSat),
+              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const Gap(4),
+            Text(loc.joinstrPeersLine(pool.peers)),
+            Text(loc.joinstrFeeRateLine(pool.feeRateSatPerVb)),
+            Text(
+              loc.joinstrRelayLine(pool.relay),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            _CountdownText(expiresAtUnixSec: pool.expiresAtUnixSec),
+            const Gap(8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: enabled ? () => _confirmJoin(context, pool) : null,
+                child: Text(loc.joinstrJoin),
+              ),
+            ),
+          ],
         ),
-        subtitle: Text(
-          context.loc.joinstrPoolDetail(
-            pool.feeRateSatPerVb,
-            pool.secondsUntilExpiry(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Matches the references: joining is confirmed against the initiator's
+  /// nostr public key, the only identity a pool announcement carries.
+  void _confirmJoin(BuildContext context, JoinstrPool pool) {
+    final cubit = context.read<JoinstrCubit>();
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.loc.joinstrJoin),
+        content: Text(dialogContext.loc.joinstrPublicKeyLine(pool.publicKey)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(dialogContext.loc.joinstrCancel),
           ),
-        ),
-        trailing: FilledButton(
-          onPressed: enabled
-              ? () => context.read<JoinstrCubit>().joinPool(pool)
-              : null,
-          child: Text(context.loc.joinstrJoin),
-        ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              cubit.joinPool(pool);
+            },
+            child: Text(dialogContext.loc.joinstrContinue),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _CreatePoolForm extends StatelessWidget {
-  const _CreatePoolForm();
+/// Ticks once a second while the pool is live, like the countdowns in
+/// joinstr-kmp and floresta_wallet.
+class _CountdownText extends StatefulWidget {
+  const _CountdownText({required this.expiresAtUnixSec});
+
+  final int expiresAtUnixSec;
+
+  @override
+  State<_CountdownText> createState() => _CountdownTextState();
+}
+
+class _CountdownTextState extends State<_CountdownText> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<JoinstrCubit>();
-    final state = context.watch<JoinstrCubit>().state;
+    final remaining =
+        widget.expiresAtUnixSec - DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final text = remaining > 0
+        ? context.loc.joinstrTimeRemaining(Joinstr.formatRemaining(remaining))
+        : context.loc.joinstrExpired;
+    return Text(text, style: Theme.of(context).textTheme.bodySmall);
+  }
+}
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextFormField(
-          initialValue: state.denominationSat,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: context.loc.joinstrDenomination,
+class _HistoryTab extends StatelessWidget {
+  const _HistoryTab({required this.history});
+
+  final List<JoinstrHistoryEntry> history;
+
+  @override
+  Widget build(BuildContext context) {
+    if (history.isEmpty) {
+      return _EmptyState(message: context.loc.joinstrNoHistory);
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: history.length,
+      separatorBuilder: (_, _) => const Gap(12),
+      itemBuilder: (context, index) {
+        final entry = history[index];
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.loc.joinstrAmountLine(
+                    Joinstr.formatBtc(entry.amountSat),
+                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const Gap(4),
+                Text(
+                  context.loc.joinstrTxLine(entry.txId),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  context.loc.joinstrRelayLine(entry.relay),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
-          onChanged: cubit.denominationChanged,
-        ),
-        const Gap(8),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: state.peers,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: context.loc.joinstrPeers,
-                ),
-                onChanged: cubit.peersChanged,
-              ),
-            ),
-            const Gap(16),
-            Expanded(
-              child: TextFormField(
-                initialValue: state.feeRate,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: context.loc.joinstrFeeRate,
-                ),
-                onChanged: cubit.feeRateChanged,
-              ),
-            ),
-          ],
-        ),
-        const Gap(12),
-        FilledButton(
-          onPressed: state.canInteract ? cubit.initiatePool : null,
-          child: Text(context.loc.joinstrCreatePool),
-        ),
-      ],
+        );
+      },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
+      ),
     );
   }
 }
@@ -238,6 +565,7 @@ String joinstrErrorMessage(BuildContext context, JoinstrException error) {
     ),
     JoinstrIssue.invalidElectrumUrl => context.loc.joinstrErrorElectrum,
     JoinstrIssue.invalidPoolConfig => context.loc.joinstrErrorPoolConfig,
+    JoinstrIssue.invalidRelayUrl => context.loc.joinstrErrorRelay,
     JoinstrIssue.poolNotFound => context.loc.joinstrErrorPoolNotFound,
     JoinstrIssue.coinjoinFailed => context.loc.joinstrErrorFailed(
       error.detail ?? '',

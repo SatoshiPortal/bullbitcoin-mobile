@@ -9,6 +9,7 @@ enum JoinstrIssue {
   noEligibleCoin,
   invalidElectrumUrl,
   invalidPoolConfig,
+  invalidRelayUrl,
   poolNotFound,
   coinjoinFailed,
 }
@@ -128,6 +129,56 @@ abstract final class Joinstr {
 
   /// The bindings take the pool denomination as BTC in a `f64`.
   static double denominationBtc(int denominationSat) => denominationSat / 1e8;
+
+  /// Matches the denomination input rule used by joinstr-kmp and
+  /// floresta_wallet: up to 8 integer digits and up to 8 decimal places.
+  static final RegExp denominationBtcPattern = RegExp(r'^\d{0,8}(\.\d{0,8})?$');
+
+  /// Parses a BTC amount typed by the user into satoshis without a float
+  /// round trip. Returns null when the text is not a positive amount matching
+  /// [denominationBtcPattern].
+  static int? parseDenominationBtcToSat(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty || !denominationBtcPattern.hasMatch(trimmed)) {
+      return null;
+    }
+    final parts = trimmed.split('.');
+    final intPart = parts[0].isEmpty ? '0' : parts[0];
+    final fracPart = parts.length > 1 ? parts[1].padRight(8, '0') : '';
+    final sats =
+        int.parse(intPart) * 100000000 +
+        (fracPart.isEmpty ? 0 : int.parse(fracPart));
+    return sats > 0 ? sats : null;
+  }
+
+  /// Renders satoshis as a BTC string with trailing zeros trimmed, e.g.
+  /// 100000 -> "0.001".
+  static String formatBtc(int sat) {
+    final whole = sat ~/ 100000000;
+    final frac = (sat % 100000000).toString().padLeft(8, '0');
+    final trimmedFrac = frac.replaceFirst(RegExp(r'0+$'), '');
+    return trimmedFrac.isEmpty ? '$whole' : '$whole.$trimmedFrac';
+  }
+
+  /// Formats a remaining duration for pool tiles, e.g. "1h 5m", "12m 30s",
+  /// "45s".
+  static String formatRemaining(int seconds) {
+    if (seconds <= 0) return '0s';
+    final h = seconds ~/ 3600;
+    final m = (seconds % 3600) ~/ 60;
+    final s = seconds % 60;
+    if (h > 0) return '${h}h ${m}m';
+    if (m > 0) return '${m}m ${s}s';
+    return '${s}s';
+  }
+
+  /// Nostr relays must be reached over a websocket.
+  static bool isValidRelayUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    return uri != null &&
+        (uri.scheme == 'wss' || uri.scheme == 'ws') &&
+        uri.host.isNotEmpty;
+  }
 
   /// Throws unless [wallet] can take part in a coinjoin.
   ///

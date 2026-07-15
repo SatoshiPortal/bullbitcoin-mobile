@@ -459,35 +459,111 @@
   "@joinstrExperimentalNotice": {
     "description": "Banner explaining that joinstr is experimental and testnet-only"
   },
-  "joinstrAvailablePools": "Available pools",
-  "@joinstrAvailablePools": {
-    "description": "Heading above the list of joinstr pools advertised on the relay"
+  "joinstrTabCreate": "Create New Pool",
+  "@joinstrTabCreate": {
+    "description": "Tab that announces a new joinstr pool"
   },
-  "joinstrNoPools": "No pools advertised on the relay right now. Create one below, or refresh.",
-  "@joinstrNoPools": {
-    "description": "Shown when the relay returned no joinstr pools"
+  "joinstrTabMyPools": "My Pools",
+  "@joinstrTabMyPools": {
+    "description": "Tab listing coinjoin rounds this device initiated or joined"
   },
-  "joinstrPoolSummary": "{denominationSat} sat · {peers} peers",
-  "@joinstrPoolSummary": {
-    "description": "One-line summary of a joinstr pool: its denomination and required peer count",
+  "joinstrTabOtherPools": "View Other Pools",
+  "@joinstrTabOtherPools": {
+    "description": "Tab listing joinstr pools advertised on the relay"
+  },
+  "joinstrTabHistory": "History",
+  "@joinstrTabHistory": {
+    "description": "Tab listing completed coinjoins"
+  },
+  "joinstrPoolDetails": "Pool Details",
+  "@joinstrPoolDetails": {
+    "description": "Heading above the create-pool form"
+  },
+  "joinstrNoActivePools": "No pools found",
+  "@joinstrNoActivePools": {
+    "description": "Empty state for the pool lists"
+  },
+  "joinstrNoHistory": "No history found",
+  "@joinstrNoHistory": {
+    "description": "Empty state for the coinjoin history tab"
+  },
+  "joinstrRefresh": "Refresh",
+  "@joinstrRefresh": {
+    "description": "Button that reloads the pool list from the relay"
+  },
+  "joinstrDenominationLine": "Denomination: {btc} BTC",
+  "@joinstrDenominationLine": {
+    "description": "Pool card line showing the pool denomination",
     "placeholders": {
-      "denominationSat": {
-        "type": "int"
-      },
+      "btc": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrPeersLine": "Peers: {peers}",
+  "@joinstrPeersLine": {
+    "description": "Pool card line showing the required peer count",
+    "placeholders": {
       "peers": {
         "type": "int"
       }
     }
   },
-  "joinstrPoolDetail": "{feeRate} sat/vB · expires in {secondsLeft}s",
-  "@joinstrPoolDetail": {
-    "description": "Secondary line of a joinstr pool tile: fee rate and seconds until the pool expires",
+  "joinstrFeeRateLine": "Fee rate: {feeRate} sat/vB",
+  "@joinstrFeeRateLine": {
+    "description": "Pool card line showing the pool fee rate",
     "placeholders": {
       "feeRate": {
         "type": "int"
-      },
-      "secondsLeft": {
-        "type": "int"
+      }
+    }
+  },
+  "joinstrRelayLine": "Relay: {relay}",
+  "@joinstrRelayLine": {
+    "description": "Pool card line showing the nostr relay the pool lives on",
+    "placeholders": {
+      "relay": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrPublicKeyLine": "Public Key: {key}",
+  "@joinstrPublicKeyLine": {
+    "description": "Initiator's nostr public key, shown on pool cards and in the join confirmation",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrTimeRemaining": "Time remaining: {time}",
+  "@joinstrTimeRemaining": {
+    "description": "Countdown until the pool expires",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrExpired": "Expired",
+  "@joinstrExpired": {
+    "description": "Shown when a pool's countdown reaches zero"
+  },
+  "joinstrAmountLine": "Amount: {btc} BTC",
+  "@joinstrAmountLine": {
+    "description": "History card line showing the mixed amount",
+    "placeholders": {
+      "btc": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrTxLine": "Tx: {tx}",
+  "@joinstrTxLine": {
+    "description": "History card line showing the coinjoin transaction id",
+    "placeholders": {
+      "tx": {
+        "type": "String"
       }
     }
   },
@@ -495,15 +571,39 @@
   "@joinstrJoin": {
     "description": "Button that joins the selected joinstr pool"
   },
+  "joinstrContinue": "Continue",
+  "@joinstrContinue": {
+    "description": "Confirms joining the pool shown in the dialog"
+  },
+  "joinstrCancel": "Cancel",
+  "@joinstrCancel": {
+    "description": "Dismisses the joinstr dialogs"
+  },
+  "joinstrSave": "Save",
+  "@joinstrSave": {
+    "description": "Saves the nostr relay setting"
+  },
+  "joinstrNostrRelay": "Nostr Relay",
+  "@joinstrNostrRelay": {
+    "description": "Title of the relay settings dialog"
+  },
   "joinstrCreatePool": "Create a pool",
   "@joinstrCreatePool": {
     "description": "Heading and button for announcing a new joinstr pool"
   },
-  "joinstrDenomination": "Denomination (sats)",
+  "joinstrCreate": "Create",
+  "@joinstrCreate": {
+    "description": "Button that announces the configured pool"
+  },
+  "joinstrDenomination": "Denomination (BTC)",
   "@joinstrDenomination": {
     "description": "Label for the joinstr pool denomination input"
   },
-  "joinstrPeers": "Peers (min 2)",
+  "joinstrDenominationSupport": "Enter denomination from available inputs",
+  "@joinstrDenominationSupport": {
+    "description": "Helper text under the denomination input"
+  },
+  "joinstrPeers": "Number of peers",
   "@joinstrPeers": {
     "description": "Label for the joinstr pool peer count input"
   },
@@ -554,6 +654,10 @@
   "joinstrErrorPoolConfig": "Enter a denomination above zero, at least 2 peers, and a fee rate of at least 1 sat/vB.",
   "@joinstrErrorPoolConfig": {
     "description": "Error when the create-pool form values are out of range"
+  },
+  "joinstrErrorRelay": "Enter a websocket relay url (wss://).",
+  "@joinstrErrorRelay": {
+    "description": "Error when the relay setting is not a valid websocket url"
   },
   "joinstrErrorPoolNotFound": "That pool is no longer advertised on the relay.",
   "@joinstrErrorPoolNotFound": {
