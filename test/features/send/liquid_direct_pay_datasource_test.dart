@@ -14,9 +14,8 @@ class _MockHttpAdapter extends Mock implements HttpClientAdapter {}
 }) {
   final requests = <RequestOptions>[];
   final adapter = _MockHttpAdapter();
-  final dio = Dio(
-    BaseOptions(validateStatus: (s) => s != null && s < 600),
-  )..httpClientAdapter = adapter;
+  final dio = Dio(BaseOptions(validateStatus: (s) => s != null && s < 600))
+    ..httpClientAdapter = adapter;
 
   when(() => adapter.fetch(any(), any(), any())).thenAnswer((inv) async {
     final opts = inv.positionalArguments[0] as RequestOptions;
@@ -139,9 +138,9 @@ void main() {
     test('network failure maps to Unavailable (quiet fallback)', () async {
       final adapter = _MockHttpAdapter();
       final dio = Dio()..httpClientAdapter = adapter;
-      when(() => adapter.fetch(any(), any(), any())).thenThrow(
-        DioException(requestOptions: RequestOptions(path: '/')),
-      );
+      when(
+        () => adapter.fetch(any(), any(), any()),
+      ).thenThrow(DioException(requestOptions: RequestOptions(path: '/')));
       final ds = DioLiquidDirectPayDatasource(dio: dio);
 
       expect(

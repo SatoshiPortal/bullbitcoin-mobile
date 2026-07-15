@@ -84,7 +84,8 @@ final class BullpayProofRequiresProof extends BullpayProofError {
 /// not L-BTC, the value is below the floor, or the opening was forged.
 final class BullpayProofInvalid extends BullpayProofError {
   final String? reason;
-  BullpayProofInvalid({this.reason}) : super._('bullpay proof of funds invalid');
+  BullpayProofInvalid({this.reason})
+    : super._('bullpay proof of funds invalid');
 }
 
 /// `UtxoNotFound`: the server's chain view has not seen the proof outpoint.
@@ -119,7 +120,8 @@ final class BullpayProofInvalidAmount extends BullpayProofError {
 /// `NymNotFound`: the recipient nym is not registered on the server.
 final class BullpayProofNymNotFound extends BullpayProofError {
   final String? reason;
-  BullpayProofNymNotFound({this.reason}) : super._('bullpay proof nym not found');
+  BullpayProofNymNotFound({this.reason})
+    : super._('bullpay proof nym not found');
 }
 
 /// Catch-all for any unrecognised server code. The raw [code] is kept for logs

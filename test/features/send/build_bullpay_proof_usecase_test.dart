@@ -184,34 +184,39 @@ void main() {
       );
     });
 
-    test('throws RequiresProof when all LBTC UTXOs are below the 1000 floor', () async {
-      // DG-7: the 1000-sat floor is the anti-enumeration cost. A wallet with
-      // only sub-1000 L-BTC outputs has genuinely no qualifying proof.
-      when(
-        () => walletRepository.getWallet(any()),
-      ).thenAnswer((_) async => _liquidWallet());
-      when(() => getUtxos.execute(walletId: any(named: 'walletId'))).thenAnswer(
-        (_) async => [
-          _utxo(
-            txId:
-                '2222222222222222222222222222222222222222222222222222222222222222',
-            amountSat: 999,
-            assetIdHex: AssetConstants.lbtcMainnet,
-          ),
-          _utxo(
-            txId:
-                '3333333333333333333333333333333333333333333333333333333333333333',
-            amountSat: 10,
-            assetIdHex: AssetConstants.lbtcMainnet,
-          ),
-        ],
-      );
+    test(
+      'throws RequiresProof when all LBTC UTXOs are below the 1000 floor',
+      () async {
+        // DG-7: the 1000-sat floor is the anti-enumeration cost. A wallet with
+        // only sub-1000 L-BTC outputs has genuinely no qualifying proof.
+        when(
+          () => walletRepository.getWallet(any()),
+        ).thenAnswer((_) async => _liquidWallet());
+        when(
+          () => getUtxos.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer(
+          (_) async => [
+            _utxo(
+              txId:
+                  '2222222222222222222222222222222222222222222222222222222222222222',
+              amountSat: 999,
+              assetIdHex: AssetConstants.lbtcMainnet,
+            ),
+            _utxo(
+              txId:
+                  '3333333333333333333333333333333333333333333333333333333333333333',
+              amountSat: 10,
+              assetIdHex: AssetConstants.lbtcMainnet,
+            ),
+          ],
+        );
 
-      expect(
-        () => usecase.execute(walletId: _kWalletId, nym: 'alice'),
-        throwsA(isA<BullpayProofRequiresProof>()),
-      );
-    });
+        expect(
+          () => usecase.execute(walletId: _kWalletId, nym: 'alice'),
+          throwsA(isA<BullpayProofRequiresProof>()),
+        );
+      },
+    );
 
     test('ignores qualifying UTXOs with an unknown address index', () async {
       final derived = _deriveZeroMnemonicAtMainnetExternal0();

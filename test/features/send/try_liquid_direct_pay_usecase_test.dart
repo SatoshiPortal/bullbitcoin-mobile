@@ -115,7 +115,10 @@ void main() {
                 () => liquidDirectPay.fetchMetadata(captureAny()),
               ).captured.single
               as Uri;
-      expect(captured.toString(), 'https://bullpay.ca/.well-known/lnurlp/alice');
+      expect(
+        captured.toString(),
+        'https://bullpay.ca/.well-known/lnurlp/alice',
+      );
     });
   });
 
@@ -237,34 +240,42 @@ void main() {
       );
     });
 
-    test('a bolt11 soft-limit response is declined (Unavailable, not paid)', () async {
-      stubMetadata();
-      stubCallback(
-        result: const LiquidDirectPayCallbackResult(bolt11: 'lnbc10u1pexample'),
-      );
+    test(
+      'a bolt11 soft-limit response is declined (Unavailable, not paid)',
+      () async {
+        stubMetadata();
+        stubCallback(
+          result: const LiquidDirectPayCallbackResult(
+            bolt11: 'lnbc10u1pexample',
+          ),
+        );
 
-      await expectLater(
-        usecase.execute(
-          lnAddress: 'alice@bullpay.ca',
-          amountSat: 1000,
-          walletId: 'w',
-        ),
-        throwsA(isA<LiquidDirectPayUnavailable>()),
-      );
-    });
+        await expectLater(
+          usecase.execute(
+            lnAddress: 'alice@bullpay.ca',
+            amountSat: 1000,
+            walletId: 'w',
+          ),
+          throwsA(isA<LiquidDirectPayUnavailable>()),
+        );
+      },
+    );
 
-    test('a response with no address and no error falls back gracefully', () async {
-      stubMetadata();
-      stubCallback(result: const LiquidDirectPayCallbackResult());
+    test(
+      'a response with no address and no error falls back gracefully',
+      () async {
+        stubMetadata();
+        stubCallback(result: const LiquidDirectPayCallbackResult());
 
-      await expectLater(
-        usecase.execute(
-          lnAddress: 'alice@bullpay.ca',
-          amountSat: 1000,
-          walletId: 'w',
-        ),
-        throwsA(isA<LiquidDirectPayUnavailable>()),
-      );
-    });
+        await expectLater(
+          usecase.execute(
+            lnAddress: 'alice@bullpay.ca',
+            amountSat: 1000,
+            walletId: 'w',
+          ),
+          throwsA(isA<LiquidDirectPayUnavailable>()),
+        );
+      },
+    );
   });
 }

@@ -14900,6 +14900,8 @@
   },
   "sendLud22PaidDirectly": "Paid directly on Liquid (no swap fee)",
   "@sendLud22PaidDirectly": {
+    "description": "Small non-blocking success annotation shown when a Bull Lightning address was settled directly on Liquid via LUD-22."
+  },
   "logsViewerClearFilter": "Clear filter",
   "@logsViewerClearFilter": {
     "description": "Tooltip for the button that clears the date filter"
