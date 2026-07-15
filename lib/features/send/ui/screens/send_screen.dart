@@ -1839,14 +1839,14 @@ class SendSucessScreen extends StatelessWidget {
                       context.loc.sendSuccessfullySent,
                       style: context.font.bodyLarge,
                     ),
-                    // A payjoin send that completed WITHOUT a payjoin txid
-                    // fell back to broadcasting the plain original
-                    // transaction (receiver declined/expired or the payjoin
+                    // A payjoin send that completed via the plain-broadcast
+                    // fallback (receiver declined/expired or the payjoin
                     // negotiation failed). The user explicitly expected a
                     // payjoin, so say that it didn't happen instead of
                     // presenting the fallback as indistinguishable from a
                     // successful payjoin.
-                    if (payjoin != null && payjoin.txId == null) ...[
+                    if (payjoin != null &&
+                        !payjoin.isRealPayjoinCompletion) ...[
                       const Gap(8),
                       BBText(
                         context.loc.sendSentWithoutPayjoin,

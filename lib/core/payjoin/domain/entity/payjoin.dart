@@ -62,6 +62,15 @@ sealed class Payjoin with _$Payjoin {
   bool get isExpired => status == PayjoinStatus.expired;
   bool get isOngoing => !isCompleted && !isExpired;
 
+  /// True once THIS session's own payjoin transaction was broadcast — as
+  /// opposed to completing via a plain fallback broadcast (declined below
+  /// the receiver's anti-probing minimum, a failed negotiation, or an
+  /// expiry with no proposal ever exchanged). [txId] can't survive stale on
+  /// a fallback completion: `tryBroadcastOriginalTransaction` always clears
+  /// it, so `txId != null` on a completed session is a reliable "a real
+  /// payjoin happened" marker for both the sender and the receiver.
+  bool get isRealPayjoinCompletion => isCompleted && txId != null;
+
   // Currently payjoin is always bitcoin, not liquid
   bool get isBitcoin => true;
   bool get isLiquid => false;
