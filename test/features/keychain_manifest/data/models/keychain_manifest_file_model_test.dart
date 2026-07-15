@@ -32,21 +32,27 @@ void main() {
     test('rejects non-JSON payloads', () {
       expect(
         () => codec.decode('not a manifest'),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
     test('rejects a top-level array', () {
       expect(
         () => codec.decode('[]'),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
     test('rejects a top-level scalar', () {
       expect(
         () => codec.decode('1'),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
@@ -55,7 +61,9 @@ void main() {
 
       expect(
         () => codec.decode(payload),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
@@ -67,7 +75,9 @@ void main() {
 
       expect(
         () => codec.decode(payload),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
@@ -79,7 +89,9 @@ void main() {
 
       expect(
         () => codec.decode(payload),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
 
@@ -91,7 +103,9 @@ void main() {
 
       expect(
         () => codec.decode(payload),
-        throwsParseFailure(KeychainManifestFileParseFailureReason.malformedFile),
+        throwsParseFailure(
+          KeychainManifestFileParseFailureReason.malformedFile,
+        ),
       );
     });
   });
