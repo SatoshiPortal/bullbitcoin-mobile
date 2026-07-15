@@ -117,6 +117,7 @@ class BullnymHttpClient implements BullnymClientPort {
         data: {
           'nym': request.nym,
           'ct_descriptor': request.ctDescriptor,
+          'verification_npub': request.verificationNpubHex,
           'npub': request.npubHex,
           'signature': request.signatureHex,
           'timestamp': request.timestamp,

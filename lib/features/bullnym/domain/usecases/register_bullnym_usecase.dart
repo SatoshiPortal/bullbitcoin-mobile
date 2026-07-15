@@ -22,13 +22,27 @@ class RegisterBullnymUsecase {
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
+    required String verificationNpubHex,
   }) async {
+    switch (validateBullnymNpubHex(verificationNpubHex)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok():
+        break;
+    }
+    if (verificationNpubHex == signer.npubHex) {
+      return const Err(
+        BullnymFailure.invalidInput(
+          'Bullnym authentication and verification keys must be distinct',
+        ),
+      );
+    }
     final timestamp = _nowSecs();
     final signatureResult = await signBullpayAction(
       signer: signer,
       action: bullpayActionRegister,
       nymOrEmpty: nym,
-      payloadFields: [ctDescriptor],
+      payloadFields: [ctDescriptor, verificationNpubHex],
       timestampSecs: timestamp,
     );
     final String signatureHex;
@@ -42,6 +56,7 @@ class RegisterBullnymUsecase {
       BullnymRegisterRequest(
         nym: nym,
         ctDescriptor: ctDescriptor,
+        verificationNpubHex: verificationNpubHex,
         npubHex: signer.npubHex,
         signatureHex: signatureHex,
         timestamp: timestamp,

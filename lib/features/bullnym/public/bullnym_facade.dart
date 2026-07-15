@@ -82,11 +82,13 @@ class BullnymFacade {
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
+    required String verificationNpubHex,
   }) {
     return _register.execute(
       signer: signer,
       nym: nym,
       ctDescriptor: ctDescriptor,
+      verificationNpubHex: verificationNpubHex,
     );
   }
 

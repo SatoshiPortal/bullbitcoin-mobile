@@ -28,7 +28,7 @@ Reserved roles:
 
 - `1'/1'` => wallet manifest publishing and recovery;
 - `2'/1'` => Bullnym server authentication;
-- `3'/1'` => reserved for future public nym verification.
+- `3'/1'` => Bullnym NIP-05 public nym verification.
 
 Product features must use role-named helpers and must not pass raw
 identity/account integers at call sites.
@@ -38,9 +38,10 @@ identity/account integers at call sites.
 `core/nostr` remains generic: path derivation, hash signing, and public-key
 access. Product role semantics live here, not in `core/nostr` and not inside
 later receive/Bullnym product features. The concrete reservation paths stay in
-`features/bip85_registry`; this feature consumes the current wallet-manifest and
-Bullnym-auth reservations through its public facade.
+`features/bip85_registry`; this feature consumes the current wallet-manifest,
+Bullnym-auth, and Bullnym NIP-05 verification reservations through its public
+facade.
 
-These roles are reserved for future Bullnym auth, public nym verification, and
-wallet manifest consumers. This PR exposes only wallet-manifest and Bullnym-auth
-public-key/signing helpers; it does not implement those protocols or events.
+The Bullnym authentication role alone exposes signing. The NIP-05 verification
+role exposes only its public key so registration cannot accidentally use the
+public identity as an authentication signer.

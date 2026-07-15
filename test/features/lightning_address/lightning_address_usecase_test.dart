@@ -50,6 +50,11 @@ void main() {
       bullnym.registerNpubHex,
       nostrIdentity.deriveBullnymServerAuthPublicKeyFromXprv(xprv),
     );
+    expect(
+      bullnym.registerVerificationNpubHex,
+      nostrIdentity.deriveBullnymNip05VerificationPublicKeyFromXprv(xprv),
+    );
+    expect(bullnym.registerVerificationNpubHex, isNot(bullnym.registerNpubHex));
     // Validity form, not byte-equality: BIP340 signatures are non-deterministic
     // under aux randomness, so assert the captured signature VERIFIES under the
     // bullnym-auth key over the signed hash rather than equals a re-signed one
@@ -217,6 +222,7 @@ void main() {
 class _FakeBullnymFacade implements BullnymFacade {
   String? registerNym;
   String? registerCtDescriptor;
+  String? registerVerificationNpubHex;
   String? registerNpubHex;
   String? registerSignatureHex;
   String? deleteNym;
@@ -240,11 +246,13 @@ class _FakeBullnymFacade implements BullnymFacade {
     required BullnymAuthSigner signer,
     required String nym,
     required String ctDescriptor,
+    required String verificationNpubHex,
   }) async {
     final error = registerError;
     if (error != null) return Err(error);
     registerNym = nym;
     registerCtDescriptor = ctDescriptor;
+    registerVerificationNpubHex = verificationNpubHex;
     registerNpubHex = signer.npubHex;
     registerSignatureHex = await signer.signHashHex(_messageHashHex);
     return Ok(

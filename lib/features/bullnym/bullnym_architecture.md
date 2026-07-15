@@ -22,7 +22,7 @@ This feature owns:
 - a public facade for feature callers.
 
 It does not own Lightning Address UI, wallet materialization, wallet manifest
-publishing or recovery, NIP-05 registration, relay publishing, invoice
+publishing or recovery, NIP-05 publication, relay publishing, invoice
 settlement interpretation or polling, payment-page/invoice UI, DMs, local
 storage, or autosweep behavior.
 
@@ -35,8 +35,9 @@ code must not assume fields beyond this documented subset.
 The foundation contract implements these registration and capability fields:
 
 - public `GET /version`, with optional `public_name_policy`;
-- `POST /register` with `nym`, `ct_descriptor`, `npub`, `signature`, and
-  `timestamp`;
+- `POST /register` with `nym`, `ct_descriptor`, `verification_npub`, `npub`,
+  `signature`, and `timestamp`. Registration signs `ct_descriptor` followed by
+  `verification_npub` as its exact payload field order;
 - register response fields `nym`, `lightning_address`, and optional validated
   `quota`;
 - `DELETE /register` with `nym`, `npub`, `signature`, and `timestamp`;
@@ -47,10 +48,11 @@ The foundation contract implements these registration and capability fields:
 - Bullpay LA v2 signing layout:
   `bullpay-la-v2\0action\0npub_hex\0nym\0(payload\0)*timestamp`.
 
-This feature intentionally does not send an extra public verification key field or
-expose derived Lightning Address behavior beyond returning server-supplied
-address fields. `active` remains only the compatibility Lightning Address
-online status; names have no active/inactive state.
+The public verification key is a required canonical lowercase 32-byte x-only
+secp256k1 key. It remains distinct from `npub`, which authenticates the request.
+This feature does not expose derived Lightning Address behavior beyond returning
+server-supplied address fields. `active` remains only the compatibility
+Lightning Address online status; names have no active/inactive state.
 
 The automatic-fallback contract uses authenticated `GET` and `PUT`
 `/api/v1/recovery-address` calls. Both use an empty nym slot. Lookup signs no

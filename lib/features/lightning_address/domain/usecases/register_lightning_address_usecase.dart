@@ -34,6 +34,8 @@ class RegisterLightningAddressUsecase {
         signer: signer,
         nym: normalizedNym,
         ctDescriptor: ctDescriptor,
+        verificationNpubHex: _nostrIdentity
+            .deriveBullnymNip05VerificationPublicKeyFromXprv(xprvBase58),
       );
       return switch (result) {
         Ok(:final value) => LightningAddressRegistration(

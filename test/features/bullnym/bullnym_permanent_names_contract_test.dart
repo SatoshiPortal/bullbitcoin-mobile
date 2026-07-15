@@ -327,33 +327,32 @@ void main() {
       }
     });
 
-    test(
-      'register response publishes a validated quota when present',
-      () async {
-        final stub = _stubDio([
-          {
-            'nym': 'alice',
-            'lightning_address': 'alice@pay2.bull-wallet.com',
-            'quota': {'used': 1, 'cap': 1, 'remaining': 0},
-          },
-        ]);
-        final client = BullnymHttpClient.withDio(stub.dio);
+    test('register response publishes a validated quota when present', () async {
+      final stub = _stubDio([
+        {
+          'nym': 'alice',
+          'lightning_address': 'alice@pay2.bull-wallet.com',
+          'quota': {'used': 1, 'cap': 1, 'remaining': 0},
+        },
+      ]);
+      final client = BullnymHttpClient.withDio(stub.dio);
 
-        final result = _unwrap(
-          await client.register(
-            const BullnymRegisterRequest(
-              nym: 'alice',
-              ctDescriptor: 'ct',
-              npubHex: 'npub',
-              signatureHex: 'sig',
-              timestamp: 1,
-            ),
+      final result = _unwrap(
+        await client.register(
+          const BullnymRegisterRequest(
+            nym: 'alice',
+            ctDescriptor: 'ct',
+            verificationNpubHex:
+                '852600604d65fea77a9d23e9623b7a5bab24b5314deb7f79419006363338047f',
+            npubHex: 'npub',
+            signatureHex: 'sig',
+            timestamp: 1,
           ),
-        );
+        ),
+      );
 
-        expect(result.quota!.remaining, 0);
-      },
-    );
+      expect(result.quota!.remaining, 0);
+    });
   });
 
   group('stable conflict decoding', () {

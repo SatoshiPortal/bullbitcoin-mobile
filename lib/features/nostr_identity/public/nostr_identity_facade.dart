@@ -21,6 +21,14 @@ class NostrIdentityFacade {
     return handle.publicKeyHex;
   }
 
+  String deriveBullnymNip05VerificationPublicKeyFromXprv(String xprvBase58) {
+    final handle = _deriveHandle.execute(
+      xprvBase58: xprvBase58,
+      role: NostrIdentityRole.bullnymNip05Verification,
+    );
+    return handle.publicKeyHex;
+  }
+
   String signWalletManifestHashFromXprv({
     required String xprvBase58,
     required String messageHashHex,

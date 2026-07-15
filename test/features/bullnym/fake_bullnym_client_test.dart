@@ -228,6 +228,7 @@ void main() {
             const BullnymRegisterRequest(
               nym: 'alice',
               ctDescriptor: 'ct',
+              verificationNpubHex: 'verification',
               npubHex: 'npub',
               signatureHex: 'sig',
               timestamp: 2,
@@ -239,6 +240,7 @@ void main() {
             const BullnymRegisterRequest(
               nym: 'bob',
               ctDescriptor: 'ct',
+              verificationNpubHex: 'verification',
               npubHex: 'npub',
               signatureHex: 'sig',
               timestamp: 3,
@@ -265,6 +267,7 @@ void main() {
             const BullnymRegisterRequest(
               nym: 'bob',
               ctDescriptor: 'ct',
+              verificationNpubHex: 'verification',
               npubHex: 'npub',
               signatureHex: 'sig',
               timestamp: 1,
@@ -279,6 +282,7 @@ void main() {
               const BullnymRegisterRequest(
                 nym: 'carol',
                 ctDescriptor: 'ct',
+                verificationNpubHex: 'verification',
                 npubHex: 'npub',
                 signatureHex: 'sig',
                 timestamp: 2,

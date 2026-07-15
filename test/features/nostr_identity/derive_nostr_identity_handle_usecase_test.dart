@@ -6,6 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 /// Master BIP32 root key from the official BIP85 test vectors.
 const _masterXprv =
     'xprv9s21ZrQH143K2LBWUUQRFXhucrQqBpKdRRxNVq2zBqsx8HVqFk2uYo8kmbaLLHRdqtQpUm98uKfu3vca1LqdGhUtyoFnCNkfmXRyPXLjbKb';
+const _expectedWalletManifestNpubHex =
+    '1072ff1a657708c194dcd1fa57d894eab3e8fca1b65950cee5c05f35a4425b9f';
+const _expectedBullnymAuthNpubHex =
+    '8b455c643d16fe546012f699b8f05eea4386268baa933b39dd1bbe0dc1965c4f';
+const _expectedBullnymVerificationNpubHex =
+    '852600604d65fea77a9d23e9623b7a5bab24b5314deb7f79419006363338047f';
 
 void main() {
   const usecase = DeriveNostrIdentityHandleUsecase(
@@ -20,6 +26,10 @@ void main() {
     final bullnymAuthHandle = usecase.execute(
       xprvBase58: _masterXprv,
       role: NostrIdentityRole.bullnymServerAuth,
+    );
+    final bullnymVerificationHandle = usecase.execute(
+      xprvBase58: _masterXprv,
+      role: NostrIdentityRole.bullnymNip05Verification,
     );
 
     expect(
@@ -41,9 +51,37 @@ void main() {
       ).publicKeyHex,
     );
     expect(
+      bullnymVerificationHandle.publicKeyHex,
+      NostrKeychainHandle.deriveFromBip85Path(
+        xprvBase58: _masterXprv,
+        hardenedPath: "9000'/3'/1'",
+      ).publicKeyHex,
+    );
+    expect(
       walletManifestHandle.publicKeyHex,
       isNot(bullnymAuthHandle.publicKeyHex),
     );
+    expect(
+      bullnymAuthHandle.publicKeyHex,
+      isNot(bullnymVerificationHandle.publicKeyHex),
+    );
+  });
+
+  test('matches canonical registration identity fixtures', () {
+    final keys = {
+      NostrIdentityRole.walletManifest: _expectedWalletManifestNpubHex,
+      NostrIdentityRole.bullnymServerAuth: _expectedBullnymAuthNpubHex,
+      NostrIdentityRole.bullnymNip05Verification:
+          _expectedBullnymVerificationNpubHex,
+    };
+
+    for (final entry in keys.entries) {
+      final publicKeyHex = usecase
+          .execute(xprvBase58: _masterXprv, role: entry.key)
+          .publicKeyHex;
+      expect(publicKeyHex, entry.value);
+      expect(publicKeyHex, matches(RegExp(r'^[0-9a-f]{64}$')));
+    }
   });
 
   test('derives distinct role keys per role', () {

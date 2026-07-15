@@ -56,6 +56,8 @@ class _Captured {
 
 void main() {
   const timestamp = 1710000000;
+  const verificationNpubHex =
+      '852600604d65fea77a9d23e9623b7a5bab24b5314deb7f79419006363338047f';
   late NostrKeychainHandle handle;
   late BullnymAuthSigner signer;
 
@@ -254,6 +256,7 @@ void main() {
           signer: signer,
           nym: 'alice',
           ctDescriptor: 'ct-desc',
+          verificationNpubHex: verificationNpubHex,
         ),
       );
 
@@ -265,26 +268,59 @@ void main() {
       expect(request.data, {
         'nym': 'alice',
         'ct_descriptor': 'ct-desc',
+        'verification_npub': verificationNpubHex,
         'npub': signer.npubHex,
         'signature': isA<String>().having((s) => s.length, 'length', 128),
         'timestamp': timestamp,
       });
-      expect(
-        (request.data as Map<String, dynamic>).containsKey(
-          'verification'
-          '_npub',
-        ),
-        isFalse,
-      );
       _expectSignatureValid(
         handle: handle,
         signatureHex:
             (request.data as Map<String, dynamic>)['signature'] as String,
         action: bullpayActionRegister,
         nymOrEmpty: 'alice',
-        payloadFields: const ['ct-desc'],
+        payloadFields: const ['ct-desc', verificationNpubHex],
         timestampSecs: timestamp,
       );
+    },
+  );
+
+  test(
+    'rejects invalid or reused verification keys before signing or network',
+    () async {
+      final stub = _stubDio([
+        {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
+      ]);
+      var signed = false;
+      final guardedSigner = BullnymAuthSigner(
+        npubHex: signer.npubHex,
+        signHashHex: (_) {
+          signed = true;
+          return '00' * 64;
+        },
+      );
+      final facade = _facadeForClient(
+        BullnymHttpClient.withDio(stub.dio),
+        nowSecs: () => timestamp,
+      );
+
+      for (final invalidVerificationNpubHex in [
+        verificationNpubHex.toUpperCase(),
+        'ff' * 32,
+        signer.npubHex,
+      ]) {
+        final failure = _unwrapFailure(
+          await facade.register(
+            signer: guardedSigner,
+            nym: 'alice',
+            ctDescriptor: 'ct-desc',
+            verificationNpubHex: invalidVerificationNpubHex,
+          ),
+        );
+        expect(failure.kind, BullnymFailureKind.invalidInput);
+      }
+      expect(signed, isFalse);
+      expect(stub.captured.requests, isEmpty);
     },
   );
 
@@ -456,6 +492,7 @@ void main() {
         signer: signer,
         nym: 'alice',
         ctDescriptor: 'ct-desc',
+        verificationNpubHex: verificationNpubHex,
       ),
     );
     expect(
@@ -482,6 +519,7 @@ void main() {
         signer: signer,
         nym: 'ali\u0000ce',
         ctDescriptor: 'ct-desc',
+        verificationNpubHex: verificationNpubHex,
       ),
     );
     expect(
@@ -507,6 +545,7 @@ void main() {
         signer: signer,
         nym: 'alice',
         ctDescriptor: 'ct\u0000desc',
+        verificationNpubHex: verificationNpubHex,
       ),
     );
     expect(failure, isA<BullnymFailure>());
@@ -531,6 +570,7 @@ void main() {
         signer: throwingSigner,
         nym: 'alice',
         ctDescriptor: 'ct-desc',
+        verificationNpubHex: verificationNpubHex,
       ),
     );
     expect(
@@ -588,6 +628,7 @@ void main() {
     addField('npub');
     addField('alice');
     addField('ct-desc');
+    addField(verificationNpubHex);
     expected.addAll(utf8.encode(timestamp.toString()));
 
     expect(
@@ -596,7 +637,7 @@ void main() {
           action: bullpayActionRegister,
           npubHex: 'npub',
           nymOrEmpty: 'alice',
-          payloadFields: const ['ct-desc'],
+          payloadFields: const ['ct-desc', verificationNpubHex],
           timestampSecs: timestamp,
         ),
       ),

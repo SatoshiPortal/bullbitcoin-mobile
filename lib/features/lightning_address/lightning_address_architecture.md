@@ -31,6 +31,7 @@ It does not import Bullnym internals, Bullnym signing helpers, Bullnym HTTP adap
 Registration and delete derive the Bullnym server-auth public key and signing operation through the role-named Nostr Identity facade methods.
 
 Registration and delete receive `xprvBase58` only inside domain composition so Lightning Address can build a one-shot Bullnym auth signer through Nostr Identity.
+Registration also derives the distinct NIP-05 public verification key through Nostr Identity's public-only role helper. It binds that public key after the confidential descriptor in the signed registration payload; only the Bullnym authentication role signs.
 They pass the confidential descriptor through to Bullnym registration.
 Lookup accepts the Bullnym auth public key/npub hex and does not require wallet secret material.
 Lightning Address does not persist or own wallet secrets.

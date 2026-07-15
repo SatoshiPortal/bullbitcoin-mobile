@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
@@ -15,8 +16,6 @@ const String bullpayActionRegister = 'register';
 const String bullpayActionDelete = 'delete';
 const String bullpayActionDonationPageSave = 'donation-page-save';
 const String bullpayActionDonationPageArchive = 'donation-page-archive';
-
-final _canonicalNpubHexPattern = RegExp(r'^[0-9a-f]{64}$');
 
 // Optional-trailing signed-field rule (server `save_payload_fields` in
 // `src/donation_page.rs`): the seven mandatory save fields (header, description,
@@ -111,10 +110,25 @@ int currentBullpayTimestampSecs() {
 
 @useResult
 Result<void, BullnymFailure> validateBullnymNpubHex(String npubHex) {
-  if (_canonicalNpubHexPattern.hasMatch(npubHex)) return const Ok(null);
+  if (npubHex.length != 64 || npubHex != npubHex.toLowerCase()) {
+    return const Err(
+      BullnymFailure.invalidInput(
+        'Bullnym npub must be canonical lowercase 32-byte hex',
+      ),
+    );
+  }
+  try {
+    final decoded = hex.decode(npubHex);
+    if (decoded.length == 32) {
+      ECPublic.fromHex('02$npubHex');
+      return const Ok(null);
+    }
+  } on Exception {
+    // Return the feature failure below.
+  }
   return const Err(
     BullnymFailure.invalidInput(
-      'Bullnym npub must be a 32-byte lowercase hex value',
+      'Bullnym npub must be a valid secp256k1 x-only public key',
     ),
   );
 }
