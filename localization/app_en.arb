@@ -14657,6 +14657,7 @@
   },
   "lightningAddressGenericError": "Lightning Address setup failed. Please try again.",
   "@lightningAddressGenericError": {
+  },
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"
