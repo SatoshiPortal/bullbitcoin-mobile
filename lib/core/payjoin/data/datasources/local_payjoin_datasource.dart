@@ -103,10 +103,23 @@ class LocalPayjoinDatasource {
     ];
   }
 
+  /// Fetches the payjoin session(s) a transaction id belongs to, matching
+  /// BOTH the payjoin transaction id and the original transaction id. The
+  /// original matters as much as the payjoin one: a session that completed
+  /// via the plain-broadcast fallback has its stale [txId] deliberately
+  /// cleared (see PayjoinRepositoryImpl), so the broadcast transaction that
+  /// actually hit the chain IS the original — matching only [txId] made that
+  /// transaction's details lose its payjoin context entirely (observed live:
+  /// a fallback-completed send rendered as a plain transaction with no trace
+  /// of why the payjoin didn't happen).
   Future<List<PayjoinModel>> fetchByTxId(String txId) async {
     final (receivers, senders) = await (
-      _db.managers.payjoinReceivers.filter((f) => f.txId(txId)).get(),
-      _db.managers.payjoinSenders.filter((f) => f.txId(txId)).get(),
+      _db.managers.payjoinReceivers
+          .filter((f) => f.txId(txId) | f.originalTxId(txId))
+          .get(),
+      _db.managers.payjoinSenders
+          .filter((f) => f.txId(txId) | f.originalTxId(txId))
+          .get(),
     ).wait;
 
     return [
