@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
@@ -42,10 +43,21 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     PaymentPage? paymentPage;
     PosTerminal? posTerminal;
     BtcpayConnection? btcpayConnection;
+    String? refreshError;
     final invoicesWalletReady = await _hasDefaultWallet();
 
     try {
-      btcpayConnection = await _btcpay.connection();
+      final btcpayResult = await _btcpay.connection();
+      switch (btcpayResult) {
+        case Ok(:final value):
+          btcpayConnection = value;
+        case Err(:final failure):
+          log.warning(
+            'Get Paid dashboard could not load the BTCPay connection',
+            error: failure.runtimeType,
+          );
+          refreshError = 'Something went wrong. Please try again.';
+      }
 
       final registration = await _lightningAddress
           .lookupWalletOwnedRegistration();
@@ -68,30 +80,35 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       }
 
       if (_isStale(generation)) return;
-      emit(_snapshot(
-        lightningAddress: lightningAddress,
-        lightningActive: lightningActive,
-        nym: nym,
-        paymentPage: paymentPage,
-        posTerminal: posTerminal,
-        btcpayConnection: btcpayConnection,
-        invoicesWalletReady: invoicesWalletReady,
-      ));
+      emit(
+        _snapshot(
+          lightningAddress: lightningAddress,
+          lightningActive: lightningActive,
+          nym: nym,
+          paymentPage: paymentPage,
+          posTerminal: posTerminal,
+          btcpayConnection: btcpayConnection,
+          invoicesWalletReady: invoicesWalletReady,
+          error: refreshError,
+        ),
+      );
     } on Exception catch (e, stack) {
       if (_isStale(generation)) return;
       log.warning('Get Paid dashboard refresh failed', error: e, trace: stack);
       // Keep whatever partial reads succeeded before the failure; surface the
       // error so the screen can toast it.
-      emit(_snapshot(
-        lightningAddress: lightningAddress,
-        lightningActive: lightningActive,
-        nym: nym,
-        paymentPage: paymentPage,
-        posTerminal: posTerminal,
-        btcpayConnection: btcpayConnection,
-        invoicesWalletReady: invoicesWalletReady,
-        error: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        _snapshot(
+          lightningAddress: lightningAddress,
+          lightningActive: lightningActive,
+          nym: nym,
+          paymentPage: paymentPage,
+          posTerminal: posTerminal,
+          btcpayConnection: btcpayConnection,
+          invoicesWalletReady: invoicesWalletReady,
+          error: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

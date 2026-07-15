@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
@@ -42,7 +43,9 @@ PaymentPageFacade _pageFacade(
   );
 }
 
-PosFacade _posFacade(Future<PosTerminal?> Function({required String nym}) find) {
+PosFacade _posFacade(
+  Future<PosTerminal?> Function({required String nym}) find,
+) {
   return PosFacade(
     find: find,
     provision: (command) async => throw UnimplementedError(),
@@ -52,7 +55,9 @@ PosFacade _posFacade(Future<PosTerminal?> Function({required String nym}) find) 
   );
 }
 
-BtcpayFacade _btcpayFacade(Future<BtcpayConnection?> Function() connection) {
+BtcpayFacade _btcpayFacade(
+  Future<Result<BtcpayConnection?, BtcpayFailure>> Function() connection,
+) {
   return BtcpayFacade(connection: connection);
 }
 
@@ -61,7 +66,11 @@ LightningAddressStatus _status({
   String nym = 'satoshi',
   String? address,
 }) {
-  return LightningAddressStatus(nym: nym, active: active, lightningAddress: address);
+  return LightningAddressStatus(
+    nym: nym,
+    active: active,
+    lightningAddress: address,
+  );
 }
 
 PaymentPage _page({bool enabled = true, bool archived = false}) {
@@ -88,16 +97,16 @@ PosTerminal _pos({bool enabled = true, bool archived = false}) {
 }
 
 BtcpayConnection _connection() {
-  return BtcpayConnection(
+  return BtcpayConnection.tryCreate(
     environment: Environment.mainnet,
     serverUrl: 'https://btcpay.example',
     storeId: 'store',
-    capabilities: const [],
-    walletNetworks: const [],
+    capabilities: const [SamRockSetupCapability.bitcoinChain],
+    walletNetworks: const [BtcpayWalletNetwork.bitcoin],
     status: BtcpayConnectionStatus.paired,
-    pairedAt: DateTime(2024),
-    updatedAt: DateTime(2024),
-  );
+    pairedAt: DateTime.utc(2024),
+    updatedAt: DateTime.utc(2024),
+  )!;
 }
 
 GetWalletsUsecase _getWallets({bool hasDefaultWallet = false}) {
@@ -109,9 +118,7 @@ GetWalletsUsecase _getWallets({bool hasDefaultWallet = false}) {
       onlyLiquid: any(named: 'onlyLiquid'),
       sync: any(named: 'sync'),
     ),
-  ).thenAnswer(
-    (_) async => hasDefaultWallet ? [_MockWallet()] : <Wallet>[],
-  );
+  ).thenAnswer((_) async => hasDefaultWallet ? [_MockWallet()] : <Wallet>[]);
   return usecase;
 }
 
@@ -119,14 +126,17 @@ GetPaidDashboardCubit _cubit({
   Future<LightningAddressStatus> Function()? lookup,
   Future<PaymentPage?> Function({required String nym})? pageFind,
   Future<PosTerminal?> Function({required String nym})? posFind,
-  Future<BtcpayConnection?> Function()? connection,
+  Future<Result<BtcpayConnection?, BtcpayFailure>> Function()? connection,
   bool hasDefaultWallet = false,
 }) {
   return GetPaidDashboardCubit(
     lightningAddress: _laFacade(lookup ?? () async => _status()),
     paymentPage: _pageFacade(pageFind ?? ({required String nym}) async => null),
     pos: _posFacade(posFind ?? ({required String nym}) async => null),
-    btcpay: _btcpayFacade(connection ?? () async => null),
+    btcpay: _btcpayFacade(
+      connection ??
+          () async => const Ok<BtcpayConnection?, BtcpayFailure>(null),
+    ),
     getWallets: _getWallets(hasDefaultWallet: hasDefaultWallet),
   );
 }
@@ -148,8 +158,7 @@ void main() {
 
   test('active Lightning Address populates address + nym', () async {
     final cubit = _cubit(
-      lookup: () async =>
-          _status(active: true, address: 'satoshi@bull.money'),
+      lookup: () async => _status(active: true, address: 'satoshi@bull.money'),
     );
 
     await cubit.refresh();
@@ -163,8 +172,7 @@ void main() {
 
   test('inactive registration keeps the address but is not active', () async {
     final cubit = _cubit(
-      lookup: () async =>
-          _status(active: false, address: 'satoshi@bull.money'),
+      lookup: () async => _status(active: false, address: 'satoshi@bull.money'),
     );
 
     await cubit.refresh();
@@ -244,12 +252,30 @@ void main() {
   });
 
   test('paired BTCPay connection is exposed', () async {
-    final cubit = _cubit(connection: () async => _connection());
+    final cubit = _cubit(
+      connection: () async =>
+          Ok<BtcpayConnection?, BtcpayFailure>(_connection()),
+    );
 
     await cubit.refresh();
 
     expect(cubit.state.hasBtcpayConnection, isTrue);
     expect(cubit.state.btcpayConnection!.serverUrl, 'https://btcpay.example');
+    await cubit.close();
+  });
+
+  test('a typed BTCPay failure preserves the partial dashboard', () async {
+    final cubit = _cubit(
+      lookup: () async => _status(active: true, address: 'satoshi@bull.money'),
+      connection: () async =>
+          const Err(BtcpayStorageFailure('fixture failure')),
+    );
+
+    await cubit.refresh();
+
+    expect(cubit.state.hasLightningAddress, isTrue);
+    expect(cubit.state.btcpayConnection, isNull);
+    expect(cubit.state.error, isNotNull);
     await cubit.close();
   });
 
@@ -277,9 +303,7 @@ void main() {
   });
 
   test('a facade failure surfaces an error and stops loading', () async {
-    final cubit = _cubit(
-      lookup: () async => throw Exception('boom'),
-    );
+    final cubit = _cubit(lookup: () async => throw Exception('boom'));
 
     await cubit.refresh();
 

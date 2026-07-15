@@ -125,8 +125,7 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         title: loc.getPaidDashboardDonationPageTitle,
         subtitle: page?.publicUrl ?? loc.getPaidDashboardDonationPageSubtitle,
         // Active green when a (non-archived) payment page exists.
-        statusLabel:
-            state.hasPaymentPage ? loc.getPaidDashboardActive : null,
+        statusLabel: state.hasPaymentPage ? loc.getPaidDashboardActive : null,
         statusActive: state.hasPaymentPage,
         onTap: () => _open(PaymentPageRoute.paymentPageSettings.name),
       ),
@@ -147,8 +146,9 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         subtitle: loc.getPaidDashboardInvoicesSubtitle,
         // Active green once the user's default wallet is created (invoices pay
         // out from the default wallet).
-        statusLabel:
-            state.invoicesWalletReady ? loc.getPaidDashboardActive : null,
+        statusLabel: state.invoicesWalletReady
+            ? loc.getPaidDashboardActive
+            : null,
         statusActive: state.invoicesWalletReady,
         onTap: () => _open(InvoicesRoute.list.name),
       ),
@@ -158,11 +158,13 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         title: loc.getPaidDashboardBtcpayTitle,
         // No store-name field on the connection; the server URL is the most
         // human-readable identifier available.
-        subtitle: state.btcpayConnection?.serverUrl ??
+        subtitle:
+            state.btcpayConnection?.serverUrl ??
             loc.getPaidDashboardBtcpaySubtitle,
         // Active green when a BTCPay connection exists.
-        statusLabel:
-            state.hasBtcpayConnection ? loc.getPaidDashboardActive : null,
+        statusLabel: state.hasBtcpayConnection
+            ? loc.getPaidDashboardActive
+            : null,
         statusActive: state.hasBtcpayConnection,
         onTap: () => _open(BtcpayRoute.btcpaySettings.name),
       ),

@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' show BoxDecoration, BoxShape, Container, Icons;
+import 'package:flutter/material.dart'
+    show BoxDecoration, BoxShape, Container, Icons;
 
 /// A single Get Paid product row. Domain-agnostic feature composite (the
 /// `UtxoTile` precedent): it lives in the feature but is built entirely out of
