@@ -187,6 +187,71 @@ void main() {
     });
   });
 
+  group('denomination input parsing', () {
+    test('parses BTC text to satoshis without float rounding', () {
+      expect(Joinstr.parseDenominationBtcToSat('0.001'), 100000);
+      expect(Joinstr.parseDenominationBtcToSat('1'), 100000000);
+      expect(Joinstr.parseDenominationBtcToSat('0.00000001'), 1);
+      expect(Joinstr.parseDenominationBtcToSat('.5'), 50000000);
+      // 0.1 has no exact double representation; string math must still land
+      // on exactly ten million sats.
+      expect(Joinstr.parseDenominationBtcToSat('0.1'), 10000000);
+      expect(Joinstr.parseDenominationBtcToSat('21000000'), 2100000000000000);
+    });
+
+    test('rejects zero, empty and malformed input', () {
+      for (final text in ['', '0', '0.0', 'abc', '1.2.3', '0,001', '-1']) {
+        expect(Joinstr.parseDenominationBtcToSat(text), isNull, reason: text);
+      }
+    });
+
+    test('rejects more than 8 decimal places or 8 integer digits', () {
+      expect(Joinstr.parseDenominationBtcToSat('0.000000001'), isNull);
+      expect(Joinstr.parseDenominationBtcToSat('100000000'), isNull);
+    });
+  });
+
+  group('btc formatting', () {
+    test('trims trailing zeros and drops the point on whole coins', () {
+      expect(Joinstr.formatBtc(100000), '0.001');
+      expect(Joinstr.formatBtc(100000000), '1');
+      expect(Joinstr.formatBtc(1), '0.00000001');
+      expect(Joinstr.formatBtc(150000000), '1.5');
+    });
+
+    test('round-trips with the input parser', () {
+      for (final sat in [1, 100000, 100000000, 2100000000000000]) {
+        expect(
+          Joinstr.parseDenominationBtcToSat(Joinstr.formatBtc(sat)),
+          sat,
+          reason: '$sat',
+        );
+      }
+    });
+  });
+
+  group('remaining time formatting', () {
+    test('renders hours, minutes and seconds at the right granularity', () {
+      expect(Joinstr.formatRemaining(45), '45s');
+      expect(Joinstr.formatRemaining(750), '12m 30s');
+      expect(Joinstr.formatRemaining(3900), '1h 5m');
+      expect(Joinstr.formatRemaining(0), '0s');
+      expect(Joinstr.formatRemaining(-5), '0s');
+    });
+  });
+
+  group('relay url validation', () {
+    test('accepts websocket urls only', () {
+      expect(Joinstr.isValidRelayUrl('wss://nos.lol'), isTrue);
+      expect(Joinstr.isValidRelayUrl('ws://localhost:8080'), isTrue);
+      expect(Joinstr.isValidRelayUrl(' wss://nos.lol '), isTrue);
+      expect(Joinstr.isValidRelayUrl('https://nos.lol'), isFalse);
+      expect(Joinstr.isValidRelayUrl('nos.lol'), isFalse);
+      expect(Joinstr.isValidRelayUrl(''), isFalse);
+      expect(Joinstr.isValidRelayUrl('wss://'), isFalse);
+    });
+  });
+
   group('wallet support', () {
     test('accepts a locally-signed bip84 testnet bitcoin wallet', () {
       expect(() => Joinstr.assertWalletSupported(_wallet()), returnsNormally);
