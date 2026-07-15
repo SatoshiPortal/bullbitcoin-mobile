@@ -176,6 +176,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
       }
 
+      if (state.payjoinMinAmountSat == null) {
+        // Fetched once so the payjoin-in-progress screen can tell a decline
+        // below this anti-probing threshold apart from any other reason a
+        // session completed via the plain-broadcast fallback.
+        final settings = await _getSettingsUsecase.execute();
+        emit(state.copyWith(payjoinMinAmountSat: settings.payjoinMinAmountSat));
+      }
+
       var bitcoinAddress = state.bitcoinAddress;
       if (bitcoinAddress == null) {
         // If the bitcoin address is not set yet, we need to get it from the wallet

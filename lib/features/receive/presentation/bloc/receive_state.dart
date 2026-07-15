@@ -28,6 +28,12 @@ abstract class ReceiveState with _$ReceiveState {
     Object? error,
     AmountException? amountException,
     @Default(false) bool creatingSwap,
+    // Fetched once alongside the other settings-derived fields in
+    // _onBitcoinStarted. Null only before that first fetch resolves; used to
+    // tell a receiver's below-the-anti-probing-threshold decline apart from
+    // any other reason a payjoin session completed via the plain-broadcast
+    // fallback (see PayjoinInProgressPage).
+    int? payjoinMinAmountSat,
   }) = _ReceiveState;
   const ReceiveState._();
 

@@ -14787,5 +14787,25 @@
   "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
   "@sendSentWithoutPayjoin": {
     "description": "Notice under the success message on the send screen when a Payjoin was attempted but the payment fell back to a plain (non-payjoin) transaction."
+  },
+  "receivePayjoinBelowMinimum": "Amount Below Payjoin Minimum",
+  "@receivePayjoinBelowMinimum": {
+    "description": "Title shown on the receive payjoin screen when the payment was below the configured Payjoin anti-probing minimum and was received as a regular transaction instead."
+  },
+  "receivePayjoinBelowMinimumSubtext": "This payment was smaller than your Payjoin minimum, so it was received as a regular transaction. You can change this threshold in Bitcoin settings.",
+  "@receivePayjoinBelowMinimumSubtext": {
+    "description": "Subtext shown under receivePayjoinBelowMinimum."
+  },
+  "receivePayjoinFallbackCompleted": "Sent Without Payjoin",
+  "@receivePayjoinFallbackCompleted": {
+    "description": "Title shown on the receive payjoin screen when the session completed via the plain-broadcast fallback for a reason other than the below-minimum decline (e.g. a failed negotiation)."
+  },
+  "receivePayjoinFallbackCompletedSubtext": "A Payjoin could not be completed this time, so the payment was received as a regular transaction.",
+  "@receivePayjoinFallbackCompletedSubtext": {
+    "description": "Subtext shown under receivePayjoinFallbackCompleted."
+  },
+  "receiveViewDetails": "View Details",
+  "@receiveViewDetails": {
+    "description": "Button label to view the received transaction's details from the receive payjoin screen."
   }
 }

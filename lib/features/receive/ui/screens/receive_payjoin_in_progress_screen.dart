@@ -30,17 +30,22 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
     // move itself out once the session reaches its happy terminal state.
     // Without this the user stayed on "payjoin in progress" indefinitely
     // after the payjoin completed, with the top-bar close button as the only
-    // way out. Expired is deliberately NOT navigated away from: that state
-    // still offers the manual "receive payment normally" fallback below.
+    // way out.
+    //
+    // Gated on isRealPayjoinCompletion, NOT merely `status == completed`: a
+    // session that completed via the plain-broadcast fallback (declined
+    // below the anti-probing minimum, a failed negotiation, or an expiry
+    // with no proposal ever exchanged) is deliberately NOT auto-navigated
+    // away from — PayjoinInProgressPage instead settles on an explanatory
+    // message (why there was no payjoin) that the user would otherwise
+    // never get to read if this immediately jumped to transaction details.
+    // Same reasoning for `expired`: it still offers the manual "receive
+    // payment normally" fallback below.
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
-          previous.payjoin?.status != PayjoinStatus.completed &&
-          current.payjoin?.status == PayjoinStatus.completed,
+          previous.payjoin?.isRealPayjoinCompletion != true &&
+          current.payjoin?.isRealPayjoinCompletion == true,
       listener: (context, state) {
-        // The payjoin-scoped details route resolves to the wallet
-        // transaction as soon as it is visible (whether the session
-        // completed with the payjoin tx or via the original-tx fallback),
-        // so it is the right landing spot for both completion flavours.
         context.goNamed(
           TransactionsRoute.payjoinTransactionDetails.name,
           pathParameters: {'payjoinId': state.payjoin!.id},
@@ -94,19 +99,50 @@ class PayjoinInProgressPage extends StatelessWidget {
     final fiatCurrencyCode = context.select(
       (ReceiveBloc bloc) => bloc.state.fiatCurrencyCode,
     );
-    final isBroadcasted = context.select(
+    final payjoinMinAmountSat = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoinMinAmountSat,
+    );
+    final payjoinId = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoin?.id,
+    );
+    final isCompleted = context.select(
       (ReceiveBloc bloc) =>
           bloc.state.payjoin?.status == PayjoinStatus.completed,
     );
-    // Distinct from isBroadcasted: the session's own window closed WITHOUT
+    // A real payjoin: the counterparty actually completed the negotiation
+    // and its own transaction was broadcast. This screen auto-navigates
+    // away as soon as this becomes true (see the BlocListener above), so in
+    // practice this branch is only ever on screen for a brief instant.
+    final isRealPayjoin = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoin?.isRealPayjoinCompletion == true,
+    );
+    // Completed, but NOT via a real payjoin: the plain-broadcast fallback
+    // paid the sender instead — declined below the anti-probing minimum, a
+    // failed negotiation, or an expiry with no proposal ever exchanged.
+    // Unlike isRealPayjoin, this state is NOT auto-navigated away from: the
+    // user explicitly expected a payjoin, so they get to read why one
+    // didn't happen instead of landing on transaction details unannounced.
+    final isFallbackCompleted = isCompleted && !isRealPayjoin;
+    // The specific, most informative case: the request was declined solely
+    // because its amount fell under the configured anti-probing threshold
+    // (PayjoinRepositoryImpl.isBelowPayjoinMinimum runs before any
+    // negotiation is attempted, so this check is exact, not a heuristic —
+    // every other decline path is unreachable when the amount is below the
+    // minimum).
+    final isBelowMinimum =
+        isFallbackCompleted &&
+        amountSat != null &&
+        payjoinMinAmountSat != null &&
+        amountSat < payjoinMinAmountSat;
+    // Distinct from isCompleted: the session's own window closed WITHOUT
     // the counterparty completing it. The automatic plain-broadcast
     // fallback (PayjoinRepositoryImpl._processExpiredPayjoin) usually
-    // resolves this into isBroadcasted=true within a second or two, but if
-    // that fallback itself fails (no network at that exact moment), status
-    // stays `expired` indefinitely — without this branch the screen kept
-    // showing the same "in progress, wait" copy forever, giving the user no
-    // signal that waiting longer would not help and the manual "receive
-    // normally" button below was their only way out.
+    // resolves this into isFallbackCompleted=true within a second or two,
+    // but if that fallback itself fails (no network at that exact moment),
+    // status stays `expired` indefinitely — without this branch the screen
+    // kept showing the same "in progress, wait" copy forever, giving the
+    // user no signal that waiting longer would not help and the manual
+    // "receive normally" button below was their only way out.
     final isExpired = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.status == PayjoinStatus.expired,
     );
@@ -115,7 +151,25 @@ class PayjoinInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: .center,
         children: [
-          if (isBroadcasted) ...[
+          if (isBelowMinimum) ...[
+            Text(
+              context.loc.receivePayjoinBelowMinimum,
+              style: context.font.headlineLarge,
+            ),
+            Text(
+              context.loc.receivePayjoinBelowMinimumSubtext,
+              style: context.font.bodyMedium,
+            ),
+          ] else if (isFallbackCompleted) ...[
+            Text(
+              context.loc.receivePayjoinFallbackCompleted,
+              style: context.font.headlineLarge,
+            ),
+            Text(
+              context.loc.receivePayjoinFallbackCompletedSubtext,
+              style: context.font.bodyMedium,
+            ),
+          ] else if (isRealPayjoin) ...[
             Text(
               context.loc.receivePaymentInProgress,
               style: context.font.headlineLarge,
@@ -158,7 +212,19 @@ class PayjoinInProgressPage extends StatelessWidget {
               ),
             ),
           ],
-          if (!isBroadcasted) ...[
+          if (isFallbackCompleted && payjoinId != null) ...[
+            const Gap(84),
+            BBButton.big(
+              label: context.loc.receiveViewDetails,
+              onPressed: () => context.goNamed(
+                TransactionsRoute.payjoinTransactionDetails.name,
+                pathParameters: {'payjoinId': payjoinId},
+                queryParameters: {'returnHome': 'true'},
+              ),
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
+            ),
+          ] else if (!isCompleted) ...[
             const Gap(84),
             const ReceiveBroadcastPayjoinButton(),
           ],
