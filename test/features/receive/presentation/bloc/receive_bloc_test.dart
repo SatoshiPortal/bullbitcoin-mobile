@@ -239,4 +239,56 @@ void main() {
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
   });
+
+  group('payjoin gated on the global setting', () {
+    test(
+      'does NOT create a payjoin receiver session when payjoin is '
+      'disabled globally (payjoinMinAmountSat at the ceiling sentinel)',
+      () async {
+        when(() => getSettings.execute()).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            payjoinMinAmountSat: 21000000,
+          ),
+        );
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.payjoin, isNull);
+        expect(bloc.state.isPayjoinGloballyEnabled, isFalse);
+        verifyNever(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        );
+      },
+    );
+
+    test('creates a payjoin receiver session when payjoin is enabled '
+        'globally (the default)', () async {
+      final createdPayjoin = _receiver();
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => createdPayjoin);
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoin, createdPayjoin);
+      expect(bloc.state.isPayjoinGloballyEnabled, isTrue);
+    });
+  });
 }

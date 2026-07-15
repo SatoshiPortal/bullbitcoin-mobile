@@ -627,7 +627,8 @@ class _PayjoinSwitch extends StatelessWidget {
     final canUsePayjoin = context.select<ReceiveBloc, bool>(
       (bloc) =>
           bloc.state.type == ReceiveType.bitcoin &&
-          (bloc.state.wallet?.signsLocally ?? false),
+          (bloc.state.wallet?.signsLocally ?? false) &&
+          bloc.state.isPayjoinGloballyEnabled,
     );
     if (!canUsePayjoin) return const SizedBox.shrink();
 

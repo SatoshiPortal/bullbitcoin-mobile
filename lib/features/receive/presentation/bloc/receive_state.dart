@@ -37,6 +37,14 @@ abstract class ReceiveState with _$ReceiveState {
   }) = _ReceiveState;
   const ReceiveState._();
 
+  // Fail-closed: while the settings fetch hasn't resolved yet (or failed),
+  // payjoinMinAmountSat stays null and this is false, so no payjoin receiver
+  // session is created. Once resolved, mirrors
+  // SettingsEntity.isPayjoinEnabled's sentinel check.
+  bool get isPayjoinGloballyEnabled =>
+      payjoinMinAmountSat != null &&
+      payjoinMinAmountSat! < PayjoinConstants.maxMinAmountSat;
+
   List<String> get inputAmountCurrencyCodes {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
   }

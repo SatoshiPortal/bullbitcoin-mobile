@@ -198,7 +198,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the payjoin receiver is not set yet, we need to create it, but only
       //  if the wallet is not watch only. If the wallet is watch only, we shouldn't
       //  create a payjoin receiver since we can't sign proposals non-interactively.
-      if (state.payjoin == null && wallet.signsLocally) {
+      // Also gated on the global payjoin setting (isPayjoinGloballyEnabled),
+      // fetched just above — fail-closed until that fetch resolves.
+      if (state.payjoin == null &&
+          wallet.signsLocally &&
+          state.isPayjoinGloballyEnabled) {
         PayjoinReceiver? payjoin;
         Object? error;
         try {
@@ -703,9 +707,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             walletId: walletId,
             generateNew: true,
           );
+          // Refetch rather than trusting the value fetched once in
+          // _onBitcoinStarted — mitigates staleness if the setting changes
+          // while this bloc stays open across multiple new-address taps.
+          final settings = await _getSettingsUsecase.execute();
+          emit(
+            state.copyWith(payjoinMinAmountSat: settings.payjoinMinAmountSat),
+          );
           // If a new address is generated, we need to update the payjoin receiver as well,
-          // but only if the wallet is not watch only.
-          if (state.wallet!.signsLocally) {
+          // but only if the wallet is not watch only, and only if payjoin is
+          // enabled globally.
+          if (state.wallet!.signsLocally && state.isPayjoinGloballyEnabled) {
             try {
               payjoin = await _receiveWithPayjoinUsecase.execute(
                 walletId: walletId,
