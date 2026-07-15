@@ -5,7 +5,10 @@ import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_d
 import 'package:bb_mobile/core/exchange/data/models/support_chat_message_attachment_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 class ExchangeSupportChatRepositoryImpl
     implements ExchangeSupportChatRepository {
@@ -22,10 +25,8 @@ class ExchangeSupportChatRepositoryImpl
   });
 
   @override
-  Future<List<SupportChatMessage>> getMessages({
-    int? page,
-    int? pageSize,
-  }) async {
+  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
+  getMessages({int? page, int? pageSize}) async {
     try {
       final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
       if (apiKey == null) {
@@ -53,17 +54,18 @@ class ExchangeSupportChatRepositoryImpl
         pageSize: pageSize,
       );
 
-      return messageModels.map((model) => model.toEntity()).toList();
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to get messages: $e');
+      return Ok(messageModels.map((model) => model.toEntity()).toList());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning('Failed to load support chat messages', error: e, trace: st);
+      return Err(LoadMessagesFailure('$e'));
     }
   }
 
   @override
-  Future<void> sendMessage({
+  Future<Result<void, ExchangeSupportChatFailure>> sendMessage({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) async {
@@ -94,18 +96,19 @@ class ExchangeSupportChatRepositoryImpl
         text: text,
         attachments: attachmentModels,
       );
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to send message: $e');
+      return const Ok(null);
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning('Failed to send support chat message', error: e, trace: st);
+      return Err(SendMessageFailure('$e'));
     }
   }
 
   @override
-  Future<SupportChatMessageAttachment> getMessageAttachment(
-    String attachmentId,
-  ) async {
+  Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
+  getMessageAttachment(String attachmentId) async {
     try {
       final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
       if (apiKey == null) {
@@ -119,12 +122,17 @@ class ExchangeSupportChatRepositoryImpl
         attachmentId: attachmentId,
       );
 
-      return attachmentModel.toEntity();
-    } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      }
-      throw Exception('Failed to get message attachment: $e');
+      return Ok(attachmentModel.toEntity());
+    } on ApiKeyException catch (e, st) {
+      log.warning('Support chat: not authenticated', error: e, trace: st);
+      return Err(NotAuthenticatedFailure('$e'));
+    } catch (e, st) {
+      log.warning(
+        'Failed to load support chat attachment',
+        error: e,
+        trace: st,
+      );
+      return Err(LoadAttachmentFailure('$e'));
     }
   }
 }

@@ -794,5 +794,14 @@
   "logsShareOptionShare": "გაზიარება",
   "logsShareOptionExport": "ექსპორტი",
   "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
-  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა",
+  "exchangeSupportChatPermissionDenied": "წვდომა უარყოფილია.",
+  "exchangeSupportChatPermissionDeniedSettings": "წვდომა უარყოფილია. გთხოვთ, პარამეტრებში მიანიჭოთ ფოტოების ბიბლიოთეკაზე წვდომა.",
+  "exchangeSupportChatPickFilesFailed": "ფაილების არჩევა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatAttachLogsFailed": "ჟურნალების მიმაგრება ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatFetchFileDataFailed": "ფაილის მონაცემების მიღება ვერ მოხერხდა",
+  "exchangeSupportChatMessageEmptyError": "შეტყობინება არ შეიძლება იყოს ცარიელი",
+  "exchangeSupportChatLoadMessagesError": "შეტყობინებების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatSendMessageError": "თქვენი შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

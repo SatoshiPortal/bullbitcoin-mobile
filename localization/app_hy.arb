@@ -582,5 +582,14 @@
   "logsShareOptionShare": "Կիսվել",
   "logsShareOptionExport": "Արտահանել",
   "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
-  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց"
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց",
+  "exchangeSupportChatPermissionDenied": "Թույլտվությունը մերժվեց։",
+  "exchangeSupportChatPermissionDeniedSettings": "Թույլտվությունը մերժվեց։ Խնդրում ենք կարգավորումներում թույլ տալ լուսանկարների գրադարանի հասանելիությունը։",
+  "exchangeSupportChatPickFilesFailed": "Չհաջողվեց ընտրել ֆայլերը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatAttachLogsFailed": "Չհաջողվեց կցել գրանցամատյանները։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatFetchFileDataFailed": "Չհաջողվեց ստանալ ֆայլի տվյալները",
+  "exchangeSupportChatMessageEmptyError": "Հաղորդագրությունը չի կարող դատարկ լինել",
+  "exchangeSupportChatLoadMessagesError": "Չհաջողվեց բեռնել հաղորդագրությունները։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatSendMessageError": "Չհաջողվեց ուղարկել ձեր հաղորդագրությունը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։"
 }

@@ -12277,6 +12277,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "สนับสนุนการสนทนา",
+  "exchangeSupportChatPermissionDenied": "การอนุญาตถูกปฏิเสธ",
+  "exchangeSupportChatPermissionDeniedSettings": "การอนุญาตถูกปฏิเสธ โปรดอนุญาตการเข้าถึงคลังรูปภาพในการตั้งค่า",
+  "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ โปรดลองอีกครั้ง",
+  "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ โปรดลองอีกครั้ง",
+  "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
+  "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },

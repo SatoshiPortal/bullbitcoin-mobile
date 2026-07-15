@@ -12285,6 +12285,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "समर्थन चैट",
+  "exchangeSupportChatPermissionDenied": "अनुमति अस्वीकृत।",
+  "exchangeSupportChatPermissionDeniedSettings": "अनुमति अस्वीकृत। कृपया सेटिंग्स में फ़ोटो लाइब्रेरी एक्सेस प्रदान करें।",
+  "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
+  "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },

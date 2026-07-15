@@ -8906,6 +8906,14 @@
     "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "এই চেট কেৱল Funding/Buy/Sell/Withdraw/Pay সম্পৰ্কীয় exchange সমস্যাৰ বাবে।\nWallet সম্পৰ্কীয় সমস্যাৰ বাবে, ইয়াত ক্লিক কৰি telegram গ্ৰুপত যোগ দিয়ক।",
+  "exchangeSupportChatPermissionDenied": "অনুমতি অস্বীকাৰ কৰা হ'ল।",
+  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি অস্বীকাৰ কৰা হ'ল। অনুগ্ৰহ কৰি ছেটিংছত ফটো লাইব্ৰেৰীৰ এক্সেছ দিয়ক।",
+  "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰাত বিফল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰাত বিফল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা অনাত বিফল",
+  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
   },

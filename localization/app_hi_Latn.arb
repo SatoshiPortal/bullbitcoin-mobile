@@ -11083,6 +11083,14 @@
     "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "Ye chat sirf Funding/Buy/Sell/Withdraw/Pay se related exchange issues ke liye hai.\nWallet related issues ke liye, yahan click karke telegram group join karo.",
+  "exchangeSupportChatPermissionDenied": "Anumati asveekrit.",
+  "exchangeSupportChatPermissionDeniedSettings": "Anumati asveekrit. Kripya Settings mein photo library access dein.",
+  "exchangeSupportChatPickFilesFailed": "Files chunne mein vifal. Kripya punah prayas karein.",
+  "exchangeSupportChatAttachLogsFailed": "Logs attach karne mein vifal. Kripya punah prayas karein.",
+  "exchangeSupportChatFetchFileDataFailed": "File data prapt karne mein vifal",
+  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
+  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
+  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
   },

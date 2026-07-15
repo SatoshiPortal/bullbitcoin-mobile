@@ -11524,6 +11524,14 @@
     "description": "Button text to retry a failed payment"
   },
   "exchangeSupportChatTitle": "الدعم",
+  "exchangeSupportChatPermissionDenied": "تم رفض الإذن.",
+  "exchangeSupportChatPermissionDeniedSettings": "تم رفض الإذن. يُرجى منح حق الوصول إلى مكتبة الصور في الإعدادات.",
+  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
+  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },

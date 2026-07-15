@@ -14164,6 +14164,18 @@
   "@exchangeSupportChatFetchFileDataFailed": {
     "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
   },
+  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
+  "@exchangeSupportChatLoadMessagesError": {
+    "description": "Shown when loading the support chat message history fails."
+  },
+  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
+  "@exchangeSupportChatSendMessageError": {
+    "description": "Shown when sending a support chat message fails."
+  },
+  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
+  "@exchangeSupportChatLoadAttachmentError": {
+    "description": "Shown when downloading or opening a support chat attachment fails."
+  },
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
