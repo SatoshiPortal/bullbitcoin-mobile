@@ -61,7 +61,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
     on<ReceiveNoteChanged>(_onNoteChanged);
     on<ReceiveNoteSaved>(_onNoteSaved);
-    on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
@@ -664,16 +663,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     } catch (e) {
       emit(state.copyWith(error: e));
       return;
-    }
-  }
-
-  Future<void> _onAddressOnlyToggled(
-    ReceiveAddressOnlyToggled event,
-    Emitter<ReceiveState> emit,
-  ) async {
-    // This toggle switch button is only available in the bitcoin receive screen
-    if (state.type == ReceiveType.bitcoin) {
-      emit(state.copyWith(isAddressOnly: event.isAddressOnly));
     }
   }
 

@@ -23,7 +23,6 @@ abstract class ReceiveState with _$ReceiveState {
     PayjoinReceiver? payjoin,
     @Default(false) bool isBroadcastingOriginalTransaction,
     ReceivePayjoinException? receivePayjoinException,
-    @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
     AmountException? amountException,
@@ -277,7 +276,6 @@ abstract class ReceiveState with _$ReceiveState {
       // code never renders.
       return wallet != null &&
           wallet!.signsLocally &&
-          !isAddressOnly &&
           isPayjoinGloballyEnabled &&
           payjoin == null &&
           receivePayjoinException == null;
@@ -287,10 +285,7 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
-      return wallet != null &&
-          wallet!.signsLocally &&
-          !isAddressOnly &&
-          payjoin != null;
+      return wallet != null && wallet!.signsLocally && payjoin != null;
     }
     return false;
   }
@@ -299,9 +294,7 @@ abstract class ReceiveState with _$ReceiveState {
 
   // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
   // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
-  // Also gated on [isAddressOnly] so toggling payjoin OFF removes only the
-  // pj= param from the URI, leaving amount/message intact.
-  bool get canPayjoin => payjoin != null && hasUtxos && !isAddressOnly;
+  bool get canPayjoin => payjoin != null && hasUtxos;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
