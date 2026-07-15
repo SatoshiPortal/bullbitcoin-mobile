@@ -269,9 +269,16 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
+      // Gated on isPayjoinGloballyEnabled: when payjoin is disabled in
+      // settings, ReceiveBloc never attempts to create a session (see
+      // _onBitcoinStarted), so payjoin stays null forever and this getter
+      // must not keep reporting "still loading" indefinitely — otherwise
+      // paymentRequest (which waits on this) never resolves and the QR
+      // code never renders.
       return wallet != null &&
           wallet!.signsLocally &&
           !isAddressOnly &&
+          isPayjoinGloballyEnabled &&
           payjoin == null &&
           receivePayjoinException == null;
     }

@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +21,19 @@ void main() {
             expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
           )
           as PayjoinReceiver;
+
+  Wallet localWallet() => Wallet(
+    origin: 'test-origin',
+    network: Network.bitcoinMainnet,
+    xpubFingerprint: '00000000',
+    scriptType: ScriptType.bip84,
+    xpub: '',
+    externalPublicDescriptor: '',
+    internalPublicDescriptor: '',
+    signer: SignerEntity.local,
+    signerDevice: null,
+    balanceSat: BigInt.zero,
+  );
 
   group('ReceiveState.isPayjoinFlowOwningNavigation', () {
     test('false for a non-Bitcoin receive type, even with a payjoin set', () {
@@ -67,6 +82,62 @@ void main() {
           reason: 'status: $status',
         );
       }
+    });
+  });
+
+  group('ReceiveState.isPayjoinLoading', () {
+    test('false when payjoin is disabled globally, even with a locally-'
+        'signing wallet and no payjoin session yet — otherwise this stays '
+        'true forever (ReceiveBloc never creates a session while disabled) '
+        'and paymentRequest (which waits on this) never resolves, so the QR '
+        'code never renders', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        wallet: localWallet(),
+        payjoinMinAmountSat: 21000000, // maxMinAmountSat sentinel: disabled
+      );
+
+      expect(state.isPayjoinGloballyEnabled, isFalse);
+      expect(state.isPayjoinLoading, isFalse);
+    });
+
+    test('true while payjoin is enabled globally and a session has not been '
+        'created yet — the QR code legitimately waits for it', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        wallet: localWallet(),
+        payjoinMinAmountSat: 10000, // below the sentinel: enabled
+      );
+
+      expect(state.isPayjoinGloballyEnabled, isTrue);
+      expect(state.isPayjoinLoading, isTrue);
+    });
+
+    test(
+      'false once the settings fetch has not resolved yet (payjoinMinAmountSat '
+      'null) — fail-closed: not "still loading a payjoin", since none will '
+      'ever be created until isPayjoinGloballyEnabled resolves true',
+      () {
+        final state = ReceiveState(
+          type: ReceiveType.bitcoin,
+          wallet: localWallet(),
+        );
+
+        expect(state.payjoinMinAmountSat, isNull);
+        expect(state.isPayjoinGloballyEnabled, isFalse);
+        expect(state.isPayjoinLoading, isFalse);
+      },
+    );
+
+    test('false once a payjoin session exists', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        wallet: localWallet(),
+        payjoinMinAmountSat: 10000,
+        payjoin: payjoinWith(status: PayjoinStatus.requested),
+      );
+
+      expect(state.isPayjoinLoading, isFalse);
     });
   });
 }
