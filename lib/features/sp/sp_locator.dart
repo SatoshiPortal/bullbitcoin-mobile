@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
@@ -115,6 +116,9 @@ class SpLocator {
     );
     locator.registerFactory<StopSpScanUsecase>(
       () => StopSpScanUsecase(repository: locator<SpAccountRepository>()),
+    );
+    locator.registerFactory<ClearSpScanStateUsecase>(
+      () => ClearSpScanStateUsecase(repository: locator<SpAccountRepository>()),
     );
     locator.registerFactory<GenerateTaprootAddressUsecase>(
       () => GenerateTaprootAddressUsecase(
@@ -228,6 +232,7 @@ class SpLocator {
         spNotificationsWatcher: locator<SpNotificationsWatcher>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         stopSpScanUsecase: locator<StopSpScanUsecase>(),
+        clearSpScanStateUsecase: locator<ClearSpScanStateUsecase>(),
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
         generateTaprootAddressUsecase: locator<GenerateTaprootAddressUsecase>(),
       ),

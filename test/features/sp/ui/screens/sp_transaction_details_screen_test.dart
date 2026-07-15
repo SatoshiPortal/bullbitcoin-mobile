@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ void main() {
   final incomingPayment = SpPayment(
     txid: 'aabbccdd' * 8,
     direction: SpPaymentDirection.receive,
+    status: SpPaymentStatus.verified,
     amountSat: BigInt.from(5000),
     height: 800000,
   );
@@ -31,6 +33,7 @@ void main() {
   final outgoingPayment = SpPayment(
     txid: '11223344' * 8,
     direction: SpPaymentDirection.send,
+    status: SpPaymentStatus.unconfirmed,
     amountSat: BigInt.from(2500),
     feeSat: BigInt.from(150),
   );
@@ -68,6 +71,48 @@ void main() {
     await tester.pumpWidget(_buildPage(cubit, outgoingPayment));
 
     expect(find.text('Unconfirmed'), findsOneWidget);
+  });
+
+  testWidgets('shows Verifying for confirmed unverified payments', (
+    tester,
+  ) async {
+    final payment = SpPayment(
+      txid: '55667788' * 8,
+      direction: SpPaymentDirection.receive,
+      status: SpPaymentStatus.confirmedUnverified,
+      amountSat: BigInt.from(3000),
+      height: 800001,
+    );
+
+    await tester.pumpWidget(_buildPage(cubit, payment));
+
+    expect(find.text('Verifying'), findsOneWidget);
+  });
+
+  testWidgets('shows failed verification with error background', (
+    tester,
+  ) async {
+    final payment = SpPayment(
+      txid: '99aabbcc' * 8,
+      direction: SpPaymentDirection.send,
+      status: SpPaymentStatus.verifyFailed,
+      amountSat: BigInt.from(4000),
+    );
+
+    await tester.pumpWidget(_buildPage(cubit, payment));
+
+    final context = tester.element(find.text('Verification failed'));
+    final containers = tester.widgetList<Container>(find.byType(Container));
+    expect(find.text('Verification failed'), findsOneWidget);
+    expect(
+      containers.any(
+        (container) =>
+            container.decoration is BoxDecoration &&
+            (container.decoration! as BoxDecoration).color ==
+                context.appColors.errorContainer,
+      ),
+      isTrue,
+    );
   });
 
   testWidgets('shows fee when present', (tester) async {

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
@@ -81,7 +82,15 @@ class SpWalletDetailScreen extends StatelessWidget {
                   chainTip: state.chainTip,
                 ),
               ),
-            const SliverToBoxAdapter(child: Gap(16)),
+            if (state.headerValidationStatus ==
+                    SpHeaderValidationStatus.validating ||
+                state.headerValidationStatus ==
+                    SpHeaderValidationStatus.failed) ...[
+              const SliverToBoxAdapter(child: Gap(16)),
+              SliverToBoxAdapter(child: _HeaderValidationCard(state: state)),
+              const SliverToBoxAdapter(child: Gap(16)),
+            ] else
+              const SliverToBoxAdapter(child: Gap(16)),
             _SpActivitySection(state: state),
           ],
         ),
@@ -94,6 +103,113 @@ class SpWalletDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _HeaderValidationCard extends StatelessWidget {
+  const _HeaderValidationCard({required this.state});
+
+  final SpState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final failed =
+        state.headerValidationStatus == SpHeaderValidationStatus.failed;
+    final progress = state.headerValidationProgress;
+    final percent = (progress * 100).round();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: failed
+                ? context.appColors.errorContainer
+                : context.appColors.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                failed ? Icons.warning_amber_rounded : Icons.verified_outlined,
+                color: failed
+                    ? context.appColors.error
+                    : context.appColors.primary,
+              ),
+              const Gap(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _title(context),
+                            style: context.font.bodyMedium?.copyWith(
+                              color: failed ? context.appColors.error : null,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        if (!failed)
+                          Text(
+                            context.loc.spHeaderValidationPercent('$percent'),
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.textMuted,
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (!failed) ...[
+                      const Gap(6),
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 3,
+                        backgroundColor:
+                            context.appColors.surfaceContainerHighest,
+                        color: context.appColors.success,
+                      ),
+                      const Gap(4),
+                      Text(
+                        _progressLabel(context),
+                        style: context.font.bodySmall?.copyWith(
+                          color: context.appColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Gap(8),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _title(BuildContext context) {
+    if (state.headerValidationStatus == SpHeaderValidationStatus.failed) {
+      return context.loc.spHeaderValidationFailed;
+    }
+    return switch (state.headerValidationPhase) {
+      SpHeaderValidationPhase.replay => context.loc.spHeaderValidationReplay,
+      SpHeaderValidationPhase.initialSync =>
+        context.loc.spHeaderValidationInitialSync,
+      null => context.loc.spHeaderValidationTitle,
+    };
+  }
+
+  String _progressLabel(BuildContext context) {
+    final current = state.headerValidationCurrent;
+    final total = state.headerValidationTo;
+    if (current == null || total == null) return '';
+    return context.loc.spHeaderValidationProgress('$current', '$total');
   }
 }
 
@@ -182,7 +298,10 @@ class _SpActivitySection extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(context.loc.spActivityTitle, style: context.font.titleSmall),
+            child: Text(
+              context.loc.spActivityTitle,
+              style: context.font.titleSmall,
+            ),
           ),
           const Gap(8),
           if (state.history.isEmpty && !state.isLoading)
@@ -231,21 +350,23 @@ class _SpPaymentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIncoming = payment.direction == SpPaymentDirection.receive;
+    final isFailed = payment.status == SpPaymentStatus.verifyFailed;
     return ListTile(
+      tileColor: isFailed ? context.appColors.errorContainer : null,
       leading: Icon(
         isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
-        color: isIncoming ? context.appColors.success : context.appColors.error,
+        color: isFailed
+            ? context.appColors.error
+            : isIncoming
+            ? context.appColors.success
+            : context.appColors.error,
       ),
       title: Text(
         context.loc.spSendSatsAmount(
           FormatAmount.satsGrouped(payment.amountSat.toInt()),
         ),
       ),
-      subtitle: Text(
-        payment.height != null
-            ? context.loc.spBlockLabel('${payment.height}')
-            : context.loc.spUnconfirmed,
-      ),
+      subtitle: _SpPaymentStatusLabel(payment: payment),
       trailing: payment.timestamp != null
           ? Text(
               _formatDate(payment.timestamp!.toInt()),
@@ -262,6 +383,43 @@ class _SpPaymentTile extends StatelessWidget {
   String _formatDate(int timestampSeconds) => timeago.format(
     DateTime.fromMillisecondsSinceEpoch(timestampSeconds * 1000),
   );
+}
+
+class _SpPaymentStatusLabel extends StatelessWidget {
+  const _SpPaymentStatusLabel({required this.payment});
+  final SpPayment payment;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = _label(context);
+    final clickable =
+        payment.status == SpPaymentStatus.confirmedUnverified ||
+        payment.status == SpPaymentStatus.verifyFailed;
+    final style = context.font.bodyMedium?.copyWith(
+      color: payment.status == SpPaymentStatus.verifyFailed
+          ? context.appColors.error
+          : context.appColors.textMuted,
+      decoration: clickable ? TextDecoration.underline : null,
+    );
+    if (!clickable) return Text(label, style: style);
+    return InkWell(
+      onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+      child: Text(label, style: style),
+    );
+  }
+
+  String _label(BuildContext context) => switch (payment.status) {
+    SpPaymentStatus.unconfirmed => context.loc.spUnconfirmed,
+    SpPaymentStatus.confirmedUnverified =>
+      payment.height != null
+          ? context.loc.spBlockVerifying('${payment.height}')
+          : context.loc.spVerifying,
+    SpPaymentStatus.verified =>
+      payment.height != null
+          ? context.loc.spBlockLabel('${payment.height}')
+          : context.loc.spConfirmed,
+    SpPaymentStatus.verifyFailed => context.loc.spVerificationFailed,
+  };
 }
 
 class _SpBottomButtons extends StatelessWidget {

@@ -17,10 +17,7 @@ class _MockEnsureSpSessionUsecase extends Mock
 
 SpWallet _wallet() => SpWallet(
   spAddress: 'sp1qtest',
-  balance: SpBalance(
-    confirmedSat: BigInt.zero,
-    totalUnifiedSat: BigInt.zero,
-  ),
+  balance: SpBalance(confirmedSat: BigInt.zero, totalUnifiedSat: BigInt.zero),
   isScanning: false,
 );
 
@@ -50,6 +47,27 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(events, hasLength(1));
+    await watcher.dispose();
+  });
+
+  test('forwards source events emitted synchronously on listen', () async {
+    late StreamController<SpNotification> source;
+    source = StreamController<SpNotification>.broadcast(
+      onListen: () {
+        source.add(
+          const SpHeaderProgressCompleted(SpHeaderValidationPhase.replay),
+        );
+      },
+    );
+    addTearDown(source.close);
+    when(() => watchUsecase.execute()).thenAnswer((_) => source.stream);
+
+    final event = watcher.watch(onReconnect: () {}).first;
+
+    expect(
+      await event,
+      const SpHeaderProgressCompleted(SpHeaderValidationPhase.replay),
+    );
     await watcher.dispose();
   });
 

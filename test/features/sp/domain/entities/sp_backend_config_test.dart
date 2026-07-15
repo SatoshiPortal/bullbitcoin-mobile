@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/data/models/sp_backend_config_model.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +52,8 @@ void main() {
         'network': 'regtest',
         'blindbitUrl': 'http://blindbit.example',
         'electrumUrl': 'tcp://electrum.example:50001',
+        'fetchConcurrencyFactor': SpConfig.defaultFetchConcurrencyFactor,
+        'matchConcurrencyFactor': SpConfig.defaultMatchConcurrencyFactor,
       });
     });
 

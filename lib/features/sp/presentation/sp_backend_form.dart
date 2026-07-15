@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_conn_test.dart';
@@ -13,9 +14,11 @@ part 'sp_backend_form.freezed.dart';
 @freezed
 sealed class SpBackendForm with _$SpBackendForm {
   const factory SpBackendForm({
-    @Default(SpNetwork.regtest) SpNetwork network,
+    @Default(SpNetwork.bitcoin) SpNetwork network,
     @Default('') String blindbitUrl,
     @Default('') String electrumUrl,
+    @Default(SpConfig.defaultFetchConcurrencyFactor) int fetchConcurrencyFactor,
+    @Default(SpConfig.defaultMatchConcurrencyFactor) int matchConcurrencyFactor,
     @Default(SpConnTest.untested) SpConnTest blindbitTest,
     @Default(SpConnTest.untested) SpConnTest electrumTest,
     SpFailure? blindbitTestError,
@@ -35,6 +38,8 @@ sealed class SpBackendForm with _$SpBackendForm {
     electrumUrl: '',
     blindbitTest: SpConnTest.untested,
     electrumTest: SpConnTest.untested,
+    fetchConcurrencyFactor: SpConfig.defaultFetchConcurrencyFactor,
+    matchConcurrencyFactor: SpConfig.defaultMatchConcurrencyFactor,
     blindbitTestError: null,
     electrumTestError: null,
     error: null,
@@ -101,4 +106,14 @@ sealed class SpBackendForm with _$SpBackendForm {
   /// The current URL for one backend.
   String urlFor(SpBackendKind kind) =>
       kind == SpBackendKind.blindbit ? blindbitUrl : electrumUrl;
+
+  SpBackendForm applyFetchConcurrencyFactor(int factor) => copyWith(
+    fetchConcurrencyFactor: factor.clamp(1, SpConfig.maxFetchConcurrencyFactor),
+    error: null,
+  );
+
+  SpBackendForm applyMatchConcurrencyFactor(int factor) => copyWith(
+    matchConcurrencyFactor: factor.clamp(1, SpConfig.maxMatchConcurrencyFactor),
+    error: null,
+  );
 }

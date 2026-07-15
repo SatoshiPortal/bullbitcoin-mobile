@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
@@ -49,7 +50,9 @@ class _SpSettingsScreenState extends State<SpSettingsScreen> {
     return BlocListener<SpCubit, SpState>(
       listenWhen: (previous, current) => previous.network != current.network,
       listener: (context, state) {
-        unawaited(context.read<SpSettingsCubit>().initFromNetwork(state.network));
+        unawaited(
+          context.read<SpSettingsCubit>().initFromNetwork(state.network),
+        );
       },
       child: BlocConsumer<SpSettingsCubit, SpSettingsState>(
         listenWhen: (previous, current) => !previous.saved && current.saved,
@@ -99,7 +102,10 @@ class _BackendConfigSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(context.loc.spSettingsBackendConfig, style: context.font.titleMedium),
+        Text(
+          context.loc.spSettingsBackendConfig,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         SpBackendConfigForm<SpSettingsState>(
           state: state,
@@ -149,6 +155,10 @@ class _WalletManagementSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLoading = context.select((SpCubit cubit) => cubit.state.isLoading);
+    final isScanning = context.select(
+      (SpCubit cubit) => cubit.state.isScanning,
+    );
+    final disabled = isLoading || isScanning;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -172,6 +182,37 @@ class _WalletManagementSection extends StatelessWidget {
             unawaited(context.read<SpCubit>().scan());
             context.pushNamed(SpRoute.spScan.name);
           },
+        ),
+        SettingsEntryItem(
+          icon: Icons.verified_outlined,
+          title: context.loc.spHeaderValidationTitle,
+          onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+        ),
+        SettingsEntryItem(
+          icon: Icons.restart_alt,
+          title: context.loc.spClearScanStateEntry,
+          onTap: disabled
+              ? null
+              : () async {
+                  final confirmed = await _confirm(
+                    context,
+                    title: context.loc.spClearScanStateTitle,
+                    content: context.loc.spClearScanStateContent,
+                    confirmLabel: context.loc.spClearButton,
+                  );
+                  if (!confirmed || !context.mounted) return;
+                  final ok = await context.read<SpCubit>().clearScanState();
+                  if (!context.mounted) return;
+                  final message = ok
+                      ? context.loc.spClearScanStateSuccess
+                      : context.read<SpCubit>().state.error?.toTranslated(
+                              context,
+                            ) ??
+                            context.loc.oopsSomethingWentWrong;
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(message)));
+                },
         ),
         SettingsEntryItem(
           icon: Icons.delete_outline,
@@ -237,7 +278,10 @@ class _NotificationConsoleSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(context.loc.spNotificationsDebug, style: context.font.titleMedium),
+            Text(
+              context.loc.spNotificationsDebug,
+              style: context.font.titleMedium,
+            ),
             TextButton(
               onPressed: console.isEmpty ? null : cubit.clearConsole,
               child: Text(context.loc.spClearButton),

@@ -33,10 +33,25 @@ String formatSpNotification(SpNotification n) {
       return 'NewOutput $outpoint ${amountSat}sat';
     case SpOutputSpent(:final outpoint):
       return 'OutputSpent $outpoint';
-    case SpElectrumTx(:final kind, :final txid, :final amountSat, :final height):
+    case SpElectrumTx(
+      :final kind,
+      :final txid,
+      :final amountSat,
+      :final height,
+    ):
       final at = height == null ? '' : ' @$height';
       return 'ElectrumTx ${kind.name} $txid ${amountSat}sat$at';
     case SpBackendOffline():
       return 'BackendOffline';
+    case SpPaymentHistoryUpdated():
+      return 'PaymentHistoryUpdated';
+    case SpHeaderProgressStarted(:final phase, :final start, :final end):
+      return 'HeaderProgressStarted ${phase.name} $start -> $end';
+    case SpHeaderProgress(:final phase, :final current, :final end):
+      return 'HeaderProgress ${phase.name} $current / $end';
+    case SpHeaderProgressCompleted(:final phase):
+      return 'HeaderProgressCompleted ${phase.name}';
+    case SpHeaderProgressFailed(:final phase):
+      return 'HeaderProgressFailed ${phase.name}';
   }
 }

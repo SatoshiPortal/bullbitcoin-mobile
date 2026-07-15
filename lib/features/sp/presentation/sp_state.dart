@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -10,6 +11,8 @@ part 'sp_state.freezed.dart';
 /// The two phases of an SP scan, reported separately by bwk: the receive
 /// (output) scan, then the spend (input) sweep.
 enum SpScanPhase { receive, spend }
+
+enum SpHeaderValidationStatus { idle, validating, valid, failed }
 
 @freezed
 sealed class SpState with _$SpState {
@@ -47,6 +50,12 @@ sealed class SpState with _$SpState {
     // Chain tip + earliest scannable height; bound the start-height chooser.
     int? chainTip,
     int? minBirthdayHeight,
+    @Default(SpHeaderValidationStatus.idle)
+    SpHeaderValidationStatus headerValidationStatus,
+    SpHeaderValidationPhase? headerValidationPhase,
+    int? headerValidationFrom,
+    int? headerValidationTo,
+    int? headerValidationCurrent,
   }) = _SpState;
   const SpState._();
 
@@ -77,5 +86,14 @@ sealed class SpState with _$SpState {
     final next = nextScanStart;
     final tip = chainTip;
     return next != null && tip != null && next > tip;
+  }
+
+  double get headerValidationProgress {
+    final from = headerValidationFrom;
+    final current = headerValidationCurrent;
+    final to = headerValidationTo;
+    if (from == null || current == null || to == null || to < from) return 0.0;
+    final total = (to - from + 1).clamp(1, 1 << 62);
+    return ((current - from + 1) / total).clamp(0.0, 1.0);
   }
 }

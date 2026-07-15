@@ -64,7 +64,7 @@ Widget _buildPage(_FakeSpSetupCubit cubit) => MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpSetupCubit>.value(
     value: cubit,
-    child: const SpSetupScreen(),
+    child: const SpSetupScreen(successRedirectPath: '/wallet'),
   ),
 );
 
@@ -173,7 +173,10 @@ void main() {
       );
 
       await tester.pumpWidget(_buildPage(cubit));
-      expect(find.widgetWithText(TextFormField, 'http://b.default'), findsNothing);
+      expect(
+        find.widgetWithText(TextFormField, 'http://b.default'),
+        findsNothing,
+      );
 
       cubit.pushState(
         const SpSetupState(
@@ -265,7 +268,7 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<SpSetupCubit>.value(
         value: c,
-        child: const SpSetupScreen(),
+        child: const SpSetupScreen(successRedirectPath: '/wallet'),
       ),
     );
 

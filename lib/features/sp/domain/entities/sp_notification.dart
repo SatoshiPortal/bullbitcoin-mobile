@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 
+enum SpHeaderValidationPhase { replay, initialSync }
+
 /// A Silent Payments session event (scan progress, electrum push, backend
 /// state). Domain mirror of the bwk `SpNotification` FFI union; the wire type
 /// stays in `data/` behind `SpNotificationMapper`.
@@ -64,4 +66,40 @@ final class SpElectrumTx extends SpNotification {
 
 final class SpBackendOffline extends SpNotification {
   const SpBackendOffline();
+}
+
+final class SpPaymentHistoryUpdated extends SpNotification {
+  const SpPaymentHistoryUpdated();
+}
+
+final class SpHeaderProgressStarted extends SpNotification {
+  final SpHeaderValidationPhase phase;
+  final int start;
+  final int end;
+  const SpHeaderProgressStarted({
+    required this.phase,
+    required this.start,
+    required this.end,
+  });
+}
+
+final class SpHeaderProgress extends SpNotification {
+  final SpHeaderValidationPhase phase;
+  final int current;
+  final int end;
+  const SpHeaderProgress({
+    required this.phase,
+    required this.current,
+    required this.end,
+  });
+}
+
+final class SpHeaderProgressCompleted extends SpNotification {
+  final SpHeaderValidationPhase phase;
+  const SpHeaderProgressCompleted(this.phase);
+}
+
+final class SpHeaderProgressFailed extends SpNotification {
+  final SpHeaderValidationPhase phase;
+  const SpHeaderProgressFailed(this.phase);
 }

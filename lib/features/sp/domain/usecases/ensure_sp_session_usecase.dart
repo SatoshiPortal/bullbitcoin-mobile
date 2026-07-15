@@ -66,6 +66,8 @@ class EnsureSpSessionUsecase {
       mnemonic: mnemonic,
       blindbitUrl: config.blindbitUrl,
       electrumUrl: config.electrumUrl,
+      fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+      matchConcurrencyFactor: config.matchConcurrencyFactor,
     );
     return _repository.snapshot();
   }

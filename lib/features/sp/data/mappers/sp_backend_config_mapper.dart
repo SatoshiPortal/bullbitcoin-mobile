@@ -7,6 +7,8 @@ abstract final class SpBackendConfigMapper {
     network: model.network,
     blindbitUrl: model.blindbitUrl,
     electrumUrl: model.electrumUrl,
+    fetchConcurrencyFactor: model.fetchConcurrencyFactor,
+    matchConcurrencyFactor: model.matchConcurrencyFactor,
   );
 
   static SpBackendConfigModel toModel(SpBackendConfig config) =>
@@ -14,5 +16,7 @@ abstract final class SpBackendConfigMapper {
         network: config.network,
         blindbitUrl: config.blindbitUrl,
         electrumUrl: config.electrumUrl,
+        fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+        matchConcurrencyFactor: config.matchConcurrencyFactor,
       );
 }

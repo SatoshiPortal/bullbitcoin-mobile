@@ -7,9 +7,12 @@ import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class SpSetupScreen extends StatelessWidget {
-  const SpSetupScreen({super.key});
+  const SpSetupScreen({super.key, required this.successRedirectPath});
+
+  final String successRedirectPath;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +20,7 @@ class SpSetupScreen extends StatelessWidget {
       appBar: AppBar(title: Text(context.loc.spSetupTitle)),
       body: BlocConsumer<SpSetupCubit, SpSetupState>(
         listenWhen: (prev, curr) => !prev.created && curr.created,
-        listener: (context, state) => Navigator.of(context).pop(),
+        listener: (context, state) => context.go(successRedirectPath),
         builder: (context, state) {
           final cubit = context.read<SpSetupCubit>();
           return Column(
@@ -46,10 +49,8 @@ class SpSetupScreen extends StatelessWidget {
                       ),
                       items: SpNetwork.values
                           .map(
-                            (n) => DropdownMenuItem(
-                              value: n,
-                              child: Text(n.name),
-                            ),
+                            (n) =>
+                                DropdownMenuItem(value: n, child: Text(n.name)),
                           )
                           .toList(),
                       onChanged: (n) {

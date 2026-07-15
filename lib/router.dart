@@ -189,7 +189,7 @@ class AppRouter {
       MempoolSettingsRoute.route,
       ArkSetupRouter.route,
       ArkRouter.route,
-      SpSetupRouter.route,
+      SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
       SpRouter.route,
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,

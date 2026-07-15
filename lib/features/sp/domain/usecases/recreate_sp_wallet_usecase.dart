@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -27,6 +28,8 @@ class RecreateSpWalletUsecase {
     required SpNetwork network,
     required String blindbitUrl,
     required String electrumUrl,
+    int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) async {
     // Outer boundary: any Exception from the seed/dispose/backup/discardBackup
     // work becomes an Err so execute() is total. A non-mnemonic seed still
@@ -56,6 +59,8 @@ class RecreateSpWalletUsecase {
               network: network,
               blindbitUrl: blindbitUrl,
               electrumUrl: electrumUrl,
+              fetchConcurrencyFactor: fetchConcurrencyFactor,
+              matchConcurrencyFactor: matchConcurrencyFactor,
             ),
           );
           await _repository.createFromMnemonic(
@@ -63,6 +68,8 @@ class RecreateSpWalletUsecase {
             mnemonic: mnemonic,
             blindbitUrl: blindbitUrl,
             electrumUrl: electrumUrl,
+            fetchConcurrencyFactor: fetchConcurrencyFactor,
+            matchConcurrencyFactor: matchConcurrencyFactor,
           );
         } catch (e) {
           await _repository.dispose();

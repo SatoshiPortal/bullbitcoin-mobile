@@ -25,10 +25,12 @@ class SpSetupCubit extends Cubit<SpSetupState>
     required this._createSpWalletUsecase,
     required this._testSpBackendUsecase,
     required this._getSpBackendDefaultsUsecase,
-  }) : super(const SpSetupState(form: SpBackendForm(isFetchingDefaults: true))) {
-    // Regtest defaults come from the infra over FFI; fetch them off the UI
+  }) : super(
+         const SpSetupState(form: SpBackendForm(isFetchingDefaults: true)),
+       ) {
+    // Defaults may come from infra over FFI; fetch them off the UI
     // isolate once the cubit exists instead of blocking construction.
-    unawaited(setNetwork(SpNetwork.regtest));
+    unawaited(setNetwork(SpNetwork.bitcoin));
   }
 
   @override
@@ -38,9 +40,17 @@ class SpSetupCubit extends Cubit<SpSetupState>
   GetSpBackendDefaultsUsecase get getBackendDefaultsUsecase =>
       _getSpBackendDefaultsUsecase;
 
+  @override
+  Future<void> setNetwork(SpNetwork network) async {
+    await super.setNetwork(network);
+    await Future.wait([testBlindbit(), testElectrum()]);
+  }
+
   Future<void> create() async {
     if (!state.canCreate) return;
-    emit(state.copyWith(isCreating: true, form: state.form.copyWith(error: null)));
+    emit(
+      state.copyWith(isCreating: true, form: state.form.copyWith(error: null)),
+    );
     final result = await _createSpWalletUsecase.execute(
       network: state.network,
       blindbitUrl: state.blindbitUrl,

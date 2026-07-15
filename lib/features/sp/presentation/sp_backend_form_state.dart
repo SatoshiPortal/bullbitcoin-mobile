@@ -18,6 +18,8 @@ mixin SpBackendFormState<S> {
   SpNetwork get network => form.network;
   String get blindbitUrl => form.blindbitUrl;
   String get electrumUrl => form.electrumUrl;
+  int get fetchConcurrencyFactor => form.fetchConcurrencyFactor;
+  int get matchConcurrencyFactor => form.matchConcurrencyFactor;
   SpConnTest get blindbitTest => form.blindbitTest;
   SpConnTest get electrumTest => form.electrumTest;
   SpFailure? get blindbitTestError => form.blindbitTestError;

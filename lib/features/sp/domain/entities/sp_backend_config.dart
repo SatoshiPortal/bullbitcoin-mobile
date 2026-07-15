@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 
 /// The SP backend config (network + node URLs) bb-mobile persists itself.
 ///
@@ -14,14 +15,26 @@ class SpBackendConfig {
   final SpNetwork network;
   final String blindbitUrl;
   final String electrumUrl;
+  final int fetchConcurrencyFactor;
+  final int matchConcurrencyFactor;
 
   SpBackendConfig({
     required this.network,
     required this.blindbitUrl,
     required this.electrumUrl,
+    this.fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    this.matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) {
     if (blindbitUrl.trim().isEmpty || electrumUrl.trim().isEmpty) {
       throw ArgumentError('SP backend URLs must not be empty');
+    }
+    if (fetchConcurrencyFactor < 1 ||
+        fetchConcurrencyFactor > SpConfig.maxFetchConcurrencyFactor) {
+      throw ArgumentError('SP fetch concurrency factor is out of range');
+    }
+    if (matchConcurrencyFactor < 1 ||
+        matchConcurrencyFactor > SpConfig.maxMatchConcurrencyFactor) {
+      throw ArgumentError('SP match concurrency factor is out of range');
     }
   }
 
@@ -30,8 +43,16 @@ class SpBackendConfig {
       other is SpBackendConfig &&
       other.network == network &&
       other.blindbitUrl == blindbitUrl &&
-      other.electrumUrl == electrumUrl;
+      other.electrumUrl == electrumUrl &&
+      other.fetchConcurrencyFactor == fetchConcurrencyFactor &&
+      other.matchConcurrencyFactor == matchConcurrencyFactor;
 
   @override
-  int get hashCode => Object.hash(network, blindbitUrl, electrumUrl);
+  int get hashCode => Object.hash(
+    network,
+    blindbitUrl,
+    electrumUrl,
+    fetchConcurrencyFactor,
+    matchConcurrencyFactor,
+  );
 }

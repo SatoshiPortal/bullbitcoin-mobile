@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -22,6 +23,7 @@ class SpCubit extends Cubit<SpState> {
   final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final StopSpScanUsecase _stopSpScanUsecase;
+  final ClearSpScanStateUsecase _clearSpScanStateUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
   final GenerateTaprootAddressUsecase _generateTaprootAddressUsecase;
 
@@ -39,6 +41,7 @@ class SpCubit extends Cubit<SpState> {
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
     required this._stopSpScanUsecase,
+    required this._clearSpScanStateUsecase,
     required this._revokeSpWalletUsecase,
     required this._generateTaprootAddressUsecase,
   }) : super(const SpState());
@@ -71,6 +74,11 @@ class SpCubit extends Cubit<SpState> {
       case Err(:final failure):
         log.warning('SpCubit.load: ${failure.logMessage}');
         emit(state.copyWith(isLoading: false, error: failure));
+        if (failure is! SpNotSetUp &&
+            failure is! SpRequiresSuperuser &&
+            failure is! SpRequiresDevMode) {
+          _subscribeToNotifications();
+        }
     }
   }
 
@@ -177,6 +185,7 @@ class SpCubit extends Cubit<SpState> {
       case SpScanFailed(:final message):
         // bwk reports the failure as a raw string; keep it for logs only and
         // show the generic message.
+        log.warning('SpCubit.scan: scan failed: $message');
         emit(
           state.copyWith(
             isScanning: false,
@@ -194,6 +203,42 @@ class SpCubit extends Cubit<SpState> {
         if (!state.isScanning) unawaited(_refreshWalletData());
       case SpBackendOffline():
         emit(state.copyWith(backendOnline: false));
+      case SpPaymentHistoryUpdated():
+        unawaited(_refreshWalletData());
+      case SpHeaderProgressStarted(:final phase, :final start, :final end):
+        emit(
+          state.copyWith(
+            headerValidationStatus: SpHeaderValidationStatus.validating,
+            headerValidationPhase: phase,
+            headerValidationFrom: start,
+            headerValidationTo: end,
+            headerValidationCurrent: start,
+          ),
+        );
+      case SpHeaderProgress(:final phase, :final current, :final end):
+        emit(
+          state.copyWith(
+            headerValidationStatus: SpHeaderValidationStatus.validating,
+            headerValidationPhase: phase,
+            headerValidationTo: end,
+            headerValidationCurrent: current,
+          ),
+        );
+      case SpHeaderProgressCompleted(:final phase):
+        emit(
+          state.copyWith(
+            headerValidationStatus: SpHeaderValidationStatus.valid,
+            headerValidationPhase: phase,
+            headerValidationCurrent: state.headerValidationTo,
+          ),
+        );
+      case SpHeaderProgressFailed(:final phase):
+        emit(
+          state.copyWith(
+            headerValidationStatus: SpHeaderValidationStatus.failed,
+            headerValidationPhase: phase,
+          ),
+        );
     }
   }
 
@@ -212,9 +257,9 @@ class SpCubit extends Cubit<SpState> {
             backendOnline: value.backendOnline,
           ),
         );
-        // The wallet feature learns about this balance change independently, by
-        // watching the SP repository's update stream (SpBalanceChanged). SP
-        // does not push to the wallet bloc.
+      // The wallet feature learns about this balance change independently, by
+      // watching the SP repository's update stream (SpBalanceChanged). SP
+      // does not push to the wallet bloc.
       case Err(:final failure):
         log.warning('SpCubit._refreshWalletData: ${failure.logMessage}');
     }
@@ -235,7 +280,9 @@ class SpCubit extends Cubit<SpState> {
       emit(state.copyWith(error: null));
       // scanOnce returns immediately (the one-shot scan runs on a background
       // thread); progress + the post-scan refresh are driven by notifications.
-      final result = await _scanSpWalletUsecase.execute(startHeight: startHeight);
+      final result = await _scanSpWalletUsecase.execute(
+        startHeight: startHeight,
+      );
       if (isClosed) return;
       if (result case Err(:final failure)) {
         log.warning('SpCubit.scan: ${failure.logMessage}');
@@ -262,6 +309,33 @@ class SpCubit extends Cubit<SpState> {
       await _stopSpScanUsecase.execute();
     } catch (e) {
       log.warning('SpCubit.stopScan: $e');
+    }
+  }
+
+  Future<bool> clearScanState() async {
+    if (isClosed || state.isScanning) return false;
+    final result = await _clearSpScanStateUsecase.execute();
+    if (isClosed) return false;
+    switch (result) {
+      case Ok():
+        emit(
+          state.copyWith(
+            error: null,
+            lastScannedHeight: null,
+            scanPhase: null,
+            scanStartTime: null,
+            scanEtaSecs: null,
+            scanLastDurationSecs: null,
+            scanFrom: null,
+            scanTo: null,
+            scanCurrent: null,
+          ),
+        );
+        return true;
+      case Err(:final failure):
+        log.warning('SpCubit.clearScanState: ${failure.logMessage}');
+        emit(state.copyWith(error: failure));
+        return false;
     }
   }
 

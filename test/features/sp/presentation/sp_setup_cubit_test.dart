@@ -102,6 +102,22 @@ void main() {
     );
   }
 
+  Future<void> waitForDefaultTests(SpSetupCubit c) {
+    bool tested(SpConnTest test) =>
+        test == SpConnTest.ok || test == SpConnTest.failed;
+    final settled =
+        !c.state.isFetchingDefaults &&
+        tested(c.state.blindbitTest) &&
+        tested(c.state.electrumTest);
+    if (settled) return Future<void>.value();
+    return c.stream.firstWhere(
+      (s) =>
+          !s.isFetchingDefaults &&
+          tested(s.blindbitTest) &&
+          tested(s.electrumTest),
+    );
+  }
+
   setUp(() async {
     mockCreate = MockCreateSpWalletUsecase();
 
@@ -114,21 +130,39 @@ void main() {
     ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
     cubit = buildSetup();
-    // The cubit fetches regtest defaults asynchronously after construction;
-    // wait for that to land so tests start from the resolved defaults.
-    await cubit.stream.firstWhere((s) => !s.isFetchingDefaults);
+    // The cubit fetches and tests defaults asynchronously after construction;
+    // wait for that to land so tests start from resolved defaults.
+    await waitForDefaultTests(cubit);
   });
 
   tearDown(() => cubit.close());
 
   group('SpSetupCubit', () {
     test('initial state is default', () {
-      expect(cubit.state.network, SpNetwork.regtest);
+      expect(cubit.state.network, SpNetwork.bitcoin);
       expect(cubit.state.blindbitUrl, isNotEmpty);
       expect(cubit.state.electrumUrl, isNotEmpty);
+      expect(cubit.state.blindbitTest, SpConnTest.ok);
+      expect(cubit.state.electrumTest, SpConnTest.ok);
       expect(cubit.state.isCreating, isFalse);
       expect(cubit.state.created, isFalse);
       expect(cubit.state.error, isNull);
+    });
+
+    test('constructor loads and tests bitcoin defaults', () async {
+      final tested = <String>[];
+      final c = buildSetup(
+        testBlindbit: ({required String url}) async => tested.add(url),
+        testElectrum: ({required String url}) async => tested.add(url),
+      );
+      addTearDown(c.close);
+
+      await waitForDefaultTests(c);
+
+      expect(c.state.network, SpNetwork.bitcoin);
+      expect(tested, contains(SpConfig.defaultBlindbitUrl[SpNetwork.bitcoin]));
+      expect(tested, contains(SpConfig.defaultElectrumUrl[SpNetwork.bitcoin]));
+      expect(c.state.canCreate, isTrue);
     });
 
     test('setNetwork to bitcoin pre-fills default URLs', () async {
@@ -145,6 +179,8 @@ void main() {
       );
       expect(cubit.state.blindbitUrl, isNotEmpty);
       expect(cubit.state.electrumUrl, isNotEmpty);
+      expect(cubit.state.blindbitTest, SpConnTest.ok);
+      expect(cubit.state.electrumTest, SpConnTest.ok);
     });
 
     test('setNetwork to signet pre-fills default URLs', () async {
@@ -175,16 +211,18 @@ void main() {
       );
     });
 
-    test('setNetwork to regtest pre-fills the injected regtest defaults',
-        () async {
-      await cubit.setNetwork(SpNetwork.bitcoin);
-      expect(cubit.state.blindbitUrl, isNotEmpty);
+    test(
+      'setNetwork to regtest pre-fills the injected regtest defaults',
+      () async {
+        await cubit.setNetwork(SpNetwork.bitcoin);
+        expect(cubit.state.blindbitUrl, isNotEmpty);
 
-      await cubit.setNetwork(SpNetwork.regtest);
-      expect(cubit.state.network, SpNetwork.regtest);
-      expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
-      expect(cubit.state.electrumUrl, 'tcp://127.0.0.1:50001');
-    });
+        await cubit.setNetwork(SpNetwork.regtest);
+        expect(cubit.state.network, SpNetwork.regtest);
+        expect(cubit.state.blindbitUrl, 'http://127.0.0.1:8000');
+        expect(cubit.state.electrumUrl, 'tcp://127.0.0.1:50001');
+      },
+    );
 
     test('setBlindbitUrl updates state', () {
       cubit.setBlindbitUrl('http://blindbit.local');
@@ -230,7 +268,7 @@ void main() {
 
       verify(
         () => mockCreate.execute(
-          network: SpNetwork.regtest,
+          network: SpNetwork.bitcoin,
           blindbitUrl: 'http://blindbit.local',
           electrumUrl: 'tcp://electrum.local:60001',
         ),
@@ -305,124 +343,137 @@ void main() {
       expect(cubit.state.isCreating, isFalse);
     });
 
-    test('a failed blindbit connection test stores the error and blocks create',
-        () async {
-      final c = buildSetup(
-        testBlindbit: ({required String url}) async =>
-            throw Exception('blindbit down'),
-      );
-      addTearDown(c.close);
-      // Wait for the async regtest-defaults init to land before simulating user
-      // input; otherwise the late applyDefaults resets the URLs and conn tests.
-      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
-      c.setBlindbitUrl('http://blindbit.local');
-      c.setElectrumUrl('tcp://electrum.local:60001');
+    test(
+      'a failed blindbit connection test stores the error and blocks create',
+      () async {
+        final c = buildSetup(
+          testBlindbit: ({required String url}) async =>
+              throw Exception('blindbit down'),
+        );
+        addTearDown(c.close);
+        // Wait for the async regtest-defaults init to land before simulating user
+        // input; otherwise the late applyDefaults resets the URLs and conn tests.
+        await c.stream.firstWhere((s) => !s.isFetchingDefaults);
+        c.setBlindbitUrl('http://blindbit.local');
+        c.setElectrumUrl('tcp://electrum.local:60001');
 
-      await c.testBlindbit();
-      await c.testElectrum();
+        await c.testBlindbit();
+        await c.testElectrum();
 
-      expect(c.state.blindbitTest, SpConnTest.failed);
-      expect(c.state.blindbitTestError, isA<SpBackendUnreachable>());
-      expect(c.state.electrumTest, SpConnTest.ok);
-      expect(c.state.canCreate, isFalse);
+        expect(c.state.blindbitTest, SpConnTest.failed);
+        expect(c.state.blindbitTestError, isA<SpBackendUnreachable>());
+        expect(c.state.electrumTest, SpConnTest.ok);
+        expect(c.state.canCreate, isFalse);
 
-      await c.create();
+        await c.create();
 
-      verifyNever(
-        () => mockCreate.execute(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-        ),
-      );
-    });
+        verifyNever(
+          () => mockCreate.execute(
+            network: any(named: 'network'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+          ),
+        );
+      },
+    );
 
-    test('a failed electrum connection test stores the error and blocks create',
-        () async {
-      final c = buildSetup(
-        testElectrum: ({required String url}) async =>
-            throw Exception('electrum down'),
-      );
-      addTearDown(c.close);
-      // Wait for the async regtest-defaults init to land before simulating user
-      // input; otherwise the late applyDefaults resets the URLs and conn tests.
-      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
-      c.setBlindbitUrl('http://blindbit.local');
-      c.setElectrumUrl('tcp://electrum.local:60001');
+    test(
+      'a failed electrum connection test stores the error and blocks create',
+      () async {
+        final c = buildSetup(
+          testElectrum: ({required String url}) async =>
+              throw Exception('electrum down'),
+        );
+        addTearDown(c.close);
+        // Wait for the async regtest-defaults init to land before simulating user
+        // input; otherwise the late applyDefaults resets the URLs and conn tests.
+        await c.stream.firstWhere((s) => !s.isFetchingDefaults);
+        c.setBlindbitUrl('http://blindbit.local');
+        c.setElectrumUrl('tcp://electrum.local:60001');
 
-      await c.testBlindbit();
-      await c.testElectrum();
+        await c.testBlindbit();
+        await c.testElectrum();
 
-      expect(c.state.electrumTest, SpConnTest.failed);
-      expect(c.state.electrumTestError, isA<SpBackendUnreachable>());
-      expect(c.state.blindbitTest, SpConnTest.ok);
-      expect(c.state.canCreate, isFalse);
+        expect(c.state.electrumTest, SpConnTest.failed);
+        expect(c.state.electrumTestError, isA<SpBackendUnreachable>());
+        expect(c.state.blindbitTest, SpConnTest.ok);
+        expect(c.state.canCreate, isFalse);
 
-      await c.create();
+        await c.create();
 
-      verifyNever(
-        () => mockCreate.execute(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-        ),
-      );
-    });
+        verifyNever(
+          () => mockCreate.execute(
+            network: any(named: 'network'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+          ),
+        );
+      },
+    );
 
-    test('create() with untested URLs never invokes the create usecase',
-        () async {
-      cubit.setBlindbitUrl('http://blindbit.local');
-      cubit.setElectrumUrl('tcp://electrum.local:60001');
-      // No testBlindbit()/testElectrum(): the conn tests stay untested.
-      expect(cubit.state.canCreate, isFalse);
+    test(
+      'create() with untested URLs never invokes the create usecase',
+      () async {
+        cubit.setBlindbitUrl('http://blindbit.local');
+        cubit.setElectrumUrl('tcp://electrum.local:60001');
+        // No testBlindbit()/testElectrum(): the conn tests stay untested.
+        expect(cubit.state.canCreate, isFalse);
 
-      await cubit.create();
+        await cubit.create();
 
-      verifyNever(
-        () => mockCreate.execute(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-        ),
-      );
-      expect(cubit.state.created, isFalse);
-    });
+        verifyNever(
+          () => mockCreate.execute(
+            network: any(named: 'network'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+          ),
+        );
+        expect(cubit.state.created, isFalse);
+      },
+    );
 
-    test('fetchRegtestDefaults failure sets error and clears the fetching flag',
-        () async {
-      final c = buildSetup(
-        regtest: const Err<SpBackendDefaults, SpFailure>(
-          SpBackendUnreachable('regtest infra unreachable'),
-        ),
-      );
-      addTearDown(c.close);
+    test(
+      'fetchRegtestDefaults failure sets error and clears the fetching flag',
+      () async {
+        final c = buildSetup(
+          regtest: const Err<SpBackendDefaults, SpFailure>(
+            SpBackendUnreachable('regtest infra unreachable'),
+          ),
+        );
+        addTearDown(c.close);
 
-      await c.fetchRegtestDefaults();
+        await c.fetchRegtestDefaults();
 
-      expect(c.state.error, isA<SpBackendUnreachable>());
-      expect(c.state.isFetchingDefaults, isFalse);
-    });
+        expect(c.state.error, isA<SpBackendUnreachable>());
+        expect(c.state.isFetchingDefaults, isFalse);
+      },
+    );
 
-    test('a late defaults fetch keeps a url the user edited during the wait',
-        () async {
-      final gate = Completer<void>();
-      final c = buildSetup(regtestGate: gate.future);
-      addTearDown(c.close);
-      // The constructor kicked off the regtest fetch; it is blocked on the gate,
-      // so the form is still fetching with empty URLs.
-      expect(c.state.isFetchingDefaults, isTrue);
+    test(
+      'a late defaults fetch keeps a url the user edited during the wait',
+      () async {
+        final gate = Completer<void>();
+        final c = buildSetup(regtestGate: gate.future);
+        addTearDown(c.close);
+        await waitForDefaultTests(c);
 
-      // User types a blindbit URL while the fetch is in flight; electrum is left
-      // untouched.
-      c.setBlindbitUrl('http://user.typed.blindbit');
+        final networkSwitch = c.setNetwork(SpNetwork.regtest);
+        // The regtest fetch is blocked on the gate, so the form is still fetching
+        // with empty URLs.
+        expect(c.state.isFetchingDefaults, isTrue);
 
-      // The slow fetch resolves only now.
-      gate.complete();
-      await c.stream.firstWhere((s) => !s.isFetchingDefaults);
+        // User types a blindbit URL while the fetch is in flight; electrum is left
+        // untouched.
+        c.setBlindbitUrl('http://user.typed.blindbit');
 
-      // The typed URL survives; the untouched electrum takes the fetched default.
-      expect(c.state.blindbitUrl, 'http://user.typed.blindbit');
-      expect(c.state.electrumUrl, 'tcp://127.0.0.1:50001');
-    });
+        // The slow fetch resolves only now.
+        gate.complete();
+        await networkSwitch;
+
+        // The typed URL survives; the untouched electrum takes the fetched default.
+        expect(c.state.blindbitUrl, 'http://user.typed.blindbit');
+        expect(c.state.electrumUrl, 'tcp://127.0.0.1:50001');
+      },
+    );
   });
 }

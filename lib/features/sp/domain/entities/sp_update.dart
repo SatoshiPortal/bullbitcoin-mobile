@@ -6,12 +6,12 @@ sealed class SpUpdate {
 }
 
 /// The SP balance changed (e.g. after a scan completed or a coin was
-/// received/spent). Carries the new confirmed balance so observers can update
-/// a cached balance cheaply, without reloading the live session.
+/// received/spent). Carries the unified balance so observers can update a
+/// cached balance cheaply, without reloading the live session.
 class SpBalanceChanged extends SpUpdate {
-  final BigInt confirmed;
+  final BigInt totalUnified;
 
-  const SpBalanceChanged(this.confirmed);
+  const SpBalanceChanged(this.totalUnified);
 }
 
 /// The SP wallet's setup state changed (created or revoked). Observers must

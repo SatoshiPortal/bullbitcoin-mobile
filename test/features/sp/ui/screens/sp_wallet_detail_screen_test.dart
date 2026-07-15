@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -82,8 +83,9 @@ void main() {
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => bitcoinPriceBloc.state).thenReturn(const BitcoinPriceState());
     when(() => bitcoinPriceBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(() => loadUsecase.execute())
-        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
+    when(
+      () => loadUsecase.execute(),
+    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
     when(
       () => harness.watchUsecase.execute(),
     ).thenAnswer((_) => openSpNotificationStream());
@@ -151,6 +153,7 @@ void main() {
             SpPayment(
               txid: 'aa' * 32,
               direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.unconfirmed,
               amountSat: BigInt.from(1000),
             ),
           ],
@@ -162,6 +165,56 @@ void main() {
     await tester.pump();
 
     expect(find.text('1 000 sats'), findsOneWidget);
+  });
+
+  testWidgets('shows verifying payment status', (tester) async {
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: 'aa' * 32,
+              direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.confirmedUnverified,
+              amountSat: BigInt.from(1000),
+              height: 800000,
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    expect(find.text('Verifying'), findsOneWidget);
+  });
+
+  testWidgets('shows failed verification with error background', (
+    tester,
+  ) async {
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: 'bb' * 32,
+              direction: SpPaymentDirection.send,
+              status: SpPaymentStatus.verifyFailed,
+              amountSat: BigInt.from(2000),
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    final context = tester.element(find.text('Verification failed'));
+    final tile = tester.widget<ListTile>(find.byType(ListTile).first);
+    expect(find.text('Verification failed'), findsOneWidget);
+    expect(tile.tileColor, context.appColors.errorContainer);
   });
 
   testWidgets('shows scan strip when scanning', (tester) async {

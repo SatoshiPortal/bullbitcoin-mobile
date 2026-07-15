@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
@@ -28,8 +29,7 @@ import 'package:mocktail/mocktail.dart';
 /// and fixture values live once instead of being copy-pasted per file.
 class MockSpAccountRepository extends Mock implements SpAccountRepository {}
 
-class MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
+class MockGetDefaultSeedUsecase extends Mock implements GetDefaultSeedUsecase {}
 
 MnemonicSeed spMnemonicSeed() => MnemonicSeed(
   mnemonicWords: List.filled(12, 'abandon'),
@@ -86,7 +86,7 @@ class FakeSpAccountRepository implements SpAccountRepository {
              isScanning: false,
            );
 
-  final SpWallet _wallet;
+  SpWallet _wallet;
   bool hasSessionValue;
   bool sentinel;
   SpNetwork? networkValue;
@@ -121,6 +121,8 @@ class FakeSpAccountRepository implements SpAccountRepository {
     required String mnemonic,
     required String blindbitUrl,
     required String electrumUrl,
+    int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) async {
     if (createShouldThrow) throw Exception('create failed on disk');
     createCount++;
@@ -199,6 +201,16 @@ class FakeSpAccountRepository implements SpAccountRepository {
   Future<void> stopScan() async {}
 
   @override
+  Future<Result<void, SpFailure>> clearScanState() async {
+    _wallet = SpWallet(
+      spAddress: _wallet.spAddress,
+      balance: _wallet.balance,
+      isScanning: _wallet.isScanning,
+    );
+    return const Ok<void, SpFailure>(null);
+  }
+
+  @override
   Future<void> restartElectrum() async {}
 
   @override
@@ -240,6 +252,10 @@ class FakeSpAccountRepository implements SpAccountRepository {
 
   @override
   void notifySetupChanged() => _updates.add(const SpSetupChanged());
+
+  @override
+  void notifyBalanceChanged(BigInt totalUnifiedSat) =>
+      _updates.add(SpBalanceChanged(totalUnifiedSat));
 }
 
 /// In-memory fake of [SpBackendConfigRepository]. Holds one config; [fetch]

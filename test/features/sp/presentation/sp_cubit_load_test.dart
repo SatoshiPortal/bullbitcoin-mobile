@@ -58,8 +58,9 @@ void main() {
     revokeUsecase = harness.revokeUsecase;
     generateUsecase = harness.generateUsecase;
 
-    when(() => loadUsecase.execute())
-        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
+    when(
+      () => loadUsecase.execute(),
+    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
     when(
       () => watchUsecase.execute(),
     ).thenAnswer((_) => openSpNotificationStream());
@@ -101,7 +102,8 @@ void main() {
 
   test('load() sets error on wallet access failure', () async {
     when(() => loadUsecase.execute()).thenAnswer(
-      (_) async => const Err<SpWalletData, SpFailure>(SpUnexpected('wallet error')),
+      (_) async =>
+          const Err<SpWalletData, SpFailure>(SpUnexpected('wallet error')),
     );
 
     await cubit.load();
@@ -114,6 +116,51 @@ void main() {
     await cubit.load();
     verify(() => watchUsecase.execute()).called(1);
   });
+
+  test('load() applies replayed header validation notification', () async {
+    when(() => watchUsecase.execute()).thenAnswer(
+      (_) => Stream<SpNotification>.value(
+        const SpHeaderProgressCompleted(SpHeaderValidationPhase.replay),
+      ),
+    );
+
+    await cubit.load();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.valid);
+    expect(cubit.state.headerValidationPhase, SpHeaderValidationPhase.replay);
+  });
+
+  test(
+    'load() keeps notifications live when wallet data is partially broken',
+    () async {
+      final controller = StreamController<SpNotification>.broadcast();
+      addTearDown(controller.close);
+      when(() => loadUsecase.execute()).thenAnswer(
+        (_) async => const Err<SpWalletData, SpFailure>(
+          SpUnexpected('history decode failed'),
+        ),
+      );
+      when(() => watchUsecase.execute()).thenAnswer((_) => controller.stream);
+
+      await cubit.load();
+      await Future<void>.delayed(Duration.zero);
+      controller.add(
+        const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.state.error, isA<SpUnexpected>());
+      expect(
+        cubit.state.headerValidationStatus,
+        SpHeaderValidationStatus.valid,
+      );
+      expect(
+        cubit.state.headerValidationPhase,
+        SpHeaderValidationPhase.initialSync,
+      );
+    },
+  );
 
   test(
     'recreated cubit subscribes to the same broadcast stream (no init reuse)',
@@ -206,15 +253,17 @@ void main() {
       verify(() => revokeUsecase.execute()).called(1);
     });
 
-    test('completes when the usecase returns Err (UI must still navigate)',
-        () async {
-      when(
-        () => revokeUsecase.execute(),
-      ).thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
+    test(
+      'completes when the usecase returns Err (UI must still navigate)',
+      () async {
+        when(
+          () => revokeUsecase.execute(),
+        ).thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
 
-      // The usecase already makes the wallet unloadable (sentinel) even on its
-      // failure path, so revokeWallet must complete instead of propagating.
-      await expectLater(cubit.revokeWallet(), completes);
-    });
+        // The usecase already makes the wallet unloadable (sentinel) even on its
+        // failure path, so revokeWallet must complete instead of propagating.
+        await expectLater(cubit.revokeWallet(), completes);
+      },
+    );
   });
 }

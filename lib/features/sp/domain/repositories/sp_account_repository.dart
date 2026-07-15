@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_network.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
@@ -37,6 +38,8 @@ abstract interface class SpAccountRepository {
     required String mnemonic,
     required String blindbitUrl,
     required String electrumUrl,
+    int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   });
 
   /// Tear down the live session: cancel the notification stream, join the
@@ -120,6 +123,8 @@ abstract interface class SpAccountRepository {
   @useResult
   Future<Result<void, SpFailure>> scanOnce({int? startHeight});
   Future<void> stopScan();
+  @useResult
+  Future<Result<void, SpFailure>> clearScanState();
 
   /// Restart the taproot electrum listener in place (reconnect + re-subscribe +
   /// re-sync). Used on app foreground to recover after Android killed the
@@ -177,4 +182,8 @@ abstract interface class SpAccountRepository {
   /// it tears the wallet down, so observers (the wallet home) re-evaluate setup
   /// state. `createFromMnemonic` emits the same event internally on setup.
   void notifySetupChanged();
+
+  /// Emit a [SpBalanceChanged] with the current unified balance. Used by SP
+  /// data loads that observe a fresh snapshot outside the notification path.
+  void notifyBalanceChanged(BigInt totalUnifiedSat);
 }

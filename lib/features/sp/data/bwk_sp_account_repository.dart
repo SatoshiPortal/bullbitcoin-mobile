@@ -28,6 +28,11 @@ import 'package:bull_sdk/bwk.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
+void _spDiag(String message) {
+  // ignore: avoid_print
+  print(message);
+}
+
 /// Secondary (driven) adapter that owns the single live `SpAccount` FFI
 /// session and implements [SpAccountRepository].
 ///
@@ -45,6 +50,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
   Stream<dom.SpNotification>? _notifications;
   StreamSubscription<SpNotification>? _sourceSub;
   StreamController<dom.SpNotification>? _broadcastController;
+  dom.SpNotification? _latestHeaderNotification;
   bool _notifTornDown = false;
   Future<void>? _pendingDispose;
 
@@ -70,6 +76,12 @@ class BwkSpAccountRepository implements SpAccountRepository {
       StreamController<SpNotifLogLine>.broadcast();
 
   void _emit(SpUpdate update) {
+    switch (update) {
+      case SpBalanceChanged(:final totalUnified):
+        _spDiag('SPDIAG dart repo emit_balance total=$totalUnified');
+      case SpSetupChanged():
+        _spDiag('SPDIAG dart repo emit_setup_changed');
+    }
     if (!_updates.isClosed) _updates.add(update);
   }
 
@@ -88,7 +100,10 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   // Write the `.revoked` sentinel into the account dir. With [skipIfPresent] it
   // leaves an existing sentinel untouched (used on the partial-delete recovery).
-  void _writeRevokedSentinel(Directory accountDir, {bool skipIfPresent = false}) {
+  void _writeRevokedSentinel(
+    Directory accountDir, {
+    bool skipIfPresent = false,
+  }) {
     final sentinel = _sentinelFile(accountDir);
     if (skipIfPresent && sentinel.existsSync()) return;
     final timestamp = DateTime.now().toUtc().toIso8601String();
@@ -267,6 +282,8 @@ class BwkSpAccountRepository implements SpAccountRepository {
     required String mnemonic,
     required String blindbitUrl,
     required String electrumUrl,
+    int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) async {
     // Single-owner guard: the adapter holds exactly one live SpAccount, so a
     // create over an existing session would leak the old Rust notif thread,
@@ -293,13 +310,16 @@ class BwkSpAccountRepository implements SpAccountRepository {
         log.warning('SpAccountRepository: stale lock delete failed: $e');
       }
     }
-    final account = SpAccount.createFromMnemonic(
+    final account = SpAccount.createFromMnemonicWithScanRuntime(
       name: SpConfig.accountName,
       network: SpNetworkMapper.toFfi(network),
       mnemonic: mnemonic,
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       dataDir: dataDir,
+      dustLimit: BigInt.from(SpConfig.dustLimitSat),
+      fetchConcurrencyFactor: fetchConcurrencyFactor,
+      matchConcurrencyFactor: matchConcurrencyFactor,
     );
     _account = account;
     // Start the always-on taproot sub-account electrum listener so incoming txs
@@ -330,11 +350,19 @@ class BwkSpAccountRepository implements SpAccountRepository {
   @override
   SpWallet snapshot() {
     final account = _live;
+    final balance = SpBalanceMapper.toDomain(account.unifiedBalance());
+    final isScanning = account.isScanning();
+    final lastScannedHeight = account.lastScannedHeight();
+    _spDiag(
+      'SPDIAG dart repo snapshot total=${balance.totalUnifiedSat} '
+      'confirmed=${balance.confirmedSat} '
+      'isScanning=$isScanning lastScannedHeight=$lastScannedHeight',
+    );
     return SpWallet(
       spAddress: account.spAddress(),
-      balance: SpBalanceMapper.toDomain(account.unifiedBalance()),
-      isScanning: account.isScanning(),
-      lastScannedHeight: account.lastScannedHeight(),
+      balance: balance,
+      isScanning: isScanning,
+      lastScannedHeight: lastScannedHeight,
     );
   }
 
@@ -348,7 +376,14 @@ class BwkSpAccountRepository implements SpAccountRepository {
   }
 
   @override
-  SpBalance balance() => SpBalanceMapper.toDomain(_live.unifiedBalance());
+  SpBalance balance() {
+    final balance = SpBalanceMapper.toDomain(_live.unifiedBalance());
+    _spDiag(
+      'SPDIAG dart repo balance total=${balance.totalUnifiedSat} '
+      'confirmed=${balance.confirmedSat}',
+    );
+    return balance;
+  }
 
   @override
   bool get isScanningCached => _scanning;
@@ -394,6 +429,16 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   Future<void> stopScan() => _live.stopScan();
+
+  @override
+  Future<Result<void, SpFailure>> clearScanState() async {
+    try {
+      _live.clearScanState();
+      return const Ok(null);
+    } catch (e) {
+      return Err(_mapFfiError(e));
+    }
+  }
 
   @override
   Future<void> restartElectrum() async {
@@ -497,7 +542,14 @@ class BwkSpAccountRepository implements SpAccountRepository {
   }
 
   @override
-  Stream<dom.SpNotification> get notifications => _ensureNotifications();
+  Stream<dom.SpNotification> get notifications =>
+      _notificationsWithHeaderReplay();
+
+  Stream<dom.SpNotification> _notificationsWithHeaderReplay() async* {
+    final latestHeader = _latestHeaderNotification;
+    if (latestHeader != null) yield latestHeader;
+    yield* _ensureNotifications();
+  }
 
   // Set up the Rust notification forwarding (init) + source listener exactly
   // once per session. Called from createFromMnemonic so recording (and electrum
@@ -543,14 +595,19 @@ class BwkSpAccountRepository implements SpAccountRepository {
       dom.SpScanSpendProgress() ||
       dom.SpScanStopped() ||
       dom.SpScanFailed() ||
-      dom.SpBackendOffline() => false,
+      dom.SpBackendOffline() ||
+      dom.SpPaymentHistoryUpdated() ||
+      dom.SpHeaderProgressStarted() ||
+      dom.SpHeaderProgress() ||
+      dom.SpHeaderProgressCompleted() ||
+      dom.SpHeaderProgressFailed() => false,
     };
     if (!affectsBalance) return;
     // Skip the per-event balance read during a scan to avoid churn; the
     // ScanCompleted event reconciles the balance once the scan ends.
     if (_scanning) return;
     try {
-      _emit(SpBalanceChanged(balance().confirmedSat));
+      _emit(SpBalanceChanged(balance().totalUnifiedSat));
     } on StateError catch (_) {
       // No live session, expected during teardown; not an error worth a
       // warning (a real FFI failure is a different type, handled below).
@@ -567,6 +624,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
   // runs on a background thread (returns immediately), so the scanning window is
   // ScanStarted..ScanCompleted, which gates WalletBloc from disposing mid-scan.
   void _recordNotification(dom.SpNotification n) {
+    if (_isHeaderNotification(n)) _latestHeaderNotification = n;
     _scanning = switch (n) {
       dom.SpScanStarted() => true,
       dom.SpScanCompleted() ||
@@ -577,7 +635,12 @@ class BwkSpAccountRepository implements SpAccountRepository {
       dom.SpNewOutput() ||
       dom.SpOutputSpent() ||
       dom.SpElectrumTx() ||
-      dom.SpBackendOffline() => _scanning,
+      dom.SpBackendOffline() ||
+      dom.SpPaymentHistoryUpdated() ||
+      dom.SpHeaderProgressStarted() ||
+      dom.SpHeaderProgress() ||
+      dom.SpHeaderProgressCompleted() ||
+      dom.SpHeaderProgressFailed() => _scanning,
     };
     final line = SpNotifLogLine(
       time: DateTime.now(),
@@ -587,6 +650,24 @@ class BwkSpAccountRepository implements SpAccountRepository {
     if (_notifLog.length > spNotifLogCap) _notifLog.removeAt(0);
     if (!_notifLogController.isClosed) _notifLogController.add(line);
   }
+
+  bool _isHeaderNotification(dom.SpNotification n) => switch (n) {
+    dom.SpHeaderProgressStarted() ||
+    dom.SpHeaderProgress() ||
+    dom.SpHeaderProgressCompleted() ||
+    dom.SpHeaderProgressFailed() => true,
+    dom.SpScanStarted() ||
+    dom.SpScanReceiveProgress() ||
+    dom.SpScanSpendProgress() ||
+    dom.SpScanCompleted() ||
+    dom.SpScanStopped() ||
+    dom.SpScanFailed() ||
+    dom.SpNewOutput() ||
+    dom.SpOutputSpent() ||
+    dom.SpElectrumTx() ||
+    dom.SpBackendOffline() ||
+    dom.SpPaymentHistoryUpdated() => false,
+  };
 
   @override
   List<SpNotifLogLine> get notificationLog => List.unmodifiable(_notifLog);
@@ -600,6 +681,12 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   void notifySetupChanged() => _emit(const SpSetupChanged());
+
+  @override
+  void notifyBalanceChanged(BigInt totalUnifiedSat) {
+    _spDiag('SPDIAG dart repo notify_balance total=$totalUnifiedSat');
+    _emit(SpBalanceChanged(totalUnifiedSat));
+  }
 
   @override
   Future<void> dispose() async {
@@ -679,6 +766,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
     _notifications = null;
     _sourceSub = null;
     _broadcastController = null;
+    _latestHeaderNotification = null;
     _notifTornDown = false;
   }
 }

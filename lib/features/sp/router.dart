@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_send_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_coins_screen.dart';
+import 'package:bb_mobile/features/sp/ui/screens/sp_header_validation_screen.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_scan_screen.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_send_amount_screen.dart';
@@ -59,6 +60,7 @@ enum SpRoute {
   spTransactionDetails('/sp-transaction-details'),
   spReceive('/sp-receive'),
   spScan('/sp-scan'),
+  spHeaderValidation('/sp-header-validation'),
   spSendRecipient('/sp-send'),
   spSendAmount('/sp-send/amount'),
   spSendConfirm('/sp-send/confirm'),
@@ -76,12 +78,12 @@ enum SpSetupRoute {
 }
 
 class SpSetupRouter {
-  static final route = GoRoute(
+  static GoRoute route({required String successRedirectPath}) => GoRoute(
     name: SpSetupRoute.spSetup.name,
     path: SpSetupRoute.spSetup.path,
     builder: (context, state) => BlocProvider(
       create: (_) => locator<SpSetupCubit>(),
-      child: const SpSetupScreen(),
+      child: SpSetupScreen(successRedirectPath: successRedirectPath),
     ),
   );
 }
@@ -119,8 +121,7 @@ class SpRouter {
       GoRoute(
         name: SpRoute.spTransactionDetails.name,
         path: SpRoute.spTransactionDetails.path,
-        redirect: (context, state) =>
-            spTransactionDetailsRedirect(state.extra),
+        redirect: (context, state) => spTransactionDetailsRedirect(state.extra),
         builder: (context, state) {
           final payment = state.extra! as SpPayment;
           return SpTransactionDetailsScreen(payment: payment);
@@ -136,6 +137,11 @@ class SpRouter {
         path: SpRoute.spScan.path,
         builder: (context, state) => const SpScanScreen(),
       ),
+      GoRoute(
+        name: SpRoute.spHeaderValidation.name,
+        path: SpRoute.spHeaderValidation.path,
+        builder: (context, state) => const SpHeaderValidationScreen(),
+      ),
       _sendRoute,
     ],
   );
@@ -146,10 +152,8 @@ class SpRouter {
   // after each action succeeds), not driven by state edges. A fresh cubit per
   // entry means a stale recipient/amount/simulation can never wedge re-entry.
   static final _sendRoute = ShellRoute(
-    builder: (context, state, child) => BlocProvider(
-      create: (_) => locator<SpSendCubit>(),
-      child: child,
-    ),
+    builder: (context, state, child) =>
+        BlocProvider(create: (_) => locator<SpSendCubit>(), child: child),
     routes: [
       GoRoute(
         name: SpRoute.spSendRecipient.name,

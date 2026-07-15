@@ -14861,6 +14861,72 @@
   "@spConfirmed": {
     "description": "Silent Payments: confirmed status"
   },
+  "spVerifying": "Verifying",
+  "@spVerifying": {
+    "description": "Silent Payments: confirmed but still verifying status"
+  },
+  "spBlockVerifying": "Block {height} (Verifying)",
+  "@spBlockVerifying": {
+    "description": "Silent Payments: confirmed at a block but still verifying status",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spVerificationFailed": "Verification failed",
+  "@spVerificationFailed": {
+    "description": "Silent Payments: failed transaction verification status"
+  },
+  "spHeaderValidationTitle": "Header validation",
+  "@spHeaderValidationTitle": {
+    "description": "Silent Payments: header validation screen title"
+  },
+  "spHeaderValidationDescription": "Bitcoin headers and transaction inclusion proofs are being verified. Payments remain in Verifying until this process completes.",
+  "@spHeaderValidationDescription": {
+    "description": "Silent Payments: header validation process explanation"
+  },
+  "spHeaderValidationReplay": "Checking saved headers",
+  "@spHeaderValidationReplay": {
+    "description": "Silent Payments: header validation replay phase"
+  },
+  "spHeaderValidationInitialSync": "Syncing headers",
+  "@spHeaderValidationInitialSync": {
+    "description": "Silent Payments: header validation initial sync phase"
+  },
+  "spHeaderValidationValid": "Headers are verified",
+  "@spHeaderValidationValid": {
+    "description": "Silent Payments: header validation valid state"
+  },
+  "spHeaderValidationFailed": "Header verification failed",
+  "@spHeaderValidationFailed": {
+    "description": "Silent Payments: header validation failed state"
+  },
+  "spHeaderValidationIdle": "Waiting for header validation",
+  "@spHeaderValidationIdle": {
+    "description": "Silent Payments: header validation idle state"
+  },
+  "spHeaderValidationProgress": "Block {current} / {total}",
+  "@spHeaderValidationProgress": {
+    "description": "Silent Payments: header validation progress",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spHeaderValidationPercent": "{percent}%",
+  "@spHeaderValidationPercent": {
+    "description": "Silent Payments: header validation percent progress",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "spAddressLabel": "Address",
   "@spAddressLabel": {
     "description": "Silent Payments: address label"
@@ -15416,6 +15482,32 @@
   "@spElectrumUrlLabel": {
     "description": "Silent Payments: electrum URL field label"
   },
+  "spFetchConcurrencyFactorLabel": "Fetch factor",
+  "@spFetchConcurrencyFactorLabel": {
+    "description": "Silent Payments: fetch concurrency factor field label"
+  },
+  "spFetchConcurrencyFactorHelper": "1 to {max}; workers = CPUs x factor",
+  "@spFetchConcurrencyFactorHelper": {
+    "description": "Silent Payments: fetch concurrency factor helper text",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMatchConcurrencyFactorLabel": "Match factor",
+  "@spMatchConcurrencyFactorLabel": {
+    "description": "Silent Payments: match concurrency factor field label"
+  },
+  "spMatchConcurrencyFactorHelper": "1 to {max}; workers = CPUs x factor",
+  "@spMatchConcurrencyFactorHelper": {
+    "description": "Silent Payments: match concurrency factor helper text",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "spSaveBackendConfigTitle": "Save server settings?",
   "@spSaveBackendConfigTitle": {
     "description": "Silent Payments: save backend config dialog title"
@@ -15439,6 +15531,22 @@
   "spScanNow": "Scan now",
   "@spScanNow": {
     "description": "Silent Payments: scan now settings entry"
+  },
+  "spClearScanStateEntry": "Clear scan state",
+  "@spClearScanStateEntry": {
+    "description": "Silent Payments: clear scan state settings entry"
+  },
+  "spClearScanStateTitle": "Clear scan state?",
+  "@spClearScanStateTitle": {
+    "description": "Silent Payments: clear scan state confirmation title"
+  },
+  "spClearScanStateContent": "This keeps your wallet data, payments, and settings. The next scan will start from a height you choose.",
+  "@spClearScanStateContent": {
+    "description": "Silent Payments: clear scan state confirmation content"
+  },
+  "spClearScanStateSuccess": "Scan state cleared.",
+  "@spClearScanStateSuccess": {
+    "description": "Silent Payments: clear scan state success message"
   },
   "spDeleteWalletEntry": "Delete Silent Payments wallet",
   "@spDeleteWalletEntry": {

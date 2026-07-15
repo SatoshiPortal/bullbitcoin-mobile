@@ -25,7 +25,14 @@ class SpScanScreen extends StatelessWidget {
         title: Text(context.loc.spScan, style: context.font.headlineMedium),
       ),
       body: SafeArea(
-        child: BlocBuilder<SpCubit, SpState>(
+        child: BlocConsumer<SpCubit, SpState>(
+          listenWhen: (previous, current) =>
+              previous.isScanning &&
+              !current.isScanning &&
+              current.scanLastDurationSecs != null &&
+              current.error == null,
+          listener: (context, state) =>
+              unawaited(Navigator.of(context).maybePop()),
           builder: (context, state) {
             if (state.isScanning) return const _ScanningView();
             if (state.error != null) {
@@ -350,7 +357,10 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   ],
                 ),
                 const Gap(24),
-                Text(context.loc.spScanBlockHeightLabel, style: context.font.bodyMedium),
+                Text(
+                  context.loc.spScanBlockHeightLabel,
+                  style: context.font.bodyMedium,
+                ),
                 const Gap(8),
                 BBInputText(
                   controller: _controller,

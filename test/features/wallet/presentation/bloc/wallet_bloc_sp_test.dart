@@ -109,17 +109,19 @@ class _MockCheckSpFeatureGate extends Mock
 
 class _MockWatchSpWallet extends Mock implements WatchSpWalletUsecase {}
 
-SpWallet _spWallet(int confirmedSat) => SpWallet(
+SpWallet _spWallet(int confirmedSat, {int? totalUnifiedSat}) => SpWallet(
   spAddress: 'sp1qexample',
   balance: SpBalance(
     confirmedSat: BigInt.from(confirmedSat),
-    totalUnifiedSat: BigInt.from(confirmedSat),
+    totalUnifiedSat: BigInt.from(totalUnifiedSat ?? confirmedSat),
   ),
   isScanning: false,
 );
 
 WalletBloc _makeBloc({
   required _MockRefreshSpWalletForWallet refreshSp,
+  _MockGetWalletsUsecase? getWallets,
+  _MockSyncCoordinator? syncCoordinator,
   _MockCheckSpWalletSetupForWallet? checkSetup,
   _MockCheckSpScanningForWallet? checkScanning,
   // The SP update stream the bloc subscribes to in `_onStarted`. Defaults to
@@ -137,9 +139,12 @@ WalletBloc _makeBloc({
   final watchFinished = _MockWatchFinished();
   final watchElectrum = _MockWatchElectrumSyncResults();
   final watchSp = _MockWatchSpWallet();
-  final getWallets = _MockGetWalletsUsecase();
+  final useDefaultGetWallets = getWallets == null;
+  getWallets ??= _MockGetWalletsUsecase();
+  syncCoordinator ??= _MockSyncCoordinator();
   final checkWalletSyncing = _MockCheckWalletSyncingUsecase();
   final seedStoreType = _MockSeedStoreType();
+  final ensureSwapMasterKey = _MockEnsureSwapMasterKey();
 
   when(
     () => watchStarted.execute(),
@@ -157,14 +162,17 @@ WalletBloc _makeBloc({
 
   // Stubs so a dispatched `WalletStarted` doesn't throw. Existing tests never
   // dispatch it, so these are harmless; SP-stream tests rely on them.
-  when(
-    () => getWallets.execute(sync: any(named: 'sync')),
-  ).thenAnswer((_) async => <Wallet>[]);
+  if (useDefaultGetWallets) {
+    when(
+      () => getWallets!.execute(sync: any(named: 'sync')),
+    ).thenAnswer((_) async => <Wallet>[]);
+  }
   when(
     () => checkWalletSyncing.execute(walletId: any(named: 'walletId')),
   ).thenReturn(false);
   when(() => checkWalletSyncing.execute()).thenReturn(false);
   when(() => seedStoreType.read()).thenAnswer((_) async => null);
+  when(() => ensureSwapMasterKey.execute()).thenAnswer((_) async {});
 
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
   when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
@@ -176,7 +184,7 @@ WalletBloc _makeBloc({
     watchStartedWalletSyncsUsecase: watchStarted,
     watchFinishedWalletSyncsUsecase: watchFinished,
     watchElectrumSyncResultsUsecase: watchElectrum,
-    syncCoordinator: _MockSyncCoordinator(),
+    syncCoordinator: syncCoordinator,
     initializeTorUsecase: _MockInitTor(),
     checkForTorInitializationOnStartupUsecase: _MockIsTorRequired(),
     getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),
@@ -185,7 +193,7 @@ WalletBloc _makeBloc({
     disableAutoswapWarningUsecase: _MockDisableAutoswapWarning(),
     disableAutoswapUsecase: _MockDisableAutoswap(),
     autoSwapExecutionUsecase: _MockAutoSwapExecution(),
-    ensureSwapMasterKeyUsecase: _MockEnsureSwapMasterKey(),
+    ensureSwapMasterKeyUsecase: ensureSwapMasterKey,
     deleteWalletUsecase: _MockDeleteWallet(),
     getArkWalletUsecase: _MockGetArkWallet(),
     checkArkWalletSetupUsecase: checkArkWalletSetup,
@@ -244,15 +252,33 @@ void main() {
       },
     );
 
+    test('A2: loaded SP wallet uses unified total for home balance', () async {
+      final refreshSp = _MockRefreshSpWalletForWallet();
+      final checkSetup = _MockCheckSpWalletSetupForWallet();
+      final wallet = _spWallet(0, totalUnifiedSat: 5000);
+
+      when(() => checkSetup.execute()).thenAnswer((_) async => true);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
+
+      final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+
+      await drive(bloc, const RefreshSpWallet());
+
+      expect(bloc.state.spBalanceSat, 5000);
+      expect(bloc.state.totalBalance(), 5000);
+
+      await bloc.close();
+    });
+
     test('B: isSpWalletSetup=false and no wallet when not set up', () async {
       final refreshSp = _MockRefreshSpWalletForWallet();
       final checkSetup = _MockCheckSpWalletSetupForWallet();
 
       // Not set up: setup check false, refresh returns null (gated/revoked).
       when(() => checkSetup.execute()).thenAnswer((_) async => false);
-      when(() => refreshSp.execute()).thenAnswer(
-        (_) async => const Ok<SpWallet?, SpFailure>(null),
-      );
+      when(
+        () => refreshSp.execute(),
+      ).thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
 
       final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
@@ -267,33 +293,30 @@ void main() {
       await bloc.close();
     });
 
-    test(
-      'K: gate off emits isSpFeatureEnabled=false even when set up (SP card '
-      'stays hidden)',
-      () async {
-        final refreshSp = _MockRefreshSpWalletForWallet();
-        final checkSetup = _MockCheckSpWalletSetupForWallet();
-        final wallet = _spWallet(5000);
+    test('K: gate off emits isSpFeatureEnabled=false even when set up (SP card '
+        'stays hidden)', () async {
+      final refreshSp = _MockRefreshSpWalletForWallet();
+      final checkSetup = _MockCheckSpWalletSetupForWallet();
+      final wallet = _spWallet(5000);
 
-        when(() => checkSetup.execute()).thenAnswer((_) async => true);
-        when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
+      when(() => checkSetup.execute()).thenAnswer((_) async => true);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
-        final bloc = _makeBloc(
-          refreshSp: refreshSp,
-          checkSetup: checkSetup,
-          gateEnabled: false,
-        );
+      final bloc = _makeBloc(
+        refreshSp: refreshSp,
+        checkSetup: checkSetup,
+        gateEnabled: false,
+      );
 
-        final states = await driveCollecting(bloc, const RefreshSpWallet());
+      final states = await driveCollecting(bloc, const RefreshSpWallet());
 
-        // The card gates on isSpFeatureEnabled && isSpWalletSetup; a gate off
-        // hides it regardless of setup.
-        expect(states.last.isSpFeatureEnabled, isFalse);
-        expect(states.last.isSpWalletSetup, isTrue);
+      // The card gates on isSpFeatureEnabled && isSpWalletSetup; a gate off
+      // hides it regardless of setup.
+      expect(states.last.isSpFeatureEnabled, isFalse);
+      expect(states.last.isSpWalletSetup, isTrue);
 
-        await bloc.close();
-      },
-    );
+      await bloc.close();
+    });
 
     test(
       'C: amount override emits spBalanceSat directly, no setup check',
@@ -339,42 +362,39 @@ void main() {
       await bloc.close();
     });
 
-    test(
-      'E: refresh failing leaves state and clears loading',
-      () async {
-        // refresh can throw an FFI error while reading the snapshot. The bloc
-        // must leave the existing snapshot intact and clear the loading flag.
-        final refreshSp = _MockRefreshSpWalletForWallet();
-        final checkSetup = _MockCheckSpWalletSetupForWallet();
-        final wallet = _spWallet(7777);
+    test('E: refresh failing leaves state and clears loading', () async {
+      // refresh can throw an FFI error while reading the snapshot. The bloc
+      // must leave the existing snapshot intact and clear the loading flag.
+      final refreshSp = _MockRefreshSpWalletForWallet();
+      final checkSetup = _MockCheckSpWalletSetupForWallet();
+      final wallet = _spWallet(7777);
 
-        when(() => checkSetup.execute()).thenAnswer((_) async => true);
-        when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
+      when(() => checkSetup.execute()).thenAnswer((_) async => true);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(wallet));
 
-        final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+      final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
-        // Prime state with a loaded wallet.
-        await drive(bloc, const RefreshSpWallet());
-        expect(bloc.state.spBalanceSat, 7777);
+      // Prime state with a loaded wallet.
+      await drive(bloc, const RefreshSpWallet());
+      expect(bloc.state.spBalanceSat, 7777);
 
-        // Now make refresh fail.
-        when(() => refreshSp.execute()).thenAnswer(
-          (_) async => const Err(SpUnexpected('FFI error reading SP snapshot')),
-        );
+      // Now make refresh fail.
+      when(() => refreshSp.execute()).thenAnswer(
+        (_) async => const Err(SpUnexpected('FFI error reading SP snapshot')),
+      );
 
-        await drive(bloc, const RefreshSpWallet());
+      await drive(bloc, const RefreshSpWallet());
 
-        // State left intact; loading cleared so the UI doesn't get stuck.
-        expect(
-          bloc.state.spBalanceSat,
-          7777,
-          reason: 'balance must reflect the stale wallet, not be reset',
-        );
-        expect(bloc.state.isSpWalletLoading, isFalse);
+      // State left intact; loading cleared so the UI doesn't get stuck.
+      expect(
+        bloc.state.spBalanceSat,
+        7777,
+        reason: 'balance must reflect the stale wallet, not be reset',
+      );
+      expect(bloc.state.isSpWalletLoading, isFalse);
 
-        await bloc.close();
-      },
-    );
+      await bloc.close();
+    });
 
     test('I: the setup check throwing settles the card without an unhandled '
         'bloc error (T1.5)', () async {
@@ -436,36 +456,141 @@ void main() {
       await bloc.close();
     });
 
-    test('J: bursty RefreshSpWallet events are droppable (one refresh runs)',
-        () async {
-      final refreshSp = _MockRefreshSpWalletForWallet();
-      final checkSetup = _MockCheckSpWalletSetupForWallet();
-      final wallet = _spWallet(1000);
+    test(
+      'J: newer RefreshSpWallet result wins over an older in-flight refresh',
+      () async {
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        final firstRefresh = Completer<Result<SpWallet?, SpFailure>>();
+        final secondRefresh = Completer<Result<SpWallet?, SpFailure>>();
+        var refreshCount = 0;
 
-      // Hold the refresh open so the burst lands while the first handler is in
-      // flight; droppable() must drop the queued events instead of stacking
-      // loading passes on top of each other.
-      final gate = Completer<Result<SpWallet?, SpFailure>>();
-      when(() => checkSetup.execute()).thenAnswer((_) async => true);
-      when(() => refreshSp.execute()).thenAnswer((_) => gate.future);
+        when(() => checkSetup.execute()).thenAnswer((_) async => true);
+        when(() => refreshSp.execute()).thenAnswer((_) {
+          refreshCount++;
+          return refreshCount == 1 ? firstRefresh.future : secondRefresh.future;
+        });
 
-      final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+        final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
 
-      bloc.add(const RefreshSpWallet());
-      bloc.add(const RefreshSpWallet());
-      bloc.add(const RefreshSpWallet());
-      await pumpEventQueue(times: 100);
+        bloc.add(const RefreshSpWallet());
+        await pumpEventQueue(times: 100);
+        bloc.add(const RefreshSpWallet());
+        await pumpEventQueue(times: 100);
 
-      gate.complete(Ok(wallet));
-      await pumpEventQueue(times: 100);
+        secondRefresh.complete(Ok(_spWallet(2000)));
+        await pumpEventQueue(times: 100);
+        firstRefresh.complete(Ok(_spWallet(1000)));
+        await pumpEventQueue(times: 100);
 
-      verify(() => refreshSp.execute()).called(1);
+        expect(bloc.state.spBalanceSat, 2000);
 
-      await bloc.close();
-    });
+        await bloc.close();
+      },
+    );
+
+    test(
+      'L: stale full refresh does not overwrite a newer balance update',
+      () async {
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        final gate = Completer<Result<SpWallet?, SpFailure>>();
+
+        when(() => checkSetup.execute()).thenAnswer((_) async => true);
+        when(() => refreshSp.execute()).thenAnswer((_) => gate.future);
+
+        final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+
+        bloc.add(const RefreshSpWallet());
+        await pumpEventQueue(times: 100);
+
+        bloc.add(const SetSpWalletBalance(9876));
+        await pumpEventQueue(times: 100);
+
+        gate.complete(Ok(_spWallet(0)));
+        await pumpEventQueue(times: 100);
+
+        expect(bloc.state.spBalanceSat, 9876);
+        expect(bloc.state.totalBalance(), 9876);
+
+        await bloc.close();
+      },
+    );
   });
 
   group('WalletBloc SP: observed update stream', () {
+    test(
+      'F0: subscribes to SP updates before startup wallet loading finishes',
+      () async {
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        final getWallets = _MockGetWalletsUsecase();
+        final walletsLoaded = Completer<List<Wallet>>();
+
+        when(
+          () => getWallets.execute(sync: any(named: 'sync')),
+        ).thenAnswer((_) => walletsLoaded.future);
+        when(() => checkSetup.execute()).thenAnswer((_) async => true);
+        when(
+          () => refreshSp.execute(),
+        ).thenAnswer((_) async => Ok(_spWallet(0)));
+
+        final controller = StreamController<SpUpdate>.broadcast();
+        addTearDown(controller.close);
+
+        final bloc = _makeBloc(
+          refreshSp: refreshSp,
+          checkSetup: checkSetup,
+          getWallets: getWallets,
+          spUpdates: controller.stream,
+        );
+
+        bloc.add(const WalletStarted());
+        await pumpEventQueue(times: 100);
+
+        final balanced = bloc.stream.firstWhere((s) => s.spBalanceSat == 9876);
+        controller.add(SpBalanceChanged(BigInt.from(9876)));
+
+        await balanced;
+        expect(bloc.state.spBalanceSat, 9876);
+
+        walletsLoaded.complete(<Wallet>[]);
+        await pumpEventQueue(times: 100);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'F1: WalletStarted keeps the current SP balance while reloading wallets',
+      () async {
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        final refreshLoaded = Completer<Result<SpWallet?, SpFailure>>();
+
+        when(() => checkSetup.execute()).thenAnswer((_) async => true);
+        when(() => refreshSp.execute()).thenAnswer((_) => refreshLoaded.future);
+
+        final bloc = _makeBloc(refreshSp: refreshSp, checkSetup: checkSetup);
+        await drive(bloc, const SetSpWalletBalance(9876));
+
+        final states = <WalletState>[];
+        final sub = bloc.stream.listen(states.add);
+
+        bloc.add(const WalletStarted());
+        await pumpEventQueue(times: 100);
+
+        final startupState = states.firstWhere(
+          (state) => state.status == WalletStatus.success,
+        );
+        expect(startupState.spBalanceSat, 9876);
+
+        refreshLoaded.complete(Ok(_spWallet(9876)));
+        await pumpEventQueue(times: 100);
+        await sub.cancel();
+        await bloc.close();
+      },
+    );
+
     test(
       'F: SpBalanceChanged drives the amount fast-path (no refresh)',
       () async {
@@ -510,6 +635,32 @@ void main() {
       },
     );
 
+    test('F2: SpBalanceChanged amount is included in total balance', () async {
+      final refreshSp = _MockRefreshSpWalletForWallet();
+      final checkSetup = _MockCheckSpWalletSetupForWallet();
+      when(() => checkSetup.execute()).thenAnswer((_) async => true);
+      when(() => refreshSp.execute()).thenAnswer((_) async => Ok(_spWallet(0)));
+
+      final controller = StreamController<SpUpdate>.broadcast();
+      addTearDown(controller.close);
+
+      final bloc = _makeBloc(
+        refreshSp: refreshSp,
+        checkSetup: checkSetup,
+        spUpdates: controller.stream,
+      );
+
+      await drive(bloc, const WalletStarted());
+
+      final balanced = bloc.stream.firstWhere((s) => s.spBalanceSat == 9876);
+      controller.add(SpBalanceChanged(BigInt.from(9876)));
+
+      await balanced;
+      expect(bloc.state.totalBalance(), 9876);
+
+      await bloc.close();
+    });
+
     test('G: SpSetupChanged drives a full re-evaluate', () async {
       final refreshSp = _MockRefreshSpWalletForWallet();
       final checkSetup = _MockCheckSpWalletSetupForWallet();
@@ -533,9 +684,7 @@ void main() {
       clearInteractions(refreshSp);
       clearInteractions(checkSetup);
 
-      final loaded = bloc.stream.firstWhere(
-        (s) => s.spBalanceSat == 4321,
-      );
+      final loaded = bloc.stream.firstWhere((s) => s.spBalanceSat == 4321);
 
       controller.add(const SpSetupChanged());
 

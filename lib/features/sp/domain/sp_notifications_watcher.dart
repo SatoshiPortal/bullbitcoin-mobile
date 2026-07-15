@@ -38,9 +38,8 @@ class SpNotificationsWatcher {
   /// caller can reload wallet data the new session exposes.
   Stream<SpNotification> watch({required void Function() onReconnect}) {
     _onReconnect = onReconnect;
-    final controller =
-        _controller ??= StreamController<SpNotification>.broadcast();
-    _subscribe();
+    final controller = _controller ??=
+        StreamController<SpNotification>.broadcast(onListen: _subscribe);
     return controller.stream;
   }
 

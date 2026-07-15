@@ -31,6 +31,7 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
     required this.onTestBlindbit,
     required this.onElectrumChanged,
     required this.onTestElectrum,
+    this.extraFields,
     required this.submit,
   });
 
@@ -50,6 +51,8 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
   final VoidCallback onTestBlindbit;
   final ValueChanged<String> onElectrumChanged;
   final VoidCallback onTestElectrum;
+
+  final Widget? extraFields;
 
   /// The submit action (Create at setup, Save in settings).
   final Widget submit;
@@ -129,6 +132,7 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
           onTest: widget.onTestElectrum,
           enabled: !widget.isBusy,
         ),
+        if (widget.extraFields != null) ...[const Gap(16), widget.extraFields!],
         const Gap(24),
         widget.submit,
         if (state.error != null) ...[

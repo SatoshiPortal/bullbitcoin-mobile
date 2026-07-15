@@ -54,10 +54,7 @@ void main() {
 
     test('a nested SP sub-path is gated too', () {
       expect(
-        redirect(
-          '${SpRoute.spSendConfirm.path}/extra',
-          isSuperuser: false,
-        ),
+        redirect('${SpRoute.spSendConfirm.path}/extra', isSuperuser: false),
         walletHome,
       );
     });
@@ -82,13 +79,17 @@ void main() {
   group('spTransactionDetailsRedirect guards the unchecked extra cast', () {
     test('redirects to SP coins when extra is not an SpPayment', () {
       expect(spTransactionDetailsRedirect(null), SpRoute.spCoins.path);
-      expect(spTransactionDetailsRedirect('not a payment'), SpRoute.spCoins.path);
+      expect(
+        spTransactionDetailsRedirect('not a payment'),
+        SpRoute.spCoins.path,
+      );
     });
 
     test('allows the navigation when extra is a valid SpPayment', () {
       final payment = SpPayment(
         txid: 'aabbcc',
         direction: SpPaymentDirection.receive,
+        status: SpPaymentStatus.unconfirmed,
         amountSat: BigInt.from(1000),
       );
       expect(spTransactionDetailsRedirect(payment), isNull);

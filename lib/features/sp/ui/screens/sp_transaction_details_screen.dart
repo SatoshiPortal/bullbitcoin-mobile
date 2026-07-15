@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
+import 'package:bb_mobile/features/sp/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -29,10 +30,14 @@ class SpTransactionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIncoming = payment.direction == SpPaymentDirection.receive;
+    final isFailed = payment.status == SpPaymentStatus.verifyFailed;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.spTransactionTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.spTransactionTitle,
+          style: context.font.headlineMedium,
+        ),
         leading: const SizedBox.shrink(),
         automaticallyImplyLeading: false,
         actions: [
@@ -46,84 +51,91 @@ class SpTransactionDetailsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Center(
-            child: Column(
-              children: [
-                Icon(
-                  isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
-                  size: 48,
-                  color:
-                      isIncoming
-                          ? context.appColors.success
-                          : context.appColors.error,
-                ),
-                const Gap(24),
-                Text(
-                  payment.height != null
-                      ? context.loc.spConfirmed
-                      : context.loc.spUnconfirmed,
-                  style: context.font.titleMedium,
-                ),
-                const Gap(8),
-                Text(
-                  context.loc.spSendSatsAmount(
-                    FormatAmount.satsGrouped(payment.amountSat.toInt()),
+            child: Container(
+              width: double.infinity,
+              padding: isFailed ? const EdgeInsets.all(16) : EdgeInsets.zero,
+              decoration: isFailed
+                  ? BoxDecoration(
+                      color: context.appColors.errorContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    )
+                  : null,
+              child: Column(
+                children: [
+                  Icon(
+                    isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
+                    size: 48,
+                    color: isIncoming
+                        ? context.appColors.success
+                        : context.appColors.error,
                   ),
-                  style: context.font.displaySmall?.copyWith(
-                    color: context.appColors.onSurface,
+                  const Gap(24),
+                  _SpDetailsStatusLabel(payment: payment),
+                  const Gap(8),
+                  Text(
+                    context.loc.spSendSatsAmount(
+                      FormatAmount.satsGrouped(payment.amountSat.toInt()),
+                    ),
+                    style: context.font.displaySmall?.copyWith(
+                      color: context.appColors.onSurface,
+                    ),
                   ),
-                ),
-                const Gap(24),
-                DetailsTable(
-                  items: [
-                    DetailsTableItem(
-                      label: context.loc.spDirectionLabel,
-                      displayValue: _directionLabel(context, payment.direction),
-                    ),
-                    DetailsTableItem(
-                      label: context.loc.amountLabel,
-                      displayValue: context.loc.spSendSatsAmount(
-                        FormatAmount.satsGrouped(payment.amountSat.toInt()),
-                      ),
-                    ),
-                    if (payment.feeSat != null)
+                  const Gap(24),
+                  DetailsTable(
+                    items: [
                       DetailsTableItem(
-                        label: context.loc.spFeeLabel,
-                        displayValue: context.loc.spSendSatsAmount(
-                          FormatAmount.satsGrouped(payment.feeSat!.toInt()),
+                        label: context.loc.spDirectionLabel,
+                        displayValue: _directionLabel(
+                          context,
+                          payment.direction,
                         ),
                       ),
-                    if (payment.height != null)
                       DetailsTableItem(
-                        label: context.loc.spBlockRowLabel,
-                        displayValue: '${payment.height}',
+                        label: context.loc.amountLabel,
+                        displayValue: context.loc.spSendSatsAmount(
+                          FormatAmount.satsGrouped(payment.amountSat.toInt()),
+                        ),
                       ),
-                    if (payment.timestamp != null)
-                      DetailsTableItem(
-                        label: context.loc.spTransactionDateLabel,
-                        displayValue: DateFormat('MMM d, y, h:mm a').format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            payment.timestamp!.toInt() * 1000,
+                      if (payment.feeSat != null)
+                        DetailsTableItem(
+                          label: context.loc.spFeeLabel,
+                          displayValue: context.loc.spSendSatsAmount(
+                            FormatAmount.satsGrouped(payment.feeSat!.toInt()),
                           ),
                         ),
+                      if (payment.height != null)
+                        DetailsTableItem(
+                          label: context.loc.spBlockRowLabel,
+                          displayValue: '${payment.height}',
+                        ),
+                      if (payment.timestamp != null)
+                        DetailsTableItem(
+                          label: context.loc.spTransactionDateLabel,
+                          displayValue: DateFormat('MMM d, y, h:mm a').format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                              payment.timestamp!.toInt() * 1000,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Gap(16),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      context.loc.spTransactionIdLabel,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.textMuted,
                       ),
-                  ],
-                ),
-                const Gap(16),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    context.loc.spTransactionIdLabel,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.textMuted,
                     ),
                   ),
-                ),
-                const Gap(4),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AddressViewer(payment.txid),
-                ),
-              ],
+                  const Gap(4),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: AddressViewer(payment.txid),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -132,3 +144,31 @@ class SpTransactionDetailsScreen extends StatelessWidget {
   }
 }
 
+class _SpDetailsStatusLabel extends StatelessWidget {
+  const _SpDetailsStatusLabel({required this.payment});
+  final SpPayment payment;
+
+  @override
+  Widget build(BuildContext context) {
+    final clickable =
+        payment.status == SpPaymentStatus.confirmedUnverified ||
+        payment.status == SpPaymentStatus.verifyFailed;
+    final style = context.font.titleMedium?.copyWith(
+      color: payment.status == SpPaymentStatus.verifyFailed
+          ? context.appColors.error
+          : null,
+      decoration: clickable ? TextDecoration.underline : null,
+    );
+    final label = switch (payment.status) {
+      SpPaymentStatus.unconfirmed => context.loc.spUnconfirmed,
+      SpPaymentStatus.confirmedUnverified => context.loc.spVerifying,
+      SpPaymentStatus.verified => context.loc.spConfirmed,
+      SpPaymentStatus.verifyFailed => context.loc.spVerificationFailed,
+    };
+    if (!clickable) return Text(label, style: style);
+    return InkWell(
+      onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+      child: Text(label, style: style),
+    );
+  }
+}

@@ -77,6 +77,8 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
             network: stored.network,
             blindbitUrl: stored.blindbitUrl,
             electrumUrl: stored.electrumUrl,
+            fetchConcurrencyFactor: stored.fetchConcurrencyFactor,
+            matchConcurrencyFactor: stored.matchConcurrencyFactor,
             isFetchingDefaults: false,
           ),
         ),
@@ -93,6 +95,12 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
 
   void clearConsole() => emit(state.copyWith(console: const []));
 
+  void setFetchConcurrencyFactor(int factor) =>
+      emit(state.withForm(state.form.applyFetchConcurrencyFactor(factor)));
+
+  void setMatchConcurrencyFactor(int factor) =>
+      emit(state.withForm(state.form.applyMatchConcurrencyFactor(factor)));
+
   Future<void> saveBackendConfig() async {
     if (!state.canSave) return;
     emit(
@@ -106,6 +114,8 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
       network: state.network,
       blindbitUrl: state.blindbitUrl,
       electrumUrl: state.electrumUrl,
+      fetchConcurrencyFactor: state.fetchConcurrencyFactor,
+      matchConcurrencyFactor: state.matchConcurrencyFactor,
     );
     if (isClosed) return;
     switch (result) {

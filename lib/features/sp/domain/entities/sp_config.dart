@@ -25,6 +25,13 @@ enum FeeratePreset {
 abstract class SpConfig {
   static const String accountName = 'sp';
 
+  static const int dustLimitSat = 600;
+
+  static const int defaultFetchConcurrencyFactor = 12;
+  static const int defaultMatchConcurrencyFactor = 1;
+  static const int maxFetchConcurrencyFactor = 32;
+  static const int maxMatchConcurrencyFactor = 4;
+
   /// Default send feerate in sat/vB: the slow preset.
   static const int defaultFeerateSatPerVb = _slowFeerateSatPerVb;
 

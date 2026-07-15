@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_balance_usecase.dart';
@@ -72,6 +73,9 @@ class MockScanSpWalletUsecase extends Mock implements ScanSpWalletUsecase {}
 
 class MockStopSpScanUsecase extends Mock implements StopSpScanUsecase {}
 
+class MockClearSpScanStateUsecase extends Mock
+    implements ClearSpScanStateUsecase {}
+
 class MockRevokeSpWalletUsecase extends Mock implements RevokeSpWalletUsecase {}
 
 class MockGenerateTaprootAddressUsecase extends Mock
@@ -97,6 +101,7 @@ class SpCubitHarness {
   final ensureUsecase = MockEnsureSpSessionUsecase();
   final scanUsecase = MockScanSpWalletUsecase();
   final stopUsecase = MockStopSpScanUsecase();
+  final clearScanStateUsecase = MockClearSpScanStateUsecase();
   final revokeUsecase = MockRevokeSpWalletUsecase();
   final generateUsecase = MockGenerateTaprootAddressUsecase();
 
@@ -112,6 +117,7 @@ class SpCubitHarness {
       ),
       scanSpWalletUsecase: scanUsecase,
       stopSpScanUsecase: stopUsecase,
+      clearSpScanStateUsecase: clearScanStateUsecase,
       revokeSpWalletUsecase: revokeUsecase,
       generateTaprootAddressUsecase: generateUsecase,
     );

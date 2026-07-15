@@ -10,6 +10,13 @@ abstract final class SpPaymentMapper {
       bwk.SpPaymentDirection.send => SpPaymentDirection.send,
       bwk.SpPaymentDirection.selfSend => SpPaymentDirection.selfSend,
     },
+    status: switch (view.status) {
+      bwk.SpPaymentStatus.unconfirmed => SpPaymentStatus.unconfirmed,
+      bwk.SpPaymentStatus.confirmedUnverified =>
+        SpPaymentStatus.confirmedUnverified,
+      bwk.SpPaymentStatus.verified => SpPaymentStatus.verified,
+      bwk.SpPaymentStatus.verifyFailed => SpPaymentStatus.verifyFailed,
+    },
     amountSat: view.amountSat,
     feeSat: view.feeSat,
     height: view.height,

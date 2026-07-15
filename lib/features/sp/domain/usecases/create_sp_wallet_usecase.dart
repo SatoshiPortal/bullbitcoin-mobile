@@ -86,6 +86,8 @@ class CreateSpWalletUsecase {
           mnemonic: mnemonic,
           blindbitUrl: config.blindbitUrl,
           electrumUrl: config.electrumUrl,
+          fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+          matchConcurrencyFactor: config.matchConcurrencyFactor,
         );
       } catch (e) {
         // Roll the config back so a failed first-time setup leaves no persisted

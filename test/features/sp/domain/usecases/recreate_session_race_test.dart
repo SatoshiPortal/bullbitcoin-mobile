@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
@@ -100,18 +101,23 @@ void main() {
     });
     when(() => repository.notifications).thenAnswer((_) => notif.stream);
     when(() => repository.snapshot()).thenReturn(spWallet());
-    when(() => repository.history())
-        .thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(<SpPayment>[]));
-    when(() => repository.coins())
-        .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
+    when(
+      () => repository.history(),
+    ).thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(<SpPayment>[]));
+    when(
+      () => repository.coins(),
+    ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
     when(() => repository.network()).thenReturn(SpNetwork.regtest);
     when(() => repository.backendOnline()).thenReturn(true);
     when(() => repository.chainTip()).thenReturn(0);
     when(() => repository.minBirthdayHeight()).thenReturn(0);
 
-    when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async => spMnemonicSeed());
-    when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()));
+    when(
+      () => getDefaultSeedUsecase.execute(),
+    ).thenAnswer((_) async => spMnemonicSeed());
+    when(() => configRepository.fetch()).thenAnswer(
+      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+    );
     when(() => configRepository.save(any())).thenAnswer((_) async {});
 
     ensureSpSessionUsecase = EnsureSpSessionUsecase(
@@ -142,6 +148,7 @@ void main() {
       ),
       scanSpWalletUsecase: harness.scanUsecase,
       stopSpScanUsecase: harness.stopUsecase,
+      clearSpScanStateUsecase: ClearSpScanStateUsecase(repository: repository),
       revokeSpWalletUsecase: harness.revokeUsecase,
       generateTaprootAddressUsecase: harness.generateUsecase,
     );
