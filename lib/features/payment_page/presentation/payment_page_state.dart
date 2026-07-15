@@ -132,7 +132,9 @@ class PaymentPageState {
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,
       nymDraft: nymDraft ?? this.nymDraft,
-      invalidField: clearInvalidField ? null : invalidField ?? this.invalidField,
+      invalidField: clearInvalidField
+          ? null
+          : invalidField ?? this.invalidField,
     );
   }
 }

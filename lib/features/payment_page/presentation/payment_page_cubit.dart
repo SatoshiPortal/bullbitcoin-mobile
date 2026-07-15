@@ -15,10 +15,8 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
   final LightningAddressFacade _lightningAddress;
   int _operationId = 0;
 
-  PaymentPageCubit({
-    required this._facade,
-    required this._lightningAddress,
-  }) : super(const PaymentPageState());
+  PaymentPageCubit({required this._facade, required this._lightningAddress})
+    : super(const PaymentPageState());
 
   Future<void> load() async {
     if (state.submitting) return;
@@ -66,7 +64,11 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
     try {
       currencies = await _facade.supportedCurrencies();
     } catch (e, stack) {
-      log.warning('Donation Page currency fetch failed', error: e, trace: stack);
+      log.warning(
+        'Donation Page currency fetch failed',
+        error: e,
+        trace: stack,
+      );
       currenciesUnavailable = true;
     }
     if (_isStale(op)) return;
@@ -142,7 +144,11 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
         ),
       );
     } catch (e, stack) {
-      log.warning('Donation Page currency retry failed', error: e, trace: stack);
+      log.warning(
+        'Donation Page currency retry failed',
+        error: e,
+        trace: stack,
+      );
     }
   }
 
@@ -208,7 +214,11 @@ class PaymentPageCubit extends Cubit<PaymentPageState> {
       emit(state.copyWith(submitting: false));
       await load();
     } catch (e, stack) {
-      log.warning('Donation Page nym registration failed', error: e, trace: stack);
+      log.warning(
+        'Donation Page nym registration failed',
+        error: e,
+        trace: stack,
+      );
       if (isClosed) return;
       emit(
         state.copyWith(submitting: false, failure: _asPaymentPageException(e)),

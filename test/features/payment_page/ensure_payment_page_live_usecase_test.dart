@@ -76,42 +76,48 @@ void main() {
     expect(client.totalWriteCalls, 0);
   });
 
-  test('registration live but page row absent -> needsReactivation, no PUT',
-      () async {
-    client.storedPage = null; // GET returns DonationPageNotFound
-    final outcome = await healWith(laFacade(status: activeStatus)).execute();
+  test(
+    'registration live but page row absent -> needsReactivation, no PUT',
+    () async {
+      client.storedPage = null; // GET returns DonationPageNotFound
+      final outcome = await healWith(laFacade(status: activeStatus)).execute();
 
-    expect(outcome.liveness, PaymentPageLiveness.needsReactivation);
-    expect(client.getDonationPageCalls, 1);
-    expect(client.totalWriteCalls, 0);
-  });
+      expect(outcome.liveness, PaymentPageLiveness.needsReactivation);
+      expect(client.getDonationPageCalls, 1);
+      expect(client.totalWriteCalls, 0);
+    },
+  );
 
-  test('page GET unreachable -> unreachable, never fake-live, zero writes',
-      () async {
-    client.getError = const BullnymException.network(
-      diagnosticReason: 'offline',
-    );
-    final outcome = await healWith(laFacade(status: activeStatus)).execute();
+  test(
+    'page GET unreachable -> unreachable, never fake-live, zero writes',
+    () async {
+      client.getError = const BullnymException.network(
+        diagnosticReason: 'offline',
+      );
+      final outcome = await healWith(laFacade(status: activeStatus)).execute();
 
-    expect(outcome.liveness, PaymentPageLiveness.unreachable);
-    expect(client.totalWriteCalls, 0);
-  });
+      expect(outcome.liveness, PaymentPageLiveness.unreachable);
+      expect(client.totalWriteCalls, 0);
+    },
+  );
 
-  test('no nym (NymNotFound) -> needsReactivation, never touches the page',
-      () async {
-    final la = laFacade(
-      lookupError: const LightningAddressServerRejectedRequestException(
-        code: 'NymNotFound',
-        retryable: false,
-      ),
-    );
+  test(
+    'no nym (NymNotFound) -> needsReactivation, never touches the page',
+    () async {
+      final la = laFacade(
+        lookupError: const LightningAddressServerRejectedRequestException(
+          code: 'NymNotFound',
+          retryable: false,
+        ),
+      );
 
-    final outcome = await healWith(la).execute();
+      final outcome = await healWith(la).execute();
 
-    expect(outcome.liveness, PaymentPageLiveness.needsReactivation);
-    expect(client.getDonationPageCalls, 0);
-    expect(client.totalWriteCalls, 0);
-  });
+      expect(outcome.liveness, PaymentPageLiveness.needsReactivation);
+      expect(client.getDonationPageCalls, 0);
+      expect(client.totalWriteCalls, 0);
+    },
+  );
 
   test('registration lookup unreachable -> unreachable, zero writes', () async {
     final la = laFacade(

@@ -35,30 +35,34 @@ void main() {
     when(() => resolveIdentity.execute()).thenAnswer((_) async => identity);
   });
 
-  test('sends a kind-pinned signed archive and returns the archived page',
-      () async {
-    final page = await usecase.execute();
+  test(
+    'sends a kind-pinned signed archive and returns the archived page',
+    () async {
+      final page = await usecase.execute();
 
-    expect(page, isNotNull);
-    expect(page!.isArchived, isTrue);
-    final archived = client.archiveCalls.single;
-    expect(archived.kind, 'payment_page');
-    expect(archived.nym, 'alice');
-  });
+      expect(page, isNotNull);
+      expect(page!.isArchived, isTrue);
+      final archived = client.archiveCalls.single;
+      expect(archived.kind, 'payment_page');
+      expect(archived.nym, 'alice');
+    },
+  );
 
-  test('maps a second archive (DonationPageNotFound) to a benign null',
-      () async {
-    client.archiveError = const BullnymException.serverRejectedRequest(
-      code: 'DonationPageNotFound',
-      diagnosticReason: 'nothing to archive',
-      statusCode: 200,
-      retryable: false,
-    );
+  test(
+    'maps a second archive (DonationPageNotFound) to a benign null',
+    () async {
+      client.archiveError = const BullnymException.serverRejectedRequest(
+        code: 'DonationPageNotFound',
+        diagnosticReason: 'nothing to archive',
+        statusCode: 200,
+        retryable: false,
+      );
 
-    final page = await usecase.execute();
+      final page = await usecase.execute();
 
-    expect(page, isNull);
-  });
+      expect(page, isNull);
+    },
+  );
 
   test('rethrows a genuine server rejection', () async {
     client.archiveError = const BullnymException.serverRejectedRequest(

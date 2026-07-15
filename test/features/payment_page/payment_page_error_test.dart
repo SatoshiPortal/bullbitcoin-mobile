@@ -17,8 +17,14 @@ void main() {
         );
       }
 
-      expect(fromCode('DonationPageNotFound').kind, PaymentPageErrorKind.notFound);
-      expect(fromCode('DonationPageInvalid').kind, PaymentPageErrorKind.rejected);
+      expect(
+        fromCode('DonationPageNotFound').kind,
+        PaymentPageErrorKind.notFound,
+      );
+      expect(
+        fromCode('DonationPageInvalid').kind,
+        PaymentPageErrorKind.rejected,
+      );
       expect(fromCode('AuthError').kind, PaymentPageErrorKind.authError);
       // A retryable, otherwise-unknown server rejection degrades to `server`.
       expect(

@@ -91,18 +91,20 @@ void main() {
       expect(cubit.state.status, PaymentPageStatus.loadFailed);
     });
 
-    test('currency fetch failure degrades but still reaches the form',
-        () async {
-      la.status = const LightningAddressStatus(nym: 'alice', active: true);
-      facade.page = null;
-      facade.currenciesError = const PaymentPageException.network();
-      final cubit = build();
+    test(
+      'currency fetch failure degrades but still reaches the form',
+      () async {
+        la.status = const LightningAddressStatus(nym: 'alice', active: true);
+        facade.page = null;
+        facade.currenciesError = const PaymentPageException.network();
+        final cubit = build();
 
-      await cubit.load();
+        await cubit.load();
 
-      expect(cubit.state.status, PaymentPageStatus.create);
-      expect(cubit.state.currenciesUnavailable, isTrue);
-    });
+        expect(cubit.state.status, PaymentPageStatus.create);
+        expect(cubit.state.currenciesUnavailable, isTrue);
+      },
+    );
   });
 
   test('createNym delegates to the LA registration then reloads', () async {

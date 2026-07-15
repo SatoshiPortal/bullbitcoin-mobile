@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/get_paid_settings/public/automated_backup_consent.dart';
 import 'package:bb_mobile/features/payment_page/domain/payment_page_validation.dart';
 import 'package:bb_mobile/features/payment_page/presentation/payment_page_cubit.dart';
 import 'package:bb_mobile/features/payment_page/presentation/payment_page_state.dart';
@@ -366,7 +365,9 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
       if (state.displayCurrency.isNotEmpty) state.displayCurrency,
     }.toList();
     return DropdownButtonFormField<String>(
-      initialValue: state.displayCurrency.isEmpty ? null : state.displayCurrency,
+      initialValue: state.displayCurrency.isEmpty
+          ? null
+          : state.displayCurrency,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: context.loc.paymentPageCurrencyLabel,
@@ -442,17 +443,10 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
   }
 
   Future<void> _createNym(PaymentPageCubit cubit) async {
-    if (!await ensureAutomatedBackupConsent(context)) return;
-    if (!mounted) return;
     await cubit.createNym();
   }
 
   Future<void> _save(PaymentPageCubit cubit) async {
-    // Creating the page provisions wallet 102 and rides the next backup
-    // snapshot, so ensure the automated-backup disclosure is acknowledged
-    // (no-op if already consented).
-    if (!await ensureAutomatedBackupConsent(context)) return;
-    if (!mounted) return;
     await cubit.save();
   }
 

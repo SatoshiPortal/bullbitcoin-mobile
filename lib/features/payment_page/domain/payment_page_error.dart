@@ -111,8 +111,7 @@ sealed class PaymentPageException implements Exception {
     PaymentPageErrorKind.server => context.loc.paymentPageErrorServer,
     PaymentPageErrorKind.invalidServerResponse ||
     PaymentPageErrorKind.signingFailed ||
-    PaymentPageErrorKind.unexpected =>
-      context.loc.paymentPageErrorUnexpected,
+    PaymentPageErrorKind.unexpected => context.loc.paymentPageErrorUnexpected,
   };
 
   @override
@@ -271,6 +270,5 @@ final class PaymentPageSaveException extends PaymentPageException {
   String toTranslated(BuildContext context) => cause.toTranslated(context);
 
   @override
-  String toString() =>
-      'PaymentPageSaveException(phase: $phase, cause: $cause)';
+  String toString() => 'PaymentPageSaveException(phase: $phase, cause: $cause)';
 }

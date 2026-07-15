@@ -252,10 +252,7 @@ class FakeBullnymClient implements BullnymClientPort {
         retryable: true,
       );
 
-  BullnymDonationPage _copyWith(
-    BullnymDonationPage page, {
-    bool? isArchived,
-  }) {
+  BullnymDonationPage _copyWith(BullnymDonationPage page, {bool? isArchived}) {
     return BullnymDonationPage(
       nym: page.nym,
       header: page.header,
