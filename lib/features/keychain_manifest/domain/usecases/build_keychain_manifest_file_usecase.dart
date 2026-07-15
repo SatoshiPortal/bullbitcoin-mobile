@@ -16,8 +16,7 @@ class BuildKeychainManifestFileUsecase {
     String parentFingerprint, {
     DateTime? now,
   }) async {
-    final generatedAt =
-        (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
+    final generatedAt = (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
     final normalizedParentFingerprint = KeychainManifestFingerprint.normalize(
       parentFingerprint,
     );

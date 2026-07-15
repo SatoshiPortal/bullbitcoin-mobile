@@ -10,18 +10,21 @@ void main() {
     expect(entry.bip85Index, 100);
   });
 
-  test('rejects a BIP85 application that mismatches the first path segment', () {
-    expect(
-      () => _entry(bip85Application: 83696968),
-      throwsA(
-        isA<KeychainManifestInvalidEntryException>().having(
-          (error) => error.type,
-          'type',
-          KeychainManifestExceptionType.invalidEntry,
+  test(
+    'rejects a BIP85 application that mismatches the first path segment',
+    () {
+      expect(
+        () => _entry(bip85Application: 83696968),
+        throwsA(
+          isA<KeychainManifestInvalidEntryException>().having(
+            (error) => error.type,
+            'type',
+            KeychainManifestExceptionType.invalidEntry,
+          ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
 
   test('rejects a BIP85 index that mismatches the last path segment', () {
     expect(
@@ -126,7 +129,10 @@ void main() {
       () => KeychainManifestFile(
         parentFingerprint: 'fedcba98',
         generatedAt: 20,
-        entries: [_entry(), _entry(walletId: 'other-wallet')],
+        entries: [
+          _entry(),
+          _entry(walletId: 'other-wallet'),
+        ],
       ),
       throwsA(
         isA<KeychainManifestInvalidEntryException>().having(

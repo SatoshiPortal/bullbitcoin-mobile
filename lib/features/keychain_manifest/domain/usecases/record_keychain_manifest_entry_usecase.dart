@@ -43,8 +43,7 @@ class RecordKeychainManifestEntryUsecase {
       );
     }
 
-    final timestamp =
-        (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
+    final timestamp = (now ?? _clock.nowUtc()).millisecondsSinceEpoch ~/ 1000;
     final entry = KeychainManifestEntry(
       parentFingerprint: request.parentFingerprint,
       bip85DerivationPath: reservation.scope.exactPath,
