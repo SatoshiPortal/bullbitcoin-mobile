@@ -10,10 +10,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-/// Tab layout mirrors joinstr-kmp and floresta_wallet: Create New Pool,
-/// My Pools, View Other Pools, History.
-class JoinstrScreen extends StatelessWidget {
+/// Tab layout, labels and dialogs mirror joinstr-kmp and floresta_wallet:
+/// Create New Pool, My Pools, View Other Pools, History; a waiting dialog
+/// while a round is in flight; snackbars for outcomes.
+class JoinstrScreen extends StatefulWidget {
   const JoinstrScreen({super.key});
+
+  @override
+  State<JoinstrScreen> createState() => _JoinstrScreenState();
+}
+
+class _JoinstrScreenState extends State<JoinstrScreen> {
+  bool _waitingDialogOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +47,93 @@ class JoinstrScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: BlocBuilder<JoinstrCubit, JoinstrState>(
+        body: BlocConsumer<JoinstrCubit, JoinstrState>(
+          listenWhen: (prev, curr) =>
+              prev.isRunning != curr.isRunning || prev.error != curr.error,
+          listener: _onStateChange,
           builder: (context, state) {
-            return Column(
+            // A wallet-level problem (watch-only, mainnet, none eligible) is
+            // terminal: the feature cannot be used, so show it in place rather
+            // than as a transient snackbar.
+            if (state.wallet == null && state.error != null) {
+              return _EmptyState(
+                message: joinstrErrorMessage(context, state.error!),
+              );
+            }
+            return TabBarView(
               children: [
-                const _JoinstrNotice(),
-                if (state.error != null) _JoinstrError(error: state.error!),
-                if (state.isRunning) const _JoinstrRunning(),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _CreatePoolTab(state: state),
-                      _MyPoolsTab(rounds: state.rounds),
-                      _OtherPoolsTab(state: state),
-                      _HistoryTab(history: state.history),
-                    ],
-                  ),
-                ),
+                _CreatePoolTab(state: state),
+                _MyPoolsTab(rounds: state.rounds),
+                _OtherPoolsTab(state: state),
+                _HistoryTab(history: state.history),
               ],
             );
           },
         ),
       ),
     );
+  }
+
+  void _onStateChange(BuildContext context, JoinstrState state) {
+    if (state.isRunning && !_waitingDialogOpen) {
+      _openWaitingDialog(context);
+      return;
+    }
+    if (!state.isRunning && _waitingDialogOpen) {
+      _closeWaitingDialog(context);
+    }
+    // A round that just finished, or a validation error that never started a
+    // round, surfaces as a snackbar like the reference wallets.
+    final round = state.rounds.isNotEmpty ? state.rounds.first : null;
+    if (round != null && round.status == JoinstrRoundStatus.broadcast) {
+      _snack(context, context.loc.joinstrCoinjoinBroadcast(round.txId!));
+    } else if (round != null && round.status == JoinstrRoundStatus.failed) {
+      _snack(context, joinstrErrorMessage(context, round.error!));
+    } else if (state.wallet != null && state.error != null) {
+      _snack(context, joinstrErrorMessage(context, state.error!));
+    }
+  }
+
+  void _openWaitingDialog(BuildContext context) {
+    _waitingDialogOpen = true;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.loc.joinstrPoolRequest),
+        content: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const Gap(16),
+            Expanded(
+              child: Text(dialogContext.loc.joinstrWaitingForCredentials),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _closeWaitingDialog(context),
+            child: Text(dialogContext.loc.joinstrRunInBackground),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _closeWaitingDialog(BuildContext context) {
+    if (!_waitingDialogOpen) return;
+    _waitingDialogOpen = false;
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  void _snack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showRelaySettings(BuildContext context) {
@@ -90,66 +162,6 @@ class JoinstrScreen extends StatelessWidget {
             child: Text(dialogContext.loc.joinstrSave),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Joinstr traffic is not routed over Tor yet, so the relay and the electrum
-/// server both see the joining IP next to the outpoint being mixed. The
-/// feature is therefore testnet-only for now.
-class _JoinstrNotice extends StatelessWidget {
-  const _JoinstrNotice();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            const Icon(Icons.science_outlined),
-            const Gap(12),
-            Expanded(child: Text(context.loc.joinstrExperimentalNotice)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _JoinstrRunning extends StatelessWidget {
-  const _JoinstrRunning();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Column(
-        children: [
-          const LinearProgressIndicator(),
-          const Gap(8),
-          Text(context.loc.joinstrRunning, textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-}
-
-class _JoinstrError extends StatelessWidget {
-  const _JoinstrError({required this.error});
-
-  final JoinstrException error;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Text(
-        joinstrErrorMessage(context, error),
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
       ),
     );
   }
@@ -547,7 +559,11 @@ class _EmptyState extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
+        child: Text(
+          message,
+          style: Theme.of(context).textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -566,6 +582,7 @@ String joinstrErrorMessage(BuildContext context, JoinstrException error) {
     JoinstrIssue.invalidElectrumUrl => context.loc.joinstrErrorElectrum,
     JoinstrIssue.invalidPoolConfig => context.loc.joinstrErrorPoolConfig,
     JoinstrIssue.invalidRelayUrl => context.loc.joinstrErrorRelay,
+    JoinstrIssue.torUnavailable => context.loc.joinstrErrorTor,
     JoinstrIssue.poolNotFound => context.loc.joinstrErrorPoolNotFound,
     JoinstrIssue.coinjoinFailed => context.loc.joinstrErrorFailed(
       error.detail ?? '',

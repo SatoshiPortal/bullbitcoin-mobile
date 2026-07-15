@@ -451,13 +451,30 @@
   "@settingsBtcMapTitle": {
     "description": "Title for the Map screen in the settings menu"
   },
-  "joinstrTitle": "Joinstr coinjoin",
+  "joinstrTitle": "Joinstr",
   "@joinstrTitle": {
     "description": "Title for the joinstr coinjoin screen"
   },
-  "joinstrExperimentalNotice": "Experimental. Joinstr traffic is not routed over Tor yet, so the relay and Electrum server can see your IP address alongside the coin you are mixing. Testnet wallets only.",
-  "@joinstrExperimentalNotice": {
-    "description": "Banner explaining that joinstr is experimental and testnet-only"
+  "joinstrPoolRequest": "Pool Request",
+  "@joinstrPoolRequest": {
+    "description": "Title of the dialog shown while a coinjoin round is in flight"
+  },
+  "joinstrWaitingForCredentials": "Waiting for pool credentials…",
+  "@joinstrWaitingForCredentials": {
+    "description": "Body of the waiting dialog shown while a coinjoin round runs"
+  },
+  "joinstrRunInBackground": "Run in background",
+  "@joinstrRunInBackground": {
+    "description": "Button that dismisses the waiting dialog while the round keeps running"
+  },
+  "joinstrCoinjoinBroadcast": "Coinjoin broadcast: {txid}",
+  "@joinstrCoinjoinBroadcast": {
+    "description": "Snackbar shown when a coinjoin transaction is broadcast",
+    "placeholders": {
+      "txid": {
+        "type": "String"
+      }
+    }
   },
   "joinstrTabCreate": "Create New Pool",
   "@joinstrTabCreate": {
@@ -658,6 +675,10 @@
   "joinstrErrorRelay": "Enter a websocket relay url (wss://).",
   "@joinstrErrorRelay": {
     "description": "Error when the relay setting is not a valid websocket url"
+  },
+  "joinstrErrorTor": "Tor is not available. Joinstr routes all traffic over Tor and cannot run without it.",
+  "@joinstrErrorTor": {
+    "description": "Error when the local Tor proxy could not be started for joinstr"
   },
   "joinstrErrorPoolNotFound": "That pool is no longer advertised on the relay.",
   "@joinstrErrorPoolNotFound": {
