@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -358,14 +359,49 @@ void main() {
       expect(state.willAttemptPayjoin, isFalse);
     });
 
-    test('true when enabled globally, not a self-transfer, and the BIP21 URI '
-        'carries a pj= parameter', () {
+    test('true when enabled globally, not a self-transfer, a locally-signing '
+        'wallet, and the BIP21 URI carries a pj= parameter', () {
       final state = SendState(
+        selectedWallet: bitcoinWallet(),
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
         isToSelf: false,
       );
       expect(state.willAttemptPayjoin, isTrue);
+    });
+
+    test('false when no wallet is selected yet, even if every other condition '
+        'is met — fail-closed default', () {
+      final state = SendState(
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: true,
+        isToSelf: false,
+      );
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+
+    test('false for a hardware/remote-signer wallet (Ledger/BitBox): the '
+        "confirm screen's device-specific sign button never reaches "
+        "signTransaction's payjoin branch, so the indicator must not promise "
+        'one', () {
+      final state = SendState(
+        selectedWallet: Wallet(
+          origin: 'test-hw-origin',
+          network: Network.bitcoinMainnet,
+          xpubFingerprint: '00000000',
+          scriptType: ScriptType.bip84,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.ledgerNanoX,
+          balanceSat: BigInt.from(100000),
+        ),
+        paymentRequest: bip21WithPj(),
+        payjoinGloballyEnabled: true,
+        isToSelf: false,
+      );
+      expect(state.willAttemptPayjoin, isFalse);
     });
   });
 

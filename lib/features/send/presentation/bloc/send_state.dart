@@ -179,8 +179,15 @@ abstract class SendState with _$SendState {
   /// gate `signTransaction`'s payjoin branch and to show the "a payjoin will
   /// be attempted" indicator on the confirm screen, so the two can never
   /// disagree.
+  ///
+  /// Gated on [Wallet.signsLocally]: a hardware/remote-signer wallet
+  /// (Ledger/BitBox) never reaches `signTransaction`'s payjoin branch (the
+  /// confirm screen swaps in a device-specific sign button for those
+  /// wallets instead), so without this check the indicator could promise a
+  /// payjoin that structurally can never happen for that wallet class.
   bool get willAttemptPayjoin =>
       payjoinGloballyEnabled &&
+      (selectedWallet?.signsLocally ?? false) &&
       isToSelf != true &&
       paymentRequest is Bip21PaymentRequest &&
       (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
