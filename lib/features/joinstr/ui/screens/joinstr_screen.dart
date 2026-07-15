@@ -578,6 +578,7 @@ String joinstrErrorMessage(BuildContext context, JoinstrException error) {
     JoinstrIssue.noEligibleCoin => context.loc.joinstrErrorNoEligibleCoin(
       (error.denominationSat ?? 0) + Joinstr.minInputSurplusSat,
       (error.denominationSat ?? 0) + Joinstr.maxInputSurplusSat,
+      Joinstr.scanDepth,
     ),
     JoinstrIssue.invalidElectrumUrl => context.loc.joinstrErrorElectrum,
     JoinstrIssue.invalidPoolConfig => context.loc.joinstrErrorPoolConfig,

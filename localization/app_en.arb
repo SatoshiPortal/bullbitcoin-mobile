@@ -652,7 +652,7 @@
   "@joinstrErrorScriptType": {
     "description": "Error when the wallet is not BIP84, which joinstr's wpkh signer requires"
   },
-  "joinstrErrorNoEligibleCoin": "No coin between {min} and {max} sats. A joinstr transaction has no change output, so the coin must nearly match the denomination.",
+  "joinstrErrorNoEligibleCoin": "No coin between {min} and {max} sats in the first {scanned} addresses. A joinstr transaction has no change output, so the coin must nearly match the denomination.",
   "@joinstrErrorNoEligibleCoin": {
     "description": "Error when no wallet coin falls inside the pool's required input value window",
     "placeholders": {
@@ -660,6 +660,9 @@
         "type": "int"
       },
       "max": {
+        "type": "int"
+      },
+      "scanned": {
         "type": "int"
       }
     }
