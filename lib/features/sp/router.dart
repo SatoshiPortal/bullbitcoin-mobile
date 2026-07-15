@@ -89,7 +89,10 @@ class SpSetupRouter {
 }
 
 class SpRouter {
-  static final route = ShellRoute(
+  static ShellRoute route({
+    required String sendRouteName,
+    required Object sendRouteExtra,
+  }) => ShellRoute(
     builder: (context, state, child) {
       // The SP session lives in the SpAccountRepository (lazySingleton); the
       // top-level GoRouter redirect already gates entry on
@@ -103,7 +106,9 @@ class SpRouter {
       GoRoute(
         name: SpRoute.spWalletDetail.name,
         path: SpRoute.spWalletDetail.path,
-        builder: (context, state) => const SpWalletDetailScreen(),
+        builder: (context, state) => SpWalletDetailScreen(
+          onSend: () => context.pushNamed(sendRouteName, extra: sendRouteExtra),
+        ),
       ),
       GoRoute(
         name: SpRoute.spSettings.name,

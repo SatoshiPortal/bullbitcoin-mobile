@@ -19,6 +19,7 @@ class SpPayment {
   final BigInt? feeSat;
   final int? height;
   final BigInt? timestamp;
+  final bool hasSpOutput;
 
   const SpPayment({
     required this.txid,
@@ -28,5 +29,6 @@ class SpPayment {
     this.feeSat,
     this.height,
     this.timestamp,
+    this.hasSpOutput = false,
   });
 }

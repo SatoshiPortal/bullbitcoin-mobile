@@ -22,6 +22,9 @@ class ValidateSpRecipientUsecase {
   }) {
     final trimmed = input.trim();
     final kind = classifySpAddress(trimmed);
+    if (kind == SpAddressKind.unrecognized) {
+      return const Err(SpUnexpected('Unsupported SP recipient'));
+    }
     final isSp = kind.isSilentPayment;
 
     if (isSp) {

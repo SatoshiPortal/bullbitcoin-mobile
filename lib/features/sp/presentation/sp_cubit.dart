@@ -9,7 +9,9 @@ import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_notifications_watcher.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
@@ -58,7 +60,7 @@ class SpCubit extends Cubit<SpState> {
             isLoading: false,
             balance: value.wallet.balance,
             spAddress: value.wallet.spAddress,
-            history: value.history,
+            history: _markSpOutputPayments(value.history, value.coins),
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
             isScanning: value.wallet.isScanning,
@@ -198,9 +200,12 @@ class SpCubit extends Cubit<SpState> {
       case SpNewOutput():
       case SpOutputSpent():
       case SpElectrumTx():
+      case SpBroadcasted():
         // Defer per-coin refreshes during a scan to avoid churn; the
         // ScanCompleted case refreshes once when the scan ends.
         if (!state.isScanning) unawaited(_refreshWalletData());
+      case SpBroadcastFailed(:final message):
+        log.warning('SpCubit.broadcast: broadcast failed: $message');
       case SpBackendOffline():
         emit(state.copyWith(backendOnline: false));
       case SpPaymentHistoryUpdated():
@@ -213,6 +218,7 @@ class SpCubit extends Cubit<SpState> {
             headerValidationFrom: start,
             headerValidationTo: end,
             headerValidationCurrent: start,
+            chainTip: end,
           ),
         );
       case SpHeaderProgress(:final phase, :final current, :final end):
@@ -222,6 +228,7 @@ class SpCubit extends Cubit<SpState> {
             headerValidationPhase: phase,
             headerValidationTo: end,
             headerValidationCurrent: current,
+            chainTip: end,
           ),
         );
       case SpHeaderProgressCompleted(:final phase):
@@ -250,7 +257,7 @@ class SpCubit extends Cubit<SpState> {
         emit(
           state.copyWith(
             balance: value.wallet.balance,
-            history: value.history,
+            history: _markSpOutputPayments(value.history, value.coins),
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
             chainTip: value.chainTip,
@@ -270,6 +277,30 @@ class SpCubit extends Cubit<SpState> {
   /// spend feedback.
   Future<void> refresh() => _refreshWalletData();
 
+  List<SpPayment> _markSpOutputPayments(
+    List<SpPayment> history,
+    List<SpCoin> coins,
+  ) {
+    final spOutputTxids = coins
+        .where((coin) => coin.source == SpCoinSource.sp)
+        .map((coin) => coin.outpoint.split(':').first)
+        .toSet();
+    return history
+        .map(
+          (payment) => SpPayment(
+            txid: payment.txid,
+            direction: payment.direction,
+            status: payment.status,
+            amountSat: payment.amountSat,
+            feeSat: payment.feeSat,
+            height: payment.height,
+            timestamp: payment.timestamp,
+            hasSpOutput: spOutputTxids.contains(payment.txid),
+          ),
+        )
+        .toList();
+  }
+
   Future<void> scan({int? startHeight}) async {
     // Re-entrancy guard: two UI entry points plus a double-tap could invoke the
     // one-shot scan concurrently. Mirrors the send flow's isBroadcasting guard.
@@ -277,7 +308,16 @@ class SpCubit extends Cubit<SpState> {
     _scanInFlight = true;
     try {
       if (isClosed) return;
-      emit(state.copyWith(error: null));
+      emit(
+        state.copyWith(
+          isScanning: true,
+          scanPhase: SpScanPhase.receive,
+          scanStartTime: DateTime.now(),
+          scanEtaSecs: null,
+          scanLastDurationSecs: null,
+          error: null,
+        ),
+      );
       // scanOnce returns immediately (the one-shot scan runs on a background
       // thread); progress + the post-scan refresh are driven by notifications.
       final result = await _scanSpWalletUsecase.execute(
@@ -286,8 +326,6 @@ class SpCubit extends Cubit<SpState> {
       if (isClosed) return;
       if (result case Err(:final failure)) {
         log.warning('SpCubit.scan: ${failure.logMessage}');
-        // A SpScanBusy means a scan the guard did not catch is live; clearing
-        // isScanning would wedge the Stop button, so leave it untouched.
         if (failure is SpScanBusy) {
           emit(state.copyWith(error: failure));
         } else {
@@ -349,6 +387,18 @@ class SpCubit extends Cubit<SpState> {
   }
 
   void clearError() => emit(state.copyWith(error: null));
+
+  void dismissScanCaughtUp() => emit(
+    state.copyWith(
+      scanPhase: null,
+      scanStartTime: null,
+      scanEtaSecs: null,
+      scanLastDurationSecs: null,
+      scanFrom: null,
+      scanTo: null,
+      scanCurrent: null,
+    ),
+  );
 
   @override
   Future<void> close() async {

@@ -3,8 +3,11 @@ import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usec
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_updates_usecase.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,14 +30,22 @@ class MockWatchSpUpdatesUsecase extends Mock implements WatchSpUpdatesUsecase {}
 class MockResyncSpListenerUsecase extends Mock
     implements ResyncSpListenerUsecase {}
 
+class MockValidateSpRecipientUsecase extends Mock
+    implements ValidateSpRecipientUsecase {}
+
+class MockPrepareSpPaymentUsecase extends Mock
+    implements PrepareSpPaymentUsecase {}
+
+class MockSendSpPaymentUsecase extends Mock implements SendSpPaymentUsecase {}
+
 SpWallet _wallet() => SpWallet(
-      spAddress: 'sp1qexample',
-      balance: SpBalance(
-        confirmedSat: BigInt.from(5000),
-        totalUnifiedSat: BigInt.from(5000),
-      ),
-      isScanning: false,
-    );
+  spAddress: 'sp1qexample',
+  balance: SpBalance(
+    confirmedSat: BigInt.from(5000),
+    totalUnifiedSat: BigInt.from(5000),
+  ),
+  isScanning: false,
+);
 
 void main() {
   late MockGetSpWalletUsecase getSpWallet;
@@ -52,6 +63,9 @@ void main() {
       revokeSpWalletUsecase: MockRevokeSpWalletUsecase(),
       watchSpUpdatesUsecase: MockWatchSpUpdatesUsecase(),
       resyncSpListenerUsecase: MockResyncSpListenerUsecase(),
+      validateSpRecipientUsecase: MockValidateSpRecipientUsecase(),
+      prepareSpPaymentUsecase: MockPrepareSpPaymentUsecase(),
+      sendSpPaymentUsecase: MockSendSpPaymentUsecase(),
     );
   });
 

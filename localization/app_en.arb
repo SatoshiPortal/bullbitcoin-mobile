@@ -15081,10 +15081,6 @@
       }
     }
   },
-  "spScanResumeTitle": "Resume scan",
-  "@spScanResumeTitle": {
-    "description": "Silent Payments: resume scan title"
-  },
   "spScanReadyMessage": "Ready to scan for incoming silent payments.",
   "@spScanReadyMessage": {
     "description": "Silent Payments: first scan ready message"

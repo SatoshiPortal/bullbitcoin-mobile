@@ -45,11 +45,6 @@ part 'wallet_bloc.freezed.dart';
 part 'wallet_event.dart';
 part 'wallet_state.dart';
 
-void _spDiag(String message) {
-  // ignore: avoid_print
-  print(message);
-}
-
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     required this._getWalletsUsecase,
@@ -154,17 +149,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
         switch (update) {
           case SpBalanceChanged(:final totalUnified):
-            _spDiag(
-              'SPDIAG wallet bloc update_balance total=$totalUnified '
-              'current=${state.spBalanceSat}',
-            );
             add(SetSpWalletBalance(totalUnified.toInt()));
           case SpSetupChanged():
-            _spDiag('SPDIAG wallet bloc update_setup_changed');
             add(const RefreshSpWallet());
         }
       });
-      _spDiag('SPDIAG wallet bloc subscribed_sp_updates');
 
       // Don't sync the wallets here so the wallet list is shown immediately
       // and the sync is done after that
@@ -677,10 +666,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     if (event.amount != null) {
-      _spDiag(
-        'SPDIAG wallet bloc refresh_event_amount amount=${event.amount} '
-        'previous=${state.spBalanceSat}',
-      );
       emit(state.copyWith(spBalanceSat: event.amount!));
       return;
     }
@@ -696,7 +681,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(isSpWalletLoading: false));
       return;
     }
-    _spDiag('SPDIAG wallet bloc setup_check setup=$isSpWalletSetup');
     emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
 
     // While a scan runs the live session holds the inner lock; refreshing now
@@ -704,7 +688,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // session down. Skip and keep the current snapshot; the scan's
     // ScanCompleted refresh updates it.
     if (_checkSpScanningForWalletUsecase.execute()) {
-      _spDiag('SPDIAG wallet bloc refresh_skipped_scanning');
       return;
     }
 
@@ -717,13 +700,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // `.revoked` sentinel).
     switch (await _refreshSpWalletForWalletUsecase.execute()) {
       case Ok(:final value):
-        _spDiag(
-          'SPDIAG wallet bloc refresh_result '
-          'versionAtStart=$balanceUpdateVersion '
-          'currentVersion=$_spBalanceUpdateVersion '
-          'valueTotal=${value?.balance.totalUnifiedSat} '
-          'stateBefore=${state.spBalanceSat}',
-        );
         emit(
           state.copyWith(
             spBalanceSat: balanceUpdateVersion == _spBalanceUpdateVersion
@@ -737,9 +713,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         // inner mutex) leaves the existing snapshot intact; the next
         // user-triggered refresh retries once the operation completes.
         log.warning('[WalletBloc] SP refresh deferred: ${failure.logMessage}');
-        _spDiag(
-          'SPDIAG wallet bloc refresh_error current=${state.spBalanceSat}',
-        );
         emit(state.copyWith(isSpWalletLoading: false));
     }
   }
@@ -749,10 +722,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     _spBalanceUpdateVersion++;
-    _spDiag(
-      'SPDIAG wallet bloc set_balance amount=${event.amount} '
-      'previous=${state.spBalanceSat} version=$_spBalanceUpdateVersion',
-    );
     emit(state.copyWith(spBalanceSat: event.amount));
   }
 

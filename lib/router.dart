@@ -190,7 +190,10 @@ class AppRouter {
       ArkSetupRouter.route,
       ArkRouter.route,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
-      SpRouter.route,
+      SpRouter.route(
+        sendRouteName: SendRoute.send.name,
+        sendRouteExtra: const SendRouteArgs.sp(),
+      ),
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,

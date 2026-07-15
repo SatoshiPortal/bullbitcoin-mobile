@@ -1,9 +1,13 @@
+import 'dart:collection';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
@@ -14,15 +18,17 @@ import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class SpWalletDetailScreen extends StatelessWidget {
-  const SpWalletDetailScreen({super.key});
+  const SpWalletDetailScreen({super.key, this.onSend});
+
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +105,7 @@ class SpWalletDetailScreen extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: const _SpBottomButtons(),
+          child: _SpBottomButtons(onSend: onSend),
         ),
       ),
     );
@@ -327,103 +333,91 @@ class _SpActivitySection extends StatelessWidget {
                 ),
               ),
             )
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: state.history.length,
-              itemBuilder: (context, index) {
-                final payment = state.history[index];
-                return _SpPaymentTile(payment: payment);
-              },
+          else ...[
+            const Gap(8),
+            ..._paymentsByDay().entries.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BBText(
+                      _dayLabel(entry.key),
+                      style: context.font.titleSmall?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(16),
+                    ...entry.value.map((payment) => TxListItem.sp(payment)),
+                    const Gap(16),
+                  ],
+                ),
+              ),
             ),
+          ],
         ],
       ),
     );
   }
-}
 
-class _SpPaymentTile extends StatelessWidget {
-  const _SpPaymentTile({required this.payment});
-  final SpPayment payment;
+  Map<int, List<SpPayment>> _paymentsByDay() {
+    final grouped = <int, List<SpPayment>>{};
 
-  @override
-  Widget build(BuildContext context) {
-    final isIncoming = payment.direction == SpPaymentDirection.receive;
-    final isFailed = payment.status == SpPaymentStatus.verifyFailed;
-    return ListTile(
-      tileColor: isFailed ? context.appColors.errorContainer : null,
-      leading: Icon(
-        isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
-        color: isFailed
-            ? context.appColors.error
-            : isIncoming
-            ? context.appColors.success
-            : context.appColors.error,
-      ),
-      title: Text(
-        context.loc.spSendSatsAmount(
-          FormatAmount.satsGrouped(payment.amountSat.toInt()),
-        ),
-      ),
-      subtitle: _SpPaymentStatusLabel(payment: payment),
-      trailing: payment.timestamp != null
-          ? Text(
-              _formatDate(payment.timestamp!.toInt()),
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.textMuted,
-              ),
-            )
-          : null,
-      onTap: () =>
-          context.pushNamed(SpRoute.spTransactionDetails.name, extra: payment),
+    for (final payment in state.history) {
+      final timestamp = payment.timestamp;
+      final day = timestamp == null
+          ? 8640000000000000
+          : _dayStart(_paymentDate(timestamp));
+      grouped.putIfAbsent(day, () => []).add(payment);
+    }
+
+    for (final payments in grouped.values) {
+      payments.sort((a, b) {
+        final aTime = a.timestamp == null
+            ? DateTime.fromMillisecondsSinceEpoch(0)
+            : _paymentDate(a.timestamp!);
+        final bTime = b.timestamp == null
+            ? DateTime.fromMillisecondsSinceEpoch(0)
+            : _paymentDate(b.timestamp!);
+        return bTime.compareTo(aTime);
+      });
+    }
+
+    final sorted = SplayTreeMap<int, List<SpPayment>>.from(
+      grouped,
+      (a, b) => b.compareTo(a),
     );
+    return LinkedHashMap<int, List<SpPayment>>.from(sorted);
   }
 
-  String _formatDate(int timestampSeconds) => timeago.format(
-    DateTime.fromMillisecondsSinceEpoch(timestampSeconds * 1000),
-  );
-}
+  String _dayLabel(int day) {
+    final date = DateTime.fromMillisecondsSinceEpoch(day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-class _SpPaymentStatusLabel extends StatelessWidget {
-  const _SpPaymentStatusLabel({required this.payment});
-  final SpPayment payment;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = _label(context);
-    final clickable =
-        payment.status == SpPaymentStatus.confirmedUnverified ||
-        payment.status == SpPaymentStatus.verifyFailed;
-    final style = context.font.bodyMedium?.copyWith(
-      color: payment.status == SpPaymentStatus.verifyFailed
-          ? context.appColors.error
-          : context.appColors.textMuted,
-      decoration: clickable ? TextDecoration.underline : null,
-    );
-    if (!clickable) return Text(label, style: style);
-    return InkWell(
-      onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
-      child: Text(label, style: style),
-    );
+    return date.compareTo(today) > 0
+        ? 'Pending'
+        : date.isAtSameMomentAs(today)
+        ? 'Today'
+        : date.isAtSameMomentAs(yesterday)
+        ? 'Yesterday'
+        : date.year == DateTime.now().year
+        ? DateFormat.MMMMd().format(date)
+        : DateFormat.yMMMMd().format(date);
   }
 
-  String _label(BuildContext context) => switch (payment.status) {
-    SpPaymentStatus.unconfirmed => context.loc.spUnconfirmed,
-    SpPaymentStatus.confirmedUnverified =>
-      payment.height != null
-          ? context.loc.spBlockVerifying('${payment.height}')
-          : context.loc.spVerifying,
-    SpPaymentStatus.verified =>
-      payment.height != null
-          ? context.loc.spBlockLabel('${payment.height}')
-          : context.loc.spConfirmed,
-    SpPaymentStatus.verifyFailed => context.loc.spVerificationFailed,
-  };
+  int _dayStart(DateTime date) =>
+      DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
+
+  DateTime _paymentDate(BigInt timestamp) =>
+      DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
 }
 
 class _SpBottomButtons extends StatelessWidget {
-  const _SpBottomButtons();
+  const _SpBottomButtons({this.onSend});
+
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -444,10 +438,10 @@ class _SpBottomButtons extends StatelessWidget {
         const Gap(4),
         Expanded(
           child: BBButton.big(
-            iconData: Icons.arrow_upward,
+            iconData: Icons.crop_free,
             iconFirst: true,
             label: context.loc.spSend,
-            onPressed: () => context.pushNamed(SpRoute.spSendRecipient.name),
+            onPressed: onSend ?? () {},
             bgColor: context.appColors.secondaryFixed,
             textColor: context.appColors.onSecondaryFixed,
             outlined: true,

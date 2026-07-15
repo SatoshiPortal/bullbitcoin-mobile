@@ -28,11 +28,6 @@ import 'package:bull_sdk/bwk.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
-void _spDiag(String message) {
-  // ignore: avoid_print
-  print(message);
-}
-
 /// Secondary (driven) adapter that owns the single live `SpAccount` FFI
 /// session and implements [SpAccountRepository].
 ///
@@ -51,6 +46,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
   StreamSubscription<SpNotification>? _sourceSub;
   StreamController<dom.SpNotification>? _broadcastController;
   dom.SpNotification? _latestHeaderNotification;
+  int? _latestHeaderTip;
   bool _notifTornDown = false;
   Future<void>? _pendingDispose;
 
@@ -76,12 +72,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
       StreamController<SpNotifLogLine>.broadcast();
 
   void _emit(SpUpdate update) {
-    switch (update) {
-      case SpBalanceChanged(:final totalUnified):
-        _spDiag('SPDIAG dart repo emit_balance total=$totalUnified');
-      case SpSetupChanged():
-        _spDiag('SPDIAG dart repo emit_setup_changed');
-    }
     if (!_updates.isClosed) _updates.add(update);
   }
 
@@ -353,11 +343,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
     final balance = SpBalanceMapper.toDomain(account.unifiedBalance());
     final isScanning = account.isScanning();
     final lastScannedHeight = account.lastScannedHeight();
-    _spDiag(
-      'SPDIAG dart repo snapshot total=${balance.totalUnifiedSat} '
-      'confirmed=${balance.confirmedSat} '
-      'isScanning=$isScanning lastScannedHeight=$lastScannedHeight',
-    );
     return SpWallet(
       spAddress: account.spAddress(),
       balance: balance,
@@ -377,12 +362,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   SpBalance balance() {
-    final balance = SpBalanceMapper.toDomain(_live.unifiedBalance());
-    _spDiag(
-      'SPDIAG dart repo balance total=${balance.totalUnifiedSat} '
-      'confirmed=${balance.confirmedSat}',
-    );
-    return balance;
+    return SpBalanceMapper.toDomain(_live.unifiedBalance());
   }
 
   @override
@@ -499,12 +479,15 @@ class BwkSpAccountRepository implements SpAccountRepository {
     final txHex = signedBytes
         .map((b) => b.toRadixString(16).padLeft(2, '0'))
         .join();
-    // changeSat lets bwk net the SP change into the unconfirmed send amount so
-    // history shows sent + fee before the change is scanned back in.
-    final txid = await account.broadcast(
-      txHex: txHex,
-      changeSat: simulation.changeSat,
+    final broadcastResult = notifications.firstWhere(
+      (n) => n is dom.SpBroadcasted || n is dom.SpBroadcastFailed,
     );
+    await account.broadcast(txHex: txHex);
+    final txid = switch (await broadcastResult) {
+      dom.SpBroadcasted(:final txid) => txid,
+      dom.SpBroadcastFailed(:final message) => throw Exception(message),
+      _ => throw StateError('unreachable broadcast notification'),
+    };
     // The tx is now irreversible. Log the txid before returning so it always
     // survives in the device log even if the caller was torn down mid-await.
     log.info('SpAccountRepository: broadcast succeeded txid=$txid');
@@ -533,12 +516,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   int? chainTip() {
-    try {
-      return _live.blockHeight();
-    } catch (e) {
-      log.warning('SpAccountRepository.chainTip: $e');
-      return null;
-    }
+    return _latestHeaderTip;
   }
 
   @override
@@ -595,6 +573,8 @@ class BwkSpAccountRepository implements SpAccountRepository {
       dom.SpScanSpendProgress() ||
       dom.SpScanStopped() ||
       dom.SpScanFailed() ||
+      dom.SpBroadcasted() ||
+      dom.SpBroadcastFailed() ||
       dom.SpBackendOffline() ||
       dom.SpPaymentHistoryUpdated() ||
       dom.SpHeaderProgressStarted() ||
@@ -624,7 +604,10 @@ class BwkSpAccountRepository implements SpAccountRepository {
   // runs on a background thread (returns immediately), so the scanning window is
   // ScanStarted..ScanCompleted, which gates WalletBloc from disposing mid-scan.
   void _recordNotification(dom.SpNotification n) {
-    if (_isHeaderNotification(n)) _latestHeaderNotification = n;
+    if (_isHeaderNotification(n)) {
+      _latestHeaderNotification = n;
+      _latestHeaderTip = _headerTip(n) ?? _latestHeaderTip;
+    }
     _scanning = switch (n) {
       dom.SpScanStarted() => true,
       dom.SpScanCompleted() ||
@@ -634,6 +617,8 @@ class BwkSpAccountRepository implements SpAccountRepository {
       dom.SpScanSpendProgress() ||
       dom.SpNewOutput() ||
       dom.SpOutputSpent() ||
+      dom.SpBroadcasted() ||
+      dom.SpBroadcastFailed() ||
       dom.SpElectrumTx() ||
       dom.SpBackendOffline() ||
       dom.SpPaymentHistoryUpdated() ||
@@ -664,9 +649,30 @@ class BwkSpAccountRepository implements SpAccountRepository {
     dom.SpScanFailed() ||
     dom.SpNewOutput() ||
     dom.SpOutputSpent() ||
+    dom.SpBroadcasted() ||
+    dom.SpBroadcastFailed() ||
     dom.SpElectrumTx() ||
     dom.SpBackendOffline() ||
     dom.SpPaymentHistoryUpdated() => false,
+  };
+
+  int? _headerTip(dom.SpNotification n) => switch (n) {
+    dom.SpHeaderProgressStarted(:final end) ||
+    dom.SpHeaderProgress(:final end) => end,
+    dom.SpHeaderProgressCompleted() || dom.SpHeaderProgressFailed() => null,
+    dom.SpScanStarted() ||
+    dom.SpScanReceiveProgress() ||
+    dom.SpScanSpendProgress() ||
+    dom.SpScanCompleted() ||
+    dom.SpScanStopped() ||
+    dom.SpScanFailed() ||
+    dom.SpNewOutput() ||
+    dom.SpOutputSpent() ||
+    dom.SpBroadcasted() ||
+    dom.SpBroadcastFailed() ||
+    dom.SpElectrumTx() ||
+    dom.SpBackendOffline() ||
+    dom.SpPaymentHistoryUpdated() => null,
   };
 
   @override
@@ -684,7 +690,6 @@ class BwkSpAccountRepository implements SpAccountRepository {
 
   @override
   void notifyBalanceChanged(BigInt totalUnifiedSat) {
-    _spDiag('SPDIAG dart repo notify_balance total=$totalUnifiedSat');
     _emit(SpBalanceChanged(totalUnifiedSat));
   }
 
@@ -767,6 +772,7 @@ class BwkSpAccountRepository implements SpAccountRepository {
     _sourceSub = null;
     _broadcastController = null;
     _latestHeaderNotification = null;
+    _latestHeaderTip = null;
     _notifTornDown = false;
   }
 }

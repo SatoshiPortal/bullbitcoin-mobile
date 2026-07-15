@@ -51,6 +51,16 @@ final class SpOutputSpent extends SpNotification {
   const SpOutputSpent(this.outpoint);
 }
 
+final class SpBroadcasted extends SpNotification {
+  final String txid;
+  const SpBroadcasted(this.txid);
+}
+
+final class SpBroadcastFailed extends SpNotification {
+  final String message;
+  const SpBroadcastFailed(this.message);
+}
+
 final class SpElectrumTx extends SpNotification {
   final SpCoinSource kind;
   final String txid;

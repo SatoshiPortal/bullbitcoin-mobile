@@ -37,6 +37,8 @@ SpAddressKind classifySpAddress(String input) {
       lower.startsWith('bc1') ||
       lower.startsWith('tb1') ||
       lower.startsWith('1') ||
+      lower.startsWith('2') ||
+      lower.startsWith('3') ||
       lower.startsWith('m') ||
       lower.startsWith('n')) {
     return SpAddressKind.bitcoin;

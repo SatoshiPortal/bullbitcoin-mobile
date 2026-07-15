@@ -153,12 +153,12 @@ abstract interface class SpAccountRepository {
   //
   // `network()` returns null only when no session is established (a genuine
   // unknown); an FFI read failure throws so callers can fail closed instead of
-  // treating a transient error as "no network". `backendOnline()`/`chainTip()`
-  // stay tolerant (false/null on FRB Err).
+  // treating a transient error as "no network". `backendOnline()` stays tolerant
+  // (false on FRB Err).
   SpNetwork? network();
   bool backendOnline();
 
-  /// Current chain tip height, or null on FRB Err / no session.
+  /// Latest header-store tip seen from header progress, or null if unknown.
   int? chainTip();
 
   // notifications (broadcast view of the single-take receiver)

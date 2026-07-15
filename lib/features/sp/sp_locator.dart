@@ -221,6 +221,9 @@ class SpLocator {
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
         watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
         resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
+        validateSpRecipientUsecase: locator<ValidateSpRecipientUsecase>(),
+        prepareSpPaymentUsecase: locator<PrepareSpPaymentUsecase>(),
+        sendSpPaymentUsecase: locator<SendSpPaymentUsecase>(),
       ),
     );
   }

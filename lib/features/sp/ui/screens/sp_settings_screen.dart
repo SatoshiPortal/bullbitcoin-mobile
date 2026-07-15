@@ -178,10 +178,7 @@ class _WalletManagementSection extends StatelessWidget {
         SettingsEntryItem(
           icon: Icons.search,
           title: context.loc.spScanNow,
-          onTap: () {
-            unawaited(context.read<SpCubit>().scan());
-            context.pushNamed(SpRoute.spScan.name);
-          },
+          onTap: () => context.pushNamed(SpRoute.spScan.name),
         ),
         SettingsEntryItem(
           icon: Icons.verified_outlined,

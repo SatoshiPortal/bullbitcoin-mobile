@@ -8,11 +8,6 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:meta/meta.dart';
 
-void _spDiag(String message) {
-  // ignore: avoid_print
-  print(message);
-}
-
 /// Reads the current wallet snapshot + payment history + backend info in one
 /// call (used by the cubit on load and after coin-change notifications).
 class SpWalletData {
@@ -52,26 +47,11 @@ class LoadSpWalletDataUsecase {
       // means the wallet is gone (revoked / not set up).
       final wallet = await _ensureSpSessionUsecase.execute();
       if (wallet == null) {
-        _spDiag('SPDIAG dart load_data wallet_null');
         return const Err(SpNotSetUp('SP session unavailable'));
       }
-      _spDiag(
-        'SPDIAG dart load_data wallet_total=${wallet.balance.totalUnifiedSat} '
-        'confirmed=${wallet.balance.confirmedSat}',
-      );
       _repository.notifyBalanceChanged(wallet.balance.totalUnifiedSat);
       final historyResult = await _repository.history();
       final coinsResult = await _repository.coins();
-      _spDiag(
-        'SPDIAG dart load_data history=${switch (historyResult) {
-          Ok(value: final h) => h.length,
-          Err() => 'err',
-        }} '
-        'coins=${switch (coinsResult) {
-          Ok(value: final c) => c.length,
-          Err() => 'err',
-        }}',
-      );
       return switch ((historyResult, coinsResult)) {
         (Err(failure: final f), _) => Err(f),
         (_, Err(failure: final f)) => Err(f),

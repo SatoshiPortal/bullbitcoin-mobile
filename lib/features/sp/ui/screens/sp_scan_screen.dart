@@ -39,7 +39,7 @@ class SpScanScreen extends StatelessWidget {
               return _ErrorView(message: state.error!.toTranslated(context));
             }
             if (!state.hasScannedBefore) return _FirstScanView(state: state);
-            if (state.isCaughtUp) {
+            if (state.isCaughtUp && state.scanLastDurationSecs != null) {
               return _CaughtUpView(
                 tip: state.chainTip!,
                 lastDurationSecs: state.scanLastDurationSecs,
@@ -127,34 +127,38 @@ class _CaughtUpView extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  color: context.appColors.success,
-                  size: 72,
-                ),
-                const Gap(24),
-                Text(
-                  context.loc.spScanCaughtUpAtBlock('$tip'),
-                  style: context.font.titleMedium?.copyWith(
+          child: Listener(
+            behavior: HitTestBehavior.opaque,
+            onPointerDown: (_) => context.read<SpCubit>().dismissScanCaughtUp(),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check_circle,
                     color: context.appColors.success,
+                    size: 72,
                   ),
-                ),
-                if (duration != null) ...[
-                  const Gap(8),
+                  const Gap(24),
                   Text(
-                    context.loc.spScanScannedIn(
-                      formatDuration(context.loc, duration),
-                    ),
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
+                    context.loc.spScanCaughtUpAtBlock('$tip'),
+                    style: context.font.titleMedium?.copyWith(
+                      color: context.appColors.success,
                     ),
                   ),
+                  if (duration != null) ...[
+                    const Gap(8),
+                    Text(
+                      context.loc.spScanScannedIn(
+                        formatDuration(context.loc, duration),
+                      ),
+                      style: context.font.bodySmall?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -175,7 +179,7 @@ class _ResumeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final last = state.lastScannedHeight;
     final tip = state.chainTip;
-    final gap = (last != null && tip != null) ? tip - last : null;
+    final gap = (last != null && tip != null && tip > last) ? tip - last : 0;
     return Column(
       children: [
         Expanded(
@@ -185,32 +189,25 @@ class _ResumeView extends StatelessWidget {
               children: [
                 Icon(Icons.search, color: context.appColors.primary, size: 72),
                 const Gap(24),
-                if (gap != null) ...[
-                  Text(
-                    context.loc.spScanBlocksBehind(gap),
-                    style: context.font.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(4),
-                  Text(
-                    context.loc.spScanApproxDuration(
-                      blocksToApproxDuration(
-                        context.loc,
-                        gap,
-                        blocksPerDay: SpConfig.blocksPerDay,
-                      ),
+                Text(
+                  context.loc.spScanBlocksBehind(gap),
+                  style: context.font.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(4),
+                Text(
+                  context.loc.spScanApproxDuration(
+                    blocksToApproxDuration(
+                      context.loc,
+                      gap,
+                      blocksPerDay: SpConfig.blocksPerDay,
                     ),
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
-                    textAlign: TextAlign.center,
                   ),
-                ] else
-                  Text(
-                    context.loc.spScanResumeTitle,
-                    style: context.font.titleMedium,
-                    textAlign: TextAlign.center,
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
                   ),
+                  textAlign: TextAlign.center,
+                ),
                 if (state.scanLastDurationSecs != null) ...[
                   const Gap(8),
                   Text(

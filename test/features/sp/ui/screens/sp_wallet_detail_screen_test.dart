@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/router.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter/material.dart';
@@ -164,10 +164,47 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.text('1 000 sats'), findsOneWidget);
+    expect(find.byType(TxListItem), findsOneWidget);
+  });
+
+  testWidgets('shows SP badge when payment has an SP output', (tester) async {
+    final txid = 'aa' * 32;
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: txid,
+              direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.unconfirmed,
+              amountSat: BigInt.from(1000),
+            ),
+          ],
+          coins: [
+            SpCoin(
+              source: SpCoinSource.sp,
+              outpoint: '$txid:0',
+              amountSat: BigInt.from(1000),
+              status: SpCoinStatus.unspent,
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    expect(find.text('SP'), findsOneWidget);
   });
 
   testWidgets('shows verifying payment status', (tester) async {
+    final timestamp = BigInt.from(
+      DateTime.now()
+              .subtract(const Duration(minutes: 5))
+              .millisecondsSinceEpoch ~/
+          1000,
+    );
     when(() => loadUsecase.execute()).thenAnswer(
       (_) async => Ok<SpWalletData, SpFailure>(
         _walletData(
@@ -178,6 +215,7 @@ void main() {
               status: SpPaymentStatus.confirmedUnverified,
               amountSat: BigInt.from(1000),
               height: 800000,
+              timestamp: timestamp,
             ),
           ],
         ),
@@ -187,7 +225,43 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.text('Verifying'), findsOneWidget);
+    expect(find.textContaining('Verifying'), findsOneWidget);
+    expect(find.textContaining('ago'), findsOneWidget);
+    expect(find.textContaining('Block 800000'), findsNothing);
+  });
+
+  testWidgets('shows verified payment time ago with confirmation icon', (
+    tester,
+  ) async {
+    final timestamp = BigInt.from(
+      DateTime.now()
+              .subtract(const Duration(hours: 2))
+              .millisecondsSinceEpoch ~/
+          1000,
+    );
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: 'aa' * 32,
+              direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.verified,
+              amountSat: BigInt.from(1000),
+              height: 800000,
+              timestamp: timestamp,
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    expect(find.textContaining('ago'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+    expect(find.textContaining('Block 800000'), findsNothing);
   });
 
   testWidgets('shows failed verification with error background', (
@@ -211,10 +285,8 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    final context = tester.element(find.text('Verification failed'));
-    final tile = tester.widget<ListTile>(find.byType(ListTile).first);
     expect(find.text('Verification failed'), findsOneWidget);
-    expect(tile.tileColor, context.appColors.errorContainer);
+    expect(find.byType(TxListItem), findsOneWidget);
   });
 
   testWidgets('shows scan strip when scanning', (tester) async {

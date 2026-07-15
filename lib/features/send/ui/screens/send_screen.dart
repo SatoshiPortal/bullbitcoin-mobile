@@ -884,13 +884,14 @@ class _BottomButtons extends StatelessWidget {
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx) ...[
+          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -989,6 +990,7 @@ class _OnchainTransactionReview extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
     final label = context.select((SendCubit cubit) => cubit.state.label);
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1002,7 +1004,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
           note: label,
-          onFeePriorityTap: hasFinalizedTx
+          onFeePriorityTap: hasFinalizedTx || isSpMode
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();

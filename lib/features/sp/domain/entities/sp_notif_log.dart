@@ -33,6 +33,10 @@ String formatSpNotification(SpNotification n) {
       return 'NewOutput $outpoint ${amountSat}sat';
     case SpOutputSpent(:final outpoint):
       return 'OutputSpent $outpoint';
+    case SpBroadcasted(:final txid):
+      return 'Broadcasted $txid';
+    case SpBroadcastFailed(:final message):
+      return 'BroadcastFailed: $message';
     case SpElectrumTx(
       :final kind,
       :final txid,

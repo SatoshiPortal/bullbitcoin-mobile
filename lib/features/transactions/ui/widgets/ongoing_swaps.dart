@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -68,10 +68,7 @@ class OngoingSwapsWidget extends StatelessWidget {
         ...ongoingSwaps.map((tx) {
           return Column(
             crossAxisAlignment: .start,
-            children: [
-              TxListItem(tx: tx),
-              const Gap(8),
-            ],
+            children: [TxListItem.transaction(tx), const Gap(8)],
           );
         }),
 

@@ -89,9 +89,7 @@ void main() {
     expect(find.text('Verifying'), findsOneWidget);
   });
 
-  testWidgets('shows failed verification with error background', (
-    tester,
-  ) async {
+  testWidgets('shows failed verification with error color', (tester) async {
     final payment = SpPayment(
       txid: '99aabbcc' * 8,
       direction: SpPaymentDirection.send,
@@ -102,17 +100,9 @@ void main() {
     await tester.pumpWidget(_buildPage(cubit, payment));
 
     final context = tester.element(find.text('Verification failed'));
-    final containers = tester.widgetList<Container>(find.byType(Container));
+    final label = tester.widget<Text>(find.text('Verification failed'));
     expect(find.text('Verification failed'), findsOneWidget);
-    expect(
-      containers.any(
-        (container) =>
-            container.decoration is BoxDecoration &&
-            (container.decoration! as BoxDecoration).color ==
-                context.appColors.errorContainer,
-      ),
-      isTrue,
-    );
+    expect(label.style?.color, context.appColors.error);
   });
 
   testWidgets('shows fee when present', (tester) async {

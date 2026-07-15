@@ -82,6 +82,7 @@ graph TB
     SEND --> FEES
     SEND --> NETWORK
     SEND --> PAYJOIN
+    SEND --> SP
     SEND --> SWAPS
     SEND --> UTXO_MGMT
     SEND --> WALLETS

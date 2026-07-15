@@ -1,10 +1,15 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/send_sp_payment_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/validate_sp_recipient_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_updates_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
@@ -13,10 +18,16 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 // Part of the SP public surface: cross-feature consumers get these pure value
 // objects (and the feature's failure family) via the facade, so they never
 // import the feature's `domain/`.
-export 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart' show SpBalance;
+export 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart'
+    show SpBalance;
+export 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart'
+    show SpRecipient;
+export 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart'
+    show SpTxDraft;
 export 'package:bb_mobile/features/sp/domain/entities/sp_update.dart'
     show SpUpdate, SpBalanceChanged, SpSetupChanged;
-export 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart' show SpWallet;
+export 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart'
+    show SpWallet;
 export 'package:bb_mobile/features/sp/domain/sp_failure.dart' show SpFailure;
 
 /// Public API of the Silent Payments feature. The ONLY entry point for
@@ -33,6 +44,9 @@ class SpFacade {
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
   final WatchSpUpdatesUsecase _watchSpUpdatesUsecase;
   final ResyncSpListenerUsecase _resyncSpListenerUsecase;
+  final ValidateSpRecipientUsecase _validateSpRecipientUsecase;
+  final PrepareSpPaymentUsecase _prepareSpPaymentUsecase;
+  final SendSpPaymentUsecase _sendSpPaymentUsecase;
 
   SpFacade({
     required this._getSpWalletUsecase,
@@ -42,6 +56,9 @@ class SpFacade {
     required this._revokeSpWalletUsecase,
     required this._watchSpUpdatesUsecase,
     required this._resyncSpListenerUsecase,
+    required this._validateSpRecipientUsecase,
+    required this._prepareSpPaymentUsecase,
+    required this._sendSpPaymentUsecase,
   });
 
   /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
@@ -79,4 +96,25 @@ class SpFacade {
   /// when no session is live (a no-op); `Err` when the restart failed.
   Future<Result<void, SpFailure>> resyncListener() =>
       _resyncSpListenerUsecase.execute();
+
+  Result<SpRecipient, SpFailure> validateRecipient({
+    required String input,
+    required BigInt amountSat,
+    required bool isMax,
+  }) => _validateSpRecipientUsecase.execute(
+    input: input,
+    amountSat: amountSat,
+    isMax: isMax,
+  );
+
+  Future<Result<SpTxDraft, SpFailure>> preparePayment({
+    required List<SpRecipient> recipients,
+    required BigInt feerateSatVb,
+  }) => _prepareSpPaymentUsecase.execute(
+    recipients: recipients,
+    feerateSatVb: feerateSatVb,
+  );
+
+  Future<Result<String, SpFailure>> sendPayment({required SpTxDraft draft}) =>
+      _sendSpPaymentUsecase.execute(draft: draft);
 }
