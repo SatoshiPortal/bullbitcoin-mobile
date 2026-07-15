@@ -177,6 +177,18 @@ void main() {
     registerFallbackValue(
       ElectrumServerNetwork.fromEnvironment(isTestnet: true, isLiquid: false),
     );
+    // Fallback for any()/wallet: any() matchers against
+    // BdkWalletDatasource.signPsbt's `wallet` param in the _broadcastPsbt
+    // real-signing-stack tests.
+    registerFallbackValue(
+      WalletModel.privateBdk(
+            id: 'w1',
+            scriptType: ScriptType.bip84,
+            mnemonic: 'abandon',
+            isTestnet: true,
+          )
+          as PrivateBdkWalletModel,
+    );
   });
 
   setUp(() {
@@ -302,6 +314,194 @@ void main() {
       expect(result, isNotNull);
       expect(result!.isCompleted, isTrue);
       verifyNever(() => labels.store(any()));
+    });
+  });
+
+  group('syncs the wallet after WE broadcast a transaction', () {
+    // Without this, the wallet balance/tx list only picked up a broadcast
+    // this repository itself just made once some unrelated sync happened to
+    // run — the same staleness class of gap _watchForBroadcast's active poll
+    // fixes for the receiver's own detection of the SENDER's broadcast.
+    late _MockWalletRepository walletRepo;
+
+    setUp(() {
+      walletRepo = _MockWalletRepository();
+      when(
+        () => walletRepo.getWallet(any(), sync: any(named: 'sync')),
+      ).thenAnswer((_) async => null);
+      when(
+        () => walletRepo.walletSyncFinishedStream,
+      ).thenAnswer((_) => const Stream.empty());
+    });
+
+    test('tryBroadcastOriginalTransaction (receiver fallback) forces a '
+        'synced wallet lookup after a successful broadcast', () async {
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+      final model = _receiverModel(walletId: 'w1', originalTxId: 'orig-txid');
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      await repo.tryBroadcastOriginalTransaction(model.toEntity());
+      // The sync is deliberately fire-and-forget (unawaited); give its
+      // Future(() => ...) wrapper a tick to run before verifying.
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => walletRepo.getWallet('w1', sync: true)).called(1);
+    });
+
+    test('tryBroadcastOriginalTransaction (sender fallback) forces a synced '
+        'wallet lookup after a successful broadcast', () async {
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+      final model = _senderModel(
+        walletId: 'w1',
+        originalTxId: 'sender-orig-txid',
+      );
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      await repo.tryBroadcastOriginalTransaction(model.toEntity());
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => walletRepo.getWallet('w1', sync: true)).called(1);
+    });
+
+    test('a sync failure is swallowed and does not affect the already-'
+        'successful broadcast result', () async {
+      when(
+        () => walletRepo.getWallet(any(), sync: any(named: 'sync')),
+      ).thenThrow(Exception('no network'));
+      final repo = PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        seedDatasource: _MockSeedDatasource(),
+        bdkWalletDatasource: _MockBdkWalletDatasource(),
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+      final model = _receiverModel(walletId: 'w1', originalTxId: 'orig-txid');
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      final result = await repo.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(result, isNotNull);
+      expect(result!.isCompleted, isTrue);
+    });
+
+    test('_broadcastPsbt (sender, real payjoin) forces a synced wallet '
+        'lookup after broadcasting the finalized proposal', () async {
+      final proposalController =
+          StreamController<PayjoinSenderModel>.broadcast();
+      addTearDown(proposalController.close);
+      when(
+        () => pdk.proposalsForSenders,
+      ).thenAnswer((_) => proposalController.stream);
+
+      // Full signing stack so _processPayjoinProposal reaches _broadcastPsbt
+      // instead of falling into the original-tx fallback.
+      final walletMetadata = _MockWalletMetadataDatasource();
+      final seed = _MockSeedDatasource();
+      final bdkWallet = _MockBdkWalletDatasource();
+      when(() => walletMetadata.fetch('w1')).thenAnswer(
+        (_) async => const WalletMetadataModel(
+          id: 'wpkh([00000000/84h/1h/0h])',
+          masterFingerprint: '00000000',
+          xpubFingerprint: '11111111',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: true,
+        ),
+      );
+      when(() => seed.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(
+                  mnemonicWords: [
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'about',
+                  ],
+                )
+                as MnemonicSeedModel,
+      );
+      when(
+        () => bdkWallet.signPsbt(any(), wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => 'signed-psbt');
+
+      final model = _senderModel(
+        walletId: 'w1',
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      ).copyWith(txId: 'payjoin-txid');
+      when(() => local.fetchSender(model.uri)).thenAnswer((_) async => model);
+
+      // Constructing it wires the datasource stream subscriptions that drive
+      // this test; nothing further is called on it directly.
+      PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: walletMetadata,
+        seedDatasource: seed,
+        bdkWalletDatasource: bdkWallet,
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: () => walletRepo,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: _MockSettingsRepository(),
+        labelsFacade: () => labels,
+      );
+
+      proposalController.add(model);
+      // Two ticks: the first drains the stream-delivery + signing/broadcast
+      // await chain (which schedules _syncWalletAfterBroadcast's own
+      // Future(() => ...) timer along the way); the second lets that timer
+      // itself fire. A single tick races it against this delay's own timer,
+      // registered before the stream ever delivers its event.
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => walletRepo.getWallet('w1', sync: true)).called(1);
     });
   });
 
@@ -1060,15 +1260,6 @@ void main() {
                   ],
                 )
                 as MnemonicSeedModel,
-      );
-      registerFallbackValue(
-        WalletModel.privateBdk(
-              id: 'w1',
-              scriptType: ScriptType.bip84,
-              mnemonic: 'abandon',
-              isTestnet: true,
-            )
-            as PrivateBdkWalletModel,
       );
       when(
         () => bdkWallet.signPsbt(any(), wallet: any(named: 'wallet')),

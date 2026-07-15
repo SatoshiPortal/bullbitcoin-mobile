@@ -351,6 +351,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  receiver with no watcher registered).
       _stopWatching(payjoin.id);
 
+      // Best-effort, non-blocking: get the wallet's balance/tx list to
+      // reflect this broadcast promptly instead of waiting on whatever
+      // unrelated sync happens to run next (the same staleness class of gap
+      // as the receiver's own payjoin-tx watcher — see _watchForBroadcast).
+      _syncWalletAfterBroadcast(completedModel.walletId);
+
       return completedModel.toEntity();
     } catch (e) {
       log.severe(
@@ -998,7 +1004,38 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
     }
 
+    // Best-effort, non-blocking: see tryBroadcastOriginalTransaction's call
+    // for why this can't wait on some unrelated sync to run.
+    _syncWalletAfterBroadcast(completedModel.walletId);
+
     return completedModel.toEntity() as PayjoinSender;
+  }
+
+  /// Fire-and-forget wallet sync after WE broadcast a transaction (either a
+  /// real payjoin proposal or a plain fallback) — the only two places this
+  /// repository itself puts a new transaction on the network. Not awaited by
+  /// callers: it must never delay resolving the payjoin session (this can
+  /// take a real network round-trip), and a transient failure here (no
+  /// network at that exact moment) shouldn't be treated as the broadcast —
+  /// which already succeeded — having failed. The next organic sync (or the
+  /// receiver's own _watchForBroadcast poll) still catches up eventually.
+  ///
+  /// The call is wrapped in `Future(() => ...)` rather than invoked directly:
+  /// this repository's callers (tryBroadcastOriginalTransaction,
+  /// _broadcastPsbt) already wrap their whole body in a try/catch for the
+  /// broadcast itself, so a SYNCHRONOUS throw from `_walletRepository()` or
+  /// `getWallet(...)` (as opposed to the future it returns rejecting) would
+  /// otherwise be caught by that outer try/catch and misreported as the
+  /// broadcast having failed, even though it already succeeded.
+  void _syncWalletAfterBroadcast(String walletId) {
+    unawaited(
+      Future(
+        () => _walletRepository().getWallet(walletId, sync: true),
+      ).catchError((e) {
+        log.warning('Failed to sync wallet after payjoin broadcast: $e');
+        return null;
+      }),
+    );
   }
 
   /// Tags a completed payjoin transaction with the payjoin system label so it
