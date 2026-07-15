@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 
@@ -6,6 +7,7 @@ import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dar
 /// merges this with the list [Invoice] explicitly, it never conflates them.
 class InvoiceStatusSnapshot {
   final InvoiceStatus status;
+  final InvoiceSettlementState settlementState;
   final String pricingMode;
   final String settlementStatus;
   final int amountSat;
@@ -27,9 +29,12 @@ class InvoiceStatusSnapshot {
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
+  final List<InvoicePaymentEvent> paymentEvents;
+  final bool presentationMarksLatePayment;
 
   const InvoiceStatusSnapshot({
     required this.status,
+    this.settlementState = InvoiceSettlementState.none,
     required this.pricingMode,
     required this.settlementStatus,
     required this.amountSat,
@@ -51,10 +56,42 @@ class InvoiceStatusSnapshot {
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
+    this.paymentEvents = const [],
+    this.presentationMarksLatePayment = false,
   });
 
-  /// The status poll stops on a terminal status.
-  bool get isTerminal => status.isTerminal;
+  /// True only when lifecycle and settlement supervision are both complete.
+  bool get isTerminal => isMonitoringComplete;
+
+  bool get hasPaymentEvidence =>
+      paymentEvents.isNotEmpty ||
+      paidAmountSat != null ||
+      paidAt != null ||
+      paidVia != null ||
+      status == InvoiceStatus.inProgress ||
+      status == InvoiceStatus.partiallyPaid ||
+      status == InvoiceStatus.paid ||
+      status == InvoiceStatus.underpaid ||
+      status == InvoiceStatus.overpaid;
+
+  bool get hasLatePayment =>
+      presentationMarksLatePayment ||
+      paymentEvents.any((event) => event.isLate) ||
+      (paidAt != null &&
+          (!expiresAt.isAfter(paidAt!) || status == InvoiceStatus.cancelled));
+
+  bool get isSettlementPending =>
+      settlementState == InvoiceSettlementState.pending;
+
+  bool get hasSettlementProblem =>
+      settlementState == InvoiceSettlementState.problem;
+
+  /// A lifecycle-terminal invoice still needs polling until provisional or
+  /// problematic settlement evidence reaches a resolved state.
+  bool get isMonitoringComplete =>
+      status.isTerminal &&
+      settlementState != InvoiceSettlementState.pending &&
+      settlementState != InvoiceSettlementState.problem;
 
   bool get isCancellable => status == InvoiceStatus.unpaid;
 

@@ -86,12 +86,36 @@ class InvoiceDetailScreen extends StatelessWidget {
             context.loc.invoiceStatusLabel,
             invoiceStatusText(context, status),
           ),
+          if (invoiceSettlementSupportingText(context, snapshot.settlementState)
+              case final settlementText?)
+            _supportingStatus(context, settlementText),
+          if (snapshot.hasLatePayment)
+            _supportingStatus(context, context.loc.invoiceLatePayment),
           const Divider(),
           _row(
             context,
             context.loc.invoiceAmountLabel,
             context.loc.invoiceAmountSats(snapshot.amountSat),
           ),
+          if (snapshot.paidAmountSat case final paidAmountSat?)
+            _row(
+              context,
+              context.loc.invoicePaymentReceivedLabel,
+              context.loc.invoiceAmountSats(paidAmountSat),
+            ),
+          if (snapshot.hasPaymentEvidence && snapshot.remainingAmountSat > 0)
+            _row(
+              context,
+              context.loc.invoicePaymentRemainingLabel,
+              context.loc.invoiceAmountSats(snapshot.remainingAmountSat),
+            ),
+          if (snapshot.paidAmountSat case final paidAmountSat?
+              when paidAmountSat > snapshot.amountSat)
+            _row(
+              context,
+              context.loc.invoicePaymentOverpaidByLabel,
+              context.loc.invoiceAmountSats(paidAmountSat - snapshot.amountSat),
+            ),
           const Divider(),
           _expiry(context, snapshot),
           const Divider(),
@@ -100,8 +124,18 @@ class InvoiceDetailScreen extends StatelessWidget {
             _notice(context, context.loc.invoiceFallbackUnavailable),
           if (state.fallbackSupervisionOverflow)
             _notice(context, context.loc.invoiceFallbackOverflow),
-          for (final fallback in state.fallbackSupervisions)
-            _fallbackBlock(context, fallback),
+          if (snapshot.paymentEvents.isNotEmpty ||
+              state.fallbackSupervisions.isNotEmpty) ...[
+            Text(
+              context.loc.invoicePaymentHistoryTitle,
+              style: context.font.titleMedium,
+            ),
+            const Gap(8),
+            for (final payment in snapshot.paymentEvents)
+              _paymentEventBlock(context, payment),
+            for (final fallback in state.fallbackSupervisions)
+              _fallbackBlock(context, fallback),
+          ],
           if (!unsupported) ...[
             const Gap(20),
             Text(
@@ -172,6 +206,98 @@ class InvoiceDetailScreen extends StatelessWidget {
     );
   }
 
+  Widget _supportingStatus(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          text,
+          style: context.font.bodySmall?.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _paymentEventBlock(BuildContext context, InvoicePaymentEvent payment) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(_paymentRailTitle(context, payment.rail)),
+          const Gap(4),
+          Text(
+            _paymentEventStateText(context, payment),
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+          if (payment.isLate)
+            Text(
+              context.loc.invoiceLatePayment,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
+          _row(
+            context,
+            context.loc.invoicePaymentReceivedLabel,
+            context.loc.invoiceAmountSats(payment.amountSat),
+          ),
+          if (payment.transactionId case final transactionId?)
+            _copyBlock(
+              context,
+              context.loc.invoicePaymentTransactionLabel,
+              transactionId,
+            ),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+
+  String _paymentRailTitle(BuildContext context, PaymentMethod rail) {
+    return switch (rail) {
+      PaymentMethod.btc => context.loc.invoicePaymentEventBitcoinTitle,
+      PaymentMethod.lightning => context.loc.invoicePaymentEventLightningTitle,
+      PaymentMethod.liquid => context.loc.invoicePaymentEventLiquidTitle,
+    };
+  }
+
+  String _paymentEventStateText(
+    BuildContext context,
+    InvoicePaymentEvent payment,
+  ) {
+    if (payment.state == InvoicePaymentEventState.problem) {
+      return switch (payment.problem) {
+        InvoicePaymentProblem.evicted =>
+          context.loc.invoicePaymentProblemEvicted,
+        InvoicePaymentProblem.reorged =>
+          context.loc.invoicePaymentProblemReorged,
+        InvoicePaymentProblem.conflicted =>
+          context.loc.invoicePaymentProblemConflicted,
+        InvoicePaymentProblem.replaced =>
+          context.loc.invoicePaymentProblemReplaced,
+        InvoicePaymentProblem.unknown ||
+        null => context.loc.invoicePaymentProblemUnknown,
+      };
+    }
+    return switch (payment.state) {
+      InvoicePaymentEventState.pending =>
+        payment.rail == PaymentMethod.btc
+            ? context.loc.invoicePaymentSeenMempool
+            : context.loc.invoiceSettlementPending,
+      InvoicePaymentEventState.confirming =>
+        context.loc.invoicePaymentConfirmations(payment.confirmations),
+      InvoicePaymentEventState.settled => context.loc.invoiceSettlementComplete,
+      InvoicePaymentEventState.problem =>
+        context.loc.invoicePaymentProblemUnknown,
+    };
+  }
+
   Widget _fallbackBlock(
     BuildContext context,
     InvoiceFallbackSupervision fallback,
@@ -182,8 +308,8 @@ class InvoiceDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.loc.invoiceFallbackSectionTitle,
-            style: context.font.titleMedium,
+            context.loc.invoicePaymentEventFallbackTitle,
+            style: context.font.bodyLarge,
           ),
           const Gap(4),
           Text(

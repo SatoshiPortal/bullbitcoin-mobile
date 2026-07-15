@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/invoices/application/commands/invoice_command
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_pay_service_datasource.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/encrypted_private_invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
@@ -317,6 +318,47 @@ void main() {
   });
 
   group('getInvoiceStatus (unsigned)', () {
+    BullnymInvoiceStatus observedStatus({
+      String settlementStatus = 'none',
+      String presentationStatus = 'payment_detected',
+      String observationState = 'mempool',
+      int confirmations = 0,
+      int firstSeenAtUnix = 200,
+    }) {
+      return BullnymInvoiceStatus(
+        status: 'paid',
+        presentationStatus: presentationStatus,
+        pricingMode: 'sat',
+        settlementStatus: settlementStatus,
+        amountSat: 1000,
+        remainingAmountSat: 0,
+        paymentToleranceSat: 0,
+        rateLocksUntilUnix: 150,
+        expiresAtUnix: 200,
+        paidVia: 'bitcoin',
+        paidAtUnix: firstSeenAtUnix,
+        paidAmountSat: 1000,
+        acceptBtc: true,
+        acceptLn: false,
+        acceptLiquid: false,
+        bitcoinDirectObservations: [
+          BullnymBitcoinDirectObservation(
+            source: confirmations == 0 ? 'mempool' : 'chain',
+            rail: 'bitcoin',
+            txid: 'ab' * 32,
+            vout: 1,
+            address: 'bc1qmerchant',
+            amountSat: 1000,
+            confirmations: confirmations,
+            blockHeight: confirmations == 0 ? null : 840000,
+            state: observationState,
+            firstSeenAtUnix: firstSeenAtUnix,
+            lastSeenAtUnix: firstSeenAtUnix + 10,
+          ),
+        ],
+      );
+    }
+
     test(
       'maps the status DTO → snapshot with unix→DateTime conversions',
       () async {
@@ -351,6 +393,12 @@ void main() {
         expect(snapshot.status, InvoiceStatus.paid);
         expect(snapshot.paidVia, PaymentMethod.lightning);
         expect(snapshot.paidAmountSat, 1000);
+        expect(snapshot.paymentEvents, hasLength(1));
+        expect(snapshot.paymentEvents.single.rail, PaymentMethod.lightning);
+        expect(
+          snapshot.paymentEvents.single.state,
+          InvoicePaymentEventState.settled,
+        );
         expect(snapshot.expiresAt.isUtc, isTrue);
         verify(() => bullnym.getInvoiceStatus(invoiceId: 'inv-1')).called(1);
       },
@@ -377,6 +425,86 @@ void main() {
     });
 
     test(
+      'maps provisional observations and late attribution onto the invoice',
+      () async {
+        when(
+          () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+        ).thenAnswer((_) async => Ok(observedStatus()));
+
+        final snapshot = _unwrap(
+          await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+        );
+
+        expect(snapshot.settlementState, InvoiceSettlementState.pending);
+        expect(snapshot.isMonitoringComplete, isFalse);
+        expect(snapshot.hasLatePayment, isTrue);
+        final payment = snapshot.paymentEvents.single;
+        expect(payment.state, InvoicePaymentEventState.pending);
+        expect(payment.confirmations, 0);
+        expect(payment.isLate, isTrue);
+        expect(payment.transactionId, 'ab' * 32);
+      },
+    );
+
+    test('maps confirmation changes and final settlement separately', () async {
+      when(
+        () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+      ).thenAnswer(
+        (_) async => Ok(
+          observedStatus(
+            settlementStatus: 'settled',
+            presentationStatus: 'settled',
+            observationState: 'confirmed',
+            confirmations: 3,
+            firstSeenAtUnix: 150,
+          ),
+        ),
+      );
+
+      final snapshot = _unwrap(
+        await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+      );
+
+      expect(snapshot.settlementState, InvoiceSettlementState.settled);
+      expect(
+        snapshot.paymentEvents.single.state,
+        InvoicePaymentEventState.settled,
+      );
+      expect(snapshot.paymentEvents.single.isLate, isFalse);
+      expect(snapshot.isMonitoringComplete, isTrue);
+    });
+
+    test('maps reorg evidence to a visible settlement problem', () async {
+      when(
+        () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+      ).thenAnswer(
+        (_) async => Ok(
+          observedStatus(
+            settlementStatus: 'none',
+            observationState: 'reorged',
+            confirmations: 0,
+            firstSeenAtUnix: 150,
+          ),
+        ),
+      );
+
+      final snapshot = _unwrap(
+        await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+      );
+
+      expect(snapshot.settlementState, InvoiceSettlementState.problem);
+      expect(
+        snapshot.paymentEvents.single.state,
+        InvoicePaymentEventState.problem,
+      );
+      expect(
+        snapshot.paymentEvents.single.problem,
+        InvoicePaymentProblem.reorged,
+      );
+      expect(snapshot.isMonitoringComplete, isFalse);
+    });
+
+    test(
       'maps an unknown wire status to unsupported fail-closed state',
       () async {
         when(
@@ -385,6 +513,7 @@ void main() {
           (_) async => const Ok(
             BullnymInvoiceStatus(
               status: 'needs_manual_reconciliation',
+              presentationStatus: 'payment_detected',
               pricingMode: 'sat',
               settlementStatus: 'pending',
               amountSat: 1000,
@@ -456,9 +585,67 @@ void main() {
       expect(result.invoices, hasLength(1));
       expect(result.invoices.single.id.value, 'inv-1');
       expect(result.invoices.single.status, InvoiceStatus.unpaid);
+      expect(
+        result.invoices.single.settlementState,
+        InvoiceSettlementState.none,
+      );
       expect(result.invoices.single.nymOwner, isNull);
       expect(result.hasMore, isFalse);
     });
+
+    test(
+      'maps provisional and late list presentation without detaching it',
+      () async {
+        when(
+          () => bullnym.listInvoices(
+            signer: any(named: 'signer'),
+            page: any(named: 'page'),
+            pageSize: any(named: 'pageSize'),
+            status: any(named: 'status'),
+          ),
+        ).thenAnswer(
+          (_) async => const Ok(
+            BullnymListInvoicesResponse(
+              invoices: [
+                BullnymInvoiceListItem(
+                  id: 'original-invoice',
+                  origin: 'wallet',
+                  status: 'paid',
+                  presentationStatus: 'late_payment_detected',
+                  pricingMode: 'sat',
+                  settlementStatus: 'none',
+                  amountSat: 1000,
+                  remainingAmountSat: 0,
+                  acceptBtc: true,
+                  acceptLn: false,
+                  acceptLiquid: false,
+                  createdAtUnix: 100,
+                  expiresAtUnix: 200,
+                  paidVia: 'bitcoin',
+                  paidAtUnix: 201,
+                  paidAmountSat: 1000,
+                ),
+              ],
+              page: 1,
+              pageSize: 100,
+              hasMore: false,
+            ),
+          ),
+        );
+
+        final result = _unwrap(
+          await datasource.listInvoices(
+            signer: signer,
+            command: const ListInvoicesCommand(),
+          ),
+        );
+
+        final invoice = result.invoices.single;
+        expect(invoice.id.value, 'original-invoice');
+        expect(invoice.settlementState, InvoiceSettlementState.pending);
+        expect(invoice.hasLatePayment, isTrue);
+      },
+    );
 
     test(
       'maps unknown list item status to unsupported fail-closed state',
@@ -478,6 +665,7 @@ void main() {
                   id: 'inv-1',
                   origin: 'wallet',
                   status: 'requires_operator_review',
+                  presentationStatus: 'payment_detected',
                   pricingMode: 'sat',
                   settlementStatus: 'pending',
                   amountSat: 1000,
@@ -503,9 +691,9 @@ void main() {
           ),
         );
 
-        final status = result.invoices.single.status;
-        expect(status, InvoiceStatus.unsupported);
-        expect(result.invoices.single.isCancellable, isFalse);
+        final invoice = result.invoices.single;
+        expect(invoice.status, InvoiceStatus.unsupported);
+        expect(invoice.isCancellable, isFalse);
       },
     );
   });

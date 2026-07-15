@@ -32,7 +32,20 @@ String invoiceFallbackStateText(
   };
 }
 
-/// A single row in the invoices list: status, optional checkout memo, and amount.
+String? invoiceSettlementSupportingText(
+  BuildContext context,
+  InvoiceSettlementState settlementState,
+) {
+  return switch (settlementState) {
+    InvoiceSettlementState.none => null,
+    InvoiceSettlementState.pending => context.loc.invoiceSettlementPending,
+    InvoiceSettlementState.settled => context.loc.invoiceSettlementComplete,
+    InvoiceSettlementState.problem => context.loc.invoiceSettlementProblem,
+  };
+}
+
+/// A single row in the invoices list: status, settlement, optional memo, and
+/// amount.
 class InvoiceListItem extends StatelessWidget {
   final Invoice invoice;
   final VoidCallback onTap;
@@ -60,6 +73,24 @@ class InvoiceListItem extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 _StatusChip(status: invoice.status),
+                if (invoiceSettlementSupportingText(
+                      context,
+                      invoice.settlementState,
+                    )
+                    case final settlementText?)
+                  Text(
+                    settlementText,
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
+                if (invoice.hasLatePayment)
+                  Text(
+                    context.loc.invoiceLatePayment,
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
                 if (invoice.fallbackState case final fallbackState?)
                   _FallbackStatusChip(state: fallbackState),
                 Text(

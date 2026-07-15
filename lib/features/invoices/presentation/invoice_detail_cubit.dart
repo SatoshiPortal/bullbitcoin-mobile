@@ -5,11 +5,9 @@ import 'package:bb_mobile/features/invoices/presentation/invoice_detail_state.da
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Drives the invoice detail screen. It polls the UNSIGNED status endpoint with
-/// exponential backoff (3s → cap ~30s, DG-I4), stops on a terminal status or on
-/// dispose, and offers an unpaid-only cancel behind the screen's confirm
-/// dialog. The cancel's final status is stored SEPARATELY from the polled
-/// snapshot (§3.11).
+/// Drives the invoice detail screen.
+/// Polling uses exponential backoff (3s → cap ~30s, DG-I4) and stops only after lifecycle and settlement supervision are complete or on dispose.
+/// Unpaid cancellation remains behind the screen's confirmation dialog, and its final status is stored separately from the polled snapshot (§3.11).
 class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
   final InvoicesFacade _facade;
   final InvoiceId _invoiceId;
@@ -31,7 +29,7 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
          ),
        );
 
-  /// First load then, unless already terminal, start the polling loop.
+  /// First load then, unless monitoring is complete, start the polling loop.
   Future<void> load() async {
     unawaited(_loadPrivateLink());
     await _fetch();

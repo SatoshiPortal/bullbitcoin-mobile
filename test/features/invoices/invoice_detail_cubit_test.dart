@@ -7,8 +7,12 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockFacade extends Mock implements InvoicesFacade {}
 
-InvoiceStatusSnapshot _snapshot(InvoiceStatus status) => InvoiceStatusSnapshot(
+InvoiceStatusSnapshot _snapshot(
+  InvoiceStatus status, {
+  InvoiceSettlementState settlementState = InvoiceSettlementState.none,
+}) => InvoiceStatusSnapshot(
   status: status,
+  settlementState: settlementState,
   pricingMode: 'sat',
   settlementStatus: 'pending',
   amountSat: 1000,
@@ -93,6 +97,47 @@ void main() {
     // one initial fetch + one poll that observed the terminal status.
     verify(() => facade.status(any())).called(2);
     expect(cubit.state.isTerminal, isTrue);
+    await cubit.close();
+  });
+
+  test('a paid invoice keeps polling until settlement becomes final', () async {
+    var call = 0;
+    when(() => facade.status(any())).thenAnswer((_) async {
+      call++;
+      return Ok(
+        _snapshot(
+          InvoiceStatus.paid,
+          settlementState: call == 1
+              ? InvoiceSettlementState.pending
+              : InvoiceSettlementState.settled,
+        ),
+      );
+    });
+
+    final cubit = build();
+    await cubit.load();
+    expect(cubit.state.isTerminal, isFalse);
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+
+    verify(() => facade.status(any())).called(2);
+    expect(cubit.state.isTerminal, isTrue);
+    await cubit.close();
+  });
+
+  test('a settlement problem remains supervised', () async {
+    when(() => facade.status(any())).thenAnswer(
+      (_) async => Ok(
+        _snapshot(
+          InvoiceStatus.paid,
+          settlementState: InvoiceSettlementState.problem,
+        ),
+      ),
+    );
+
+    final cubit = build(initial: const Duration(seconds: 30));
+    await cubit.load();
+
+    expect(cubit.state.isTerminal, isFalse);
     await cubit.close();
   });
 

@@ -95,6 +95,14 @@ explicit product states; every unknown value stays in progress with no action.
 Servers returning 404/405 produce an empty fail-closed projection. Other read
 failures never hide the ordinary invoice list or a previously loaded detail.
 
+## Honest payment presentation and history
+
+Invoice lifecycle and settlement finality are separate domain states. A server lifecycle value of `paid`, `partially_paid`, `underpaid`, or `overpaid` does not by itself prove final settlement. The client maps `presentation_status`, `settlement_status`, `paid_*`, and `bitcoin_direct_observations` into typed settlement and payment-event values. Unknown evidence-bearing values stay provisional instead of being guessed final.
+
+List and detail views show **Paid** with calm **Settlement pending** supporting text until the server reports final settlement. Detail keeps showing received, remaining, and overpaid amounts. Bitcoin observations retain their confirmation count and transaction id; eviction, conflict, replacement, reorg, and unknown integrity problems remain visible. Evidence first observed after expiry, after cancellation, or with an explicit late presentation marker stays attributed to the original invoice as a late payment.
+
+When no per-output Bitcoin observation exists, aggregate `paid_via` / `paid_at` / `paid_amount_sat` evidence supplies one rail-attributed payment event. Automatic Bitcoin fallback rows remain separate authenticated supervision records, but the detail screen renders them inside the original invoice's payment-history section. The client does not manufacture a detached wallet receipt or a second invoice.
+
 ## Local-only private memo (§3.14)
 
 `privateMemo` is stored as local address labels
@@ -108,13 +116,7 @@ SharedPreferences invoice cache, no offline editing.
 
 ## Polling with backoff (DG-I4)
 
-The detail screen polls the unsigned status endpoint and the authenticated
-fallback projection with exponential backoff (3s → cap ~30s), stops on a
-terminal status
-(`paid`/`expired`/`cancelled`/`underpaid`/`overpaid`) or on dispose. No tight
-loop, no poll after terminal. An invoice with delayed, active, confirming, or
-integrity-hold fallback remains under supervision even if its ordinary status
-is terminal; only a settled fallback completes that monitoring lifecycle.
+The detail screen polls the unsigned status endpoint and the authenticated fallback projection with exponential backoff (3s → cap ~30s), and stops on dispose or only after both lifecycle and settlement supervision are complete. A lifecycle-terminal invoice keeps polling while direct payment settlement is pending/problematic or while an attributed fallback is delayed, active, confirming, or held for integrity review. Explicit final settlement and a settled fallback complete their respective monitoring lifecycles.
 
 ## No manual recovery product
 

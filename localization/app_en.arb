@@ -16400,5 +16400,90 @@
         "type": "int"
       }
     }
+  },
+  "invoiceSettlementPending": "Settlement pending",
+  "@invoiceSettlementPending": {
+    "description": "Supporting text shown while a received payment is not yet final."
+  },
+  "invoiceSettlementComplete": "Settlement complete",
+  "@invoiceSettlementComplete": {
+    "description": "Supporting text shown when payment settlement is final."
+  },
+  "invoiceSettlementProblem": "Settlement problem",
+  "@invoiceSettlementProblem": {
+    "description": "Supporting text shown when received payment evidence has a settlement problem."
+  },
+  "invoiceLatePayment": "Late payment",
+  "@invoiceLatePayment": {
+    "description": "Label for payment evidence first received after the invoice deadline or cancellation."
+  },
+  "invoicePaymentReceivedLabel": "Received",
+  "@invoicePaymentReceivedLabel": {
+    "description": "Label for the amount received on an invoice."
+  },
+  "invoicePaymentRemainingLabel": "Remaining",
+  "@invoicePaymentRemainingLabel": {
+    "description": "Label for the amount still due on a partially paid invoice."
+  },
+  "invoicePaymentOverpaidByLabel": "Overpaid by",
+  "@invoicePaymentOverpaidByLabel": {
+    "description": "Label for the amount received above the invoice face value."
+  },
+  "invoicePaymentHistoryTitle": "Payment history",
+  "@invoicePaymentHistoryTitle": {
+    "description": "Heading for payment evidence attributed to an invoice."
+  },
+  "invoicePaymentEventBitcoinTitle": "Bitcoin payment",
+  "@invoicePaymentEventBitcoinTitle": {
+    "description": "Title for a Bitcoin payment event."
+  },
+  "invoicePaymentEventLightningTitle": "Lightning payment",
+  "@invoicePaymentEventLightningTitle": {
+    "description": "Title for a Lightning payment event."
+  },
+  "invoicePaymentEventLiquidTitle": "Liquid payment",
+  "@invoicePaymentEventLiquidTitle": {
+    "description": "Title for a Liquid payment event."
+  },
+  "invoicePaymentEventFallbackTitle": "Automatic Bitcoin fallback",
+  "@invoicePaymentEventFallbackTitle": {
+    "description": "Title for an automatic fallback payment event attributed to an invoice."
+  },
+  "invoicePaymentSeenMempool": "Payment received; awaiting confirmation",
+  "@invoicePaymentSeenMempool": {
+    "description": "Payment event status when broadcast or mempool evidence exists without a confirmation."
+  },
+  "invoicePaymentTransactionLabel": "Transaction ID",
+  "@invoicePaymentTransactionLabel": {
+    "description": "Label for a payment event transaction identifier."
+  },
+  "invoicePaymentProblemEvicted": "Payment left the mempool before settlement",
+  "@invoicePaymentProblemEvicted": {
+    "description": "Explanation for an evicted payment event."
+  },
+  "invoicePaymentProblemReorged": "Payment confirmation was reversed by a chain reorganization",
+  "@invoicePaymentProblemReorged": {
+    "description": "Explanation for a payment event affected by a chain reorganization."
+  },
+  "invoicePaymentProblemConflicted": "Payment conflicts with another transaction",
+  "@invoicePaymentProblemConflicted": {
+    "description": "Explanation for a conflicting payment event."
+  },
+  "invoicePaymentProblemReplaced": "Payment was replaced before settlement",
+  "@invoicePaymentProblemReplaced": {
+    "description": "Explanation for a replaced payment event."
+  },
+  "invoicePaymentProblemUnknown": "Payment needs attention before it can settle",
+  "@invoicePaymentProblemUnknown": {
+    "description": "Generic explanation for a payment settlement problem."
+  },
+  "invoicePaymentConfirmations": "{count, plural, =0{Awaiting confirmation} =1{1 confirmation} other{{count} confirmations}}",
+  "@invoicePaymentConfirmations": {
+    "description": "Confirmation count for a provisional chain payment.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

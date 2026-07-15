@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/invoices/application/results/invoice_results.
 import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
@@ -100,11 +101,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
         case Err(:final failure):
           return Err(mapBullnymFailureToInvoices(failure));
       }
-      final parsedStatus = _invoiceStatus(response.status, operation: 'cancel');
       return Ok(
         CancelInvoiceResult(
           invoiceId: _invoiceId(response.invoiceId),
-          finalStatus: parsedStatus,
+          finalStatus: _invoiceStatus(response.status, operation: 'cancel'),
         ),
       );
     } on ArgumentError {
@@ -189,10 +189,55 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
         case Err(:final failure):
           return Err(mapBullnymFailureToInvoices(failure));
       }
-      final parsedStatus = _invoiceStatus(status.status, operation: 'status');
+      final invoiceStatus = _invoiceStatus(status.status, operation: 'status');
+      final hasPaymentEvidence =
+          status.bitcoinDirectObservations.isNotEmpty ||
+          status.paidVia != null ||
+          status.paidAtUnix != null ||
+          status.paidAmountSat != null ||
+          _statusCarriesPaymentEvidence(invoiceStatus);
+      final mappedSettlementState = invoiceSettlementStateFromWire(
+        settlementStatus: status.settlementStatus,
+        presentationStatus: status.presentationStatus,
+        hasPaymentEvidence: hasPaymentEvidence,
+      );
+      final settlementState =
+          mappedSettlementState != InvoiceSettlementState.settled &&
+              status.bitcoinDirectObservations.any(
+                (observation) =>
+                    invoicePaymentProblemFromWire(observation.state) != null,
+              )
+          ? InvoiceSettlementState.problem
+          : mappedSettlementState;
+      final expiresAt = _fromUnix(status.expiresAtUnix);
+      final paymentEvents = [
+        for (final observation in status.bitcoinDirectObservations)
+          _toPaymentEvent(
+            observation,
+            invoiceStatus: invoiceStatus,
+            invoiceSettlement: settlementState,
+            invoiceExpiresAt: expiresAt,
+            presentationMarksLate: invoicePresentationMarksLate(
+              status.presentationStatus,
+            ),
+          ),
+      ];
+      if (paymentEvents.isEmpty &&
+          status.paidVia != null &&
+          status.paidAtUnix != null &&
+          status.paidAmountSat != null) {
+        final aggregate = _toAggregatePaymentEvent(
+          status,
+          invoiceStatus: invoiceStatus,
+          invoiceSettlement: settlementState,
+          invoiceExpiresAt: expiresAt,
+        );
+        if (aggregate != null) paymentEvents.add(aggregate);
+      }
       return Ok(
         InvoiceStatusSnapshot(
-          status: parsedStatus,
+          status: invoiceStatus,
+          settlementState: settlementState,
           pricingMode: status.pricingMode,
           settlementStatus: status.settlementStatus,
           amountSat: status.amountSat,
@@ -202,7 +247,7 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           paymentToleranceSat: status.paymentToleranceSat,
           rateMinorPerBtc: status.rateMinorPerBtc,
           rateLocksUntil: _fromUnix(status.rateLocksUntilUnix),
-          expiresAt: _fromUnix(status.expiresAtUnix),
+          expiresAt: expiresAt,
           paidVia: PaymentMethod.fromWire(status.paidVia),
           paidAt: status.paidAtUnix == null
               ? null
@@ -216,6 +261,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           acceptBtc: status.acceptBtc,
           acceptLn: status.acceptLn,
           acceptLiquid: status.acceptLiquid,
+          paymentEvents: paymentEvents,
+          presentationMarksLatePayment: invoicePresentationMarksLate(
+            status.presentationStatus,
+          ),
         ),
       );
     } on ArgumentError {
@@ -226,11 +275,25 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
   }
 
   Invoice _toInvoice(BullnymInvoiceListItem item) {
+    final status = _invoiceStatus(item.status, operation: 'list');
+    final hasPaymentEvidence =
+        item.paidVia != null ||
+        item.paidAtUnix != null ||
+        item.paidAmountSat != null ||
+        _statusCarriesPaymentEvidence(status);
     return Invoice(
       id: _invoiceId(item.id),
       nymOwner: item.nymOwner,
-      status: _invoiceStatus(item.status, operation: 'list'),
+      status: status,
       presentationStatus: item.presentationStatus,
+      settlementState: invoiceSettlementStateFromWire(
+        settlementStatus: item.settlementStatus,
+        presentationStatus: item.presentationStatus,
+        hasPaymentEvidence: hasPaymentEvidence,
+      ),
+      presentationMarksLatePayment: invoicePresentationMarksLate(
+        item.presentationStatus,
+      ),
       amountSat: item.amountSat,
       remainingAmountSat: item.remainingAmountSat,
       fiatAmountMinor: item.fiatAmountMinor,
@@ -265,6 +328,86 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       updatedAt: _fromUnix(item.swapUpdatedAtUnix),
     );
   }
+
+  InvoicePaymentEvent _toPaymentEvent(
+    BullnymBitcoinDirectObservation observation, {
+    required InvoiceStatus invoiceStatus,
+    required InvoiceSettlementState invoiceSettlement,
+    required DateTime invoiceExpiresAt,
+    required bool presentationMarksLate,
+  }) {
+    final firstSeenAt = _fromUnix(observation.firstSeenAtUnix);
+    final eventState = invoicePaymentEventStateFromWire(
+      state: observation.state,
+      confirmations: observation.confirmations,
+      invoiceSettlement: invoiceSettlement,
+    );
+    return InvoicePaymentEvent(
+      rail: PaymentMethod.fromWire(observation.rail) ?? PaymentMethod.btc,
+      amountSat: observation.amountSat,
+      firstSeenAt: firstSeenAt,
+      lastSeenAt: _fromUnix(observation.lastSeenAtUnix),
+      state: eventState,
+      confirmations: observation.confirmations,
+      transactionId: observation.txid,
+      outputIndex: observation.vout,
+      isLate:
+          presentationMarksLate ||
+          !invoiceExpiresAt.isAfter(firstSeenAt) ||
+          invoiceStatus == InvoiceStatus.cancelled,
+      problem: eventState == InvoicePaymentEventState.problem
+          ? invoicePaymentProblemFromWire(observation.state) ??
+                InvoicePaymentProblem.unknown
+          : null,
+    );
+  }
+
+  InvoicePaymentEvent? _toAggregatePaymentEvent(
+    BullnymInvoiceStatus status, {
+    required InvoiceStatus invoiceStatus,
+    required InvoiceSettlementState invoiceSettlement,
+    required DateTime invoiceExpiresAt,
+  }) {
+    final rail = PaymentMethod.fromWire(status.paidVia);
+    if (rail == null ||
+        status.paidAtUnix == null ||
+        status.paidAmountSat == null) {
+      return null;
+    }
+    final paidAt = _fromUnix(status.paidAtUnix!);
+    final eventState = switch (invoiceSettlement) {
+      InvoiceSettlementState.settled => InvoicePaymentEventState.settled,
+      InvoiceSettlementState.problem => InvoicePaymentEventState.problem,
+      InvoiceSettlementState.none ||
+      InvoiceSettlementState.pending => InvoicePaymentEventState.pending,
+    };
+    return InvoicePaymentEvent(
+      rail: rail,
+      amountSat: status.paidAmountSat!,
+      firstSeenAt: paidAt,
+      lastSeenAt: paidAt,
+      state: eventState,
+      confirmations: 0,
+      isLate:
+          invoicePresentationMarksLate(status.presentationStatus) ||
+          !invoiceExpiresAt.isAfter(paidAt) ||
+          invoiceStatus == InvoiceStatus.cancelled,
+      problem: eventState == InvoicePaymentEventState.problem
+          ? invoicePaymentProblemFromWire(status.settlementStatus) ??
+                invoicePaymentProblemFromWire(
+                  status.presentationStatus ?? '',
+                ) ??
+                InvoicePaymentProblem.unknown
+          : null,
+    );
+  }
+
+  bool _statusCarriesPaymentEvidence(InvoiceStatus status) =>
+      status == InvoiceStatus.inProgress ||
+      status == InvoiceStatus.partiallyPaid ||
+      status == InvoiceStatus.paid ||
+      status == InvoiceStatus.underpaid ||
+      status == InvoiceStatus.overpaid;
 
   DateTime _fromUnix(int unix) =>
       DateTime.fromMillisecondsSinceEpoch(unix * 1000, isUtc: true);
