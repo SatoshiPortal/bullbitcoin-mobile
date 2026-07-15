@@ -1,13 +1,15 @@
 # Bullnym
 
 Bullnym owns the shared Bullnym HTTP protocol foundation for authenticated
-registration, donation-page, currency, and recipient-invoice calls.
+registration, recovery-address, donation-page, currency, and recipient-invoice
+calls.
 
 ## Scope
 
 This feature owns:
 
 - Bullnym registration, delete, and lookup protocol calls;
+- the private merchant-wide recovery-address lookup and registration contract;
 - Bullnym registration, donation-page, and invoice signing payload construction;
 - permanent-name capability, validation, status, quota, alias intent, and
   structured ownership-conflict values;
@@ -47,6 +49,16 @@ This feature intentionally does not send an extra public verification key field 
 expose derived Lightning Address behavior beyond returning server-supplied
 address fields. `active` remains only the compatibility Lightning Address
 online status; names have no active/inactive state.
+
+The automatic-fallback contract uses authenticated `GET` and `PUT`
+`/api/v1/recovery-address` calls. Both use an empty nym slot. Lookup signs no
+payload fields and returns either an all-null unregistered value or the exact
+address, positive commitment version, and original signed timestamp. Register
+signs `["1", btc_address]` and accepts only a matching privacy-safe
+acknowledgement. The write body contains only `version`, `npub`, `btc_address`,
+`timestamp`, and `signature`; descriptors and key material are outside this
+contract. Wallet selection, network/ownership proof, labeling, and restore
+orchestration belong to the later automatic-fallback feature.
 
 Capability gating begins with `/version` because lookup for a never-registered
 npub is an error envelope without a policy. Missing or unknown policy is a valid
@@ -107,9 +119,11 @@ Bullnym authenticated writes are signed with the caller-supplied
 and one-shot hash signing callback; this feature does not derive keys, own wallet
 seeds, or retain signing handles.
 
-Signing payload and timestamp construction are internal to the Bullnym domain use
-cases. Public callers provide the signer and operation inputs; they do not
-construct wire messages or choose protocol timestamps.
+Signing payload and timestamp construction stay internal to the Bullnym
+boundary: donation-page operations use domain use cases, while invoice and
+identity-wide recovery-address actions sign in the HTTP client. Public callers
+provide the signer and operation inputs; they do not construct wire messages or
+choose protocol timestamps.
 
 ## Recipient-invoice wire surface
 

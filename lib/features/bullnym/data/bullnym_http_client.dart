@@ -13,6 +13,8 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
@@ -39,9 +41,9 @@ class BullnymHttpClient implements BullnymClientPort {
 
   final Dio _dio;
   final Uri _trustedPublicOrigin;
-  // Invoice actions are signed inside the client (unlike the donation-page
-  // actions, which are signed in their usecases), so the client owns the
-  // signing timestamp; injected for deterministic contract tests.
+  // Invoice and identity-wide recovery-address actions are signed inside the
+  // client (unlike donation-page actions, which are signed in their usecases),
+  // so the client owns their timestamp; injected for deterministic tests.
   final int Function() _nowSecs;
 
   String get baseUrl => _dio.options.baseUrl;
@@ -294,6 +296,65 @@ class BullnymHttpClient implements BullnymClientPort {
   }
 
   @override
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionRecoveryAddressGet,
+        nymOrEmpty: '',
+        payloadFields: buildRecoveryAddressLookupPayloadFields(),
+        timestampSecs: timestamp,
+      );
+      final response = await _getMap(
+        '/api/v1/recovery-address',
+        queryParameters: {
+          'npub': signer.npubHex,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return _parseRecoveryAddressLookupResponse(response);
+    });
+  }
+
+  @override
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) {
+    return _guard(() async {
+      _validateRecoveryAddressInput(btcAddress);
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionRecoveryAddressSet,
+        nymOrEmpty: '',
+        payloadFields: buildRecoveryAddressRegistrationPayloadFields(
+          btcAddress,
+        ),
+        timestampSecs: timestamp,
+      );
+      final response = await _putMap(
+        '/api/v1/recovery-address',
+        data: {
+          'version': bullnymRecoveryAddressContractVersion,
+          'npub': signer.npubHex,
+          'btc_address': btcAddress,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return _parseRecoveryAddressRegistrationResponse(
+        response,
+        expectedSignedAtUnix: timestamp,
+      );
+    });
+  }
+
+  @override
   Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
@@ -301,7 +362,7 @@ class BullnymHttpClient implements BullnymClientPort {
   }) {
     return _guard(() async {
       final timestamp = _nowSecs();
-      final signatureHex = await _signInvoiceAction(
+      final signatureHex = await _signAction(
         signer: signer,
         action: bullpayActionInvoiceCreate,
         nymOrEmpty: nym ?? '',
@@ -343,7 +404,7 @@ class BullnymHttpClient implements BullnymClientPort {
   }) {
     return _guard(() async {
       final timestamp = _nowSecs();
-      final signatureHex = await _signInvoiceAction(
+      final signatureHex = await _signAction(
         signer: signer,
         action: bullpayActionInvoiceCancel,
         nymOrEmpty: nym ?? '',
@@ -375,7 +436,7 @@ class BullnymHttpClient implements BullnymClientPort {
     return _guard(() async {
       final timestamp = _nowSecs();
       // The list is npub-wide: the signed nym slot is ALWAYS empty.
-      final signatureHex = await _signInvoiceAction(
+      final signatureHex = await _signAction(
         signer: signer,
         action: bullpayActionInvoiceList,
         nymOrEmpty: '',
@@ -420,7 +481,7 @@ class BullnymHttpClient implements BullnymClientPort {
     return '/api/v1/${Uri.encodeComponent(nym)}/invoices';
   }
 
-  Future<String> _signInvoiceAction({
+  Future<String> _signAction({
     required BullnymAuthSigner signer,
     required String action,
     required String nymOrEmpty,
@@ -652,6 +713,90 @@ class BullnymHttpClient implements BullnymClientPort {
       return _serverFailureFromResponse(response);
     }
     return BullnymFailure.unexpectedHttpStatus(statusCode: response.statusCode);
+  }
+
+  void _validateRecoveryAddressInput(String btcAddress) {
+    if (btcAddress.isEmpty ||
+        btcAddress != btcAddress.trim() ||
+        btcAddress.contains('\u0000')) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidInput(
+          'Recovery address must be a non-empty canonical Bitcoin address',
+        ),
+      );
+    }
+  }
+
+  BullnymRecoveryAddressLookupResult _parseRecoveryAddressLookupResponse(
+    Map<String, dynamic> json,
+  ) {
+    final version = _requiredRecoveryAddressVersion(json);
+    final isRegistered = _requiredBool(json, 'recovery_address_registered');
+    final btcAddress = _optionalString(json, 'btc_address');
+    final commitmentVersion = _optionalInt(json, 'commitment_version');
+    final signedAtUnix = _optionalInt(json, 'signed_at_unix');
+
+    final isCompleteRegisteredValue =
+        btcAddress != null &&
+        btcAddress.isNotEmpty &&
+        btcAddress == btcAddress.trim() &&
+        !btcAddress.contains('\u0000') &&
+        commitmentVersion != null &&
+        commitmentVersion > 0 &&
+        signedAtUnix != null &&
+        signedAtUnix >= 0;
+    final isCompleteUnregisteredValue =
+        btcAddress == null && commitmentVersion == null && signedAtUnix == null;
+    if ((isRegistered && !isCompleteRegisteredValue) ||
+        (!isRegistered && !isCompleteUnregisteredValue)) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Recovery-address lookup fields are inconsistent',
+        ),
+      );
+    }
+
+    return BullnymRecoveryAddressLookupResult(
+      version: version,
+      isRegistered: isRegistered,
+      btcAddress: btcAddress,
+      commitmentVersion: commitmentVersion,
+      signedAtUnix: signedAtUnix,
+    );
+  }
+
+  BullnymRecoveryAddressRegistrationResult
+  _parseRecoveryAddressRegistrationResponse(
+    Map<String, dynamic> json, {
+    required int expectedSignedAtUnix,
+  }) {
+    final version = _requiredRecoveryAddressVersion(json);
+    final isRegistered = _requiredBool(json, 'recovery_address_registered');
+    final signedAtUnix = _requiredInt(json, 'signed_at_unix');
+    if (!isRegistered || signedAtUnix != expectedSignedAtUnix) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Recovery-address acknowledgement is inconsistent',
+        ),
+      );
+    }
+    return BullnymRecoveryAddressRegistrationResult(
+      version: version,
+      isRegistered: true,
+      signedAtUnix: signedAtUnix,
+    );
+  }
+
+  int _requiredRecoveryAddressVersion(Map<String, dynamic> json) {
+    final version = _requiredInt(json, 'version');
+    if (version != bullnymRecoveryAddressContractVersion) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Unsupported recovery-address contract version',
+        ),
+      );
+    }
+    return version;
   }
 
   BullnymRegisterResult _parseRegisterResponse(Map<String, dynamic> json) {

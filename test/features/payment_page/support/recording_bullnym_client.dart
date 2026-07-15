@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 /// A hand fake [BullnymClientPort] for payment_page unit tests: it records the
@@ -182,6 +183,24 @@ class RecordingBullnymClient implements BullnymClientPort {
     if (error != null) return Err(error);
     return Ok(BullnymSupportedCurrencies(currencies: currencies));
   }
+
+  @override
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) async =>
+      const Ok(BullnymRecoveryAddressLookupResult.unregistered());
+
+  @override
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) async => const Ok(
+    BullnymRecoveryAddressRegistrationResult(
+      version: bullnymRecoveryAddressContractVersion,
+      isRegistered: true,
+      signedAtUnix: 0,
+    ),
+  );
 
   // Invoice surface — not exercised by the payment_page donation-page tests.
   @override

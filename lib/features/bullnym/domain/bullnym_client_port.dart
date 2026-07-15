@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:meta/meta.dart';
 
@@ -61,6 +62,21 @@ abstract interface class BullnymClientPort {
   @useResult
   Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
   getSupportedCurrencies();
+
+  /// Private, merchant-authenticated read of the one immutable Bitcoin
+  /// fallback destination. The signed action is identity-wide (empty nym).
+  @useResult
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer});
+
+  /// Register the one Bitcoin fallback destination selected from the current
+  /// default wallet. No descriptor or key material is accepted by this API.
+  @useResult
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  });
 
   /// Create a Schnorr-signed recipient invoice. `nym == null` (v1 default)
   /// targets the UNLINKED endpoint `POST /api/v1/invoices` and signs

@@ -6,7 +6,9 @@ import 'package:get_it/get_it.dart';
 
 class BullnymLocator {
   static void setup(GetIt locator) {
-    locator.registerLazySingleton<BullnymClientPort>(() => BullnymHttpClient());
+    locator.registerLazySingleton<BullnymClientPort>(
+      () => BullnymHttpClient(nowSecs: () => locator<Clock>().nowSecs()),
+    );
     locator.registerFactory<BullnymFacade>(
       () => BullnymFacade(
         client: locator<BullnymClientPort>(),

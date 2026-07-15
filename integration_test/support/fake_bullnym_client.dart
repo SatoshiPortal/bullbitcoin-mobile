@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 enum FakeBullnymMode {
@@ -119,6 +120,7 @@ class FakeBullnymClient implements BullnymClientPort {
   String nym = 'alice';
   String? permanentAlias;
   bool permanentNamesCapable = true;
+  String? recoveryAddress;
 
   final List<String> registeredNyms = [];
   final List<BullnymSaveDonationPageRequest> saveDonationPageCalls = [];
@@ -471,6 +473,40 @@ class FakeBullnymClient implements BullnymClientPort {
       return Err(_serverUnreachable());
     }
     return Ok(BullnymSupportedCurrencies(currencies: supportedCurrencies));
+  }
+
+  @override
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) async {
+    final address = recoveryAddress;
+    if (address == null) {
+      return const Ok(BullnymRecoveryAddressLookupResult.unregistered());
+    }
+    return Ok(
+      BullnymRecoveryAddressLookupResult(
+        version: bullnymRecoveryAddressContractVersion,
+        isRegistered: true,
+        btcAddress: address,
+        commitmentVersion: 1,
+        signedAtUnix: 0,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) async {
+    recoveryAddress ??= btcAddress;
+    return const Ok(
+      BullnymRecoveryAddressRegistrationResult(
+        version: bullnymRecoveryAddressContractVersion,
+        isRegistered: true,
+        signedAtUnix: 0,
+      ),
+    );
   }
 
   @override

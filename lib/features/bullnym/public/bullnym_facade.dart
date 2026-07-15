@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/domain/usecases/archive_donation_page_usecase.dart';
@@ -31,6 +32,7 @@ export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 export 'package:bb_mobile/features/bullnym/presentation/bullnym_failure_l10n.dart';
 
@@ -178,6 +180,24 @@ class BullnymFacade {
   Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
   getSupportedCurrencies() {
     return _getSupportedCurrencies.execute();
+  }
+
+  @useResult
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) {
+    return _client.lookupRecoveryAddress(signer: signer);
+  }
+
+  @useResult
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) {
+    return _client.registerRecoveryAddress(
+      signer: signer,
+      btcAddress: btcAddress,
+    );
   }
 
   // Invoice methods sign in the client (the `invoice-*` actions) and delegate

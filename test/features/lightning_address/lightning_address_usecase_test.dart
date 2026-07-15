@@ -326,6 +326,19 @@ class _FakeBullnymFacade implements BullnymFacade {
   Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
   getSupportedCurrencies() => throw UnimplementedError();
 
+  // Recovery-address surface — not exercised by Lightning Address usecases.
+  @override
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) => throw UnimplementedError();
+
   // Invoice surface — not exercised by the Lightning Address usecases.
   @override
   Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
