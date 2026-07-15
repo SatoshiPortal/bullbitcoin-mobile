@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/update_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/update_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -96,6 +97,8 @@ class SettingsLocator {
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
         updatePayjoinMinAmountUsecase: locator<UpdatePayjoinMinAmountUsecase>(),
+        updatePayjoinExpireAfterSecUsecase:
+            locator<UpdatePayjoinExpireAfterSecUsecase>(),
       ),
     );
   }

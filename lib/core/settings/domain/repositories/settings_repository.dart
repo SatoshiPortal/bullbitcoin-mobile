@@ -20,6 +20,7 @@ abstract class SettingsRepository {
     required bool useTorProxy,
     required int torProxyPort,
     int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
+    int payjoinExpireAfterSec = PayjoinConstants.defaultExpireAfterSec,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
@@ -47,6 +48,8 @@ abstract class SettingsRepository {
   Future<void> setTorProxyPort(int port);
 
   Future<void> setPayjoinMinAmountSat(int amountSat);
+
+  Future<void> setPayjoinExpireAfterSec(int expireAfterSec);
 
   Future<void> setThemeMode(AppThemeMode themeMode);
 

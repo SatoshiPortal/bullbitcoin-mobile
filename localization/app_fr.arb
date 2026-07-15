@@ -5087,5 +5087,14 @@
   "settingsPayjoinMinAmountTitle": "Montant minimum pour le payjoin",
   "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin n'est pas proposé et une transaction normale est envoyée à la place.",
   "receivePayjoinUtxoDisclosure": "Recevoir avec le payjoin révèle l'un de vos UTXO à l'expéditeur.",
-  "settingsPayjoinMinAmountRangeError": "Saisissez un montant compris entre {min} et {max} sats"
+  "settingsPayjoinMinAmountRangeError": "Saisissez un montant compris entre {min} et {max} sats",
+  "settingsPayjoinTitle": "Payjoin",
+  "settingsPayjoinExplanation": "Le payjoin fusionne votre paiement avec un autre sur la blockchain, ce qui rend la transaction plus difficile à tracer. Accepter un payjoin révèle l'un de vos UTXO à l'autre partie.",
+  "settingsPayjoinEnabledLabel": "Payjoin activé",
+  "settingsPayjoinExpireTitle": "Durée de la session",
+  "settingsPayjoinExpireDescription": "Délai d'attente de l'autre partie avant de basculer vers une transaction normale, en secondes.",
+  "settingsPayjoinExpireRangeError": "Saisissez une durée comprise entre {min} et {max} secondes",
+  "settingsPayjoinDirectoryLabel": "Répertoire",
+  "settingsPayjoinRelaysLabel": "Relais",
+  "settingsPayjoinServersTitle": "Serveurs utilisés"
 }

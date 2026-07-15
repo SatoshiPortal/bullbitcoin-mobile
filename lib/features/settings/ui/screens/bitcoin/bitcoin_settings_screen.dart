@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/payjoin_min_amount_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,23 +16,6 @@ import 'package:go_router/go_router.dart';
 
 class BitcoinSettingsScreen extends StatelessWidget {
   const BitcoinSettingsScreen({super.key});
-
-  Future<void> _editPayjoinMinAmount(BuildContext context) async {
-    final cubit = context.read<SettingsCubit>();
-    // Fall back to the actual default (not the bottom sheet's minimum bound)
-    // if settings haven't loaded yet, so the pre-filled value matches what
-    // the user actually has configured in the common case.
-    final current =
-        cubit.state.storedSettings?.payjoinMinAmountSat ??
-        PayjoinConstants.defaultMinAmountSat;
-    final result = await PayjoinMinAmountBottomSheet.show(
-      context,
-      initialAmountSat: current,
-    );
-    if (result != null) {
-      await cubit.setPayjoinMinAmount(result);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +92,10 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.shield_outlined,
-                  title: context.loc.settingsPayjoinMinAmountTitle,
-                  onTap: () => _editPayjoinMinAmount(context),
+                  title: context.loc.settingsPayjoinTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.payjoinSettings.name);
+                  },
                 ),
                 if (hasLegacySeeds)
                   SettingsEntryItem(

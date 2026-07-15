@@ -14807,5 +14807,49 @@
   "receiveViewDetails": "View Details",
   "@receiveViewDetails": {
     "description": "Button label to view the received transaction's details from the receive payjoin screen."
+  },
+  "settingsPayjoinTitle": "Payjoin",
+  "@settingsPayjoinTitle": {
+    "description": "Title for the dedicated payjoin settings screen and its entry in Bitcoin settings"
+  },
+  "settingsPayjoinExplanation": "Payjoin merges your payment with another one on the blockchain, making the transaction harder to trace. Accepting one reveals one of your UTXOs to the other party.",
+  "@settingsPayjoinExplanation": {
+    "description": "Explanatory info card at the top of the payjoin settings screen"
+  },
+  "settingsPayjoinEnabledLabel": "Payjoin enabled",
+  "@settingsPayjoinEnabledLabel": {
+    "description": "Label for the payjoin enabled toggle in payjoin settings"
+  },
+  "settingsPayjoinExpireTitle": "Session length",
+  "@settingsPayjoinExpireTitle": {
+    "description": "Title for the payjoin session expiry field in payjoin settings"
+  },
+  "settingsPayjoinExpireDescription": "How long to wait for the other party before falling back to a normal transaction, in seconds.",
+  "@settingsPayjoinExpireDescription": {
+    "description": "Explanation under the payjoin session expiry field"
+  },
+  "settingsPayjoinExpireRangeError": "Enter a duration between {min} and {max} seconds",
+  "@settingsPayjoinExpireRangeError": {
+    "description": "Validation error for payjoin session expiry input",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinDirectoryLabel": "Directory",
+  "@settingsPayjoinDirectoryLabel": {
+    "description": "Label for the payjoin directory server row in payjoin settings"
+  },
+  "settingsPayjoinRelaysLabel": "Relays",
+  "@settingsPayjoinRelaysLabel": {
+    "description": "Label for the payjoin OHTTP relays list in payjoin settings"
+  },
+  "settingsPayjoinServersTitle": "Servers used",
+  "@settingsPayjoinServersTitle": {
+    "description": "Section header for the read-only payjoin servers info in payjoin settings"
   }
 }

@@ -143,10 +143,20 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
     @Default(PayjoinConstants.defaultMinAmountSat) int payjoinMinAmountSat,
+    @Default(PayjoinConstants.defaultExpireAfterSec) int payjoinExpireAfterSec,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;
   const SettingsEntity._();
+
+  /// Whether payjoin is enabled at all, receive and send alike. Backed by a
+  /// sentinel value on [payjoinMinAmountSat] rather than a dedicated boolean
+  /// column: setting the minimum receive amount to the ceiling
+  /// ([PayjoinConstants.maxMinAmountSat]) reuses the existing
+  /// below-minimum-decline mechanism to represent "off", since no real
+  /// amount will ever reach it. See [PayjoinConstants.maxMinAmountSat].
+  bool get isPayjoinEnabled =>
+      payjoinMinAmountSat < PayjoinConstants.maxMinAmountSat;
 }

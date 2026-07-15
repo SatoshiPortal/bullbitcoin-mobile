@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 
 class SettingsModel {
   final int id;
@@ -14,6 +13,7 @@ class SettingsModel {
   final bool useTorProxy;
   final int torProxyPort;
   final int payjoinMinAmountSat;
+  final int payjoinExpireAfterSec;
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
@@ -31,6 +31,7 @@ class SettingsModel {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.payjoinMinAmountSat,
+    required this.payjoinExpireAfterSec,
     required this.themeMode,
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
@@ -50,10 +51,7 @@ class SettingsModel {
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
       payjoinMinAmountSat: payjoinMinAmountSat,
-      // TODO: wire through SettingsModel/SettingsEntity once the settings
-      // screen lands (next commit) — the column exists from this migration
-      // on, but nothing reads/writes a per-row value yet.
-      payjoinExpireAfterSec: PayjoinConstants.defaultExpireAfterSec,
+      payjoinExpireAfterSec: payjoinExpireAfterSec,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -74,6 +72,7 @@ class SettingsModel {
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
       payjoinMinAmountSat: row.payjoinMinAmountSat,
+      payjoinExpireAfterSec: row.payjoinExpireAfterSec,
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,

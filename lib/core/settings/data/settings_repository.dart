@@ -36,6 +36,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool useTorProxy,
     required int torProxyPort,
     int payjoinMinAmountSat = PayjoinConstants.defaultMinAmountSat,
+    int payjoinExpireAfterSec = PayjoinConstants.defaultExpireAfterSec,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
@@ -54,6 +55,7 @@ class SettingsRepository implements domain.SettingsRepository {
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
         payjoinMinAmountSat: payjoinMinAmountSat,
+        payjoinExpireAfterSec: payjoinExpireAfterSec,
         themeMode: themeMode,
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
@@ -77,6 +79,7 @@ class SettingsRepository implements domain.SettingsRepository {
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
       payjoinMinAmountSat: s.payjoinMinAmountSat,
+      payjoinExpireAfterSec: s.payjoinExpireAfterSec,
       themeMode: s.themeMode,
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
@@ -133,6 +136,11 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setPayjoinMinAmountSat(int amountSat) async {
     await _settingsDatasource.setPayjoinMinAmountSat(amountSat);
+  }
+
+  @override
+  Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
+    await _settingsDatasource.setPayjoinExpireAfterSec(expireAfterSec);
   }
 
   @override

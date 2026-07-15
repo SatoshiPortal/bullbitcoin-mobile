@@ -79,6 +79,13 @@ class SettingsDatasource {
     );
   }
 
+  Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
+    await _sqlite.managers.settings.update(
+      (f) =>
+          f(id: const Value(1), payjoinExpireAfterSec: Value(expireAfterSec)),
+    );
+  }
+
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
