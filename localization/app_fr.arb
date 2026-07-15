@@ -5096,5 +5096,6 @@
   "settingsPayjoinExpireRangeError": "Saisissez une durée comprise entre {min} et {max} secondes",
   "settingsPayjoinDirectoryLabel": "Répertoire",
   "settingsPayjoinRelaysLabel": "Relais",
-  "settingsPayjoinServersTitle": "Serveurs utilisés"
+  "settingsPayjoinServersTitle": "Serveurs utilisés",
+  "sendPayjoinWillBeAttempted": "Un payjoin sera tenté pour ce paiement."
 }

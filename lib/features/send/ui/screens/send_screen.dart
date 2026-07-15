@@ -989,10 +989,21 @@ class _OnchainTransactionReview extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
     final label = context.select((SendCubit cubit) => cubit.state.label);
+    final willAttemptPayjoin = context.select(
+      (SendCubit cubit) => cubit.state.willAttemptPayjoin,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (willAttemptPayjoin) ...[
+          InfoCard(
+            description: context.loc.sendPayjoinWillBeAttempted,
+            tagColor: context.appColors.secondary,
+            bgColor: context.appColors.onSecondary,
+          ),
+          const Gap(16),
+        ],
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,

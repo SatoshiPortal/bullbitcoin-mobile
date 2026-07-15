@@ -14851,5 +14851,9 @@
   "settingsPayjoinServersTitle": "Servers used",
   "@settingsPayjoinServersTitle": {
     "description": "Section header for the read-only payjoin servers info in payjoin settings"
+  },
+  "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
+  "@sendPayjoinWillBeAttempted": {
+    "description": "Confirmation-screen indicator shown on a Bitcoin send when a payjoin will be attempted"
   }
 }
