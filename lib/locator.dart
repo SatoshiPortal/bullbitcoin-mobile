@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
+import 'package:bb_mobile/features/automatic_fallback/automatic_fallback_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autosweep/autosweep_locator.dart';
@@ -105,6 +106,7 @@ class AppLocator {
     BullnymLocator.setup(locator);
     KeychainManifestLocator.start(locator);
     GetPaidSettingsLocator.setup(locator);
+    AutomaticFallbackLocator.setup(locator);
     LightningAddressLocator.setup(locator);
     PaymentPageLocator.setup(locator);
     PosLocator.setup(locator);

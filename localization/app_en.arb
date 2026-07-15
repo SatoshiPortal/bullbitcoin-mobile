@@ -16339,5 +16339,9 @@
         "type": "int"
       }
     }
+  },
+  "systemLabelAutomaticFallback": "Automatic fallback",
+  "@systemLabelAutomaticFallback": {
+    "description": "System label for the Bitcoin address reserved for automatic fallback settlement."
   }
 }

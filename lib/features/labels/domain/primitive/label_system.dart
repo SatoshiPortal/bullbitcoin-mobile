@@ -10,6 +10,7 @@ enum LabelSystem {
   exchangeBuy,
   exchangeSell,
   invoice,
+  automaticFallback,
   lightningAddress,
   paymentPage,
   pointOfSale,
@@ -25,6 +26,7 @@ enum LabelSystem {
     LabelSystem.exchangeBuy => exchangeBuyLabelSystem,
     LabelSystem.exchangeSell => exchangeSellLabelSystem,
     LabelSystem.invoice => invoiceLabelSystem,
+    LabelSystem.automaticFallback => automaticFallbackLabelSystem,
     LabelSystem.lightningAddress => lightningAddressLabelSystem,
     LabelSystem.paymentPage => paymentPageLabelSystem,
     LabelSystem.pointOfSale => posLabelSystem,
@@ -40,6 +42,7 @@ enum LabelSystem {
       exchangeBuyLabelSystem => LabelSystem.exchangeBuy,
       exchangeSellLabelSystem => LabelSystem.exchangeSell,
       invoiceLabelSystem => LabelSystem.invoice,
+      automaticFallbackLabelSystem => LabelSystem.automaticFallback,
       lightningAddressLabelSystem => LabelSystem.lightningAddress,
       paymentPageLabelSystem => LabelSystem.paymentPage,
       posLabelSystem => LabelSystem.pointOfSale,
@@ -66,6 +69,7 @@ enum LabelSystem {
       LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
       LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,
       LabelSystem.invoice => context.loc.systemLabelInvoice,
+      LabelSystem.automaticFallback => context.loc.systemLabelAutomaticFallback,
       // Reuse the existing product-name strings so these labels track the same
       // wording (and translations) shown on the Get Paid dashboard cards.
       LabelSystem.lightningAddress =>

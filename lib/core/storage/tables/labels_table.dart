@@ -8,6 +8,7 @@ const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';
 const invoiceLabelSystem = 'invoice';
+const automaticFallbackLabelSystem = 'automatic-fallback';
 // Get Paid feature labels applied to the transaction an auto-sweep lands in the
 // default wallet, so the swept funds read as the product that received them.
 const lightningAddressLabelSystem = 'lightning-address';

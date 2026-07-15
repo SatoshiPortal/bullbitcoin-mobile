@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/automatic_fallback/public/automatic_fallback_facade.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
+import 'package:bb_mobile/features/get_paid/domain/ensure_get_paid_automatic_fallback_usecase.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
@@ -62,6 +64,27 @@ BtcpayFacade _btcpayFacade(
   Future<Result<BtcpayConnection?, BtcpayFailure>> Function() connection,
 ) {
   return BtcpayFacade(connection: connection);
+}
+
+EnsureGetPaidAutomaticFallbackUsecase _fallbackUsecase(
+  Future<Result<AutomaticFallbackSetup, AutomaticFallbackFailure>> Function()
+  ensure,
+) {
+  return EnsureGetPaidAutomaticFallbackUsecase(
+    automaticFallback: AutomaticFallbackFacade(ensureReady: ensure),
+  );
+}
+
+Future<Result<AutomaticFallbackSetup, AutomaticFallbackFailure>>
+_fallbackReady() async {
+  return Ok(
+    AutomaticFallbackSetup(
+      btcAddress: 'bc1qfallbackaddress',
+      commitmentVersion: 1,
+      signedAtUnix: 1_700_000_000,
+      registeredNow: false,
+    ),
+  );
 }
 
 LightningAddressStatus _status({
@@ -130,6 +153,8 @@ GetPaidDashboardCubit _cubit({
   Future<PaymentPage?> Function({required String nym})? pageFind,
   Future<PosTerminal?> Function({required String nym})? posFind,
   Future<Result<BtcpayConnection?, BtcpayFailure>> Function()? connection,
+  Future<Result<AutomaticFallbackSetup, AutomaticFallbackFailure>> Function()?
+  ensureFallback,
   bool hasDefaultWallet = false,
 }) {
   return GetPaidDashboardCubit(
@@ -141,6 +166,7 @@ GetPaidDashboardCubit _cubit({
           () async => const Ok<BtcpayConnection?, BtcpayFailure>(null),
     ),
     getWallets: _getWallets(hasDefaultWallet: hasDefaultWallet),
+    ensureAutomaticFallback: _fallbackUsecase(ensureFallback ?? _fallbackReady),
   );
 }
 
@@ -371,8 +397,13 @@ void main() {
   test('nym-keyed products are not probed without a nym', () async {
     var pageProbed = false;
     var posProbed = false;
+    var fallbackProbed = false;
     final cubit = _cubit(
       lookup: () async => _status(nym: '', active: false),
+      ensureFallback: () async {
+        fallbackProbed = true;
+        return _fallbackReady();
+      },
       pageFind: ({required String nym}) async {
         pageProbed = true;
         return null;
@@ -387,7 +418,56 @@ void main() {
 
     expect(pageProbed, isFalse);
     expect(posProbed, isFalse);
+    expect(fallbackProbed, isFalse);
     expect(cubit.state.nym, isNull);
+    await cubit.close();
+  });
+
+  test('wallet-owned nym triggers automatic fallback setup once', () async {
+    var calls = 0;
+    final cubit = _cubit(
+      ensureFallback: () async {
+        calls++;
+        return _fallbackReady();
+      },
+    );
+
+    await cubit.refresh();
+
+    expect(calls, 1);
+    expect(cubit.state.error, isNull);
+    await cubit.close();
+  });
+
+  test('fallback failure preserves other Get Paid product reads', () async {
+    var pageProbed = false;
+    var posProbed = false;
+    final cubit = _cubit(
+      lookup: () async => _status(active: true, address: 'satoshi@bull.money'),
+      ensureFallback: () async => const Err(
+        AutomaticFallbackFailure.remoteLookupFailed(
+          code: 'NetworkError',
+          retryable: true,
+        ),
+      ),
+      pageFind: ({required String nym}) async {
+        pageProbed = true;
+        return _page();
+      },
+      posFind: ({required String nym}) async {
+        posProbed = true;
+        return _pos();
+      },
+    );
+
+    await cubit.refresh();
+
+    expect(cubit.state.hasLightningAddress, isTrue);
+    expect(cubit.state.hasPaymentPage, isTrue);
+    expect(cubit.state.hasPos, isTrue);
+    expect(pageProbed, isTrue);
+    expect(posProbed, isTrue);
+    expect(cubit.state.error, isNotNull);
     await cubit.close();
   });
 
