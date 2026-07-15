@@ -1,16 +1,18 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class SendWithPayjoinUsecase {
   final PayjoinRepository _payjoinRepository;
   final BitcoinWalletRepository _bitcoinWalletRepository;
+  final SettingsRepository _settingsRepository;
 
   const SendWithPayjoinUsecase({
     required this._payjoinRepository,
     required this._bitcoinWalletRepository,
+    required this._settingsRepository,
   });
 
   Future<PayjoinSender> execute({
@@ -28,6 +30,8 @@ class SendWithPayjoinUsecase {
         walletId: walletId,
       );
 
+      final settings = await _settingsRepository.fetch();
+
       final pjSender = await _payjoinRepository.createPayjoinSender(
         walletId: walletId,
         isTestnet: isTestnet,
@@ -35,8 +39,7 @@ class SendWithPayjoinUsecase {
         originalPsbt: signedOriginalPsbt,
         amountSat: amountSat,
         networkFeesSatPerVb: networkFeesSatPerVb,
-        expireAfterSec:
-            expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec,
+        expireAfterSec: expireAfterSec ?? settings.payjoinExpireAfterSec,
       );
 
       return pjSender;

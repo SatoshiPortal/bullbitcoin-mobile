@@ -13,6 +13,8 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
+    as domain;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -124,6 +126,7 @@ class PayjoinLocator {
       () => SendWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        settingsRepository: locator<domain.SettingsRepository>(),
       ),
     );
 
