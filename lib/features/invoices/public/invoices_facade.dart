@@ -24,6 +24,7 @@ export 'package:bb_mobile/features/invoices/application/results/invoice_results.
 export 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
+export 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 export 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';

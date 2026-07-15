@@ -404,6 +404,90 @@ void main() {
       },
     );
 
+    test(
+      'keeps merchant face value separate from exact payer costs by rail',
+      () async {
+        when(
+          () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+        ).thenAnswer(
+          (_) async => const Ok(
+            BullnymInvoiceStatus(
+              status: 'partially_paid',
+              presentationStatus: 'partial',
+              pricingMode: 'sat_fixed',
+              settlementStatus: 'pending',
+              amountSat: 10000,
+              remainingAmountSat: 4000,
+              paymentToleranceSat: 1,
+              rateLocksUntilUnix: 1893456000,
+              expiresAtUnix: 1893456000,
+              lightningPr: 'lnbc4050n1test',
+              lightningAmountSat: 4050,
+              liquidAddress: 'lq1qtest',
+              liquidAmountSat: 4000,
+              bitcoinChainAddress: 'bc1qchain',
+              bitcoinChainBip21: 'bitcoin:bc1qchain?amount=0.00004100',
+              bitcoinChainAmountSat: 4100,
+              acceptBtc: true,
+              acceptLn: true,
+              acceptLiquid: true,
+              bitcoinDirectObservations: [],
+            ),
+          ),
+        );
+
+        final snapshot = _unwrap(
+          await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+        );
+
+        expect(snapshot.merchantFaceAmountSat, 10000);
+        expect(snapshot.remainingAmountSat, 4000);
+        expect(snapshot.payerAmounts.map((amount) => amount.rail), [
+          PaymentMethod.lightning,
+          PaymentMethod.liquid,
+          PaymentMethod.btc,
+        ]);
+        expect(snapshot.lightningPayerAmount!.payerAmountSat, 4050);
+        expect(snapshot.lightningPayerAmount!.checkoutCostSat, 50);
+        expect(snapshot.liquidPayerAmount!.payerAmountSat, 4000);
+        expect(snapshot.liquidPayerAmount!.checkoutCostSat, 0);
+        expect(snapshot.bitcoinChainPayerAmount!.payerAmountSat, 4100);
+        expect(snapshot.bitcoinChainPayerAmount!.checkoutCostSat, 100);
+      },
+    );
+
+    test('rejects a payer amount below the merchant remainder', () async {
+      when(
+        () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+      ).thenAnswer(
+        (_) async => const Ok(
+          BullnymInvoiceStatus(
+            status: 'unpaid',
+            presentationStatus: 'unpaid',
+            pricingMode: 'sat_fixed',
+            settlementStatus: 'none',
+            amountSat: 1000,
+            remainingAmountSat: 1000,
+            paymentToleranceSat: 1,
+            rateLocksUntilUnix: 1893456000,
+            expiresAtUnix: 1893456000,
+            lightningPr: 'lnbc900n1test',
+            lightningAmountSat: 900,
+            acceptBtc: false,
+            acceptLn: true,
+            acceptLiquid: false,
+            bitcoinDirectObservations: [],
+          ),
+        ),
+      );
+
+      final failure = _unwrapFailure(
+        await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+      );
+
+      expect(failure.kind, InvoicesFailureKind.invalidServerResponse);
+    });
+
     test('a bullnym error maps to notFound', () async {
       when(
         () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),

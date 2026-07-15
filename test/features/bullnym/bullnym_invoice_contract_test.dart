@@ -85,6 +85,7 @@ List<int> _oracleMessageBytes({
 Map<String, dynamic> _statusView({String status = 'unpaid'}) {
   return {
     'status': status,
+    'presentation_status': 'payment_detected',
     'pricing_mode': 'sat',
     'settlement_status': 'none',
     'amount_sat': 25000,
@@ -98,13 +99,30 @@ Map<String, dynamic> _statusView({String status = 'unpaid'}) {
     'paid_via': null,
     'paid_at_unix': null,
     'paid_amount_sat': null,
-    'lightning_pr': null,
+    'lightning_pr': 'lnbc25050n1test',
+    'lightning_amount_sat': 25050,
     'liquid_address': 'lq1qtest',
+    'liquid_amount_sat': 25000,
     'bitcoin_address': null,
-    'bitcoin_direct_observations': [],
-    'bitcoin_chain_address': null,
-    'bitcoin_chain_bip21': null,
-    'accept_btc': false,
+    'bitcoin_direct_observations': [
+      {
+        'source': 'mempool',
+        'rail': 'bitcoin',
+        'txid': 'ab' * 32,
+        'vout': 1,
+        'address': 'bc1qtest',
+        'amount_sat': 25000,
+        'confirmations': 2,
+        'block_height': 840000,
+        'state': 'confirmed',
+        'first_seen_at_unix': 1710000100,
+        'last_seen_at_unix': 1710000200,
+      },
+    ],
+    'bitcoin_chain_address': 'bc1qchain',
+    'bitcoin_chain_bip21': 'bitcoin:bc1qchain?amount=0.00025200',
+    'bitcoin_chain_amount_sat': 25200,
+    'accept_btc': true,
     'accept_ln': true,
     'accept_liquid': true,
     // A future server field the older binary must ignore (tolerant reader).
@@ -401,7 +419,7 @@ void main() {
 
   group('T-INV-DTO parse round-trips', () {
     test(
-      'status shape parses and ignores unknown keys (tolerant reader)',
+      'status parses exact payer amounts, observations, and unknown keys',
       () async {
         final client = BullnymHttpClient.withDio(
           _stubDio([_statusView(status: 'paid')]).dio,
@@ -410,8 +428,70 @@ void main() {
           await client.getInvoiceStatus(invoiceId: 'inv-1'),
         );
         expect(status.status, 'paid');
+        expect(status.presentationStatus, 'payment_detected');
+        expect(status.lightningPr, 'lnbc25050n1test');
+        expect(status.lightningAmountSat, 25050);
         expect(status.liquidAddress, 'lq1qtest');
+        expect(status.liquidAmountSat, 25000);
+        expect(status.bitcoinChainAddress, 'bc1qchain');
+        expect(status.bitcoinChainAmountSat, 25200);
         expect(status.acceptLiquid, isTrue);
+        final observation = status.bitcoinDirectObservations.single;
+        expect(observation.source, 'mempool');
+        expect(observation.rail, 'bitcoin');
+        expect(observation.txid, 'ab' * 32);
+        expect(observation.vout, 1);
+        expect(observation.amountSat, 25000);
+        expect(observation.confirmations, 2);
+        expect(observation.blockHeight, 840000);
+        expect(observation.state, 'confirmed');
+        expect(observation.firstSeenAtUnix, 1710000100);
+        expect(observation.lastSeenAtUnix, 1710000200);
+      },
+    );
+
+    test('status fails closed when the observations list is absent', () async {
+      final response = _statusView()..remove('bitcoin_direct_observations');
+      final client = BullnymHttpClient.withDio(_stubDio([response]).dio);
+
+      final failure = _unwrapFailure(
+        await client.getInvoiceStatus(invoiceId: 'inv-1'),
+      );
+
+      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+    });
+
+    test('status keeps an exact Bitcoin amount when BIP21 is absent', () async {
+      final response = _statusView()..['bitcoin_chain_bip21'] = null;
+      final client = BullnymHttpClient.withDio(_stubDio([response]).dio);
+
+      final status = _unwrap(await client.getInvoiceStatus(invoiceId: 'inv-1'));
+
+      expect(status.bitcoinChainAddress, 'bc1qchain');
+      expect(status.bitcoinChainBip21, isNull);
+      expect(status.bitcoinChainAmountSat, 25200);
+    });
+
+    test(
+      'status fails closed on incomplete or invalid payer amounts',
+      () async {
+        final withoutAmount = _statusView()..remove('lightning_amount_sat');
+        final withoutPayload = _statusView()..['liquid_address'] = null;
+        final invalidAmount = _statusView()..['bitcoin_chain_amount_sat'] = 0;
+        final emptyPayload = _statusView()..['lightning_pr'] = '';
+
+        for (final response in [
+          withoutAmount,
+          withoutPayload,
+          invalidAmount,
+          emptyPayload,
+        ]) {
+          final client = BullnymHttpClient.withDio(_stubDio([response]).dio);
+          final failure = _unwrapFailure(
+            await client.getInvoiceStatus(invoiceId: 'inv-1'),
+          );
+          expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+        }
       },
     );
 

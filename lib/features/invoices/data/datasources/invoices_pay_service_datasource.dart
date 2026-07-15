@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart'
 import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
@@ -254,10 +255,25 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
               : _fromUnix(status.paidAtUnix!),
           paidAmountSat: status.paidAmountSat,
           lightningPr: status.lightningPr,
+          lightningPayerAmount: _toPayerAmount(
+            PaymentMethod.lightning,
+            payerAmountSat: status.lightningAmountSat,
+            merchantTargetAmountSat: status.remainingAmountSat,
+          ),
           liquidAddress: status.liquidAddress,
+          liquidPayerAmount: _toPayerAmount(
+            PaymentMethod.liquid,
+            payerAmountSat: status.liquidAmountSat,
+            merchantTargetAmountSat: status.remainingAmountSat,
+          ),
           bitcoinAddress: status.bitcoinAddress,
           bitcoinChainAddress: status.bitcoinChainAddress,
           bitcoinChainBip21: status.bitcoinChainBip21,
+          bitcoinChainPayerAmount: _toPayerAmount(
+            PaymentMethod.btc,
+            payerAmountSat: status.bitcoinChainAmountSat,
+            merchantTargetAmountSat: status.remainingAmountSat,
+          ),
           acceptBtc: status.acceptBtc,
           acceptLn: status.acceptLn,
           acceptLiquid: status.acceptLiquid,
@@ -359,6 +375,19 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           ? invoicePaymentProblemFromWire(observation.state) ??
                 InvoicePaymentProblem.unknown
           : null,
+    );
+  }
+
+  InvoicePayerAmount? _toPayerAmount(
+    PaymentMethod rail, {
+    required int? payerAmountSat,
+    required int merchantTargetAmountSat,
+  }) {
+    if (payerAmountSat == null) return null;
+    return InvoicePayerAmount(
+      rail: rail,
+      merchantTargetAmountSat: merchantTargetAmountSat,
+      payerAmountSat: payerAmountSat,
     );
   }
 

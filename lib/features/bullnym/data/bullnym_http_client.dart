@@ -1119,6 +1119,38 @@ class BullnymHttpClient implements BullnymClientPort {
     );
   }
 
+  int? _optionalPositiveInt(Map<String, dynamic> json, String key) {
+    final value = _optionalInt(json, key);
+    if (value == null || value > 0) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is not positive',
+      ),
+    );
+  }
+
+  void _validatePayerInstructionPair({
+    required String name,
+    required String? payload,
+    required int? amountSat,
+  }) {
+    if (payload != null && payload.trim().isEmpty) {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response has an empty $name instruction',
+        ),
+      );
+    }
+    final hasPayload = payload != null && payload.trim().isNotEmpty;
+    if (hasPayload != (amountSat != null)) {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response has an incomplete $name instruction',
+        ),
+      );
+    }
+  }
+
   // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
   // ignored so a future server field cannot crash an older binary.
   BullnymDonationPage _parseDonationPageResponse(Map<String, dynamic> json) {
@@ -1349,6 +1381,49 @@ class BullnymHttpClient implements BullnymClientPort {
   }
 
   BullnymInvoiceStatus _parseInvoiceStatusResponse(Map<String, dynamic> json) {
+    final lightningPr = _optionalString(json, 'lightning_pr');
+    final lightningAmountSat = _optionalPositiveInt(
+      json,
+      'lightning_amount_sat',
+    );
+    final liquidAddress = _optionalString(json, 'liquid_address');
+    final liquidAmountSat = _optionalPositiveInt(json, 'liquid_amount_sat');
+    final bitcoinChainAddress = _optionalString(json, 'bitcoin_chain_address');
+    final bitcoinChainBip21 = _optionalString(json, 'bitcoin_chain_bip21');
+    final bitcoinChainAmountSat = _optionalPositiveInt(
+      json,
+      'bitcoin_chain_amount_sat',
+    );
+    _validatePayerInstructionPair(
+      name: 'Lightning',
+      payload: lightningPr,
+      amountSat: lightningAmountSat,
+    );
+    _validatePayerInstructionPair(
+      name: 'Liquid',
+      payload: liquidAddress,
+      amountSat: liquidAmountSat,
+    );
+    _validatePayerInstructionPair(
+      name: 'Bitcoin chain',
+      payload: bitcoinChainAddress,
+      amountSat: bitcoinChainAmountSat,
+    );
+    if (bitcoinChainBip21 != null && bitcoinChainAddress == null) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage:
+              'Server response has a Bitcoin BIP21 without a chain address',
+        ),
+      );
+    }
+    if (bitcoinChainBip21 != null && bitcoinChainBip21.trim().isEmpty) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response has an empty Bitcoin BIP21',
+        ),
+      );
+    }
     return BullnymInvoiceStatus(
       status: _requiredString(json, 'status'),
       presentationStatus: _optionalString(json, 'presentation_status'),
@@ -1365,11 +1440,14 @@ class BullnymHttpClient implements BullnymClientPort {
       paidVia: _optionalString(json, 'paid_via'),
       paidAtUnix: _optionalInt(json, 'paid_at_unix'),
       paidAmountSat: _optionalInt(json, 'paid_amount_sat'),
-      lightningPr: _optionalString(json, 'lightning_pr'),
-      liquidAddress: _optionalString(json, 'liquid_address'),
+      lightningPr: lightningPr,
+      lightningAmountSat: lightningAmountSat,
+      liquidAddress: liquidAddress,
+      liquidAmountSat: liquidAmountSat,
       bitcoinAddress: _optionalString(json, 'bitcoin_address'),
-      bitcoinChainAddress: _optionalString(json, 'bitcoin_chain_address'),
-      bitcoinChainBip21: _optionalString(json, 'bitcoin_chain_bip21'),
+      bitcoinChainAddress: bitcoinChainAddress,
+      bitcoinChainBip21: bitcoinChainBip21,
+      bitcoinChainAmountSat: bitcoinChainAmountSat,
       acceptBtc: _requiredBool(json, 'accept_btc'),
       acceptLn: _requiredBool(json, 'accept_ln'),
       acceptLiquid: _requiredBool(json, 'accept_liquid'),

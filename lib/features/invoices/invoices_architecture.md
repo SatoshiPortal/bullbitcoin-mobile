@@ -103,6 +103,23 @@ List and detail views show **Paid** with calm **Settlement pending** supporting 
 
 When no per-output Bitcoin observation exists, aggregate `paid_via` / `paid_at` / `paid_amount_sat` evidence supplies one rail-attributed payment event. Automatic Bitcoin fallback rows remain separate authenticated supervision records, but the detail screen renders them inside the original invoice's payment-history section. The client does not manufacture a detached wallet receipt or a second invoice.
 
+## Exact fixed-checkout payer amounts
+
+The public status DTO preserves the server's typed
+`lightning_amount_sat`, `liquid_amount_sat`, and
+`bitcoin_chain_amount_sat` fields. Each amount must arrive with its matching
+payment payload; non-positive or incomplete pairs fail as an invalid server
+response. A BIP21 may be absent because the exact chain address and amount are
+still sufficient to describe the server-issued instruction.
+
+The datasource maps each available pair to `InvoicePayerAmount`. That domain
+type keeps the current merchant remainder separate from the exact principal a
+payer must send and derives the checkout-cost delta without parsing a BOLT11,
+BIP21, address, or QR payload. The snapshot retains `amountSat` as the durable
+merchant face value and orders typed payer amounts Lightning, Liquid, then
+Bitcoin. The authenticated mobile invoice screen does not create a payer QR;
+the public Payment Page owns that surface.
+
 ## Local-only private memo (§3.14)
 
 `privateMemo` is stored as local address labels

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 
@@ -22,10 +23,13 @@ class InvoiceStatusSnapshot {
   final DateTime? paidAt;
   final int? paidAmountSat;
   final String? lightningPr;
+  final InvoicePayerAmount? lightningPayerAmount;
   final String? liquidAddress;
+  final InvoicePayerAmount? liquidPayerAmount;
   final String? bitcoinAddress;
   final String? bitcoinChainAddress;
   final String? bitcoinChainBip21;
+  final InvoicePayerAmount? bitcoinChainPayerAmount;
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
@@ -49,10 +53,13 @@ class InvoiceStatusSnapshot {
     this.paidAt,
     this.paidAmountSat,
     this.lightningPr,
+    this.lightningPayerAmount,
     this.liquidAddress,
+    this.liquidPayerAmount,
     this.bitcoinAddress,
     this.bitcoinChainAddress,
     this.bitcoinChainBip21,
+    this.bitcoinChainPayerAmount,
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
@@ -62,6 +69,16 @@ class InvoiceStatusSnapshot {
 
   /// True only when lifecycle and settlement supervision are both complete.
   bool get isTerminal => isMonitoringComplete;
+
+  /// The invoice's durable merchant face value, distinct from payer gross-up.
+  int get merchantFaceAmountSat => amountSat;
+
+  /// Exact currently payable amounts in the approved rail order.
+  List<InvoicePayerAmount> get payerAmounts => [
+    ?lightningPayerAmount,
+    ?liquidPayerAmount,
+    ?bitcoinChainPayerAmount,
+  ];
 
   bool get hasPaymentEvidence =>
       paymentEvents.isNotEmpty ||
