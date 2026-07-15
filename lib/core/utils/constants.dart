@@ -70,12 +70,19 @@ class CurrencyConstants {
 }
 
 class PayjoinConstants {
+  // Stable base list (fixed order) so a display surface (e.g. the payjoin
+  // settings screen) can show a consistent order across rebuilds. Actual
+  // network use always goes through [ohttpRelayUrls], which shuffles a COPY
+  // of this list on every call (anti-fingerprinting network behaviour,
+  // unchanged).
+  static const List<String> ohttpRelayUrlsBase = [
+    'https://ohttp.achow101.com',
+    'https://pj.bobspacebkk.com',
+    'https://ohttp.cakewallet.com',
+  ];
+
   static List<String> get ohttpRelayUrls {
-    final list = [
-      'https://ohttp.achow101.com',
-      'https://pj.bobspacebkk.com',
-      'https://ohttp.cakewallet.com',
-    ];
+    final list = [...ohttpRelayUrlsBase];
     list.shuffle(Random.secure());
     return list;
   }
@@ -104,6 +111,25 @@ class PayjoinConstants {
   // default, the entity default, the DB seed, and the repository's default
   // param, so they can't silently drift apart.
   static const defaultMinAmountSat = 10000;
+  // Bounds for the payjoin minimum-receive-amount setting. minMinAmountSat
+  // (1000 sats) is just above dust, effectively "always payjoin".
+  // maxMinAmountSat (21_000_000 sats, 0.21 BTC) is a deliberately high
+  // "only large amounts" ceiling that ALSO doubles as the sentinel value
+  // meaning "payjoin disabled" (see SettingsEntity.isPayjoinEnabled) — no
+  // real amount will ever reach it, so setting the minimum to this value
+  // reuses the existing below-minimum decline path to represent "off"
+  // without a separate boolean column.
+  static const int minMinAmountSat = 1000;
+  static const int maxMinAmountSat = 21000000;
+  // Bounds for the payjoin session expiry setting (seconds). Floor of 60s:
+  // see PayjoinRepositoryImpl.retryOnTransient's doc comment — the
+  // receiver's own worst-case retry budget already reaches ~61s, so a
+  // shorter session expiry would leave no time for that retry to run at
+  // all. Ceiling of 600s (10 min): avoids leaving a UTXO frozen
+  // indefinitely (see getUtxosFrozenByOngoingPayjoins) if the counter is
+  // set too high and no proposal ever arrives.
+  static const int minExpireAfterSec = 60;
+  static const int maxExpireAfterSec = 600;
 }
 
 class ApiServiceConstants {
