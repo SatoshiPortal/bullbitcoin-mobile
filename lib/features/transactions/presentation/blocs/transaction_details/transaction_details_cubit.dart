@@ -60,6 +60,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   StreamSubscription? _payjoinTxSubscription;
   StreamSubscription? _payjoinOriginalTxSubscription;
 
+  // The payjoin id _payjoinSubscription is currently listening to on the
+  // by-wallet-tx path, so reloads triggered by its own events don't
+  // needlessly cancel and re-create the same subscription.
+  String? _watchedPayjoinId;
+
   @override
   Future<void> close() async {
     await Future.wait([
@@ -133,11 +138,66 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           swapClaimedAmountSat: await _counterpartAmountForSwap(swap),
         ),
       );
+
+      // If this transaction belongs to a payjoin session, keep the details
+      // live on payjoin events too — not just on wallet syncs. The session's
+      // terminal transitions (fallback broadcast, completion on broadcast)
+      // happen in the payjoin repository long after this screen was opened,
+      // and without this the screen only refreshed on the next wallet sync
+      // (observed live: a stale "Send without payjoin" button lingering for
+      // ~a minute after the fallback had already broadcast the original).
+      final payjoin = transaction.payjoin;
+      if (payjoin != null) {
+        _watchPayjoinForWalletTx(
+          payjoinId: payjoin.id,
+          txId: txId,
+          walletId: walletId,
+        );
+      }
     } on TransactionNotFoundError catch (e) {
       emit(state.copyWith(notFoundError: e));
     } catch (e) {
       emit(state.copyWith(err: e));
     }
+  }
+
+  /// Reloads the by-wallet-tx details whenever the given payjoin session
+  /// emits an update. Payjoin state lives in the local database, so the
+  /// reload is instant — the manual-broadcast button and the payjoin status
+  /// row react the moment the repository resolves the session instead of
+  /// waiting for a wallet sync to trigger the transaction watcher.
+  ///
+  /// On a terminal event (completed/expired) a targeted sync of this wallet
+  /// is also fired when the broadcast transaction isn't visible as a wallet
+  /// transaction yet, so the screen swaps from payjoin-only data to the real
+  /// transaction promptly instead of at the next scheduled sync.
+  void _watchPayjoinForWalletTx({
+    required String payjoinId,
+    required String txId,
+    required String walletId,
+  }) {
+    if (_watchedPayjoinId == payjoinId) return;
+    _watchedPayjoinId = payjoinId;
+    unawaited(_payjoinSubscription?.cancel());
+    _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
+      payjoin,
+    ) async {
+      // The payjoin repository's timers outlive this cubit; an event can
+      // arrive after close() (see ReceiveBloc/SendCubit's identical guard).
+      if (isClosed) return;
+      await _loadDetailsByWalletTxId(txId, walletId: walletId);
+      if (isClosed) return;
+      if (!payjoin.isOngoing && state.transaction?.walletTransaction == null) {
+        unawaited(
+          _getWalletUsecase.execute(walletId, sync: true).catchError((
+            Object e,
+          ) {
+            log.warning('Failed to sync wallet after payjoin event: $e');
+            return null;
+          }),
+        );
+      }
+    });
   }
 
   /// The exact amount returned on the recovered chain swap's *counterpart* leg —
@@ -266,6 +326,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         _payjoinTxSubscription = _watchWalletTransactionByTxIdUsecase
             .execute(txId: payjoin.txId!, walletId: payjoin.walletId)
             .listen((_) async {
+              // Reset so _loadDetailsByWalletTxId re-arms its own payjoin
+              // watcher after this by-payjoin-id one is cancelled.
+              _watchedPayjoinId = null;
               await _payjoinSubscription?.cancel();
               await _loadDetailsByWalletTxId(
                 payjoin.txId!,
@@ -279,6 +342,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         _payjoinOriginalTxSubscription = _watchWalletTransactionByTxIdUsecase
             .execute(txId: payjoin.originalTxId!, walletId: payjoin.walletId)
             .listen((_) async {
+              // See the txId watcher above.
+              _watchedPayjoinId = null;
               await _payjoinSubscription?.cancel();
               await _loadDetailsByWalletTxId(
                 payjoin.originalTxId!,

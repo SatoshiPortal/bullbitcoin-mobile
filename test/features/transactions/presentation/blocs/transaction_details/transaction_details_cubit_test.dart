@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
@@ -12,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -77,6 +80,7 @@ PayjoinSender _sender({
 
 void main() {
   late _MockGetWalletUsecase getWallet;
+  late _MockGetTransactionsByTxIdUsecase getTransactionsByTxId;
   late _MockGetPayjoinByIdUsecase getPayjoinById;
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByTxIdUsecase watchWalletTransactionByTxId;
@@ -84,7 +88,7 @@ void main() {
 
   TransactionDetailsCubit buildCubit() => TransactionDetailsCubit(
     getWalletUsecase: getWallet,
-    getTransactionsByTxIdUsecase: _MockGetTransactionsByTxIdUsecase(),
+    getTransactionsByTxIdUsecase: getTransactionsByTxId,
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
     getSwapUsecase: _MockGetSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
@@ -102,6 +106,7 @@ void main() {
 
   setUp(() {
     getWallet = _MockGetWalletUsecase();
+    getTransactionsByTxId = _MockGetTransactionsByTxIdUsecase();
     getPayjoinById = _MockGetPayjoinByIdUsecase();
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransactionByTxId = _MockWatchWalletTransactionByTxIdUsecase();
@@ -232,6 +237,102 @@ void main() {
       await cubit.broadcastPayjoinOriginalTx();
 
       verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
+    });
+  });
+
+  group('TransactionDetailsCubit payjoin reactivity on the by-tx-id path', () {
+    test(
+      'a payjoin event reloads the details immediately — the manual-broadcast '
+      'guard flips the moment the repository resolves the session, without '
+      'waiting for a wallet sync (observed live: a stale "Send without '
+      'payjoin" button lingering after the fallback had already broadcast)',
+      () async {
+        final ongoing = _sender(status: PayjoinStatus.requested);
+        final completedViaFallback = _sender(status: PayjoinStatus.completed);
+        final payjoinEvents = StreamController<Payjoin>.broadcast();
+        addTearDown(payjoinEvents.close);
+
+        var loadCount = 0;
+        when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+          (_) async => [
+            Transaction(payjoin: loadCount++ == 0 ? ongoing : completedViaFallback),
+          ],
+        );
+        when(
+          () => watchPayjoin.execute(ids: [ongoing.id]),
+        ).thenAnswer((_) => payjoinEvents.stream);
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
+
+        expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isTrue);
+
+        payjoinEvents.add(completedViaFallback);
+        await pumpEventQueue();
+
+        expect(cubit.state.payjoin?.isCompleted, isTrue);
+        expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isFalse);
+      },
+    );
+
+    test(
+      'a TERMINAL payjoin event with no wallet transaction on screen yet '
+      'fires a targeted sync of the wallet, so the broadcast transaction '
+      'shows up promptly instead of at the next scheduled sync',
+      () async {
+        final ongoing = _sender(status: PayjoinStatus.requested);
+        final completedViaFallback = _sender(status: PayjoinStatus.completed);
+        final payjoinEvents = StreamController<Payjoin>.broadcast();
+        addTearDown(payjoinEvents.close);
+
+        var loadCount = 0;
+        when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+          (_) async => [
+            Transaction(payjoin: loadCount++ == 0 ? ongoing : completedViaFallback),
+          ],
+        );
+        when(
+          () => watchPayjoin.execute(ids: [ongoing.id]),
+        ).thenAnswer((_) => payjoinEvents.stream);
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
+
+        payjoinEvents.add(completedViaFallback);
+        await pumpEventQueue();
+
+        verify(() => getWallet.execute('w1', sync: true)).called(1);
+      },
+    );
+
+    test('a NON-terminal payjoin event does not fire the targeted sync', () async {
+      final ongoing = _sender(status: PayjoinStatus.requested);
+      final proposed = _sender(
+        status: PayjoinStatus.proposed,
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      final payjoinEvents = StreamController<Payjoin>.broadcast();
+      addTearDown(payjoinEvents.close);
+
+      var loadCount = 0;
+      when(() => getTransactionsByTxId.execute(any())).thenAnswer(
+        (_) async => [Transaction(payjoin: loadCount++ == 0 ? ongoing : proposed)],
+      );
+      when(
+        () => watchPayjoin.execute(ids: [ongoing.id]),
+      ).thenAnswer((_) => payjoinEvents.stream);
+
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByWalletTxId('sender-orig-txid', walletId: 'w1');
+
+      payjoinEvents.add(proposed);
+      await pumpEventQueue();
+
+      expect(cubit.state.payjoin?.status, PayjoinStatus.proposed);
+      verifyNever(() => getWallet.execute(any(), sync: true));
     });
   });
 }
