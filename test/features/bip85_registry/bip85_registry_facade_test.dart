@@ -63,14 +63,8 @@ void main() {
         'words',
         'index',
       ]);
-      expect(
-        reservation.scope.segmentValue('language'),
-        bip39.Language.english.toBip85Code(),
-      );
-      expect(
-        reservation.scope.segmentValue('words'),
-        bip39.MnemonicLength.words12.toBip85Code(),
-      );
+      expect(reservation.scope.segmentValue('language'), 0);
+      expect(reservation.scope.segmentValue('words'), 12);
       expect(reservation.scope.segmentValue('index'), reservation.walletIndex);
     }
   });
@@ -161,11 +155,7 @@ void main() {
     final indices = registry.reservedWalletSeedIndices;
     final paths = registry.reservedWalletSeedPaths;
     expect(indices, {100, 101, 102});
-    expect(paths, {
-      "39'/0'/12'/100'",
-      "39'/0'/12'/101'",
-      "39'/0'/12'/102'",
-    });
+    expect(paths, {"39'/0'/12'/100'", "39'/0'/12'/101'", "39'/0'/12'/102'"});
     expect(() => indices.add(103), throwsA(isA<UnsupportedError>()));
     expect(
       () => paths.add("39'/0'/12'/103'"),
