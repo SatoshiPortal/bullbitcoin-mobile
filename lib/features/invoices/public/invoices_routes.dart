@@ -43,7 +43,9 @@ class InvoicesRoutes {
         path: InvoicesRoute.detail.path,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          final invoice = state.extra is Invoice ? state.extra as Invoice : null;
+          final invoice = state.extra is Invoice
+              ? state.extra as Invoice
+              : null;
           return BlocProvider(
             create: (_) => InvoiceDetailCubit(
               facade: locator<InvoicesFacade>(),

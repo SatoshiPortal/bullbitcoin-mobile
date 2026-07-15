@@ -26,7 +26,10 @@ void main() {
     });
 
     test('rejects a non-HTTPS URL', () {
-      expect(() => InvoiceUrl('http://bullpay.ca/invoice/1'), throwsArgumentError);
+      expect(
+        () => InvoiceUrl('http://bullpay.ca/invoice/1'),
+        throwsArgumentError,
+      );
     });
 
     test('rejects a javascript: scheme', () {

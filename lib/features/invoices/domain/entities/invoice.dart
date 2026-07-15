@@ -59,8 +59,7 @@ class Invoice {
   /// Still collectible: unpaid or partially paid, and not past expiry.
   bool isPayable(DateTime now) {
     final open =
-        status == InvoiceStatus.unpaid ||
-        status == InvoiceStatus.partiallyPaid;
+        status == InvoiceStatus.unpaid || status == InvoiceStatus.partiallyPaid;
     return open && expiresAt.isAfter(now);
   }
 

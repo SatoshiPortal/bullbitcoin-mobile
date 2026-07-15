@@ -61,9 +61,5 @@ class ListInvoicesCommand {
   final int pageSize;
   final InvoiceStatus? status;
 
-  const ListInvoicesCommand({
-    this.page = 1,
-    this.pageSize = 100,
-    this.status,
-  });
+  const ListInvoicesCommand({this.page = 1, this.pageSize = 100, this.status});
 }

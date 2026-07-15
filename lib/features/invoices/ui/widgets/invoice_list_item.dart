@@ -35,8 +35,8 @@ class InvoiceListItem extends StatelessWidget {
     final title = invoice.invoiceNumber?.trim().isNotEmpty ?? false
         ? invoice.invoiceNumber!
         : (invoice.publicDescription?.trim().isNotEmpty ?? false)
-            ? invoice.publicDescription!
-            : invoice.id.value;
+        ? invoice.publicDescription!
+        : invoice.id.value;
     return ListTile(
       onTap: onTap,
       title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),

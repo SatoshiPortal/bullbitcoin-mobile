@@ -39,11 +39,8 @@ WalletMetadataModel _metadata(String id) {
   );
 }
 
-Label _systemLabel(String address) => Label.addr(
-  id: 1,
-  address: address,
-  label: LabelSystem.swaps.label,
-);
+Label _systemLabel(String address) =>
+    Label.addr(id: 1, address: address, label: LabelSystem.swaps.label);
 
 void main() {
   late _MockWalletMetadataDatasource metadata;
@@ -78,10 +75,11 @@ void main() {
       when(
         () => metadata.fetch(_liquidWalletId),
       ).thenAnswer((_) async => _metadata(_liquidWalletId));
-      when(() => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')))
-          .thenAnswer(
-            (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
-          );
+      when(
+        () => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
+      );
       when(
         () => lwk.getAddressWithBlindingKeyByIndex(
           5,
@@ -110,10 +108,11 @@ void main() {
       when(
         () => metadata.fetch(_liquidWalletId),
       ).thenAnswer((_) async => _metadata(_liquidWalletId));
-      when(() => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')))
-          .thenAnswer(
-            (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
-          );
+      when(
+        () => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
+      );
       when(
         () => lwk.getAddressWithBlindingKeyByIndex(
           5,
@@ -156,25 +155,27 @@ void main() {
       expect(result.blindingKeyHex, 'bkey6');
     });
 
-    test('refuses a Bitcoin (BDK) wallet before touching the datasource',
-        () async {
-      when(
-        () => metadata.fetch(_bitcoinWalletId),
-      ).thenAnswer((_) async => _metadata(_bitcoinWalletId));
+    test(
+      'refuses a Bitcoin (BDK) wallet before touching the datasource',
+      () async {
+        when(
+          () => metadata.fetch(_bitcoinWalletId),
+        ).thenAnswer((_) async => _metadata(_bitcoinWalletId));
 
-      await expectLater(
-        repository.generateNewLiquidReceiveAddressWithBlindingKey(
-          walletId: _bitcoinWalletId,
-        ),
-        throwsA(isA<WalletError>()),
-      );
-      verifyNever(
-        () => lwk.getAddressWithBlindingKeyByIndex(
-          any(),
-          wallet: any(named: 'wallet'),
-        ),
-      );
-    });
+        await expectLater(
+          repository.generateNewLiquidReceiveAddressWithBlindingKey(
+            walletId: _bitcoinWalletId,
+          ),
+          throwsA(isA<WalletError>()),
+        );
+        verifyNever(
+          () => lwk.getAddressWithBlindingKeyByIndex(
+            any(),
+            wallet: any(named: 'wallet'),
+          ),
+        );
+      },
+    );
 
     test('throws when the wallet is unknown', () async {
       when(() => metadata.fetch(any())).thenAnswer((_) async => null);

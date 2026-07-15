@@ -352,7 +352,10 @@ void main() {
           'has_more': false,
         },
       ]);
-      final client = BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp);
+      final client = BullnymHttpClient.withDio(
+        stub.dio,
+        nowSecs: () => timestamp,
+      );
       final result = await client.listInvoices(
         signer: signer,
         page: 1,
@@ -368,44 +371,49 @@ void main() {
   });
 
   group('T-INV-CLIENT create', () {
-    test('POSTs the unlinked body and signs the exact 13-field layout',
-        () async {
-      final stub = _stubDio([
-        {'invoice_id': 'inv-1', 'share_url': 'https://bullpay.ca/invoice/inv-1'},
-      ]);
-      final client = BullnymHttpClient.withDio(
-        stub.dio,
-        nowSecs: () => timestamp,
-      );
+    test(
+      'POSTs the unlinked body and signs the exact 13-field layout',
+      () async {
+        final stub = _stubDio([
+          {
+            'invoice_id': 'inv-1',
+            'share_url': 'https://bullpay.ca/invoice/inv-1',
+          },
+        ]);
+        final client = BullnymHttpClient.withDio(
+          stub.dio,
+          nowSecs: () => timestamp,
+        );
 
-      final response = await client.createInvoice(
-        signer: signer,
-        fields: _lnLiquidFields(),
-      );
+        final response = await client.createInvoice(
+          signer: signer,
+          fields: _lnLiquidFields(),
+        );
 
-      expect(response.invoiceId, 'inv-1');
-      expect(response.shareUrl, 'https://bullpay.ca/invoice/inv-1');
+        expect(response.invoiceId, 'inv-1');
+        expect(response.shareUrl, 'https://bullpay.ca/invoice/inv-1');
 
-      final request = stub.captured.requests.single;
-      expect(request.method, 'POST');
-      expect(request.path, '/api/v1/invoices');
-      final body = request.data as Map<String, dynamic>;
-      expect(body['npub'], handle.publicKeyHex);
-      expect(body['accept_ln'], true);
-      expect(body['accept_liquid'], true);
-      expect(body['accept_btc'], false);
-      expect(body['liquid_address'], 'lq1qtest');
-      expect(body['liquid_blinding_key_hex'], 'ab12cd');
+        final request = stub.captured.requests.single;
+        expect(request.method, 'POST');
+        expect(request.path, '/api/v1/invoices');
+        final body = request.data as Map<String, dynamic>;
+        expect(body['npub'], handle.publicKeyHex);
+        expect(body['accept_ln'], true);
+        expect(body['accept_liquid'], true);
+        expect(body['accept_btc'], false);
+        expect(body['liquid_address'], 'lq1qtest');
+        expect(body['liquid_blinding_key_hex'], 'ab12cd');
 
-      _expectSignatureValid(
-        handle: handle,
-        signatureHex: body['signature'] as String,
-        action: bullpayActionInvoiceCreate,
-        nymOrEmpty: '',
-        payloadFields: buildInvoiceCreatePayloadFields(_lnLiquidFields()),
-        timestampSecs: timestamp,
-      );
-    });
+        _expectSignatureValid(
+          handle: handle,
+          signatureHex: body['signature'] as String,
+          action: bullpayActionInvoiceCreate,
+          nymOrEmpty: '',
+          payloadFields: buildInvoiceCreatePayloadFields(_lnLiquidFields()),
+          timestampSecs: timestamp,
+        );
+      },
+    );
 
     test('maps the InvalidAmount envelope to a typed rejection', () {
       final stub = _stubDio([
@@ -422,7 +430,11 @@ void main() {
       expect(
         () => client.createInvoice(signer: signer, fields: _lnLiquidFields()),
         throwsA(
-          isA<BullnymException>().having((e) => e.code, 'code', 'InvalidAmount'),
+          isA<BullnymException>().having(
+            (e) => e.code,
+            'code',
+            'InvalidAmount',
+          ),
         ),
       );
     });
@@ -462,34 +474,36 @@ void main() {
   });
 
   group('T-INV-CLIENT list', () {
-    test('GETs /api/v1/invoices with signed query and empty-nym signature',
-        () async {
-      final stub = _stubDio([
-        {'invoices': [], 'page': 1, 'pageSize': 100, 'has_more': false},
-      ]);
-      final client = BullnymHttpClient.withDio(
-        stub.dio,
-        nowSecs: () => timestamp,
-      );
+    test(
+      'GETs /api/v1/invoices with signed query and empty-nym signature',
+      () async {
+        final stub = _stubDio([
+          {'invoices': [], 'page': 1, 'pageSize': 100, 'has_more': false},
+        ]);
+        final client = BullnymHttpClient.withDio(
+          stub.dio,
+          nowSecs: () => timestamp,
+        );
 
-      await client.listInvoices(signer: signer, page: 1, pageSize: 100);
+        await client.listInvoices(signer: signer, page: 1, pageSize: 100);
 
-      final request = stub.captured.requests.single;
-      expect(request.method, 'GET');
-      expect(request.path, '/api/v1/invoices');
-      expect(request.queryParameters['npub'], handle.publicKeyHex);
-      expect(request.queryParameters['pageSize'], 100);
-      expect(request.queryParameters.containsKey('status'), isFalse);
+        final request = stub.captured.requests.single;
+        expect(request.method, 'GET');
+        expect(request.path, '/api/v1/invoices');
+        expect(request.queryParameters['npub'], handle.publicKeyHex);
+        expect(request.queryParameters['pageSize'], 100);
+        expect(request.queryParameters.containsKey('status'), isFalse);
 
-      _expectSignatureValid(
-        handle: handle,
-        signatureHex: request.queryParameters['signature'] as String,
-        action: bullpayActionInvoiceList,
-        nymOrEmpty: '',
-        payloadFields: buildInvoiceListPayloadFields(page: 1, pageSize: 100),
-        timestampSecs: timestamp,
-      );
-    });
+        _expectSignatureValid(
+          handle: handle,
+          signatureHex: request.queryParameters['signature'] as String,
+          action: bullpayActionInvoiceList,
+          nymOrEmpty: '',
+          payloadFields: buildInvoiceListPayloadFields(page: 1, pageSize: 100),
+          timestampSecs: timestamp,
+        );
+      },
+    );
   });
 
   group('T-INV-CLIENT status is unsigned', () {

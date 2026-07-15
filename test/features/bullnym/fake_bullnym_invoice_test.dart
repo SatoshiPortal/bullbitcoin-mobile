@@ -24,10 +24,17 @@ void main() {
   setUp(() => client = FakeBullnymClient());
 
   test('create → list → status → cancel round-trip (unlinked)', () async {
-    final created = await client.createInvoice(signer: alice, fields: _lnLiquid());
+    final created = await client.createInvoice(
+      signer: alice,
+      fields: _lnLiquid(),
+    );
     expect(created.shareUrl, contains('/invoice/'));
 
-    final list = await client.listInvoices(signer: alice, page: 1, pageSize: 100);
+    final list = await client.listInvoices(
+      signer: alice,
+      page: 1,
+      pageSize: 100,
+    );
     expect(list.invoices.single.id, created.invoiceId);
     expect(list.invoices.single.nymOwner, isNull);
 
@@ -50,57 +57,92 @@ void main() {
 
   test('the invoice store is independent of a bob-owned invoice', () async {
     await client.createInvoice(signer: alice, fields: _lnLiquid());
-    final bobList = await client.listInvoices(signer: bob, page: 1, pageSize: 100);
+    final bobList = await client.listInvoices(
+      signer: bob,
+      page: 1,
+      pageSize: 100,
+    );
     expect(bobList.invoices, isEmpty);
   });
 
   test('cancel of a non-owner id surfaces InvoiceNotFound', () async {
-    final created = await client.createInvoice(signer: alice, fields: _lnLiquid());
+    final created = await client.createInvoice(
+      signer: alice,
+      fields: _lnLiquid(),
+    );
     expect(
       () => client.cancelInvoice(signer: bob, invoiceId: created.invoiceId),
-      throwsA(isA<BullnymException>().having((e) => e.code, 'code', 'InvoiceNotFound')),
+      throwsA(
+        isA<BullnymException>().having(
+          (e) => e.code,
+          'code',
+          'InvoiceNotFound',
+        ),
+      ),
     );
   });
 
-  test('create enforces at-least-one-rail and rail↔address coherence', () async {
-    expect(
-      () => client.createInvoice(
-        signer: alice,
-        fields: const BullnymCreateInvoiceFields(
-          amountSat: 1,
-          acceptBtc: false,
-          acceptLn: false,
-          acceptLiquid: false,
-          expiresAtUnix: 1710086400,
+  test(
+    'create enforces at-least-one-rail and rail↔address coherence',
+    () async {
+      expect(
+        () => client.createInvoice(
+          signer: alice,
+          fields: const BullnymCreateInvoiceFields(
+            amountSat: 1,
+            acceptBtc: false,
+            acceptLn: false,
+            acceptLiquid: false,
+            expiresAtUnix: 1710086400,
+          ),
         ),
-      ),
-      throwsA(isA<BullnymException>().having((e) => e.code, 'code', 'InvalidAmount')),
-    );
-    expect(
-      () => client.createInvoice(
-        signer: alice,
-        fields: const BullnymCreateInvoiceFields(
-          amountSat: 1,
-          acceptBtc: true,
-          acceptLn: false,
-          acceptLiquid: false,
-          expiresAtUnix: 1710086400,
+        throwsA(
+          isA<BullnymException>().having(
+            (e) => e.code,
+            'code',
+            'InvalidAmount',
+          ),
         ),
-      ),
-      throwsA(isA<BullnymException>().having((e) => e.code, 'code', 'InvalidAmount')),
-    );
-  });
+      );
+      expect(
+        () => client.createInvoice(
+          signer: alice,
+          fields: const BullnymCreateInvoiceFields(
+            amountSat: 1,
+            acceptBtc: true,
+            acceptLn: false,
+            acceptLiquid: false,
+            expiresAtUnix: 1710086400,
+          ),
+        ),
+        throwsA(
+          isA<BullnymException>().having(
+            (e) => e.code,
+            'code',
+            'InvalidAmount',
+          ),
+        ),
+      );
+    },
+  );
 
   test('reusedLiquidAddressOnce fires once then clears', () async {
     client.invoiceMode = FakeInvoiceMode.reusedLiquidAddressOnce;
     expect(
       () => client.createInvoice(signer: alice, fields: _lnLiquid()),
       throwsA(
-        isA<BullnymException>().having((e) => e.code, 'code', 'LiquidAddressAlreadyUsed'),
+        isA<BullnymException>().having(
+          (e) => e.code,
+          'code',
+          'LiquidAddressAlreadyUsed',
+        ),
       ),
     );
     // The mode cleared itself; the retry succeeds.
-    final retry = await client.createInvoice(signer: alice, fields: _lnLiquid());
+    final retry = await client.createInvoice(
+      signer: alice,
+      fields: _lnLiquid(),
+    );
     expect(retry.invoiceId, isNotEmpty);
   });
 
@@ -122,7 +164,11 @@ void main() {
     for (var i = 0; i < 3; i++) {
       await client.createInvoice(signer: alice, fields: _lnLiquid());
     }
-    final firstPage = await client.listInvoices(signer: alice, page: 1, pageSize: 2);
+    final firstPage = await client.listInvoices(
+      signer: alice,
+      page: 1,
+      pageSize: 2,
+    );
     expect(firstPage.invoices.length, 2);
     expect(firstPage.hasMore, isTrue);
     final unpaid = await client.listInvoices(

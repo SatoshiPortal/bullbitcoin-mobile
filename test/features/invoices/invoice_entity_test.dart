@@ -89,10 +89,7 @@ void main() {
 
   group('publicUrlFor', () {
     test('unlinked uses /invoice/<id>', () {
-      final invoice = _invoice(
-        status: InvoiceStatus.unpaid,
-        expiresAt: now,
-      );
+      final invoice = _invoice(status: InvoiceStatus.unpaid, expiresAt: now);
       expect(
         invoice.publicUrlFor(domain: 'https://bullpay.ca'),
         'https://bullpay.ca/invoice/inv-1',
