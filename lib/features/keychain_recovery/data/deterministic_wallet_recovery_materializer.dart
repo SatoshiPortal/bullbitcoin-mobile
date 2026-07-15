@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -38,34 +39,36 @@ class DeterministicWalletRecoveryMaterializer
       );
     }
 
-    PreparedDeterministicWallets? prepared;
-    try {
-      prepared = await _deterministicWallets.prepare(
-        DeterministicWalletsRequest(
-          bip85Index: batch.bip85Index,
-          bip85Alias: batch.deterministicAlias,
-          environment: settings.environment,
-          walletSpecs: supportedIntents
-              .map(
-                (intent) => DeterministicWalletSpec(
-                  id: _materializationKey(intent),
-                  network: intent.network,
-                  scriptType: intent.scriptType,
-                  isDefault: false,
-                  sync: false,
-                ),
-              )
-              .toList(growable: false),
-        ),
-      );
-    } catch (_) {
-      return KeychainRecoveryWalletMaterializationResult(
-        materializedWallets: const [],
-        failedOutcomes: [
-          ...unsupportedOutcomes,
-          ..._failed(supportedIntents, status: _failedWalletCreation),
-        ],
-      );
+    final prepareResult = await _deterministicWallets.prepare(
+      DeterministicWalletsRequest(
+        bip85Index: batch.bip85Index,
+        bip85Alias: batch.deterministicAlias,
+        environment: settings.environment,
+        walletSpecs: supportedIntents
+            .map(
+              (intent) => DeterministicWalletSpec(
+                id: _materializationKey(intent),
+                network: intent.network,
+                scriptType: intent.scriptType,
+                isDefault: false,
+                sync: false,
+              ),
+            )
+            .toList(growable: false),
+      ),
+    );
+    final PreparedDeterministicWallets prepared;
+    switch (prepareResult) {
+      case Ok(:final value):
+        prepared = value;
+      case Err():
+        return KeychainRecoveryWalletMaterializationResult(
+          materializedWallets: const [],
+          failedOutcomes: [
+            ...unsupportedOutcomes,
+            ..._failed(supportedIntents, status: _failedWalletCreation),
+          ],
+        );
     }
 
     if (prepared.parentFingerprint.toLowerCase() !=
@@ -84,7 +87,7 @@ class DeterministicWalletRecoveryMaterializer
         .where(
           (intent) =>
               intent.childSeedFingerprint.toLowerCase() !=
-              prepared!.childSeedFingerprint.toLowerCase(),
+              prepared.childSeedFingerprint.toLowerCase(),
         )
         .toList(growable: false);
     if (childFingerprintMismatches.isNotEmpty) {
@@ -136,11 +139,8 @@ class DeterministicWalletRecoveryMaterializer
   Future<void> _rollbackCreatedWalletsBestEffort(
     PreparedDeterministicWallets prepared,
   ) async {
-    try {
-      await _deterministicWallets.rollbackCreatedWallets(prepared);
-    } catch (_) {
-      // Recovery still reports the materialization failure; rollback is best effort.
-    }
+    final result = await _deterministicWallets.rollbackCreatedWallets(prepared);
+    result.fold<void>((_) {}, (_) {});
   }
 
   List<KeychainRecoveryWalletRestoreOutcome> _unsupportedEnvironmentOutcomes(

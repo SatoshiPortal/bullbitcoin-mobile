@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -117,6 +118,18 @@ void main() {
     },
   );
 
+  test('maps typed wallet preparation failures without throwing', () async {
+    final intent = _intent();
+    deterministicWallets.prepareFailure =
+        const DeterministicWalletDerivationFailure();
+
+    final result = await materializer.materialize(_batch(intents: [intent]));
+
+    expect(result.materializedWallets, isEmpty);
+    expect(result.failedOutcomes.single.status, _walletCreationFailed);
+    expect(deterministicWallets.rollbackCalls, 0);
+  });
+
   test(
     'rolls back and reports all supported wallets on wallet id conflict',
     () async {
@@ -214,21 +227,25 @@ PreparedDeterministicWallets _prepared({
 class _FakeDeterministicWalletsFacade implements DeterministicWalletsFacade {
   final requests = <DeterministicWalletsRequest>[];
   late PreparedDeterministicWallets result;
+  DeterministicWalletFailure? prepareFailure;
+  DeterministicWalletFailure? rollbackFailure;
   int rollbackCalls = 0;
 
   @override
-  Future<PreparedDeterministicWallets> prepare(
-    DeterministicWalletsRequest request,
-  ) async {
+  Future<Result<PreparedDeterministicWallets, DeterministicWalletFailure>>
+  prepare(DeterministicWalletsRequest request) async {
     requests.add(request);
-    return result;
+    final failure = prepareFailure;
+    return failure == null ? Ok(result) : Err(failure);
   }
 
   @override
-  Future<void> rollbackCreatedWallets(
+  Future<Result<void, DeterministicWalletFailure>> rollbackCreatedWallets(
     PreparedDeterministicWallets result,
   ) async {
     rollbackCalls++;
+    final failure = rollbackFailure;
+    return failure == null ? const Ok(null) : Err(failure);
   }
 }
 
@@ -248,6 +265,8 @@ class _FakeGetSettingsUsecase implements GetSettingsUsecase {
 }
 
 const _skipped = KeychainRecoveryWalletRestoreStatus.skippedUnsupported;
+const _walletCreationFailed =
+    KeychainRecoveryWalletRestoreStatus.failedWalletCreation;
 const _childFingerprintMismatch =
     KeychainRecoveryWalletRestoreStatus.failedChildSeedFingerprintMismatch;
 const _conflict = KeychainRecoveryWalletRestoreStatus.failedConflict;
