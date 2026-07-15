@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
@@ -32,9 +33,15 @@ class PrepareLightningAddressWalletUsecase {
     PreparedDeterministicWallets? preparedWallets;
     try {
       final settings = await _getSettings.execute();
-      preparedWallets = await _deterministicWallets.prepare(
+      final prepareResult = await _deterministicWallets.prepare(
         _lightningAddressWalletRequest(settings.environment),
       );
+      switch (prepareResult) {
+        case Ok(:final value):
+          preparedWallets = value;
+        case Err(:final failure):
+          throw _mapDeterministicWalletFailure(failure);
+      }
       await _recordKeychainManifestEntry(preparedWallets);
       final preparedWallet = preparedWallets.wallets.single;
       return PreparedLightningAddressWallet(
@@ -44,17 +51,6 @@ class PrepareLightningAddressWalletUsecase {
       );
     } on LightningAddressException {
       rethrow;
-    } on DeterministicWalletException catch (e) {
-      if (preparedWallets != null) {
-        await _rollbackPreparedWalletsBestEffort(preparedWallets);
-      }
-      if (e.type == DeterministicWalletExceptionType.generic) {
-        throw const LightningAddressException.localPreparationFailed(
-          code: 'DeterministicWalletPreparationFailed',
-          retryable: true,
-        );
-      }
-      throw const LightningAddressException.unexpected();
     } on KeychainManifestException catch (e) {
       if (preparedWallets != null) {
         await _rollbackPreparedWalletsBestEffort(preparedWallets);
@@ -126,10 +122,33 @@ class PrepareLightningAddressWalletUsecase {
     PreparedDeterministicWallets preparedWallets,
   ) async {
     try {
-      await _deterministicWallets.rollbackCreatedWallets(preparedWallets);
+      final result = await _deterministicWallets.rollbackCreatedWallets(
+        preparedWallets,
+      );
+      result.fold<void>((_) {}, (_) {});
     } catch (_) {
       // The caller still receives the original failure; cleanup is best effort.
     }
+  }
+
+  LightningAddressException _mapDeterministicWalletFailure(
+    DeterministicWalletFailure failure,
+  ) {
+    return switch (failure) {
+      DeterministicWalletDerivationFailure() ||
+      DeterministicWalletStorageFailure() ||
+      DeterministicWalletOperationFailure() ||
+      DeterministicWalletUnexpectedFailure() =>
+        const LightningAddressException.localPreparationFailed(
+          code: 'DeterministicWalletPreparationFailed',
+          retryable: true,
+        ),
+      InvalidDeterministicWalletRequestFailure() ||
+      DeterministicWalletMismatchFailure() ||
+      DeterministicWalletDerivationConflictFailure() ||
+      DeterministicWalletRollbackFailure() =>
+        const LightningAddressException.unexpected(),
+    };
   }
 
   bool _isRetryableManifestFailure(KeychainManifestException error) {

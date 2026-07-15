@@ -135,8 +135,7 @@ class DeterministicWalletRecoveryMaterializer
       materializedWallets: materialized,
       failedOutcomes: unsupportedOutcomes,
       derivationPath: prepared.derivationPath,
-      rollbackCreatedWallets: () =>
-          _rollbackCreatedWalletsBestEffort(prepared!),
+      rollbackCreatedWallets: () => _rollbackCreatedWalletsBestEffort(prepared),
     );
   }
 

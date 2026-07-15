@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/lightning_address/domain/usecases/prepare_lightning_address_wallet_usecase.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
@@ -129,7 +129,8 @@ void main() {
   });
 
   test('reports generic deterministic wallet failures as retryable', () async {
-    deterministicWallets.prepareError = DeterministicWalletException.generic();
+    deterministicWallets.prepareFailure =
+        const DeterministicWalletOperationFailure();
 
     await expectLater(
       usecase.execute(),
@@ -148,8 +149,8 @@ void main() {
   });
 
   test('reports deterministic wallet mismatches as non-retryable', () async {
-    deterministicWallets.prepareError =
-        DeterministicWalletException.walletMismatch('wrong wallet');
+    deterministicWallets.prepareFailure =
+        const DeterministicWalletMismatchFailure();
 
     await expectLater(
       usecase.execute(),
@@ -183,23 +184,22 @@ class _FakeDeterministicWalletsFacade implements DeterministicWalletsFacade {
   final prepareRequests = <DeterministicWalletsRequest>[];
   final rollbackRequests = <PreparedDeterministicWallets>[];
   PreparedDeterministicWallets prepared = _prepared();
-  DeterministicWalletException? prepareError;
+  DeterministicWalletFailure? prepareFailure;
 
   @override
-  Future<PreparedDeterministicWallets> prepare(
-    DeterministicWalletsRequest request,
-  ) async {
-    final error = prepareError;
-    if (error != null) throw error;
+  Future<Result<PreparedDeterministicWallets, DeterministicWalletFailure>>
+  prepare(DeterministicWalletsRequest request) async {
     prepareRequests.add(request);
-    return prepared;
+    final failure = prepareFailure;
+    return failure == null ? Ok(prepared) : Err(failure);
   }
 
   @override
-  Future<void> rollbackCreatedWallets(
+  Future<Result<void, DeterministicWalletFailure>> rollbackCreatedWallets(
     PreparedDeterministicWallets result,
   ) async {
     rollbackRequests.add(result);
+    return const Ok(null);
   }
 }
 
