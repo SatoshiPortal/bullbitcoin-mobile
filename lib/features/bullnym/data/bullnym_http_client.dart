@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
@@ -459,6 +460,30 @@ class BullnymHttpClient implements BullnymClientPort {
         },
       );
       return _parseListInvoicesResponse(response);
+    });
+  }
+
+  @override
+  Future<Result<BullnymFallbackSupervisionResponse, BullnymFailure>>
+  listFallbackSupervision({required BullnymAuthSigner signer}) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionInvoiceRecoveryList,
+        nymOrEmpty: '',
+        payloadFields: buildInvoiceRecoveryListPayloadFields(),
+        timestampSecs: timestamp,
+      );
+      final response = await _getMap(
+        '/api/v1/invoices/recoverable',
+        queryParameters: {
+          'npub': signer.npubHex,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return _parseFallbackSupervisionResponse(response);
     });
   }
 
@@ -1073,6 +1098,16 @@ class BullnymHttpClient implements BullnymClientPort {
     }
   }
 
+  int _requiredNonNegativeInt(Map<String, dynamic> json, String key) {
+    final value = _requiredInt(json, key);
+    if (value >= 0) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is negative',
+      ),
+    );
+  }
+
   int? _optionalInt(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value == null) return null;
@@ -1225,6 +1260,91 @@ class BullnymHttpClient implements BullnymClientPort {
       paidVia: _optionalString(json, 'paid_via'),
       paidAtUnix: _optionalInt(json, 'paid_at_unix'),
       paidAmountSat: _optionalInt(json, 'paid_amount_sat'),
+    );
+  }
+
+  BullnymFallbackSupervisionResponse _parseFallbackSupervisionResponse(
+    Map<String, dynamic> json,
+  ) {
+    final rawItems = json['items'];
+    if (rawItems is! List) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server response is missing fallback supervision list',
+        ),
+      );
+    }
+    final items = <BullnymFallbackSupervisionItem>[];
+    for (final raw in rawItems) {
+      if (raw is! Map<String, dynamic>) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Server fallback entry has an unexpected shape',
+          ),
+        );
+      }
+      final rawInvoice = raw['invoice'];
+      if (rawInvoice is! Map<String, dynamic>) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidServerResponse(
+            logMessage: 'Server fallback entry is missing invoice context',
+          ),
+        );
+      }
+      items.add(
+        BullnymFallbackSupervisionItem(
+          invoiceId: _requiredString(raw, 'invoice_id'),
+          nym: _requiredString(raw, 'nym'),
+          recoveryStatus: _requiredString(raw, 'recovery_status'),
+          userLockAmountSat: _requiredNonNegativeInt(
+            raw,
+            'user_lock_amount_sat',
+          ),
+          serverLockAmountSat: _requiredNonNegativeInt(
+            raw,
+            'server_lock_amount_sat',
+          ),
+          lockupAddress: _requiredString(raw, 'lockup_address'),
+          refundAddress: _optionalString(raw, 'refund_address'),
+          refundTxid: _optionalString(raw, 'refund_txid'),
+          swapCreatedAtUnix: _requiredNonNegativeInt(
+            raw,
+            'swap_created_at_unix',
+          ),
+          swapUpdatedAtUnix: _requiredNonNegativeInt(
+            raw,
+            'swap_updated_at_unix',
+          ),
+          invoice: BullnymFallbackInvoiceContext(
+            status: _requiredString(rawInvoice, 'status'),
+            amountSat: _requiredNonNegativeInt(rawInvoice, 'amount_sat'),
+            fiatAmountMinor: _optionalInt(rawInvoice, 'fiat_amount_minor'),
+            fiatCurrency: _optionalString(rawInvoice, 'fiat_currency'),
+            publicDescription: _optionalString(
+              rawInvoice,
+              'public_description',
+            ),
+            invoiceNumber: _optionalString(rawInvoice, 'invoice_number'),
+            createdAtUnix: _requiredNonNegativeInt(
+              rawInvoice,
+              'created_at_unix',
+            ),
+          ),
+        ),
+      );
+    }
+    final count = _requiredNonNegativeInt(json, 'count');
+    if (count != items.length || items.length > 100) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Server fallback supervision count is inconsistent',
+        ),
+      );
+    }
+    return BullnymFallbackSupervisionResponse(
+      items: items,
+      count: count,
+      hasMore: _requiredBool(json, 'has_more'),
     );
   }
 

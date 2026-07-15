@@ -32,11 +32,15 @@ class ListInvoicesResult {
   final int page;
   final int pageSize;
   final bool hasMore;
+  final bool fallbackSupervisionUnavailable;
+  final bool fallbackSupervisionOverflow;
 
   const ListInvoicesResult({
     required this.invoices,
     required this.page,
     required this.pageSize,
     required this.hasMore,
+    this.fallbackSupervisionUnavailable = false,
+    this.fallbackSupervisionOverflow = false,
   });
 }

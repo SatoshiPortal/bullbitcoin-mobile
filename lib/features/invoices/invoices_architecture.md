@@ -8,9 +8,8 @@ set of accepted rails), share its public payment URL, then track it to payment
 tracked to a terminal state.
 
 This feature has its OWN hexagon, entry tile, screens, and routes. It REUSES the
-shared `bullnym` client (adding the three signed `invoice-*` actions) and adds
-one core-wallet primitive (a Liquid receive address WITH its blinding secret).
-It
+shared `bullnym` client (adding four signed `invoice-*` actions) and adds one
+core-wallet primitive (a Liquid receive address WITH its blinding secret). It
 edits neither `features/payment_page` nor `features/pos`.
 
 ## The 2-path contract (DG-I1: UNLINKED-ONLY in v1)
@@ -58,7 +57,7 @@ the app does not implement SLIP77 derivation in Dart.
 
 ## Signed byte layout (KR-3-analog, DG-I3)
 
-Three `bullpay-la-v2` actions, signed over
+Four `bullpay-la-v2` actions, signed over
 `bullpay-la-v2\0<action>\0<npub_hex>\0<nym_or_empty>\0(<field>\0)*<timestamp>`
 (server `src/auth.rs::build_la_v2_message`):
 
@@ -71,6 +70,9 @@ Three `bullpay-la-v2` actions, signed over
 - **`invoice-cancel`** — 1 field: `[invoice_id]`.
 - **`invoice-list`** — 3 fields: `[page, page_size, status_or_empty]`,
   `nym_or_empty` ALWAYS `""`.
+- **`invoice-recovery-list`** — zero payload fields and `nym_or_empty` ALWAYS
+  `""`. This is a GET-only, npub-wide automatic-fallback projection; it cannot
+  choose a destination, trigger a broadcast, or retry execution.
 
 Golden byte-layout vectors are pinned as hand-derived literals (append-only) in
 `test/features/bullnym/bullnym_invoice_contract_test.dart`.
@@ -82,6 +84,16 @@ public `InvoiceStatusSnapshot`; the list returns `Invoice[]`. The domain keeps
 `Invoice` (list/create) separate from `InvoiceStatusSnapshot` (status); callers
 merge them explicitly, never conflate. Public status
 (`GET /api/v1/invoices/:id/status`) is **UNSIGNED** — polled by id, no signer.
+
+Automatic fallback supervision is deliberately separate and authenticated:
+`GET /api/v1/invoices/recoverable` is signed by the wallet identity and returns
+one read-only row per swap, attributed to its original invoice. Current server
+states map conservatively: `refund_due` is delayed, `refunding` is in progress,
+and `refunded` is confirming because a transaction id alone does not prove
+finality. Approved confirmed/finalized/settled and integrity-hold values have
+explicit product states; every unknown value stays in progress with no action.
+Servers returning 404/405 produce an empty fail-closed projection. Other read
+failures never hide the ordinary invoice list or a previously loaded detail.
 
 ## Local-only private memo (§3.14)
 
@@ -96,10 +108,27 @@ SharedPreferences invoice cache, no offline editing.
 
 ## Polling with backoff (DG-I4)
 
-The detail screen polls the unsigned status endpoint with exponential backoff
-(3s → cap ~30s), stops on a terminal status
+The detail screen polls the unsigned status endpoint and the authenticated
+fallback projection with exponential backoff (3s → cap ~30s), stops on a
+terminal status
 (`paid`/`expired`/`cancelled`/`underpaid`/`overpaid`) or on dispose. No tight
-loop, no poll after terminal.
+loop, no poll after terminal. An invoice with delayed, active, confirming, or
+integrity-hold fallback remains under supervision even if its ordinary status
+is terminal; only a settled fallback completes that monitoring lifecycle.
+
+## No manual recovery product
+
+The client contains no signed recovery POST, incident-time address picker,
+Recover button, confirmation sheet, retry counters, or till-side settlement
+instruction. Bullnym executes fallback while the phone can be offline. Mobile
+only registers the single automatic destination in the separate
+`automatic_fallback` feature and supervises server-authoritative invoice state.
+
+## Existing layout debt
+
+This feature predates the current feature layout and still has an
+`application/ports` hexagon. Automatic supervision stays inside that existing
+boundary for an atomic change; migrating the whole feature is separate work.
 
 ## Multi-rail single-Liquid-address caveat (§3.19)
 

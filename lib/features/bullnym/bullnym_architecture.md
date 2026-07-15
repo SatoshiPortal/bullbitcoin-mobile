@@ -127,10 +127,17 @@ choose protocol timestamps.
 
 ## Recipient-invoice wire surface
 
-Bullnym carries the signed create/cancel/list endpoints and unsigned public
-status endpoint for recipient invoices. These shapes stay raw at this boundary:
+Bullnym carries the signed create/cancel/list endpoints, the signed GET-only
+automatic-fallback supervision endpoint, and the unsigned public status
+endpoint for recipient invoices. These shapes stay raw at this boundary:
 the `invoices` feature maps them into its own domain and owns all settlement
 meaning and UI behavior.
+
+`invoice-recovery-list` signs an empty nym with zero payload fields and sends
+only `npub`, `timestamp`, and `signature` to
+`GET /api/v1/invoices/recoverable`. Its DTO contains invoice attribution,
+amounts, immutable destination/transaction observations, and timestamps only.
+There is no recovery mutation in this boundary.
 
 The deployed status contract includes nullable `presentation_status` and the
 required `bitcoin_direct_observations` list. Each observation preserves

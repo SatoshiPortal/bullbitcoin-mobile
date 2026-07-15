@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/invoices/application/usecases/cancel_invoice_
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
+import 'package:bb_mobile/features/invoices/application/usecases/list_invoice_fallback_supervision_usecase.dart';
 import 'package:bb_mobile/features/invoices/data/private_invoice_cipher_impl.dart';
 import 'package:bb_mobile/features/invoices/data/private_invoice_link_repository_impl.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_identity_datasource.dart';
@@ -74,6 +75,12 @@ class InvoicesLocator {
         payService: locator<InvoicesPayServicePort>(),
       ),
     );
+    locator.registerFactory<ListInvoiceFallbackSupervisionUsecase>(
+      () => ListInvoiceFallbackSupervisionUsecase(
+        identity: locator<InvoicesIdentityPort>(),
+        payService: locator<InvoicesPayServicePort>(),
+      ),
+    );
     locator.registerFactory<GetInvoiceUsecase>(
       () => GetInvoiceUsecase(payService: locator<InvoicesPayServicePort>()),
     );
@@ -86,6 +93,8 @@ class InvoicesLocator {
         create: locator<CreateInvoiceUsecase>(),
         cancel: locator<CancelInvoiceUsecase>(),
         list: locator<ListInvoicesUsecase>(),
+        listFallbackSupervision:
+            locator<ListInvoiceFallbackSupervisionUsecase>(),
         getStatus: locator<GetInvoiceUsecase>(),
         getPrivateLink: locator<GetPrivateInvoiceLinkUsecase>(),
         bullnym: locator<BullnymFacade>(),

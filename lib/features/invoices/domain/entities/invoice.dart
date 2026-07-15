@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
@@ -29,6 +30,7 @@ class Invoice {
   final PaymentMethod? paidVia;
   final DateTime? paidAt;
   final int? paidAmountSat;
+  final List<InvoiceFallbackSupervision> fallbackSupervisions;
 
   const Invoice({
     required this.id,
@@ -50,7 +52,38 @@ class Invoice {
     this.paidVia,
     this.paidAt,
     this.paidAmountSat,
+    this.fallbackSupervisions = const [],
   });
+
+  InvoiceFallbackState? get fallbackState =>
+      mostUrgentInvoiceFallbackState(fallbackSupervisions);
+
+  Invoice withFallbackSupervisions(
+    List<InvoiceFallbackSupervision> supervisions,
+  ) {
+    return Invoice(
+      id: id,
+      nymOwner: nymOwner,
+      status: status,
+      presentationStatus: presentationStatus,
+      amountSat: amountSat,
+      remainingAmountSat: remainingAmountSat,
+      fiatAmountMinor: fiatAmountMinor,
+      fiatCurrency: fiatCurrency,
+      memo: memo,
+      acceptBtc: acceptBtc,
+      acceptLn: acceptLn,
+      acceptLiquid: acceptLiquid,
+      bitcoinAddress: bitcoinAddress,
+      liquidAddress: liquidAddress,
+      createdAt: createdAt,
+      expiresAt: expiresAt,
+      paidVia: paidVia,
+      paidAt: paidAt,
+      paidAmountSat: paidAmountSat,
+      fallbackSupervisions: List.unmodifiable(supervisions),
+    );
+  }
 
   bool get isExpired => status == InvoiceStatus.expired;
 

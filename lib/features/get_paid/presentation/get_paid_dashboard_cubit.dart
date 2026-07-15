@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/domain/ensure_get_paid_automatic_fallback_usecase.dart';
+import 'package:bb_mobile/features/get_paid/domain/get_paid_fallback_attention_usecase.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
@@ -17,7 +18,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// The Donation Page and Point of Sale rows are keyed by the wallet nym, which
 /// is resolved from the Lightning Address registration — so those two are only
 /// probed once a nym exists (mirroring how the product screens resolve their
-/// own identity). Invoices only need the local default-wallet readiness check.
+/// own identity). The invoices boundary contributes only wallet readiness and
+/// a read-only automatic-fallback attention count.
 class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
   static const _nymNotFoundCode = 'NymNotFound';
 
@@ -27,6 +29,7 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
   final BtcpayFacade _btcpay;
   final GetWalletsUsecase _getWallets;
   final EnsureGetPaidAutomaticFallbackUsecase _ensureAutomaticFallback;
+  final GetPaidFallbackAttentionUsecase _fallbackAttention;
   int _refreshGeneration = 0;
 
   GetPaidDashboardCubit({
@@ -36,6 +39,7 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     required this._btcpay,
     required this._getWallets,
     required this._ensureAutomaticFallback,
+    required this._fallbackAttention,
   }) : super(const GetPaidDashboardState());
 
   Future<void> refresh() async {
@@ -60,10 +64,24 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
 
     final invoicesFuture = () async {
       final ready = await _hasDefaultWallet();
+      int? fallbackAttentionCount;
+      if (ready) {
+        try {
+          fallbackAttentionCount = await _fallbackAttention.execute();
+        } on Exception catch (error, trace) {
+          log.warning(
+            'Get Paid fallback attention lookup failed unexpectedly',
+            error: error,
+            trace: trace,
+          );
+        }
+      }
       if (_isStale(generation)) return;
       emit(
         state.copyWith(
           invoicesWalletReady: ready,
+          fallbackAttentionCount: fallbackAttentionCount,
+          clearFallbackAttention: fallbackAttentionCount == null,
           invoicesStatus: GetPaidDashboardCardStatus.loaded,
         ),
       );

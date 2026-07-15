@@ -25,7 +25,11 @@ class _StubListCubit extends Cubit<InvoicesListState>
   void setFilter(InvoiceStatus? filter) {}
 }
 
-Invoice _invoice(String id, InvoiceStatus status) => Invoice(
+Invoice _invoice(
+  String id,
+  InvoiceStatus status, {
+  InvoiceFallbackState? fallbackState,
+}) => Invoice(
   id: InvoiceId(id),
   status: status,
   amountSat: 1000,
@@ -35,6 +39,20 @@ Invoice _invoice(String id, InvoiceStatus status) => Invoice(
   acceptLiquid: true,
   createdAt: DateTime.utc(2026),
   expiresAt: DateTime.utc(2030),
+  fallbackSupervisions: fallbackState == null
+      ? const []
+      : [
+          InvoiceFallbackSupervision(
+            invoiceId: InvoiceId(id),
+            nym: 'merchant',
+            state: fallbackState,
+            payerAmountSat: 105000,
+            invoiceSwapAmountSat: 100000,
+            lockupAddress: 'bc1plockup',
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026, 1, 2),
+          ),
+        ],
 );
 
 Future<void> _pump(WidgetTester tester, InvoicesListState state) async {
@@ -83,6 +101,53 @@ void main() {
       ),
     );
     expect(find.byType(InvoiceListItem), findsNWidgets(2));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders invoice-linked fallback state without an action', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      InvoicesListState(
+        status: InvoicesListStatus.loaded,
+        invoices: [
+          _invoice(
+            'a',
+            InvoiceStatus.paid,
+            fallbackState: InvoiceFallbackState.confirming,
+          ),
+        ],
+      ),
+    );
+
+    expect(find.text('Settlement pending — Bitcoin fallback'), findsOneWidget);
+    expect(find.textContaining('Recover'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders calm unavailable and overflow supervision notices', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const InvoicesListState(
+        status: InvoicesListStatus.loaded,
+        fallbackSupervisionUnavailable: true,
+        fallbackSupervisionOverflow: true,
+      ),
+    );
+
+    expect(
+      find.text('Automatic fallback status is temporarily unavailable.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Some automatic fallback payments are not shown. Contact support.',
+      ),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 

@@ -140,6 +140,41 @@ Map<String, dynamic> _listItemView({String? nymOwner, bool paid = false}) {
   };
 }
 
+Map<String, dynamic> _fallbackView({
+  String recoveryStatus = 'refund_due',
+  String? refundAddress,
+  String? refundTxid,
+}) {
+  return {
+    'items': [
+      {
+        'invoice_id': 'inv-1',
+        'nym': 'merchant-nym',
+        'recovery_status': recoveryStatus,
+        'user_lock_amount_sat': 105000,
+        'server_lock_amount_sat': 100000,
+        'lockup_address': 'bc1plockup',
+        'refund_address': refundAddress,
+        'refund_txid': refundTxid,
+        'swap_created_at_unix': 1767000000,
+        'swap_updated_at_unix': 1767003600,
+        'invoice': {
+          'status': 'expired',
+          'amount_sat': 100000,
+          'fiat_amount_minor': 5000,
+          'fiat_currency': 'CAD',
+          'public_description': 'Order 123',
+          'invoice_number': 'INV-42',
+          'created_at_unix': 1766990000,
+        },
+        'future_server_field': true,
+      },
+    ],
+    'count': 1,
+    'has_more': false,
+  };
+}
+
 BullnymCreateInvoiceFields _lnLiquidFields() {
   return BullnymCreateInvoiceFields(
     amountSat: 25000,
@@ -338,6 +373,32 @@ void main() {
     });
   });
 
+  group('T-INV-SIGN fallback supervision byte layout', () {
+    test('pins zero payload fields and an empty nym slot', () {
+      expect(bullpayActionInvoiceRecoveryList, 'invoice-recovery-list');
+      expect(buildInvoiceRecoveryListPayloadFields(), isEmpty);
+      final oracle = _oracleMessageBytes(
+        action: 'invoice-recovery-list',
+        npubHex: 'npub',
+        nymOrEmpty: '',
+        payloadFields: const [],
+        timestampSecs: timestamp,
+      );
+      expect(
+        _unwrap(
+          buildBullpaySchnorrMessage(
+            action: bullpayActionInvoiceRecoveryList,
+            npubHex: 'npub',
+            nymOrEmpty: '',
+            payloadFields: buildInvoiceRecoveryListPayloadFields(),
+            timestampSecs: timestamp,
+          ),
+        ),
+        oracle,
+      );
+    });
+  });
+
   group('T-INV-DTO parse round-trips', () {
     test(
       'status shape parses and ignores unknown keys (tolerant reader)',
@@ -378,6 +439,56 @@ void main() {
       expect(result.invoices.last.status, 'paid');
       expect(result.invoices.last.paidVia, 'liquid');
     });
+
+    test(
+      'fallback projection parses one swap per row and ignores additions',
+      () async {
+        final client = BullnymHttpClient.withDio(
+          _stubDio([
+            _fallbackView(
+              recoveryStatus: 'refunded',
+              refundAddress: 'bc1qfallback',
+              refundTxid: 'ab' * 32,
+            ),
+          ]).dio,
+          nowSecs: () => timestamp,
+        );
+
+        final result = _unwrap(
+          await client.listFallbackSupervision(signer: signer),
+        );
+
+        expect(result.count, 1);
+        expect(result.hasMore, isFalse);
+        final item = result.items.single;
+        expect(item.invoiceId, 'inv-1');
+        expect(item.recoveryStatus, 'refunded');
+        expect(item.userLockAmountSat, 105000);
+        expect(item.serverLockAmountSat, 100000);
+        expect(item.refundAddress, 'bc1qfallback');
+        expect(item.refundTxid, 'ab' * 32);
+        expect(item.invoice.invoiceNumber, 'INV-42');
+      },
+    );
+
+    test(
+      'fallback projection rejects inconsistent count and negative money',
+      () async {
+        final inconsistent = _fallbackView()..['count'] = 2;
+        final negative = _fallbackView();
+        (negative['items'] as List).single['user_lock_amount_sat'] = -1;
+        for (final response in [inconsistent, negative]) {
+          final client = BullnymHttpClient.withDio(
+            _stubDio([response]).dio,
+            nowSecs: () => timestamp,
+          );
+          final failure = _unwrapFailure(
+            await client.listFallbackSupervision(signer: signer),
+          );
+          expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+        }
+      },
+    );
   });
 
   group('T-INV-CLIENT create', () {
@@ -517,6 +628,38 @@ void main() {
         );
       },
     );
+  });
+
+  group('T-INV-CLIENT fallback supervision is read-only', () {
+    test('GETs the signed npub-wide endpoint with no payload fields', () async {
+      final stub = _stubDio([
+        {'items': [], 'count': 0, 'has_more': false},
+      ]);
+      final client = BullnymHttpClient.withDio(
+        stub.dio,
+        nowSecs: () => timestamp,
+      );
+
+      _unwrap(await client.listFallbackSupervision(signer: signer));
+
+      final request = stub.captured.requests.single;
+      expect(request.method, 'GET');
+      expect(request.path, '/api/v1/invoices/recoverable');
+      expect(request.data, isNull);
+      expect(request.queryParameters.keys.toSet(), {
+        'npub',
+        'timestamp',
+        'signature',
+      });
+      _expectSignatureValid(
+        handle: handle,
+        signatureHex: request.queryParameters['signature'] as String,
+        action: bullpayActionInvoiceRecoveryList,
+        nymOrEmpty: '',
+        payloadFields: const [],
+        timestampSecs: timestamp,
+      );
+    });
   });
 
   group('T-INV-CLIENT status is unsigned', () {

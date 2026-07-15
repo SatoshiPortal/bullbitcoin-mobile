@@ -56,6 +56,9 @@ void main() {
 
   setUp(() {
     facade = _MockFacade();
+    when(facade.fallbackSupervision).thenAnswer(
+      (_) async => const Ok(InvoiceFallbackOverview(items: [], hasMore: false)),
+    );
     cubit = InvoiceDetailCubit(
       facade: facade,
       invoiceId: InvoiceId('inv-1'),

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 const String bullpayActionInvoiceCreate = 'invoice-create';
 const String bullpayActionInvoiceCancel = 'invoice-cancel';
 const String bullpayActionInvoiceList = 'invoice-list';
+const String bullpayActionInvoiceRecoveryList = 'invoice-recovery-list';
 
 /// The signed `invoice-create` payload fields, in the server's FIXED order
 /// (`create_payload_fields` in `src/invoice.rs`). All 12 fields are ALWAYS
@@ -47,3 +48,8 @@ List<String> buildInvoiceListPayloadFields({
 }) {
   return [page.toString(), pageSize.toString(), status ?? ''];
 }
+
+/// The authenticated automatic-fallback projection has no payload fields and
+/// always signs an empty nym slot. Adding even one empty payload field changes
+/// the NUL-separated byte layout and invalidates the signature.
+List<String> buildInvoiceRecoveryListPayloadFields() => const [];

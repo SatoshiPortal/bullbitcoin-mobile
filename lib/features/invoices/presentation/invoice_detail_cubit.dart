@@ -24,7 +24,12 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
     Invoice? invoice,
     this._pollInitialDelay = const Duration(seconds: 3),
     this._pollMaxDelay = const Duration(seconds: 30),
-  }) : super(InvoiceDetailState(invoice: invoice));
+  }) : super(
+         InvoiceDetailState(
+           invoice: invoice,
+           fallbackSupervisions: invoice?.fallbackSupervisions ?? const [],
+         ),
+       );
 
   /// First load then, unless already terminal, start the polling loop.
   Future<void> load() async {
@@ -101,6 +106,27 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
         } else {
           emit(state.copyWith(failure: failure));
         }
+    }
+    if (isClosed) return;
+    await _fetchFallbackSupervision();
+  }
+
+  Future<void> _fetchFallbackSupervision() async {
+    final result = await _facade.fallbackSupervision();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            fallbackSupervisions: value.forInvoice(_invoiceId),
+            fallbackSupervisionOverflow: value.hasMore,
+            clearFallbackSupervisionFailure: true,
+          ),
+        );
+      case Err(:final failure):
+        // Keep the last authenticated projection visible. This failure must
+        // not hide a successfully loaded public invoice snapshot.
+        emit(state.copyWith(fallbackSupervisionFailure: failure));
     }
   }
 

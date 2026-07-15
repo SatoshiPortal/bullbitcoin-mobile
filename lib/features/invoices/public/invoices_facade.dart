@@ -7,7 +7,9 @@ import 'package:bb_mobile/features/invoices/application/usecases/cancel_invoice_
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
+import 'package:bb_mobile/features/invoices/application/usecases/list_invoice_fallback_supervision_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
@@ -20,6 +22,7 @@ export 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
 export 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 export 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
+export 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 export 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
@@ -33,6 +36,7 @@ class InvoicesFacade {
   final CreateInvoiceUsecase _create;
   final CancelInvoiceUsecase _cancel;
   final ListInvoicesUsecase _list;
+  final ListInvoiceFallbackSupervisionUsecase _listFallbackSupervision;
   final GetInvoiceUsecase _getStatus;
   final GetPrivateInvoiceLinkUsecase _getPrivateLink;
   final BullnymFacade _bullnym;
@@ -41,6 +45,7 @@ class InvoicesFacade {
     required this._create,
     required this._cancel,
     required this._list,
+    required this._listFallbackSupervision,
     required this._getStatus,
     required this._getPrivateLink,
     required this._bullnym,
@@ -64,6 +69,10 @@ class InvoicesFacade {
   Future<Result<ListInvoicesResult, InvoicesFailure>> list(
     ListInvoicesCommand command,
   ) => _list.execute(command);
+
+  @useResult
+  Future<Result<InvoiceFallbackOverview, InvoicesFailure>>
+  fallbackSupervision() => _listFallbackSupervision.execute();
 
   @useResult
   Future<Result<InvoiceStatusSnapshot, InvoicesFailure>> status(

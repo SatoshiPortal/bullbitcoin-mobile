@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 /// Localized label for an invoice status (shared by the list chips + detail).
 String invoiceStatusText(BuildContext context, InvoiceStatus status) {
@@ -16,6 +15,20 @@ String invoiceStatusText(BuildContext context, InvoiceStatus status) {
     InvoiceStatus.expired => context.loc.invoiceStatusExpired,
     InvoiceStatus.cancelled => context.loc.invoiceStatusCancelled,
     InvoiceStatus.unsupported => context.loc.invoiceStatusUnsupported,
+  };
+}
+
+String invoiceFallbackStateText(
+  BuildContext context,
+  InvoiceFallbackState state,
+) {
+  return switch (state) {
+    InvoiceFallbackState.delayed => context.loc.invoiceFallbackDelayed,
+    InvoiceFallbackState.inProgress => context.loc.invoiceFallbackInProgress,
+    InvoiceFallbackState.confirming => context.loc.invoiceFallbackConfirming,
+    InvoiceFallbackState.settled => context.loc.invoiceFallbackSettled,
+    InvoiceFallbackState.integrityHold =>
+      context.loc.invoiceFallbackIntegrityHold,
   };
 }
 
@@ -40,17 +53,49 @@ class InvoiceListItem extends StatelessWidget {
       title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Row(
         children: [
-          _StatusChip(status: invoice.status),
-          const Gap(8),
-          Text(
-            context.loc.invoiceAmountSats(invoice.amountSat),
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.textMuted,
+          Expanded(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                _StatusChip(status: invoice.status),
+                if (invoice.fallbackState case final fallbackState?)
+                  _FallbackStatusChip(state: fallbackState),
+                Text(
+                  context.loc.invoiceAmountSats(invoice.amountSat),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
       trailing: const Icon(Icons.chevron_right),
+    );
+  }
+}
+
+class _FallbackStatusChip extends StatelessWidget {
+  final InvoiceFallbackState state;
+
+  const _FallbackStatusChip({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.appColors.border),
+      ),
+      child: Text(
+        invoiceFallbackStateText(context, state),
+        style: context.font.labelSmall,
+      ),
     );
   }
 }

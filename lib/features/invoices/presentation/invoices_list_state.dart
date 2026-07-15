@@ -11,6 +11,8 @@ class InvoicesListState {
   final List<Invoice> invoices;
   final InvoiceStatus? filter;
   final bool hasMore;
+  final bool fallbackSupervisionUnavailable;
+  final bool fallbackSupervisionOverflow;
   final InvoicesFailure? failure;
 
   const InvoicesListState({
@@ -18,6 +20,8 @@ class InvoicesListState {
     this.invoices = const [],
     this.filter,
     this.hasMore = false,
+    this.fallbackSupervisionUnavailable = false,
+    this.fallbackSupervisionOverflow = false,
     this.failure,
   });
 
@@ -36,6 +40,8 @@ class InvoicesListState {
     List<Invoice>? invoices,
     InvoiceStatus? filter,
     bool? hasMore,
+    bool? fallbackSupervisionUnavailable,
+    bool? fallbackSupervisionOverflow,
     InvoicesFailure? failure,
     bool clearFilter = false,
     bool clearFailure = false,
@@ -45,6 +51,10 @@ class InvoicesListState {
       invoices: invoices ?? this.invoices,
       filter: clearFilter ? null : filter ?? this.filter,
       hasMore: hasMore ?? this.hasMore,
+      fallbackSupervisionUnavailable:
+          fallbackSupervisionUnavailable ?? this.fallbackSupervisionUnavailable,
+      fallbackSupervisionOverflow:
+          fallbackSupervisionOverflow ?? this.fallbackSupervisionOverflow,
       failure: clearFailure ? null : failure ?? this.failure,
     );
   }

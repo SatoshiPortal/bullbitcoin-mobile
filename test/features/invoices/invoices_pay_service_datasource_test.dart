@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_pay_service_datasource.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/encrypted_private_invoice.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
@@ -507,5 +508,120 @@ void main() {
         expect(result.invoices.single.isCancellable, isFalse);
       },
     );
+  });
+
+  group('listFallbackSupervision (authenticated, read-only)', () {
+    BullnymFallbackSupervisionItem item(String status) {
+      return BullnymFallbackSupervisionItem(
+        invoiceId: 'inv-1',
+        nym: 'merchant',
+        recoveryStatus: status,
+        userLockAmountSat: 105000,
+        serverLockAmountSat: 100000,
+        lockupAddress: 'bc1plockup',
+        refundAddress: 'bc1qfallback',
+        refundTxid: status == 'refund_due' ? null : 'ab' * 32,
+        swapCreatedAtUnix: 1767000000,
+        swapUpdatedAtUnix: 1767003600,
+        invoice: const BullnymFallbackInvoiceContext(
+          status: 'expired',
+          amountSat: 100000,
+          createdAtUnix: 1766990000,
+        ),
+      );
+    }
+
+    test('maps current and approved lifecycle values conservatively', () async {
+      final cases = {
+        'refund_due': InvoiceFallbackState.delayed,
+        'refunding': InvoiceFallbackState.inProgress,
+        'refunded': InvoiceFallbackState.confirming,
+        'finalized': InvoiceFallbackState.settled,
+        'integrity_hold': InvoiceFallbackState.integrityHold,
+        'future_unknown': InvoiceFallbackState.inProgress,
+      };
+      for (final entry in cases.entries) {
+        when(
+          () => bullnym.listFallbackSupervision(signer: any(named: 'signer')),
+        ).thenAnswer(
+          (_) async => Ok(
+            BullnymFallbackSupervisionResponse(
+              items: [item(entry.key)],
+              count: 1,
+              hasMore: false,
+            ),
+          ),
+        );
+
+        final overview = _unwrap(
+          await datasource.listFallbackSupervision(signer: signer),
+        );
+
+        expect(overview.items.single.state, entry.value);
+        expect(overview.items.single.invoiceId, InvoiceId('inv-1'));
+        expect(overview.items.single.payerAmountSat, 105000);
+      }
+    });
+
+    for (final statusCode in [404, 405]) {
+      test(
+        'HTTP $statusCode fails closed to an empty old-server view',
+        () async {
+          when(
+            () => bullnym.listFallbackSupervision(signer: any(named: 'signer')),
+          ).thenAnswer(
+            (_) async => Err(
+              BullnymFailure.unexpectedHttpStatus(statusCode: statusCode),
+            ),
+          );
+
+          final overview = _unwrap(
+            await datasource.listFallbackSupervision(signer: signer),
+          );
+
+          expect(overview.items, isEmpty);
+          expect(overview.hasMore, isFalse);
+        },
+      );
+    }
+
+    test(
+      'a network failure remains typed and does not imply no incidents',
+      () async {
+        when(
+          () => bullnym.listFallbackSupervision(signer: any(named: 'signer')),
+        ).thenAnswer(
+          (_) async =>
+              const Err(BullnymFailure.network(logMessage: 'diagnostic-only')),
+        );
+
+        final failure = _unwrapFailure(
+          await datasource.listFallbackSupervision(signer: signer),
+        );
+
+        expect(failure.kind, InvoicesFailureKind.network);
+      },
+    );
+
+    test('a JSON 404 rejection also fails closed to an empty view', () async {
+      when(
+        () => bullnym.listFallbackSupervision(signer: any(named: 'signer')),
+      ).thenAnswer(
+        (_) async => const Err(
+          BullnymFailure.serverRejectedRequest(
+            code: 'NotFound',
+            logMessage: 'old server route missing',
+            statusCode: 404,
+            retryable: false,
+          ),
+        ),
+      );
+
+      final overview = _unwrap(
+        await datasource.listFallbackSupervision(signer: signer),
+      );
+
+      expect(overview.items, isEmpty);
+    });
   });
 }

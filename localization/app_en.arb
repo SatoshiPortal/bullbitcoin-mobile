@@ -16343,5 +16343,62 @@
   "systemLabelAutomaticFallback": "Automatic fallback",
   "@systemLabelAutomaticFallback": {
     "description": "System label for the Bitcoin address reserved for automatic fallback settlement."
+  },
+  "invoiceFallbackDelayed": "Automatic fallback delayed",
+  "@invoiceFallbackDelayed": {
+    "description": "Read-only invoice fallback state while the server is waiting for safe execution evidence."
+  },
+  "invoiceFallbackInProgress": "Automatic Bitcoin fallback in progress",
+  "@invoiceFallbackInProgress": {
+    "description": "Read-only invoice fallback state while automatic execution is underway."
+  },
+  "invoiceFallbackConfirming": "Settlement pending — Bitcoin fallback",
+  "@invoiceFallbackConfirming": {
+    "description": "Read-only invoice fallback state after a transaction is identified but before finality."
+  },
+  "invoiceFallbackSettled": "Settled by Bitcoin fallback",
+  "@invoiceFallbackSettled": {
+    "description": "Read-only invoice fallback state after server-confirmed settlement."
+  },
+  "invoiceFallbackIntegrityHold": "Automatic fallback paused for review",
+  "@invoiceFallbackIntegrityHold": {
+    "description": "Read-only invoice fallback state when conflicting integrity evidence stops automation."
+  },
+  "invoiceFallbackSectionTitle": "Automatic Bitcoin fallback",
+  "@invoiceFallbackSectionTitle": {
+    "description": "Heading for authenticated automatic fallback supervision on invoice detail."
+  },
+  "invoiceFallbackPayerAmountLabel": "Payer amount",
+  "@invoiceFallbackPayerAmountLabel": {
+    "description": "Label for the exact Bitcoin amount observed from the payer in fallback supervision."
+  },
+  "invoiceFallbackInvoiceAmountLabel": "Invoice swap amount",
+  "@invoiceFallbackInvoiceAmountLabel": {
+    "description": "Label for the renegotiation-aware invoice-side swap amount in fallback supervision."
+  },
+  "invoiceFallbackDestinationLabel": "Fallback address",
+  "@invoiceFallbackDestinationLabel": {
+    "description": "Label for the immutable registered automatic fallback destination."
+  },
+  "invoiceFallbackTransactionLabel": "Bitcoin transaction",
+  "@invoiceFallbackTransactionLabel": {
+    "description": "Label for an automatic fallback Bitcoin transaction identifier."
+  },
+  "invoiceFallbackUnavailable": "Automatic fallback status is temporarily unavailable.",
+  "@invoiceFallbackUnavailable": {
+    "description": "Calm notice shown when authenticated fallback supervision could not refresh."
+  },
+  "invoiceFallbackOverflow": "Some automatic fallback payments are not shown. Contact support.",
+  "@invoiceFallbackOverflow": {
+    "description": "Operator-incident notice when the server fallback projection reaches its hard row cap."
+  },
+  "getPaidDashboardFallbackPending": "{count, plural, =1{1 settlement pending} other{{count} settlements pending}}",
+  "@getPaidDashboardFallbackPending": {
+    "description": "Get Paid invoice badge showing the number of automatic fallback rows that are not settled.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

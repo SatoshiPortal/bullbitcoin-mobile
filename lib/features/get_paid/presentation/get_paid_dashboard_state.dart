@@ -24,6 +24,10 @@ class GetPaidDashboardState {
   /// True when the user has a default wallet created — the Invoices product
   /// issues payouts from the default wallet, so this gates its "Active" status.
   final bool invoicesWalletReady;
+
+  /// Authenticated automatic-fallback rows that are not yet settled. `null`
+  /// means unavailable or not applicable; zero is a successful empty result.
+  final int? fallbackAttentionCount;
   final String? error;
   final GetPaidDashboardCardStatus lightningStatus;
   final GetPaidDashboardCardStatus paymentPageStatus;
@@ -40,6 +44,7 @@ class GetPaidDashboardState {
     this.posTerminal,
     this.btcpayConnection,
     this.invoicesWalletReady = false,
+    this.fallbackAttentionCount,
     this.error,
     this.lightningStatus = GetPaidDashboardCardStatus.loading,
     this.paymentPageStatus = GetPaidDashboardCardStatus.loading,
@@ -53,6 +58,7 @@ class GetPaidDashboardState {
   bool get hasPaymentPage => paymentPage != null && !paymentPage!.isArchived;
   bool get hasPos => posTerminal != null && !posTerminal!.isArchived;
   bool get hasBtcpayConnection => btcpayConnection != null;
+  bool get hasFallbackAttention => (fallbackAttentionCount ?? 0) > 0;
 
   GetPaidDashboardState copyWith({
     bool? isLoading,
@@ -68,6 +74,8 @@ class GetPaidDashboardState {
     BtcpayConnection? btcpayConnection,
     bool clearBtcpayConnection = false,
     bool? invoicesWalletReady,
+    int? fallbackAttentionCount,
+    bool clearFallbackAttention = false,
     String? error,
     bool clearError = false,
     GetPaidDashboardCardStatus? lightningStatus,
@@ -89,6 +97,9 @@ class GetPaidDashboardState {
           ? null
           : btcpayConnection ?? this.btcpayConnection,
       invoicesWalletReady: invoicesWalletReady ?? this.invoicesWalletReady,
+      fallbackAttentionCount: clearFallbackAttention
+          ? null
+          : fallbackAttentionCount ?? this.fallbackAttentionCount,
       error: clearError ? null : error ?? this.error,
       lightningStatus: lightningStatus ?? this.lightningStatus,
       paymentPageStatus: paymentPageStatus ?? this.paymentPageStatus,

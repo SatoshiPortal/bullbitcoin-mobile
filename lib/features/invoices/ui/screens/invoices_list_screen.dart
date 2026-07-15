@@ -101,6 +101,10 @@ class InvoicesListScreen extends StatelessWidget {
     return Column(
       children: [
         _filterBar(context, state, cubit),
+        if (state.fallbackSupervisionUnavailable)
+          _supervisionNotice(context, context.loc.invoiceFallbackUnavailable),
+        if (state.fallbackSupervisionOverflow)
+          _supervisionNotice(context, context.loc.invoiceFallbackOverflow),
         Expanded(
           child: state.isEmpty
               ? _empty(context)
@@ -120,6 +124,31 @@ class InvoicesListScreen extends StatelessWidget {
                 ),
         ),
       ],
+    );
+  }
+
+  Widget _supervisionNotice(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 18,
+            color: context.appColors.textMuted,
+          ),
+          const Gap(8),
+          Expanded(
+            child: Text(
+              text,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

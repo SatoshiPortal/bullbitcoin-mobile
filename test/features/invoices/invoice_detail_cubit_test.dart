@@ -21,6 +21,19 @@ InvoiceStatusSnapshot _snapshot(InvoiceStatus status) => InvoiceStatusSnapshot(
   acceptLiquid: true,
 );
 
+InvoiceFallbackSupervision _fallback(InvoiceFallbackState state) =>
+    InvoiceFallbackSupervision(
+      invoiceId: InvoiceId('inv-1'),
+      nym: 'merchant',
+      state: state,
+      payerAmountSat: 105000,
+      invoiceSwapAmountSat: 100000,
+      lockupAddress: 'bc1plockup',
+      transactionId: 'ab' * 32,
+      createdAt: DateTime.utc(2026),
+      updatedAt: DateTime.utc(2026, 1, 2),
+    );
+
 void main() {
   setUpAll(() {
     registerFallbackValue(InvoiceId('x'));
@@ -29,7 +42,12 @@ void main() {
 
   late _MockFacade facade;
 
-  setUp(() => facade = _MockFacade());
+  setUp(() {
+    facade = _MockFacade();
+    when(() => facade.fallbackSupervision()).thenAnswer(
+      (_) async => const Ok(InvoiceFallbackOverview(items: [], hasMore: false)),
+    );
+  });
 
   InvoiceDetailCubit build({
     Duration initial = const Duration(milliseconds: 5),
@@ -77,6 +95,53 @@ void main() {
     expect(cubit.state.isTerminal, isTrue);
     await cubit.close();
   });
+
+  test('a terminal invoice keeps polling while fallback confirms', () async {
+    var statusCalls = 0;
+    when(() => facade.status(any())).thenAnswer((_) async {
+      statusCalls++;
+      return Ok(_snapshot(InvoiceStatus.paid));
+    });
+    when(() => facade.fallbackSupervision()).thenAnswer(
+      (_) async => Ok(
+        InvoiceFallbackOverview(
+          items: [_fallback(InvoiceFallbackState.confirming)],
+          hasMore: false,
+        ),
+      ),
+    );
+
+    final cubit = build();
+    await cubit.load();
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+
+    expect(cubit.state.isTerminal, isFalse);
+    expect(statusCalls, greaterThan(1));
+    await cubit.close();
+  });
+
+  test(
+    'a supervision failure keeps the loaded invoice snapshot visible',
+    () async {
+      when(
+        () => facade.status(any()),
+      ).thenAnswer((_) async => Ok(_snapshot(InvoiceStatus.paid)));
+      when(
+        () => facade.fallbackSupervision(),
+      ).thenAnswer((_) async => const Err(InvoicesFailure.network()));
+
+      final cubit = build(initial: const Duration(seconds: 30));
+      await cubit.load();
+
+      expect(cubit.state.status, InvoiceDetailStatus.loaded);
+      expect(cubit.state.snapshot, isNotNull);
+      expect(
+        cubit.state.fallbackSupervisionFailure?.kind,
+        InvoicesFailureKind.network,
+      );
+      await cubit.close();
+    },
+  );
 
   test('dispose stops the poll loop (no post-dispose fetch)', () async {
     when(

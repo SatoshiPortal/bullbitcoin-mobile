@@ -14,6 +14,9 @@ class InvoiceDetailState {
   final InvoicesFailure? failure;
   final PrivateInvoiceLink? privateLink;
   final bool privateLinkLookupComplete;
+  final List<InvoiceFallbackSupervision> fallbackSupervisions;
+  final bool fallbackSupervisionOverflow;
+  final InvoicesFailure? fallbackSupervisionFailure;
 
   final bool cancelling;
   final InvoiceStatus? cancelFinalStatus;
@@ -26,6 +29,9 @@ class InvoiceDetailState {
     this.failure,
     this.privateLink,
     this.privateLinkLookupComplete = false,
+    this.fallbackSupervisions = const [],
+    this.fallbackSupervisionOverflow = false,
+    this.fallbackSupervisionFailure,
     this.cancelling = false,
     this.cancelFinalStatus,
     this.cancelFailure,
@@ -35,7 +41,17 @@ class InvoiceDetailState {
   /// polled snapshot once a cancel has completed.
   InvoiceStatus? get effectiveStatus => cancelFinalStatus ?? snapshot?.status;
 
-  bool get isTerminal => effectiveStatus?.isTerminal ?? false;
+  InvoiceFallbackState? get fallbackState =>
+      mostUrgentInvoiceFallbackState(fallbackSupervisions);
+
+  bool get isTerminal {
+    final invoiceTerminal = effectiveStatus?.isTerminal ?? false;
+    if (!invoiceTerminal) return false;
+    if (fallbackSupervisions.isEmpty) return true;
+    return fallbackSupervisions.every(
+      (item) => item.state == InvoiceFallbackState.settled,
+    );
+  }
 
   /// Cancel is offered only while unpaid (DG-I5), and never mid-cancel.
   bool get canCancel =>
@@ -50,10 +66,14 @@ class InvoiceDetailState {
     InvoicesFailure? failure,
     PrivateInvoiceLink? privateLink,
     bool? privateLinkLookupComplete,
+    List<InvoiceFallbackSupervision>? fallbackSupervisions,
+    bool? fallbackSupervisionOverflow,
+    InvoicesFailure? fallbackSupervisionFailure,
     bool? cancelling,
     InvoiceStatus? cancelFinalStatus,
     InvoicesFailure? cancelFailure,
     bool clearFailure = false,
+    bool clearFallbackSupervisionFailure = false,
     bool clearCancelFailure = false,
   }) {
     return InvoiceDetailState(
@@ -64,6 +84,12 @@ class InvoiceDetailState {
       privateLink: privateLink ?? this.privateLink,
       privateLinkLookupComplete:
           privateLinkLookupComplete ?? this.privateLinkLookupComplete,
+      fallbackSupervisions: fallbackSupervisions ?? this.fallbackSupervisions,
+      fallbackSupervisionOverflow:
+          fallbackSupervisionOverflow ?? this.fallbackSupervisionOverflow,
+      fallbackSupervisionFailure: clearFallbackSupervisionFailure
+          ? null
+          : fallbackSupervisionFailure ?? this.fallbackSupervisionFailure,
       cancelling: cancelling ?? this.cancelling,
       cancelFinalStatus: cancelFinalStatus ?? this.cancelFinalStatus,
       cancelFailure: clearCancelFailure

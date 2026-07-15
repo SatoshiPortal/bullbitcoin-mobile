@@ -363,6 +363,11 @@ class _FakeBullnymFacade implements BullnymFacade {
   }) => throw UnimplementedError();
 
   @override
+  Future<Result<BullnymFallbackSupervisionResponse, BullnymFailure>>
+  listFallbackSupervision({required BullnymAuthSigner signer}) =>
+      throw UnimplementedError();
+
+  @override
   Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
     required String invoiceId,
   }) => throw UnimplementedError();

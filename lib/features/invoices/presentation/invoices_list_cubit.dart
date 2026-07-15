@@ -38,6 +38,9 @@ class InvoicesListCubit extends Cubit<InvoicesListState> {
             status: InvoicesListStatus.loaded,
             invoices: value.invoices,
             hasMore: value.hasMore,
+            fallbackSupervisionUnavailable:
+                value.fallbackSupervisionUnavailable,
+            fallbackSupervisionOverflow: value.fallbackSupervisionOverflow,
           ),
         );
       case Err(:final failure):
