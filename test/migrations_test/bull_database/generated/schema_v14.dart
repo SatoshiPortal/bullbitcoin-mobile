@@ -1799,6 +1799,15 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     $customConstraints: 'NOT NULL DEFAULT 10000',
     defaultValue: const CustomExpression('10000'),
   );
+  late final GeneratedColumn<int> payjoinExpireAfterSec = GeneratedColumn<int>(
+    'payjoin_expire_after_sec',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 60',
+    defaultValue: const CustomExpression('60'),
+  );
   late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
     'theme_mode',
     aliasedName,
@@ -1850,6 +1859,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     useTorProxy,
     torProxyPort,
     payjoinMinAmountSat,
+    payjoinExpireAfterSec,
     themeMode,
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
@@ -1910,6 +1920,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.int,
         data['${effectivePrefix}payjoin_min_amount_sat'],
       )!,
+      payjoinExpireAfterSec: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payjoin_expire_after_sec'],
+      )!,
       themeMode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
@@ -1950,6 +1964,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int useTorProxy;
   final int torProxyPort;
   final int payjoinMinAmountSat;
+  final int payjoinExpireAfterSec;
   final String themeMode;
   final int isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
@@ -1966,6 +1981,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.payjoinMinAmountSat,
+    required this.payjoinExpireAfterSec,
     required this.themeMode,
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
@@ -1985,6 +2001,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['use_tor_proxy'] = Variable<int>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
     map['payjoin_min_amount_sat'] = Variable<int>(payjoinMinAmountSat);
+    map['payjoin_expire_after_sec'] = Variable<int>(payjoinExpireAfterSec);
     map['theme_mode'] = Variable<String>(themeMode);
     map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
     if (!nullToAbsent || exchangeTestnetBasicAuthUsername != null) {
@@ -2013,6 +2030,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       useTorProxy: Value(useTorProxy),
       torProxyPort: Value(torProxyPort),
       payjoinMinAmountSat: Value(payjoinMinAmountSat),
+      payjoinExpireAfterSec: Value(payjoinExpireAfterSec),
       themeMode: Value(themeMode),
       isErrorReportingEnabled: Value(isErrorReportingEnabled),
       exchangeTestnetBasicAuthUsername:
@@ -2045,6 +2063,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       payjoinMinAmountSat: serializer.fromJson<int>(
         json['payjoinMinAmountSat'],
       ),
+      payjoinExpireAfterSec: serializer.fromJson<int>(
+        json['payjoinExpireAfterSec'],
+      ),
       themeMode: serializer.fromJson<String>(json['themeMode']),
       isErrorReportingEnabled: serializer.fromJson<int>(
         json['isErrorReportingEnabled'],
@@ -2072,6 +2093,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'useTorProxy': serializer.toJson<int>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
       'payjoinMinAmountSat': serializer.toJson<int>(payjoinMinAmountSat),
+      'payjoinExpireAfterSec': serializer.toJson<int>(payjoinExpireAfterSec),
       'themeMode': serializer.toJson<String>(themeMode),
       'isErrorReportingEnabled': serializer.toJson<int>(
         isErrorReportingEnabled,
@@ -2097,6 +2119,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? useTorProxy,
     int? torProxyPort,
     int? payjoinMinAmountSat,
+    int? payjoinExpireAfterSec,
     String? themeMode,
     int? isErrorReportingEnabled,
     Value<String?> exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2113,6 +2136,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy: useTorProxy ?? this.useTorProxy,
     torProxyPort: torProxyPort ?? this.torProxyPort,
     payjoinMinAmountSat: payjoinMinAmountSat ?? this.payjoinMinAmountSat,
+    payjoinExpireAfterSec: payjoinExpireAfterSec ?? this.payjoinExpireAfterSec,
     themeMode: themeMode ?? this.themeMode,
     isErrorReportingEnabled:
         isErrorReportingEnabled ?? this.isErrorReportingEnabled,
@@ -2152,6 +2176,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       payjoinMinAmountSat: data.payjoinMinAmountSat.present
           ? data.payjoinMinAmountSat.value
           : this.payjoinMinAmountSat,
+      payjoinExpireAfterSec: data.payjoinExpireAfterSec.present
+          ? data.payjoinExpireAfterSec.value
+          : this.payjoinExpireAfterSec,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
       isErrorReportingEnabled: data.isErrorReportingEnabled.present
           ? data.isErrorReportingEnabled.value
@@ -2181,6 +2208,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
           ..write('payjoinMinAmountSat: $payjoinMinAmountSat, ')
+          ..write('payjoinExpireAfterSec: $payjoinExpireAfterSec, ')
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
           ..write(
@@ -2206,6 +2234,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy,
     torProxyPort,
     payjoinMinAmountSat,
+    payjoinExpireAfterSec,
     themeMode,
     isErrorReportingEnabled,
     exchangeTestnetBasicAuthUsername,
@@ -2226,6 +2255,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort &&
           other.payjoinMinAmountSat == this.payjoinMinAmountSat &&
+          other.payjoinExpireAfterSec == this.payjoinExpireAfterSec &&
           other.themeMode == this.themeMode &&
           other.isErrorReportingEnabled == this.isErrorReportingEnabled &&
           other.exchangeTestnetBasicAuthUsername ==
@@ -2246,6 +2276,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> useTorProxy;
   final Value<int> torProxyPort;
   final Value<int> payjoinMinAmountSat;
+  final Value<int> payjoinExpireAfterSec;
   final Value<String> themeMode;
   final Value<int> isErrorReportingEnabled;
   final Value<String?> exchangeTestnetBasicAuthUsername;
@@ -2262,6 +2293,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.payjoinMinAmountSat = const Value.absent(),
+    this.payjoinExpireAfterSec = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2279,6 +2311,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.payjoinMinAmountSat = const Value.absent(),
+    this.payjoinExpireAfterSec = const Value.absent(),
     this.themeMode = const Value.absent(),
     this.isErrorReportingEnabled = const Value.absent(),
     this.exchangeTestnetBasicAuthUsername = const Value.absent(),
@@ -2301,6 +2334,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? useTorProxy,
     Expression<int>? torProxyPort,
     Expression<int>? payjoinMinAmountSat,
+    Expression<int>? payjoinExpireAfterSec,
     Expression<String>? themeMode,
     Expression<int>? isErrorReportingEnabled,
     Expression<String>? exchangeTestnetBasicAuthUsername,
@@ -2319,6 +2353,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
       if (payjoinMinAmountSat != null)
         'payjoin_min_amount_sat': payjoinMinAmountSat,
+      if (payjoinExpireAfterSec != null)
+        'payjoin_expire_after_sec': payjoinExpireAfterSec,
       if (themeMode != null) 'theme_mode': themeMode,
       if (isErrorReportingEnabled != null)
         'is_error_reporting_enabled': isErrorReportingEnabled,
@@ -2343,6 +2379,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? useTorProxy,
     Value<int>? torProxyPort,
     Value<int>? payjoinMinAmountSat,
+    Value<int>? payjoinExpireAfterSec,
     Value<String>? themeMode,
     Value<int>? isErrorReportingEnabled,
     Value<String?>? exchangeTestnetBasicAuthUsername,
@@ -2360,6 +2397,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       useTorProxy: useTorProxy ?? this.useTorProxy,
       torProxyPort: torProxyPort ?? this.torProxyPort,
       payjoinMinAmountSat: payjoinMinAmountSat ?? this.payjoinMinAmountSat,
+      payjoinExpireAfterSec:
+          payjoinExpireAfterSec ?? this.payjoinExpireAfterSec,
       themeMode: themeMode ?? this.themeMode,
       isErrorReportingEnabled:
           isErrorReportingEnabled ?? this.isErrorReportingEnabled,
@@ -2408,6 +2447,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (payjoinMinAmountSat.present) {
       map['payjoin_min_amount_sat'] = Variable<int>(payjoinMinAmountSat.value);
     }
+    if (payjoinExpireAfterSec.present) {
+      map['payjoin_expire_after_sec'] = Variable<int>(
+        payjoinExpireAfterSec.value,
+      );
+    }
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
@@ -2443,6 +2487,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
           ..write('payjoinMinAmountSat: $payjoinMinAmountSat, ')
+          ..write('payjoinExpireAfterSec: $payjoinExpireAfterSec, ')
           ..write('themeMode: $themeMode, ')
           ..write('isErrorReportingEnabled: $isErrorReportingEnabled, ')
           ..write(

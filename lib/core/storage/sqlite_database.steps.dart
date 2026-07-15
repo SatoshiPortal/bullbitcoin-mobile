@@ -6358,6 +6358,7 @@ final class Schema14 extends i0.VersionedSchema {
         _column_155,
         _column_156,
         _column_242,
+        _column_243,
         _column_157,
         _column_233,
         _column_235,
@@ -6632,6 +6633,8 @@ class Shape40 extends i0.VersionedTable {
       columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get payjoinMinAmountSat =>
       columnsByName['payjoin_min_amount_sat']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get payjoinExpireAfterSec =>
+      columnsByName['payjoin_expire_after_sec']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get themeMode =>
       columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<int> get isErrorReportingEnabled =>
@@ -6652,6 +6655,15 @@ i1.GeneratedColumn<int> _column_242(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL DEFAULT 10000',
       defaultValue: const i1.CustomExpression('10000'),
+    );
+i1.GeneratedColumn<int> _column_243(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'payjoin_expire_after_sec',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 60',
+      defaultValue: const i1.CustomExpression('60'),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

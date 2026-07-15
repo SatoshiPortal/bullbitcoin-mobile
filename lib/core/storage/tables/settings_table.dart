@@ -19,6 +19,10 @@ class Settings extends Table {
   // sync with PayjoinConstants.defaultMinAmountSat by hand.
   IntColumn get payjoinMinAmountSat =>
       integer().withDefault(const Constant(10000))();
+  // Same codegen constraint as payjoinMinAmountSat above: kept as a literal,
+  // must stay in sync with PayjoinConstants.defaultExpireAfterSec by hand.
+  IntColumn get payjoinExpireAfterSec =>
+      integer().withDefault(const Constant(60))();
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
   BoolColumn get isErrorReportingEnabled =>
       boolean().withDefault(const Constant(false))();

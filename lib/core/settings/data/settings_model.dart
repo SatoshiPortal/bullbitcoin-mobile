@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 
 class SettingsModel {
   final int id;
@@ -49,6 +50,10 @@ class SettingsModel {
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
       payjoinMinAmountSat: payjoinMinAmountSat,
+      // TODO: wire through SettingsModel/SettingsEntity once the settings
+      // screen lands (next commit) — the column exists from this migration
+      // on, but nothing reads/writes a per-row value yet.
+      payjoinExpireAfterSec: PayjoinConstants.defaultExpireAfterSec,
       themeMode: themeMode.name,
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
