@@ -41,6 +41,7 @@ class JoinstrLocator {
         electrumServerRepository: locator<ElectrumServerRepository>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         resolveProxyUsecase: locator<ResolveJoinstrProxyUsecase>(),
+        store: locator<JoinstrStore>(),
       ),
     );
     locator.registerFactory<GetJoinstrSettingsUsecase>(

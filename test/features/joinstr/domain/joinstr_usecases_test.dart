@@ -82,6 +82,7 @@ void main() {
     when(() => store.getRelay()).thenAnswer((_) async => null);
     when(() => store.appendHistory(any())).thenAnswer((_) async {});
     when(() => resolveProxy.execute()).thenAnswer((_) async => '127.0.0.1:9050');
+    when(() => store.clearReservedAddress()).thenAnswer((_) async {});
     when(
       () => resolvePeerContext.execute(wallet: any(named: 'wallet')),
     ).thenAnswer(

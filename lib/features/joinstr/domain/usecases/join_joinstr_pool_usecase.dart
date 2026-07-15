@@ -49,6 +49,9 @@ class JoinJoinstrPoolUsecase {
           completedAtUnixSec: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         ),
       );
+      // The reserved output address received this coinjoin: release it so the
+      // next round gets a fresh one instead of reusing it on-chain.
+      await _store.clearReservedAddress();
       return txId;
     } on JoinstrException {
       rethrow;

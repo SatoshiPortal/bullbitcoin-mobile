@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 
@@ -32,12 +33,14 @@ class ResolveJoinstrPeerContextUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ResolveJoinstrProxyUsecase _resolveProxy;
+  final JoinstrStore _store;
 
   ResolveJoinstrPeerContextUsecase({
     required this._seedRepository,
     required this._electrumServerRepository,
     required this._getReceiveAddressUsecase,
     required ResolveJoinstrProxyUsecase resolveProxyUsecase,
+    required this._store,
   }) : _resolveProxy = resolveProxyUsecase;
 
   Future<JoinstrPeerContext> execute({required Wallet wallet}) async {
@@ -68,17 +71,28 @@ class ResolveJoinstrPeerContextUsecase {
       ),
     );
 
-    // A fresh address each round: joinstr's own address-reuse check is gated on
-    // an electrum client the peer flow never supplies, so it never runs.
-    final address = await _getReceiveAddressUsecase.execute(
-      walletId: wallet.id,
-      generateNew: true,
-    );
+    // Reserve one fresh address for the round and reuse it across retries.
+    // joinstr's own address-reuse check never runs here (it is gated on an
+    // electrum client the peer flow does not supply), so a fresh address still
+    // matters; but generating a new one on every attempt would walk the receive
+    // chain toward the gap limit with addresses that never see funds. The
+    // reservation is cleared on a successful broadcast (see the initiate/join
+    // usecases), so each completed coinjoin gets a distinct address and a failed
+    // round's reserved-but-unused address is reused rather than abandoned.
+    var address = await _store.getReservedAddress();
+    if (address == null) {
+      final generated = await _getReceiveAddressUsecase.execute(
+        walletId: wallet.id,
+        generateNew: true,
+      );
+      address = generated.address;
+      await _store.saveReservedAddress(address);
+    }
 
     return JoinstrPeerContext(
       mnemonic: seed.mnemonicWords.join(' '),
       electrumUrl: electrumUrl,
-      outputAddress: address.address,
+      outputAddress: address,
       proxy: proxy,
     );
   }
