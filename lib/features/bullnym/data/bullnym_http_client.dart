@@ -670,9 +670,9 @@ class BullnymHttpClient implements BullnymClientPort {
 
   BullnymLookupResult _parseLookupResponse(Map<String, dynamic> json) {
     final nym = _requiredString(json, 'nym');
-    final active = _requiredBool(json, 'active');
     final policy = _optionalString(json, 'public_name_policy');
     BullnymPublicNameStatus? publicNameStatus;
+    final bool active;
     if (policy == bullnymPermanentNamesV1Policy) {
       if (!json.containsKey('alias')) {
         throw const _BullnymClientException(
@@ -681,17 +681,23 @@ class BullnymHttpClient implements BullnymClientPort {
           ),
         );
       }
+      // Under permanent_names_v1 the server reports liveness via
+      // `lightning_address_online` and no longer emits the legacy `active`
+      // bool; derive `active` from it. When `active` is still present (older
+      // servers), it must agree with liveness.
       final lightningAddressOnline = _requiredBool(
         json,
         'lightning_address_online',
       );
-      if (active != lightningAddressOnline) {
+      if (json.containsKey('active') &&
+          _requiredBool(json, 'active') != lightningAddressOnline) {
         throw const _BullnymClientException(
           BullnymFailure.invalidServerResponse(
             logMessage: 'Lookup status fields are inconsistent',
           ),
         );
       }
+      active = lightningAddressOnline;
       publicNameStatus = BullnymPublicNameStatus(
         nym: _parsePublicName(nym, field: 'nym'),
         alias: _parseOptionalPublicName(json['alias'], field: 'alias'),
@@ -699,6 +705,8 @@ class BullnymHttpClient implements BullnymClientPort {
         publicNamePolicy: bullnymPermanentNamesV1Policy,
         quota: _parseQuota(json['quota']),
       );
+    } else {
+      active = _requiredBool(json, 'active');
     }
     return BullnymLookupResult(
       nym: nym,
