@@ -186,7 +186,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       emit(
         state.copyWith(
           bitcoinUnit: settings.bitcoinUnit,
-          inputAmountCurrencyCode: settings.bitcoinUnit.code,
+          inputAmountCurrencyCode: settings.currencyCode,
           fiatCurrencyCodes: fiatCurrencyCodes,
           wallets: wallets,
           fromWallet: fromWallet,

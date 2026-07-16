@@ -86,7 +86,7 @@ class SwapAmountInput extends StatelessWidget {
                       const Gap(8.0),
                       InkWell(
                         borderRadius: BorderRadius.circular(4),
-                        onTap: state.inputAmountCurrencyCodes.isEmpty
+                        onTap: _pickerCurrencies(state).isEmpty
                             ? null
                             : () => _openCurrencyPicker(context, state),
                         child: Padding(
@@ -119,9 +119,7 @@ class SwapAmountInput extends StatelessWidget {
                   Row(
                     children: [
                       InkWell(
-                        onTap: state.inputAmountCurrencyCodes.isEmpty
-                            ? null
-                            : () => _openCurrencyPicker(context, state),
+                        onTap: () => _toggleCurrencyType(context, state),
                         child: Icon(
                           Icons.swap_vert,
                           color: context.appColors.outline,
@@ -185,13 +183,39 @@ class SwapAmountInput extends StatelessWidget {
     final selected = await BlurredBottomSheet.show<String?>(
       context: context,
       child: CurrencyBottomSheet(
-        availableCurrencies: state.inputAmountCurrencyCodes,
-        selectedValue: state.inputAmountCurrencyCode,
+        availableCurrencies: _pickerCurrencies(state),
+        selectedValue: state.displayInputAmountCurrencyCode,
       ),
     );
     if (selected == null || !context.mounted) return;
     context.read<TransferBloc>().add(
-      TransferEvent.amountCurrencyChanged(selected),
+      TransferEvent.amountCurrencyChanged(_currencyCode(selected)),
     );
+  }
+
+  void _toggleCurrencyType(BuildContext context, TransferState state) {
+    final currencyCode = state.isInputAmountFiat
+        ? state.bitcoinUnit.code
+        : state.fiatCurrencyCode;
+    if (currencyCode == null || currencyCode.isEmpty) return;
+    focusNode.unfocus();
+    context.read<TransferBloc>().add(
+      TransferEvent.amountCurrencyChanged(currencyCode),
+    );
+  }
+
+  List<String> _pickerCurrencies(TransferState state) {
+    if (state.isInputAmountFiat) return state.fiatCurrencyCodes;
+    final prefix = (state.fromWallet?.isLiquid ?? false) ? 'L-' : '';
+    return [
+      '$prefix${BitcoinUnit.btc.code}',
+      '$prefix${BitcoinUnit.sats.code}',
+    ];
+  }
+
+  String _currencyCode(String displayCode) {
+    return displayCode.startsWith('L-')
+        ? displayCode.substring(2)
+        : displayCode;
   }
 }

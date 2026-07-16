@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -8,6 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockTransferBloc extends Mock implements TransferBloc {}
+
+class _LiquidWallet extends Fake implements Wallet {
+  @override
+  bool get isLiquid => true;
+}
 
 void main() {
   late _MockTransferBloc bloc;
@@ -70,20 +77,99 @@ void main() {
     expect(find.byIcon(Icons.swap_vert), findsOneWidget);
   });
 
-  testWidgets('opens the existing currency sheet when currency is tapped', (
-    tester,
-  ) async {
-    await pumpInput(tester);
+  testWidgets('Bitcoin arrow only offers Liquid bitcoin units', (tester) async {
+    await pumpInput(
+      tester,
+      state: TransferState(
+        inputAmountCurrencyCode: 'sats',
+        fiatCurrencyCodes: const ['CAD', 'USD'],
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+        fromWallet: _LiquidWallet(),
+      ),
+    );
 
-    await tester.tap(find.text('sats'));
+    await tester.tap(find.byIcon(Icons.arrow_drop_down));
     await tester.pumpAndSettle();
 
+    final sheet = find.byType(CurrencyBottomSheet);
     expect(find.text('Currency'), findsOneWidget);
-    expect(find.text('BTC'), findsWidgets);
-    expect(find.text('CAD'), findsWidgets);
+    expect(
+      find.descendant(of: sheet, matching: find.text('L-BTC')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('L-sats')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('CAD')),
+      findsNothing,
+    );
   });
 
-  testWidgets('dispatches the selected currency from the sheet', (
+  testWidgets('fiat arrow only offers supported fiat currencies', (
+    tester,
+  ) async {
+    await pumpInput(
+      tester,
+      state: const TransferState(
+        inputAmountCurrencyCode: 'CAD',
+        fiatCurrencyCodes: ['CAD', 'USD'],
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.arrow_drop_down));
+    await tester.pumpAndSettle();
+
+    final sheet = find.byType(CurrencyBottomSheet);
+    expect(
+      find.descendant(of: sheet, matching: find.text('Canada')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('United States')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('BTC')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('sats')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('normalizes selected Liquid units before dispatching', (
+    tester,
+  ) async {
+    when(
+      () => bloc.add(const TransferEvent.amountCurrencyChanged('BTC')),
+    ).thenReturn(null);
+    await pumpInput(
+      tester,
+      state: TransferState(
+        inputAmountCurrencyCode: 'sats',
+        fiatCurrencyCodes: const ['CAD'],
+        fiatCurrencyCode: 'CAD',
+        fromWallet: _LiquidWallet(),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.arrow_drop_down));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('L-BTC').first);
+    await tester.pumpAndSettle();
+
+    verify(
+      () => bloc.add(const TransferEvent.amountCurrencyChanged('BTC')),
+    ).called(1);
+  });
+
+  testWidgets('switcher toggles Bitcoin input to selected fiat', (
     tester,
   ) async {
     when(
@@ -91,10 +177,7 @@ void main() {
     ).thenReturn(null);
     await pumpInput(tester);
 
-    await tester.tap(find.text('sats'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Canada'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.swap_vert));
 
     verify(
       () => bloc.add(const TransferEvent.amountCurrencyChanged('CAD')),
