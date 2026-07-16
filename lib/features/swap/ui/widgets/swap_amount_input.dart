@@ -30,6 +30,7 @@ class SwapAmountInput extends StatelessWidget {
         : inputCurrency == BitcoinUnit.btc.code
         ? BitcoinUnit.btc.decimals
         : 0;
+    final canSelectMax = (state.maxAmountSat ?? 0) > 0;
 
     return Column(
       crossAxisAlignment: .start,
@@ -141,19 +142,19 @@ class SwapAmountInput extends StatelessWidget {
                           minimumSize: const Size(48, 48),
                           tapTargetSize: .padded,
                         ),
-                        onPressed:
-                            state.maxAmountSat == null ||
-                                state.maxAmountSat! <= 0
-                            ? null
-                            : () {
+                        onPressed: canSelectMax
+                            ? () {
                                 context.read<TransferBloc>().add(
                                   const TransferEvent.maxAmountSelected(),
                                 );
-                              },
+                              }
+                            : null,
                         child: Text(
                           context.loc.swapMaxButton,
                           style: context.font.bodyMedium?.copyWith(
-                            color: context.appColors.primary,
+                            color: canSelectMax
+                                ? context.appColors.primary
+                                : context.appColors.onSurfaceVariant,
                           ),
                         ),
                       ),

@@ -231,4 +231,29 @@ void main() {
 
     verify(() => bloc.add(const TransferEvent.maxAmountSelected())).called(1);
   });
+
+  testWidgets('shows Max as disabled when the wallet has no spendable funds', (
+    tester,
+  ) async {
+    await pumpInput(
+      tester,
+      state: const TransferState(
+        inputAmountCurrencyCode: 'CAD',
+        fiatCurrencyCodes: ['CAD'],
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+        maxAmountSat: 0,
+      ),
+    );
+
+    final button = tester.widget<TextButton>(
+      find.widgetWithText(TextButton, 'MAX'),
+    );
+    final label = tester.widget<Text>(find.text('MAX'));
+    final context = tester.element(find.byType(SwapAmountInput));
+
+    expect(button.onPressed, isNull);
+    expect(label.style?.color, context.appColors.onSurfaceVariant);
+    expect(label.style?.color, isNot(context.appColors.primary));
+  });
 }
