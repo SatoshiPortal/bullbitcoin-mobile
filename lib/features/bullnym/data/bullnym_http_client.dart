@@ -484,6 +484,7 @@ class BullnymHttpClient implements BullnymClientPort {
   // Tolerant reader: parse the KNOWN keys with type checks; unknown keys are
   // ignored so a future server field cannot crash an older binary.
   BullnymDonationPage _parseDonationPageResponse(Map<String, dynamic> json) {
+    final kind = _requiredString(json, 'kind');
     return BullnymDonationPage(
       nym: _requiredString(json, 'nym'),
       header: _requiredString(json, 'header'),
@@ -492,8 +493,8 @@ class BullnymHttpClient implements BullnymClientPort {
       website: _optionalString(json, 'website'),
       twitter: _optionalString(json, 'twitter'),
       instagram: _optionalString(json, 'instagram'),
-      kind: _requiredString(json, 'kind'),
-      posMode: _requiredBool(json, 'pos_mode'),
+      kind: kind,
+      posMode: kind == bullnymDonationPageKindPos,
       enabled: _requiredBool(json, 'enabled'),
       isArchived: _requiredBool(json, 'is_archived'),
       avatarSha256: _optionalString(json, 'avatar_sha256'),

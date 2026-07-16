@@ -182,7 +182,7 @@ class FakeBullnymClient implements BullnymClientPort {
       twitter: request.twitter.isEmpty ? null : request.twitter,
       instagram: request.instagram.isEmpty ? null : request.instagram,
       kind: request.kind,
-      posMode: false,
+      posMode: request.kind == bullnymDonationPageKindPos,
       enabled: request.enabled,
       isArchived: false,
       publicUrl: 'https://example.invalid/${request.nym}',

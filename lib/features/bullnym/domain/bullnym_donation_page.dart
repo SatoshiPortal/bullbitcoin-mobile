@@ -3,11 +3,16 @@
 // generic so the future POS surface reuses the same wire methods with `pos`.
 const String bullnymDonationPageKindPaymentPage = 'payment_page';
 
+// Data-layer constant: the donation-page surface discriminator for Point of
+// Sale. POS is a kind, never a `pos_mode` wire field.
+const String bullnymDonationPageKindPos = 'pos';
+
 /// Mirror of the server `DonationPageView` (public read of the current row).
 ///
 /// The view NEVER echoes `ct_descriptor`, so this DTO does not carry it. JSON
-/// keys mirror the server exactly: `display_currency`, `pos_mode`,
-/// `is_archived`, `avatar_sha256`, `og_sha256`, `public_url`.
+/// keys mirror the server exactly: `display_currency`, `is_archived`,
+/// `avatar_sha256`, `og_sha256`, `public_url`. `posMode` is not a wire field:
+/// the client derives it from `kind`.
 class BullnymDonationPage {
   final String nym;
   final String header;

@@ -96,7 +96,6 @@ Map<String, dynamic> _donationPageView({
     'twitter': 'me',
     'instagram': null,
     'kind': kind,
-    'pos_mode': false,
     'enabled': enabled,
     'is_archived': isArchived,
     'avatar_sha256': null,
@@ -181,7 +180,10 @@ void main() {
         timestampSecs: timestamp,
       );
       // The enabled slot ('0') is the 7th payload field.
-      expect(utf8.decode(message).contains('\x000\x00ct(desc)\x00'), isTrue);
+      expect(
+        utf8.decode(message).contains('\u00000\u0000ct(desc)\u0000'),
+        isTrue,
+      );
     });
 
     test('action constant is the deployed wire name', () {
@@ -339,6 +341,7 @@ void main() {
         expect(page.header, 'Tip me');
         expect(page.displayCurrency, 'CAD');
         expect(page.instagram, isNull);
+        expect(page.posMode, isFalse);
         expect(page.enabled, isTrue);
         expect(page.isArchived, isFalse);
         final request = stub.captured.requests.single;
@@ -347,6 +350,35 @@ void main() {
         expect(request.queryParameters['kind'], 'payment_page');
       },
     );
+
+    test('derives posMode from kind=pos without a pos_mode field', () async {
+      final stub = _stubDio([_donationPageView(kind: 'pos')]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      final page = await facade.getDonationPage(nym: 'alice', kind: 'pos');
+
+      expect(page.kind, bullnymDonationPageKindPos);
+      expect(page.posMode, isTrue);
+      final request = stub.captured.requests.single;
+      expect(request.queryParameters['kind'], bullnymDonationPageKindPos);
+    });
+
+    test('rejects a donation-page view missing kind', () async {
+      final view = _donationPageView()..remove('kind');
+      final stub = _stubDio([view]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      expect(
+        () => facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        throwsA(
+          isA<BullnymException>().having(
+            (e) => e.kind,
+            'kind',
+            BullnymErrorKind.invalidServerResponse,
+          ),
+        ),
+      );
+    });
 
     test('maps DonationPageNotFound envelope to a typed rejection', () async {
       final stub = _stubDio([
