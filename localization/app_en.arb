@@ -16634,5 +16634,114 @@
   "invoiceQuoteRetry": "Refresh quote",
   "@invoiceQuoteRetry": {
     "description": "Button label to explicitly retry a fiat payer quote."
+  },
+  "walletMetadataBackupSettingsTitle": "Wallet metadata backup",
+  "@walletMetadataBackupSettingsTitle": {
+    "description": "Title for the wallet metadata backup switch in backup settings."
+  },
+  "walletMetadataBackupStatusOff": "Off",
+  "@walletMetadataBackupStatusOff": {
+    "description": "Status when automatic wallet metadata backup is disabled."
+  },
+  "walletMetadataBackupStatusWorking": "Backing up…",
+  "@walletMetadataBackupStatusWorking": {
+    "description": "Status while a wallet metadata backup operation is running."
+  },
+  "walletMetadataBackupStatusBlocked": "Blocked to protect newer recovery data",
+  "@walletMetadataBackupStatusBlocked": {
+    "description": "Status when metadata publication is blocked after an unsafe or unsupported recovery result."
+  },
+  "walletMetadataBackupStatusPending": "Changes waiting to be backed up",
+  "@walletMetadataBackupStatusPending": {
+    "description": "Status when local wallet metadata changes have not yet been backed up."
+  },
+  "walletMetadataBackupStatusCurrent": "Up to date",
+  "@walletMetadataBackupStatusCurrent": {
+    "description": "Status when local wallet metadata matches the last verified backup."
+  },
+  "walletMetadataBackupConsentTitle": "Back up private wallet metadata?",
+  "@walletMetadataBackupConsentTitle": {
+    "description": "Title for the Bullnym metadata storage disclosure dialog."
+  },
+  "walletMetadataBackupConsentBody": "Bull Bitcoin will store one encrypted copy of your labels, frozen-coin state, and wallet preferences on Bullnym. Bull Bitcoin can observe backup timing and size but cannot read the encrypted metadata. This uses a separate identity and encryption key from your wallet-discovery backup. Turning this off stops future updates; you can delete the remote copy separately.",
+  "@walletMetadataBackupConsentBody": {
+    "description": "Privacy and retention disclosure shown before wallet metadata backup is enabled."
+  },
+  "walletMetadataBackupConsentCancel": "Cancel",
+  "@walletMetadataBackupConsentCancel": {
+    "description": "Cancel enabling wallet metadata backup."
+  },
+  "walletMetadataBackupConsentContinue": "Enable backup",
+  "@walletMetadataBackupConsentContinue": {
+    "description": "Accept Bullnym storage and enable wallet metadata backup."
+  },
+  "walletMetadataBackupNow": "Back up now",
+  "@walletMetadataBackupNow": {
+    "description": "Manually store pending wallet metadata changes."
+  },
+  "walletMetadataBackupDelete": "Delete remote backup",
+  "@walletMetadataBackupDelete": {
+    "description": "Action to delete the encrypted metadata blob from Bullnym."
+  },
+  "walletMetadataBackupDeleteTitle": "Delete encrypted metadata backup?",
+  "@walletMetadataBackupDeleteTitle": {
+    "description": "Confirmation title for remote metadata deletion."
+  },
+  "walletMetadataBackupDeleteBody": "This removes the encrypted metadata copy stored on Bullnym. It does not delete labels, frozen-coin state, or settings from this wallet.",
+  "@walletMetadataBackupDeleteBody": {
+    "description": "Confirmation body for remote metadata deletion."
+  },
+  "walletMetadataBackupSaved": "Wallet metadata backup verified.",
+  "@walletMetadataBackupSaved": {
+    "description": "Confirmation after a wallet metadata backup is read back successfully."
+  },
+  "walletMetadataBackupUnchanged": "Wallet metadata is already up to date.",
+  "@walletMetadataBackupUnchanged": {
+    "description": "Confirmation when a manual metadata backup finds no changes."
+  },
+  "walletMetadataBackupNotReady": "Wallet metadata could not be backed up right now.",
+  "@walletMetadataBackupNotReady": {
+    "description": "Status when wallet metadata storage is disabled or blocked."
+  },
+  "walletMetadataBackupFailed": "Wallet metadata backup failed.",
+  "@walletMetadataBackupFailed": {
+    "description": "Generic wallet metadata backup operation failure."
+  },
+  "wizardMetadataBackupTitle": "Keep your wallet organized after recovery",
+  "@wizardMetadataBackupTitle": {
+    "description": "Title of the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupBody": "Automatically store one encrypted copy of transaction labels, frozen-coin state, and wallet preferences on Bullnym. Bull Bitcoin can observe backup timing and size but cannot read the metadata. This uses a separate identity and encryption key from your wallet-discovery backup. Turning it off later stops new updates, and the remote copy can be deleted separately.",
+  "@wizardMetadataBackupBody": {
+    "description": "Privacy disclosure for the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupQuestion": "Back up wallet metadata automatically?",
+  "@wizardMetadataBackupQuestion": {
+    "description": "Question shown on the onboarding wallet metadata backup choice."
+  },
+  "wizardMetadataBackupEnable": "Enable backup",
+  "@wizardMetadataBackupEnable": {
+    "description": "Affirmative onboarding wallet metadata backup action."
+  },
+  "wizardMetadataBackupNotNow": "Not now (enable later in Backup settings)",
+  "@wizardMetadataBackupNotNow": {
+    "description": "Negative onboarding wallet metadata backup action."
+  },
+  "wizardMetadataBackupRequired": "Choose whether to enable wallet metadata backup before continuing.",
+  "@wizardMetadataBackupRequired": {
+    "description": "Shown when onboarding is completed without a metadata backup preference."
+  },
+  "walletMetadataBackupDeleted": "Remote wallet metadata backup deleted.",
+  "@walletMetadataBackupDeleted": {
+    "description": "Confirmation after the encrypted metadata copy is deleted from Bullnym."
+  },
+  "walletMetadataBackupLastVerified": "Last verified: {timestamp}",
+  "@walletMetadataBackupLastVerified": {
+    "description": "Timestamp of the last successfully verified Bullnym metadata backup.",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
   }
 }

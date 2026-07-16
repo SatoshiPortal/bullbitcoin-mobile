@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/public/wallet_metadata_backup_facade.dart';
 import 'package:get_it/get_it.dart';
 
 /// The wizard runs pre-locator (in `main()`) for the gating check and
@@ -22,6 +23,7 @@ class WizardLocator {
       () => ApplyPendingWizardChoicesUsecase(
         wizardRepository: locator<WizardRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        metadataBackup: locator<WalletMetadataBackupFacade>(),
       ),
     );
   }

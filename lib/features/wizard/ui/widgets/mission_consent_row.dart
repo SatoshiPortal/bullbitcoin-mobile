@@ -14,11 +14,15 @@ class MissionConsentRow extends StatelessWidget {
     required this.consent,
     required this.onYes,
     required this.onNo,
+    this.yesLabel,
+    this.noLabel,
   });
 
   final bool? consent;
   final VoidCallback onYes;
   final VoidCallback onNo;
+  final String? yesLabel;
+  final String? noLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class MissionConsentRow extends StatelessWidget {
       children: [
         Expanded(
           child: _ConsentButton(
-            label: context.loc.wizardMissionYes,
+            label: yesLabel ?? context.loc.wizardMissionYes,
             selected: consent == true,
             onTap: onYes,
           ),
@@ -35,7 +39,7 @@ class MissionConsentRow extends StatelessWidget {
         SizedBox(width: hGap),
         Expanded(
           child: _ConsentButton(
-            label: context.loc.wizardMissionNo,
+            label: noLabel ?? context.loc.wizardMissionNo,
             selected: consent == false,
             onTap: onNo,
           ),

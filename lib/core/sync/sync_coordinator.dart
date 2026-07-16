@@ -78,6 +78,10 @@ class SyncCoordinator {
   bool _draining = false;
   Future<void>? _activeDrain;
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
+  final StreamController<void> _successfulSyncs =
+      StreamController<void>.broadcast();
+
+  Stream<void> get successfulSyncs => _successfulSyncs.stream;
 
   /// Per-kind waiters. A [sync] call registers a completer for each kind it
   /// enqueues (or that is already pending) and awaits exactly those, so it
@@ -138,6 +142,7 @@ class SyncCoordinator {
     final kinds = requested.map((k) => k.name).join(', ');
     if (failures.isEmpty) {
       log.fine('[SyncCoordinator] sync ok ($kinds) in ${elapsedMs}ms');
+      if (waits.isNotEmpty) _successfulSyncs.add(null);
       return;
     }
     // One sanitized summary (kind:runtimeType only — no wallet identifiers
@@ -255,6 +260,7 @@ class SyncCoordinator {
 
   void dispose() {
     _lifecycleListener.dispose();
+    unawaited(_successfulSyncs.close());
   }
 }
 

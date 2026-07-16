@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/public/wallet_metadata_backup_facade.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
@@ -238,6 +239,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
+    if (state == AppLifecycleState.resumed) {
+      unawaited(locator<WalletMetadataBackupFacade>().retryPendingBackup());
+    }
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the
     // `hidden` and `paused` flushes, so flush there too.

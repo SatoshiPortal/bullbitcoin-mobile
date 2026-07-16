@@ -10,6 +10,7 @@ void main() {
       expect(c.themeMode, AppThemeMode.system);
       expect(c.defaultCurrency, 'USD');
       expect(c.reportingConsent, isNull);
+      expect(c.metadataBackupEnabled, isNull);
       expect(c.touched, isEmpty);
     });
   });
@@ -46,6 +47,17 @@ void main() {
       final no = c.copyWith(reportingConsent: const ConsentValue(false));
       expect(no.reportingConsent, false);
       expect(no.touched, contains(WizardField.reportingConsent));
+    });
+
+    test('metadata backup choice is explicit and tracked', () {
+      const c = WizardChoices();
+      final yes = c.copyWith(metadataBackupEnabled: const ConsentValue(true));
+      final no = c.copyWith(metadataBackupEnabled: const ConsentValue(false));
+
+      expect(yes.metadataBackupEnabled, isTrue);
+      expect(no.metadataBackupEnabled, isFalse);
+      expect(yes.touched, contains(WizardField.metadataBackupEnabled));
+      expect(no.touched, contains(WizardField.metadataBackupEnabled));
     });
 
     test('reportingConsent ConsentValue(null) marks touched too', () {

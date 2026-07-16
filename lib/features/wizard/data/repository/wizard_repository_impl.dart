@@ -10,12 +10,12 @@ import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.da
 ///
 /// WARNING: bumping this re-shows the wizard. The bloc stages choices
 /// in prefs on completion; `ApplyPendingWizardChoicesUsecase` flushes
-/// them to SQLite via `setLanguage` / `setThemeMode` / `setCurrency` /
-/// `setErrorReportingEnabled` — but only for fields the user explicitly
+/// them after initialization via the settings repository and wallet metadata
+/// facade — but only for fields the user explicitly
 /// touched (see [WizardChoices.touched]). A user who taps Skip without
 /// changing anything therefore preserves their existing settings
 /// unchanged.
-const int kCurrentWizardVersion = 1;
+const int kCurrentWizardVersion = 2;
 
 class WizardRepositoryImpl implements WizardRepository {
   WizardRepositoryImpl(this._datasource);
@@ -46,6 +46,11 @@ class WizardRepositoryImpl implements WizardRepository {
     if (choices.touched.contains(WizardField.defaultCurrency)) {
       await _datasource.writePendingCurrency(choices.defaultCurrency);
     }
+    final metadataBackupEnabled = choices.metadataBackupEnabled;
+    if (choices.touched.contains(WizardField.metadataBackupEnabled) &&
+        metadataBackupEnabled != null) {
+      await _datasource.writePendingMetadataBackup(metadataBackupEnabled);
+    }
     final consent = choices.reportingConsent;
     if (choices.touched.contains(WizardField.reportingConsent) &&
         consent != null) {
@@ -63,10 +68,12 @@ class WizardRepositoryImpl implements WizardRepository {
     final themeName = await _datasource.readPendingThemeMode();
     final currency = await _datasource.readPendingCurrency();
     final errorReporting = await _datasource.readPendingErrorReporting();
+    final metadataBackupEnabled = await _datasource.readPendingMetadataBackup();
     if (languageName == null &&
         themeName == null &&
         currency == null &&
-        errorReporting == null) {
+        errorReporting == null &&
+        metadataBackupEnabled == null) {
       return null;
     }
     final pendingVersion = await _datasource.readPendingVersion() ?? 0;
@@ -79,6 +86,9 @@ class WizardRepositoryImpl implements WizardRepository {
     if (themeName != null) touched.add(WizardField.themeMode);
     if (currency != null) touched.add(WizardField.defaultCurrency);
     if (errorReporting != null) touched.add(WizardField.reportingConsent);
+    if (metadataBackupEnabled != null) {
+      touched.add(WizardField.metadataBackupEnabled);
+    }
     return WizardChoices(
       language: languageName == null
           ? Language.unitedStatesEnglish
@@ -87,6 +97,7 @@ class WizardRepositoryImpl implements WizardRepository {
           ? AppThemeMode.system
           : AppThemeMode.fromName(themeName),
       defaultCurrency: currency ?? 'USD',
+      metadataBackupEnabled: metadataBackupEnabled,
       reportingConsent: errorReporting,
       touched: touched,
     );

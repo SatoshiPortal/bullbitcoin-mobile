@@ -25,6 +25,7 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
+    on<_WizardMetadataBackupPicked>(_onMetadataBackupPicked);
     on<_WizardConsentPicked>(_onConsentPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
     on<_WizardCompleted>(_onCompleted);
@@ -64,6 +65,19 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
       state.copyWith(
         choices: state.choices.copyWith(
           reportingConsent: ConsentValue(event.consent),
+        ),
+      ),
+    );
+  }
+
+  void _onMetadataBackupPicked(
+    _WizardMetadataBackupPicked event,
+    Emitter<WizardState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        choices: state.choices.copyWith(
+          metadataBackupEnabled: ConsentValue(event.enabled),
         ),
       ),
     );

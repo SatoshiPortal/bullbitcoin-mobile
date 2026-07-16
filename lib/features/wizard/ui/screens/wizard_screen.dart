@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/metadata_backup_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
@@ -18,7 +19,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// Five-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -84,7 +85,24 @@ class _WizardScreenState extends State<WizardScreen> {
     _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
+  void _pickMetadataBackup(bool enabled) {
+    context.read<WizardBloc>().add(WizardEvent.metadataBackupPicked(enabled));
+    _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
+  }
+
   void _tryFinish(WizardChoices choices) {
+    if (choices.metadataBackupEnabled == null) {
+      _controller.animateToPage(
+        WizardPage.metadataBackup.index,
+        duration: _pageDuration,
+        curve: _pageCurve,
+      );
+      SnackBarUtils.showSnackBar(
+        context,
+        context.loc.wizardMetadataBackupRequired,
+      );
+      return;
+    }
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
         WizardPage.mission.index,
@@ -104,6 +122,7 @@ class _WizardScreenState extends State<WizardScreen> {
 
     final isWelcome = _page == WizardPage.welcome;
     final isMission = _page == WizardPage.mission;
+    final isMetadataBackup = _page == WizardPage.metadataBackup;
     final isLast = _page.isLast;
     return PopScope(
       // Block the actual app pop. The handler below intercepts the
@@ -154,6 +173,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                   setState(() => _page = WizardPage.values[i]),
                               children: [
                                 const WelcomeStep(),
+                                const MetadataBackupStep(),
                                 CustomizeStep(
                                   themeMode: c.themeMode,
                                   language: c.language,
@@ -206,7 +226,17 @@ class _WizardScreenState extends State<WizardScreen> {
                                 ),
                                 SizedBox(height: vGap),
                               ],
-                              if (isMission)
+                              if (isMetadataBackup)
+                                MissionConsentRow(
+                                  consent: c.metadataBackupEnabled,
+                                  onYes: () => _pickMetadataBackup(true),
+                                  onNo: () => _pickMetadataBackup(false),
+                                  yesLabel:
+                                      context.loc.wizardMetadataBackupEnable,
+                                  noLabel:
+                                      context.loc.wizardMetadataBackupNotNow,
+                                )
+                              else if (isMission)
                                 MissionConsentRow(
                                   consent: c.reportingConsent,
                                   onYes: () => _pickConsent(true),

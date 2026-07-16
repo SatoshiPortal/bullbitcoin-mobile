@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/public/wallet_metadata_backup_facade.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
@@ -10,9 +12,13 @@ class _MockWizardRepository extends Mock implements WizardRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class _MockWalletMetadataBackupFacade extends Mock
+    implements WalletMetadataBackupFacade {}
+
 void main() {
   late _MockWizardRepository wizard;
   late _MockSettingsRepository settings;
+  late _MockWalletMetadataBackupFacade metadataBackup;
   late ApplyPendingWizardChoicesUsecase usecase;
 
   setUpAll(() {
@@ -23,9 +29,11 @@ void main() {
   setUp(() {
     wizard = _MockWizardRepository();
     settings = _MockSettingsRepository();
+    metadataBackup = _MockWalletMetadataBackupFacade();
     usecase = ApplyPendingWizardChoicesUsecase(
       wizardRepository: wizard,
       settingsRepository: settings,
+      metadataBackup: metadataBackup,
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
@@ -35,6 +43,9 @@ void main() {
     when(
       () => settings.setErrorReportingEnabled(any()),
     ).thenAnswer((_) async {});
+    when(
+      () => metadataBackup.setEnabled(any()),
+    ).thenAnswer((_) async => const Ok(WalletMetadataBackupState.initial));
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -45,6 +56,7 @@ void main() {
     verify(() => wizard.readPending()).called(1);
     verifyNoMoreInteractions(wizard);
     verifyZeroInteractions(settings);
+    verifyZeroInteractions(metadataBackup);
   });
 
   test(
@@ -91,14 +103,16 @@ void main() {
     },
   );
 
-  test('flushes all four fields when all are touched', () async {
+  test('flushes every touched field', () async {
     when(() => wizard.readPending()).thenAnswer(
       (_) async => const WizardChoices(
         language: Language.franceFrench,
         themeMode: AppThemeMode.light,
         defaultCurrency: 'CAD',
         reportingConsent: false,
+        metadataBackupEnabled: true,
         touched: {
+          WizardField.metadataBackupEnabled,
           WizardField.language,
           WizardField.themeMode,
           WizardField.defaultCurrency,
@@ -113,7 +127,21 @@ void main() {
     verify(() => settings.setThemeMode(AppThemeMode.light)).called(1);
     verify(() => settings.setCurrency('CAD')).called(1);
     verify(() => settings.setErrorReportingEnabled(false)).called(1);
+    verify(() => metadataBackup.setEnabled(true)).called(1);
     verify(() => wizard.clearPending()).called(1);
     verify(() => wizard.markComplete()).called(1);
+  });
+
+  test('disables metadata backup without another storage action', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        metadataBackupEnabled: false,
+        touched: {WizardField.metadataBackupEnabled},
+      ),
+    );
+
+    await usecase.execute();
+
+    verify(() => metadataBackup.setEnabled(false)).called(1);
   });
 }

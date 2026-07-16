@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/sync/watch_successful_foreground_syncs_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -15,6 +16,9 @@ class SyncLocator {
         syncWalletUsecase: locator<SyncWalletUsecase>(),
         restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
       ),
+    );
+    locator.registerFactory<WatchSuccessfulForegroundSyncsUsecase>(
+      () => WatchSuccessfulForegroundSyncsUsecase(locator<SyncCoordinator>()),
     );
   }
 }
