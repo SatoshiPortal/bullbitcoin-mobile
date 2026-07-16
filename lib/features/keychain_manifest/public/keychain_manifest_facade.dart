@@ -17,6 +17,8 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_im
         KeychainManifestWalletMaterializationIntent;
 export 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_state.dart'
     show KeychainManifestBackupState;
+export 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_remote_import.dart'
+    show KeychainManifestRemoteImportResult, KeychainManifestRemoteImportStatus;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_reservation_support.dart'
     show KeychainManifestReservationSupport;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart'
@@ -29,10 +31,12 @@ import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manife
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_state.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_remote_import.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/delete_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_backup_state_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/fetch_keychain_manifest_remote_import_plan_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/set_keychain_manifest_backup_enabled_usecase.dart';
@@ -46,6 +50,7 @@ class KeychainManifestFacade {
   final GetKeychainManifestBackupStateUsecase _getBackupState;
   final SetKeychainManifestBackupEnabledUsecase _setBackupEnabled;
   final DeleteKeychainManifestBackupUsecase _deleteBackup;
+  final FetchKeychainManifestRemoteImportPlanUsecase _fetchRemoteImportPlan;
 
   KeychainManifestFacade({
     required this._recordEntry,
@@ -54,6 +59,7 @@ class KeychainManifestFacade {
     required this._getBackupState,
     required this._setBackupEnabled,
     required this._deleteBackup,
+    required this._fetchRemoteImportPlan,
   });
 
   Future<KeychainManifestBackupState> getBackupState() =>
@@ -67,6 +73,9 @@ class KeychainManifestFacade {
 
   Future<void> deleteRemoteBackup({required bool confirmed}) =>
       _deleteBackup.execute(confirmed: confirmed);
+
+  Future<KeychainManifestRemoteImportResult> fetchRemoteImportPlan() =>
+      _fetchRemoteImportPlan.execute();
 
   Future<void> recordReservedDerivation(
     KeychainManifestReservedDerivationRequest request, {
@@ -89,6 +98,7 @@ class KeychainManifestFacade {
         parentFingerprint,
         now: now,
       );
+
       if (manifestFile.entries.isEmpty && !allowEmpty) {
         throw KeychainManifestEmptyInventoryException();
       }

@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychai
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/delete_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_backup_state_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/fetch_keychain_manifest_remote_import_plan_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/set_keychain_manifest_backup_enabled_usecase.dart';
@@ -87,6 +88,15 @@ class KeychainManifestLocator {
         wallet: locator<KeychainManifestBackupWalletPort>(),
       ),
     );
+    locator.registerFactory<FetchKeychainManifestRemoteImportPlanUsecase>(
+      () => FetchKeychainManifestRemoteImportPlanUsecase(
+        remote: locator<KeychainManifestRemoteRepository>(),
+        encryption: locator<KeychainManifestEncryptionRepository>(),
+        parseManifest: locator<ParseKeychainManifestFileUsecase>(),
+        identity: locator<NostrIdentityFacade>(),
+        wallet: locator<KeychainManifestBackupWalletPort>(),
+      ),
+    );
     locator.registerFactory<KeychainManifestFacade>(
       () => KeychainManifestFacade(
         recordEntry: locator<RecordKeychainManifestEntryUsecase>(),
@@ -95,6 +105,8 @@ class KeychainManifestLocator {
         getBackupState: locator<GetKeychainManifestBackupStateUsecase>(),
         setBackupEnabled: locator<SetKeychainManifestBackupEnabledUsecase>(),
         deleteBackup: locator<DeleteKeychainManifestBackupUsecase>(),
+        fetchRemoteImportPlan:
+            locator<FetchKeychainManifestRemoteImportPlanUsecase>(),
       ),
     );
   }
