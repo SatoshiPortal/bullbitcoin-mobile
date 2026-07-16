@@ -794,5 +794,6 @@
   "logsShareOptionShare": "გაზიარება",
   "logsShareOptionExport": "ექსპორტი",
   "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
-  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა",
+  "settingsExchangeSettingsTitleNewspeakApple": "ანგარიშის პარამეტრები"
 }

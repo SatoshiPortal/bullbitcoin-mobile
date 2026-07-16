@@ -12934,5 +12934,6 @@
   "logsShareOptionShare": "공유",
   "logsShareOptionExport": "내보내기",
   "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
-  "logsExportFailedMessage": "로그 내보내기에 실패했습니다"
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
+  "settingsExchangeSettingsTitleNewspeakApple": "계정 설정"
 }

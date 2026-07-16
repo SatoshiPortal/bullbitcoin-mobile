@@ -13202,5 +13202,6 @@
   "logsShareOptionShare": "शेयर करें",
   "logsShareOptionExport": "निर्यात करें",
   "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
-  "logsExportFailedMessage": "लॉग निर्यात करने में विफल"
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
+  "settingsExchangeSettingsTitleNewspeakApple": "खाता सेटिंग्स"
 }

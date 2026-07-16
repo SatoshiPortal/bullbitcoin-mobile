@@ -5086,5 +5086,6 @@
   "logsShareOptionShare": "Jaa",
   "logsShareOptionExport": "Vie",
   "logsExportedMessage": "Lokit viety onnistuneesti",
-  "logsExportFailedMessage": "Lokien vienti epäonnistui"
+  "logsExportFailedMessage": "Lokien vienti epäonnistui",
+  "settingsExchangeSettingsTitleNewspeakApple": "Tilin asetukset"
 }

@@ -1,0 +1,12 @@
+name: novlang
+description: Store-compliance vocabulary policy (Newspeak) — pure selection logic.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+
+dev_dependencies:
+  test: ^1.31.0
+  lints: ^6.0.0

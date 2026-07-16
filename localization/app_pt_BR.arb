@@ -13048,5 +13048,6 @@
   "logsShareOptionShare": "Compartilhar",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados com sucesso",
-  "logsExportFailedMessage": "Falha ao exportar os registros"
+  "logsExportFailedMessage": "Falha ao exportar os registros",
+  "settingsExchangeSettingsTitleNewspeakApple": "Configurações da conta"
 }

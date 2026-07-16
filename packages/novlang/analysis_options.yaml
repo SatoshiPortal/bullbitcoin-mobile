@@ -1,0 +1,11 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    # A shared-foundation package is held to a stricter bar than the app.
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - require_trailing_commas
+    - prefer_final_locals
+    - prefer_single_quotes
+    - unnecessary_parenthesis

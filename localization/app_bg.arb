@@ -10084,5 +10084,6 @@
   "logsShareOptionShare": "Споделяне",
   "logsShareOptionExport": "Експортиране",
   "logsExportedMessage": "Журналите са експортирани успешно",
-  "logsExportFailedMessage": "Неуспешно експортиране на журналите"
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите",
+  "settingsExchangeSettingsTitleNewspeakApple": "Настройки на акаунта"
 }

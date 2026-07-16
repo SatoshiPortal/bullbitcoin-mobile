@@ -13222,5 +13222,6 @@
   "logsShareOptionShare": "শেয়ার করুন",
   "logsShareOptionExport": "এক্সপোর্ট করুন",
   "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
-  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে"
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে",
+  "settingsExchangeSettingsTitleNewspeakApple": "অ্যাকাউন্ট সেটিংস"
 }

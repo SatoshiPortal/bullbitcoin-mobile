@@ -13389,5 +13389,6 @@
   "logsShareOptionShare": "Share karein",
   "logsShareOptionExport": "Export karein",
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
-  "logsExportFailedMessage": "Logs export karne mein vifal"
+  "logsExportFailedMessage": "Logs export karne mein vifal",
+  "settingsExchangeSettingsTitleNewspeakApple": "Account Settings"
 }

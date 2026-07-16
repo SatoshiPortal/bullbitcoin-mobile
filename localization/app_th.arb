@@ -12934,5 +12934,6 @@
   "logsShareOptionShare": "แชร์",
   "logsShareOptionExport": "ส่งออก",
   "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
-  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ"
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ",
+  "settingsExchangeSettingsTitleNewspeakApple": "การตั้งค่าบัญชี"
 }
