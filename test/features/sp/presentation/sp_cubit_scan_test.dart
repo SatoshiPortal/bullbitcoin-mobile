@@ -58,7 +58,7 @@ void main() {
       () => watchUsecase.execute(),
     ).thenAnswer((_) => notifController.stream);
     when(
-      () => scanUsecase.execute(),
+      () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
     ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
     cubit = harness.build();
@@ -192,7 +192,9 @@ void main() {
       await cubit.load();
       await Future.delayed(Duration.zero);
 
-      verifyNever(() => scanUsecase.execute());
+      verifyNever(
+        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+      );
     });
 
     test('Electrum balance push does not trigger scan', () async {
@@ -207,7 +209,9 @@ void main() {
       );
       await Future.delayed(Duration.zero);
 
-      verifyNever(() => scanUsecase.execute());
+      verifyNever(
+        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+      );
     });
   });
 
@@ -231,15 +235,15 @@ void main() {
   });
 
   test(
-    'scan() invokes ScanSpWalletUsecase.execute exactly once per call',
+    'scan() invokes ScanSpWalletUsecase.execute once while a scan is active',
     () async {
       await cubit.load();
 
       await cubit.scan();
-      verify(() => scanUsecase.execute()).called(1);
+      verify(() => scanUsecase.execute(startHeight: null)).called(1);
 
       await cubit.scan();
-      verify(() => scanUsecase.execute()).called(1);
+      verifyNever(() => scanUsecase.execute(startHeight: null));
     },
   );
 
@@ -248,7 +252,7 @@ void main() {
     await cubit.load();
     await cubit.scan();
 
-    verify(() => scanUsecase.execute()).called(1);
+    verify(() => scanUsecase.execute(startHeight: null)).called(1);
   });
 
   test('scan(startHeight) forwards the chosen height to the usecase', () async {
@@ -265,7 +269,9 @@ void main() {
   test(
     'scan() sets error and leaves isScanning false when execute throws',
     () async {
-      when(() => scanUsecase.execute()).thenAnswer(
+      when(
+        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+      ).thenAnswer(
         (_) async =>
             const Err<void, SpFailure>(SpUnexpected('scan start failed')),
       );
@@ -313,7 +319,9 @@ void main() {
       // Hold the first scan open so the second tap lands inside the window
       // before ScanStarted would flip state.isScanning.
       final gate = Completer<Result<void, SpFailure>>();
-      when(() => scanUsecase.execute()).thenAnswer((_) => gate.future);
+      when(
+        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+      ).thenAnswer((_) => gate.future);
       await cubit.load();
 
       final first = cubit.scan();
@@ -321,7 +329,7 @@ void main() {
       gate.complete(const Ok(null));
       await Future.wait([first, second]);
 
-      verify(() => scanUsecase.execute()).called(1);
+      verify(() => scanUsecase.execute(startHeight: null)).called(1);
     });
 
     test(
@@ -330,7 +338,9 @@ void main() {
         // The scan really starts (ScanStarted sets isScanning=true) while the
         // execute future is still pending, then reports busy. The catch must not
         // flip isScanning off and wedge the Stop button.
-        when(() => scanUsecase.execute()).thenAnswer((_) async {
+        when(
+          () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+        ).thenAnswer((_) async {
           notifController.add(const SpScanStarted(1, 10));
           await Future.delayed(Duration.zero);
           return const Err<void, SpFailure>(
@@ -350,7 +360,9 @@ void main() {
     test(
       'a non-busy scan error still clears isScanning (T1.4 contrast)',
       () async {
-        when(() => scanUsecase.execute()).thenAnswer((_) async {
+        when(
+          () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
+        ).thenAnswer((_) async {
           notifController.add(const SpScanStarted(1, 10));
           await Future.delayed(Duration.zero);
           return const Err<void, SpFailure>(

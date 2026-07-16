@@ -39,7 +39,7 @@ class SpScanScreen extends StatelessWidget {
               return _ErrorView(message: state.error!.toTranslated(context));
             }
             if (!state.hasScannedBefore) return _FirstScanView(state: state);
-            if (state.isCaughtUp && state.scanLastDurationSecs != null) {
+            if (state.isCaughtUp) {
               return _CaughtUpView(
                 tip: state.chainTip!,
                 lastDurationSecs: state.scanLastDurationSecs,

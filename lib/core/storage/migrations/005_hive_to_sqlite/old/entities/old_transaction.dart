@@ -2,7 +2,7 @@
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_address.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;

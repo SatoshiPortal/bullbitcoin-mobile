@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "2.0.1"
   bdk_dart:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
       ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
@@ -305,8 +305,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
-      resolved-ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      ref: "5aa832e0590c1f457e0ffa4936a91f8bb10fd6cb"
+      resolved-ref: "5aa832e0590c1f457e0ffa4936a91f8bb10fd6cb"
       url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1755,8 +1755,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
-      resolved-ref: f6e8f4c821fb4603f9b8d61cf86f8655859459a0
+      ref: "5aa832e0590c1f457e0ffa4936a91f8bb10fd6cb"
+      resolved-ref: "5aa832e0590c1f457e0ffa4936a91f8bb10fd6cb"
       url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "0.0.1"

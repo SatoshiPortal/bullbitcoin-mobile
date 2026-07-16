@@ -144,12 +144,12 @@ void main() {
 
   group('SpSettingsCubit', () {
     test(
-      'initial state is a placeholder that fetches regtest defaults async',
+      'initial state is a placeholder until initialized from a network',
       () async {
         final cubit = build();
-        // Construction does not block on the FFI: URLs are empty and the fetching
-        // flag is set until the async regtest defaults land.
-        expect(cubit.state.network, SpNetwork.regtest);
+        // Construction does not block on backend defaults: URLs are empty until
+        // initFromNetwork or setNetwork provides the network to load.
+        expect(cubit.state.network, SpNetwork.bitcoin);
         expect(cubit.state.blindbitUrl, isEmpty);
         expect(cubit.state.isFetchingDefaults, isTrue);
 

@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_transaction.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
