@@ -11,6 +11,7 @@ enum KeychainManifestExceptionType {
   conflict,
   duplicate,
   backupSnapshot,
+  remoteBackup,
   generic,
 }
 
@@ -132,6 +133,24 @@ final class KeychainManifestEncryptionException
     extends KeychainManifestException {
   KeychainManifestEncryptionException(String message, {Object? cause})
     : super._(KeychainManifestExceptionType.generic, message, cause: cause);
+}
+
+enum KeychainManifestRemoteFailureReason {
+  unavailable,
+  headConflict,
+  invalid,
+  tooLarge,
+}
+
+final class KeychainManifestRemoteException extends KeychainManifestException {
+  final KeychainManifestRemoteFailureReason reason;
+
+  KeychainManifestRemoteException(this.reason, {Object? cause})
+    : super._(
+        KeychainManifestExceptionType.remoteBackup,
+        'keychain manifest remote backup failed',
+        cause: cause,
+      );
 }
 
 final class KeychainManifestGenericException extends KeychainManifestException {
