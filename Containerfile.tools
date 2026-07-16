@@ -12,7 +12,7 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 # forces every cargo/rustc invocation through this version, so plugins that
 # request "stable" or anything else still get the pinned bytes. This is
 # essential for reproducibility — upstream stable drifts every 6 weeks.
-ARG RUST_VERSION="1.95.0"
+ARG RUST_VERSION="1.96.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
 ARG JVM_TARGET="21"
