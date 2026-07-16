@@ -14875,5 +14875,13 @@
   "transactionDetailLabelPayjoinInProgress": "In progress",
   "@transactionDetailLabelPayjoinInProgress": {
     "description": "Payjoin status row on transaction details while the session is still being negotiated (request or proposal in flight, nothing broadcast yet)."
+  },
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin fee contribution",
+  "@transactionDetailLabelPayjoinFeeContribution": {
+    "description": "Row label on transaction details (receive side of a completed payjoin) for the mining fee deducted from the received amount to pay for the input the receiver contributed."
+  },
+  "transactionPayjoinFeeContributionExplanation": "A payjoin adds one of your coins as an extra input to the payment to improve privacy. The mining fee for that added input is deducted from the amount you receive (BIP78).",
+  "@transactionPayjoinFeeContributionExplanation": {
+    "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
   }
 }

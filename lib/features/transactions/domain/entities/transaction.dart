@@ -101,6 +101,24 @@ sealed class Transaction with _$Transaction {
     return pj.status;
   }
 
+  /// The mining fee the receiver of a REAL payjoin paid out of the payment
+  /// for the input it contributed (BIP78: the receiver's added input grows
+  /// the transaction, and the fee for that extra weight is deducted from the
+  /// receiver's output). Derived as the gap between the payment amount the
+  /// session negotiated and the net amount the wallet actually received.
+  /// Null when it doesn't apply: not a completed real payjoin, not the
+  /// receiving side, amounts not available yet, or no positive gap.
+  int? get payjoinFeeContributionSat {
+    final pj = payjoin;
+    final wt = walletTransaction;
+    if (pj == null || wt == null || !isIncoming) return null;
+    if (displayPayjoinStatus != PayjoinStatus.completed) return null;
+    final paymentAmountSat = pj.amountSat;
+    if (paymentAmountSat == null) return null;
+    final contribution = paymentAmountSat - wt.amountSat;
+    return contribution > 0 ? contribution : null;
+  }
+
   DateTime? get timestamp =>
       // Completed swaps are displayed (and should sort) by when they finished,
       // not when they were created — otherwise a just-claimed rescued swap

@@ -1023,6 +1023,33 @@ class TransactionDetailsTable extends StatelessWidget {
                 context.loc.transactionDetailLabelPayjoinInProgress,
             },
           ),
+          // The receive side of a completed real payjoin: the net received
+          // amount shown above is the negotiated payment minus the mining
+          // fee for the input this wallet contributed (BIP78). Surfacing
+          // that deduction here keeps the gap from looking like a wrong
+          // amount (observed live: 1002 sats sent, 948 displayed).
+          if (transaction.payjoinFeeContributionSat != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelPayjoinFeeContribution,
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(
+                      transaction.payjoinFeeContributionSat!,
+                    ).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(
+                        transaction.payjoinFeeContributionSat!,
+                      ),
+                    ).toUpperCase(),
+              expandableChild: Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 8),
+                child: BBText(
+                  context.loc.transactionPayjoinFeeContributionExplanation,
+                  style: context.font.labelSmall,
+                  color: context.appColors.secondary,
+                  maxLines: 6,
+                ),
+              ),
+            ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,
             displayValue: DateFormat(

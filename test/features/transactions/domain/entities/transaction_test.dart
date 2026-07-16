@@ -4,18 +4,39 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-WalletTransaction _walletTx({required String txId}) => WalletTransaction(
+WalletTransaction _walletTx({
+  required String txId,
+  WalletTransactionDirection direction = WalletTransactionDirection.outgoing,
+  int amountSat = 50000,
+}) => WalletTransaction(
   walletId: 'w1',
   network: Network.bitcoinMainnet,
-  direction: WalletTransactionDirection.outgoing,
+  direction: direction,
   status: WalletTransactionStatus.pending,
   txId: txId,
-  amountSat: 50000,
+  amountSat: amountSat,
   feeSat: 500,
   vsize: 150,
   inputs: const [],
   outputs: const [],
   isRbf: false,
+);
+
+Payjoin _receiverPayjoin({
+  PayjoinStatus status = PayjoinStatus.completed,
+  String? txId = 'payjoin-txid',
+  int? amountSat = 1002,
+}) => Payjoin.receiver(
+  status: status,
+  id: 'recv-1',
+  isTestnet: false,
+  walletId: 'w1',
+  pjUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in',
+  createdAt: DateTime(2026),
+  expiresAt: DateTime(2026, 1, 1, 0, 5),
+  originalTxId: 'orig-txid',
+  amountSat: amountSat,
+  txId: txId,
 );
 
 Payjoin _senderPayjoin({
@@ -112,6 +133,78 @@ void main() {
       );
 
       expect(transaction.displayPayjoinStatus, PayjoinStatus.proposed);
+    });
+  });
+
+  group('Transaction.payjoinFeeContributionSat', () {
+    test('is the gap between the negotiated payment and the net received '
+        'amount on the receive side of a completed payjoin (BIP78 fee for '
+        'the contributed input)', () {
+      // Observed live: 1002 sats sent, 948 received — 54 sats of mining fee
+      // paid for the receiver's contributed input.
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'payjoin-txid',
+          direction: WalletTransactionDirection.incoming,
+          amountSat: 948,
+        ),
+        payjoin: _receiverPayjoin(amountSat: 1002),
+      );
+
+      expect(transaction.payjoinFeeContributionSat, 54);
+    });
+
+    test('is null on the send side — the sender does not pay the '
+        'receiver\'s input fee', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(txId: 'payjoin-txid', amountSat: 1002),
+        payjoin: _senderPayjoin(
+          status: PayjoinStatus.completed,
+          txId: 'payjoin-txid',
+        ),
+      );
+
+      expect(transaction.payjoinFeeContributionSat, isNull);
+    });
+
+    test('is null for an aborted payjoin — the plain original transaction '
+        'has no contributed input', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'orig-txid',
+          direction: WalletTransactionDirection.incoming,
+          amountSat: 902,
+        ),
+        payjoin: _receiverPayjoin(
+          status: PayjoinStatus.aborted,
+          txId: null,
+          amountSat: 902,
+        ),
+      );
+
+      expect(transaction.payjoinFeeContributionSat, isNull);
+    });
+
+    test('is null when there is no positive gap', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'payjoin-txid',
+          direction: WalletTransactionDirection.incoming,
+          amountSat: 1002,
+        ),
+        payjoin: _receiverPayjoin(amountSat: 1002),
+      );
+
+      expect(transaction.payjoinFeeContributionSat, isNull);
+    });
+
+    test('is null while the wallet transaction is not visible yet', () {
+      expect(
+        Transaction(
+          payjoin: _receiverPayjoin(amountSat: 1002),
+        ).payjoinFeeContributionSat,
+        isNull,
+      );
     });
   });
 }

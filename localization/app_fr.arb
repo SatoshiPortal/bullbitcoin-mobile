@@ -5102,5 +5102,7 @@
   "sendPayjoinFallbackCountdown": "Retour à un paiement normal dans",
   "transactionStatusPayjoinAborted": "Payjoin abandonné",
   "transactionDetailLabelPayjoinAborted": "Abandonné",
-  "transactionDetailLabelPayjoinInProgress": "En cours"
+  "transactionDetailLabelPayjoinInProgress": "En cours",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribution aux frais du payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin ajoute une de vos pièces comme input supplémentaire au paiement pour améliorer la confidentialité. Les frais de minage de cet input ajouté sont déduits du montant que vous recevez (BIP78)."
 }
