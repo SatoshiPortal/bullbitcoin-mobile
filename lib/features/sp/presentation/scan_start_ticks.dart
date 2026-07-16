@@ -46,8 +46,9 @@ List<ScanStartTick> scanStartTicks({
   final seen = <int>{minBirthday};
   for (final o in offsets) {
     final height = tip - o.count * _unitDays(o.unit) * blocksPerDay;
-    if (height <= minBirthday || height > tip || seen.contains(height))
+    if (height <= minBirthday || height > tip || seen.contains(height)) {
       continue;
+    }
     seen.add(height);
     ticks.add((label: _tickLabel(loc, o.unit, o.count), height: height));
   }
