@@ -47,8 +47,8 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           ? order.orderType.value
           : payjoinStatus == PayjoinStatus.completed
           ? context.loc.transactionStatusPayjoinCompleted
-          : payjoinStatus == PayjoinStatus.fallback
-          ? context.loc.transactionStatusPayjoinFallback
+          : payjoinStatus == PayjoinStatus.aborted
+          ? context.loc.transactionStatusPayjoinAborted
           : payjoinStatus == PayjoinStatus.requested
           ? context.loc.transactionStatusPayjoinRequested
           : transaction?.isIncoming == true

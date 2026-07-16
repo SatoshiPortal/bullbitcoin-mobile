@@ -220,8 +220,8 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         PayjoinStatus.completed => 'completed',
         // Financially identical to 'completed' (the payment landed either
         // way) but distinguished for the record: no real payjoin happened,
-        // just a plain broadcast fallback.
-        PayjoinStatus.fallback => 'fallback',
+        // the payment fell back to a plain broadcast of the original.
+        PayjoinStatus.aborted => 'aborted',
         PayjoinStatus.expired => 'expired',
       };
     }

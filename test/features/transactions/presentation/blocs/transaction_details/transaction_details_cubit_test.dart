@@ -160,9 +160,9 @@ void main() {
     );
 
     test('does NOT broadcast once already completed via the plain-'
-        'broadcast fallback (PayjoinStatus.fallback — same isCompleted as a '
+        'broadcast fallback (PayjoinStatus.aborted — same isCompleted as a '
         'real payjoin, nothing left to do)', () async {
-      final payjoin = _sender(status: PayjoinStatus.fallback);
+      final payjoin = _sender(status: PayjoinStatus.aborted);
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
@@ -201,7 +201,7 @@ void main() {
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
-      final completed = _sender(status: PayjoinStatus.fallback);
+      final completed = _sender(status: PayjoinStatus.aborted);
       when(
         () => broadcastOriginalTransaction.execute(any()),
       ).thenAnswer((_) async => completed);
@@ -225,7 +225,7 @@ void main() {
       when(
         () => getPayjoinById.execute(payjoin.uri),
       ).thenAnswer((_) async => payjoin);
-      final completed = _sender(status: PayjoinStatus.fallback);
+      final completed = _sender(status: PayjoinStatus.aborted);
       when(
         () => broadcastOriginalTransaction.execute(any()),
       ).thenAnswer((_) async => completed);
@@ -248,7 +248,7 @@ void main() {
       'payjoin" button lingering after the fallback had already broadcast)',
       () async {
         final ongoing = _sender(status: PayjoinStatus.requested);
-        final completedViaFallback = _sender(status: PayjoinStatus.fallback);
+        final completedViaFallback = _sender(status: PayjoinStatus.aborted);
         final payjoinEvents = StreamController<Payjoin>.broadcast();
         addTearDown(payjoinEvents.close);
 
@@ -282,7 +282,7 @@ void main() {
         'fires a targeted sync of the wallet, so the broadcast transaction '
         'shows up promptly instead of at the next scheduled sync', () async {
       final ongoing = _sender(status: PayjoinStatus.requested);
-      final completedViaFallback = _sender(status: PayjoinStatus.fallback);
+      final completedViaFallback = _sender(status: PayjoinStatus.aborted);
       final payjoinEvents = StreamController<Payjoin>.broadcast();
       addTearDown(payjoinEvents.close);
 

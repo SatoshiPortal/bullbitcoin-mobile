@@ -14864,12 +14864,12 @@
   "@sendPayjoinFallbackCountdown": {
     "description": "Label preceding the countdown timer before automatic fallback on the send payjoin-in-progress screen"
   },
-  "transactionStatusPayjoinFallback": "Payjoin fell back",
-  "@transactionStatusPayjoinFallback": {
+  "transactionStatusPayjoinAborted": "Payjoin aborted",
+  "@transactionStatusPayjoinAborted": {
     "description": "Big status heading on transaction details when a payjoin was attempted but completed via the plain-broadcast fallback instead (declined below minimum, failed negotiation, or expiry with no proposal exchanged)."
   },
-  "transactionDetailLabelPayjoinFallback": "Fell back",
-  "@transactionDetailLabelPayjoinFallback": {
+  "transactionDetailLabelPayjoinAborted": "Aborted",
+  "@transactionDetailLabelPayjoinAborted": {
     "description": "Payjoin status row on transaction details when the session completed via the plain-broadcast fallback rather than a real payjoin."
   }
 }

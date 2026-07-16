@@ -1516,7 +1516,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(emitted, hasLength(1));
-      expect(emitted.single.status, PayjoinStatus.fallback);
+      expect(emitted.single.status, PayjoinStatus.aborted);
       expect(emitted.single.isCompleted, isTrue);
       expect((emitted.single as PayjoinSender).txId, isNull);
       await sub.cancel();
@@ -1665,7 +1665,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(emitted, hasLength(2));
-        expect(emitted.last.status, PayjoinStatus.fallback);
+        expect(emitted.last.status, PayjoinStatus.aborted);
         await sub.cancel();
       },
     );

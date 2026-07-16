@@ -48,8 +48,8 @@ void main() {
 
     test('true for a plain-broadcast fallback completion too — both mean '
         '"money moved, nothing left to do here"', () {
-      expect(_receiver(status: PayjoinStatus.fallback).isCompleted, isTrue);
-      expect(_sender(status: PayjoinStatus.fallback).isCompleted, isTrue);
+      expect(_receiver(status: PayjoinStatus.aborted).isCompleted, isTrue);
+      expect(_sender(status: PayjoinStatus.aborted).isCompleted, isTrue);
     });
 
     test('false while ongoing or expired', () {
@@ -61,8 +61,8 @@ void main() {
 
   group('Payjoin.isOngoing', () {
     test('false once resolved via fallback, same as a real completion', () {
-      expect(_receiver(status: PayjoinStatus.fallback).isOngoing, isFalse);
-      expect(_sender(status: PayjoinStatus.fallback).isOngoing, isFalse);
+      expect(_receiver(status: PayjoinStatus.aborted).isOngoing, isFalse);
+      expect(_sender(status: PayjoinStatus.aborted).isOngoing, isFalse);
     });
   });
 
@@ -96,13 +96,13 @@ void main() {
     });
 
     test('false when completed via the plain-broadcast fallback '
-        '(PayjoinStatus.fallback, not completed)', () {
+        '(PayjoinStatus.aborted, not completed)', () {
       expect(
-        _receiver(status: PayjoinStatus.fallback).isRealPayjoinCompletion,
+        _receiver(status: PayjoinStatus.aborted).isRealPayjoinCompletion,
         isFalse,
       );
       expect(
-        _sender(status: PayjoinStatus.fallback).isRealPayjoinCompletion,
+        _sender(status: PayjoinStatus.aborted).isRealPayjoinCompletion,
         isFalse,
       );
     });
@@ -165,7 +165,7 @@ void main() {
         isFalse,
       );
       expect(
-        _receiver(status: PayjoinStatus.fallback).canManuallyBroadcastOriginal,
+        _receiver(status: PayjoinStatus.aborted).canManuallyBroadcastOriginal,
         isFalse,
       );
     });
@@ -197,7 +197,7 @@ void main() {
         isFalse,
       );
       expect(
-        _sender(status: PayjoinStatus.fallback).canManuallyBroadcastOriginal,
+        _sender(status: PayjoinStatus.aborted).canManuallyBroadcastOriginal,
         isFalse,
       );
     });

@@ -70,7 +70,7 @@ void main() {
         PayjoinStatus.requested,
         PayjoinStatus.proposed,
         PayjoinStatus.completed,
-        PayjoinStatus.fallback,
+        PayjoinStatus.aborted,
         PayjoinStatus.expired,
       ]) {
         final state = ReceiveState(

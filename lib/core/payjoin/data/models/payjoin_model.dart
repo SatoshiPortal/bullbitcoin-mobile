@@ -113,7 +113,7 @@ sealed class PayjoinModel with _$PayjoinModel {
   PayjoinStatus get status => switch (this) {
     PayjoinReceiverModel(:final originalTxBytes) =>
       isCompleted
-          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.fallback)
+          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.aborted)
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null
@@ -123,7 +123,7 @@ sealed class PayjoinModel with _$PayjoinModel {
           : PayjoinStatus.started,
     PayjoinSenderModel() =>
       isCompleted
-          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.fallback)
+          ? (txId != null ? PayjoinStatus.completed : PayjoinStatus.aborted)
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null

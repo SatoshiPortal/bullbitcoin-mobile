@@ -11,7 +11,13 @@ enum PayjoinStatus {
   requested,
   proposed,
   completed,
-  fallback,
+
+  /// The payjoin itself was aborted (declined below the receiver's
+  /// anti-probing minimum, a failed negotiation, or an expiry with no
+  /// proposal exchanged) and the payment completed via the plain-broadcast
+  /// fallback of the ORIGINAL transaction instead — money moved, but no
+  /// CoinJoin-style privacy was gained.
+  aborted,
   expired,
 }
 
@@ -67,17 +73,17 @@ sealed class Payjoin with _$Payjoin {
 
   /// Terminal AND successfully broadcast — either a real payjoin
   /// ([PayjoinStatus.completed]) or the plain-broadcast fallback
-  /// ([PayjoinStatus.fallback]). Both mean "money moved, nothing left to
+  /// ([PayjoinStatus.aborted]). Both mean "money moved, nothing left to
   /// do here"; [isRealPayjoinCompletion] is what tells the two apart.
   bool get isCompleted =>
-      status == PayjoinStatus.completed || status == PayjoinStatus.fallback;
+      status == PayjoinStatus.completed || status == PayjoinStatus.aborted;
   bool get isExpired => status == PayjoinStatus.expired;
   bool get isOngoing => !isCompleted && !isExpired;
 
   /// True only for a real payjoin — as opposed to completing via the plain
   /// fallback broadcast (declined below the receiver's anti-probing
   /// minimum, a failed negotiation, or an expiry with no proposal ever
-  /// exchanged), which is [PayjoinStatus.fallback] instead. The two are
+  /// exchanged), which is [PayjoinStatus.aborted] instead. The two are
   /// mutually exclusive by construction (see PayjoinModel.status), so this
   /// no longer needs to also check [txId].
   bool get isRealPayjoinCompletion => status == PayjoinStatus.completed;

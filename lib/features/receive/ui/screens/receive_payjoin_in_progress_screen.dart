@@ -118,13 +118,12 @@ class PayjoinInProgressPage extends StatelessWidget {
     // Completed, but NOT via a real payjoin: the plain-broadcast fallback
     // paid the sender instead — declined below the anti-probing minimum, a
     // failed negotiation, or an expiry with no proposal ever exchanged (see
-    // PayjoinStatus.fallback). Unlike isRealPayjoin, this state is NOT
+    // PayjoinStatus.aborted). Unlike isRealPayjoin, this state is NOT
     // auto-navigated away from: the user explicitly expected a payjoin, so
     // they get to read why one didn't happen instead of landing on
     // transaction details unannounced.
     final isFallbackCompleted = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.payjoin?.status == PayjoinStatus.fallback,
+      (ReceiveBloc bloc) => bloc.state.payjoin?.status == PayjoinStatus.aborted,
     );
     // The specific, most informative case: the request was declined solely
     // because its amount fell under the configured anti-probing threshold
