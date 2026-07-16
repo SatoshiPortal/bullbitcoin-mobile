@@ -115,7 +115,24 @@ RUN rustup target add aarch64-linux-android
 RUN rustup target add armv7-linux-androideabi
 RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
-RUN rustc --version && cargo --version
+
+# cargokit (used by payjoin_flutter, bull_sdk, tor -- see their Cargo.toml/
+# cargokit.yaml) never reads RUSTUP_TOOLCHAIN. It hardcodes
+# `rustup run stable cargo build`, and rustup's own precedence rules put an
+# explicit `rustup run <toolchain>` invocation ABOVE the RUSTUP_TOOLCHAIN env
+# var. Left alone, cargokit finds no toolchain named "stable" installed,
+# silently runs `rustup toolchain install stable` itself, and fetches whatever
+# upstream stable happens to be on the day of the build -- completely
+# bypassing RUST_VERSION for those 3 crates while leaving RUSTUP_TOOLCHAIN
+# looking correctly pinned everywhere else. Fix: register a toolchain
+# literally named "stable" in rustup's own store that points at our already-
+# pinned, already-target-equipped RUST_VERSION toolchain, so `rustup run
+# stable` resolves locally without ever touching the network.
+RUN HOST_TRIPLE=$(rustc -vV | grep '^host:' | cut -d' ' -f2) && \
+    ln -s "$HOME/.rustup/toolchains/${RUST_VERSION}-${HOST_TRIPLE}" \
+          "$HOME/.rustup/toolchains/stable-${HOST_TRIPLE}"
+
+RUN rustc --version && cargo --version && rustup run stable rustc --version
 
 # Belt-and-suspenders verification: abort if the installed Rust does not match
 # EXPECTED_RUST_VERSION when provided.
@@ -141,14 +158,19 @@ RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 
 # Download Android cmdline-tools
-RUN sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
+# (USER root instead of sudo: setuid binaries are unreliable under rootless
+# podman user namespaces — sudo fails with "account validation failure" —
+# and are unnecessary at build time since USER switching achieves the same.)
+USER root
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
 
 # Set up Android SDK
-RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools
-RUN sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
-RUN sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
-RUN sudo rm /tmp/android-cmdline-tools.zip
-RUN sudo chown -R $USER ${ANDROID_HOME}
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
+RUN unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN rm /tmp/android-cmdline-tools.zip
+RUN chown -R $USER ${ANDROID_HOME}
+USER $USER
 
 # Install Android SDK components
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
