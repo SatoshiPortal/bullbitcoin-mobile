@@ -317,8 +317,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         // Since the from wallet is changed, there will be a new balance and thus a
         //  new max amount to calculate. Set to null while recalculating.
         maxAmountSat: null,
-        useMaxAmount: false,
-        exactInputAmountSat: state.useMaxAmount
+        exactInputAmountSat: state.isMaxSelected
             ? null
             : state.exactInputAmountSat,
       ),
@@ -344,7 +343,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     var updated = state.copyWith(
       amount: event.amount,
       exactInputAmountSat: null,
-      useMaxAmount: false,
       swapCreationException: null,
     );
     // Sending the max drains the wallet, so an exact receivable amount can
@@ -389,7 +387,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         exchangeRate: exchangeRate,
         amount: '',
         exactInputAmountSat: null,
-        useMaxAmount: false,
         swapCreationException: null,
         continueClicked: false,
       ),
@@ -406,7 +403,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       state.copyWith(
         amount: state.maxAmountInput,
         exactInputAmountSat: state.maxAmountSat,
-        useMaxAmount: true,
         receiveExactAmount: false,
         swapCreationException: null,
       ),
@@ -923,7 +919,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                 // ignore: avoid_bool_literals_in_conditional_expressions
                 bip21AmountSat != null ? true : state.receiveExactAmount,
             amount: bip21AmountText ?? state.amount,
-            exactInputAmountSat: bip21AmountSat,
+            exactInputAmountSat: bip21AmountSat ?? state.exactInputAmountSat,
           ),
         );
       } catch (e) {

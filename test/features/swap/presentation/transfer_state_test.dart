@@ -10,12 +10,6 @@ class _LiquidWallet extends Fake implements Wallet {
 
 void main() {
   group('TransferState input currencies', () {
-    test('exposes bitcoin units before available fiat currencies', () {
-      const state = TransferState(fiatCurrencyCodes: ['CAD', 'USD']);
-
-      expect(state.inputAmountCurrencyCodes, ['BTC', 'sats', 'CAD', 'USD']);
-    });
-
     test('converts sats input to canonical satoshis', () {
       const state = TransferState(
         inputAmountCurrencyCode: 'sats',
@@ -96,7 +90,6 @@ void main() {
           maxAmountSat: 12345,
           amount: '12.34',
           exactInputAmountSat: 12345,
-          useMaxAmount: true,
         );
 
         expect(state.maxAmountInput, '12.34');

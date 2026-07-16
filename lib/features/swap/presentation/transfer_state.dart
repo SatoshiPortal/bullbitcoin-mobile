@@ -16,7 +16,6 @@ sealed class TransferState with _$TransferState {
     Wallet? fromWallet,
     Wallet? toWallet,
     int? maxAmountSat,
-    @Default(false) bool useMaxAmount,
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
@@ -38,6 +37,8 @@ sealed class TransferState with _$TransferState {
     String? externalAddressError,
     @Default(true) bool receiveExactAmount,
     @Default('') String amount,
+    // Preserves programmatic Max/BIP21 satoshis when fiat display rounds to
+    // two decimals. Manual edits clear it and are converted from [amount].
     int? exactInputAmountSat,
     String? receiveAddress,
     @Default(true) bool replaceByFee,
@@ -65,16 +66,6 @@ sealed class TransferState with _$TransferState {
   String get displayToCurrencyCode {
     return '${toWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
   }
-
-  String get displayFromCurrencyCode {
-    return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
-  }
-
-  List<String> get inputAmountCurrencyCodes => [
-    BitcoinUnit.btc.code,
-    BitcoinUnit.sats.code,
-    ...fiatCurrencyCodes,
-  ];
 
   bool get isInputAmountFiat => ![
     BitcoinUnit.btc.code,
@@ -222,7 +213,7 @@ sealed class TransferState with _$TransferState {
   /// incompatible with guaranteeing an exact receivable amount.
   bool get isMaxSelected {
     final max = maxAmountSat;
-    return max != null && max > 0 && (useMaxAmount || inputAmountSat == max);
+    return max != null && max > 0 && inputAmountSat == max;
   }
 
   int get selectedUtxoTotalSat {
