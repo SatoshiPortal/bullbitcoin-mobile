@@ -62,6 +62,20 @@ class PdkPayjoinDatasource {
 
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
 
+  /// Stops the directory polling of one session — both the receiver
+  /// request poll and the sender proposal poll, whichever exists for
+  /// [payjoinId]. Called by the repository the moment a session resolves
+  /// through a path the poll itself can't see (the plain-broadcast fallback
+  /// landing on-chain): the poll only self-cancels on request/proposal
+  /// found or expiry, so without this it kept firing until expiry and then
+  /// raised a stale expired event for an already-completed session
+  /// (observed live: a redundant second broadcast of the original
+  /// transaction a minute after the session had already resolved).
+  void stopPolling(String payjoinId) {
+    _receiverTimers.remove(payjoinId)?.cancel();
+    _senderTimers.remove(payjoinId)?.cancel();
+  }
+
   /// Cancels every polling timer and closes the event streams. Individual
   /// poll timers self-cancel on success/expiry, but a session that never
   /// resolves (a relay permanently down) would otherwise leave a

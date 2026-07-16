@@ -710,6 +710,99 @@ void main() {
       expect(emitted.single.isExpired, isTrue);
       await sub.cancel();
     });
+
+    test('bails out when the persisted row already completed — an expiry '
+        'firing after a fallback resolution must not re-broadcast the '
+        'original transaction', () async {
+      // The poll's own stale copy says unfinished, but the row has since
+      // been completed by _onOriginalTransactionSeen (the counterparty's
+      // fallback broadcast landed on-chain). Observed live: the sender's
+      // poll expired a minute later and broadcast the original a second
+      // time.
+      final staleCopy = _senderModel(originalTxId: 'sender-orig-txid');
+      final completedRow = staleCopy.copyWith(isCompleted: true, txId: null);
+      when(
+        () => local.fetchSender(staleCopy.uri),
+      ).thenAnswer((_) async => completedRow);
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      expiredController.add(staleCopy.copyWith(isExpired: true));
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+      verifyNever(() => local.update(any()));
+      expect(emitted, isEmpty);
+      await sub.cancel();
+    });
+
+    test('bails out when the session row no longer exists', () async {
+      final staleCopy = _senderModel(originalTxId: 'sender-orig-txid');
+      when(
+        () => local.fetchSender(staleCopy.uri),
+      ).thenAnswer((_) async => null);
+
+      final emitted = <Payjoin>[];
+      final sub = repository.payjoinStream.listen(emitted.add);
+
+      expiredController.add(staleCopy.copyWith(isExpired: true));
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(
+        () => serversPort.runWithFallback<void>(
+          network: any(named: 'network'),
+          operation: any(named: 'operation'),
+        ),
+      );
+      expect(emitted, isEmpty);
+      await sub.cancel();
+    });
+
+    test(
+      'decides on the persisted row, not the stale event copy: a '
+      'proposal persisted since the copy was captured suppresses the '
+      'original-transaction fallback and keeps the proposal intact',
+      () async {
+        final staleCopy = _senderModel(originalTxId: 'sender-orig-txid');
+        final freshRow = staleCopy.copyWith(
+          proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        );
+        when(
+          () => local.fetchSender(staleCopy.uri),
+        ).thenAnswer((_) async => freshRow);
+
+        final emitted = <Payjoin>[];
+        final sub = repository.payjoinStream.listen(emitted.add);
+
+        expiredController.add(staleCopy.copyWith(isExpired: true));
+        await Future<void>.delayed(Duration.zero);
+
+        // Once a proposal is out the sender owns broadcasting the payjoin
+        // transaction — no original fallback.
+        verifyNever(
+          () => serversPort.runWithFallback<void>(
+            network: any(named: 'network'),
+            operation: any(named: 'operation'),
+          ),
+        );
+        // The expired marker is persisted on the FRESH row: persisting the
+        // stale copy would clobber the proposal (insertOnConflictUpdate
+        // replaces the whole row).
+        final persisted =
+            verify(() => local.update(captureAny())).captured.single
+                as PayjoinSenderModel;
+        expect(persisted.proposalPsbt, 'cHNidP9wcm9wb3NhbA==');
+        expect(persisted.isExpired, isTrue);
+        expect(emitted.single.isExpired, isTrue);
+        await sub.cancel();
+      },
+    );
   });
 
   group('_processPayjoinProposal terminal emission on broadcast failure '
@@ -1014,6 +1107,10 @@ void main() {
         when(
           () => local.fetchAll(onlyUnfinished: true),
         ).thenAnswer((_) async => [bad, ok]);
+        // _processExpiredPayjoin re-fetches the persisted row before acting
+        //  (stale-copy guard) — serve each session's own row back.
+        when(() => local.fetchReceiver('bad')).thenAnswer((_) async => bad);
+        when(() => local.fetchReceiver('ok')).thenAnswer((_) async => ok);
         // "bad"'s persist throws (e.g. a transient DB failure); "ok"'s must
         //  still go through despite "bad" throwing first in the loop.
         when(
@@ -1285,6 +1382,113 @@ void main() {
 
         expect(emitted, hasLength(1));
         expect(emitted.single.isCompleted, isTrue);
+      });
+    });
+  });
+
+  group('post-broadcast visibility watch (own fallback broadcast)', () {
+    // After WE broadcast the original transaction, the single unawaited
+    // wallet sync can be throttled by the sync coordinator or race the
+    // broadcast — observed live: a receiver's below-minimum fallback stayed
+    // invisible in its own wallet until several manual resyncs. The
+    // original-tx watch re-armed by _broadcastOriginalTransaction must keep
+    // forcing DIRECT sync'd lookups until the tx is visible, then tear
+    // itself down without emitting duplicate events.
+    late _MockWalletRepository walletRepo;
+    late _MockWalletTransactionRepository walletTxRepo;
+    late StreamController<Wallet> syncController;
+
+    setUp(() {
+      walletRepo = _MockWalletRepository();
+      walletTxRepo = _MockWalletTransactionRepository();
+      syncController = StreamController<Wallet>.broadcast();
+      when(
+        () => walletRepo.walletSyncFinishedStream,
+      ).thenAnswer((_) => syncController.stream);
+    });
+
+    tearDown(() => syncController.close());
+
+    test('keeps forcing sync\'d lookups until the broadcast original is '
+        'visible in the wallet, then tears down', () {
+      fakeAsync((async) {
+        var txSeen = false;
+        when(
+          () => walletTxRepo.getWalletTransaction(
+            'orig-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).thenAnswer(
+          (_) async =>
+              txSeen ? _testWalletTx(txId: 'orig-txid', walletId: 'w1') : null,
+        );
+
+        // The row is re-fetched several times along the way (the manual
+        // guard, the broadcast itself, and the visibility watch's
+        // completion handler) — serve back whatever was last persisted so
+        // the watch sees the completed row once the broadcast stored it.
+        var row = _receiverModel(
+          id: 'pj1',
+          walletId: 'w1',
+          originalTxId: 'orig-txid',
+          expireAfterSec: 9999999999,
+        );
+        when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => row);
+        when(() => local.update(any())).thenAnswer((invocation) async {
+          row = invocation.positionalArguments.single as PayjoinReceiverModel;
+        });
+
+        final repo = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          walletMetadataDatasource: _MockWalletMetadataDatasource(),
+          seedDatasource: _MockSeedDatasource(),
+          bdkWalletDatasource: _MockBdkWalletDatasource(),
+          blockchainDatasource: blockchain,
+          serversPort: serversPort,
+          walletRepository: () => walletRepo,
+          walletTransactionRepository: () => walletTxRepo,
+          settingsRepository: _MockSettingsRepository(),
+          labelsFacade: () => labels,
+        );
+
+        final emitted = <Payjoin>[];
+        repo.payjoinStream.listen(emitted.add);
+
+        unawaited(repo.tryBroadcastOriginalTransaction(row.toEntity()));
+        async.flushMicrotasks();
+
+        // First poll: the wallet doesn't see the tx yet (throttled sync /
+        // raced broadcast).
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay);
+
+        // The next backed-off poll finds it — no walletSyncFinishedStream
+        // event ever fired in this test, so only the forced lookups can
+        // have made it visible.
+        txSeen = true;
+        async.elapse(PayjoinRepositoryImpl.broadcastPollInitialDelay * 2);
+        async.flushMicrotasks();
+
+        verify(
+          () => walletTxRepo.getWalletTransaction(
+            'orig-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        ).called(2);
+
+        // Pure teardown for the already-persisted session: no duplicate
+        // terminal event, and no further forced lookups ever again.
+        expect(emitted, isEmpty);
+        async.elapse(const Duration(hours: 2));
+        verifyNever(
+          () => walletTxRepo.getWalletTransaction(
+            'orig-txid',
+            walletId: 'w1',
+            sync: true,
+          ),
+        );
       });
     });
   });
