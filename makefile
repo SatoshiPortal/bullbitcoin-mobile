@@ -49,10 +49,10 @@ fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
 
-# Formatting gate scoped to git-tracked source via git ls-files: untracked generated code never trips it, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
+# Formatting gate scoped to git-tracked source via git ls-files: untracked generated code never trips it, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. Batch formatter inputs so generated source cannot make one exec exceed the argument limit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
 format-check:
 	@echo "🎨 dart format should have nothing to change"
-	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | xargs -r fvm dart format --output=none --set-exit-if-changed'
+	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | xargs -r -n 500 fvm dart format --output=none --set-exit-if-changed'
 
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"

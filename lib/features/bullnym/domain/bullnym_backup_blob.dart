@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
+
+final _backupHashPattern = RegExp(r'^[0-9a-f]{64}$');
 
 enum BullnymBackupStream {
   keychainManifest('keychain_manifest'),
@@ -26,32 +27,34 @@ final class BullnymBackupHead {
     required this.ciphertextSha256,
     required this.updatedAtSecs,
   }) {
-    if (generation < 0) {
-      throw const BullnymException.invalidServerResponse(
-        diagnosticReason: 'Backup generation must be non-negative',
-      );
-    }
-    if (found && generation == 0) {
-      throw const BullnymException.invalidServerResponse(
-        diagnosticReason: 'Found backup generation must be positive',
-      );
+    if (generation < 0 || (found && generation == 0)) {
+      throw ArgumentError.value(generation, 'generation');
     }
     if (found &&
         (etag == null ||
             ciphertext == null ||
             ciphertextSha256 == null ||
             updatedAtSecs == null)) {
-      throw const BullnymException.invalidServerResponse(
-        diagnosticReason: 'Found backup head is incomplete',
-      );
+      throw ArgumentError('Found backup head is incomplete');
     }
     if (!found &&
         (ciphertext != null ||
             ciphertextSha256 != null ||
             (generation == 0 ? etag != null : etag == null))) {
-      throw const BullnymException.invalidServerResponse(
-        diagnosticReason: 'Absent backup head is inconsistent',
-      );
+      throw ArgumentError('Absent backup head is inconsistent');
+    }
+    final etagValue = etag;
+    if (etagValue != null && !_backupHashPattern.hasMatch(etagValue)) {
+      throw ArgumentError.value(etagValue, 'etag');
+    }
+    final ciphertextHash = ciphertextSha256;
+    if (ciphertextHash != null &&
+        !_backupHashPattern.hasMatch(ciphertextHash)) {
+      throw ArgumentError.value(ciphertextHash, 'ciphertextSha256');
+    }
+    final updatedAt = updatedAtSecs;
+    if (updatedAt != null && updatedAt < 0) {
+      throw ArgumentError.value(updatedAt, 'updatedAtSecs');
     }
   }
 

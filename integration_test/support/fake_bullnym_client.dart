@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
@@ -153,6 +152,86 @@ class FakeBullnymClient implements BullnymClientPort {
   int get totalDonationWriteCalls =>
       saveDonationPageCalls.length + archiveDonationPageCalls.length;
 
+  @override
+  Future<Result<BullnymBackupHead, BullnymFailure>> fetchBackup(
+    BullnymBackupFetchRequest request,
+  ) async {
+    if (mode == FakeBullnymMode.serverUnreachable) {
+      return Err(_unavailable());
+    }
+    return Ok(
+      _backups[_backupKey(request.stream, request.npubHex)] ??
+          BullnymBackupHead.absent(generation: 0, etag: null),
+    );
+  }
+
+  @override
+  Future<Result<BullnymBackupStoreReceipt, BullnymFailure>> storeBackup(
+    BullnymBackupStoreRequest request,
+  ) async {
+    if (mode == FakeBullnymMode.serverUnreachable) {
+      return Err(_unavailable());
+    }
+    final key = _backupKey(request.stream, request.npubHex);
+    final current = _backups[key];
+    if (request.expectedEtag != current?.etag) return Err(_conflict());
+    final computed = computeWalletBackupEtag(
+      stream: request.stream,
+      npubHex: request.npubHex,
+      generation: request.generation,
+      ciphertextSha256: request.ciphertextSha256,
+    );
+    final String etag;
+    switch (computed) {
+      case Ok(:final value):
+        etag = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    _backups[key] = BullnymBackupHead.present(
+      generation: request.generation,
+      etag: etag,
+      ciphertext: request.ciphertext,
+      ciphertextSha256: request.ciphertextSha256,
+      updatedAtSecs: request.timestamp,
+    );
+    return Ok(
+      BullnymBackupStoreReceipt(generation: request.generation, etag: etag),
+    );
+  }
+
+  @override
+  Future<Result<BullnymBackupDeleteReceipt, BullnymFailure>> deleteBackup(
+    BullnymBackupDeleteRequest request,
+  ) async {
+    if (mode == FakeBullnymMode.serverUnreachable) {
+      return Err(_unavailable());
+    }
+    final key = _backupKey(request.stream, request.npubHex);
+    final current = _backups[key];
+    if (request.expectedEtag != current?.etag) return Err(_conflict());
+    final computed = computeWalletBackupEtag(
+      stream: request.stream,
+      npubHex: request.npubHex,
+      generation: request.generation,
+      ciphertextSha256: '',
+    );
+    final String etag;
+    switch (computed) {
+      case Ok(:final value):
+        etag = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    _backups[key] = BullnymBackupHead.absent(
+      generation: request.generation,
+      etag: etag,
+    );
+    return Ok(
+      BullnymBackupDeleteReceipt(generation: request.generation, etag: etag),
+    );
+  }
+
   String get _lightningAddress => '$nym@example.invalid';
 
   String _backupKey(BullnymBackupStream stream, String npubHex) =>
@@ -272,66 +351,6 @@ class FakeBullnymClient implements BullnymClientPort {
           ),
         );
     }
-  }
-
-  @override
-  Future<BullnymBackupHead> fetchBackup(
-    BullnymBackupFetchRequest request,
-  ) async {
-    if (mode == FakeBullnymMode.serverUnreachable) throw _unavailable();
-    return _backups[_backupKey(request.stream, request.npubHex)] ??
-        BullnymBackupHead.absent(generation: 0, etag: null);
-  }
-
-  @override
-  Future<BullnymBackupStoreReceipt> storeBackup(
-    BullnymBackupStoreRequest request,
-  ) async {
-    if (mode == FakeBullnymMode.serverUnreachable) throw _unavailable();
-    final key = _backupKey(request.stream, request.npubHex);
-    final current = _backups[key];
-    if (request.expectedEtag != current?.etag) throw _conflict();
-    final etag = computeWalletBackupEtag(
-      stream: request.stream,
-      npubHex: request.npubHex,
-      generation: request.generation,
-      ciphertextSha256: request.ciphertextSha256,
-    );
-    _backups[key] = BullnymBackupHead.present(
-      generation: request.generation,
-      etag: etag,
-      ciphertext: request.ciphertext,
-      ciphertextSha256: request.ciphertextSha256,
-      updatedAtSecs: request.timestamp,
-    );
-    return BullnymBackupStoreReceipt(
-      generation: request.generation,
-      etag: etag,
-    );
-  }
-
-  @override
-  Future<BullnymBackupDeleteReceipt> deleteBackup(
-    BullnymBackupDeleteRequest request,
-  ) async {
-    if (mode == FakeBullnymMode.serverUnreachable) throw _unavailable();
-    final key = _backupKey(request.stream, request.npubHex);
-    final current = _backups[key];
-    if (request.expectedEtag != current?.etag) throw _conflict();
-    final etag = computeWalletBackupEtag(
-      stream: request.stream,
-      npubHex: request.npubHex,
-      generation: request.generation,
-      ciphertextSha256: '',
-    );
-    _backups[key] = BullnymBackupHead.absent(
-      generation: request.generation,
-      etag: etag,
-    );
-    return BullnymBackupDeleteReceipt(
-      generation: request.generation,
-      etag: etag,
-    );
   }
 
   @override
@@ -815,17 +834,16 @@ class FakeBullnymClient implements BullnymClientPort {
         retryable: true,
       );
 
-  BullnymException _unavailable() =>
-      const BullnymException.serverRejectedRequest(
-        code: 'ServiceUnavailable',
-        diagnosticReason: 'fake service unavailable',
-        statusCode: 503,
-        retryable: true,
-      );
+  BullnymFailure _unavailable() => const BullnymFailure.serverRejectedRequest(
+    code: 'ServiceUnavailable',
+    logMessage: 'fake service unavailable',
+    statusCode: 503,
+    retryable: true,
+  );
 
-  BullnymException _conflict() => const BullnymException.serverRejectedRequest(
-    code: 'BackupConflict',
-    diagnosticReason: 'backup etag mismatch',
+  BullnymFailure _conflict() => const BullnymFailure.serverRejectedRequest(
+    code: 'BackupHeadConflict',
+    logMessage: 'backup etag mismatch',
     statusCode: 409,
     retryable: false,
   );

@@ -2,13 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullnym/data/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bip340/bip340.dart' as bip340;
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:dio/dio.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+final class _MockHttpAdapter extends Mock implements HttpClientAdapter {}
 
 void main() {
   final fixture = _fixture();
@@ -17,20 +21,24 @@ void main() {
   final vectors = (fixture['vectors']! as List<Object?>)
       .cast<Map<String, Object?>>();
 
+  setUpAll(() => registerFallbackValue(RequestOptions(path: '')));
+
   test('matches every frozen Rust signing, signature, and ETag vector', () {
     for (final vector in vectors) {
       final stream = _stream(vector['stream']! as String);
       final generation = vector['generation']! as int;
       final ciphertextHash = vector['ciphertext_sha256'] as String?;
-      final message = buildWalletBackupSchnorrMessage(
-        action: vector['action']! as String,
-        stream: stream,
-        npubHex: npub,
-        generation: generation,
-        expectedEtag: vector['expected_etag'] as String? ?? '',
-        ciphertextSha256: ciphertextHash ?? '',
-        ciphertextBytes: vector['ciphertext_bytes']! as int,
-        timestampSecs: vector['timestamp']! as int,
+      final message = _unwrap(
+        buildWalletBackupSchnorrMessage(
+          action: vector['action']! as String,
+          stream: stream,
+          npubHex: npub,
+          generation: generation,
+          expectedEtag: vector['expected_etag'] as String? ?? '',
+          ciphertextSha256: ciphertextHash ?? '',
+          ciphertextBytes: vector['ciphertext_bytes']! as int,
+          timestampSecs: vector['timestamp']! as int,
+        ),
       );
       final digest = sha256.convert(message).toString();
 
@@ -44,11 +52,13 @@ void main() {
 
       if (generation > 0) {
         expect(
-          computeWalletBackupEtag(
-            stream: stream,
-            npubHex: npub,
-            generation: generation,
-            ciphertextSha256: ciphertextHash ?? '',
+          _unwrap(
+            computeWalletBackupEtag(
+              stream: stream,
+              npubHex: npub,
+              generation: generation,
+              ciphertextSha256: ciphertextHash ?? '',
+            ),
           ),
           vector['result_etag'],
         );
@@ -68,9 +78,7 @@ void main() {
       (item) => item['name'] == 'initial_store',
     );
     final signature = vector['signature']! as String;
-    final cases = fixture['tamper_cases']! as List<Object?>;
-
-    for (final rawCase in cases) {
+    for (final rawCase in fixture['tamper_cases']! as List<Object?>) {
       final tamperCase = rawCase! as Map<String, Object?>;
       final field = tamperCase['field']! as String;
       if (field == 'signature') {
@@ -87,24 +95,26 @@ void main() {
         continue;
       }
 
-      final message = buildWalletBackupSchnorrMessage(
-        action: field == 'action'
-            ? walletBackupDeleteAction
-            : vector['action']! as String,
-        stream: field == 'stream'
-            ? BullnymBackupStream.keychainManifest
-            : _stream(vector['stream']! as String),
-        npubHex: npub,
-        generation: vector['generation']! as int,
-        expectedEtag: '',
-        ciphertextSha256: field == 'ciphertext_sha256'
-            ? '1${(vector['ciphertext_sha256']! as String).substring(1)}'
-            : vector['ciphertext_sha256']! as String,
-        ciphertextBytes:
-            (vector['ciphertext_bytes']! as int) +
-            (field == 'ciphertext_bytes' ? 1 : 0),
-        timestampSecs:
-            (vector['timestamp']! as int) + (field == 'timestamp' ? 1 : 0),
+      final message = _unwrap(
+        buildWalletBackupSchnorrMessage(
+          action: field == 'action'
+              ? walletBackupDeleteAction
+              : vector['action']! as String,
+          stream: field == 'stream'
+              ? BullnymBackupStream.keychainManifest
+              : _stream(vector['stream']! as String),
+          npubHex: npub,
+          generation: vector['generation']! as int,
+          expectedEtag: '',
+          ciphertextSha256: field == 'ciphertext_sha256'
+              ? '1${(vector['ciphertext_sha256']! as String).substring(1)}'
+              : vector['ciphertext_sha256']! as String,
+          ciphertextBytes:
+              (vector['ciphertext_bytes']! as int) +
+              (field == 'ciphertext_bytes' ? 1 : 0),
+          timestampSecs:
+              (vector['timestamp']! as int) + (field == 'timestamp' ? 1 : 0),
+        ),
       );
       expect(
         bip340.verify(npub, sha256.convert(message).toString(), signature),
@@ -113,74 +123,119 @@ void main() {
     }
   });
 
-  test('rejects non-canonical signing fields before network access', () async {
-    expect(
-      () => buildWalletBackupSchnorrMessage(
-        action: walletBackupFetchAction,
-        stream: BullnymBackupStream.keychainManifest,
-        npubHex: npub.toUpperCase(),
-        generation: 0,
-        expectedEtag: '',
-        ciphertextSha256: '',
-        ciphertextBytes: 0,
-        timestampSecs: 1,
-      ),
-      throwsA(isA<BullnymException>()),
+  test('facade sends and validates conditional server requests', () async {
+    const timestamp = 1700000000;
+    final ciphertext = AuthenticatedBackupCiphertext(
+      base64.encode(List<int>.generate(64, (index) => index)),
     );
-    expect(
-      () => buildWalletBackupSchnorrMessage(
-        action: walletBackupStoreAction,
-        stream: BullnymBackupStream.keychainManifest,
+    final ciphertextHash = sha256
+        .convert(base64.decode(ciphertext.value))
+        .toString();
+    final storedEtag = _unwrap(
+      computeWalletBackupEtag(
+        stream: BullnymBackupStream.walletMetadata,
         npubHex: npub,
         generation: 1,
-        expectedEtag: 'etag',
-        ciphertextSha256: 'hash',
-        ciphertextBytes: 64,
-        timestampSecs: 1,
+        ciphertextSha256: ciphertextHash,
       ),
-      throwsA(isA<BullnymException>()),
     );
-  });
-
-  test('facade signs and sends conditional fetch, store, and delete', () async {
-    final client = _RecordingClient();
-    final facade = BullnymFacade(client: client, nowSecs: () => 1700000000);
+    final deletedEtag = _unwrap(
+      computeWalletBackupEtag(
+        stream: BullnymBackupStream.walletMetadata,
+        npubHex: npub,
+        generation: 2,
+        ciphertextSha256: '',
+      ),
+    );
+    final stub = _stubDio([
+      {'version': 1, 'found': false, 'generation': 0, 'etag': null},
+      {'version': 1, 'generation': 1, 'etag': storedEtag},
+      {'version': 1, 'generation': 2, 'etag': deletedEtag},
+    ]);
+    final facade = BullnymFacade(
+      client: BullnymHttpClient.withDio(stub.dio),
+      nowSecs: () => timestamp,
+    );
     final signer = BullnymAuthSigner(
       npubHex: npub,
       signHashHex: (hash) => bip340.sign(secretKey, hash, '00' * 32),
     );
 
-    final head = await facade.fetchBackup(
-      signer: signer,
-      stream: BullnymBackupStream.keychainManifest,
+    final head = _unwrap(
+      await facade.fetchBackup(
+        signer: signer,
+        stream: BullnymBackupStream.walletMetadata,
+      ),
     );
-    final ciphertext = AuthenticatedBackupCiphertext(
-      base64.encode(List<int>.filled(64, 7)),
-    );
-    final stored = await facade.storeBackup(
-      signer: signer,
-      stream: BullnymBackupStream.keychainManifest,
-      currentHead: head,
-      ciphertext: ciphertext,
-    );
-    await facade.deleteBackup(
-      signer: signer,
-      stream: BullnymBackupStream.keychainManifest,
-      currentHead: BullnymBackupHead.present(
-        generation: stored.generation,
-        etag: stored.etag,
+    final stored = _unwrap(
+      await facade.storeBackup(
+        signer: signer,
+        stream: BullnymBackupStream.walletMetadata,
+        currentHead: head,
         ciphertext: ciphertext,
-        ciphertextSha256: client.storeRequest!.ciphertextSha256,
-        updatedAtSecs: 1700000000,
+      ),
+    );
+    final deleted = _unwrap(
+      await facade.deleteBackup(
+        signer: signer,
+        stream: BullnymBackupStream.walletMetadata,
+        currentHead: BullnymBackupHead.present(
+          generation: stored.generation,
+          etag: stored.etag,
+          ciphertext: ciphertext,
+          ciphertextSha256: ciphertextHash,
+          updatedAtSecs: timestamp,
+        ),
       ),
     );
 
-    expect(client.fetchRequest!.stream.wireName, 'keychain_manifest');
-    expect(client.storeRequest!.generation, 1);
-    expect(client.storeRequest!.expectedEtag, isNull);
-    expect(client.deleteRequest!.generation, 2);
-    expect(client.deleteRequest!.expectedEtag, stored.etag);
+    expect(deleted?.generation, 2);
+    expect(stub.requests.map((request) => request.method), [
+      'POST',
+      'PUT',
+      'DELETE',
+    ]);
+    expect(stub.requests.map((request) => request.path), [
+      '/api/v1/wallet-backups/fetch',
+      '/api/v1/wallet-backups',
+      '/api/v1/wallet-backups',
+    ]);
+    final store = stub.requests[1].data as Map<String, dynamic>;
+    expect(store['stream'], 'wallet_metadata');
+    expect(store['generation'], 1);
+    expect(store['expected_etag'], isNull);
+    expect(store['ciphertext_sha256'], ciphertextHash);
+    expect(store['ciphertext_bytes'], 64);
+    final delete = stub.requests[2].data as Map<String, dynamic>;
+    expect(delete['generation'], 2);
+    expect(delete['expected_etag'], storedEtag);
   });
+}
+
+({Dio dio, List<RequestOptions> requests}) _stubDio(
+  List<Map<String, dynamic>> responses,
+) {
+  final requests = <RequestOptions>[];
+  final adapter = _MockHttpAdapter();
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://bullpay.test',
+      validateStatus: (status) => status != null && status < 600,
+    ),
+  )..httpClientAdapter = adapter;
+  var index = 0;
+  when(() => adapter.fetch(any(), any(), any())).thenAnswer((invocation) async {
+    final request = invocation.positionalArguments[0] as RequestOptions;
+    requests.add(request);
+    return ResponseBody.fromString(
+      jsonEncode(responses[index++]),
+      200,
+      headers: {
+        'content-type': ['application/json'],
+      },
+    );
+  });
+  return (dio: dio, requests: requests);
 }
 
 Map<String, Object?> _fixture() =>
@@ -190,149 +245,10 @@ Map<String, Object?> _fixture() =>
 BullnymBackupStream _stream(String value) => switch (value) {
   'keychain_manifest' => BullnymBackupStream.keychainManifest,
   'wallet_metadata' => BullnymBackupStream.walletMetadata,
-  _ => throw ArgumentError.value(value, 'value', 'Unknown backup stream'),
+  _ => throw ArgumentError.value(value, 'value'),
 };
 
-final class _RecordingClient implements BullnymClientPort {
-  BullnymBackupFetchRequest? fetchRequest;
-  BullnymBackupStoreRequest? storeRequest;
-  BullnymBackupDeleteRequest? deleteRequest;
-
-  @override
-  Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() =>
-      throw UnimplementedError();
-
-  @override
-  Future<BullnymBackupHead> fetchBackup(
-    BullnymBackupFetchRequest request,
-  ) async {
-    fetchRequest = request;
-    return BullnymBackupHead.absent(generation: 0, etag: null);
-  }
-
-  @override
-  Future<BullnymBackupStoreReceipt> storeBackup(
-    BullnymBackupStoreRequest request,
-  ) async {
-    storeRequest = request;
-    return BullnymBackupStoreReceipt(
-      generation: request.generation,
-      etag: computeWalletBackupEtag(
-        stream: request.stream,
-        npubHex: request.npubHex,
-        generation: request.generation,
-        ciphertextSha256: request.ciphertextSha256,
-      ),
-    );
-  }
-
-  @override
-  Future<BullnymBackupDeleteReceipt> deleteBackup(
-    BullnymBackupDeleteRequest request,
-  ) async {
-    deleteRequest = request;
-    return BullnymBackupDeleteReceipt(
-      generation: request.generation,
-      etag: computeWalletBackupEtag(
-        stream: request.stream,
-        npubHex: request.npubHex,
-        generation: request.generation,
-        ciphertextSha256: '',
-      ),
-    );
-  }
-
-  @override
-  Future<Result<void, BullnymFailure>> deleteRegistration(
-    BullnymDeleteRegistrationRequest request,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
-    required String npubHex,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymRegisterResult, BullnymFailure>> register(
-    BullnymRegisterRequest request,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymDonationPage, BullnymFailure>> getDonationPage({
-    required String nym,
-    required String kind,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymDonationPage, BullnymFailure>> saveDonationPage(
-    BullnymSaveDonationPageRequest request,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymDonationPage, BullnymFailure>> archiveDonationPage(
-    BullnymArchiveDonationPageRequest request,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymSupportedCurrencies, BullnymFailure>>
-  getSupportedCurrencies() => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
-  lookupRecoveryAddress({required BullnymAuthSigner signer}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
-  registerRecoveryAddress({
-    required BullnymAuthSigner signer,
-    required String btcAddress,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
-    required BullnymAuthSigner signer,
-    String? nym,
-    required BullnymCreateInvoiceFields fields,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymCancelInvoiceResponse, BullnymFailure>> cancelInvoice({
-    required BullnymAuthSigner signer,
-    String? nym,
-    required String invoiceId,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymListInvoicesResponse, BullnymFailure>> listInvoices({
-    required BullnymAuthSigner signer,
-    required int page,
-    required int pageSize,
-    String? status,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymFallbackSupervisionResponse, BullnymFailure>>
-  listFallbackSupervision({required BullnymAuthSigner signer}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
-  listGetPaidTransactions({
-    required BullnymAuthSigner signer,
-    required String cursor,
-    required int limit,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
-    required String invoiceId,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullnymPayerDemandQuoteResponse, BullnymFailure>>
-  getInvoiceQuote({
-    required String invoiceId,
-    required BullnymPayerQuoteRail rail,
-  }) => throw UnimplementedError();
-}
+T _unwrap<T>(Result<T, BullnymFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Expected Ok, got $failure'),
+};

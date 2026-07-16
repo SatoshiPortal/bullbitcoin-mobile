@@ -236,6 +236,30 @@ class _FakeBullnymFacade implements BullnymFacade {
   BullnymFailure? registerError;
 
   @override
+  Future<Result<BullnymBackupHead, BullnymFailure>> fetchBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+  }) async =>
+      const Err(BullnymFailure.unexpected('Backup fake not configured'));
+
+  @override
+  Future<Result<BullnymBackupStoreReceipt, BullnymFailure>> storeBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+    required BullnymBackupHead currentHead,
+    required AuthenticatedBackupCiphertext ciphertext,
+  }) async =>
+      const Err(BullnymFailure.unexpected('Backup fake not configured'));
+
+  @override
+  Future<Result<BullnymBackupDeleteReceipt?, BullnymFailure>> deleteBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+    required BullnymBackupHead currentHead,
+  }) async =>
+      const Err(BullnymFailure.unexpected('Backup fake not configured'));
+
+  @override
   Future<Result<BullnymVersionInfo, BullnymFailure>> getVersion() async =>
       const Ok(
         BullnymVersionInfo(publicNamePolicy: bullnymPermanentNamesV1Policy),
@@ -278,27 +302,6 @@ class _FakeBullnymFacade implements BullnymFacade {
     lookupNpubHex = npubHex;
     return Ok(lookupResult);
   }
-
-  @override
-  Future<BullnymBackupHead> fetchBackup({
-    required BullnymAuthSigner signer,
-    required BullnymBackupStream stream,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<BullnymBackupStoreReceipt> storeBackup({
-    required BullnymAuthSigner signer,
-    required BullnymBackupStream stream,
-    required BullnymBackupHead currentHead,
-    required AuthenticatedBackupCiphertext ciphertext,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<BullnymBackupDeleteReceipt?> deleteBackup({
-    required BullnymAuthSigner signer,
-    required BullnymBackupStream stream,
-    required BullnymBackupHead currentHead,
-  }) => throw UnimplementedError();
 
   // Donation-page surface — not exercised by the Lightning Address usecases.
   @override

@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
+import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
@@ -14,6 +14,21 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class BullnymClientPort {
+  @useResult
+  Future<Result<BullnymBackupHead, BullnymFailure>> fetchBackup(
+    BullnymBackupFetchRequest request,
+  );
+
+  @useResult
+  Future<Result<BullnymBackupStoreReceipt, BullnymFailure>> storeBackup(
+    BullnymBackupStoreRequest request,
+  );
+
+  @useResult
+  Future<Result<BullnymBackupDeleteReceipt, BullnymFailure>> deleteBackup(
+    BullnymBackupDeleteRequest request,
+  );
+
   /// Public capability read. Missing/unknown policy is a valid old-server
   /// response and leaves permanent-name behavior disabled.
   @useResult
@@ -33,16 +48,6 @@ abstract interface class BullnymClientPort {
   Future<Result<BullnymLookupResult, BullnymFailure>> lookupRegistration({
     required String npubHex,
   });
-
-  Future<BullnymBackupHead> fetchBackup(BullnymBackupFetchRequest request);
-
-  Future<BullnymBackupStoreReceipt> storeBackup(
-    BullnymBackupStoreRequest request,
-  );
-
-  Future<BullnymBackupDeleteReceipt> deleteBackup(
-    BullnymBackupDeleteRequest request,
-  );
 
   /// Public read of the current donation-page row for `nym`/`kind`. Returns a
   /// server-rejected failure with code `DonationPageNotFound` when absent.
@@ -147,7 +152,7 @@ abstract interface class BullnymClientPort {
   });
 }
 
-class BullnymBackupFetchRequest {
+final class BullnymBackupFetchRequest {
   final BullnymBackupStream stream;
   final String npubHex;
   final String signatureHex;
@@ -161,7 +166,7 @@ class BullnymBackupFetchRequest {
   });
 }
 
-class BullnymBackupStoreRequest {
+final class BullnymBackupStoreRequest {
   final BullnymBackupStream stream;
   final String npubHex;
   final int generation;
@@ -183,11 +188,11 @@ class BullnymBackupStoreRequest {
   });
 }
 
-class BullnymBackupDeleteRequest {
+final class BullnymBackupDeleteRequest {
   final BullnymBackupStream stream;
   final String npubHex;
   final int generation;
-  final String? expectedEtag;
+  final String expectedEtag;
   final String signatureHex;
   final int timestamp;
 

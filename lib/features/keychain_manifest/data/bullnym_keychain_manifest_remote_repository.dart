@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_remote_backup.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_remote_repository.dart';
+import 'package:crypto/crypto.dart';
 
 final class BullnymKeychainManifestRemoteRepository
     implements KeychainManifestRemoteRepository {
@@ -21,10 +25,14 @@ final class BullnymKeychainManifestRemoteRepository
     KeychainManifestBackupSigner signer,
   ) async {
     try {
-      final head = await bullnym.fetchBackup(
+      final result = await bullnym.fetchBackup(
         signer: _adapt(signer),
         stream: BullnymBackupStream.keychainManifest,
       );
+      final head = switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw _mapBullnymFailure(failure),
+      };
       return KeychainManifestRemoteBackup(
         generation: head.generation,
         etag: head.etag,
@@ -32,8 +40,6 @@ final class BullnymKeychainManifestRemoteRepository
       );
     } on AuthenticatedBackupCipherException catch (error) {
       throw _mapCipherError(error);
-    } on BullnymException catch (error) {
-      throw _mapBullnymError(error);
     }
   }
 
@@ -44,20 +50,27 @@ final class BullnymKeychainManifestRemoteRepository
     required AuthenticatedBackupCiphertext ciphertext,
   }) async {
     try {
-      final receipt = await bullnym.storeBackup(
+      final result = await bullnym.storeBackup(
         signer: _adapt(signer),
         stream: BullnymBackupStream.keychainManifest,
         currentHead: _toBullnymHead(current),
         ciphertext: ciphertext,
       );
+      final receipt = switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw _mapBullnymFailure(failure),
+      };
       return KeychainManifestRemoteCheckpoint(
         generation: receipt.generation,
         etag: receipt.etag,
       );
     } on AuthenticatedBackupCipherException catch (error) {
       throw _mapCipherError(error);
-    } on BullnymException catch (error) {
-      throw _mapBullnymError(error);
+    } on ArgumentError catch (error) {
+      throw KeychainManifestRemoteException(
+        KeychainManifestRemoteFailureReason.invalid,
+        cause: error,
+      );
     }
   }
 
@@ -67,11 +80,15 @@ final class BullnymKeychainManifestRemoteRepository
     required KeychainManifestRemoteBackup current,
   }) async {
     try {
-      final receipt = await bullnym.deleteBackup(
+      final result = await bullnym.deleteBackup(
         signer: _adapt(signer),
         stream: BullnymBackupStream.keychainManifest,
         currentHead: _toBullnymHead(current),
       );
+      final receipt = switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw _mapBullnymFailure(failure),
+      };
       if (receipt == null) return null;
       return KeychainManifestRemoteCheckpoint(
         generation: receipt.generation,
@@ -79,8 +96,11 @@ final class BullnymKeychainManifestRemoteRepository
       );
     } on AuthenticatedBackupCipherException catch (error) {
       throw _mapCipherError(error);
-    } on BullnymException catch (error) {
-      throw _mapBullnymError(error);
+    } on ArgumentError catch (error) {
+      throw KeychainManifestRemoteException(
+        KeychainManifestRemoteFailureReason.invalid,
+        cause: error,
+      );
     }
   }
 
@@ -96,7 +116,9 @@ final class BullnymKeychainManifestRemoteRepository
       generation: current.generation,
       etag: current.etag!,
       ciphertext: ciphertext,
-      ciphertextSha256: '',
+      ciphertextSha256: sha256
+          .convert(base64.decode(ciphertext.value))
+          .toString(),
       updatedAtSecs: 0,
     );
   }
@@ -112,13 +134,16 @@ final class BullnymKeychainManifestRemoteRepository
     );
   }
 
-  KeychainManifestRemoteException _mapBullnymError(BullnymException error) {
-    final reason = switch (error.code) {
+  KeychainManifestRemoteException _mapBullnymFailure(BullnymFailure failure) {
+    final reason = switch (failure.code) {
       'BackupHeadConflict' => KeychainManifestRemoteFailureReason.headConflict,
       'BackupBlobTooLarge' => KeychainManifestRemoteFailureReason.tooLarge,
-      'InvalidServerResponse' => KeychainManifestRemoteFailureReason.invalid,
+      _
+          when failure.kind == BullnymFailureKind.invalidInput ||
+              failure.kind == BullnymFailureKind.invalidServerResponse =>
+        KeychainManifestRemoteFailureReason.invalid,
       _ => KeychainManifestRemoteFailureReason.unavailable,
     };
-    return KeychainManifestRemoteException(reason, cause: error);
+    return KeychainManifestRemoteException(reason, cause: failure);
   }
 }
