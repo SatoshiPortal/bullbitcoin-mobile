@@ -1004,16 +1004,24 @@ class TransactionDetailsTable extends StatelessWidget {
         if (payjoin != null) ...[
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinStatus,
-            displayValue:
-                payjoin.status == PayjoinStatus.completed ||
-                    (payjoin.status == PayjoinStatus.proposed &&
-                        walletTransaction != null)
-                ? context.loc.transactionDetailLabelPayjoinCompleted
-                : payjoin.status == PayjoinStatus.aborted
-                ? context.loc.transactionDetailLabelPayjoinAborted
-                : payjoin.isExpired
-                ? context.loc.transactionDetailLabelPayjoinExpired
-                : payjoin.status.name,
+            // displayPayjoinStatus, not the raw session status: derived from
+            // the broadcast transaction when it is already visible, so a
+            // stale session row (completion detection lagging on a
+            // background poll) can't surface an in-progress status for a
+            // payment that's already on-chain. Every case is localized —
+            // the raw enum name must never reach the user.
+            displayValue: switch (transaction!.displayPayjoinStatus!) {
+              PayjoinStatus.completed =>
+                context.loc.transactionDetailLabelPayjoinCompleted,
+              PayjoinStatus.aborted =>
+                context.loc.transactionDetailLabelPayjoinAborted,
+              PayjoinStatus.expired =>
+                context.loc.transactionDetailLabelPayjoinExpired,
+              PayjoinStatus.started ||
+              PayjoinStatus.requested ||
+              PayjoinStatus.proposed =>
+                context.loc.transactionDetailLabelPayjoinInProgress,
+            },
           ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,

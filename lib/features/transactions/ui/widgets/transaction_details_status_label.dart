@@ -18,8 +18,13 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
     final swap = transaction?.swap;
     final order = transaction?.order;
     final isOrder = transaction?.isOrder;
+    // Display status, not the raw session status: derived from the broadcast
+    // transaction when it is already visible, so a stale session row
+    // (completion detection lagging on a background poll) can't surface
+    // "requested"/"proposed" for a payment that's already on-chain.
     final payjoinStatus = context.select(
-      (TransactionDetailsCubit bloc) => bloc.state.payjoin?.status,
+      (TransactionDetailsCubit bloc) =>
+          bloc.state.transaction?.displayPayjoinStatus,
     );
 
     return BBText(

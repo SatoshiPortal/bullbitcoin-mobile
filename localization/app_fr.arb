@@ -5101,5 +5101,6 @@
   "receivePayjoinFallbackCountdown": "Retour à un paiement normal dans",
   "sendPayjoinFallbackCountdown": "Retour à un paiement normal dans",
   "transactionStatusPayjoinAborted": "Payjoin abandonné",
-  "transactionDetailLabelPayjoinAborted": "Abandonné"
+  "transactionDetailLabelPayjoinAborted": "Abandonné",
+  "transactionDetailLabelPayjoinInProgress": "En cours"
 }

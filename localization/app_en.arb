@@ -14871,5 +14871,9 @@
   "transactionDetailLabelPayjoinAborted": "Aborted",
   "@transactionDetailLabelPayjoinAborted": {
     "description": "Payjoin status row on transaction details when the session completed via the plain-broadcast fallback rather than a real payjoin."
+  },
+  "transactionDetailLabelPayjoinInProgress": "In progress",
+  "@transactionDetailLabelPayjoinInProgress": {
+    "description": "Payjoin status row on transaction details while the session is still being negotiated (request or proposal in flight, nothing broadcast yet)."
   }
 }

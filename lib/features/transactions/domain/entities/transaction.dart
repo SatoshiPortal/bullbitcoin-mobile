@@ -75,6 +75,32 @@ sealed class Transaction with _$Transaction {
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
   bool get isChainSwap => isSwap && swap!.isChainSwap;
 
+  /// The payjoin status to DISPLAY, derived from what actually happened
+  /// on-chain rather than from the session row alone. The session's
+  /// persisted status can lag reality: completion/fallback detection runs on
+  /// background polls in the payjoin repository, so right after a payment
+  /// lands the row may still say requested/proposed while the broadcast
+  /// transaction is already visible in the wallet. When the wallet
+  /// transaction is present, its txid is authoritative:
+  /// - it IS the payjoin transaction → the negotiation completed;
+  /// - it IS the original transaction → the payjoin was aborted and the
+  ///   payment fell back to a plain broadcast.
+  /// Falls back to the session status when there is no wallet transaction
+  /// (nothing broadcast yet, or not synced in) — and null when this
+  /// transaction has no payjoin at all.
+  PayjoinStatus? get displayPayjoinStatus {
+    final pj = payjoin;
+    if (pj == null) return null;
+    final walletTxId = walletTransaction?.txId;
+    if (walletTxId != null) {
+      if (walletTxId == pj.txId) return PayjoinStatus.completed;
+      if (walletTxId == pj.originalTxId && !pj.isRealPayjoinCompletion) {
+        return PayjoinStatus.aborted;
+      }
+    }
+    return pj.status;
+  }
+
   DateTime? get timestamp =>
       // Completed swaps are displayed (and should sort) by when they finished,
       // not when they were created — otherwise a just-claimed rescued swap
