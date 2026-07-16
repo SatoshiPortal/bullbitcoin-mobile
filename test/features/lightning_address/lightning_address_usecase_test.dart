@@ -259,6 +259,27 @@ class _FakeBullnymFacade implements BullnymFacade {
     lookupNpubHex = npubHex;
     return lookupResult;
   }
+
+  @override
+  Future<BullnymBackupHead> fetchBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymBackupStoreReceipt> storeBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+    required BullnymBackupHead currentHead,
+    required AuthenticatedBackupCiphertext ciphertext,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymBackupDeleteReceipt?> deleteBackup({
+    required BullnymAuthSigner signer,
+    required BullnymBackupStream stream,
+    required BullnymBackupHead currentHead,
+  }) => throw UnimplementedError();
 }
 
 String _zeroMnemonicXprv() {

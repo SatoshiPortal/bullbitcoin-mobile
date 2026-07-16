@@ -1,7 +1,13 @@
+import 'dart:convert';
+
+import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 import 'package:dio/dio.dart';
+import 'package:crypto/crypto.dart';
 
 const bullnymBaseUrlEnvironmentKey = 'BULLNYM_BASE_URL';
 const bullnymDefaultBaseUrl = String.fromEnvironment(
@@ -87,6 +93,72 @@ class BullnymHttpClient implements BullnymClientPort {
     return _parseLookupResponse(response);
   }
 
+  @override
+  Future<BullnymBackupHead> fetchBackup(
+    BullnymBackupFetchRequest request,
+  ) async {
+    final response = await _postMap(
+      '/api/v1/wallet-backups/fetch',
+      data: {
+        'version': 1,
+        'stream': request.stream.wireName,
+        'npub': request.npubHex,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      },
+    );
+    return _parseBackupHead(response, request);
+  }
+
+  @override
+  Future<BullnymBackupStoreReceipt> storeBackup(
+    BullnymBackupStoreRequest request,
+  ) async {
+    final response = await _putMap(
+      '/api/v1/wallet-backups',
+      data: {
+        'version': 1,
+        'stream': request.stream.wireName,
+        'npub': request.npubHex,
+        'generation': request.generation,
+        'expected_etag': request.expectedEtag,
+        'ciphertext': request.ciphertext.value,
+        'ciphertext_sha256': request.ciphertextSha256,
+        'ciphertext_bytes': request.ciphertext.byteLength,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      },
+    );
+    _requireBackupResponseVersion(response);
+    return BullnymBackupStoreReceipt(
+      generation: _requiredInt(response, 'generation'),
+      etag: _requiredString(response, 'etag'),
+    );
+  }
+
+  @override
+  Future<BullnymBackupDeleteReceipt> deleteBackup(
+    BullnymBackupDeleteRequest request,
+  ) async {
+    final response = await _deleteMap(
+      '/api/v1/wallet-backups',
+      data: {
+        'version': 1,
+        'stream': request.stream.wireName,
+        'npub': request.npubHex,
+        'generation': request.generation,
+        'expected_etag': request.expectedEtag,
+        'timestamp': request.timestamp,
+        'signature': request.signatureHex,
+      },
+    );
+    _requireBackupResponseVersion(response);
+    return BullnymBackupDeleteReceipt(
+      generation: _requiredInt(response, 'generation'),
+      etag: _requiredString(response, 'etag'),
+    );
+  }
+
   Future<Map<String, dynamic>> _getMap(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -98,6 +170,14 @@ class BullnymHttpClient implements BullnymClientPort {
 
   Future<Map<String, dynamic>> _postMap(String path, {Object? data}) async {
     return _requestMap(() => _dio.post<dynamic>(path, data: data));
+  }
+
+  Future<Map<String, dynamic>> _putMap(String path, {Object? data}) async {
+    return _requestMap(() => _dio.put<dynamic>(path, data: data));
+  }
+
+  Future<Map<String, dynamic>> _deleteMap(String path, {Object? data}) async {
+    return _requestMap(() => _dio.delete<dynamic>(path, data: data));
   }
 
   Future<void> _deleteSuccess(String path, {Object? data}) async {
@@ -254,5 +334,89 @@ class BullnymHttpClient implements BullnymClientPort {
     throw BullnymException.invalidServerResponse(
       diagnosticReason: 'Server response field $key is not a string',
     );
+  }
+
+  int _requiredInt(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is int && value >= 0) return value;
+    throw BullnymException.invalidServerResponse(
+      diagnosticReason: 'Server response is missing integer field $key',
+    );
+  }
+
+  BullnymBackupHead _parseBackupHead(
+    Map<String, dynamic> json,
+    BullnymBackupFetchRequest request,
+  ) {
+    _requireBackupResponseVersion(json);
+    final found = _requiredBool(json, 'found');
+    final generation = _requiredInt(json, 'generation');
+    final etag = _optionalString(json, 'etag');
+    if (!found) {
+      if (json['ciphertext'] != null ||
+          json['ciphertext_sha256'] != null ||
+          json['ciphertext_bytes'] != null) {
+        throw const BullnymException.invalidServerResponse(
+          diagnosticReason: 'Absent backup response contains ciphertext',
+        );
+      }
+      final expectedEtag = generation == 0
+          ? null
+          : computeWalletBackupEtag(
+              stream: request.stream,
+              npubHex: request.npubHex,
+              generation: generation,
+              ciphertextSha256: '',
+            );
+      if (etag != expectedEtag) {
+        throw const BullnymException.invalidServerResponse(
+          diagnosticReason: 'Absent backup response ETag does not match',
+        );
+      }
+      return BullnymBackupHead.absent(generation: generation, etag: etag);
+    }
+    final ciphertext = AuthenticatedBackupCiphertext(
+      _requiredString(json, 'ciphertext'),
+    );
+    final declaredBytes = _requiredInt(json, 'ciphertext_bytes');
+    final declaredHash = _requiredString(json, 'ciphertext_sha256');
+    final actualHash = sha256
+        .convert(base64.decode(ciphertext.value))
+        .toString();
+    if (declaredBytes != ciphertext.byteLength || declaredHash != actualHash) {
+      throw const BullnymException.invalidServerResponse(
+        diagnosticReason: 'Backup ciphertext integrity fields do not match',
+      );
+    }
+    final expectedEtag = computeWalletBackupEtag(
+      stream: request.stream,
+      npubHex: request.npubHex,
+      generation: generation,
+      ciphertextSha256: declaredHash,
+    );
+    if (etag != expectedEtag) {
+      throw const BullnymException.invalidServerResponse(
+        diagnosticReason: 'Backup response ETag does not match',
+      );
+    }
+    return BullnymBackupHead.present(
+      generation: generation,
+      etag:
+          etag ??
+          (throw const BullnymException.invalidServerResponse(
+            diagnosticReason: 'Found backup response is missing ETag',
+          )),
+      ciphertext: ciphertext,
+      ciphertextSha256: declaredHash,
+      updatedAtSecs: _requiredInt(json, 'updated_at'),
+    );
+  }
+
+  void _requireBackupResponseVersion(Map<String, dynamic> json) {
+    if (_requiredInt(json, 'version') != 1) {
+      throw const BullnymException.invalidServerResponse(
+        diagnosticReason: 'Unsupported backup response version',
+      );
+    }
   }
 }

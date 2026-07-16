@@ -60,14 +60,9 @@ int currentBullpayTimestampSecs() {
 }
 
 void validateBullnymNpubHex(String npubHex) {
-  try {
-    final decoded = hex.decode(npubHex);
-    if (decoded.length == 32) return;
-  } on FormatException {
-    // Throw the feature error below.
-  }
+  if (RegExp(r'^[0-9a-f]{64}$').hasMatch(npubHex)) return;
   throw const BullnymException.invalidInput(
-    'Bullnym npub must be a 32-byte hex value',
+    'Bullnym npub must be a 32-byte lowercase hex value',
   );
 }
 

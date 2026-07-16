@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 abstract interface class BullnymClientPort {
@@ -6,6 +8,70 @@ abstract interface class BullnymClientPort {
   Future<void> deleteRegistration(BullnymDeleteRegistrationRequest request);
 
   Future<BullnymLookupResult> lookupRegistration({required String npubHex});
+
+  Future<BullnymBackupHead> fetchBackup(BullnymBackupFetchRequest request);
+
+  Future<BullnymBackupStoreReceipt> storeBackup(
+    BullnymBackupStoreRequest request,
+  );
+
+  Future<BullnymBackupDeleteReceipt> deleteBackup(
+    BullnymBackupDeleteRequest request,
+  );
+}
+
+class BullnymBackupFetchRequest {
+  final BullnymBackupStream stream;
+  final String npubHex;
+  final String signatureHex;
+  final int timestamp;
+
+  const BullnymBackupFetchRequest({
+    required this.stream,
+    required this.npubHex,
+    required this.signatureHex,
+    required this.timestamp,
+  });
+}
+
+class BullnymBackupStoreRequest {
+  final BullnymBackupStream stream;
+  final String npubHex;
+  final int generation;
+  final String? expectedEtag;
+  final AuthenticatedBackupCiphertext ciphertext;
+  final String ciphertextSha256;
+  final String signatureHex;
+  final int timestamp;
+
+  const BullnymBackupStoreRequest({
+    required this.stream,
+    required this.npubHex,
+    required this.generation,
+    required this.expectedEtag,
+    required this.ciphertext,
+    required this.ciphertextSha256,
+    required this.signatureHex,
+    required this.timestamp,
+  });
+}
+
+class BullnymBackupDeleteRequest {
+  final BullnymBackupStream stream;
+  final String npubHex;
+  final int generation;
+  final String? expectedEtag;
+  final String signatureHex;
+  final int timestamp;
+
+  const BullnymBackupDeleteRequest({
+    required this.stream,
+    required this.npubHex,
+    required this.generation,
+    required this.expectedEtag,
+    required this.signatureHex,
+    required this.timestamp,
+  });
 }
 
 class BullnymRegisterRequest {
