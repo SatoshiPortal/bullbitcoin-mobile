@@ -294,6 +294,10 @@ class PdkPayjoinDatasource {
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required String Function(String) processPsbt,
+    // The `txid:vout` references of candidates already exposed by a prior
+    // proposal (see PayjoinRepositoryImpl._exposedUtxoRefs). Empty when none
+    // are exposed yet (the common case for a session's first attempt).
+    Set<String> preferredRefs = const {},
   }) async {
     // A CorruptPayjoinSessionException thrown here (unlike in the polls, which
     // catch it and retire the session as expired) propagates up through
@@ -314,6 +318,7 @@ class PdkPayjoinDatasource {
       inputPairs: inputPairs,
       receiverModel: receiverModel,
       processPsbt: processPsbt,
+      preferredRefs: preferredRefs,
     );
 
     // Update the model with the proposal psbt so it can be known a proposal has
@@ -341,6 +346,7 @@ class PdkPayjoinDatasource {
     required List<PayjoinInputPairModel> inputPairs,
     required PayjoinReceiverModel receiverModel,
     required String Function(String) processPsbt,
+    Set<String> preferredRefs = const {},
   }) async {
     switch (state) {
       case InitializedReceiveSession():
@@ -356,6 +362,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case MaybeInputsOwnedReceiveSession():
         return _checkInputsNotOwned(
@@ -366,6 +373,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case MaybeInputsSeenReceiveSession():
         return _checkNoInputsSeenBefore(
@@ -375,6 +383,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case OutputsUnknownReceiveSession():
         return _identifyReceiverOutputs(
@@ -384,6 +393,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case WantsOutputsReceiveSession():
         return _commitOutputs(
@@ -392,6 +402,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case WantsInputsReceiveSession():
         return _contributeInputs(
@@ -400,6 +411,7 @@ class PdkPayjoinDatasource {
           inputPairs,
           receiverModel,
           processPsbt,
+          preferredRefs,
         );
       case WantsFeeRangeReceiveSession():
         return _applyFeeRange(
@@ -433,6 +445,7 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
     final next = inner.assumeInteractiveReceiver().save(persister: persister);
     return _checkInputsNotOwned(
@@ -443,6 +456,7 @@ class PdkPayjoinDatasource {
       inputPairs,
       receiverModel,
       processPsbt,
+      preferredRefs,
     );
   }
 
@@ -454,6 +468,7 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
     final next = inner
         .checkInputsNotOwned(isOwned: _IsScriptOwned(hasOwnedInputs))
@@ -465,6 +480,7 @@ class PdkPayjoinDatasource {
       inputPairs,
       receiverModel,
       processPsbt,
+      preferredRefs,
     );
   }
 
@@ -475,6 +491,7 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
     final next = inner
         .checkNoInputsSeenBefore(isKnown: _AssumeUnseen())
@@ -486,6 +503,7 @@ class PdkPayjoinDatasource {
       inputPairs,
       receiverModel,
       processPsbt,
+      preferredRefs,
     );
   }
 
@@ -496,6 +514,7 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
     final next = inner
         .identifyReceiverOutputs(
@@ -508,6 +527,7 @@ class PdkPayjoinDatasource {
       inputPairs,
       receiverModel,
       processPsbt,
+      preferredRefs,
     );
   }
 
@@ -517,6 +537,7 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
     final next = inner.commitOutputs().save(persister: persister);
     return _contributeInputs(
@@ -525,7 +546,49 @@ class PdkPayjoinDatasource {
       inputPairs,
       receiverModel,
       processPsbt,
+      preferredRefs,
     );
+  }
+
+  /// Selects the input to contribute via [WantsInputsInterface.tryPreservingPrivacy]
+  /// — always the protocol's own call, never bypassed: it implements BIP78's
+  /// avoidance of the Unnecessary Input Heuristic 2 (UIH2, Ghesmati et al.
+  /// 2022), which decides whether a SPECIFIC candidate makes THIS proposal
+  /// look like a normal transaction rather than an obvious payjoin. That
+  /// analysis must always have the final say over which coin is used.
+  ///
+  /// What we control is which CANDIDATE SET it gets to choose from, in two
+  /// passes:
+  /// 1. [preferredRefs] only (coins already exposed by an earlier proposal
+  ///    from this session — see PayjoinRepositoryImpl._exposedUtxoRefs). If
+  ///    one of them can satisfy UIH2-avoidance for this specific proposal,
+  ///    it's used, satisfying both goals: no fresh coin exposed AND this
+  ///    proposal stays indistinguishable from a normal send.
+  /// 2. The full candidate list, if pass 1 has no preferred candidates or
+  ///    none of them work for this proposal (e.g. UIH2 needs a specific
+  ///    value relationship none of the already-exposed coins have, or a
+  ///    >2-output proposal where tryPreservingPrivacy always defaults to the
+  ///    first candidate regardless — see its doc comment). A fresh coin is
+  ///    exposed only when truly necessary.
+  ///
+  /// Without this, offering the full list in one shot (previously always the
+  /// case here) let tryPreservingPrivacy's own heuristic pick a completely
+  /// fresh coin over an already-exposed one whenever the fresh one happened
+  /// to score better for UIH2 avoidance — our "prefer reusing an exposed
+  /// coin" mitigation had no actual effect outside of its narrow fallback
+  /// case (see PayjoinRepositoryImpl.filterAvailableUtxos's doc comment).
+  /// The subset of [inputPairs] already exposed by a prior proposal (see
+  /// [PayjoinRepositoryImpl._exposedUtxoRefs]), matched by `txid:vout`.
+  /// Extracted pure and static so the partitioning [_contributeInputs] relies
+  /// on is unit-testable without a real FFI session.
+  @visibleForTesting
+  static List<PayjoinInputPairModel> preferredCandidates(
+    List<PayjoinInputPairModel> inputPairs,
+    Set<String> preferredRefs,
+  ) {
+    return inputPairs
+        .where((c) => preferredRefs.contains('${c.txId}:${c.vout}'))
+        .toList();
   }
 
   Future<({Monitor monitor, String psbt})> _contributeInputs(
@@ -534,11 +597,30 @@ class PdkPayjoinDatasource {
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
+    Set<String> preferredRefs,
   ) async {
-    final candidates = inputPairs.map(_buildInputPair).toList();
+    final preferred = preferredCandidates(inputPairs, preferredRefs);
+    final all = inputPairs.map(_buildInputPair).toList();
+
     InputPair? chosen;
+    if (preferred.isNotEmpty) {
+      try {
+        chosen = inner.tryPreservingPrivacy(
+          candidateInputs: preferred.map(_buildInputPair).toList(),
+        );
+      } on CoinSelectionException catch (e) {
+        // None of the already-exposed candidates work for THIS proposal
+        // (e.g. no value relationship among them avoids UIH2). Fall through
+        // to the full list below — logged so a pattern of misses is visible
+        // without treating it as an error (falling back is expected here).
+        log(
+          'No already-exposed candidate suited this proposal, falling back '
+          'to the full candidate set: $e',
+        );
+      }
+    }
     try {
-      chosen = inner.tryPreservingPrivacy(candidateInputs: candidates);
+      chosen ??= inner.tryPreservingPrivacy(candidateInputs: all);
     } catch (e) {
       // Include the PDK's own rejection reason (e.g. "no candidates
       // available for selection" when none of the wallet's UTXOs make a

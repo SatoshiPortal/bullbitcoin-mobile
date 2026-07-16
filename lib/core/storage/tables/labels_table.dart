@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 const swapLabelSystem = 'swaps';
 const autoSwapLabelSystem = 'auto-swap';
 const payjoinLabelSystem = 'payjoin';
+const payjoinExposedLabelSystem = 'payjoin_exposed';
 const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';

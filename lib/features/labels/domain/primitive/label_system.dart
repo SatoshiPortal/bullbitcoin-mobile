@@ -6,6 +6,18 @@ enum LabelSystem {
   swaps,
   autoSwap,
   payjoin,
+
+  /// A UTXO the wallet contributed as an input to a payjoin proposal it
+  /// sent out — distinct from [payjoin], which tags a TRANSACTION that
+  /// actually completed via a real payjoin. Applied the moment a proposal
+  /// is built and sent, before either side knows whether the negotiation
+  /// will complete, and deliberately never removed if it doesn't: sharing
+  /// the proposal already revealed this coin's existence and ownership to
+  /// the counterparty (BIP78), so the exposure is real regardless of
+  /// whether a transaction was ever broadcast. Also drives "prefer
+  /// re-contributing an already-exposed coin" on the next attempt instead
+  /// of burning a fresh one.
+  payjoinExposed,
   selfSpend,
   exchangeBuy,
   exchangeSell;
@@ -16,6 +28,7 @@ enum LabelSystem {
     LabelSystem.swaps => swapLabelSystem,
     LabelSystem.autoSwap => autoSwapLabelSystem,
     LabelSystem.payjoin => payjoinLabelSystem,
+    LabelSystem.payjoinExposed => payjoinExposedLabelSystem,
     LabelSystem.selfSpend => selfSpendLabelSystem,
     LabelSystem.exchangeBuy => exchangeBuyLabelSystem,
     LabelSystem.exchangeSell => exchangeSellLabelSystem,
@@ -26,6 +39,7 @@ enum LabelSystem {
       swapLabelSystem => LabelSystem.swaps,
       autoSwapLabelSystem => LabelSystem.autoSwap,
       payjoinLabelSystem => LabelSystem.payjoin,
+      payjoinExposedLabelSystem => LabelSystem.payjoinExposed,
       selfSpendLabelSystem => LabelSystem.selfSpend,
       exchangeBuyLabelSystem => LabelSystem.exchangeBuy,
       exchangeSellLabelSystem => LabelSystem.exchangeSell,
@@ -47,6 +61,7 @@ enum LabelSystem {
       LabelSystem.swaps => context.loc.systemLabelSwaps,
       LabelSystem.autoSwap => context.loc.systemLabelAutoSwap,
       LabelSystem.payjoin => context.loc.systemLabelPayjoin,
+      LabelSystem.payjoinExposed => context.loc.systemLabelPayjoinExposed,
       LabelSystem.selfSpend => context.loc.systemLabelSelfSpend,
       LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
       LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,

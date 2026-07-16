@@ -14883,5 +14883,9 @@
   "transactionPayjoinFeeContributionExplanation": "A payjoin adds one of your coins as an extra input to the payment to improve privacy. The mining fee for that added input is deducted from the amount you receive (BIP78).",
   "@transactionPayjoinFeeContributionExplanation": {
     "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
+  },
+  "systemLabelPayjoinExposed": "Payjoin exposed",
+  "@systemLabelPayjoinExposed": {
+    "description": "System label tag shown on a UTXO the wallet contributed as an input to a payjoin proposal it sent — distinct from the plain \"Payjoin\" label, which tags a transaction that actually completed via a real payjoin. Kept even if the negotiation never completes: the coin's existence was already revealed to the counterparty."
   }
 }

@@ -1875,6 +1875,151 @@ void main() {
     );
   });
 
+  group('_proposePayjoin exposed-utxo preference (BIP78 anti-probing)', () {
+    // Above the minimum, so the full propose flow runs instead of the
+    // below-minimum decline.
+    test('threads the already-exposed candidate refs through to '
+        'PdkPayjoinDatasource.proposePayjoin as preferredRefs, so it can try '
+        'them before the full candidate set (see '
+        'PdkPayjoinDatasource._contributeInputs)', () async {
+      final requestController =
+          StreamController<PayjoinReceiverModel>.broadcast();
+      final settings = _MockSettingsRepository();
+      final walletMetadata = _MockWalletMetadataDatasource();
+      final seed = _MockSeedDatasource();
+      final bdkWallet = _MockBdkWalletDatasource();
+      when(
+        () => pdk.requestsForReceivers,
+      ).thenAnswer((_) => requestController.stream);
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => _testSettings(payjoinMinAmountSat: 1000));
+
+      when(() => walletMetadata.fetch('w1')).thenAnswer(
+        (_) async => const WalletMetadataModel(
+          id: 'wpkh([00000000/84h/1h/0h])',
+          masterFingerprint: '00000000',
+          xpubFingerprint: '11111111',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: '',
+          externalPublicDescriptor: '',
+          internalPublicDescriptor: '',
+          signer: Signer.local,
+          isDefault: true,
+        ),
+      );
+      when(() => seed.get('00000000')).thenAnswer(
+        (_) async =>
+            const SeedModel.mnemonic(
+                  mnemonicWords: [
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'abandon',
+                    'about',
+                  ],
+                )
+                as MnemonicSeedModel,
+      );
+
+      final exposedUtxo = _utxo('exposed-txid', 0);
+      final freshUtxo = _utxo('fresh-txid', 0);
+      when(
+        () => bdkWallet.getUtxos(wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async => [exposedUtxo, freshUtxo]);
+      when(
+        () => bdkWallet.createIsMineChecker(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () => bdkWallet.createPsbtSigner(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+
+      // This wallet's exposed-UTXO label, already on `exposedUtxo` from an
+      // earlier proposal — read back by _exposedUtxoRefs.
+      when(() => labels.fetchAll()).thenAnswer(
+        (_) async => [
+          Label(
+            id: 1,
+            type: LabelType.output,
+            label: LabelSystem.payjoinExposed.label,
+            reference: 'exposed-txid:0',
+            origin: 'w1',
+          ),
+        ],
+      );
+
+      final model = _receiverModel(
+        id: 'pj1',
+        walletId: 'w1',
+        originalTxId: 'orig-txid',
+        amountSat: 50000,
+      );
+      when(() => local.fetchReceiver('pj1')).thenAnswer((_) async => model);
+
+      final completedModel = model.copyWith(
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        txId: 'payjoin-txid',
+      );
+      when(
+        () => pdk.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          hasOwnedInputs: any(named: 'hasOwnedInputs'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+          preferredRefs: any(named: 'preferredRefs'),
+        ),
+      ).thenAnswer((_) async => completedModel);
+
+      PayjoinRepositoryImpl(
+        localPayjoinDatasource: local,
+        pdkPayjoinDatasource: pdk,
+        walletMetadataDatasource: walletMetadata,
+        seedDatasource: seed,
+        bdkWalletDatasource: bdkWallet,
+        blockchainDatasource: blockchain,
+        serversPort: serversPort,
+        walletRepository: _MockWalletRepository.new,
+        walletTransactionRepository: _MockWalletTransactionRepository.new,
+        settingsRepository: settings,
+        labelsFacade: () => labels,
+      );
+      addTearDown(() => requestController.close());
+
+      requestController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      final captured =
+          verify(
+                () => pdk.proposePayjoin(
+                  receiverModel: any(named: 'receiverModel'),
+                  hasOwnedInputs: any(named: 'hasOwnedInputs'),
+                  hasReceiverOutput: any(named: 'hasReceiverOutput'),
+                  inputPairs: any(named: 'inputPairs'),
+                  processPsbt: any(named: 'processPsbt'),
+                  preferredRefs: captureAny(named: 'preferredRefs'),
+                ),
+              ).captured.single
+              as Set<String>;
+
+      expect(captured, {'exposed-txid:0'});
+    });
+  });
+
   group('_processPayjoinRequest below-minimum decline flow', () {
     test('declines and broadcasts the original when the amount is below the '
         'configured minimum', () async {

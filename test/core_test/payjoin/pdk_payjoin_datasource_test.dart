@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:dio/dio.dart';
@@ -246,6 +247,69 @@ void main() {
       // Without the _disposed guard this would throw on re-closing a closed
       // controller.
       await expectLater(datasource.dispose(), completes);
+    });
+  });
+
+  group('PdkPayjoinDatasource.preferredCandidates', () {
+    PayjoinInputPairModel candidate(String txId, int vout) =>
+        PayjoinInputPairModel(
+          txId: txId,
+          vout: vout,
+          scriptPubkey: Uint8List(0),
+        );
+
+    test('returns only the candidates matching a preferred ref', () {
+      final a = candidate('txa', 0);
+      final b = candidate('txb', 1);
+      final c = candidate('txc', 2);
+
+      final result = PdkPayjoinDatasource.preferredCandidates(
+        [a, b, c],
+        {'txb:1'},
+      );
+
+      expect(result, [b]);
+    });
+
+    test('returns every candidate that matches, in original order', () {
+      final a = candidate('txa', 0);
+      final b = candidate('txb', 1);
+      final c = candidate('txc', 2);
+
+      final result = PdkPayjoinDatasource.preferredCandidates(
+        [a, b, c],
+        {'txa:0', 'txc:2'},
+      );
+
+      expect(result, [a, c]);
+    });
+
+    test('returns empty when no ref matches', () {
+      final result = PdkPayjoinDatasource.preferredCandidates(
+        [candidate('txa', 0)],
+        {'txb:1'},
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test('returns empty when preferredRefs is empty (the common case: '
+        'nothing exposed yet)', () {
+      final result = PdkPayjoinDatasource.preferredCandidates([
+        candidate('txa', 0),
+      ], {});
+
+      expect(result, isEmpty);
+    });
+
+    test('matches by exact txid:vout, not just txid — a different vout on '
+        'the same prior tx must not match', () {
+      final result = PdkPayjoinDatasource.preferredCandidates(
+        [candidate('txa', 0)],
+        {'txa:1'},
+      );
+
+      expect(result, isEmpty);
     });
   });
 

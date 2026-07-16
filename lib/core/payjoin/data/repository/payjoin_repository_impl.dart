@@ -854,6 +854,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: completedModel.walletId,
       );
     }
+    // The exposure bookkeeping label has served its purpose now that the
+    // transaction itself carries the definitive "Payjoin" label: see
+    // _unlabelExposedUtxos's doc comment.
+    await _unlabelExposedUtxos(
+      proposalPsbt: completedModel.proposalPsbt,
+      walletId: completedModel.walletId,
+    );
     _payjoinStreamController.add(completedModel.toEntity());
     log.info('Payjoin receiver completed on broadcast: $payjoinId');
   }
@@ -1225,6 +1232,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
         processPsbt: signPsbtSync,
+        // Tried first, on their own: see PdkPayjoinDatasource._contributeInputs'
+        // doc comment for why offering the full list in one shot (as before)
+        // let the underlying privacy heuristic silently override this
+        // preference and expose a fresh coin instead.
+        preferredRefs: exposedRefs,
       );
 
       await _localPayjoinDatasource.update(updatedModel);
@@ -1242,23 +1254,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   /// The `txid:vout` references of this wallet's UTXOs already exposed by a
-  /// prior payjoin proposal, tagged with the payjoin system output label.
-  /// Best-effort: a labels read failure degrades to "no preference".
+  /// prior payjoin proposal, tagged with [LabelSystem.payjoinExposed] — NOT
+  /// [LabelSystem.payjoin], which tags a transaction that actually completed
+  /// via a real payjoin, a different fact from "this coin's privacy was
+  /// spent on a proposal". Best-effort: a labels read failure degrades to
+  /// "no preference".
   Future<Set<String>> _exposedUtxoRefs() async {
     final labels = await _labelsFacade().fetchAll();
     return labels
         .where(
           (l) =>
               l.type == LabelType.output &&
-              l.label == LabelSystem.payjoin.label,
+              l.label == LabelSystem.payjoinExposed.label,
         )
         .map((l) => l.reference)
         .toSet();
   }
 
   /// Filters out locked UTXOs and orders the rest so already-exposed coins
-  /// are preferred. Pure and static so it can be unit-tested without the
-  /// repository's collaborators.
+  /// sort first. This ordering alone is NOT what guarantees an already-
+  /// exposed coin gets reused — the actual guarantee comes from
+  /// [PdkPayjoinDatasource._contributeInputs] trying the exposed subset with
+  /// the privacy-preserving selector BEFORE the full list (see its doc
+  /// comment). This sort only matters as that selector's OWN documented
+  /// fallback ("defaults to the first candidate" for a >2-output proposal or
+  /// when no candidate avoids UIH2) — putting exposed coins first means even
+  /// that fallback favors reuse. Pure and static so it can be unit-tested
+  /// without the repository's collaborators.
   @visibleForTesting
   static List<PayjoinInputPairModel> filterAvailableUtxos(
     List<WalletUtxoModel> unspent,
@@ -1272,8 +1294,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             )
             .whereType<BitcoinWalletUtxoModel>()
             .toList()
-          // Prefer already-exposed UTXOs so we don't reveal a fresh one when
-          // an earlier proposal already burned the privacy of this coin.
           ..sort((a, b) {
             final aExposed = exposedRefs.contains('${a.txId}:${a.vout}');
             final bExposed = exposedRefs.contains('${b.txId}:${b.vout}');
@@ -1287,8 +1307,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   /// Tags every candidate UTXO that ended up as an input of [proposalPsbt]
   /// (i.e. the coins the receiver actually contributed and thereby exposed)
-  /// with the payjoin system output label. Best-effort and idempotent (the
-  /// labels table dedupes on (label, reference)).
+  /// with [LabelSystem.payjoinExposed]. Deliberately NOT [LabelSystem.payjoin]
+  /// — that label means "this transaction actually completed via a real
+  /// payjoin" (see [_labelPayjoinTransaction]), a claim this call site can't
+  /// make: a proposal being sent doesn't guarantee the sender ever finalizes
+  /// or broadcasts it (it may fall back to its own original transaction
+  /// instead — see [_processPayjoinProposal]), leaving this coin unspent.
+  /// The exposure label is applied here regardless and is left in place if
+  /// the negotiation later fails: sharing the proposal already revealed this
+  /// coin's existence and ownership to the counterparty (BIP78), so the
+  /// exposure already happened whether or not a transaction follows. Removed
+  /// only once a REAL payjoin actually completes — see
+  /// [_unlabelExposedUtxos], called from [_onPayjoinTransactionSeen] — since
+  /// at that point the label has served its purpose ([_exposedUtxoRefs]'s
+  /// "prefer re-contributing an already-exposed coin" preference: nothing
+  /// left to prefer once the coin is spent) and the transaction itself now
+  /// carries the definitive [LabelSystem.payjoin] tag. Best-effort and
+  /// idempotent (the labels table dedupes on (label, reference)).
   Future<void> _labelExposedUtxos({
     required List<PayjoinInputPairModel> candidates,
     required String? proposalPsbt,
@@ -1308,7 +1343,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         await _labelsFacade().store(
           NewLabel(
             type: LabelType.output,
-            label: LabelSystem.payjoin.label,
+            label: LabelSystem.payjoinExposed.label,
             reference: ref,
             origin: walletId,
           ),
@@ -1316,6 +1351,42 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
     } catch (e) {
       log.warning('Failed to label exposed payjoin UTXOs: $e');
+    }
+  }
+
+  /// Removes the [LabelSystem.payjoinExposed] tag from every UTXO that was
+  /// an input of [proposalPsbt], called once a REAL payjoin actually
+  /// completes (see [_labelExposedUtxos]'s doc comment for why it's kept
+  /// until then, not removed on a failed negotiation). The coin is spent by
+  /// now, so the "prefer re-contributing an already-exposed coin" preference
+  /// ([_exposedUtxoRefs]) has nothing left to read it for, and the
+  /// transaction itself carries the definitive [LabelSystem.payjoin] tag —
+  /// leaving the exposure label in place would be redundant bookkeeping, not
+  /// a second, distinct fact. Best-effort: a cleanup failure must never
+  /// affect the (already broadcast and labelled) payjoin completion, so it
+  /// is logged and swallowed.
+  Future<void> _unlabelExposedUtxos({
+    required String? proposalPsbt,
+    required String walletId,
+  }) async {
+    if (proposalPsbt == null) return;
+    try {
+      final proposalTx = await BitcoinTx.fromPsbt(proposalPsbt);
+      final inputRefs = proposalTx.inputs
+          .map((i) => '${i.txid}:${i.vout}')
+          .toSet();
+      final labels = await _labelsFacade().fetchAll();
+      final exposedLabels = labels.where(
+        (l) =>
+            l.type == LabelType.output &&
+            l.label == LabelSystem.payjoinExposed.label &&
+            inputRefs.contains(l.reference),
+      );
+      for (final label in exposedLabels) {
+        await _labelsFacade().trash(label.id);
+      }
+    } catch (e) {
+      log.warning('Failed to remove exposed-utxo labels: $e');
     }
   }
 
