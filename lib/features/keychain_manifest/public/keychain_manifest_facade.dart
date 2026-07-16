@@ -15,6 +15,8 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_im
         KeychainManifestImportPlan,
         KeychainManifestImportEntryIntent,
         KeychainManifestWalletMaterializationIntent;
+export 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_state.dart'
+    show KeychainManifestBackupState;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_reservation_support.dart'
     show KeychainManifestReservationSupport;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart'
@@ -26,10 +28,14 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_file_model.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_import.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_state.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/delete_keychain_manifest_backup_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_backup_state_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/set_keychain_manifest_backup_enabled_usecase.dart';
 
 class KeychainManifestFacade {
   static const _manifestFileCodec = KeychainManifestFileCodec();
@@ -37,12 +43,30 @@ class KeychainManifestFacade {
   final RecordKeychainManifestEntryUsecase _recordEntry;
   final BuildKeychainManifestFileUsecase _buildManifestFile;
   final ParseKeychainManifestFileUsecase _parseManifestFile;
+  final GetKeychainManifestBackupStateUsecase _getBackupState;
+  final SetKeychainManifestBackupEnabledUsecase _setBackupEnabled;
+  final DeleteKeychainManifestBackupUsecase _deleteBackup;
 
   KeychainManifestFacade({
     required this._recordEntry,
     required this._buildManifestFile,
     required this._parseManifestFile,
+    required this._getBackupState,
+    required this._setBackupEnabled,
+    required this._deleteBackup,
   });
+
+  Future<KeychainManifestBackupState> getBackupState() =>
+      _getBackupState.execute();
+
+  Stream<KeychainManifestBackupState> watchBackupState() =>
+      _getBackupState.watch();
+
+  Future<void> setBackupEnabled(bool enabled) =>
+      _setBackupEnabled.execute(enabled);
+
+  Future<void> deleteRemoteBackup({required bool confirmed}) =>
+      _deleteBackup.execute(confirmed: confirmed);
 
   Future<void> recordReservedDerivation(
     KeychainManifestReservedDerivationRequest request, {

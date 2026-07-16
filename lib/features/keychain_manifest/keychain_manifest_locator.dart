@@ -12,8 +12,11 @@ import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychai
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_encryption_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_remote_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/delete_keychain_manifest_backup_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_backup_state_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/set_keychain_manifest_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/sync_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -65,11 +68,32 @@ class KeychainManifestLocator {
         parseManifest: locator<ParseKeychainManifestFileUsecase>(),
       ),
     );
+    locator.registerFactory<GetKeychainManifestBackupStateUsecase>(
+      () => GetKeychainManifestBackupStateUsecase(
+        locator<KeychainManifestBackupStateRepository>(),
+      ),
+    );
+    locator.registerFactory<SetKeychainManifestBackupEnabledUsecase>(
+      () => SetKeychainManifestBackupEnabledUsecase(
+        locator<KeychainManifestBackupStateRepository>(),
+      ),
+    );
+    locator.registerFactory<DeleteKeychainManifestBackupUsecase>(
+      () => DeleteKeychainManifestBackupUsecase(
+        remote: locator<KeychainManifestRemoteRepository>(),
+        state: locator<KeychainManifestBackupStateRepository>(),
+        identity: locator<NostrIdentityFacade>(),
+        wallet: locator<KeychainManifestBackupWalletPort>(),
+      ),
+    );
     locator.registerFactory<KeychainManifestFacade>(
       () => KeychainManifestFacade(
         recordEntry: locator<RecordKeychainManifestEntryUsecase>(),
         buildManifestFile: locator<BuildKeychainManifestFileUsecase>(),
         parseManifestFile: locator<ParseKeychainManifestFileUsecase>(),
+        getBackupState: locator<GetKeychainManifestBackupStateUsecase>(),
+        setBackupEnabled: locator<SetKeychainManifestBackupEnabledUsecase>(),
+        deleteBackup: locator<DeleteKeychainManifestBackupUsecase>(),
       ),
     );
   }
