@@ -27,8 +27,11 @@ import 'package:bb_mobile/features/wallet_metadata_backup/domain/repositories/wa
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/repositories/wallet_metadata_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/repositories/wallet_metadata_snapshot_composition_repository.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/wallet_metadata_snapshot_cryptor.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/apply_wallet_metadata_recovery_plan_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/build_wallet_metadata_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/delete_wallet_metadata_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/fetch_current_wallet_metadata_recovery_plan_usecase.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/fetch_wallet_metadata_recovery_plan_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/get_wallet_metadata_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/mark_wallet_metadata_backup_dirty_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/publish_current_wallet_metadata_backup_usecase.dart';
@@ -137,6 +140,30 @@ final class WalletMetadataBackupLocator {
         keyMaterialPort: locator<WalletMetadataKeyMaterialPort>(),
       ),
     );
+    locator.registerFactory<FetchWalletMetadataRecoveryPlanUsecase>(
+      () => FetchWalletMetadataRecoveryPlanUsecase(
+        stateRepository: locator<WalletMetadataBackupStateRepository>(),
+        remoteRepository: locator<WalletMetadataRemoteRepository>(),
+        contributors: _contributors(locator),
+        clock: locator<Clock>(),
+      ),
+    );
+    locator.registerFactory<FetchCurrentWalletMetadataRecoveryPlanUsecase>(
+      () => FetchCurrentWalletMetadataRecoveryPlanUsecase(
+        keyMaterial: locator<WalletMetadataKeyMaterialPort>(),
+        fetch: locator<FetchWalletMetadataRecoveryPlanUsecase>(),
+      ),
+    );
+    locator.registerFactory<ApplyWalletMetadataRecoveryPlanUsecase>(
+      () => ApplyWalletMetadataRecoveryPlanUsecase(
+        locator<WalletMetadataKeyMaterialPort>(),
+        stateRepository: locator<WalletMetadataBackupStateRepository>(),
+        remoteRepository: locator<WalletMetadataRemoteRepository>(),
+        contributors: _restoringContributors(locator),
+        publicationGuard: locator<WalletMetadataPublicationGuard>(),
+        clock: locator<Clock>(),
+      ),
+    );
     locator.registerLazySingleton<WalletMetadataBackupCoordinator>(
       () => WalletMetadataBackupCoordinator(
         markDirty: locator<MarkWalletMetadataBackupDirtyUsecase>(),
@@ -156,6 +183,13 @@ final class WalletMetadataBackupLocator {
         locator<MarkWalletMetadataBackupDirtyUsecase>(),
         locator<DeleteWalletMetadataBackupUsecase>(),
         locator<WalletMetadataBackupCoordinator>(),
+        () =>
+            locator<FetchCurrentWalletMetadataRecoveryPlanUsecase>().execute(),
+        ({required plan, required createdWalletRefs}) =>
+            locator<ApplyWalletMetadataRecoveryPlanUsecase>().execute(
+              plan: plan,
+              createdWalletRefs: createdWalletRefs,
+            ),
       ),
     );
   }
@@ -164,6 +198,14 @@ final class WalletMetadataBackupLocator {
       locator<WalletMetadataBackupCoordinator>().start();
 
   static List<WalletMetadataContributor> _contributors(GetIt locator) => [
+    locator<LabelsBip329WalletMetadataContributor>(),
+    locator<WalletUtxoFreezeMetadataContributor>(),
+    locator<WalletPreferencesMetadataContributor>(),
+  ];
+
+  static List<WalletMetadataRestoringContributor> _restoringContributors(
+    GetIt locator,
+  ) => [
     locator<LabelsBip329WalletMetadataContributor>(),
     locator<WalletUtxoFreezeMetadataContributor>(),
     locator<WalletPreferencesMetadataContributor>(),

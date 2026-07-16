@@ -79,11 +79,15 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           statusError: '',
         ),
       );
-      await _createDefaultWalletsUsecase.execute(
+      final defaultWallets = await _createDefaultWalletsUsecase.execute(
         mnemonicWords: event.mnemonic.words,
       );
       await _completePhysicalBackupVerificationUsecase.execute();
-      _recoverRemoteKeychainUsecase.execute();
+      _recoverRemoteKeychainUsecase.execute(
+        defaultCreatedWalletIds: defaultWallets
+            .map((wallet) => wallet.id)
+            .toSet(),
+      );
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
       await _handleError(e, emit);

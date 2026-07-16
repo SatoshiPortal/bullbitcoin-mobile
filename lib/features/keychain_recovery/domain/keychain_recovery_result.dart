@@ -39,12 +39,15 @@ class KeychainRecoveryWalletRestoreOutcome {
   final KeychainRecoveryWalletIntent intent;
   final KeychainRecoveryWalletRestoreStatus status;
   final String? materializedWalletId;
+  final bool wasCreated;
 
   const KeychainRecoveryWalletRestoreOutcome({
     required this.intent,
     required this.status,
     this.materializedWalletId,
-  });
+    bool? wasCreated,
+  }) : wasCreated =
+           wasCreated ?? status == KeychainRecoveryWalletRestoreStatus.created;
 
   String get walletId => materializedWalletId ?? intent.walletId;
 

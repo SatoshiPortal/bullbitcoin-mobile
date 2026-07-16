@@ -180,6 +180,7 @@ void main() {
       expect(result.hasProductReactivationRequired, true);
       expect(result.productReactivationRequiredOutcomes, hasLength(1));
       expect(result.walletOutcomes.single.status, _requiresReactivation);
+      expect(result.walletOutcomes.single.wasCreated, isFalse);
 
       // KC-6/R2-KC6b: a recovered Lightning Address wallet also comes back
       // hidden + autosweep-enabled (the same posture pr06 applies to BTCPay),
@@ -409,6 +410,7 @@ void main() {
 
       expect(result.hasFailures, false);
       expect(result.walletOutcomes.single.status, _requiresReactivation);
+      expect(result.walletOutcomes.single.wasCreated, isTrue);
       expect(
         materializer.batches.single.reservationId,
         'lightning_address_wallet_seed',

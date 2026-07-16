@@ -90,6 +90,7 @@ void main() {
               status: KeychainRecoveryWalletRestoreStatus
                   .requiresProductReactivation,
               materializedWalletId: 'lightning-wallet',
+              wasCreated: true,
             ),
           ],
         ),
@@ -98,11 +99,51 @@ void main() {
       final result = await usecase.execute();
 
       expect(result.status, RemoteKeychainRecoveryStatus.restored);
+      expect(result.createdWalletIds, ['lightning-wallet']);
       expect(lightningAddress.ensureCalls, 1);
       expect(
         result.healOutcome?.lightningAddress?.liveness,
         LightningAddressRegistrationLiveness.live,
       );
+    },
+  );
+
+  test(
+    'does not report an existing reactivated wallet as newly created',
+    () async {
+      final plan = KeychainManifestImportPlan(
+        parentFingerprint: 'fedcba98',
+        entries: [],
+      );
+      const intent = KeychainRecoveryWalletIntent(
+        entryId: "fedcba98:39'/0'/12'/101'",
+        reservationId: 'lightning_address_wallet_seed',
+        bip85DerivationPath: "39'/0'/12'/101'",
+        walletId: 'lightning-wallet',
+        childSeedFingerprint: '0123abcd',
+        network: Network.liquidMainnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(manifest.fetchRemoteImportPlan).thenAnswer(
+        (_) async => KeychainManifestRemoteImportResult.success(plan),
+      );
+      when(() => recovery.restoreWallets(plan)).thenAnswer(
+        (_) async => const KeychainRecoveryResult(
+          walletOutcomes: [
+            KeychainRecoveryWalletRestoreOutcome(
+              intent: intent,
+              status: KeychainRecoveryWalletRestoreStatus
+                  .requiresProductReactivation,
+              materializedWalletId: 'lightning-wallet',
+              wasCreated: false,
+            ),
+          ],
+        ),
+      );
+
+      final result = await usecase.execute();
+
+      expect(result.createdWalletIds, isEmpty);
     },
   );
 }

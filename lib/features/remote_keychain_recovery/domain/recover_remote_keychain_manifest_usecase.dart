@@ -56,10 +56,7 @@ final class RecoverRemoteKeychainManifestUsecase {
       restoredCount: restored.restoredCount,
       failedCount: failed,
       createdWalletIds: restored.walletOutcomes
-          .where(
-            (outcome) =>
-                outcome.status == KeychainRecoveryWalletRestoreStatus.created,
-          )
+          .where((outcome) => outcome.wasCreated)
           .map((outcome) => outcome.walletId)
           .toList(growable: false),
       healOutcome: healOutcome,
