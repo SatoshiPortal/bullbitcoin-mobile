@@ -53,8 +53,11 @@ must not be presented as importable or recoverable.
   current-attempt rollback.
 - The public boundary may build a manifest file payload, but file operations
   must not mutate local manifest inventory.
+- `keychain_manifest` owns the encrypted backup snapshot shape as a contract
+  over the existing v1 manifest file projection.
 - `keychain_manifest` must not import BTCPay, Get Paid, external receive
-  wallets, keychain recovery, Nostr, or UI features.
+  wallets, keychain recovery, remote storage infrastructure, or UI
+  features.
 
 ## Entry Identity
 
@@ -243,3 +246,28 @@ not a refactor.
 The payload is generated on demand by callers that need a serialized projection.
 Transport, wallet creation, product restore, and UI flows are out of scope and
 are not specified by this feature.
+
+## Encrypted Backup Contract
+
+The remote manifest is a provider-neutral encrypted snapshot over the existing
+v1 manifest file payload. Local Drift records remain the source of truth.
+
+The plaintext wrapper contains only:
+
+- `version: 1`;
+- `contentType: bullbitcoin.keychain_manifest.v1`;
+- the canonical `manifestFile` projection.
+
+No cleartext manifest marker is sent outside the authenticated ciphertext.
+
+The snapshot uses the RecoverBull-compatible
+`base64(nonce16 || AES-256-CBC ciphertext || HMAC-SHA256)` format and a
+dedicated seed-derived BIP85 key at `1642'/0'/1'`. This key is separate from
+RecoverBull vault keys at app `1608` and from the stream signing identity at
+`9000'/1'/1'`. Decoded ciphertext is bounded to 2 MiB and canonical base64 is
+required.
+
+Bullnym storage, request signing, conditional replacement, wallet restore,
+product reactivation, and UI are separate slices. The manifest stream role must
+not be reused for generic Bullnym authentication, NIP-05, profiles, DMs, or any
+public identity flow.

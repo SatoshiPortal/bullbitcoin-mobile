@@ -46,16 +46,20 @@ Payment Page reserves BIP85 path `39'/0'/12'/102'`, which is a BIP39 English
 
 Nostr role keys reserve the app-owned Nostr namespace paths:
 
-- `9000'/1'/1'` for the future wallet manifest key.
+- `9000'/1'/1'` for the encrypted keychain-backup stream identity.
 - `9000'/2'/1'` for Bullnym server authentication.
 - `9000'/3'/1'` for future NIP-05 public nym verification.
 
-These Nostr reservations are static namespace policy only. They do not implement
-Nostr signing, relay publish/fetch, wallet manifest transport, DMs, NIP-05
-registration, verification, lookup, NIP-05 UI, or product behavior.
+These Nostr-compatible reservations are static namespace policy only. They do
+not require Nostr events or relays. The keychain role signs Bullnym backup
+requests; the other roles retain their existing product responsibilities.
 The exact app number and role segments are the locked namespace allocation;
 later Nostr behavior work may consume these ids and paths, but should not infer
 runtime semantics from this registry entry alone.
+
+Keychain Manifest reserves BIP85 path `1642'/0'/1'` as the primary encryption key for remote manifest snapshot payloads.
+This is a Bull-owned custom application namespace and must not be reused for RecoverBull vault backups, Nostr signing, Bullnym authentication, or wallet-seed materialization.
+`keychain_manifest` owns encryption and encrypted payload semantics; the registry only blocks and names the path.
 
 Future reservations should add typed entries here only when a first-party
 feature needs a stable, blocked path. User-created ad hoc BIP85 outputs remain

@@ -24,6 +24,10 @@ void main() {
 
     expect(
       walletManifestHandle.publicKeyHex,
+      '1072ff1a657708c194dcd1fa57d894eab3e8fca1b65950cee5c05f35a4425b9f',
+    );
+    expect(
+      walletManifestHandle.publicKeyHex,
       NostrKeychainHandle.deriveFromBip85Path(
         xprvBase58: _masterXprv,
         hardenedPath: "9000'/1'/1'",

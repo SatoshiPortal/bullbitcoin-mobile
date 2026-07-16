@@ -21,6 +21,7 @@ void main() {
       'nostr_wallet_manifest_key',
       'nostr_bullnym_server_auth_key',
       'nostr_nip05_public_nym_verification_key',
+      'keychain_manifest_encryption_key',
     ]);
     for (final reservation in registry.reservations) {
       expect(registry.reservationById(reservation.id), same(reservation));
@@ -100,6 +101,21 @@ void main() {
       // programming error rather than a value.
       expect(() => reservation.scope.segmentValue('index'), throwsStateError);
     }
+  });
+
+  test('models keychain manifest encryption as a separate app 1642 key', () {
+    final reservation = _keyReservation('keychain_manifest_encryption_key');
+
+    expect(reservation.scope.exactPath, "1642'/0'/1'");
+    expect(reservation.owner, Bip85ReservationOwner.keychainManifest);
+    expect(reservation.purpose, Bip85ReservationPurpose.manifestEncryptionKey);
+    expect(reservation.application.number, 1642);
+    expect(reservation.scope.segments.map((segment) => segment.name), [
+      'namespace',
+      'key',
+    ]);
+    expect(reservation.scope.segmentValue('namespace'), 0);
+    expect(reservation.scope.segmentValue('key'), 1);
   });
 
   test('rejects mis-shaped reservation scopes at construction', () {

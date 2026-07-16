@@ -10,6 +10,7 @@ enum KeychainManifestExceptionType {
   reservationMismatch,
   conflict,
   duplicate,
+  backupSnapshot,
   generic,
 }
 
@@ -114,6 +115,23 @@ final class KeychainManifestDuplicateException
     extends KeychainManifestException {
   KeychainManifestDuplicateException(String message, {Object? cause})
     : super._(KeychainManifestExceptionType.duplicate, message, cause: cause);
+}
+
+/// A violation of the encrypted manifest snapshot contract.
+final class KeychainManifestBackupSnapshotException
+    extends KeychainManifestException {
+  KeychainManifestBackupSnapshotException(String message, {Object? cause})
+    : super._(
+        KeychainManifestExceptionType.backupSnapshot,
+        message,
+        cause: cause,
+      );
+}
+
+final class KeychainManifestEncryptionException
+    extends KeychainManifestException {
+  KeychainManifestEncryptionException(String message, {Object? cause})
+    : super._(KeychainManifestExceptionType.generic, message, cause: cause);
 }
 
 final class KeychainManifestGenericException extends KeychainManifestException {

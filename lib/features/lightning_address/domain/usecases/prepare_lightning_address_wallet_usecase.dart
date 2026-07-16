@@ -190,7 +190,8 @@ class PrepareLightningAddressWalletUsecase {
       KeychainManifestExceptionType.reservationMismatch ||
       KeychainManifestExceptionType.unsupportedFileVersion ||
       KeychainManifestExceptionType.conflict ||
-      KeychainManifestExceptionType.duplicate => false,
+      KeychainManifestExceptionType.duplicate ||
+      KeychainManifestExceptionType.nostrEvent => false,
     };
   }
 }
