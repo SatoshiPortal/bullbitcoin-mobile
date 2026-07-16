@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_er
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:drift/native.dart' show SqliteException;
+import 'package:drift/drift.dart' show Value;
 
 class DriftKeychainManifestEntryRepository
     implements KeychainManifestEntryRepository {
@@ -76,6 +77,7 @@ class DriftKeychainManifestEntryRepository
     if (records.isEmpty) return;
     try {
       await _database.transaction(() async {
+        var changed = false;
         for (final record in records) {
           final existingByWallet =
               await _fetchWalletMaterializationRecordByWalletId(
@@ -103,6 +105,7 @@ class DriftKeychainManifestEntryRepository
                     updatedAt: record.walletMaterialization.updatedAt,
                   ),
                 );
+            changed = true;
           } catch (e) {
             if (!_isUniqueConstraintFailure(e)) rethrow;
             final insertedByWallet =
@@ -119,6 +122,7 @@ class DriftKeychainManifestEntryRepository
             );
           }
         }
+        if (changed) await _markBackupDirty();
       });
     } catch (e) {
       if (_isUniqueConstraintFailure(e)) {
@@ -129,6 +133,31 @@ class DriftKeychainManifestEntryRepository
       }
       rethrow;
     }
+  }
+
+  Future<void> _markBackupDirty() async {
+    final table = _database.keychainManifestBackupStates;
+    final current = await (_database.select(
+      table,
+    )..where((row) => row.id.equals(1))).getSingleOrNull();
+    if (current == null) {
+      await _database
+          .into(table)
+          .insert(
+            KeychainManifestBackupStatesCompanion.insert(
+              id: const Value(1),
+              dirty: const Value(true),
+              dirtyRevision: const Value(1),
+            ),
+          );
+      return;
+    }
+    await (_database.update(table)..where((row) => row.id.equals(1))).write(
+      KeychainManifestBackupStatesCompanion(
+        dirty: const Value(true),
+        dirtyRevision: Value(current.dirtyRevision + 1),
+      ),
+    );
   }
 
   Future<void> _ensureEntry(KeychainManifestEntry entry) async {

@@ -60,6 +60,11 @@ void main() {
         .select(database.keychainManifestWalletBindings)
         .get();
     expect(bindings, hasLength(1));
+    final backupState = await database
+        .select(database.keychainManifestBackupStates)
+        .getSingle();
+    expect(backupState.dirty, isTrue);
+    expect(backupState.dirtyRevision, 1);
   });
 
   test('allows same entry and network on another wallet id', () async {

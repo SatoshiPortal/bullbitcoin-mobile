@@ -4,6 +4,7 @@ export 'package:bb_mobile/core/storage/migrations/schema_11_to_12.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_12_to_13.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_13_to_14.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_14_to_15.dart';
+export 'package:bb_mobile/core/storage/migrations/schema_15_to_16.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
