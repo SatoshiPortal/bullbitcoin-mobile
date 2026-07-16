@@ -41,8 +41,10 @@ sealed class InvoicesFailure extends Failure {
   const factory InvoicesFailure.noDefaultLiquidWallet() =
       InvoicesNoDefaultLiquidWalletFailure;
 
-  const factory InvoicesFailure.invalidInput({required String code}) =
-      InvoicesInvalidInputFailure;
+  const factory InvoicesFailure.invalidInput({
+    required String code,
+    String? logMessage,
+  }) = InvoicesInvalidInputFailure;
 
   const factory InvoicesFailure.reusedBitcoinAddress() =
       InvoicesReusedBitcoinAddressFailure;
@@ -105,7 +107,7 @@ final class InvoicesNoDefaultLiquidWalletFailure extends InvoicesFailure {
 }
 
 final class InvoicesInvalidInputFailure extends InvoicesFailure {
-  const InvoicesInvalidInputFailure({required super.code})
+  const InvoicesInvalidInputFailure({required super.code, super.logMessage})
     : super._(kind: InvoicesFailureKind.invalidInput, retryable: false);
 }
 

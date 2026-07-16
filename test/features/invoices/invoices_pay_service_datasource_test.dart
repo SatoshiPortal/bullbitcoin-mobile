@@ -270,6 +270,27 @@ void main() {
       },
     );
 
+    test('preserves the server reason on logMessage for a rejected liquid '
+        'blinding key without leaking it into toString', () async {
+      final mapped = await mapCreateFailure(
+        const BullnymFailure.serverRejectedRequest(
+          code: 'InvalidAmount',
+          logMessage: 'liquid_blinding_key_hex: invalid secret key',
+          retryable: false,
+        ),
+      );
+
+      // The server buckets every create-time field validation under the
+      // `InvalidAmount` code, so the kind stays invalidInput...
+      expect(mapped.kind, InvoicesFailureKind.invalidInput);
+      // ...but the specific reason must remain recoverable for logs/Sentry so
+      // a blinding-key rejection is not mistaken for an amount rejection.
+      expect(mapped.logMessage, 'liquid_blinding_key_hex: invalid secret key');
+      // The diagnostic reason still never leaks through toString (UI-facing).
+      expect(mapped.toString(), 'InvoicesFailure(InvalidAmount)');
+      expect(mapped.toString(), isNot(contains('secret key')));
+    });
+
     test(
       'maps an unexpected recoverable exception without leaking it',
       () async {
