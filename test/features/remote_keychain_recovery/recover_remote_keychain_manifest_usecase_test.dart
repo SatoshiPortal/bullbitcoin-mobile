@@ -1,21 +1,29 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/public/keychain_recovery_facade.dart';
+import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/remote_keychain_recovery/domain/recover_remote_keychain_manifest_usecase.dart';
 import 'package:bb_mobile/features/remote_keychain_recovery/domain/remote_keychain_recovery_result.dart';
+import 'package:bb_mobile/features/remote_keychain_recovery/domain/usecases/heal_recovered_products_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 void main() {
   late _ManifestFacade manifest;
   late _RecoveryFacade recovery;
+  late _LightningAddressFacade lightningAddress;
+  late HealRecoveredProductsUsecase heal;
   late RecoverRemoteKeychainManifestUsecase usecase;
 
   setUp(() {
     manifest = _ManifestFacade();
     recovery = _RecoveryFacade();
+    lightningAddress = _LightningAddressFacade();
+    heal = HealRecoveredProductsUsecase(lightningAddress);
     usecase = RecoverRemoteKeychainManifestUsecase(
       manifest: manifest,
       recovery: recovery,
+      healRecoveredProducts: heal,
     );
   });
 
@@ -48,8 +56,66 @@ void main() {
 
     expect(usecase.execute(), throwsStateError);
   });
+
+  test(
+    'automatically heals products flagged by a successful restore',
+    () async {
+      final plan = KeychainManifestImportPlan(
+        parentFingerprint: 'fedcba98',
+        entries: [],
+      );
+      const intent = KeychainRecoveryWalletIntent(
+        entryId: "fedcba98:39'/0'/12'/101'",
+        reservationId: 'lightning_address_wallet_seed',
+        bip85DerivationPath: "39'/0'/12'/101'",
+        walletId: 'lightning-wallet',
+        childSeedFingerprint: '0123abcd',
+        network: Network.liquidMainnet,
+        scriptType: ScriptType.bip84,
+      );
+      when(manifest.fetchRemoteImportPlan).thenAnswer(
+        (_) async => KeychainManifestRemoteImportResult.success(plan),
+      );
+      when(() => recovery.restoreWallets(plan)).thenAnswer(
+        (_) async => const KeychainRecoveryResult(
+          walletOutcomes: [
+            KeychainRecoveryWalletRestoreOutcome(
+              intent: intent,
+              status: KeychainRecoveryWalletRestoreStatus
+                  .requiresProductReactivation,
+              materializedWalletId: 'lightning-wallet',
+            ),
+          ],
+        ),
+      );
+
+      final result = await usecase.execute();
+
+      expect(result.status, RemoteKeychainRecoveryStatus.restored);
+      expect(lightningAddress.ensureCalls, 1);
+      expect(
+        result.healOutcome?.lightningAddress?.liveness,
+        LightningAddressRegistrationLiveness.live,
+      );
+    },
+  );
 }
 
 final class _ManifestFacade extends Mock implements KeychainManifestFacade {}
 
 final class _RecoveryFacade extends Mock implements KeychainRecoveryFacade {}
+
+final class _LightningAddressFacade implements LightningAddressFacade {
+  int ensureCalls = 0;
+
+  @override
+  Future<LightningAddressHealOutcome> ensureRegistrationLive() async {
+    ensureCalls += 1;
+    return const LightningAddressHealOutcome(
+      liveness: LightningAddressRegistrationLiveness.live,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}

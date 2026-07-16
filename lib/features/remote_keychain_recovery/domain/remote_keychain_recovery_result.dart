@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/remote_keychain_recovery/domain/recovered_products_heal_outcome.dart';
+
 enum RemoteKeychainRecoveryStatus {
   noBackup,
   unavailable,
@@ -14,11 +16,13 @@ final class RemoteKeychainRecoveryResult {
   final int restoredCount;
   final int failedCount;
   final List<String> createdWalletIds;
+  final RecoveredProductsHealOutcome? healOutcome;
 
   const RemoteKeychainRecoveryResult({
     required this.status,
     this.restoredCount = 0,
     this.failedCount = 0,
     this.createdWalletIds = const [],
+    this.healOutcome,
   });
 }

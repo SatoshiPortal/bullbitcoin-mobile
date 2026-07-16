@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.d
 import 'package:bb_mobile/features/bullnym/bullnym_locator.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/lightning_address/data/default_wallet_xprv_adapter.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_default_wallet_xprv_port.dart';
@@ -27,22 +28,32 @@ import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.d
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:get_it/get_it.dart';
 import 'package:test/test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockGetPaidSettingsFacade extends Mock
+    implements GetPaidSettingsFacade {}
 
 void main() {
   group('RegisterWalletOwnedLightningAddressUsecase', () {
     late _FakeDefaultWalletXprvPort defaultWalletXprv;
     late _FakePrepareLightningAddressWalletUsecase prepareWallet;
     late _FakeRegisterLightningAddressUsecase register;
+    late _MockGetPaidSettingsFacade getPaidSettings;
     late RegisterWalletOwnedLightningAddressUsecase usecase;
 
     setUp(() {
       defaultWalletXprv = _FakeDefaultWalletXprvPort();
       prepareWallet = _FakePrepareLightningAddressWalletUsecase();
       register = _FakeRegisterLightningAddressUsecase();
+      getPaidSettings = _MockGetPaidSettingsFacade();
+      when(
+        getPaidSettings.publishBackupSnapshotIfEnabled,
+      ).thenAnswer((_) async {});
       usecase = RegisterWalletOwnedLightningAddressUsecase(
         defaultWalletXprv: defaultWalletXprv,
         prepareWallet: prepareWallet,
         register: register,
+        getPaidSettings: getPaidSettings,
       );
     });
 
@@ -53,6 +64,7 @@ void main() {
 
         expect(defaultWalletXprv.deriveCalls, 1);
         expect(prepareWallet.executeCalls, 1);
+        expect(prepareWallet.scheduleBackupCalls, [false]);
         expect(register.commands.single.xprvBase58, 'xprv');
         expect(register.commands.single.nym, 'alice');
         expect(register.commands.single.ctDescriptor, 'ct-desc');
@@ -60,6 +72,7 @@ void main() {
         expect(result.registration.lightningAddress, 'alice@example.invalid');
         expect(result.walletId, 'la-wallet');
         expect(result.walletCreated, true);
+        verify(getPaidSettings.publishBackupSnapshotIfEnabled).called(1);
       },
     );
 
@@ -315,6 +328,9 @@ void main() {
           ),
       registerWalletOwned: ({required nym}) => walletOwned.execute(nym: nym),
       lookupWalletOwnedRegistration: lookupWalletOwned.execute,
+      ensureRegistrationLive: () async => const LightningAddressHealOutcome(
+        liveness: LightningAddressRegistrationLiveness.live,
+      ),
     );
 
     final result = await facade.registerWalletOwned(nym: 'alice');
@@ -335,6 +351,9 @@ void main() {
       registerWalletOwned: ({required nym}) =>
           _FakeRegisterWalletOwnedLightningAddressUsecase().execute(nym: nym),
       lookupWalletOwnedRegistration: lookupWalletOwned.execute,
+      ensureRegistrationLive: () async => const LightningAddressHealOutcome(
+        liveness: LightningAddressRegistrationLiveness.live,
+      ),
     );
 
     final result = await facade.lookupWalletOwnedRegistration();
@@ -394,6 +413,9 @@ void main() {
     getIt.registerFactory<KeychainManifestFacade>(
       () => _FakeKeychainManifestFacade(),
     );
+    getIt.registerFactory<GetPaidSettingsFacade>(
+      () => _MockGetPaidSettingsFacade(),
+    );
     getIt.registerLazySingleton<Bip85RegistryFacade>(
       () => const Bip85RegistryFacade(),
     );
@@ -428,12 +450,16 @@ class _FakeDefaultWalletXprvPort
 class _FakePrepareLightningAddressWalletUsecase
     implements PrepareLightningAddressWalletUsecase {
   int executeCalls = 0;
+  final List<bool> scheduleBackupCalls = [];
   PreparedLightningAddressWallet prepared = _prepared();
   LightningAddressException? error;
 
   @override
-  Future<PreparedLightningAddressWallet> execute() async {
+  Future<PreparedLightningAddressWallet> execute({
+    bool scheduleBackup = true,
+  }) async {
     executeCalls += 1;
+    scheduleBackupCalls.add(scheduleBackup);
     final error = this.error;
     if (error != null) throw error;
     return prepared;
@@ -472,6 +498,7 @@ class _FakeRegisterWalletOwnedLightningAddressUsecase
   @override
   Future<WalletOwnedLightningAddressRegistration> execute({
     required String nym,
+    bool publishBackupSnapshot = true,
   }) async {
     nyms.add(nym);
     return WalletOwnedLightningAddressRegistration(

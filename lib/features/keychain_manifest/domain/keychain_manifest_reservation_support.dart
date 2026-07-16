@@ -1,14 +1,12 @@
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 
-/// PR23 forward-obligation for the auto-heal products, recorded as intent only
-/// (there is no live reactivation field or flow at this stack level - DG-3).
+/// Post-recovery handling for product-owned wallet material.
 enum KeychainManifestReactivationOnRecovery {
   /// Local materialization is sufficient; nothing to re-activate.
   none,
 
-  /// A bullnym-backed product (LN address, Payment Page, POS). PR23 must, on
-  /// recovery, look the registration up by the seed-derived npub and silently
-  /// re-register if missing - NOT prompt unconditionally (DG-3/GATE-1).
+  /// A Bullnym-backed product whose registration is checked and silently
+  /// repaired after recovery. The value name is frozen manifest-era API.
   autoHealOnRecoveryPr23,
 }
 
@@ -21,9 +19,7 @@ class KeychainManifestReservationClassification {
   /// silently excluded - KC-3).
   final bool exportableV1;
 
-  /// Materialized when restoring FROM a manifest at this stack level. Remote
-  /// recovery is dormant and unwired until PR23, so only BTCPay (local
-  /// materialization, no server dependency) recovers today.
+  /// Materialized when restoring from a manifest at this stack level.
   final bool recoverableV1;
 
   final KeychainManifestReactivationOnRecovery reactivationOnRecovery;
@@ -42,22 +38,9 @@ class KeychainManifestReservationClassification {
 /// recovery decision on any newly reserved product seed rather than silently
 /// dropping it from backups (KC-3) or from recovery.
 ///
-/// Recoverability lands per owning PR: BTCPay at pr06, Lightning Address at
-/// pr11 (recoverableV1 flips true here, with the requiresProductReactivation
-/// flow + KC-6 posture re-applied). Payment Page (102) stays exportable but NOT
-/// recoverable through this cascade; POS (103) is a future reservation.
-///
-/// PR23 FORWARD-OBLIGATION (DG-3, decisions [3]/[A]/[D]/[E]), remote recovery
-/// being dormant/unwired until then, PR23 MUST:
-///   (a) UPGRADE requiresProductReactivation into the DG-3 auto-heal for the
-///       bullnym-backed products (101/102/103) - verify the registration by
-///       seed-derived npub and silently re-register if missing (keyed off
-///       [KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23]),
-///       replacing the unconditional-reactivation precursor;
-///   (b) add Payment Page (102) recovery (flip its recoverableV1);
-///   (c) add POS (103) recovery once that reservation lands;
-///   (d) re-apply the KC-6 hidden + autosweep posture to those newly
-///       recoverable products (as pr06/pr11 already do for BTCPay/LN).
+/// BTCPay, Lightning Address, and Payment Page are recoverable in v1. POS is a
+/// future reservation. Bullnym-backed products expose an automatic heal signal
+/// rather than an unconditional reactivation prompt.
 class KeychainManifestReservationSupport {
   const KeychainManifestReservationSupport._();
 
@@ -68,9 +51,7 @@ class KeychainManifestReservationSupport {
           recoverableV1: true,
           reactivationOnRecovery: KeychainManifestReactivationOnRecovery.none,
         ),
-        // LN recovery is added by this PR (pr11): recoverableV1 flips to true
-        // here. Its registration cannot be proven live on restore, so it is
-        // flagged requiresProductReactivation (PR23 upgrades that to auto-heal).
+        // Registration is checked and silently repaired after local recovery.
         'lightning_address_wallet_seed':
             KeychainManifestReservationClassification(
               exportableV1: true,
@@ -80,7 +61,7 @@ class KeychainManifestReservationSupport {
             ),
         'payment_page_wallet_seed': KeychainManifestReservationClassification(
           exportableV1: true,
-          recoverableV1: false,
+          recoverableV1: true,
           reactivationOnRecovery:
               KeychainManifestReactivationOnRecovery.autoHealOnRecoveryPr23,
         ),
@@ -96,12 +77,7 @@ class KeychainManifestReservationSupport {
   }
 
   /// Whether restoring this reservation's wallet materialization requires the
-  /// owning product to be reactivated. Manifest recovery restores local wallet
-  /// metadata but cannot prove that an external (Bullnym) registration is still
-  /// active, so recovered bullnym-backed wallets are surfaced as requiring
-  /// reactivation. This PR flags it (the unconditional-reactivation precursor);
-  /// PR23 upgrades it to the DG-3 conditional auto-heal (seed-npub lookup +
-  /// silent reregister-if-missing).
+  /// owning product's Bullnym registration to be checked and healed.
   static bool requiresProductReactivationOnRecovery(
     Bip85Reservation reservation,
   ) {
@@ -115,7 +91,7 @@ class KeychainManifestReservationSupport {
       classificationFor(reservation)?.exportableV1 ?? false;
 
   /// Whether the reserved seed is materialized when restoring from a v1
-  /// manifest at this stack level (btcpay only; LN/page recovery is PR23).
+  /// manifest at this stack level (BTCPay, Lightning Address, Payment Page).
   static bool supportsV1Recovery(Bip85Reservation reservation) =>
       classificationFor(reservation)?.recoverableV1 ?? false;
 

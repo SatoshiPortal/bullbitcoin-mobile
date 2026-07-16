@@ -48,6 +48,7 @@ This follows the canonical rollback-timing rule in `ARCHITECTURE.md` (Error hand
 If local wallet creation fails before manifest recording, the use case rolls back newly created deterministic wallets best-effort and returns a local preparation error.
 Once manifest recording succeeds, defaults failures return a local preparation error without rolling back the wallet, so durable recovery metadata never points at a removed wallet.
 Recovered Lightning Address wallets require product reactivation because the manifest can restore wallet materialization metadata but cannot prove an active Bullnym server registration.
+Remote recovery therefore calls `ensureRegistrationLive()` automatically. A live registration is left untouched; an inactive registration with a known nym is silently re-registered without scheduling a backup write. Missing registrations require user reactivation, while network and server failures remain explicitly unreachable.
 
 The existing `xprvBase58` and confidential descriptor registration inputs remain foundation inputs for internal protocol use cases.
 They are not exported by the public facade and must not be passed from routed UI.

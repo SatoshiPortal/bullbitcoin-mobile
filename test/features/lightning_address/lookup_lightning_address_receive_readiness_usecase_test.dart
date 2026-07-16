@@ -162,7 +162,9 @@ class _FakePrepareLightningAddressWalletUsecase
   Object? error;
 
   @override
-  Future<PreparedLightningAddressWallet> execute() async {
+  Future<PreparedLightningAddressWallet> execute({
+    bool scheduleBackup = true,
+  }) async {
     executeCalls += 1;
     final error = this.error;
     if (error != null) throw error;

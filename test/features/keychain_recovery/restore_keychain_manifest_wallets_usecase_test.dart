@@ -425,22 +425,44 @@ void main() {
     },
   );
 
-  test('rejects Payment Page plans before wallet materialization', () async {
-    final result = await usecase.execute(
-      _unsupportedPlan(
+  test(
+    'materializes a Payment Page wallet with posture and reactivation',
+    () async {
+      final plan = _unsupportedPlan(
         reservationId: 'payment_page_wallet_seed',
         path: "39'/0'/12'/102'",
         ownerFeature: 'paymentPage',
+        bip85Application: 39,
         bip85Index: 102,
         walletId: 'payment-page-wallet',
-      ),
-    );
+      );
+      final intent = plan.walletMaterializations.single;
+      materializer.result = KeychainRecoveryWalletMaterializationResult(
+        materializedWallets: [
+          KeychainRecoveryMaterializedWallet(
+            intent: _recoveryIntent(intent),
+            walletId: intent.walletId,
+            network: Network.liquidMainnet,
+            scriptType: intent.scriptType,
+            childSeedFingerprint: intent.childSeedFingerprint,
+            created: true,
+          ),
+        ],
+        failedOutcomes: const [],
+        derivationPath: "39'/0'/12'/102'",
+      );
 
-    expect(result.hasFailures, true);
-    expect(result.walletOutcomes.single.status, _invalidImportPlan);
-    expect(materializer.batches, isEmpty);
-    expect(keychainManifest.recordRequests, isEmpty);
-  });
+      final result = await usecase.execute(plan);
+
+      expect(result.hasFailures, false);
+      expect(materializer.batches, hasLength(1));
+      expect(applyDefaults.calls.single.walletId, 'payment-page-wallet');
+      expect(applyDefaults.calls.single.hideOnHome, true);
+      expect(applyDefaults.calls.single.autoSweepEnabled, true);
+      expect(result.hasProductReactivationRequired, true);
+      expect(result.walletOutcomes.single.status, _requiresReactivation);
+    },
+  );
 }
 
 KeychainManifestImportPlan _plan(

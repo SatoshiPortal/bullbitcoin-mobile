@@ -11,6 +11,8 @@ or Bullnym transport.
 - The cubit calls feature-local use cases.
 - Feature-local use cases consume `keychain_manifest/public` and map its durable
   state into `GetPaidSettings`.
+- Other product features consume only `GetPaidSettingsFacade`; its publication
+  trigger is best effort and never gates product activation.
 - Bullnym, key material, xprvs, ETags, and ciphertext never cross this feature's
   presentation boundary.
 

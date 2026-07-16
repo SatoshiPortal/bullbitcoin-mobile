@@ -245,6 +245,7 @@ class _FakeKeychainManifestFacade implements KeychainManifestFacade {
   Future<void> recordReservedDerivation(
     KeychainManifestReservedDerivationRequest request, {
     DateTime? now,
+    bool scheduleBackup = true,
   }) async {
     final error = recordError;
     if (error != null) throw error;

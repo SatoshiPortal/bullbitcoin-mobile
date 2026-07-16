@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
+import 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration_liveness.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet.dart';
 import 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet_registration.dart';
 
@@ -7,6 +8,7 @@ export 'package:bb_mobile/features/lightning_address/domain/lightning_address_er
         WalletOwnedLightningAddressActivationException,
         WalletOwnedLightningAddressActivationFailurePhase;
 export 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
+export 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration_liveness.dart';
 export 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet.dart'
     show PreparedLightningAddressWallet;
 export 'package:bb_mobile/features/lightning_address/domain/lightning_address_wallet_registration.dart'
@@ -23,6 +25,8 @@ class LightningAddressFacade {
   _registerWalletOwnedCallback;
   final Future<LightningAddressStatus> Function()
   _lookupWalletOwnedRegistrationCallback;
+  final Future<LightningAddressHealOutcome> Function()
+  _ensureRegistrationLiveCallback;
 
   const LightningAddressFacade({
     required Future<PreparedLightningAddressWallet> Function() prepareWallet,
@@ -34,10 +38,13 @@ class LightningAddressFacade {
     registerWalletOwned,
     required Future<LightningAddressStatus> Function()
     lookupWalletOwnedRegistration,
+    required Future<LightningAddressHealOutcome> Function()
+    ensureRegistrationLive,
   }) : _prepareWalletCallback = prepareWallet,
        _lookupRegistrationCallback = lookupRegistration,
        _registerWalletOwnedCallback = registerWalletOwned,
-       _lookupWalletOwnedRegistrationCallback = lookupWalletOwnedRegistration;
+       _lookupWalletOwnedRegistrationCallback = lookupWalletOwnedRegistration,
+       _ensureRegistrationLiveCallback = ensureRegistrationLive;
 
   Future<PreparedLightningAddressWallet> prepareWallet() {
     return _prepareWalletCallback();
@@ -55,5 +62,9 @@ class LightningAddressFacade {
 
   Future<LightningAddressStatus> lookupRegistration({required String npubHex}) {
     return _lookupRegistrationCallback(npubHex: npubHex);
+  }
+
+  Future<LightningAddressHealOutcome> ensureRegistrationLive() {
+    return _ensureRegistrationLiveCallback();
   }
 }

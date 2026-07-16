@@ -87,7 +87,12 @@ class KeychainManifestFacade {
   Future<void> recordReservedDerivation(
     KeychainManifestReservedDerivationRequest request, {
     DateTime? now,
-  }) => _recordReservedDerivation(request, now: now, flushAfterCommit: true);
+    bool scheduleBackup = true,
+  }) => _recordReservedDerivation(
+    request,
+    now: now,
+    flushAfterCommit: scheduleBackup,
+  );
 
   /// Records inventory restored from a remote snapshot without publishing it.
   ///

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -13,6 +15,7 @@ import 'package:bb_mobile/features/btcpay/domain/samrock_pairing_request.dart';
 import 'package:bb_mobile/features/btcpay/domain/samrock_pairing_service_port.dart';
 import 'package:bb_mobile/features/btcpay/domain/samrock_setup_payload_builder.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:meta/meta.dart';
 
@@ -25,6 +28,7 @@ class CompleteBtcpaySamRockPairingUsecase {
   final Bip85RegistryFacade _bip85Registry;
   final ApplyWalletBehaviorDefaultsUsecase _applyWalletBehaviorDefaults;
   final KeychainManifestFacade _keychainManifest;
+  final GetPaidSettingsFacade _getPaidSettings;
 
   const CompleteBtcpaySamRockPairingUsecase({
     required this._getSettings,
@@ -35,6 +39,7 @@ class CompleteBtcpaySamRockPairingUsecase {
     required this._bip85Registry,
     required this._applyWalletBehaviorDefaults,
     required this._keychainManifest,
+    required this._getPaidSettings,
   });
 
   @useResult
@@ -79,6 +84,7 @@ class CompleteBtcpaySamRockPairingUsecase {
 
     try {
       await _recordBtcpayKeychainManifestEntries(preparedWallets);
+      unawaited(_getPaidSettings.publishBackupSnapshotIfEnabled());
     } on KeychainManifestException catch (failure, trace) {
       log.warning(
         'Could not record BTCPay recovery metadata before submission',
@@ -192,6 +198,7 @@ class CompleteBtcpaySamRockPairingUsecase {
   ) async {
     await _keychainManifest.recordReservedDerivation(
       _btcpayKeychainManifestRequest(preparedWallets),
+      scheduleBackup: false,
     );
   }
 

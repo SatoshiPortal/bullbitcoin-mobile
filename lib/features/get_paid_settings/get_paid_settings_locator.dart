@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_pai
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/publish_automated_keychain_backup_usecase.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/set_automated_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/get_paid_settings/presentation/get_paid_settings_cubit.dart';
+import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -22,6 +23,13 @@ final class GetPaidSettingsLocator {
     locator.registerFactory<DeleteAutomatedKeychainBackupUsecase>(
       () => DeleteAutomatedKeychainBackupUsecase(
         locator<KeychainManifestFacade>(),
+      ),
+    );
+    locator.registerFactory<GetPaidSettingsFacade>(
+      () => GetPaidSettingsFacade(
+        getSettings: locator<GetGetPaidSettingsUsecase>(),
+        setAutomatedBackupEnabled: locator<SetAutomatedBackupEnabledUsecase>(),
+        publishBackup: locator<PublishAutomatedKeychainBackupUsecase>(),
       ),
     );
     locator.registerFactory<GetPaidSettingsCubit>(

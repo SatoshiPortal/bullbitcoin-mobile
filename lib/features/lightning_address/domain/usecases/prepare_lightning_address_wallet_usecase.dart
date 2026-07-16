@@ -33,7 +33,9 @@ class PrepareLightningAddressWalletUsecase {
     required this._bip85Registry,
   });
 
-  Future<PreparedLightningAddressWallet> execute() async {
+  Future<PreparedLightningAddressWallet> execute({
+    bool scheduleBackup = true,
+  }) async {
     PreparedDeterministicWallets? preparedWallets;
     var manifestRecorded = false;
     try {
@@ -47,7 +49,10 @@ class PrepareLightningAddressWalletUsecase {
         case Err(:final failure):
           throw _mapDeterministicWalletFailure(failure);
       }
-      await _recordKeychainManifestEntry(preparedWallets);
+      await _recordKeychainManifestEntry(
+        preparedWallets,
+        scheduleBackup: scheduleBackup,
+      );
       manifestRecorded = true;
       final preparedWallet = preparedWallets.wallets.single;
       await _applyLightningAddressWalletDefaults(preparedWallet.walletId);
@@ -99,8 +104,9 @@ class PrepareLightningAddressWalletUsecase {
   }
 
   Future<void> _recordKeychainManifestEntry(
-    PreparedDeterministicWallets preparedWallets,
-  ) {
+    PreparedDeterministicWallets preparedWallets, {
+    required bool scheduleBackup,
+  }) {
     final reservation = _bip85Registry.lightningAddressWalletSeed;
     final preparedWallet = preparedWallets.wallets.single;
     return _keychainManifest.recordReservedDerivation(
@@ -117,6 +123,7 @@ class PrepareLightningAddressWalletUsecase {
           ),
         ],
       ),
+      scheduleBackup: scheduleBackup,
     );
   }
 
