@@ -565,7 +565,7 @@ class _FakeKeychainManifestFacade implements KeychainManifestFacade {
   KeychainManifestException? recordError;
 
   @override
-  Future<void> recordReservedDerivation(
+  Future<void> recordRecoveredDerivation(
     KeychainManifestReservedDerivationRequest request, {
     DateTime? now,
   }) async {

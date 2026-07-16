@@ -80,6 +80,22 @@ class KeychainManifestFacade {
   Future<void> recordReservedDerivation(
     KeychainManifestReservedDerivationRequest request, {
     DateTime? now,
+  }) => _recordReservedDerivation(request, now: now, flushAfterCommit: true);
+
+  /// Records inventory restored from a remote snapshot without publishing it.
+  ///
+  /// Recovery may reconstruct local wallets but must not turn that read into a
+  /// remote write. The durable dirty revision remains available to a later
+  /// normal retry when backup was already enabled independently.
+  Future<void> recordRecoveredDerivation(
+    KeychainManifestReservedDerivationRequest request, {
+    DateTime? now,
+  }) => _recordReservedDerivation(request, now: now, flushAfterCommit: false);
+
+  Future<void> _recordReservedDerivation(
+    KeychainManifestReservedDerivationRequest request, {
+    required bool flushAfterCommit,
+    DateTime? now,
   }) async {
     try {
       await _recordEntry.execute(request, now: now);

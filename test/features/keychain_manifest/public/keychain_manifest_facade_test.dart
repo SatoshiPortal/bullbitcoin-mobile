@@ -23,11 +23,25 @@ import 'package:mocktail/mocktail.dart';
 
 void main() {
   late _InMemoryKeychainManifestStore store;
+  late _MockBackupStateRepository backupState;
   late KeychainManifestFacade facade;
 
   setUp(() {
     store = _InMemoryKeychainManifestStore();
-    final backupState = _MockBackupStateRepository();
+    backupState = _MockBackupStateRepository();
+    when(backupState.get).thenAnswer(
+      (_) async => const KeychainManifestBackupState(
+        enabled: false,
+        dirty: true,
+        dirtyRevision: 1,
+        lastAttemptedAt: null,
+        lastSucceededAt: null,
+        remoteGeneration: 0,
+        remoteEtag: null,
+        contentHash: null,
+        unsupportedVersion: null,
+      ),
+    );
     final remote = _MockRemoteRepository();
     final identity = _MockNostrIdentityFacade();
     facade = KeychainManifestFacade(
@@ -116,6 +130,24 @@ void main() {
     expect(store.entries.single.bip85Application, 39);
     expect(store.entries.single.bip85Index, 100);
   });
+
+  test(
+    'recovery recording never schedules an immediate remote write',
+    () async {
+      await facade.recordRecoveredDerivation(
+        KeychainManifestReservedDerivationRequest(
+          reservationId: 'btcpay_wallet_seed',
+          derivationPath: "39'/0'/12'/100'",
+          parentFingerprint: 'fedcba98',
+          materializations: [_walletMaterialization()],
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(store.records, hasLength(1));
+      verifyNever(backupState.get);
+    },
+  );
 
   test('records additional wallet materializations idempotently', () async {
     await facade.recordReservedDerivation(

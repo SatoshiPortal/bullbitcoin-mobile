@@ -193,7 +193,7 @@ class RestoreKeychainManifestWalletsUsecase {
     final derivationPath = materializationResult.derivationPath;
     if (wallets.isEmpty || derivationPath == null) return [];
     try {
-      await _keychainManifest.recordReservedDerivation(
+      await _keychainManifest.recordRecoveredDerivation(
         KeychainManifestReservedDerivationRequest(
           reservationId: reservationId,
           parentFingerprint: parentFingerprint,

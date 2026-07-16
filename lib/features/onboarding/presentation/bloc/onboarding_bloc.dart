@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/onboarding/recover_remote_keychain_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -15,6 +16,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required this._createDefaultWalletsUsecase,
     required this._completePhysicalBackupVerificationUsecase,
+    required this._recoverRemoteKeychainUsecase,
   }) : super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
@@ -28,6 +30,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
+  final RecoverRemoteKeychainUsecase _recoverRemoteKeychainUsecase;
   Future<void> _handleError(Object error, Emitter<OnboardingState> emit) async {
     log.severe(error: error, trace: StackTrace.current);
     emit(
@@ -80,6 +83,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         mnemonicWords: event.mnemonic.words,
       );
       await _completePhysicalBackupVerificationUsecase.execute();
+      await _recoverRemoteKeychainUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
       await _handleError(e, emit);
