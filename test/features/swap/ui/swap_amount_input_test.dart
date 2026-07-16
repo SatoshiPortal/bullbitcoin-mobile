@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -75,6 +76,42 @@ void main() {
     expect(find.text('MAX'), findsOneWidget);
     expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
     expect(find.byIcon(Icons.swap_vert), findsOneWidget);
+  });
+
+  testWidgets('shows approximate sats for fiat input when sats are preferred', (
+    tester,
+  ) async {
+    await pumpInput(
+      tester,
+      state: const TransferState(
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: 'CAD',
+        fiatCurrencyCodes: ['CAD'],
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+        amount: '50',
+      ),
+    );
+
+    expect(find.text('~50,000 sats'), findsOneWidget);
+  });
+
+  testWidgets('shows approximate BTC for fiat input when BTC is preferred', (
+    tester,
+  ) async {
+    await pumpInput(
+      tester,
+      state: const TransferState(
+        bitcoinUnit: BitcoinUnit.btc,
+        inputAmountCurrencyCode: 'CAD',
+        fiatCurrencyCodes: ['CAD'],
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+        amount: '50',
+      ),
+    );
+
+    expect(find.text('~0.00050000 BTC'), findsOneWidget);
   });
 
   testWidgets('Bitcoin arrow only offers Liquid bitcoin units', (tester) async {

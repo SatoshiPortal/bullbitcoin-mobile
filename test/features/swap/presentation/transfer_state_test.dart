@@ -44,6 +44,39 @@ void main() {
       expect(state.inputAmountSat, 50000);
     });
 
+    test('formats fiat input equivalent using the preferred sats unit', () {
+      const state = TransferState(
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: 'CAD',
+        amount: '50',
+        exchangeRate: 100000,
+      );
+
+      expect(state.formattedInputAmountEquivalent, '50,000 sats');
+    });
+
+    test('formats fiat input equivalent using the preferred BTC unit', () {
+      const state = TransferState(
+        bitcoinUnit: BitcoinUnit.btc,
+        inputAmountCurrencyCode: 'CAD',
+        amount: '50',
+        exchangeRate: 100000,
+      );
+
+      expect(state.formattedInputAmountEquivalent, '0.00050000 BTC');
+    });
+
+    test('formats Bitcoin input equivalent in the selected fiat', () {
+      const state = TransferState(
+        inputAmountCurrencyCode: 'sats',
+        amount: '50000',
+        fiatCurrencyCode: 'CAD',
+        exchangeRate: 100000,
+      );
+
+      expect(state.formattedInputAmountEquivalent, '50.00 CAD');
+    });
+
     test('formats Liquid bitcoin unit without changing picker value', () {
       final state = TransferState(
         inputAmountCurrencyCode: BitcoinUnit.btc.code,

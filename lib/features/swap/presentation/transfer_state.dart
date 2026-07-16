@@ -93,6 +93,20 @@ sealed class TransferState with _$TransferState {
     return fiatCurrencyCode ?? '';
   }
 
+  String get formattedInputAmountEquivalent {
+    if (isInputAmountFiat) {
+      if (bitcoinUnit == BitcoinUnit.sats) {
+        return FormatAmount.sats(inputAmountSat);
+      }
+      return FormatAmount.btc(ConvertAmount.satsToBtc(inputAmountSat));
+    }
+
+    return FormatAmount.fiat(
+      ConvertAmount.satsToFiat(inputAmountSat, exchangeRate ?? 0),
+      fiatCurrencyCode ?? '',
+    );
+  }
+
   SwapLimits? get swapLimits {
     if (sendToExternal) {
       if (fromWallet?.isLiquid == false) {

@@ -127,7 +127,9 @@ class SwapAmountInput extends StatelessWidget {
                       ),
                       const Gap(8),
                       Text(
-                        state.displayEquivalentCurrencyCode,
+                        state.amount.isEmpty
+                            ? state.displayEquivalentCurrencyCode
+                            : '~${state.formattedInputAmountEquivalent}',
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.outline,
                         ),
