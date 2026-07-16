@@ -50,6 +50,14 @@ sealed class PayjoinModel with _$PayjoinModel {
   factory PayjoinModel.fromJson(Map<String, dynamic> json) =>
       _$PayjoinModelFromJson(json);
 
+  // isExpired/isCompleted MUST round-trip: they are what the whole session
+  // lifecycle derives its terminal statuses from. Omitting them here (they
+  // silently fell back to their @Default(false)) meant every by-id fetch
+  // returned a never-completed session no matter what the row said —
+  // surfacing as stale "requested"/"proposed" statuses on transaction
+  // details after a completed/aborted payjoin, redundant fallback
+  // re-broadcasts on expiry, and completion handlers re-resolving sessions
+  // that had already resolved (all observed live).
   factory PayjoinModel.fromReceiverTable(PayjoinReceiverRow table) =>
       PayjoinReceiverModel(
         id: table.id,
@@ -66,6 +74,8 @@ sealed class PayjoinModel with _$PayjoinModel {
         amountSat: table.amountSat,
         proposalPsbt: table.proposalPsbt,
         txId: table.txId,
+        isExpired: table.isExpired,
+        isCompleted: table.isCompleted,
       );
 
   factory PayjoinModel.fromSenderTable(PayjoinSenderRow table) =>
@@ -81,6 +91,8 @@ sealed class PayjoinModel with _$PayjoinModel {
         expireAfterSec: table.expireAfterSec,
         proposalPsbt: table.proposalPsbt,
         txId: table.txId,
+        isExpired: table.isExpired,
+        isCompleted: table.isCompleted,
       );
 
   int get expiresAt => createdAt + expireAfterSec;
