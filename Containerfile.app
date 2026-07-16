@@ -30,6 +30,12 @@ RUN make build-runner
 RUN make translations
 
 # Configure Gradle for containerized builds
+# org.gradle.vfs.watch=false: Gradle's native file-watcher
+# (net.rubygrapefruit.platform) crashes under rootless podman/overlayfs with
+# "Couldn't poll for events, error = 4", killing the daemon mid-build even
+# with org.gradle.daemon=false (Flutter's own gradle invocation still spins
+# one up). Disabling the watch-fs VFS avoids the native watcher entirely.
 RUN mkdir -p $HOME/.gradle && \
     echo "org.gradle.daemon=false" > $HOME/.gradle/gradle.properties && \
+    echo "org.gradle.vfs.watch=false" >> $HOME/.gradle/gradle.properties && \
     echo "org.gradle.jvmargs=-Xmx${GRADLE_HEAP} -XX:+HeapDumpOnOutOfMemoryError" >> $HOME/.gradle/gradle.properties
