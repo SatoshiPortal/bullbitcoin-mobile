@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -29,6 +30,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
     required this._getWalletUsecase,
     required this._getTransactionsByTxIdUsecase,
+    required this._getWalletTransactionUsecase,
     required this._watchWalletTransactionByTxIdUsecase,
     required this._getSwapUsecase,
     required this._getPayjoinByIdUsecase,
@@ -42,6 +44,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   final GetWalletUsecase _getWalletUsecase;
   final GetTransactionsByTxIdUsecase _getTransactionsByTxIdUsecase;
+  final GetWalletTransactionUsecase _getWalletTransactionUsecase;
   final WatchWalletTransactionByTxIdUsecase
   _watchWalletTransactionByTxIdUsecase;
   final GetSwapUsecase _getSwapUsecase;
@@ -78,7 +81,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> initByWalletTxId(String txId, {required String walletId}) async {
-    // Start monitoring the wallet transaction for updates.
+    // Start monitoring the wallet transaction for updates. Cancel any
+    // previous watcher first: this is also reached from the by-payjoin-id
+    // path once the broadcast transaction becomes visible.
+    await _walletTransactionSubscription?.cancel();
     _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
         .execute(txId: txId, walletId: walletId)
         .listen((_) => _loadDetailsByWalletTxId(txId, walletId: walletId));
@@ -179,25 +185,26 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     if (_watchedPayjoinId == payjoinId) return;
     _watchedPayjoinId = payjoinId;
     unawaited(_payjoinSubscription?.cancel());
-    _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
-      payjoin,
-    ) async {
-      // The payjoin repository's timers outlive this cubit; an event can
-      // arrive after close() (see ReceiveBloc/SendCubit's identical guard).
-      if (isClosed) return;
-      await _loadDetailsByWalletTxId(txId, walletId: walletId);
-      if (isClosed) return;
-      if (!payjoin.isOngoing && state.transaction?.walletTransaction == null) {
-        unawaited(
-          _getWalletUsecase.execute(walletId, sync: true).catchError((
-            Object e,
-          ) {
-            log.warning('Failed to sync wallet after payjoin event: $e');
-            return null;
-          }),
-        );
-      }
-    });
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(ids: [payjoinId])
+        .listen((payjoin) async {
+          // The payjoin repository's timers outlive this cubit; an event can
+          // arrive after close() (see ReceiveBloc/SendCubit's identical guard).
+          if (isClosed) return;
+          await _loadDetailsByWalletTxId(txId, walletId: walletId);
+          if (isClosed) return;
+          if (!payjoin.isOngoing &&
+              state.transaction?.walletTransaction == null) {
+            unawaited(
+              _getWalletUsecase.execute(walletId, sync: true).catchError((
+                Object e,
+              ) {
+                log.warning('Failed to sync wallet after payjoin event: $e');
+                return null;
+              }),
+            );
+          }
+        });
   }
 
   /// The exact amount returned on the recovered chain swap's *counterpart* leg —
@@ -320,6 +327,35 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     try {
       final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
 
+      // The broadcast transaction (the payjoin one, or the original on a
+      // fallback) is usually already in the local wallet database by the
+      // time this screen opens — the repository fires a targeted sync right
+      // after any broadcast. Resolve it NOW instead of waiting for the next
+      // organic sync to trigger the watchers below: without this the screen
+      // sat on payjoin-session-only data (a stale "requested"/"proposed"
+      // status and no transaction) even though the payment was already
+      // on-chain (observed live on both sides of a fallback).
+      var broadcastTxId = await _broadcastTxIdForPayjoin(payjoin);
+      if (broadcastTxId == null && !payjoin.isOngoing) {
+        // Resolved session whose broadcast isn't visible locally yet (the
+        // user tapped "view details" within seconds of the broadcast, before
+        // any sync pulled it in). Force a DIRECT sync'd lookup — the
+        // repository's per-transaction sync path is not routed through the
+        // sync coordinator, so it can't be throttled away — and wait for it,
+        // so the user lands straight on the transaction view instead of a
+        // payjoin-session placeholder that swaps out moments later
+        // (observed live on the receiver side of an aborted payjoin).
+        broadcastTxId = await _syncBroadcastTxForPayjoin(payjoin);
+      }
+      if (broadcastTxId != null) {
+        // Reset so _loadDetailsByWalletTxId re-arms its own payjoin watcher
+        // after this by-payjoin-id one is cancelled.
+        _watchedPayjoinId = null;
+        await _payjoinSubscription?.cancel();
+        await initByWalletTxId(broadcastTxId, walletId: payjoin.walletId);
+        return;
+      }
+
       if (payjoin.txId != null) {
         // Listen for the payjoin transaction to be broadcasted.
         await _payjoinTxSubscription?.cancel();
@@ -359,9 +395,70 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           wallet: wallet,
         ),
       );
+
+      // The session is resolved but its broadcast transaction isn't visible
+      // in the local wallet database yet — fire a targeted sync so the
+      // watchers armed above swap this screen to the real transaction
+      // promptly instead of at the next scheduled sync (same gap
+      // _watchPayjoinForWalletTx closes on the by-wallet-tx path).
+      if (!payjoin.isOngoing) {
+        unawaited(
+          _getWalletUsecase.execute(payjoin.walletId, sync: true).catchError((
+            Object e,
+          ) {
+            log.warning('Failed to sync wallet for resolved payjoin: $e');
+            return null;
+          }),
+        );
+      }
     } catch (e) {
       emit(state.copyWith(err: e));
     }
+  }
+
+  /// The txid of this payjoin session's transaction that actually reached
+  /// the chain AND is already visible as a wallet transaction locally — the
+  /// payjoin transaction when the negotiation completed, or the original
+  /// transaction when the session fell back to a plain broadcast. Null while
+  /// neither is visible yet (session still ongoing, or the wallet hasn't
+  /// synced the broadcast in).
+  Future<String?> _broadcastTxIdForPayjoin(Payjoin payjoin) async {
+    for (final txId in [payjoin.txId, payjoin.originalTxId]) {
+      if (txId == null) continue;
+      try {
+        final transactions = await _getTransactionsByTxIdUsecase.execute(txId);
+        final isVisibleInWallet = transactions.any(
+          (tx) =>
+              tx.walletId == payjoin.walletId && tx.walletTransaction != null,
+        );
+        if (isVisibleInWallet) return txId;
+      } catch (_) {
+        // Nothing found for this txid — try the next candidate.
+      }
+    }
+    return null;
+  }
+
+  /// Same candidates as [_broadcastTxIdForPayjoin], but each lookup forces a
+  /// direct electrum-backed sync first, pulling a just-broadcast transaction
+  /// into the local wallet database on demand. Bounded by one sync per
+  /// candidate; best-effort — a failed lookup just means the watchers armed
+  /// by the caller resolve it later.
+  Future<String?> _syncBroadcastTxForPayjoin(Payjoin payjoin) async {
+    for (final txId in [payjoin.txId, payjoin.originalTxId]) {
+      if (txId == null) continue;
+      try {
+        final tx = await _getWalletTransactionUsecase.execute(
+          txId: txId,
+          walletId: payjoin.walletId,
+          sync: true,
+        );
+        if (tx != null) return txId;
+      } catch (e) {
+        log.warning('Forced lookup of payjoin broadcast tx failed: $e');
+      }
+    }
+    return null;
   }
 
   Future<void> initByOrderId(String orderId) async {
