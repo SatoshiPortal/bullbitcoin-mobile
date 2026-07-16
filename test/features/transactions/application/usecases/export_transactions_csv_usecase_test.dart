@@ -177,7 +177,7 @@ void main() {
       ),
       Transaction(
         walletTransaction: _walletTx(
-          txId: 'after',
+          txId: 'future',
           amountSat: 3,
           confirmationTime: DateTime.utc(2026, 1, 16, 0, 1),
         ),
@@ -191,7 +191,7 @@ void main() {
 
     expect(csv, contains('inside'));
     expect(csv, isNot(contains('before')));
-    expect(csv, isNot(contains('after')));
+    expect(csv, isNot(contains('future')));
   });
 
   test('null-timestamp tx is excluded when a date range is set', () async {

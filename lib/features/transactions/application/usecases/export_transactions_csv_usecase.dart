@@ -23,7 +23,7 @@ class ExportTransactionsCsvUsecase {
 
     final exclusiveEnd = end == null
         ? null
-        : DateTime(end.year, end.month, end.day + 1);
+        : DateTime.utc(end.year, end.month, end.day + 1);
 
     final filtered = transactions.where((tx) {
       if (tx.isOrder) return false;
