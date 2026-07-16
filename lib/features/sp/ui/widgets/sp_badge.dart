@@ -15,12 +15,12 @@ class SpBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BullBadge(
-        label: label,
-        background: color.withValues(alpha: 0.15),
-        foreground: color,
-        radius: 4,
-        border: Border.all(color: color),
-      );
+    label: label,
+    background: color.withValues(alpha: 0.15),
+    foreground: color,
+    radius: 4,
+    border: Border.all(color: color),
+  );
 }
 
 /// The badge label and tint for an SP address kind, so the recipient badge

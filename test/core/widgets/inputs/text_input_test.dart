@@ -50,7 +50,10 @@ void main() {
 
       expect(controller.text, '1.5');
       final field = tester.widget<TextField>(find.byType(TextField));
-      expect(field.keyboardType, const TextInputType.numberWithOptions(decimal: true));
+      expect(
+        field.keyboardType,
+        const TextInputType.numberWithOptions(decimal: true),
+      );
     });
   });
 }

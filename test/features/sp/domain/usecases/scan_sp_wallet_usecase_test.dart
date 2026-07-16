@@ -17,8 +17,9 @@ void main() {
 
   group('ScanSpWalletUsecase', () {
     test('A: calls scanOnce exactly once on the repository', () async {
-      when(() => repository.scanOnce())
-          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
+      when(
+        () => repository.scanOnce(),
+      ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -26,45 +27,50 @@ void main() {
       verify(() => repository.scanOnce()).called(1);
     });
 
-    test('B: each execute() delegates to scanOnce (idempotent pass-through)',
-        () async {
-      when(() => repository.scanOnce())
-          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    test(
+      'B: each execute() delegates to scanOnce (idempotent pass-through)',
+      () async {
+        when(
+          () => repository.scanOnce(),
+        ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
-      expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
-      expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
+        expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
+        expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
 
-      // Two calls => two delegations, one-to-one. The use case adds no
-      // dedup/throttle of its own; it is a thin pass-through.
-      verify(() => repository.scanOnce()).called(2);
-    });
+        // Two calls => two delegations, one-to-one. The use case adds no
+        // dedup/throttle of its own; it is a thin pass-through.
+        verify(() => repository.scanOnce()).called(2);
+      },
+    );
 
     test('C: rethrows the exact error thrown by scanOnce', () async {
       final scanError = StateError('scan backend offline');
-      when(() => repository.scanOnce()).thenAnswer((_) async => throw scanError);
+      when(
+        () => repository.scanOnce(),
+      ).thenAnswer((_) async => throw scanError);
 
       // The same instance must propagate unchanged (no wrapping/swallowing).
-      await expectLater(
-        usecase.execute(),
-        throwsA(same(scanError)),
-      );
+      await expectLater(usecase.execute(), throwsA(same(scanError)));
 
       verify(() => repository.scanOnce()).called(1);
     });
 
-    test('D: does not touch any repository method other than scanOnce',
-        () async {
-      when(() => repository.scanOnce())
-          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    test(
+      'D: does not touch any repository method other than scanOnce',
+      () async {
+        when(
+          () => repository.scanOnce(),
+        ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
-      expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
+        expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
 
-      verify(() => repository.scanOnce()).called(1);
-      // The scan entry point must never stop a scan or tear down the session.
-      verifyNever(() => repository.stopScan());
-      verifyNever(() => repository.dispose());
-      verifyNoMoreInteractions(repository);
-    });
+        verify(() => repository.scanOnce()).called(1);
+        // The scan entry point must never stop a scan or tear down the session.
+        verifyNever(() => repository.stopScan());
+        verifyNever(() => repository.dispose());
+        verifyNoMoreInteractions(repository);
+      },
+    );
 
     test('E: forwards a chosen start height to scanOnce', () async {
       when(

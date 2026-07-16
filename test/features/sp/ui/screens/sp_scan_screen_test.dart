@@ -36,8 +36,9 @@ void main() {
     scanUsecase = harness.scanUsecase;
     watchUsecase = harness.watchUsecase;
 
-    when(() => loadUsecase.execute())
-        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
+    when(
+      () => loadUsecase.execute(),
+    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
     when(() => stopUsecase.execute()).thenAnswer((_) async {});
     when(
       () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
@@ -52,8 +53,9 @@ void main() {
   tearDown(() => cubit.close());
 
   Future<void> loadWith(WidgetTester tester, SpWalletData data) async {
-    when(() => loadUsecase.execute())
-        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(data));
+    when(
+      () => loadUsecase.execute(),
+    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(data));
     await cubit.load();
     await tester.pumpWidget(_buildPage(cubit));
     await tester.pump();

@@ -45,8 +45,9 @@ class SpSyncEstimator {
         return;
       }
       final rate = elapsed / blocksDone;
-      _emaSecsPerBlock =
-          _samples > 0 ? _alpha * rate + (1 - _alpha) * _emaSecsPerBlock : rate;
+      _emaSecsPerBlock = _samples > 0
+          ? _alpha * rate + (1 - _alpha) * _emaSecsPerBlock
+          : rate;
       _samples++;
     }
     _lastHeight = current;

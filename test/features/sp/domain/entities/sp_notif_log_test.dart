@@ -18,14 +18,8 @@ void main() {
         formatSpNotification(const SpScanSpendProgress(3, 9)),
         'ScanSpendProgress 3 / 9',
       );
-      expect(
-        formatSpNotification(const SpScanCompleted()),
-        'ScanCompleted',
-      );
-      expect(
-        formatSpNotification(const SpScanStopped()),
-        'ScanStopped',
-      );
+      expect(formatSpNotification(const SpScanCompleted()), 'ScanCompleted');
+      expect(formatSpNotification(const SpScanStopped()), 'ScanStopped');
       expect(
         formatSpNotification(const SpScanFailed('boom')),
         'ScanFailed: boom',
@@ -41,10 +35,7 @@ void main() {
         formatSpNotification(const SpOutputSpent('ab:0')),
         'OutputSpent ab:0',
       );
-      expect(
-        formatSpNotification(const SpBackendOffline()),
-        'BackendOffline',
-      );
+      expect(formatSpNotification(const SpBackendOffline()), 'BackendOffline');
     });
 
     test('electrum tx shows kind, txid, amount and height', () {

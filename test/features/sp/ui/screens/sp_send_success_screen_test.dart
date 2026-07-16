@@ -116,7 +116,8 @@ void main() {
       expect(
         blockingPopScope,
         findsOneWidget,
-        reason: 'success page must block raw pops so we can clear send flow '
+        reason:
+            'success page must block raw pops so we can clear send flow '
             'and route to wallet detail instead of stranding the user on '
             'the confirm page.',
       );

@@ -92,7 +92,11 @@ class _StatusLine extends StatelessWidget {
           padding: const EdgeInsets.only(top: 2),
           child: Row(
             children: [
-              Icon(Icons.check_circle, size: 14, color: context.appColors.success),
+              Icon(
+                Icons.check_circle,
+                size: 14,
+                color: context.appColors.success,
+              ),
               const Gap(4),
               Text(
                 context.loc.spConnected,

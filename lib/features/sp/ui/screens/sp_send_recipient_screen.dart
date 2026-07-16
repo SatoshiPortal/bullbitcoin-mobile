@@ -199,7 +199,10 @@ class _AddressTypeBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (input.trim().isEmpty) return const SizedBox.shrink();
-    final (label, color) = spAddressKindBadge(context, classifySpAddress(input));
+    final (label, color) = spAddressKindBadge(
+      context,
+      classifySpAddress(input),
+    );
     return SpBadge(label: label, color: color);
   }
 }

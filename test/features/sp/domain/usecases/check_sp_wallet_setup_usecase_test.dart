@@ -21,12 +21,13 @@ class MockSpBackendConfigRepository extends Mock
 class MockEnsureSpSessionUsecase extends Mock
     implements EnsureSpSessionUsecase {}
 
-SettingsEntity _makeSettings({bool? isSuperuser = true}) => const SettingsEntity(
-  environment: Environment.mainnet,
-  bitcoinUnit: BitcoinUnit.sats,
-  currencyCode: 'CAD',
-  isSuperuser: null,
-).copyWith(isSuperuser: isSuperuser, isDevModeEnabled: true);
+SettingsEntity _makeSettings({bool? isSuperuser = true}) =>
+    const SettingsEntity(
+      environment: Environment.mainnet,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+      isSuperuser: null,
+    ).copyWith(isSuperuser: isSuperuser, isDevModeEnabled: true);
 
 void main() {
   late MockSpBackendConfigRepository configRepo;
@@ -36,10 +37,9 @@ void main() {
   setUp(() {
     configRepo = MockSpBackendConfigRepository();
     accountRepo = MockSpAccountRepository();
-    when(() => configRepo.fetch())
-        .thenAnswer(
-          (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
-        );
+    when(() => configRepo.fetch()).thenAnswer(
+      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+    );
     when(() => accountRepo.hasRevokedSentinel()).thenAnswer((_) async => false);
     usecase = CheckSpWalletSetupUsecase(
       configRepository: configRepo,
@@ -49,8 +49,9 @@ void main() {
 
   group('CheckSpWalletSetupUsecase', () {
     test('returns false when no backend config is stored', () async {
-      when(() => configRepo.fetch())
-          .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(
+        () => configRepo.fetch(),
+      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -64,7 +65,9 @@ void main() {
     });
 
     test('returns false when the .revoked sentinel is present', () async {
-      when(() => accountRepo.hasRevokedSentinel()).thenAnswer((_) async => true);
+      when(
+        () => accountRepo.hasRevokedSentinel(),
+      ).thenAnswer((_) async => true);
 
       final result = await usecase.execute();
 
@@ -82,15 +85,15 @@ void main() {
     });
   });
 
-  group('gate consistency (CheckSpWalletSetupUsecase vs GetSpWalletUsecase)',
-      () {
-    test(
-      'with .revoked sentinel present, BOTH usecases treat the wallet as '
-      'not-set-up',
-      () async {
+  group(
+    'gate consistency (CheckSpWalletSetupUsecase vs GetSpWalletUsecase)',
+    () {
+      test('with .revoked sentinel present, BOTH usecases treat the wallet as '
+          'not-set-up', () async {
         // Partially-revoked state: config still stored + sentinel present.
-        when(() => accountRepo.hasRevokedSentinel())
-            .thenAnswer((_) async => true);
+        when(
+          () => accountRepo.hasRevokedSentinel(),
+        ).thenAnswer((_) async => true);
 
         final checkUsecase = CheckSpWalletSetupUsecase(
           configRepository: configRepo,
@@ -100,8 +103,9 @@ void main() {
         // which honours the sentinel veto. Mirror that here: with the sentinel
         // present, ensure returns null.
         final settingsRepo = MockSettingsRepository();
-        when(() => settingsRepo.fetch())
-            .thenAnswer((_) async => _makeSettings());
+        when(
+          () => settingsRepo.fetch(),
+        ).thenAnswer((_) async => _makeSettings());
         final ensureSpSession = MockEnsureSpSessionUsecase();
         when(() => ensureSpSession.execute()).thenAnswer((_) async => null);
         final getUsecase = GetSpWalletUsecase(
@@ -114,11 +118,17 @@ void main() {
         final isSetUp = await checkUsecase.execute();
         final wallet = await getUsecase.execute();
 
-        expect(isSetUp, isFalse,
-            reason: 'CheckSpWalletSetupUsecase must honour sentinel');
-        expect(wallet, isNull,
-            reason: 'GetSpWalletUsecase must honour sentinel');
-      },
-    );
-  });
+        expect(
+          isSetUp,
+          isFalse,
+          reason: 'CheckSpWalletSetupUsecase must honour sentinel',
+        );
+        expect(
+          wallet,
+          isNull,
+          reason: 'GetSpWalletUsecase must honour sentinel',
+        );
+      });
+    },
+  );
 }

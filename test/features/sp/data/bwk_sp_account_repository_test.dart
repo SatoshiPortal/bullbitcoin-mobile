@@ -118,21 +118,23 @@ void main() {
       expect(accountDir.existsSync(), isFalse);
     });
 
-    test('writes the sentinel BEFORE disposing the live session (T1.3)',
-        () async {
-      final accountDir = accountDirOf()..createSync();
-      File('${accountDir.path}/account.sqlite').writeAsStringSync('db');
+    test(
+      'writes the sentinel BEFORE disposing the live session (T1.3)',
+      () async {
+        final accountDir = accountDirOf()..createSync();
+        File('${accountDir.path}/account.sqlite').writeAsStringSync('db');
 
-      final repo = _RepoWithFakeSession(sentinelOf().path);
-      await repo.revokeOnDisk();
+        final repo = _RepoWithFakeSession(sentinelOf().path);
+        await repo.revokeOnDisk();
 
-      expect(
-        repo.sentinelPresentAtDispose,
-        isTrue,
-        reason: 'sentinel must be on disk before the session is torn down',
-      );
-      expect(accountDir.existsSync(), isFalse);
-    });
+        expect(
+          repo.sentinelPresentAtDispose,
+          isTrue,
+          reason: 'sentinel must be on disk before the session is torn down',
+        );
+        expect(accountDir.existsSync(), isFalse);
+      },
+    );
 
     test('on a delete failure the sentinel survives, SpSetupChanged is '
         'emitted, and the error is rethrown', () async {
@@ -155,9 +157,7 @@ void main() {
       });
 
       final repo = BwkSpAccountRepository();
-      final setupChanged = repo.updates
-          .where((u) => u is SpSetupChanged)
-          .first;
+      final setupChanged = repo.updates.where((u) => u is SpSetupChanged).first;
 
       Object? caught;
       try {
@@ -199,31 +199,35 @@ void main() {
       );
     });
 
-    test('backupAccountDir returns false with no dir; restore then no-ops',
-        () async {
-      final repo = BwkSpAccountRepository();
-      expect(await repo.backupAccountDir(), isFalse);
-      expect(await repo.restoreAccountDir(), isFalse);
-    });
+    test(
+      'backupAccountDir returns false with no dir; restore then no-ops',
+      () async {
+        final repo = BwkSpAccountRepository();
+        expect(await repo.backupAccountDir(), isFalse);
+        expect(await repo.restoreAccountDir(), isFalse);
+      },
+    );
 
-    test('restoreAccountDir deletes a partial new dir before restoring backup',
-        () async {
-      final accountDir = accountDirOf()..createSync();
-      File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
+    test(
+      'restoreAccountDir deletes a partial new dir before restoring backup',
+      () async {
+        final accountDir = accountDirOf()..createSync();
+        File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
 
-      final repo = BwkSpAccountRepository();
-      await repo.backupAccountDir();
-      // A partial recreate left a fresh dir behind.
-      accountDirOf().createSync();
-      File('${accountDirOf().path}/partial').writeAsStringSync('junk');
+        final repo = BwkSpAccountRepository();
+        await repo.backupAccountDir();
+        // A partial recreate left a fresh dir behind.
+        accountDirOf().createSync();
+        File('${accountDirOf().path}/partial').writeAsStringSync('junk');
 
-      expect(await repo.restoreAccountDir(), isTrue);
-      expect(
-        File('${accountDir.path}/account.sqlite').readAsStringSync(),
-        'old',
-      );
-      expect(File('${accountDir.path}/partial').existsSync(), isFalse);
-    });
+        expect(await repo.restoreAccountDir(), isTrue);
+        expect(
+          File('${accountDir.path}/account.sqlite').readAsStringSync(),
+          'old',
+        );
+        expect(File('${accountDir.path}/partial').existsSync(), isFalse);
+      },
+    );
 
     test('discardBackup removes the backup dir', () async {
       accountDirOf().createSync();
@@ -242,27 +246,31 @@ void main() {
   });
 
   group('dispose stream teardown', () {
-    test('a clean session dispose tears down the notification streams',
-        () async {
-      final repo = _RepoWithDisposableSession();
+    test(
+      'a clean session dispose tears down the notification streams',
+      () async {
+        final repo = _RepoWithDisposableSession();
 
-      await repo.dispose();
+        await repo.dispose();
 
-      expect(repo.notifStreamTornDown, isTrue);
-    });
+        expect(repo.notifStreamTornDown, isTrue);
+      },
+    );
 
-    test('a timed-out session dispose keeps the streams and session live',
-        () async {
-      final repo = _RepoWithDisposableSession(shouldThrow: true);
+    test(
+      'a timed-out session dispose keeps the streams and session live',
+      () async {
+        final repo = _RepoWithDisposableSession(shouldThrow: true);
 
-      await expectLater(repo.dispose(), throwsA(isA<StateError>()));
+        await expectLater(repo.dispose(), throwsA(isA<StateError>()));
 
-      // The stream plumbing is NOT torn down, so the still-live session keeps
-      // pushing notifications instead of going dark on a transient timeout.
-      expect(repo.notifStreamTornDown, isFalse);
-      expect(repo.hasSession, isTrue);
-      expect(repo.isScanningCached, isFalse);
-    });
+        // The stream plumbing is NOT torn down, so the still-live session keeps
+        // pushing notifications instead of going dark on a transient timeout.
+        expect(repo.notifStreamTornDown, isFalse);
+        expect(repo.hasSession, isTrue);
+        expect(repo.isScanningCached, isFalse);
+      },
+    );
   });
 
   group('wipeStaleAccountDir', () {

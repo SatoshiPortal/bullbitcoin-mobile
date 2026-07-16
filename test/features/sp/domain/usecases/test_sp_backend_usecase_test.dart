@@ -13,13 +13,16 @@ class _FakeConfigRepository implements SpBackendConfigRepository {
   _FakeConfigRepository(this._result);
 
   @override
-  Future<Result<void, SpFailure>> testBackend(SpBackendKind kind, String url) async =>
-      _result;
+  Future<Result<void, SpFailure>> testBackend(
+    SpBackendKind kind,
+    String url,
+  ) async => _result;
 
   @override
   Future<void> save(SpBackendConfig config) => throw UnimplementedError();
   @override
-  Future<Result<SpBackendConfig?, SpFailure>> fetch() => throw UnimplementedError();
+  Future<Result<SpBackendConfig?, SpFailure>> fetch() =>
+      throw UnimplementedError();
   @override
   Future<void> delete() => throw UnimplementedError();
   @override
@@ -33,7 +36,10 @@ void main() {
       final usecase = TestSpBackendUsecase(
         configRepository: _FakeConfigRepository(const Ok(null)),
       );
-      expect(await usecase.execute(SpBackendKind.blindbit, 'http://ok'), isNull);
+      expect(
+        await usecase.execute(SpBackendKind.blindbit, 'http://ok'),
+        isNull,
+      );
     });
 
     test('forwards an Err as the failure', () async {

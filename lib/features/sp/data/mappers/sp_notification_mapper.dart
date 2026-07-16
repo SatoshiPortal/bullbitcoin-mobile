@@ -27,8 +27,9 @@ abstract final class SpNotificationMapper {
       SpNewOutput(outpoint, amountSat),
     bwk.SpNotification_OutputSpent(:final outpoint) => SpOutputSpent(outpoint),
     bwk.SpNotification_Broadcasted(:final txid) => SpBroadcasted(txid),
-    bwk.SpNotification_BroadcastFailed(:final message) =>
-      SpBroadcastFailed(message),
+    bwk.SpNotification_BroadcastFailed(:final message) => SpBroadcastFailed(
+      message,
+    ),
     bwk.SpNotification_ElectrumTx(
       :final kind,
       :final txid,

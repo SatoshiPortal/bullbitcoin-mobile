@@ -135,10 +135,7 @@ void main() {
 
   testWidgets('shows fee row', (tester) async {
     cubit.emitTestState(
-      SpSendState(
-        amountSat: BigInt.from(5000),
-        txSimulation: fakeTxSimulation,
-      ),
+      SpSendState(amountSat: BigInt.from(5000), txSimulation: fakeTxSimulation),
     );
     await tester.pumpWidget(_buildPage(cubit));
     await tester.pump();

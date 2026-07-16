@@ -111,10 +111,7 @@ void main() {
         () => ensureSpSessionUsecase.execute(),
       ).thenThrow(StateError('boom'));
 
-      await expectLater(
-        usecase.execute(),
-        throwsA(isA<StateError>()),
-      );
+      await expectLater(usecase.execute(), throwsA(isA<StateError>()));
     });
   });
 }

@@ -41,7 +41,10 @@ void main() {
 
     test('blindbit returns Ok on success', () async {
       final repo = build(testBlindbit: ({required String url}) async {});
-      final result = await repo.testBackend(SpBackendKind.blindbit, 'http://ok');
+      final result = await repo.testBackend(
+        SpBackendKind.blindbit,
+        'http://ok',
+      );
       expect(result, isA<Ok<void, SpFailure>>());
     });
 
@@ -49,7 +52,10 @@ void main() {
       final repo = build(
         testBlindbit: ({required String url}) async => throw Exception('boom'),
       );
-      final result = await repo.testBackend(SpBackendKind.blindbit, 'http://bad');
+      final result = await repo.testBackend(
+        SpBackendKind.blindbit,
+        'http://bad',
+      );
       expect(result, isA<Err<void, SpFailure>>());
       final failure = (result as Err<void, SpFailure>).failure;
       expect(failure, isA<SpBackendUnreachable>());
@@ -58,7 +64,10 @@ void main() {
 
     test('electrum returns Ok on success', () async {
       final repo = build(testElectrum: ({required String url}) async {});
-      final result = await repo.testBackend(SpBackendKind.electrum, 'tcp://ok:1');
+      final result = await repo.testBackend(
+        SpBackendKind.electrum,
+        'tcp://ok:1',
+      );
       expect(result, isA<Ok<void, SpFailure>>());
     });
 
@@ -67,7 +76,10 @@ void main() {
         testElectrum: ({required String url}) async =>
             throw Exception('no route'),
       );
-      final result = await repo.testBackend(SpBackendKind.electrum, 'tcp://bad:1');
+      final result = await repo.testBackend(
+        SpBackendKind.electrum,
+        'tcp://bad:1',
+      );
       expect(result, isA<Err<void, SpFailure>>());
       final failure = (result as Err<void, SpFailure>).failure;
       expect(failure, isA<SpBackendUnreachable>());

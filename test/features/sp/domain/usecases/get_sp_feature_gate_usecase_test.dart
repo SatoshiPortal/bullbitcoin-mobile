@@ -25,8 +25,10 @@ void main() {
 
   Future<bool> gateWith({bool? isSuperuser, bool? isDevModeEnabled}) {
     when(() => settingsRepo.fetch()).thenAnswer(
-      (_) async =>
-          _settings(isSuperuser: isSuperuser, isDevModeEnabled: isDevModeEnabled),
+      (_) async => _settings(
+        isSuperuser: isSuperuser,
+        isDevModeEnabled: isDevModeEnabled,
+      ),
     );
     return usecase.execute();
   }

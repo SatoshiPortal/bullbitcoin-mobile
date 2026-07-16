@@ -45,8 +45,9 @@ void main() {
     when(() => repository.hasRevokedSentinel()).thenAnswer((_) async => false);
     when(() => repository.dispose()).thenAnswer((_) async {});
     when(() => repository.snapshot()).thenReturn(spWallet());
-    when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()));
+    when(() => configRepository.fetch()).thenAnswer(
+      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+    );
     when(
       () => getDefaultSeedUsecase.execute(),
     ).thenAnswer((_) async => spMnemonicSeed());
@@ -88,8 +89,9 @@ void main() {
     });
 
     test('returns null when no backend config is stored', () async {
-      when(() => configRepository.fetch())
-          .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(
+        () => configRepository.fetch(),
+      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -102,26 +104,27 @@ void main() {
         () => getDefaultSeedUsecase.execute(),
       ).thenAnswer((_) async => _bytesSeed());
 
-      await expectLater(
-        usecase.execute(),
-        throwsA(isA<StateError>()),
-      );
+      await expectLater(usecase.execute(), throwsA(isA<StateError>()));
     });
 
-    test('reconstructs via createFromMnemonic from the stored config', () async {
-      final result = await usecase.execute();
+    test(
+      'reconstructs via createFromMnemonic from the stored config',
+      () async {
+        final result = await usecase.execute();
 
-      expect(result, isNotNull);
-      verify(
-        () => repository.createFromMnemonic(
-          network: SpNetwork.regtest,
-          blindbitUrl: 'http://blindbit.example',
-          electrumUrl: 'tcp://electrum.example:50001',
-          mnemonic: 'abandon abandon abandon abandon abandon abandon abandon '
-              'abandon abandon abandon abandon abandon',
-        ),
-      ).called(1);
-    });
+        expect(result, isNotNull);
+        verify(
+          () => repository.createFromMnemonic(
+            network: SpNetwork.regtest,
+            blindbitUrl: 'http://blindbit.example',
+            electrumUrl: 'tcp://electrum.example:50001',
+            mnemonic:
+                'abandon abandon abandon abandon abandon abandon abandon '
+                'abandon abandon abandon abandon abandon',
+          ),
+        ).called(1);
+      },
+    );
 
     test('returns null while a teardown is in progress (no create)', () async {
       when(() => repository.teardownInProgress).thenReturn(true);
@@ -147,9 +150,7 @@ void main() {
       // re-check right before create must abort instead of racing a live
       // session.
       var tearingDown = false;
-      when(
-        () => repository.teardownInProgress,
-      ).thenAnswer((_) => tearingDown);
+      when(() => repository.teardownInProgress).thenAnswer((_) => tearingDown);
       when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async {
         tearingDown = true;
         return spMnemonicSeed();
@@ -182,19 +183,25 @@ void main() {
       verifyNever(() => repository.snapshot());
     });
 
-    test('serializes concurrent establishment into one createFromMnemonic', () async {
-      final results = await Future.wait([usecase.execute(), usecase.execute()]);
+    test(
+      'serializes concurrent establishment into one createFromMnemonic',
+      () async {
+        final results = await Future.wait([
+          usecase.execute(),
+          usecase.execute(),
+        ]);
 
-      expect(results[0], isNotNull);
-      expect(results[1], isNotNull);
-      verify(
-        () => repository.createFromMnemonic(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
-        ),
-      ).called(1);
-    });
+        expect(results[0], isNotNull);
+        expect(results[1], isNotNull);
+        verify(
+          () => repository.createFromMnemonic(
+            network: any(named: 'network'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+            mnemonic: any(named: 'mnemonic'),
+          ),
+        ).called(1);
+      },
+    );
   });
 }

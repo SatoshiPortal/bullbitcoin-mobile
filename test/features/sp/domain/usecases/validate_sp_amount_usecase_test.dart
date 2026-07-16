@@ -27,7 +27,10 @@ void main() {
 
   test('rejects a non-positive amount', () {
     when(() => balanceUsecase.execute()).thenReturn(balance(50000));
-    expect(failureOf(usecase.execute(BigInt.zero)), isA<SpAmountBelowMinimum>());
+    expect(
+      failureOf(usecase.execute(BigInt.zero)),
+      isA<SpAmountBelowMinimum>(),
+    );
   });
 
   test('rejects an amount above the available balance', () {

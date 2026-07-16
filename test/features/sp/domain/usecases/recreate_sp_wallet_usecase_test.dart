@@ -66,8 +66,9 @@ void main() {
     when(() => repository.backupAccountDir()).thenAnswer((_) async => true);
     when(() => repository.restoreAccountDir()).thenAnswer((_) async => true);
     when(() => repository.discardBackup()).thenAnswer((_) async {});
-    when(() => configRepository.fetch())
-        .thenAnswer((_) async => Ok<SpBackendConfig?, SpFailure>(_previousConfig()));
+    when(() => configRepository.fetch()).thenAnswer(
+      (_) async => Ok<SpBackendConfig?, SpFailure>(_previousConfig()),
+    );
     when(() => configRepository.save(any())).thenAnswer((_) async {});
     when(() => ensureSpSessionUsecase.execute()).thenAnswer((_) async => null);
     when(
@@ -80,150 +81,162 @@ void main() {
     ).thenAnswer((_) async {});
   });
 
-  test('recreates: dispose, backup, save config, create, discard backup',
-      () async {
-    final result = await usecase.execute(
-      network: SpNetwork.bitcoin,
-      blindbitUrl: 'https://blindbit.example',
-      electrumUrl: 'ssl://electrum.example:50002',
-    );
+  test(
+    'recreates: dispose, backup, save config, create, discard backup',
+    () async {
+      final result = await usecase.execute(
+        network: SpNetwork.bitcoin,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
 
-    expect(result, isA<Ok<void, SpFailure>>());
-    verifyInOrder([
-      () => repository.beginTeardown(),
-      () => repository.dispose(),
-      () => repository.backupAccountDir(),
-      () => configRepository.save(
-            any(
-              that: isA<SpBackendConfig>()
-                  .having((c) => c.network, 'network', SpNetwork.bitcoin)
-                  .having(
-                    (c) => c.blindbitUrl,
-                    'blindbitUrl',
-                    'https://blindbit.example',
-                  )
-                  .having(
-                    (c) => c.electrumUrl,
-                    'electrumUrl',
-                    'ssl://electrum.example:50002',
-                  ),
-            ),
+      expect(result, isA<Ok<void, SpFailure>>());
+      verifyInOrder([
+        () => repository.beginTeardown(),
+        () => repository.dispose(),
+        () => repository.backupAccountDir(),
+        () => configRepository.save(
+          any(
+            that: isA<SpBackendConfig>()
+                .having((c) => c.network, 'network', SpNetwork.bitcoin)
+                .having(
+                  (c) => c.blindbitUrl,
+                  'blindbitUrl',
+                  'https://blindbit.example',
+                )
+                .having(
+                  (c) => c.electrumUrl,
+                  'electrumUrl',
+                  'ssl://electrum.example:50002',
+                ),
           ),
-      () => repository.createFromMnemonic(
-            network: SpNetwork.bitcoin,
-            blindbitUrl: 'https://blindbit.example',
-            electrumUrl: 'ssl://electrum.example:50002',
-            mnemonic: any(named: 'mnemonic'),
-          ),
-      () => repository.discardBackup(),
-      () => repository.endTeardown(),
-    ]);
-    verifyNever(() => repository.restoreAccountDir());
-  });
+        ),
+        () => repository.createFromMnemonic(
+          network: SpNetwork.bitcoin,
+          blindbitUrl: 'https://blindbit.example',
+          electrumUrl: 'ssl://electrum.example:50002',
+          mnemonic: any(named: 'mnemonic'),
+        ),
+        () => repository.discardBackup(),
+        () => repository.endTeardown(),
+      ]);
+      verifyNever(() => repository.restoreAccountDir());
+    },
+  );
 
-  test('rolls back when the create fails: restores the dir, re-saves the '
-      'previous config, clears teardown, then re-establishes the session',
-      () async {
-    when(
-      () => repository.createFromMnemonic(
-        network: any(named: 'network'),
-        blindbitUrl: any(named: 'blindbitUrl'),
-        electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
-      ),
-    ).thenThrow(Exception('create failed'));
+  test(
+    'rolls back when the create fails: restores the dir, re-saves the '
+    'previous config, clears teardown, then re-establishes the session',
+    () async {
+      when(
+        () => repository.createFromMnemonic(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          mnemonic: any(named: 'mnemonic'),
+        ),
+      ).thenThrow(Exception('create failed'));
 
-    final result = await usecase.execute(
-      network: SpNetwork.bitcoin,
-      blindbitUrl: 'https://blindbit.example',
-      electrumUrl: 'ssl://electrum.example:50002',
-    );
+      final result = await usecase.execute(
+        network: SpNetwork.bitcoin,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
 
-    expect(result, isA<Err<void, SpFailure>>());
-    // The previous config is re-saved and endTeardown runs BEFORE the
-    // re-establish so EnsureSpSessionUsecase does not refuse. (verifyInOrder
-    // runs first: a standalone verify would mark the call and break ordering.)
-    verifyInOrder([
-      () => repository.restoreAccountDir(),
-      () => configRepository.save(_previousConfig()),
-      () => repository.endTeardown(),
-      () => ensureSpSessionUsecase.execute(),
-    ]);
-    // Two disposes: the pre-backup one and the rollback one before restore.
-    verify(() => repository.dispose()).called(2);
-    verifyNever(() => repository.discardBackup());
-  });
+      expect(result, isA<Err<void, SpFailure>>());
+      // The previous config is re-saved and endTeardown runs BEFORE the
+      // re-establish so EnsureSpSessionUsecase does not refuse. (verifyInOrder
+      // runs first: a standalone verify would mark the call and break ordering.)
+      verifyInOrder([
+        () => repository.restoreAccountDir(),
+        () => configRepository.save(_previousConfig()),
+        () => repository.endTeardown(),
+        () => ensureSpSessionUsecase.execute(),
+      ]);
+      // Two disposes: the pre-backup one and the rollback one before restore.
+      verify(() => repository.dispose()).called(2);
+      verifyNever(() => repository.discardBackup());
+    },
+  );
 
-  test('rollback without a backup still reverts config but skips re-establish',
-      () async {
-    when(() => repository.restoreAccountDir()).thenAnswer((_) async => false);
-    when(
-      () => repository.createFromMnemonic(
-        network: any(named: 'network'),
-        blindbitUrl: any(named: 'blindbitUrl'),
-        electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
-      ),
-    ).thenThrow(Exception('create failed'));
+  test(
+    'rollback without a backup still reverts config but skips re-establish',
+    () async {
+      when(() => repository.restoreAccountDir()).thenAnswer((_) async => false);
+      when(
+        () => repository.createFromMnemonic(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          mnemonic: any(named: 'mnemonic'),
+        ),
+      ).thenThrow(Exception('create failed'));
 
-    final result = await usecase.execute(
-      network: SpNetwork.bitcoin,
-      blindbitUrl: 'https://blindbit.example',
-      electrumUrl: 'ssl://electrum.example:50002',
-    );
+      final result = await usecase.execute(
+        network: SpNetwork.bitcoin,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
 
-    expect(result, isA<Err<void, SpFailure>>());
-    verify(() => repository.restoreAccountDir()).called(1);
-    // Config is always reverted so the failed new config never lingers, but with
-    // no restored dir the session is not re-established.
-    verify(() => configRepository.save(_previousConfig())).called(1);
-    verifyNever(() => ensureSpSessionUsecase.execute());
-  });
+      expect(result, isA<Err<void, SpFailure>>());
+      verify(() => repository.restoreAccountDir()).called(1);
+      // Config is always reverted so the failed new config never lingers, but with
+      // no restored dir the session is not re-established.
+      verify(() => configRepository.save(_previousConfig())).called(1);
+      verifyNever(() => ensureSpSessionUsecase.execute());
+    },
+  );
 
-  test('rollback with no previous config deletes it (no persisted new config)',
-      () async {
-    // A corrupt/absent previous config: the fetch folds to null, so the rollback
-    // must delete() rather than re-save, leaving the wallet not-set-up.
-    when(() => configRepository.fetch())
-        .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
-    when(() => configRepository.delete()).thenAnswer((_) async {});
-    when(() => repository.restoreAccountDir()).thenAnswer((_) async => false);
-    when(
-      () => repository.createFromMnemonic(
-        network: any(named: 'network'),
-        blindbitUrl: any(named: 'blindbitUrl'),
-        electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
-      ),
-    ).thenThrow(Exception('create failed'));
+  test(
+    'rollback with no previous config deletes it (no persisted new config)',
+    () async {
+      // A corrupt/absent previous config: the fetch folds to null, so the rollback
+      // must delete() rather than re-save, leaving the wallet not-set-up.
+      when(
+        () => configRepository.fetch(),
+      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(() => configRepository.delete()).thenAnswer((_) async {});
+      when(() => repository.restoreAccountDir()).thenAnswer((_) async => false);
+      when(
+        () => repository.createFromMnemonic(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          mnemonic: any(named: 'mnemonic'),
+        ),
+      ).thenThrow(Exception('create failed'));
 
-    final result = await usecase.execute(
-      network: SpNetwork.bitcoin,
-      blindbitUrl: 'https://blindbit.example',
-      electrumUrl: 'ssl://electrum.example:50002',
-    );
+      final result = await usecase.execute(
+        network: SpNetwork.bitcoin,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
 
-    expect(result, isA<Err<void, SpFailure>>());
-    verify(() => configRepository.delete()).called(1);
-  });
+      expect(result, isA<Err<void, SpFailure>>());
+      verify(() => configRepository.delete()).called(1);
+    },
+  );
 
-  test('a dispose throw returns Err (execute is total) and clears teardown',
-      () async {
-    when(() => repository.dispose()).thenThrow(Exception('dispose boom'));
+  test(
+    'a dispose throw returns Err (execute is total) and clears teardown',
+    () async {
+      when(() => repository.dispose()).thenThrow(Exception('dispose boom'));
 
-    final result = await usecase.execute(
-      network: SpNetwork.bitcoin,
-      blindbitUrl: 'https://blindbit.example',
-      electrumUrl: 'ssl://electrum.example:50002',
-    );
+      final result = await usecase.execute(
+        network: SpNetwork.bitcoin,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
 
-    expect((result as Err).failure, isA<SpUnexpected>());
-    verify(() => repository.endTeardown()).called(1);
-  });
+      expect((result as Err).failure, isA<SpUnexpected>());
+      verify(() => repository.endTeardown()).called(1);
+    },
+  );
 
   test('a backup throw returns Err (execute is total)', () async {
-    when(() => repository.backupAccountDir())
-        .thenThrow(Exception('backup boom'));
+    when(
+      () => repository.backupAccountDir(),
+    ).thenThrow(Exception('backup boom'));
 
     final result = await usecase.execute(
       network: SpNetwork.bitcoin,

@@ -22,13 +22,19 @@ class _MockSpCubit extends Mock implements SpCubit {}
 Widget _buildPage(SpCubit cubit) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceiveScreen()),
+  home: BlocProvider<SpCubit>.value(
+    value: cubit,
+    child: const SpReceiveScreen(),
+  ),
 );
 
 Widget _buildMockPage(_MockSpCubit cubit) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  home: BlocProvider<SpCubit>.value(value: cubit, child: const SpReceiveScreen()),
+  home: BlocProvider<SpCubit>.value(
+    value: cubit,
+    child: const SpReceiveScreen(),
+  ),
 );
 
 void main() {
@@ -145,9 +151,9 @@ void main() {
   testWidgets(
     'tapping Generate address calls the usecase and reveals the address',
     (tester) async {
-      when(
-        () => generateUsecase.execute(),
-      ).thenAnswer((_) async => const Ok<String, SpFailure>('bcrt1ptaprootnew'));
+      when(() => generateUsecase.execute()).thenAnswer(
+        (_) async => const Ok<String, SpFailure>('bcrt1ptaprootnew'),
+      );
 
       await tester.pumpWidget(_buildPage(cubit));
       await tester.pump();

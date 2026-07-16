@@ -139,19 +139,20 @@ void main() {
   }
 
   group('SP wallet card visibility', () {
-    testWidgets('renders the SP card when enabled, superuser, dev mode, setup', (
-      tester,
-    ) async {
-      await pumpCards(
-        tester,
-        isSpWalletSetup: true,
-        isSpFeatureEnabled: true,
-        isSuperuser: true,
-        isDevModeEnabled: true,
-      );
+    testWidgets(
+      'renders the SP card when enabled, superuser, dev mode, setup',
+      (tester) async {
+        await pumpCards(
+          tester,
+          isSpWalletSetup: true,
+          isSpFeatureEnabled: true,
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        );
 
-      expect(find.text('Silent Payments'), findsOneWidget);
-    });
+        expect(find.text('Silent Payments'), findsOneWidget);
+      },
+    );
 
     // The card gates on `isSpFeatureEnabled && isSpWalletSetup`. The bloc
     // derives isSpFeatureEnabled from superuser + dev mode, so the card ignores

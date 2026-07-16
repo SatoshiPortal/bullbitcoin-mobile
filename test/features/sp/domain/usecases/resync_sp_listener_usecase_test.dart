@@ -16,14 +16,17 @@ void main() {
     when(() => repository.restartElectrum()).thenAnswer((_) async {});
   });
 
-  test('restarts the listener when a session is live and not scanning', () async {
-    when(() => repository.hasSession).thenReturn(true);
-    when(() => repository.isScanningCached).thenReturn(false);
+  test(
+    'restarts the listener when a session is live and not scanning',
+    () async {
+      when(() => repository.hasSession).thenReturn(true);
+      when(() => repository.isScanningCached).thenReturn(false);
 
-    await usecase.execute();
+      await usecase.execute();
 
-    verify(() => repository.restartElectrum()).called(1);
-  });
+      verify(() => repository.restartElectrum()).called(1);
+    },
+  );
 
   test('no-ops when there is no live session', () async {
     when(() => repository.hasSession).thenReturn(false);

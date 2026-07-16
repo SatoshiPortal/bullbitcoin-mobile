@@ -62,10 +62,7 @@ class SpSendSuccessScreen extends StatelessWidget {
                 if (txid.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: AddressViewer(
-                      txid,
-                      textAlign: TextAlign.center,
-                    ),
+                    child: AddressViewer(txid, textAlign: TextAlign.center),
                   ),
                 const Gap(40),
                 Padding(

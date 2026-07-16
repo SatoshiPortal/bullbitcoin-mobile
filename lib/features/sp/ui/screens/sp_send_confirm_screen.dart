@@ -42,7 +42,10 @@ class SpSendConfirmScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.confirmButton, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.confirmButton,
+          style: context.font.headlineMedium,
+        ),
         bottom: SpSendAppBarProgress(
           isLoading: context.select((SpSendCubit c) => c.state.isLoading),
         ),
@@ -98,7 +101,9 @@ class SpSendConfirmScreen extends StatelessWidget {
                           children: [
                             for (final coin in simulation.inputs)
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
                                 child: _CoinInputRow(coin: coin),
                               ),
                           ],
@@ -114,7 +119,9 @@ class SpSendConfirmScreen extends StatelessWidget {
                           children: [
                             for (final out in simulation.outputs)
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
                                 child: _OutputRow(recipient: out),
                               ),
                           ],
@@ -216,10 +223,7 @@ class _CoinInputRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        SpBadge(
-          label: coin.source.shortLabel(context),
-          color: sourceColor,
-        ),
+        SpBadge(label: coin.source.shortLabel(context), color: sourceColor),
         const Gap(8),
         Text(
           context.loc.spDotAmountSats(

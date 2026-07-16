@@ -73,10 +73,7 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
       }
       return const Ok(null);
     } catch (e) {
-      developer.log(
-        'SP backend test failed ($kind, $url): $e',
-        name: 'SP',
-      );
+      developer.log('SP backend test failed ($kind, $url): $e', name: 'SP');
       log.warning('SP backend test failed ($kind, $url)', error: e);
       return Err(SpBackendUnreachable('SP backend test failed ($url): $e'));
     }

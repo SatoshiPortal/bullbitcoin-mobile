@@ -105,7 +105,9 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
         const Gap(16),
         if (state.network == SpNetwork.regtest) ...[
           BBButton.big(
-            onPressed: state.isFetchingDefaults ? () {} : widget.onFetchDefaults,
+            onPressed: state.isFetchingDefaults
+                ? () {}
+                : widget.onFetchDefaults,
             label: context.loc.spFetchRegtestDefaults,
             bgColor: context.appColors.surface,
             textColor: context.appColors.onSurface,

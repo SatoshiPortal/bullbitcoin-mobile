@@ -83,7 +83,9 @@ class SpSendCubit extends Cubit<SpSendState> {
     if (recipient == null || (amount == null && !state.isMax)) {
       emit(
         state.copyWith(
-          error: const SpUnexpected('SP prepare: recipient and amount required'),
+          error: const SpUnexpected(
+            'SP prepare: recipient and amount required',
+          ),
         ),
       );
       return;

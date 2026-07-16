@@ -48,8 +48,9 @@ void main() {
     scanUsecase = harness.scanUsecase;
     notifController = StreamController<SpNotification>.broadcast();
 
-    when(() => loadUsecase.execute())
-        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
+    when(
+      () => loadUsecase.execute(),
+    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
     when(
       () => watchUsecase.execute(),
     ).thenAnswer((_) => notifController.stream);
@@ -100,9 +101,7 @@ void main() {
     await cubit.load();
     clearInteractions(loadUsecase);
 
-    notifController.add(
-      SpNewOutput('abc:0', BigInt.zero),
-    );
+    notifController.add(SpNewOutput('abc:0', BigInt.zero));
     await Future.delayed(Duration.zero);
 
     verify(() => loadUsecase.execute()).called(greaterThanOrEqualTo(1));

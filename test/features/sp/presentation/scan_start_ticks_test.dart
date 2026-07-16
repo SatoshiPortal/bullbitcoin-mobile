@@ -30,17 +30,19 @@ void main() {
       ]);
     });
 
-    test('drops offsets that fall at or below the birthday on a short chain',
-        () {
-      final ticks = scanStartTicks(
-        loc: loc,
-        tip: 709700,
-        minBirthday: 709632,
-        blocksPerDay: 144,
-      );
+    test(
+      'drops offsets that fall at or below the birthday on a short chain',
+      () {
+        final ticks = scanStartTicks(
+          loc: loc,
+          tip: 709700,
+          minBirthday: 709632,
+          blocksPerDay: 144,
+        );
 
-      expect(ticks, const [(label: 'Earliest', height: 709632)]);
-    });
+        expect(ticks, const [(label: 'Earliest', height: 709632)]);
+      },
+    );
   });
 
   group('blocksToApproxDuration', () {

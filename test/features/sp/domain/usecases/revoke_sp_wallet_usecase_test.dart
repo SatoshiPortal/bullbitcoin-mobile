@@ -47,19 +47,23 @@ void main() {
       ]);
     });
 
-    test('a config delete failure does not abort the revoke; it still notifies',
-        () async {
-      when(() => configRepo.delete()).thenThrow(Exception('config gone'));
+    test(
+      'a config delete failure does not abort the revoke; it still notifies',
+      () async {
+        when(() => configRepo.delete()).thenThrow(Exception('config gone'));
 
-      await usecase.execute();
+        await usecase.execute();
 
-      verify(() => accountRepo.notifySetupChanged()).called(1);
-      verify(() => accountRepo.endTeardown()).called(1);
-    });
+        verify(() => accountRepo.notifySetupChanged()).called(1);
+        verify(() => accountRepo.endTeardown()).called(1);
+      },
+    );
 
     test('when revokeOnDisk fails, the config is NOT dropped, no final notify, '
         'and endTeardown still runs, error returned as Err', () async {
-      when(() => accountRepo.revokeOnDisk()).thenThrow(Exception('delete boom'));
+      when(
+        () => accountRepo.revokeOnDisk(),
+      ).thenThrow(Exception('delete boom'));
 
       final result = await usecase.execute();
 

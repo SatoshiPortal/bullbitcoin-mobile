@@ -142,9 +142,7 @@ void main() {
         verify(() => revokeSpWalletUsecase.execute()).called(1);
         // Settings no longer pokes the WalletBloc for SP; revoke emits
         // SpSetupChanged and the wallet refreshes via its own watcher.
-        verifyNever(
-          () => walletBloc.add(any(that: isA<RefreshSpWallet>())),
-        );
+        verifyNever(() => walletBloc.add(any(that: isA<RefreshSpWallet>())));
         verify(() => setIsDevModeUsecase.execute(false)).called(1);
         expect(cubit.state.storedSettings?.isDevModeEnabled, false);
       },

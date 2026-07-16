@@ -94,15 +94,17 @@ void main() {
       expect(fakeRepo.scanOnceCount, 0);
     });
 
-    test('only an explicit user scan() reaches scanOnce, exactly once',
-        () async {
-      await cubit.load();
-      await settle();
-      expect(fakeRepo.scanOnceCount, 0);
+    test(
+      'only an explicit user scan() reaches scanOnce, exactly once',
+      () async {
+        await cubit.load();
+        await settle();
+        expect(fakeRepo.scanOnceCount, 0);
 
-      await cubit.scan();
+        await cubit.scan();
 
-      expect(fakeRepo.scanOnceCount, 1);
-    });
+        expect(fakeRepo.scanOnceCount, 1);
+      },
+    );
   });
 }

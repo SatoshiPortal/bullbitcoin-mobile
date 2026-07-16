@@ -53,10 +53,7 @@ class _SpCoinTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = coin.source.sourceColor(context);
     return ListTile(
-      leading: SpBadge(
-        label: coin.source.shortLabel(context),
-        color: color,
-      ),
+      leading: SpBadge(label: coin.source.shortLabel(context), color: color),
       title: Text(
         context.loc.spSendSatsAmount(
           FormatAmount.satsGrouped(coin.amountSat.toInt()),
@@ -100,6 +97,9 @@ class _SpCoinTile extends StatelessWidget {
         context.loc.spCoinStatusSpent,
       ),
     };
-    return Tooltip(message: tooltip, child: Icon(icon, color: color));
+    return Tooltip(
+      message: tooltip,
+      child: Icon(icon, color: color),
+    );
   }
 }

@@ -92,22 +92,26 @@ void main() {
       expect(cubit.state.error, isA<SpAddressNetworkMismatch>());
     });
 
-    test('previewRecipient rejects a mainnet address on a test-network wallet',
-        () {
-      // Reverse of the case above: an sp1... mainnet address on a testnet
-      // wallet must be rejected up front.
-      when(() => networkUsecase.execute()).thenReturn(SpNetwork.testnet);
-      cubit.previewRecipient('sp1qexampleaddress');
-      expect(cubit.state.recipient, isNull);
-      expect(cubit.state.error, isA<SpAddressNetworkMismatch>());
-    });
+    test(
+      'previewRecipient rejects a mainnet address on a test-network wallet',
+      () {
+        // Reverse of the case above: an sp1... mainnet address on a testnet
+        // wallet must be rejected up front.
+        when(() => networkUsecase.execute()).thenReturn(SpNetwork.testnet);
+        cubit.previewRecipient('sp1qexampleaddress');
+        expect(cubit.state.recipient, isNull);
+        expect(cubit.state.error, isA<SpAddressNetworkMismatch>());
+      },
+    );
 
-    test('previewRecipient accepts a matching-network silent payment address',
-        () {
-      cubit.previewRecipient('sp1qexampleaddress');
-      expect(cubit.state.recipient, isA<SpRecipientSp>());
-      expect(cubit.state.error, isNull);
-    });
+    test(
+      'previewRecipient accepts a matching-network silent payment address',
+      () {
+        cubit.previewRecipient('sp1qexampleaddress');
+        expect(cubit.state.recipient, isA<SpRecipientSp>());
+        expect(cubit.state.error, isNull);
+      },
+    );
 
     test('previewRecipient rejects a tsp1 address on a regtest wallet', () {
       // tsp1 is testnet/signet, so it must not be accepted on a regtest wallet.
@@ -179,22 +183,24 @@ void main() {
       expect(cubit.state.recipient, isA<SpRecipientSp>());
     });
 
-    test('prepare() calls PrepareSpPaymentUsecase and sets txSimulation',
-        () async {
-      cubit.previewRecipient('sp1qexampleaddress');
-      cubit.setAmount(BigInt.from(5000));
+    test(
+      'prepare() calls PrepareSpPaymentUsecase and sets txSimulation',
+      () async {
+        cubit.previewRecipient('sp1qexampleaddress');
+        cubit.setAmount(BigInt.from(5000));
 
-      await cubit.prepare();
+        await cubit.prepare();
 
-      expect(cubit.state.txSimulation, isNotNull);
-      expect(cubit.state.hasTxSimulation, true);
-      verify(
-        () => prepareUsecase.execute(
-          recipients: any(named: 'recipients'),
-          feerateSatVb: any(named: 'feerateSatVb'),
-        ),
-      ).called(1);
-    });
+        expect(cubit.state.txSimulation, isNotNull);
+        expect(cubit.state.hasTxSimulation, true);
+        verify(
+          () => prepareUsecase.execute(
+            recipients: any(named: 'recipients'),
+            feerateSatVb: any(named: 'feerateSatVb'),
+          ),
+        ).called(1);
+      },
+    );
 
     test('setMax(true) makes prepare() send a max RecipientView', () async {
       cubit.previewRecipient('sp1qexampleaddress');
@@ -203,39 +209,41 @@ void main() {
 
       await cubit.prepare();
 
-      final captured = verify(
-        () => prepareUsecase.execute(
-          recipients: captureAny(named: 'recipients'),
-          feerateSatVb: any(named: 'feerateSatVb'),
-        ),
-      ).captured.single as List<SpRecipient>;
+      final captured =
+          verify(
+                () => prepareUsecase.execute(
+                  recipients: captureAny(named: 'recipients'),
+                  feerateSatVb: any(named: 'feerateSatVb'),
+                ),
+              ).captured.single
+              as List<SpRecipient>;
       expect(captured.single, isA<SpRecipientSp>());
       expect((captured.single as SpRecipientSp).isMax, true);
     });
 
-    test('signAndBroadcast() completes full SP send flow and sets txid',
-        () async {
-      cubit.previewRecipient('sp1qexampleaddress');
-      cubit.setAmount(BigInt.from(5000));
-      // signAndBroadcast requires a confirmed simulation. The UI flow only
-      // exposes the Confirm button after prepare() succeeds, so tests that
-      // drive Confirm directly must prepare first.
-      await cubit.prepare();
+    test(
+      'signAndBroadcast() completes full SP send flow and sets txid',
+      () async {
+        cubit.previewRecipient('sp1qexampleaddress');
+        cubit.setAmount(BigInt.from(5000));
+        // signAndBroadcast requires a confirmed simulation. The UI flow only
+        // exposes the Confirm button after prepare() succeeds, so tests that
+        // drive Confirm directly must prepare first.
+        await cubit.prepare();
 
-      await cubit.signAndBroadcast();
+        await cubit.signAndBroadcast();
 
-      expect(cubit.state.txid, fakeTxid);
-      expect(cubit.state.sendSuccess, true);
-      // R4: send-flow inputs must be cleared on success so a back-pop to the
-      // confirm page cannot re-enter signAndBroadcast against a stale pinned
-      // simulation. txid stays so the success page can still render it.
-      expect(cubit.state.recipient, isNull);
-      expect(cubit.state.amountSat, isNull);
-      expect(cubit.state.txSimulation, isNull);
-      verify(
-        () => sendUsecase.execute(draft: any(named: 'draft')),
-      ).called(1);
-    });
+        expect(cubit.state.txid, fakeTxid);
+        expect(cubit.state.sendSuccess, true);
+        // R4: send-flow inputs must be cleared on success so a back-pop to the
+        // confirm page cannot re-enter signAndBroadcast against a stale pinned
+        // simulation. txid stays so the success page can still render it.
+        expect(cubit.state.recipient, isNull);
+        expect(cubit.state.amountSat, isNull);
+        expect(cubit.state.txSimulation, isNull);
+        verify(() => sendUsecase.execute(draft: any(named: 'draft'))).called(1);
+      },
+    );
 
     test(
       'signAndBroadcast() after a prior success refuses to re-broadcast (no resetSendFlow between calls)',
@@ -262,9 +270,7 @@ void main() {
 
         expect(cubit.state.error, isA<SpUnexpected>());
         // The irreversible send ran exactly once across both invocations.
-        verify(
-          () => sendUsecase.execute(draft: any(named: 'draft')),
-        ).called(1);
+        verify(() => sendUsecase.execute(draft: any(named: 'draft'))).called(1);
       },
     );
 
@@ -311,63 +317,56 @@ void main() {
           (cubit.state.error! as SpUnexpected).logMessage,
           contains('missing simulation'),
         );
-        verifyNever(
-          () => sendUsecase.execute(draft: any(named: 'draft')),
-        );
+        verifyNever(() => sendUsecase.execute(draft: any(named: 'draft')));
       },
     );
 
-    test(
-      'signAndBroadcast() survives cubit.close() mid-broadcast: no '
-      'emit-after-close, send called once',
-      () async {
-        cubit.previewRecipient('sp1qexampleaddress');
-        cubit.setAmount(BigInt.from(5000));
-        // confirm a simulation before driving Confirm.
-        await cubit.prepare();
+    test('signAndBroadcast() survives cubit.close() mid-broadcast: no '
+        'emit-after-close, send called once', () async {
+      cubit.previewRecipient('sp1qexampleaddress');
+      cubit.setAmount(BigInt.from(5000));
+      // confirm a simulation before driving Confirm.
+      await cubit.prepare();
 
-        // Gate the send so we control exactly when it resolves. We close the
-        // cubit BEFORE releasing the gate, simulating the user popping the SP
-        // route while the FRB broadcast worker is still running. Without the
-        // `isClosed` guards, the post-await `emit(state.copyWith(txid: txid))`
-        // would throw `StateError: emit was called after close`.
-        final gate = Completer<Result<String, SpFailure>>();
-        when(
-          () => sendUsecase.execute(draft: any(named: 'draft')),
-        ).thenAnswer((_) => gate.future);
+      // Gate the send so we control exactly when it resolves. We close the
+      // cubit BEFORE releasing the gate, simulating the user popping the SP
+      // route while the FRB broadcast worker is still running. Without the
+      // `isClosed` guards, the post-await `emit(state.copyWith(txid: txid))`
+      // would throw `StateError: emit was called after close`.
+      final gate = Completer<Result<String, SpFailure>>();
+      when(
+        () => sendUsecase.execute(draft: any(named: 'draft')),
+      ).thenAnswer((_) => gate.future);
 
-        // Track any unhandled errors that escape from the in-flight future
-        // (the cubit catches its own exceptions, but emit-after-close would
-        // bubble as an async error).
-        final asyncErrors = <Object>[];
-        final inFlight = runZonedGuarded<Future<void>>(
-          () => cubit.signAndBroadcast(),
-          (error, _) => asyncErrors.add(error),
-        )!;
+      // Track any unhandled errors that escape from the in-flight future
+      // (the cubit catches its own exceptions, but emit-after-close would
+      // bubble as an async error).
+      final asyncErrors = <Object>[];
+      final inFlight = runZonedGuarded<Future<void>>(
+        () => cubit.signAndBroadcast(),
+        (error, _) => asyncErrors.add(error),
+      )!;
 
-        // Yield once so signAndBroadcast advances past the guards and is
-        // awaiting on the send usecase.
-        await Future<void>.delayed(Duration.zero);
+      // Yield once so signAndBroadcast advances past the guards and is
+      // awaiting on the send usecase.
+      await Future<void>.delayed(Duration.zero);
 
-        // Close mid-broadcast.
-        await cubit.close();
-        expect(cubit.isClosed, isTrue);
+      // Close mid-broadcast.
+      await cubit.close();
+      expect(cubit.isClosed, isTrue);
 
-        // Now release the broadcast; tx hits the network AFTER the cubit is
-        // gone. The post-await code path must not throw.
-        gate.complete(const Ok(fakeTxid));
-        await inFlight;
-        await Future<void>.delayed(Duration.zero);
+      // Now release the broadcast; tx hits the network AFTER the cubit is
+      // gone. The post-await code path must not throw.
+      gate.complete(const Ok(fakeTxid));
+      await inFlight;
+      await Future<void>.delayed(Duration.zero);
 
-        // No emit-after-close exception escaped.
-        expect(asyncErrors, isEmpty);
+      // No emit-after-close exception escaped.
+      expect(asyncErrors, isEmpty);
 
-        // Send ran exactly once (no retry, no duplicate send).
-        verify(
-          () => sendUsecase.execute(draft: any(named: 'draft')),
-        ).called(1);
-      },
-    );
+      // Send ran exactly once (no retry, no duplicate send).
+      verify(() => sendUsecase.execute(draft: any(named: 'draft'))).called(1);
+    });
 
     test(
       'signAndBroadcast() is re-entrancy guarded: concurrent calls broadcast once',
@@ -394,9 +393,7 @@ void main() {
 
         // The irreversible send sequence must run exactly once even with
         // overlapping invocations.
-        verify(
-          () => sendUsecase.execute(draft: any(named: 'draft')),
-        ).called(1);
+        verify(() => sendUsecase.execute(draft: any(named: 'draft'))).called(1);
         expect(cubit.state.txid, fakeTxid);
         expect(cubit.state.isBroadcasting, false);
       },
@@ -446,9 +443,8 @@ void main() {
           feerateSatVb: any(named: 'feerateSatVb'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SpFailure>(
-          SpUnexpected('insufficient funds'),
-        ),
+        (_) async =>
+            const Err<SpTxDraft, SpFailure>(SpUnexpected('insufficient funds')),
       );
 
       cubit.previewRecipient('sp1qtest');
@@ -459,32 +455,32 @@ void main() {
       expect(cubit.state.isLoading, false);
     });
 
-    test('signAndBroadcast() sets error and resets flags when broadcast throws',
-        () async {
-      when(
-        () => sendUsecase.execute(draft: any(named: 'draft')),
-      ).thenAnswer(
-        (_) async =>
-            const Err<String, SpFailure>(SpUnexpected('broadcast failed')),
-      );
+    test(
+      'signAndBroadcast() sets error and resets flags when broadcast throws',
+      () async {
+        when(() => sendUsecase.execute(draft: any(named: 'draft'))).thenAnswer(
+          (_) async =>
+              const Err<String, SpFailure>(SpUnexpected('broadcast failed')),
+        );
 
-      cubit.previewRecipient('sp1qexampleaddress');
-      cubit.setAmount(BigInt.from(5000));
-      await cubit.prepare();
+        cubit.previewRecipient('sp1qexampleaddress');
+        cubit.setAmount(BigInt.from(5000));
+        await cubit.prepare();
 
-      await cubit.signAndBroadcast();
+        await cubit.signAndBroadcast();
 
-      expect(cubit.state.error, isA<SpUnexpected>());
-      expect(
-        (cubit.state.error! as SpUnexpected).logMessage,
-        contains('broadcast failed'),
-      );
-      expect(cubit.state.isBroadcasting, false);
-      expect(cubit.state.isLoading, false);
-      // A failed broadcast must not look successful: no txid, no success flag.
-      expect(cubit.state.txid, '');
-      expect(cubit.state.sendSuccess, false);
-    });
+        expect(cubit.state.error, isA<SpUnexpected>());
+        expect(
+          (cubit.state.error! as SpUnexpected).logMessage,
+          contains('broadcast failed'),
+        );
+        expect(cubit.state.isBroadcasting, false);
+        expect(cubit.state.isLoading, false);
+        // A failed broadcast must not look successful: no txid, no success flag.
+        expect(cubit.state.txid, '');
+        expect(cubit.state.sendSuccess, false);
+      },
+    );
 
     test('resetSendFlow() clears all send state', () {
       cubit.previewRecipient('sp1qtest');
@@ -518,15 +514,17 @@ void main() {
       expect(cubit.state.txSimulation, isNotNull);
     });
 
-    test('signAndBroadcast() without a simulation refuses without scanning',
-        () async {
-      cubit.previewRecipient('sp1qtest');
-      cubit.setAmount(BigInt.from(5000));
-      // The missing-simulation guard rejects the call (no prepare()).
-      await cubit.signAndBroadcast();
+    test(
+      'signAndBroadcast() without a simulation refuses without scanning',
+      () async {
+        cubit.previewRecipient('sp1qtest');
+        cubit.setAmount(BigInt.from(5000));
+        // The missing-simulation guard rejects the call (no prepare()).
+        await cubit.signAndBroadcast();
 
-      verifyNever(() => sendUsecase.execute(draft: any(named: 'draft')));
-      expect(cubit.state.txid, isEmpty);
-    });
+        verifyNever(() => sendUsecase.execute(draft: any(named: 'draft')));
+        expect(cubit.state.txid, isEmpty);
+      },
+    );
   });
 }

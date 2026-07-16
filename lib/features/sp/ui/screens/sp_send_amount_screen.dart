@@ -83,7 +83,10 @@ class _SpSendAmountScreenState extends State<SpSendAmountScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.loc.amountLabel, style: context.font.headlineMedium),
+          title: Text(
+            context.loc.amountLabel,
+            style: context.font.headlineMedium,
+          ),
           bottom: SpSendAppBarProgress(
             isLoading: context.select((SpSendCubit c) => c.state.isLoading),
           ),
@@ -125,7 +128,8 @@ class _SpSendAmountScreenState extends State<SpSendAmountScreen> {
                           builder: (context, balance) => Text(
                             context.loc.spSendAvailableSats(
                               FormatAmount.satsGrouped(
-                                (balance?.totalUnifiedSat ?? BigInt.zero).toInt(),
+                                (balance?.totalUnifiedSat ?? BigInt.zero)
+                                    .toInt(),
                               ),
                             ),
                             style: context.font.bodySmall?.copyWith(

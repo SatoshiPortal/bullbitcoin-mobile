@@ -26,9 +26,10 @@ SettingsEntity _settings({
 ).copyWith(isSuperuser: isSuperuser, isDevModeEnabled: isDevModeEnabled);
 
 Seed _mnemonicSeed() => Seed.mnemonic(
-  mnemonicWords: 'abandon abandon abandon abandon abandon abandon abandon '
-          'abandon abandon abandon abandon about'
-      .split(' '),
+  mnemonicWords:
+      'abandon abandon abandon abandon abandon abandon abandon '
+              'abandon abandon abandon abandon about'
+          .split(' '),
   bytes: Uint8List.fromList(List<int>.filled(64, 1)),
   masterFingerprint: '00000000',
 );
@@ -110,70 +111,91 @@ void main() {
   });
 
   group('CreateSpWalletUsecase double-setup', () {
-    test('refuses with SpAlreadySetUp when a config is stored and no sentinel',
-        () async {
-      await configRepo.save(
-        SpBackendConfig(
-          network: SpNetwork.regtest,
-          blindbitUrl: 'http://existing.example',
-          electrumUrl: 'tcp://existing.example:50001',
-        ),
-      );
+    test(
+      'refuses with SpAlreadySetUp when a config is stored and no sentinel',
+      () async {
+        await configRepo.save(
+          SpBackendConfig(
+            network: SpNetwork.regtest,
+            blindbitUrl: 'http://existing.example',
+            electrumUrl: 'tcp://existing.example:50001',
+          ),
+        );
 
-      final result = await run();
+        final result = await run();
 
-      expect((result as Err).failure, isA<SpAlreadySetUp>());
-      expect(accountRepo.createCount, 0, reason: 'never recreate over a wallet');
-    });
+        expect((result as Err).failure, isA<SpAlreadySetUp>());
+        expect(
+          accountRepo.createCount,
+          0,
+          reason: 'never recreate over a wallet',
+        );
+      },
+    );
 
-    test('a corrupt stored config does not block setup (counts as absent)',
-        () async {
-      configRepo.failFetch = true;
+    test(
+      'a corrupt stored config does not block setup (counts as absent)',
+      () async {
+        configRepo.failFetch = true;
 
-      final result = await run();
+        final result = await run();
 
-      expect(result, isA<Ok<void, SpFailure>>());
-      expect(accountRepo.createCount, 1);
-    });
+        expect(result, isA<Ok<void, SpFailure>>());
+        expect(accountRepo.createCount, 1);
+      },
+    );
   });
 
   group('CreateSpWalletUsecase stale-sentinel cleanup', () {
-    test('wipes the stale account dir, then creates and persists the config',
-        () async {
-      accountRepo.sentinel = true; // a prior revoke left a sentinel behind
+    test(
+      'wipes the stale account dir, then creates and persists the config',
+      () async {
+        accountRepo.sentinel = true; // a prior revoke left a sentinel behind
 
-      final result = await run();
+        final result = await run();
 
-      expect(result, isA<Ok<void, SpFailure>>());
-      expect(accountRepo.sentinel, isFalse, reason: 'stale dir was wiped');
-      expect(accountRepo.createCount, 1);
-      expect(
-        (await configRepo.fetch()),
-        isA<Ok<SpBackendConfig?, SpFailure>>()
-            .having((r) => (r as Ok).value, 'config', isNotNull),
-      );
-    });
+        expect(result, isA<Ok<void, SpFailure>>());
+        expect(accountRepo.sentinel, isFalse, reason: 'stale dir was wiped');
+        expect(accountRepo.createCount, 1);
+        expect(
+          (await configRepo.fetch()),
+          isA<Ok<SpBackendConfig?, SpFailure>>().having(
+            (r) => (r as Ok).value,
+            'config',
+            isNotNull,
+          ),
+        );
+      },
+    );
 
-    test('refuses with SpSetupCleanupFailed when the stale wipe throws',
-        () async {
-      accountRepo.sentinel = true;
-      accountRepo.wipeShouldThrow = true;
+    test(
+      'refuses with SpSetupCleanupFailed when the stale wipe throws',
+      () async {
+        accountRepo.sentinel = true;
+        accountRepo.wipeShouldThrow = true;
 
-      final result = await run();
+        final result = await run();
 
-      expect((result as Err).failure, isA<SpSetupCleanupFailed>());
-      expect(accountRepo.createCount, 0, reason: 'no create if cleanup failed');
-    });
+        expect((result as Err).failure, isA<SpSetupCleanupFailed>());
+        expect(
+          accountRepo.createCount,
+          0,
+          reason: 'no create if cleanup failed',
+        );
+      },
+    );
   });
 
   group('CreateSpWalletUsecase seed + create failures', () {
-    test('a non-mnemonic seed throws StateError (programmer-bug path)',
-        () async {
-      when(() => seedUsecase.execute()).thenAnswer((_) async => _bytesSeed());
+    test(
+      'a non-mnemonic seed throws StateError (programmer-bug path)',
+      () async {
+        when(() => seedUsecase.execute()).thenAnswer((_) async => _bytesSeed());
 
-      await expectLater(run(), throwsA(isA<StateError>()));
-      expect(accountRepo.createCount, 0);
-    });
+        await expectLater(run(), throwsA(isA<StateError>()));
+        expect(accountRepo.createCount, 0);
+      },
+    );
 
     test('maps a createFromMnemonic throw to SpUnexpected', () async {
       accountRepo.createShouldThrow = true;
@@ -195,39 +217,45 @@ void main() {
       expect(
         stored.value,
         isNull,
-        reason: 'a failed first-time setup must leave no persisted config, '
+        reason:
+            'a failed first-time setup must leave no persisted config, '
             'else the next setup hits the double-setup guard',
       );
     });
 
-    test('a save throw returns Err (execute is total, does not throw)',
-        () async {
-      configRepo.saveShouldThrow = true;
+    test(
+      'a save throw returns Err (execute is total, does not throw)',
+      () async {
+        configRepo.saveShouldThrow = true;
 
-      final result = await run();
+        final result = await run();
 
-      expect((result as Err).failure, isA<SpUnexpected>());
-      expect(accountRepo.createCount, 0, reason: 'save is before create');
-    });
+        expect((result as Err).failure, isA<SpUnexpected>());
+        expect(accountRepo.createCount, 0, reason: 'save is before create');
+      },
+    );
 
-    test('a seed read throw returns Err (execute is total, does not throw)',
-        () async {
-      when(
-        () => seedUsecase.execute(),
-      ).thenThrow(Exception('seed read failed'));
+    test(
+      'a seed read throw returns Err (execute is total, does not throw)',
+      () async {
+        when(
+          () => seedUsecase.execute(),
+        ).thenThrow(Exception('seed read failed'));
 
-      final result = await run();
+        final result = await run();
 
-      expect((result as Err).failure, isA<SpUnexpected>());
-      expect(accountRepo.createCount, 0);
-    });
+        expect((result as Err).failure, isA<SpUnexpected>());
+        expect(accountRepo.createCount, 0);
+      },
+    );
 
     test('happy path returns Ok and persists the checked config', () async {
       final result = await run();
 
       expect(result, isA<Ok<void, SpFailure>>());
       expect(accountRepo.createCount, 1);
-      final stored = (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
+      final stored =
+          (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
       expect(stored.value?.network, SpNetwork.regtest);
       expect(stored.value?.blindbitUrl, 'http://blindbit.example');
     });
