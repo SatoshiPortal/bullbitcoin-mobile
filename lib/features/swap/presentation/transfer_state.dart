@@ -7,6 +7,8 @@ sealed class TransferState with _$TransferState {
     Exception? startError,
     @Default([]) List<Wallet> wallets,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    @Default('sats') String inputAmountCurrencyCode,
+    @Default([]) List<String> fiatCurrencyCodes,
     FeeOptions? liquidNetworkFees,
     FeeOptions? bitcoinNetworkFees,
     (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
@@ -14,6 +16,7 @@ sealed class TransferState with _$TransferState {
     Wallet? fromWallet,
     Wallet? toWallet,
     int? maxAmountSat,
+    @Default(false) bool useMaxAmount,
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
@@ -35,6 +38,7 @@ sealed class TransferState with _$TransferState {
     String? externalAddressError,
     @Default(true) bool receiveExactAmount,
     @Default('') String amount,
+    int? exactInputAmountSat,
     String? receiveAddress,
     @Default(true) bool replaceByFee,
     @Default([]) List<WalletUtxo> selectedUtxos,
@@ -64,6 +68,29 @@ sealed class TransferState with _$TransferState {
 
   String get displayFromCurrencyCode {
     return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
+  }
+
+  List<String> get inputAmountCurrencyCodes => [
+    BitcoinUnit.btc.code,
+    BitcoinUnit.sats.code,
+    ...fiatCurrencyCodes,
+  ];
+
+  bool get isInputAmountFiat => ![
+    BitcoinUnit.btc.code,
+    BitcoinUnit.sats.code,
+  ].contains(inputAmountCurrencyCode);
+
+  String get displayInputAmountCurrencyCode {
+    if (isInputAmountFiat) return inputAmountCurrencyCode;
+    return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}$inputAmountCurrencyCode';
+  }
+
+  String get displayEquivalentCurrencyCode {
+    if (isInputAmountFiat) {
+      return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
+    }
+    return fiatCurrencyCode ?? '';
   }
 
   SwapLimits? get swapLimits {
@@ -106,7 +133,14 @@ sealed class TransferState with _$TransferState {
   }
 
   int get inputAmountSat {
-    if (bitcoinUnit == BitcoinUnit.sats) {
+    if (exactInputAmountSat != null) return exactInputAmountSat!;
+    if (isInputAmountFiat) {
+      if (exchangeRate == null || exchangeRate! <= 0) return 0;
+      return ConvertAmount.fiatToSats(
+        double.tryParse(amount) ?? 0,
+        exchangeRate!,
+      );
+    } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
       return int.tryParse(amount) ?? 0;
     } else {
       return ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
@@ -114,12 +148,29 @@ sealed class TransferState with _$TransferState {
   }
 
   String get formattedInputAmount {
-    if (amount.isEmpty) return '0';
     if (bitcoinUnit == BitcoinUnit.sats) {
       return FormatAmount.sats(inputAmountSat);
-    } else {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(inputAmountSat));
     }
+    return FormatAmount.btc(ConvertAmount.satsToBtc(inputAmountSat));
+  }
+
+  String get maxAmountInput {
+    return formatSatsForInput(maxAmountSat ?? 0, includeCurrency: false);
+  }
+
+  String formatSatsForInput(int amountSat, {bool includeCurrency = true}) {
+    late final String amount;
+    if (isInputAmountFiat) {
+      amount = ConvertAmount.btcToFiat(
+        ConvertAmount.satsToBtc(amountSat),
+        exchangeRate ?? 0,
+      ).toString();
+    } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      amount = amountSat.toString();
+    } else {
+      amount = ConvertAmount.satsToBtc(amountSat).toString();
+    }
+    return includeCurrency ? '$amount $displayInputAmountCurrencyCode' : amount;
   }
 
   int? get absoluteFees {
@@ -157,7 +208,7 @@ sealed class TransferState with _$TransferState {
   /// incompatible with guaranteeing an exact receivable amount.
   bool get isMaxSelected {
     final max = maxAmountSat;
-    return max != null && max > 0 && inputAmountSat == max;
+    return max != null && max > 0 && (useMaxAmount || inputAmountSat == max);
   }
 
   int get selectedUtxoTotalSat {
@@ -232,17 +283,11 @@ sealed class TransferState with _$TransferState {
     if (limits == null) return null;
 
     if (limits.min > inputAmountSat) {
-      final minAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.min)
-          : limits.min;
-      return 'Minimum amount is ${minAmount.toString()} $displayFromCurrencyCode';
+      return 'Minimum amount is ${formatSatsForInput(limits.min)}';
     }
 
     if (limits.max < inputAmountSat) {
-      final maxAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.max)
-          : limits.max;
-      return 'Maximum amount is ${maxAmount.toString()} $displayFromCurrencyCode';
+      return 'Maximum amount is ${formatSatsForInput(limits.max)}';
     }
 
     return null;

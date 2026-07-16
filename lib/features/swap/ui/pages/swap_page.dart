@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -12,7 +10,6 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
@@ -31,13 +28,11 @@ class SwapPageState extends State<SwapPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountNode = FocusNode();
-  int _amountSat = 0;
 
   @override
   void initState() {
     super.initState();
     final bloc = context.read<TransferBloc>();
-    final bitcoinUnit = bloc.state.bitcoinUnit;
     final initialAmount = bloc.state.amount;
     if (initialAmount.isNotEmpty) {
       _amountController.text = initialAmount;
@@ -48,21 +43,6 @@ class SwapPageState extends State<SwapPage> {
       context.read<TransferBloc>().add(
         TransferEvent.amountChanged(_amountController.text),
       );
-      // Keep the amount in satoshis updated so we can use it elsewhere to
-      // calculate fees etc. in Stateless child Widgets like SwapAmountInput
-      // and SwapFeesRow.
-      setState(() {
-        _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
-              );
-        _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
-              );
-      });
     });
   }
 
@@ -80,15 +60,6 @@ class SwapPageState extends State<SwapPage> {
       listener: (context, state) {
         if (state.amount != _amountController.text) {
           _amountController.text = state.amount;
-          final bitcoinUnit = state.bitcoinUnit;
-          setState(() {
-            _amountSat = bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(state.amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
-            _amountSat = bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(state.amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
-          });
         }
       },
       child: Scaffold(
@@ -207,11 +178,8 @@ class SwapPageState extends State<SwapPage> {
                     const Gap(12),
                     SwapAmountInput(
                       amountController: _amountController,
-                      amountSat: _amountSat,
                       focusNode: _amountNode,
                     ),
-                    const Gap(12),
-                    SwapBalanceRow(amountController: _amountController),
                     const Gap(12),
                     BlocSelector<
                       TransferBloc,
