@@ -1,7 +1,7 @@
 /// An injectable source of the current time.
 ///
-/// Signing and ordering paths (the keychain-manifest Nostr event `created_at`,
-/// the manifest file `generatedAt`, the entry timestamps, and the Bullpay
+/// Signing and ordering paths (Bullnym backup request timestamps, the manifest
+/// file `generatedAt`, the entry timestamps, and the Bullpay
 /// request timestamp) previously read `DateTime.now()` directly, which made the
 /// clock impossible to control in a test and left a latent bug class around the
 /// signature time-window and recency ordering when a device clock is skewed.

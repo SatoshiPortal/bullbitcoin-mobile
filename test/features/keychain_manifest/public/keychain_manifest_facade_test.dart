@@ -7,15 +7,18 @@ import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_ma
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_backup_state_repository.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_encryption_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_remote_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/delete_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_keychain_manifest_backup_state_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/fetch_keychain_manifest_remote_import_plan_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/flush_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/set_keychain_manifest_backup_enabled_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/sync_keychain_manifest_backup_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,6 +77,11 @@ void main() {
         ),
         identity: identity,
         wallet: _MockBackupWalletPort(),
+      ),
+      flushBackup: FlushKeychainManifestBackupUsecase(
+        state: backupState,
+        wallet: _MockBackupWalletPort(),
+        sync: _MockSyncBackup(),
       ),
     );
   });
@@ -458,6 +466,12 @@ final class _MockNostrIdentityFacade extends Mock
 
 final class _MockEncryptionRepository extends Mock
     implements KeychainManifestEncryptionRepository {}
+
+final class _MockBackupWalletPort extends Mock
+    implements KeychainManifestBackupWalletPort {}
+
+final class _MockSyncBackup extends Mock
+    implements SyncKeychainManifestBackupUsecase {}
 
 const _manifestPayload =
     '{"version":1,"parentFingerprint":"fedcba98","generatedAt":20,'

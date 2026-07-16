@@ -271,3 +271,38 @@ Bullnym storage, request signing, conditional replacement, wallet restore,
 product reactivation, and UI are separate slices. The manifest stream role must
 not be reused for generic Bullnym authentication, NIP-05, profiles, DMs, or any
 public identity flow.
+
+## Bullnym Storage
+
+The remote store contains one current opaque blob for the
+`keychain_manifest` stream. Requests are signed by the frozen
+`9000'/1'/1'` BIP85/BIP340 identity and encrypted with `1642'/0'/1'`.
+Bullnym receives neither xprv nor plaintext. Fetch, conditional store, and
+conditional delete use the public `bullnym` facade; this feature has no direct
+public-network transport.
+
+Every store first fetches and authenticates the current head, decrypts it, and
+merges compatible remote entries with local inventory. A stale conditional
+write refetches and recomposes once. Corrupt, conflicting, oversized, or newer
+data is never overwritten.
+
+## Durable Scheduling
+
+One singleton Drift row owns activation, dirty revision, attempts, success,
+remote generation/ETag, content checkpoint, and a newer-version block. New
+manifest materializations and the dirty revision are committed in one local
+transaction. Upload is best effort after commit and can never roll back wallet
+creation.
+
+The same single-flight flush runs on startup, app resume, successful foreground
+wallet sync, and the explicit Back up now action. Disabling stops stores but
+preserves dirty work and the remote blob. Deletion is a distinct confirmed
+conditional action.
+
+Seed recovery fetches automatically after the default wallet exists. Absence,
+network failure, malformed data, and unsupported versions never block access to
+the seed-derived wallet and never enable future uploads. Onboarding schedules
+this optional work after local recovery commits and leaves its loading state
+immediately; remote fetch and wallet materialization continue independently.
+Recovered inventory advances the durable dirty revision but suppresses the
+post-materialization upload trigger, so a recovery read never causes a write.

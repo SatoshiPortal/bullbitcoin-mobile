@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_routes.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -112,6 +113,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.storefront_outlined,
+                  title: context.loc.settingsGetPaidTitle,
+                  onTap: () => context.pushNamed(
+                    GetPaidSettingsRoute.getPaidSettings.name,
+                  ),
                 ),
                 SettingsEntryItem(
                   icon: Icons.currency_bitcoin,

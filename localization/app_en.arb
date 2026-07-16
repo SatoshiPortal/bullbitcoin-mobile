@@ -13579,6 +13579,26 @@
     "description": "Generic error message when deterministic wallet preparation fails"
   },
   "keychainManifestGenericError": "Could not update recovery metadata.",
+  "settingsGetPaidTitle": "Get Paid",
+  "@settingsGetPaidTitle": {
+    "description": "Settings row title for Get Paid products"
+  },
+  "getPaidSettingsScreenTitle": "Get Paid",
+  "@getPaidSettingsScreenTitle": {
+    "description": "Title for the Get Paid settings screen"
+  },
+  "getPaidAutomatedBackupToggleLabel": "Encrypted recovery backup",
+  "@getPaidAutomatedBackupToggleLabel": {
+    "description": "Toggle for the independent keychain manifest backup"
+  },
+  "getPaidBullnymBackupDisclosure": "Bull Bitcoin stores one encrypted recovery blob. It can observe your IP address, request timing, backup identity, and size, but cannot read the contents.",
+  "@getPaidBullnymBackupDisclosure": {
+    "description": "Privacy disclosure for Bullnym encrypted blob storage"
+  },
+  "getPaidBackupNow": "Back up now",
+  "@getPaidBackupNow": {
+    "description": "Manual encrypted keychain backup action"
+  },
   "@keychainManifestGenericError": {
     "description": "Generic error shown when keychain manifest metadata cannot be recorded"
   },
@@ -15129,5 +15149,42 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "getPaidBackupPending": "Backup pending.",
+  "@getPaidBackupPending": {
+    "description": "Status shown while keychain recovery metadata is waiting to upload"
+  },
+  "getPaidBackupNever": "Not backed up yet.",
+  "@getPaidBackupNever": {
+    "description": "Status shown before the first successful keychain metadata backup"
+  },
+  "getPaidBackupLastSucceeded": "Last backed up: {timestamp}",
+  "@getPaidBackupLastSucceeded": {
+    "description": "Status showing when keychain recovery metadata was last backed up",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidBackupNeedsUpdate": "Update the app before replacing this backup.",
+  "@getPaidBackupNeedsUpdate": {
+    "description": "Status shown when the remote keychain backup uses a newer unsupported version"
+  },
+  "getPaidBackupError": "Could not update the encrypted recovery backup. Try again.",
+  "@getPaidBackupError": {
+    "description": "Generic retryable error for keychain backup settings actions"
+  },
+  "getPaidDeleteBackup": "Delete remote backup",
+  "@getPaidDeleteBackup": {
+    "description": "Button label for deleting encrypted keychain metadata from Bullnym"
+  },
+  "getPaidDeleteBackupTitle": "Delete remote backup?",
+  "@getPaidDeleteBackupTitle": {
+    "description": "Confirmation title before deleting encrypted keychain metadata from Bullnym"
+  },
+  "getPaidDeleteBackupBody": "This removes the encrypted recovery metadata stored by Bull Bitcoin. It does not delete local wallets or funds.",
+  "@getPaidDeleteBackupBody": {
+    "description": "Confirmation body before deleting encrypted keychain metadata from Bullnym"
   }
 }

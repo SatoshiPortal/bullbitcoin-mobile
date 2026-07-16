@@ -70,3 +70,16 @@ single Bullnym server URL outside this data boundary.
 Server `reason` fields are diagnostic-only. Future UI must map stable Bullnym
 error categories to localized user-facing copy instead of displaying backend
 text directly.
+## Wallet Backup Blobs
+
+Bullnym exposes one authenticated opaque-object contract for the independent
+`keychain_manifest` and `wallet_metadata` streams. Public keys are carried in
+signed request bodies rather than URLs. The client signs the SHA-256 digest of
+the fixed NUL-separated `bullbitcoin-wallet-backup-v1` message and never gives
+Bullnym an xprv.
+
+The facade exposes fetch, conditional store, and conditional delete. Dio,
+base64 JSON, status mapping, hash verification, and endpoint paths remain in
+the data client. A decoded ciphertext is bounded to 2 MiB. Bullnym can observe
+source IP, timing, stream pseudonym, and object size, but authenticated
+encryption hides wallet metadata.

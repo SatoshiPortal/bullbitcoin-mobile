@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_routes.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_routes.dart';
@@ -186,7 +187,11 @@ class SettingsRouter {
         name: SettingsRoute.bitcoinSettings.name,
         path: SettingsRoute.bitcoinSettings.path,
         builder: (context, state) => const BitcoinSettingsScreen(),
-        routes: [BtcpayRoutes.route, LightningAddressRoutes.route],
+        routes: [
+          BtcpayRoutes.route,
+          LightningAddressRoutes.route,
+          GetPaidSettingsRoutes.route,
+        ],
       ),
       GoRoute(
         name: SettingsRoute.swapRestore.name,
