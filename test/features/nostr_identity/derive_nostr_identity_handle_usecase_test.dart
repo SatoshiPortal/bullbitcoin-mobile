@@ -12,6 +12,8 @@ const _expectedBullnymAuthNpubHex =
     '8b455c643d16fe546012f699b8f05eea4386268baa933b39dd1bbe0dc1965c4f';
 const _expectedBullnymVerificationNpubHex =
     '852600604d65fea77a9d23e9623b7a5bab24b5314deb7f79419006363338047f';
+const _expectedWalletMetadataNpubHex =
+    '21ee43d352f3506c8cef5ee18f028efec0a2f71c510638afd0f7869f630a7dfd';
 
 void main() {
   const usecase = DeriveNostrIdentityHandleUsecase(
@@ -30,6 +32,10 @@ void main() {
     final bullnymVerificationHandle = usecase.execute(
       xprvBase58: _masterXprv,
       role: NostrIdentityRole.bullnymNip05Verification,
+    );
+    final walletMetadataHandle = usecase.execute(
+      xprvBase58: _masterXprv,
+      role: NostrIdentityRole.walletMetadata,
     );
 
     expect(
@@ -58,12 +64,23 @@ void main() {
       ).publicKeyHex,
     );
     expect(
+      walletMetadataHandle.publicKeyHex,
+      NostrKeychainHandle.deriveFromBip85Path(
+        xprvBase58: _masterXprv,
+        hardenedPath: "9000'/4'/1'",
+      ).publicKeyHex,
+    );
+    expect(
       walletManifestHandle.publicKeyHex,
       isNot(bullnymAuthHandle.publicKeyHex),
     );
     expect(
       bullnymAuthHandle.publicKeyHex,
       isNot(bullnymVerificationHandle.publicKeyHex),
+    );
+    expect(
+      walletMetadataHandle.publicKeyHex,
+      isNot(walletManifestHandle.publicKeyHex),
     );
   });
 
@@ -73,6 +90,7 @@ void main() {
       NostrIdentityRole.bullnymServerAuth: _expectedBullnymAuthNpubHex,
       NostrIdentityRole.bullnymNip05Verification:
           _expectedBullnymVerificationNpubHex,
+      NostrIdentityRole.walletMetadata: _expectedWalletMetadataNpubHex,
     };
 
     for (final entry in keys.entries) {

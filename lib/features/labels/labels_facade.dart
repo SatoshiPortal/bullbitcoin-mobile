@@ -1,15 +1,21 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
+import 'package:bb_mobile/features/labels/application/usecases/export_bip329_label_records_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/watch_label_changes_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/restore_bip329_label_records_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
+import 'package:bb_mobile/features/labels/bip329_label_record.dart';
+import 'package:meta/meta.dart';
 
+export 'package:bb_mobile/features/labels/bip329_label_record.dart';
 export 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';
@@ -29,20 +35,30 @@ export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 /// addresses/transactions, so a lookup failure degrades to an empty result
 /// (logged at the boundary) rather than aborting the caller's flow. **Writes
 /// return [Result]** so the caller can decide what a persistence failure means
-/// for its own flow. The facade itself never throws and never surfaces a raw
-/// reason — callers translate a [LabelFailure] via its presentation extension.
+/// for its own flow. Backup export is strict: it returns a failed [Result]
+/// rather than making a read or codec failure look like an empty label set. The
+/// facade itself never throws and never surfaces a raw reason — callers
+/// translate a [LabelFailure] via its presentation extension.
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
+  final ExportBip329LabelRecordsUsecase _exportBip329LabelRecordsUsecase;
+  final RestoreBip329LabelRecordsUsecase _restoreBip329LabelRecordsUsecase;
+  final WatchLabelChangesUsecase _watchLabelChangesUsecase;
 
   LabelsFacade({
     required this._fetchLabelByReferenceUsecase,
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+    required this._exportBip329LabelRecordsUsecase,
+    required this._restoreBip329LabelRecordsUsecase,
+    required this._watchLabelChangesUsecase,
   });
+
+  Stream<void> get changes => _watchLabelChangesUsecase.execute();
 
   Future<List<Label>> fetchByReference(String reference) async {
     final result = await _fetchLabelByReferenceUsecase.execute(reference);
@@ -64,6 +80,18 @@ class LabelsFacade {
           .toList(),
       (_) => const <Label>[],
     );
+  }
+
+  @useResult
+  Future<Result<List<Bip329LabelRecord>, LabelFailure>>
+  exportBip329LabelRecords() {
+    return _exportBip329LabelRecordsUsecase.execute();
+  }
+
+  @useResult
+  Future<Result<Bip329LabelRestoreSummary, LabelFailure>>
+  restoreBip329LabelRecords(List<Bip329LabelRecord> records) {
+    return _restoreBip329LabelRecordsUsecase.execute(records);
   }
 
   /// Distinct user-defined label strings used to feed the suggestion chips

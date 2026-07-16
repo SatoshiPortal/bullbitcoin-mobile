@@ -5,11 +5,13 @@ const _walletManifestReservationId = 'nostr_wallet_manifest_key';
 const _bullnymServerAuthReservationId = 'nostr_bullnym_server_auth_key';
 const _bullnymNip05VerificationReservationId =
     'nostr_nip05_public_nym_verification_key';
+const _walletMetadataReservationId = 'wallet_metadata_signing_key';
 
 enum NostrIdentityRole {
   walletManifest,
   bullnymServerAuth,
   bullnymNip05Verification,
+  walletMetadata,
 }
 
 class DeriveNostrIdentityHandleUsecase {
@@ -33,6 +35,7 @@ class DeriveNostrIdentityHandleUsecase {
       NostrIdentityRole.bullnymServerAuth => _bullnymServerAuthReservationId,
       NostrIdentityRole.bullnymNip05Verification =>
         _bullnymNip05VerificationReservationId,
+      NostrIdentityRole.walletMetadata => _walletMetadataReservationId,
     };
   }
 
@@ -44,26 +47,35 @@ class DeriveNostrIdentityHandleUsecase {
     if (reservation == null) {
       throw StateError('Unknown Nostr BIP85 reservation: $reservationId');
     }
-    _validateNostrReservation(reservation);
+    _validateReservation(reservation, reservationId);
     return NostrKeychainHandle.deriveFromBip85Path(
       xprvBase58: xprvBase58,
       hardenedPath: reservation.scope.exactPath,
     );
   }
 
-  void _validateNostrReservation(Bip85Reservation reservation) {
-    // Nostr identity keys are non-wallet key material; the registry models
-    // them with the key reservation shape, which carries no wallet index.
+  void _validateReservation(
+    Bip85Reservation reservation,
+    String reservationId,
+  ) {
     if (reservation is! Bip85KeyReservation) {
-      throw StateError('Expected a key-shaped Nostr BIP85 reservation');
+      throw StateError('Expected a key-shaped BIP85 signing reservation');
     }
     if (reservation.application.number != nostrBip85Application) {
       throw StateError(
-        'Expected Nostr BIP85 application $nostrBip85Application, '
+        'Expected BIP340 application $nostrBip85Application, '
         'got ${reservation.application.number}',
       );
     }
-    if (reservation.owner != Bip85ReservationOwner.nostr) {
+    if (reservationId == _walletMetadataReservationId) {
+      if (reservation.owner != Bip85ReservationOwner.walletMetadataBackup ||
+          reservation.purpose != Bip85ReservationPurpose.backupSigningKey) {
+        throw StateError('Expected a wallet-metadata signing reservation');
+      }
+      return;
+    }
+    if (reservation.owner != Bip85ReservationOwner.nostr ||
+        reservation.purpose != Bip85ReservationPurpose.nonWalletNostrKey) {
       throw StateError('Expected a Nostr-owned BIP85 reservation');
     }
   }

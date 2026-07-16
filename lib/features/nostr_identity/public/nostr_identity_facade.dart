@@ -13,6 +13,25 @@ class NostrIdentityFacade {
     return handle.publicKeyHex;
   }
 
+  String deriveWalletMetadataPublicKeyFromXprv(String xprvBase58) {
+    final handle = _deriveHandle.execute(
+      xprvBase58: xprvBase58,
+      role: NostrIdentityRole.walletMetadata,
+    );
+    return handle.publicKeyHex;
+  }
+
+  String signWalletMetadataHashFromXprv({
+    required String xprvBase58,
+    required String messageHashHex,
+  }) {
+    final handle = _deriveHandle.execute(
+      xprvBase58: xprvBase58,
+      role: NostrIdentityRole.walletMetadata,
+    );
+    return handle.signHashHex(messageHashHex);
+  }
+
   String deriveBullnymServerAuthPublicKeyFromXprv(String xprvBase58) {
     final handle = _deriveHandle.execute(
       xprvBase58: xprvBase58,

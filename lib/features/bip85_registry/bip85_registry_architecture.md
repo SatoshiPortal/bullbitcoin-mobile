@@ -49,6 +49,7 @@ Nostr role keys reserve the app-owned Nostr namespace paths:
 - `9000'/1'/1'` for the encrypted keychain-backup stream identity.
 - `9000'/2'/1'` for Bullnym server authentication.
 - `9000'/3'/1'` for future NIP-05 public nym verification.
+- `9000'/4'/1'` for wallet metadata backup publishing and recovery.
 
 These Nostr-compatible reservations are static namespace policy only. They do
 not require Nostr events or relays. The keychain role signs Bullnym backup
@@ -57,9 +58,13 @@ The exact app number and role segments are the locked namespace allocation;
 later Nostr behavior work may consume these ids and paths, but should not infer
 runtime semantics from this registry entry alone.
 
-Keychain Manifest reserves BIP85 path `1642'/0'/1'` as the primary encryption key for remote manifest snapshot payloads.
-This is a Bull-owned custom application namespace and must not be reused for RecoverBull vault backups, Nostr signing, Bullnym authentication, or wallet-seed materialization.
-`keychain_manifest` owns encryption and encrypted payload semantics; the registry only blocks and names the path.
+The remote-backup encryption keys use separate reservations in Bull's custom BIP85 application namespace:
+
+- Keychain Manifest reserves `1642'/0'/1'` for remote keychain-manifest snapshot payloads.
+- Wallet Metadata Backup reserves `1642'/0'/2'` for remote wallet-metadata snapshot payloads, including BIP329 labels and future metadata sections.
+
+These encryption reservations must not be reused for each other, RecoverBull vault backups, Nostr signing, Bullnym authentication, or wallet-seed materialization. Keeping the keychain-manifest and wallet-metadata keys distinct prevents either backup stream from providing a cryptographic correlation handle for the other and allows the two backup features to be activated independently.
+The consuming features own encryption and encrypted-payload semantics; the registry only blocks and names the paths.
 
 Future reservations should add typed entries here only when a first-party
 feature needs a stable, blocked path. User-created ad hoc BIP85 outputs remain

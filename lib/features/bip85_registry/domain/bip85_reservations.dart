@@ -87,6 +87,18 @@ class Bip85Reservations {
     ],
   );
 
+  static final walletMetadataSigningKey = Bip85KeyReservation(
+    id: 'wallet_metadata_signing_key',
+    deterministicAlias: 'Wallet Metadata Signing',
+    owner: Bip85ReservationOwner.walletMetadataBackup,
+    purpose: Bip85ReservationPurpose.backupSigningKey,
+    application: const Bip85ApplicationSpec(number: 9000),
+    segments: const [
+      Bip85PathSegment(name: 'identity', value: 4),
+      Bip85PathSegment(name: 'account', value: 1),
+    ],
+  );
+
   static final keychainManifestEncryptionKey = Bip85KeyReservation(
     id: 'keychain_manifest_encryption_key',
     deterministicAlias: 'Keychain Manifest Encryption',
@@ -99,6 +111,18 @@ class Bip85Reservations {
     ],
   );
 
+  static final walletMetadataEncryptionKey = Bip85KeyReservation(
+    id: 'wallet_metadata_encryption_key',
+    deterministicAlias: 'Wallet Metadata Encryption',
+    owner: Bip85ReservationOwner.walletMetadataBackup,
+    purpose: Bip85ReservationPurpose.manifestEncryptionKey,
+    application: const Bip85ApplicationSpec(number: 1642),
+    segments: const [
+      Bip85PathSegment(name: 'namespace', value: 0),
+      Bip85PathSegment(name: 'key', value: 2),
+    ],
+  );
+
   static final List<Bip85Reservation> all = List.unmodifiable([
     btcpayWalletSeed,
     lightningAddressWalletSeed,
@@ -107,6 +131,8 @@ class Bip85Reservations {
     nostrWalletManifestKey,
     nostrBullnymServerAuthKey,
     nostrNip05PublicNymVerificationKey,
+    walletMetadataSigningKey,
     keychainManifestEncryptionKey,
+    walletMetadataEncryptionKey,
   ]);
 }

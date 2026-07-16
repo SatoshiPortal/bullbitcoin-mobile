@@ -195,10 +195,10 @@ void main() {
   test('rejects more entries than the registry reserves', () {
     // Pinned to the registry size: every valid entry maps to a distinct
     // reservation, so a file carrying more entries than the registry holds
-    // (currently eight) can never validate and is bounded before per-entry
+    // (currently ten) can never validate and is bounded before per-entry
     // validation runs.
     final reservationCount = const Bip85RegistryFacade().reservations.length;
-    expect(reservationCount, 8);
+    expect(reservationCount, 10);
     final extraEntries = StringBuffer();
     for (var i = 0; i < reservationCount; i++) {
       final index = 200 + i;

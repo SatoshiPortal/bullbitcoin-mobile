@@ -127,10 +127,18 @@ void main() {
         );
 
         final all = await datasource.getAllFrozen();
-        expect(all.toSet(), {
-          (walletId: walletId, txId: a.txId, vout: a.vout),
-          (walletId: 'wallet-2', txId: b.txId, vout: b.vout),
-        });
+        expect(
+          all
+              .map(
+                (item) =>
+                    (walletId: item.walletId, txId: item.txId, vout: item.vout),
+              )
+              .toSet(),
+          {
+            (walletId: walletId, txId: a.txId, vout: a.vout),
+            (walletId: 'wallet-2', txId: b.txId, vout: b.vout),
+          },
+        );
       },
     );
   });

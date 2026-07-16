@@ -27,13 +27,15 @@ class LabelEntity {
         // Address validation requires async BDK/LWK calls
         break;
       case LabelType.publicKey:
+        _validatePublicKeyReference();
       case LabelType.input:
-        final parts = reference.split(':');
-        _validateTxid(parts[0]);
-        _validateIndex(parts[1]);
-
       case LabelType.output:
         final parts = reference.split(':');
+        if (parts.length != 2) {
+          throw LabelValidationException(
+            'Invalid outpoint reference: expected txid:index',
+          );
+        }
         _validateTxid(parts[0]);
         _validateIndex(parts[1]);
       case LabelType.extendedPublicKey:
@@ -42,17 +44,37 @@ class LabelEntity {
   }
 
   void _validateTxid(String input) {
-    if (reference.length != 64) {
+    if (input.length != 64) {
       throw LabelValidationException(
         'Invalid transaction reference: must be 64 hex characters',
       );
     }
 
     try {
-      hex.decode(reference);
+      hex.decode(input);
     } catch (e) {
       throw LabelValidationException(
         'Invalid transaction reference: must be valid hex',
+      );
+    }
+  }
+
+  void _validatePublicKeyReference() {
+    try {
+      final decoded = hex.decode(reference);
+      final isXOnly = decoded.length == 32;
+      final isCompressed =
+          decoded.length == 33 && (decoded.first == 2 || decoded.first == 3);
+      final isUncompressed = decoded.length == 65 && decoded.first == 4;
+      if (!isXOnly && !isCompressed && !isUncompressed) {
+        throw LabelValidationException(
+          'Invalid public key reference: expected a 32, 33, or 65 byte key',
+        );
+      }
+    } catch (e) {
+      if (e is LabelValidationException) rethrow;
+      throw LabelValidationException(
+        'Invalid public key reference: must be valid hex',
       );
     }
   }
@@ -74,6 +96,12 @@ class LabelEntity {
       if (decoded.length != 78) {
         throw LabelValidationException(
           'Invalid extended public key reference: decoded length must be 78 bytes, got ${decoded.length}',
+        );
+      }
+      final keyPrefix = decoded[45];
+      if (keyPrefix != 2 && keyPrefix != 3) {
+        throw LabelValidationException(
+          'Invalid extended public key reference: expected public key data',
         );
       }
     } catch (e) {

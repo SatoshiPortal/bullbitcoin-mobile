@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
+import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +23,9 @@ void main() {
       'nostr_wallet_manifest_key',
       'nostr_bullnym_server_auth_key',
       'nostr_nip05_public_nym_verification_key',
+      'wallet_metadata_signing_key',
       'keychain_manifest_encryption_key',
+      'wallet_metadata_encryption_key',
     ]);
     for (final reservation in registry.reservations) {
       expect(registry.reservationById(reservation.id), same(reservation));
@@ -74,25 +77,27 @@ void main() {
     }
   });
 
-  test('models Nostr role keys as index-free reserved policy only', () {
+  test('models x-only signing roles as index-free reserved policy', () {
     final reservations = [
       _keyReservation('nostr_wallet_manifest_key'),
       _keyReservation('nostr_bullnym_server_auth_key'),
       _keyReservation('nostr_nip05_public_nym_verification_key'),
+      _keyReservation('wallet_metadata_signing_key'),
     ];
 
     expect(reservations.map((reservation) => reservation.scope.exactPath), [
       "9000'/1'/1'",
       "9000'/2'/1'",
       "9000'/3'/1'",
+      "9000'/4'/1'",
     ]);
     expect(
       reservations.map(
         (reservation) => reservation.scope.segmentValue('identity'),
       ),
-      [1, 2, 3],
+      [1, 2, 3, 4],
     );
-    for (final reservation in reservations) {
+    for (final reservation in reservations.take(3)) {
       expect(reservation.owner, Bip85ReservationOwner.nostr);
       expect(reservation.purpose, Bip85ReservationPurpose.nonWalletNostrKey);
       expect(reservation.application.number, 9000);
@@ -105,6 +110,13 @@ void main() {
       // programming error rather than a value.
       expect(() => reservation.scope.segmentValue('index'), throwsStateError);
     }
+    final metadata = reservations.last;
+    expect(metadata.owner, Bip85ReservationOwner.walletMetadataBackup);
+    expect(metadata.purpose, Bip85ReservationPurpose.backupSigningKey);
+    expect(metadata.application.number, 9000);
+    expect(metadata.scope.segmentValue('identity'), 4);
+    expect(metadata.scope.segmentValue('account'), 1);
+    expect(() => metadata.scope.segmentValue('index'), throwsStateError);
   });
 
   test('models keychain manifest encryption as a separate app 1642 key', () {
@@ -120,6 +132,30 @@ void main() {
     ]);
     expect(reservation.scope.segmentValue('namespace'), 0);
     expect(reservation.scope.segmentValue('key'), 1);
+  });
+
+  test('reserves a purpose-separated wallet metadata encryption key', () {
+    final manifest = _keyReservation('keychain_manifest_encryption_key');
+    final metadata = _keyReservation('wallet_metadata_encryption_key');
+
+    expect(metadata.scope.exactPath, "1642'/0'/2'");
+    expect(metadata.owner, Bip85ReservationOwner.walletMetadataBackup);
+    expect(metadata.purpose, Bip85ReservationPurpose.manifestEncryptionKey);
+    expect(metadata.application.number, 1642);
+    expect(metadata.scope.segments.map((segment) => segment.name), [
+      'namespace',
+      'key',
+    ]);
+    expect(metadata.scope.segmentValue('namespace'), 0);
+    expect(metadata.scope.segmentValue('key'), 2);
+
+    final manifestKey = _deriveReservedKey(manifest);
+    final metadataKey = _deriveReservedKey(metadata);
+    expect(
+      metadataKey,
+      'a26bad6f943b78ea4d685ab00eac75407f9cb642b106b8a44c0597bc3f7a256f',
+    );
+    expect(metadataKey, isNot(manifestKey));
   });
 
   test('rejects mis-shaped reservation scopes at construction', () {
@@ -243,4 +279,11 @@ Bip85KeyReservation _keyReservation(String id) {
   final reservation = registry.reservationById(id);
   expect(reservation, isA<Bip85KeyReservation>());
   return reservation! as Bip85KeyReservation;
+}
+
+String _deriveReservedKey(Bip85KeyReservation reservation) {
+  return Bip85Entropy.deriveFromHardenedPath(
+    xprvBase58: _masterXprv,
+    path: Bip85HardenedPath(reservation.scope.exactPath),
+  ).substring(0, 64);
 }

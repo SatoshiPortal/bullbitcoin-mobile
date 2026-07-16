@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/labels/bip329_label_record.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
@@ -13,6 +14,11 @@ void main() {
   const bip329Origin = '[0f36572d/84h/1h/0h]';
   final txId = 'a' * 64;
   final ref = '$txId:0';
+  const origin = "wpkh([d34db33f/84'/0'/0'])";
+  const publicKey =
+      '0283409659355b6d1cc3c32decd5d561abaac86c37a353b52895a5e6c196d6f448';
+  const xpub =
+      'xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8';
 
   List<Map<String, dynamic>> lines(String jsonl) => jsonl
       .split('\n')
@@ -167,6 +173,144 @@ void main() {
       final decoded = codec.decode(jsonl);
       expect(decoded.frozen, isEmpty);
       expect(decoded.labels, isEmpty);
+    });
+  });
+
+  group('metadata records', () {
+    test('all six types and origins round-trip without ids or freezes', () {
+      final labels = [
+        LabelEntity(
+          id: 41,
+          type: LabelType.transaction,
+          reference: txId,
+          label: 'Transaction',
+          origin: origin,
+        ),
+        LabelEntity(
+          id: 42,
+          type: LabelType.address,
+          reference: 'bc1q34aq5drpuwy3wgl9lhup9892qp6svr8ldzyy7c',
+          label: 'Address',
+          origin: origin,
+        ),
+        LabelEntity(
+          id: 43,
+          type: LabelType.publicKey,
+          reference: publicKey,
+          label: 'Public key',
+          origin: origin,
+        ),
+        LabelEntity(
+          id: 44,
+          type: LabelType.input,
+          reference: '$txId:1',
+          label: 'Input',
+          origin: origin,
+        ),
+        LabelEntity(
+          id: 45,
+          type: LabelType.output,
+          reference: '$txId:2',
+          label: 'Output',
+          origin: origin,
+        ),
+        LabelEntity(
+          id: 46,
+          type: LabelType.extendedPublicKey,
+          reference: xpub,
+          label: 'Extended public key',
+          origin: origin,
+        ),
+      ];
+
+      final records = codec.encodeMetadataRecords(labels);
+
+      expect(records.map((record) => record.type), [
+        'tx',
+        'addr',
+        'pubkey',
+        'input',
+        'output',
+        'xpub',
+      ]);
+      for (final record in records) {
+        expect(record.origin, origin);
+      }
+
+      final decoded = codec.decodeMetadataRecords(records);
+      expect(
+        decoded.map((label) => label.type),
+        labels.map((label) => label.type),
+      );
+      expect(
+        decoded.map((label) => label.reference),
+        labels.map((label) => label.reference),
+      );
+      expect(
+        decoded.map((label) => label.label),
+        labels.map((label) => label.label),
+      );
+      expect(decoded.map((label) => label.origin), everyElement(origin));
+    });
+
+    test('record identity ignores the local id and follows label plus ref', () {
+      final first = LabelEntity(
+        id: 1,
+        type: LabelType.transaction,
+        reference: txId,
+        label: 'coffee',
+        origin: origin,
+      );
+      final second = LabelEntity(
+        id: 999,
+        type: LabelType.transaction,
+        reference: txId,
+        label: 'coffee',
+        origin: '[ffffffff/84h/0h/0h]',
+      );
+
+      final firstRecord = codec.encodeMetadataRecords([first]).single;
+      final secondRecord = codec.encodeMetadataRecords([second]).single;
+
+      expect(secondRecord.recordId, firstRecord.recordId);
+    });
+
+    test('the annotation entity rejects unsupported BIP329 types', () {
+      expect(
+        () => Bip329LabelRecord(
+          type: 'unknown',
+          reference: ref,
+          label: 'savings',
+        ),
+        throwsFormatException,
+      );
+      expect(
+        () => Bip329LabelRecord(
+          type: 'tx',
+          reference: 'not-a-txid',
+          label: 'savings',
+        ),
+        throwsFormatException,
+      );
+    });
+
+    test('accepts x-only public keys and rejects extended private keys', () {
+      final xOnly = Bip329LabelRecord(
+        type: 'pubkey',
+        reference: 'a' * 64,
+        label: 'Taproot key',
+      );
+
+      expect(xOnly.reference, 'a' * 64);
+      expect(
+        () => Bip329LabelRecord(
+          type: 'xpub',
+          reference:
+              'xprv9s21ZrQH143K2LBWUUQRFXhucrQqBpKdRRxNVq2zBqsx8HVqFk2uYo8kmbaLLHRdqtQpUm98uKfu3vca1LqdGhUtyoFnCNkfmXRyPXLjbKb',
+          label: 'Must not import',
+        ),
+        throwsFormatException,
+      );
     });
   });
 }

@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/bip329_label_record.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
 
 class Bip329LabelsCodec {
@@ -24,34 +25,25 @@ class Bip329LabelsCodec {
     final coveredRefs = <String>{};
 
     final bip329Labels = labels.map((label) {
-      switch (label.type) {
-        case LabelType.transaction:
-          return bip329.TxLabel(ref: label.reference, label: label.label);
-        case LabelType.address:
-          return bip329.AddressLabel(ref: label.reference, label: label.label);
-        case LabelType.publicKey:
-          return bip329.PubkeyLabel(ref: label.reference, label: label.label);
-        case LabelType.input:
-          return bip329.InputLabel(ref: label.reference, label: label.label);
-        case LabelType.output:
-          final frozenWalletId = frozenByRef[label.reference];
-          final isFrozen = frozenWalletId != null;
-          if (isFrozen) coveredRefs.add(label.reference);
-          return bip329.OutputLabel(
-            ref: label.reference,
-            label: label.label,
-            // Only assert spendability when frozen (`false`); otherwise leave it
-            // absent (null) per BIP329 "omitted ⇒ don't alter". The `origin`
-            // carries the wallet attribution: the freezing wallet's origin when
-            // frozen, else any origin the label already had.
-            spendable: isFrozen ? false : null,
-            origin: isFrozen
-                ? _bip329OriginFromWalletId(frozenWalletId)
-                : label.origin,
-          );
-        case LabelType.extendedPublicKey:
-          return bip329.XpubLabel(ref: label.reference, label: label.label);
+      if (label.type != LabelType.output) {
+        return _convertLabelToBip329(label);
       }
+
+      final frozenWalletId = frozenByRef[label.reference];
+      final isFrozen = frozenWalletId != null;
+      if (isFrozen) coveredRefs.add(label.reference);
+      return bip329.OutputLabel(
+        ref: label.reference,
+        label: label.label,
+        // Only assert spendability when frozen (`false`); otherwise leave it
+        // absent (null) per BIP329 "omitted ⇒ don't alter". The `origin`
+        // carries the wallet attribution: the freezing wallet's origin when
+        // frozen, else any origin the label already had.
+        spendable: isFrozen ? false : null,
+        origin: isFrozen
+            ? _bip329OriginFromWalletId(frozenWalletId)
+            : label.origin,
+      );
     }).toList();
 
     // Frozen outpoints with no label: emit a bare freeze-only output record so
@@ -72,14 +64,48 @@ class Bip329LabelsCodec {
     return bip329.Bip329Label.toJsonLines(bip329Labels);
   }
 
+  /// Encodes annotations only, with no freeze projection or local database id.
+  List<Bip329LabelRecord> encodeMetadataRecords(List<LabelEntity> labels) {
+    return List.unmodifiable(
+      labels.map((label) {
+        final encoded = _convertLabelToBip329(label);
+        return Bip329LabelRecord(
+          type: _bip329Type(encoded),
+          reference: encoded.ref,
+          label: encoded.label,
+          origin: encoded.origin,
+        );
+      }),
+    );
+  }
+
+  /// Reuses the BIP329 parser used by file import while keeping freezes out of
+  /// the metadata annotation channel.
+  List<NewLabel> decodeMetadataRecords(List<Bip329LabelRecord> records) {
+    if (records.isEmpty) return const [];
+    final decoded = decode(
+      bip329.Bip329Label.toJsonLines(
+        records.map(_metadataRecordToBip329).toList(growable: false),
+      ),
+    );
+    if (decoded.frozen.isNotEmpty) {
+      throw const FormatException(
+        'BIP329 metadata label records cannot contain freeze state',
+      );
+    }
+    return List.unmodifiable(decoded.labels);
+  }
+
   DecodedLabels decode(String input) {
     var bip329Labels = <bip329.Bip329Label>[];
     try {
       bip329Labels = bip329.Bip329Label.fromJsonLines(input);
-    } catch (e) {
-      throw 'Failed to parse bip329 format';
+    } on Exception catch (error) {
+      throw FormatException('Failed to parse BIP329 format', error);
     }
-    if (bip329Labels.isEmpty) throw 'No labels found';
+    if (bip329Labels.isEmpty) {
+      throw const FormatException('No labels found');
+    }
 
     final labels = <NewLabel>[];
     final frozen = <({String? walletId, String txId, int vout})>[];
@@ -111,6 +137,89 @@ class Bip329LabelsCodec {
 
     return DecodedLabels(labels: labels, frozen: frozen);
   }
+}
+
+bip329.Bip329Label _metadataRecordToBip329(Bip329LabelRecord record) {
+  return switch (record.type) {
+    'tx' => bip329.TxLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    'addr' => bip329.AddressLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    'pubkey' => bip329.PubkeyLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    'input' => bip329.InputLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    'output' => bip329.OutputLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    'xpub' => bip329.XpubLabel(
+      ref: record.reference,
+      label: record.label,
+      origin: record.origin,
+    ),
+    _ => throw const FormatException('Unsupported BIP329 label type'),
+  };
+}
+
+String _bip329Type(bip329.Bip329Label label) {
+  return switch (label) {
+    bip329.TxLabel() => 'tx',
+    bip329.AddressLabel() => 'addr',
+    bip329.PubkeyLabel() => 'pubkey',
+    bip329.InputLabel() => 'input',
+    bip329.OutputLabel() => 'output',
+    bip329.XpubLabel() => 'xpub',
+    _ => throw const FormatException('Unsupported BIP329 label type'),
+  };
+}
+
+bip329.Bip329Label _convertLabelToBip329(LabelEntity label) {
+  return switch (label.type) {
+    LabelType.transaction => bip329.TxLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+    LabelType.address => bip329.AddressLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+    LabelType.publicKey => bip329.PubkeyLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+    LabelType.input => bip329.InputLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+    LabelType.output => bip329.OutputLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+    LabelType.extendedPublicKey => bip329.XpubLabel(
+      ref: label.reference,
+      label: label.label,
+      origin: label.origin,
+    ),
+  };
 }
 
 /// Extracts the BIP380 key origin (`[fingerprint/path]`) from an internal
@@ -199,6 +308,8 @@ NewLabel _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    _ => throw 'Unsupported label type: ${bip329Label.runtimeType}',
+    _ => throw FormatException(
+      'Unsupported BIP329 label type: ${bip329Label.runtimeType}',
+    ),
   };
 }
