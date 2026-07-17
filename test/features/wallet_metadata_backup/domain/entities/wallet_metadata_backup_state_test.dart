@@ -55,4 +55,33 @@ void main() {
     expect(stored.dirty, isTrue);
     expect(stored.verifiedHead?.remoteEtag, etag);
   });
+
+  test('recovery only clears the dirty revision captured at apply start', () {
+    final block = WalletMetadataBackupRecoveryBlock(
+      reason: WalletMetadataRecoveryBlockReason.applyInProgress,
+      remoteGeneration: 1,
+      remoteEtag: etag,
+      snapshotRevision: 1,
+      observedAt: 100,
+    );
+    final started = WalletMetadataBackupState.initial
+        .recordRecoveryApplyStarted(block);
+    final changedDuringRecovery = started.withEnabled(true);
+
+    final result = changedDuringRecovery.recordRecoveryAppliedClean(
+      head: WalletMetadataBackupVerifiedHead(
+        remoteGeneration: 1,
+        remoteEtag: etag,
+        snapshotRevision: 1,
+        canonicalContentHash: hash,
+        verifiedAt: 101,
+      ),
+      expectedDirtyRevision: started.dirtyRevision,
+    );
+
+    expect(result.enabled, isTrue);
+    expect(result.dirty, isTrue);
+    expect(result.dirtyRevision, 2);
+    expect(result.recoveryBlock, isNull);
+  });
 }

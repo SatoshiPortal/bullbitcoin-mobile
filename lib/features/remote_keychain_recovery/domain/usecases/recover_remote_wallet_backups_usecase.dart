@@ -25,7 +25,7 @@ final class RecoverRemoteWalletBackupsUsecase {
     try {
       try {
         session = await _metadataBackup.beginRecoverySession();
-      } catch (error, stack) {
+      } on Exception catch (error, stack) {
         log.warning(
           'Could not suppress metadata publication during wallet recovery',
           error: error,
@@ -35,7 +35,7 @@ final class RecoverRemoteWalletBackupsUsecase {
 
       try {
         keychainResult = await _recoverKeychain();
-      } catch (error, stack) {
+      } on Exception catch (error, stack) {
         keychainError = error;
         keychainStack = stack;
       }
@@ -75,7 +75,7 @@ final class RecoverRemoteWalletBackupsUsecase {
           error: StateError(failure.runtimeType.toString()),
         );
       }
-    } catch (error, stack) {
+    } on Exception catch (error, stack) {
       log.warning(
         'Remote wallet metadata recovery threw unexpectedly',
         error: error,

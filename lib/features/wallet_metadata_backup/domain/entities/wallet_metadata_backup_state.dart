@@ -237,7 +237,9 @@ final class WalletMetadataBackupState {
 
   WalletMetadataBackupState recordRecoveryAppliedClean({
     required WalletMetadataBackupVerifiedHead head,
+    required int expectedDirtyRevision,
   }) {
+    _validateNonNegativeInt64(expectedDirtyRevision, 'expectedDirtyRevision');
     final current = verifiedHead;
     if (current != null && head.remoteGeneration < current.remoteGeneration) {
       final block = recoveryBlock;
@@ -253,7 +255,7 @@ final class WalletMetadataBackupState {
     return _copy(
       verifiedHead: head,
       lastSucceededAt: _latest(lastSucceededAt, head.verifiedAt),
-      dirty: false,
+      dirty: dirtyRevision == expectedDirtyRevision ? false : dirty,
       clearUnsupportedNewerEnvelope: true,
       clearRecoveryBlock: true,
     );

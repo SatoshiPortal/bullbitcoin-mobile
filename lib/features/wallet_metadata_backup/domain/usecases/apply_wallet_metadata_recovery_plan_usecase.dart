@@ -108,7 +108,13 @@ final class ApplyWalletMetadataRecoveryPlanUsecase {
     final started = await _stateRepository.update(
       (state) => state.recordRecoveryApplyStarted(startedBlock),
     );
-    if (started case Err(:final failure)) return Err(failure);
+    final WalletMetadataBackupState applyState;
+    switch (started) {
+      case Ok(:final value):
+        applyState = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
 
     final context = WalletMetadataApplyContext(
       createdWalletRefs: createdWalletRefs,
@@ -179,6 +185,7 @@ final class ApplyWalletMetadataRecoveryPlanUsecase {
             canonicalContentHash: selected.canonicalContentHash,
             verifiedAt: now,
           ),
+          expectedDirtyRevision: applyState.dirtyRevision,
         );
       }
       return state.recordRecoveryApplyBlocked(

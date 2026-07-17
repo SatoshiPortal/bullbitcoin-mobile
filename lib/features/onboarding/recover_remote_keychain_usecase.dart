@@ -23,7 +23,7 @@ final class RecoverRemoteKeychainUsecase {
           '${result.status.name}',
         );
       }
-    } catch (error, stack) {
+    } on Exception catch (error, stack) {
       log.warning(
         'Optional remote keychain recovery failed',
         error: error,

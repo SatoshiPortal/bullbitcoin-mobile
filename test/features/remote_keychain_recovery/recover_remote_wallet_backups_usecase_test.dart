@@ -89,13 +89,13 @@ void main() {
     'still attempts metadata recovery when keychain recovery throws',
     () async {
       final usecase = RecoverRemoteWalletBackupsUsecase(
-        () async => throw StateError('keychain database unavailable'),
+        () async => throw Exception('keychain database unavailable'),
         metadataBackup,
       );
 
       await expectLater(
         usecase.execute(defaultCreatedWalletIds: {'bitcoin-default'}),
-        throwsStateError,
+        throwsA(isA<Exception>()),
       );
 
       verify(
@@ -104,6 +104,25 @@ void main() {
       verify(metadataSession.close).called(1);
     },
   );
+
+  test('does not swallow programmer errors from keychain recovery', () async {
+    final usecase = RecoverRemoteWalletBackupsUsecase(
+      () async => throw StateError('programmer bug'),
+      metadataBackup,
+    );
+
+    await expectLater(
+      usecase.execute(defaultCreatedWalletIds: {'bitcoin-default'}),
+      throwsA(isA<StateError>()),
+    );
+
+    verifyNever(
+      () => metadataSession.recover(
+        createdWalletRefs: any(named: 'createdWalletRefs'),
+      ),
+    );
+    verify(metadataSession.close).called(1);
+  });
 }
 
 final class _MetadataBackupFacade extends Mock
