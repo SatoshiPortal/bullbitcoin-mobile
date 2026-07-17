@@ -52,12 +52,13 @@ if echo "$staged" | grep -q '\.dart$'; then
   # `exclude:`, so the filter lives here — keep the regex in sync with the
   # format-check target in the makefile (which CI invokes). xargs -r no-ops when
   # the staged set is all-generated. Exits non-zero if any staged file is
-  # unformatted.
+  # unformatted. Batch inputs to keep each formatter process below the
+  # operating system argument limit after code generation.
   # $DART is intentionally unquoted: the fallback sets DART="fvm dart" (two
   # words), and quoting it makes xargs exec a literal binary named "fvm dart"
   # (exit 127). Word splitting here matches the `$DART fix` call above.
   echo "$staged" | grep '\.dart$' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' \
-    | xargs -r $DART format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
+    | xargs -r -n 500 $DART format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
   fmtPid=$!
 
   wait $analyzePid; analyzeExit=$?
