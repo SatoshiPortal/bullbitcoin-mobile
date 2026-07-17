@@ -451,21 +451,29 @@
   "@settingsBtcMapTitle": {
     "description": "Title for the Map screen in the settings menu"
   },
-  "joinstrTitle": "Joinstr",
+  "joinstrTitle": "Coinjoin",
   "@joinstrTitle": {
-    "description": "Title for the joinstr coinjoin screen"
+    "description": "Title for the joinstr coinjoin screen and the home-screen entry"
   },
-  "joinstrPoolRequest": "Pool Request",
-  "@joinstrPoolRequest": {
-    "description": "Title of the dialog shown while a coinjoin round is in flight"
+  "joinstrWaitingForPeers": "Waiting for peers",
+  "@joinstrWaitingForPeers": {
+    "description": "Status on a pool this device created, waiting for other peers to join"
   },
-  "joinstrWaitingForCredentials": "Waiting for pool credentials…",
+  "joinstrWaitingForCredentials": "Waiting for pool credentials",
   "@joinstrWaitingForCredentials": {
-    "description": "Body of the waiting dialog shown while a coinjoin round runs"
+    "description": "Status on a pool this device is joining, waiting for the initiator's credentials"
   },
-  "joinstrRunInBackground": "Run in background",
-  "@joinstrRunInBackground": {
-    "description": "Button that dismisses the waiting dialog while the round keeps running"
+  "joinstrPoolCreatedSnack": "Pool created. Waiting for peers to join.",
+  "@joinstrPoolCreatedSnack": {
+    "description": "Snackbar shown right after a pool is announced"
+  },
+  "joinstrJoinRequestSnack": "Join request sent. Waiting for pool credentials.",
+  "@joinstrJoinRequestSnack": {
+    "description": "Snackbar shown right after a join request is sent"
+  },
+  "joinstrRoundInProgress": "A coinjoin is already in progress. See My Pools.",
+  "@joinstrRoundInProgress": {
+    "description": "Hint shown when the create button is disabled because a round is active"
   },
   "joinstrCoinjoinBroadcast": "Coinjoin broadcast: {txid}",
   "@joinstrCoinjoinBroadcast": {

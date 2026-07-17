@@ -21,7 +21,11 @@ class JoinstrScreen extends StatefulWidget {
 }
 
 class _JoinstrScreenState extends State<JoinstrScreen> {
-  bool _waitingDialogOpen = false;
+  // Snapshot used to fire snackbars exactly once per transition, rather than
+  // on every rebuild.
+  int _seenRounds = 0;
+  JoinstrRoundStatus? _seenTopStatus;
+  JoinstrException? _seenError;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +53,9 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
         ),
         body: BlocConsumer<JoinstrCubit, JoinstrState>(
           listenWhen: (prev, curr) =>
-              prev.isRunning != curr.isRunning || prev.error != curr.error,
+              prev.rounds.length != curr.rounds.length ||
+              _topStatus(prev) != _topStatus(curr) ||
+              prev.error != curr.error,
           listener: _onStateChange,
           builder: (context, state) {
             // A wallet-level problem (watch-only, mainnet, none eligible) is
@@ -74,60 +80,39 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
     );
   }
 
+  /// A coinjoin round is created or joined without blocking the screen: it
+  /// runs in the background and shows up on the My Pools tab. This only turns
+  /// state transitions into one-shot snackbars, and jumps to My Pools when a
+  /// round starts so the user sees the pool they just created/joined.
+  JoinstrRoundStatus? _topStatus(JoinstrState state) =>
+      state.rounds.isEmpty ? null : state.rounds.first.status;
+
   void _onStateChange(BuildContext context, JoinstrState state) {
-    if (state.isRunning && !_waitingDialogOpen) {
-      _openWaitingDialog(context);
-      return;
-    }
-    if (!state.isRunning && _waitingDialogOpen) {
-      _closeWaitingDialog(context);
-    }
-    // A round that just finished, or a validation error that never started a
-    // round, surfaces as a snackbar like the reference wallets.
-    final round = state.rounds.isNotEmpty ? state.rounds.first : null;
-    if (round != null && round.status == JoinstrRoundStatus.broadcast) {
-      _snack(context, context.loc.joinstrCoinjoinBroadcast(round.txId!));
-    } else if (round != null && round.status == JoinstrRoundStatus.failed) {
-      _snack(context, joinstrErrorMessage(context, round.error!));
-    } else if (state.wallet != null && state.error != null) {
+    final top = state.rounds.isEmpty ? null : state.rounds.first;
+
+    if (state.rounds.length > _seenRounds && top != null) {
+      _snack(
+        context,
+        top.initiated
+            ? context.loc.joinstrPoolCreatedSnack
+            : context.loc.joinstrJoinRequestSnack,
+      );
+      DefaultTabController.of(context).animateTo(1); // My Pools
+    } else if (top != null && top.status != _seenTopStatus) {
+      if (top.status == JoinstrRoundStatus.broadcast) {
+        _snack(context, context.loc.joinstrCoinjoinBroadcast(top.txId!));
+      } else if (top.status == JoinstrRoundStatus.failed) {
+        _snack(context, joinstrErrorMessage(context, top.error!));
+      }
+    } else if (state.wallet != null &&
+        state.error != null &&
+        state.error != _seenError) {
       _snack(context, joinstrErrorMessage(context, state.error!));
     }
-  }
 
-  void _openWaitingDialog(BuildContext context) {
-    _waitingDialogOpen = true;
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.loc.joinstrPoolRequest),
-        content: Row(
-          children: [
-            const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-            const Gap(16),
-            Expanded(
-              child: Text(dialogContext.loc.joinstrWaitingForCredentials),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _closeWaitingDialog(context),
-            child: Text(dialogContext.loc.joinstrRunInBackground),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _closeWaitingDialog(BuildContext context) {
-    if (!_waitingDialogOpen) return;
-    _waitingDialogOpen = false;
-    Navigator.of(context, rootNavigator: true).pop();
+    _seenRounds = state.rounds.length;
+    _seenTopStatus = top?.status;
+    _seenError = state.error;
   }
 
   void _snack(BuildContext context, String message) {
@@ -215,6 +200,14 @@ class _CreatePoolTab extends StatelessWidget {
               : null,
           child: Text(context.loc.joinstrCreate),
         ),
+        if (state.isRunning) ...[
+          const Gap(8),
+          Text(
+            context.loc.joinstrRoundInProgress,
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
       ],
     );
   }
@@ -334,8 +327,25 @@ class _RoundCard extends StatelessWidget {
               ),
             const Gap(4),
             switch (round.status) {
-              JoinstrRoundStatus.waiting => _CountdownText(
-                expiresAtUnixSec: round.expiresAtUnixSec,
+              // A pool this device created waits for peers; a pool it is
+              // joining waits for the initiator's credentials. These are
+              // different states in the protocol and must not read alike.
+              JoinstrRoundStatus.waiting => Row(
+                children: [
+                  const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: Text(
+                      round.initiated
+                          ? loc.joinstrWaitingForPeers
+                          : loc.joinstrWaitingForCredentials,
+                    ),
+                  ),
+                ],
               ),
               JoinstrRoundStatus.broadcast => Text(
                 '${loc.joinstrBroadcast}: ${_short(round.txId!)}',
@@ -345,6 +355,10 @@ class _RoundCard extends StatelessWidget {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             },
+            if (round.isWaiting) ...[
+              const Gap(2),
+              _CountdownText(expiresAtUnixSec: round.expiresAtUnixSec),
+            ],
           ],
         ),
       ),
