@@ -160,7 +160,10 @@ class _SignTransactionView extends StatelessWidget {
 
   // ───────────────────────── Helpers ─────────────────────────
 
-  String _getMainTextForState(BuildContext context, TrezorOperationState state) {
+  String _getMainTextForState(
+    BuildContext context,
+    TrezorOperationState state,
+  ) {
     if (state.isLaunching || state.isWaiting) {
       return context.loc.trezorSignWaitingTitle;
     }

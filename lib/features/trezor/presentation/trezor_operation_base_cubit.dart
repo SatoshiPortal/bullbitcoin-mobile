@@ -91,12 +91,7 @@ abstract class TrezorOperationBaseCubit<T>
     // dropped by the epoch checks below.
     final myEpoch = ++_operationEpoch;
 
-    emit(
-      state.copyWith(
-        status: TrezorOperationStatus.launching,
-        error: null,
-      ),
-    );
+    emit(state.copyWith(status: TrezorOperationStatus.launching, error: null));
 
     try {
       if (isClosed) return;
@@ -119,9 +114,7 @@ abstract class TrezorOperationBaseCubit<T>
       if (isClosed || _operationEpoch != myEpoch) return;
       _cancelGrace();
       log.warning('Trezor operation failed', error: e);
-      emit(
-        state.copyWith(status: TrezorOperationStatus.error, error: e),
-      );
+      emit(state.copyWith(status: TrezorOperationStatus.error, error: e));
       rethrow;
     } catch (e, t) {
       log.severe(
@@ -164,5 +157,4 @@ abstract class TrezorOperationBaseCubit<T>
     WidgetsBinding.instance.removeObserver(this);
     return super.close();
   }
-
 }
