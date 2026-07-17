@@ -15,7 +15,8 @@ enum SignerDeviceEntity {
   ledgerStax,
   passport,
   seedsigner,
-  specter;
+  specter,
+  trezor;
 
   String get displayName => switch (this) {
     SignerDeviceEntity.bitbox02 => 'BitBox02',
@@ -25,6 +26,8 @@ enum SignerDeviceEntity {
   bool get isLedger => name.startsWith('ledger');
 
   bool get isBitBox => name.startsWith('bitbox');
+
+  bool get isTrezor => this == SignerDeviceEntity.trezor;
 
   bool get supportsBluetooth =>
       isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;

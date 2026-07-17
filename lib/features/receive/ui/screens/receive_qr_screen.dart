@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_bottom_sheet.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -45,6 +46,10 @@ class ReceiveQrPage extends StatelessWidget {
     );
     final showAddressVerification = !isLightning && (isLedger || isBitBox);
 
+    final isTrezor = context.select(
+      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isTrezor ?? false,
+    );
+
     final gap = Device.screen.height * 0.02;
     return SingleChildScrollView(
       child: Column(
@@ -57,6 +62,9 @@ class ReceiveQrPage extends StatelessWidget {
           Gap(gap),
           ReceiveInfoDetails(wallet: wallet),
           Gap(gap),
+          if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
+          if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
+          if (isTrezor) const Column(children: [VerifyAddressOnTrezorButton()]),
           if (showAddressVerification) ...[
             if (isLedger)
               const Column(children: [VerifyAddressOnLedgerButton()]),
@@ -797,6 +805,48 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
               derivationPath: derivationPath,
               requestedDeviceType: state.wallet!.signerDevice,
               scriptType: state.wallet!.scriptType,
+            ),
+          );
+        },
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
+        outlined: true,
+      ),
+    );
+  }
+}
+
+class VerifyAddressOnTrezorButton extends StatelessWidget {
+  const VerifyAddressOnTrezorButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBButton.big(
+        label: context.loc.receiveVerifyAddressTrezor,
+        onPressed: () {
+          final state = context.read<ReceiveBloc>().state;
+          if (state.wallet == null || state.bitcoinAddress == null) {
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.receiveVerifyAddressError,
+            );
+            return;
+          }
+          final keyChainPath =
+              state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
+              ? '0'
+              : '1';
+          final derivationPath =
+              '${state.wallet!.derivationPath}/$keyChainPath/${state.bitcoinAddress!.index}';
+          context.pushNamed(
+            TrezorRoute.trezorVerifyAddress.name,
+            extra: TrezorVerifyAddressRouteParams(
+              address: state.address,
+              derivationPath: derivationPath,
+              scriptType: state.wallet!.scriptType,
+              isTestnet: state.wallet!.network.isTestnet,
             ),
           );
         },
