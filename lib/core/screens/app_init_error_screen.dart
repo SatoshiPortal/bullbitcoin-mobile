@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/share_logs_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,25 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       );
       if (!context.mounted) return;
       SnackBarUtils.showSnackBar(context, 'Failed to share logs: $e');
+    }
+  }
+
+  Future<void> _exportLogs(BuildContext context, AppLocalizations loc) async {
+    try {
+      final logs = await log.readLogs();
+      final saved = await exportLogsAsFile(logs);
+      if (!context.mounted) return;
+      if (saved) {
+        SnackBarUtils.showSnackBar(context, loc.logsExportedMessage);
+      }
+    } catch (e) {
+      log.severe(
+        message: 'Failed to export logs',
+        error: e,
+        trace: StackTrace.current,
+      );
+      if (!context.mounted) return;
+      SnackBarUtils.showSnackBar(context, loc.logsExportFailedMessage);
     }
   }
 
@@ -129,6 +149,17 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       borderColor: context.appColors.border,
                       outlined: true,
                       onPressed: () => _shareLogs(context),
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: loc.logsShareOptionExport,
+                      iconData: Icons.file_download_outlined,
+                      iconFirst: true,
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.text,
+                      borderColor: context.appColors.border,
+                      outlined: true,
+                      onPressed: () => _exportLogs(context, loc),
                     ),
                     const Gap(12),
                     BBButton.big(
