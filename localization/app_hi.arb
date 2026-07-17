@@ -5089,7 +5089,7 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
+  "electrumInvalidTimeoutError": "अमान्य टाइमआउट मान: {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
@@ -6621,7 +6621,7 @@
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
   },
-  "bip85Title": "BIP85 Deterministic Entropies",
+  "bip85Title": "BIP85 निर्धारक एन्ट्रॉपी",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
@@ -7239,7 +7239,7 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "exchangeFileUploadUploadCount": "{count} {count, plural, =1{फ़ाइल} other{फ़ाइलें}} अपलोड करें",
+  "exchangeFileUploadUploadCount": "{count} {count, plural, =1{File} other{Files}} अपलोड करें",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -7772,7 +7772,7 @@
   "exportTransactionsButton": "CSV निर्यात करें",
   "exportTransactionsSuccess": "लेनदेन सफलतापूर्वक निर्यात हो गए",
   "exportTransactionsEmpty": "चयनित अवधि के लिए कोई लेनदेन नहीं है",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "लेनदेन निर्यात करने में विफल",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -11084,7 +11084,7 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
+  "arkSettleTransactionCount": "{count} {transaction} निपटाएं",
   "@arkSettleTransactionCount": {
     "description": "Button label showing number of unsettled transactions",
     "placeholders": {
@@ -12425,7 +12425,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "यह हमारी सहायता टीम को खाता हटाने का अनुरोध भेजेगा। आपका खाता 5 कार्य दिवसों के भीतर हटा दिया जाएगा।",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12437,11 +12437,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "खाता हटाने का अनुरोध किया गया",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "आपका खाता हटाने का अनुरोध कर दिया गया है। इसे 5 कार्य दिवसों के भीतर संसाधित किया जाएगा।",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -12563,7 +12563,7 @@
   "legacyStorageAcceptRisksCheckbox": "मैं बैकअप न लेने के जोखिम स्वीकार करता हूँ",
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "आपका वॉलेट सेटअप करते समय कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
   "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
   "@recoverbullBalance": {
@@ -12748,19 +12748,19 @@
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
   },
-  "transactionListLoadingFailed": "Could not load transactions.",
+  "transactionListLoadingFailed": "लेनदेन लोड नहीं हो सके।",
   "@transactionListLoadingFailed": {
     "description": "Error message when transaction loading fails"
   },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "errorReportingProgramDescriptionP2": "कुछ समस्या होने पर Bull Bitcoin बेनामी त्रुटि रिपोर्ट भेजता है।",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin ओपन-सोर्स है, इसलिए आप सत्यापित कर सकते हैं कि क्या भेजा जा रहा है।",
   "@errorReportingProgramDescriptionP5": {
     "description": "Bold paragraph: open source verification fact"
   },
-  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "fundExchangeCopSelectBankError": "कृपया एक जारीकर्ता बैंक चुनें",
   "@fundExchangeCopSelectBankError": {
     "description": "Validation error when no bank is selected"
   },
@@ -12768,7 +12768,7 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
-  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "fundExchangeCopDailyLimitWarning": "यदि आप अपनी दैनिक लेनदेन सीमा से अधिक हो जाते हैं, तो लेनदेन विफल हो जाएगा। आपको ग्राहक सहायता से संपर्क करना होगा।",
   "@fundExchangeCopDailyLimitWarning": {
     "description": "Warning about daily transaction limit for COP bank transfer"
   },
@@ -12776,7 +12776,7 @@
   "@fundExchangeCopIssuingBank": {
     "description": "Label for issuing bank dropdown in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "errorReportingProgramDescriptionP1": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में योगदान देकर Bull को बेहतर बनाने में हमारी मदद करें।",
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
@@ -12788,7 +12788,7 @@
   "@fundExchangeCopGeneratePaymentLink": {
     "description": "Button label to generate COP payment link"
   },
-  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "fundExchangeCopRedirectMessage": "भुगतान करने के लिए आपको एक बाहरी पृष्ठ पर पुनर्निर्देशित किया जाएगा।",
   "@fundExchangeCopRedirectMessage": {
     "description": "Message about redirect to external payment page"
   },
@@ -12796,7 +12796,7 @@
   "@payViewReceipt": {
     "description": "Button to view SINPE payment receipt"
   },
-  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "errorReportingProgramDescriptionP3": "इससे हमें यह देखने में मदद मिलती है कि प्रत्येक बग कितने उपयोगकर्ताओं को प्रभावित करता है और तदनुसार सुधारों को प्राथमिकता देने में मदद मिलती है; इसके बिना, प्रभाव मापने का हमारे पास कोई तरीका नहीं है।",
   "@errorReportingProgramDescriptionP3": {
     "description": "Impact paragraph of error reporting program description"
   },
@@ -12804,11 +12804,11 @@
   "@fundExchangeCopAmount": {
     "description": "Label for amount field in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "errorReportingProgramDescriptionP4": "रिपोर्ट केवल Bull के सर्वर पर जाती हैं, कभी भी तृतीय पक्षों को नहीं।",
   "@errorReportingProgramDescriptionP4": {
     "description": "Privacy paragraph of error reporting program description"
   },
-  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "fundExchangeCopValidAmountError": "कृपया मान्य राशि दर्ज करें",
   "@fundExchangeCopValidAmountError": {
     "description": "Validation error when amount is invalid"
   },
@@ -12820,7 +12820,7 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "fundExchangeCopFailedToOpenLink": "भुगतान लिंक नहीं खोला जा सका। कृपया पुनः प्रयास करें या सहायता से संपर्क करें।",
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
@@ -13202,5 +13202,252 @@
   "logsShareOptionShare": "शेयर करें",
   "logsShareOptionExport": "निर्यात करें",
   "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
-  "logsExportFailedMessage": "लॉग निर्यात करने में विफल"
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
+  "coreSwapsStatusRefunded": "वापस किया गया",
+  "swapRestoreTitle": "Swap रिस्टोर",
+  "swapRestoreActionable": "{count, plural, =0{रिकवर करने के लिए कोई Swap नहीं} =1{आप 1 Swap रिकवर करने का प्रयास कर सकते हैं। यह पहले से ही अंतिम स्थिति में हो सकता है।} other{आप {count} Swaps रिकवर करने का प्रयास कर सकते हैं। ध्यान दें, इनमें से कुछ पहले से ही अंतिम स्थिति में हो सकते हैं।}}",
+  "swapRestoreNoSwaps": "रिस्टोर करने के लिए कोई Swap नहीं मिला",
+  "swapRestoreRecoverableSection": "रिकवर करने योग्य",
+  "swapRestoreAllSection": "सभी Swaps",
+  "swapRestoreFailed": "Swaps रिस्टोर नहीं हो सके",
+  "swapRestoreKindLightningSend": "Lightning भेजें",
+  "swapRestoreKindLightningReceive": "Lightning प्राप्त करें",
+  "swapRestoreKindCrossChain": "क्रॉस-चेन",
+  "swapRescueTitle": "Swap बचाव",
+  "swapRescueTypeLabel": "प्रकार",
+  "swapRescueStatusLabel": "स्थिति",
+  "swapRescueAmountLabel": "राशि",
+  "swapRescueRouteLabel": "मार्ग",
+  "swapRescueCreatedLabel": "बनाया गया",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "वॉलेट में रिस्टोर करें",
+  "swapRescueWalletHint": "एक वॉलेट चुनें",
+  "swapRescueButton": "रिस्टोर करें",
+  "swapRescueSuccess": "Swap रिस्टोर हो गया — यह अब फिर से शुरू होगा",
+  "receivePayjoinNoUtxos": "इसे सक्षम करने के लिए पहले फंड प्राप्त करें।\npayjoin का उपयोग करने के लिए UTXO आवश्यक हैं।",
+  "receiveLiquidRiskDisclosureLabel": "भुगतान Liquid L-BTC (BTC नहीं) में बदल दिए जाएंगे। और जानें।",
+  "transactionLabelNetworkFees": "नेटवर्क शुल्क",
+  "walletLiquidRiskDisclosureLabel": "यह फंड Liquid L-BTC (BTC नहीं) है। और जानें।",
+  "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin जोखिम प्रकटीकरण खोलें",
+  "liquidRiskDisclosureTitle": "तत्काल भुगतान वॉलेट Liquid Bitcoin जोखिम प्रकटीकरण",
+  "liquidRiskDisclosureBody": "इंस्टेंट पेमेंट वॉलेट में मौजूद फंड \"असली\" Bitcoin नहीं हैं। यह Liquid Network Bitcoin (L-BTC) है, एक Bitcoin-समर्थित टोकन जो \"sidechain\" नामक एक अलग लेजर पर मौजूद होता है।\n\nहर Liquid Bitcoin, 15 कंपनियों के एक संघ (federation) द्वारा बनाए रखे गए एक पारदर्शी पेग तंत्र का उपयोग करके, वास्तविक Bitcoin द्वारा 1:1 समर्थित है। Liquid Federation के पास मौजूद Bitcoin भंडार पूरी तरह से ऑडिट करने योग्य हैं, और कोई भी यह सत्यापित कर सकता है कि हर Liquid Bitcoin एक वास्तविक Bitcoin द्वारा समर्थित है।\n\nLiquid Network पर पैसा रखना पारंपरिक कस्टोडियल वॉलेट या एक्सचेंज का उपयोग करने की तुलना में कहीं ज़्यादा सुरक्षित है। हालांकि, इंस्टेंट बिटकॉइन पेमेंट्स वॉलेट में अपना पैसा Liquid Bitcoin के रूप में रखना, सुरक्षित बिटकॉइन वॉलेट में वास्तविक Bitcoin के रूप में रखने की तुलना में कहीं कम सुरक्षित है।\n\nLiquid Network भुगतान सामान्य Bitcoin भुगतानों की तुलना में तेज़, सस्ते और अधिक निजी होते हैं। इंस्टेंट पेमेंट्स वॉलेट में आपके पास Liquid Bitcoin संपत्तियों का पूर्ण स्व-कस्टडी है और भुगतान भेजने व प्राप्त करने के लिए आपको किसी की अनुमति की आवश्यकता नहीं है।\n\nअपने वॉलेट बैकअप तक पहुंच सुरक्षित रखने की पूरी और एकमात्र ज़िम्मेदारी आपकी है, इसके बिना कोई भी आपकी Liquid Bitcoin संपत्तियों तक पहुंच बहाल नहीं कर सकता।\n\nL-BTC का वास्तविक दुनिया में मूल्य इस बात पर निर्भर करता है कि आप उन्हें वास्तविक Bitcoin के लिए भुना सकें या नहीं, जो बदले में उन स्वैप प्रदाताओं पर निर्भर करता है जो Liquid Network के सदस्य हैं, जो बदले में इस बात पर निर्भर करता है कि Liquid Network संघ कभी भी समझौता या बंद न हो।\n\nदूसरे शब्दों में, यदि Liquid Network संघ के सदस्य आपके Liquid Bitcoin को वास्तविक Bitcoin के बदले भुनाने में असमर्थ या अनिच्छुक हो जाते हैं, तो L-BTC टोकन का मूल्य शून्य हो जाएगा।\n\n> सिफारिश\n> इंस्टेंट पेमेंट्स वॉलेट में केवल छोटी राशि रखें। अपनी बचत सुरक्षित बिटकॉइन वॉलेट में या किसी आयातित हार्डवेयर वॉलेट में रखें।\n\n## इंस्टेंट पेमेंट्स वॉलेट क्या है?\n\nजब भी आप इंस्टेंट पेमेंट वॉलेट के साथ कोई Lightning Network भुगतान प्राप्त करते हैं, तो भेजने वाले का फंड वास्तव में एक तीसरे पक्ष के स्वैप प्रदाता द्वारा प्राप्त किया जाता है, Liquid Bitcoin में बदला जाता है और आपके वॉलेट में भेजा जाता है।\n\nजब भी आप इस वॉलेट से कोई Lightning Network भुगतान भेजते हैं, तो आप वास्तव में एक Liquid Bitcoin भुगतान एक तीसरे पक्ष के स्वैप प्रदाता को भेज रहे होते हैं, जो उसे Lightning Network पर वास्तविक Bitcoin में बदलता है और प्राप्तकर्ता को Lightning Network भुगतान भेजता है।\n\nये स्वैप पूरी तरह से नॉन-कस्टोडियल और ट्रस्टलेस हैं, यानी स्वैप प्रदाता के पास आपका फंड चुराने का कोई तरीका नहीं है। Bull Bitcoin उन स्वैप लेनदेन को करने में शामिल नहीं है और किसी भी व्यक्तिगत जानकारी की आवश्यकता या संग्रह नहीं करता।\n\n## मुझे इस वॉलेट का उपयोग किस लिए करना चाहिए?\n\nइंस्टेंट पेमेंट्स वॉलेट इस तरह डिज़ाइन किया गया है कि आप Bitcoin नेटवर्क शुल्क चुकाए बिना, रोज़मर्रा के आधार पर Bitcoin भुगतान प्राप्त कर सकें (या Bitcoin खरीद सकें) और Bitcoin भुगतान भेज सकें (या Bitcoin बेच सकें)।\n\nयदि आप एक व्यापारी हैं या Bitcoin जमा कर रहे हैं, तो 0.01 BTC से कम के भुगतान प्राप्त करने के लिए इस वॉलेट का उपयोग करें और, एक बार 0.01 BTC से अधिक जमा हो जाने पर, उन Bitcoins को सुरक्षित बिटकॉइन वॉलेट या किसी अन्य स्व-कस्टोडियल Bitcoin वॉलेट में ट्रांसफर करें।\n\nयदि आप अपना Bitcoin खर्च करना चाहते हैं, तो इंस्टेंट पेमेंट वॉलेट में थोड़ी राशि ट्रांसफर करें और इसे अपने खर्चों के भुगतान के लिए उपयोग करें। जब इंस्टेंट पेमेंट्स वॉलेट में फंड खत्म हो जाए, तो बस इसे फिर से भर दें।\n\n## ऑटो-स्वैप क्या है और यह कैसे काम करता है?\n\nऑटो-स्वैप, जिसे Auto-Transfer भी कहा जाता है, Bull Bitcoin द्वारा बनाई गई एक सुविधा है जो आपके वॉलेट में L-BTC राशि एक निर्धारित सीमा तक पहुंचने पर Liquid Network Bitcoin (L-BTC) को स्वचालित रूप से Bitcoin (BTC) में बदल देती है।\n\nऑटो-स्वैप डिफ़ॉल्ट रूप से सक्षम है:\n\n- **अधिकतम इंस्टेंट वॉलेट शेष:** 0.01 BTC\n- **ऑटो-स्वैप के बाद लक्ष्य शेष:** 0.005 BTC\n- **न्यूनतम ट्रांसफर राशि:** 0.005 BTC\n\nजब आपका शेष 0.01 BTC तक पहुंच जाता है, तो ऐप खोलते ही एक ट्रांसफर शुरू हो जाएगा और 0.005 BTC से अधिक का कोई भी फंड L-BTC से BTC में बदल दिया जाएगा।\n\n### उदाहरण\n\nयदि आपके पास 0.012 L-BTC है और ऑटो-स्वैप सक्षम है, तो 0.007 L-BTC का एक ट्रांसफर शुरू किया जाएगा और आपका शेष L-BTC 0.005 L-BTC रह जाएगा, और आपका BTC शेष 0.007 BTC बढ़ जाएगा।\n\n## मैं इंस्टेंट बिटकॉइन वॉलेट में L-BTC कैसे जमा करूं या निकालूं?\n\nवॉलेट को \"असली\" Bitcoin से फंड करने के लिए, \"Receive\" पर क्लिक करें और \"Lightning Network\" चुनें। L-BTC निकालने के लिए, \"Send\" पर क्लिक करें और एक Lightning इनवॉइस पेस्ट करें।\n\n## बैकअप कैसे काम करता है?\n\nइंस्टेंट बिटकॉइन वॉलेट, सुरक्षित बिटकॉइन वॉलेट के समान ही बैकअप सीड शब्दों का उपयोग करता है। आपको दोनों वॉलेट के लिए केवल एक ही बैकअप की आवश्यकता है।\n\n## क्या मुझे नॉन-कस्टोडियल Lightning Network वॉलेट के बजाय इंस्टेंट पेमेंट्स वॉलेट का उपयोग करना चाहिए?\n\nPhoenix Wallet जैसे नॉन-कस्टोडियल Lightning Network वॉलेट का उपयोग करने से आपको सुरक्षा का एक उच्चतर स्तर मिलेगा। चूंकि आपको Lightning Network चैनल प्रबंधन से निपटना होगा, यह कम सुविधाजनक और उपयोग में कठिन हो सकता है।\n\nचूंकि Lightning चैनल खोलने और बंद करने के लिए ऑन-चेन लेनदेन की आवश्यकता होती है, और चूंकि आपको संभवतः Lightning सेवा प्रदाताओं को शुल्क देना पड़ सकता है, इसलिए कुछ मामलों में पूरी तरह से नॉन-कस्टोडियल Lightning वॉलेट का उपयोग करना अधिक महंगा हो सकता है।\n\nयदि आप पूरी तरह से नॉन-कस्टोडियल शुद्ध Lightning वॉलेट का उपयोग करने में सक्षम और इच्छुक हैं, तो हम अत्यधिक अनुशंसा करते हैं कि आप Phoenix Wallet आज़माएं।\n\n## लेनदेन शुल्क क्या हैं?\n\nइंस्टेंट पेमेंट्स वॉलेट में आने-जाने वाले हर भुगतान में दो Liquid Network लेनदेन शामिल होते हैं। ये आम तौर पर बहुत छोटे होते हैं और लगभग 0.00000050 BTC (50 sats) के आसपास होने चाहिए।\n\nयदि आप सुरक्षित बिटकॉइन वॉलेट के साथ Lightning Network भुगतान प्राप्त या भेज रहे हैं, तो आपको हर भुगतान के लिए दो ऑन-चेन Bitcoin लेनदेन का शुल्क देना होगा, जो काफी महंगा हो सकता है।\n\nइसके अलावा, स्वैप प्रदाता स्वैप शुल्क भी ले सकता है। फिलहाल, स्वैप प्रदाता (Boltz) निम्नलिखित शुल्क लेता है:\n\n- **इंस्टेंट पेमेंट वॉलेट में Lightning Network भुगतान प्राप्त करना:** 0.25%\n- **इंस्टेंट पेमेंट वॉलेट से Lightning Network भुगतान भेजना:** 0.1%\n- **सुरक्षित बिटकॉइन वॉलेट में Lightning Network भुगतान प्राप्त करना:** 0.5%\n- **सुरक्षित बिटकॉइन वॉलेट से Lightning Network भुगतान भेजना:** 0.1%",
+  "nfcNotAvailable": "इस डिवाइस पर NFC समर्थित नहीं है",
+  "nfcDisabled": "NFC अक्षम है। इसे सेटिंग्स में सक्षम करें।",
+  "nfcInvalidData": "कोई समर्थित NFC डेटा नहीं मिला",
+  "nfcConnectionLost": "NFC कनेक्शन टूट गया। अपने डिवाइस को NFC टैग के पास रखें और फिर से प्रयास करें।",
+  "nfcWriteFailed": "NFC ट्रांसफर विफल रहा। कृपया फिर से प्रयास करें।",
+  "nfcError": "NFC त्रुटि: {error}",
+  "sendErrorInvoiceExpired": "यह चालान समाप्त हो चुका है। प्राप्तकर्ता से नया चालान मांगें।",
+  "psbtFlowSignViaNfc": "NFC के ज़रिए साइन करें",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT को NFC के ज़रिए भेजने के लिए अपने {deviceName} को टैप करें",
+  "psbtFlowColdcardQInstructionsTitle": "कोल्डकार्ड Q निर्देश",
+  "psbtFlowColdcardMk4InstructionsTitle": "कोल्डकार्ड Mk4 निर्देश",
+  "psbtFlowColdcardQStep1": "अपने कोल्डकार्ड Q डिवाइस पर लॉगिन करें",
+  "psbtFlowColdcardQStep2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "psbtFlowColdcardQStep3": "अपनी पसंदीदा साइनिंग विधि चुनें:",
+  "psbtFlowColdcardQStep4": "QR कोड के लिए:",
+  "psbtFlowColdcardQStep5": "   - अपने कोल्डकार्ड Q पर \"Scan any QR code\" चुनें",
+  "psbtFlowColdcardQStep6": "   - बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "psbtFlowColdcardQStep7": "   - यदि आपको कोई परेशानी स्कैनिंग है:",
+  "psbtFlowColdcardQStep8": "     - अपने डिवाइस पर स्क्रीन की चमक बढ़ाएं",
+  "psbtFlowColdcardQStep9": "     - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "psbtFlowColdcardQStep10": "     - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "psbtFlowColdcardQStep11": "NFC के लिए:",
+  "psbtFlowColdcardQStep12": "   - अपने कोल्डकार्ड Q पर \"Ready to Sign\" चुनें, फिर NFC बटन टैप करें",
+  "psbtFlowColdcardQStep13": "   - अपने फ़ोन को कोल्डकार्ड Q पर टैप करें",
+  "psbtFlowColdcardQStep14": "   - PSBT के ट्रांसफर होने की प्रतीक्षा करें",
+  "psbtFlowColdcardQStep15": "एक बार जब लेनदेन आपके कोल्डकार्ड Q में आयात हो जाए, तो गंतव्य पते और राशि की समीक्षा करें।",
+  "psbtFlowColdcardQStep16": "अपने कोल्डकार्ड Q पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।",
+  "psbtFlowColdcardQStep17": "इसके बाद कोल्डकार्ड Q एक हस्ताक्षरित लेनदेन QR कोड दिखाएगा या NFC ट्रांसफर तैयार करेगा।",
+  "psbtFlowColdcardQStep18": "यदि आपने QR से साइन किया है, तो बुल बिटकॉइन वॉलेट में \"I'm done\" पर क्लिक करें।",
+  "psbtFlowColdcardQStep19": "बुल बिटकॉइन वॉलेट आपसे हस्ताक्षरित लेनदेन QR कोड स्कैन करने या इसे प्राप्त करने के लिए NFC का उपयोग करने के लिए कहेगा।",
+  "psbtFlowColdcardQStep20": "   - QR के लिए: कोल्डकार्ड Q पर QR कोड स्कैन करें",
+  "psbtFlowColdcardQStep21": "   - NFC के लिए: अपने फ़ोन को कोल्डकार्ड Q पर टैप करें",
+  "psbtFlowColdcardQStep22": "हस्ताक्षरित लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।",
+  "psbtFlowColdcardQStep23": "अब यह प्रसारण के लिए तैयार है। जैसे ही आप प्रसारण पर क्लिक करेंगे, लेनदेन Bitcoin नेटवर्क पर प्रकाशित हो जाएगा।",
+  "psbtFlowColdcardMk4Step1": "अपने कोल्डकार्ड Mk4 डिवाइस पर लॉगिन करें",
+  "psbtFlowColdcardMk4Step2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "psbtFlowColdcardMk4Step3": "अपने कोल्डकार्ड Mk4 पर \"Ready to Sign\" चुनें, फिर नंबर 3 बटन टैप करें",
+  "psbtFlowColdcardMk4Step4": "अपने फ़ोन को कोल्डकार्ड Mk4 पर टैप करें",
+  "psbtFlowColdcardMk4Step5": "PSBT के ट्रांसफर होने की प्रतीक्षा करें",
+  "psbtFlowColdcardMk4Step6": "एक बार जब लेनदेन आपके कोल्डकार्ड Mk4 में आयात हो जाए, तो गंतव्य पते और राशि की समीक्षा करें।",
+  "psbtFlowColdcardMk4Step7": "अपने कोल्डकार्ड Mk4 पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।",
+  "psbtFlowColdcardMk4Step8": "इसके बाद कोल्डकार्ड Mk4 हस्ताक्षरित लेनदेन को NFC ट्रांसफर के लिए तैयार करेगा।",
+  "psbtFlowColdcardMk4Step9": "बुल बिटकॉइन वॉलेट में, प्रसारण स्क्रीन पर NFC टैप करें।",
+  "psbtFlowColdcardMk4Step10": "हस्ताक्षरित लेनदेन प्राप्त करने के लिए अपने फ़ोन को कोल्डकार्ड Mk4 पर टैप करें।",
+  "psbtFlowColdcardMk4Step11": "हस्ताक्षरित लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।",
+  "psbtFlowColdcardMk4Step12": "बुल बिटकॉइन वॉलेट में लेनदेन के विवरण की समीक्षा करें।",
+  "psbtFlowColdcardMk4Step13": "अब यह प्रसारण के लिए तैयार है। जैसे ही आप प्रसारण पर क्लिक करेंगे, लेनदेन Bitcoin नेटवर्क पर प्रकाशित हो जाएगा।",
+  "importWalletColdcardMk4": "कोल्डकार्ड Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "हस्ताक्षरित लेनदेन को NFC के ज़रिए प्राप्त करने के लिए अपने कोल्डकार्ड को टैप करें",
+  "importColdcardInvalidWalletData": "अमान्य कोल्डकार्ड वॉलेट डेटा",
+  "importColdcardConnectTitle": "कनेक्ट {deviceName}",
+  "importColdcardConnectDescription": "अपने {deviceName} से वॉलेट descriptor आयात करें",
+  "importColdcardScanNfcSheetTitle": "वॉलेट descriptor को NFC के ज़रिए आयात करने के लिए अपने {deviceName} को टैप करें",
+  "importColdcardQInstructionsTitle": "कोल्डकार्ड Q निर्देश",
+  "importColdcardQStep1": "अपने कोल्डकार्ड Q डिवाइस पर लॉगिन करें",
+  "importColdcardQStep2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "importColdcardQStep3": "उन्नत/सेटिंग्स मेनू चुनें",
+  "importColdcardQStep4": "\"export wallet\" पर क्लिक करें",
+  "importColdcardQStep5": "एक्सपोर्ट प्रकार के रूप में \"descriptor\" चुनें",
+  "importColdcardQStep6": "पहली स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardQStep7": "दूसरी स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardQStep8": "अपना एड्रेस प्रकार चुनें (अनिश्चित होने पर Segwit उपयोग करें)",
+  "importColdcardQStep9": "QR के लिए, डिवाइस पर QR कोड बटन पर क्लिक करें। यह आपको डिवाइस पर एक QR कोड दिखाएगा",
+  "importColdcardQStep10": "NFC के लिए, डिवाइस पर NFC बटन पर क्लिक करें",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" बटन पर क्लिक करें",
+  "importColdcardQStep12": "अपने डिवाइस पर दिखने वाला QR कोड स्कैन करें या फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
+  "importColdcardQStep13": "यही है!",
+  "importColdcardMk4InstructionsTitle": "कोल्डकार्ड Mk4 निर्देश",
+  "importColdcardMk4Step1": "अपने कोल्डकार्ड Mk4 डिवाइस पर लॉगिन करें",
+  "importColdcardMk4Step2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "importColdcardMk4Step3": "उन्नत/सेटिंग्स मेनू चुनें",
+  "importColdcardMk4Step4": "\"export wallet\" पर क्लिक करें",
+  "importColdcardMk4Step5": "एक्सपोर्ट प्रकार के रूप में \"descriptor\" चुनें",
+  "importColdcardMk4Step6": "पहली स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardMk4Step7": "दूसरी स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardMk4Step8": "अपना एड्रेस प्रकार चुनें (अनिश्चित होने पर Segwit उपयोग करें)",
+  "importColdcardMk4Step9": "कोल्डकार्ड NFC शुरू करने के लिए नंबर 3 पर क्लिक करें",
+  "importColdcardMk4Step10": "\"Scan NFC\" बटन पर क्लिक करें",
+  "importColdcardMk4Step11": "फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
+  "importColdcardMk4Step12": "यही है!",
+  "noteVisibleToSenderNotice": "यह नोट आपके QR या चालान के प्राप्तकर्ता को दिखाई देगा।",
+  "viewerAddressTab": "पता",
+  "viewerPaymentUriTab": "भुगतान URI",
+  "transactionSwapOpenWithin24h": "अपने Swap को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
+  "recipientsScreenTitle": "प्राप्तकर्ता चुनें",
+  "recipientsScreenSubtitle": "आप किसे भुगतान कर रहे हैं?",
+  "recipientsTabNew": "नया प्राप्तकर्ता",
+  "recipientsTabList": "मेरे फ़िएट प्राप्तकर्ता",
+  "recipientsPayoutMethod": "भुगतान विधि",
+  "recipientsFilterByJurisdiction": "क्षेत्राधिकार के अनुसार फ़िल्टर करें:",
+  "recipientsListEmpty": "कोई प्राप्तकर्ता नहीं मिला।",
+  "recipientsContinue": "जारी रखें",
+  "recipientsJurisdictionAll": "सभी क्षेत्राधिकार",
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "recipientsTypeInteracEmail": "इंटरैक ई-ट्रांसफर",
+  "recipientsTypeBillPayment": "बिल भुगतान",
+  "recipientsTypeBankTransfer": "बैंक ट्रांसफर",
+  "recipientsTypeSepa": "SEPA ट्रांसफर",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI कार्ड",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU अर्जेंटीना",
+  "recipientsTypeBankAccountCo": "बैंक खाता COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "ईमेल",
+  "recipientsInfoPayee": "भुगतानकर्ता",
+  "recipientsInfoAccount": "खाता",
+  "recipientsInfoPhone": "फ़ोन",
+  "recipientsInfoCard": "कार्ड",
+  "recipientsInfoLabel": "लेबल",
+  "recipientsValidationFieldRequired": "यह क्षेत्र खाली नहीं हो सकता है",
+  "recipientsLabelOptional": "लेबल (वैकल्पिक)",
+  "recipientsLabelHint": "इस प्राप्तकर्ता के लिए एक लेबल दर्ज करें",
+  "recipientsFieldName": "नाम",
+  "recipientsFieldNameHint": "प्राप्तकर्ता का नाम दर्ज करें",
+  "recipientsFieldRecipientNameLabel": "प्राप्तकर्ता का नाम",
+  "recipientsFieldPhoneNumber": "फ़ोन नंबर",
+  "recipientsFieldPhoneNumberHint": "फ़ोन नंबर दर्ज करें",
+  "recipientsFieldOwnerName": "स्वामी का नाम",
+  "recipientsFieldOwnerNameHint": "स्वामी का नाम दर्ज करें",
+  "recipientsAccountOwnerQuestion": "यह खाता किसका है?",
+  "recipientsAccountOwnerMine": "यह मेरा खाता है",
+  "recipientsAccountOwnerSomeoneElse": "यह किसी और का खाता है",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN दर्ज करें",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE नंबर दर्ज करें",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU नंबर दर्ज करें",
+  "recipientsFieldBankInstitution": "बैंक संस्था",
+  "recipientsFieldBankInstitutionPlaceholder": "बैंक संस्था चुनें",
+  "recipientsValidationBankInstitution": "कृपया एक बैंक संस्था चुनें",
+  "recipientsFieldAccountType": "खाता प्रकार",
+  "recipientsAccountTypeSavings": "बचत",
+  "recipientsAccountTypeChecking": "चालू",
+  "recipientsFieldBankAccountNumber": "बैंक खाता संख्या",
+  "recipientsFieldBankAccountNumberHint": "बैंक खाता संख्या दर्ज करें",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "पासपोर्ट",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "डेबिट कार्ड नंबर",
+  "recipientsFieldDebitCardHint": "डेबिट कार्ड नंबर दर्ज करें",
+  "recipientsFieldOwnerNameSinpeHint": "स्वामी का नाम यहाँ दिखाई देगा",
+  "recipientsValidationSinpeOwner": "कृपया फ़ोन नंबर सत्यापित करें",
+  "recipientsFieldEmailAddress": "ईमेल पता",
+  "recipientsFieldEmailAddressHint": "ईमेल पता दर्ज करें",
+  "recipientsFieldSecurityQuestion": "सुरक्षा प्रश्न",
+  "recipientsFieldSecurityQuestionHint": "सुरक्षा प्रश्न दर्ज करें (10-40 वर्ण)",
+  "recipientsFieldSecurityAnswer": "सुरक्षा उत्तर",
+  "recipientsFieldSecurityAnswerHint": "सुरक्षा उत्तर दर्ज करें",
+  "recipientsValidationSecurityQuestionMin": "सुरक्षा प्रश्न कम से कम 10 वर्णों का होना चाहिए",
+  "recipientsCharCounter": "{count}/40 वर्ण",
+  "recipientsFieldInstitutionCode": "संस्था कोड",
+  "recipientsFieldInstitutionCodeHint": "संस्था कोड दर्ज करें",
+  "recipientsFieldInstitutionNumber": "संस्था संख्या",
+  "recipientsFieldInstitutionNumberHint": "संस्था संख्या दर्ज करें",
+  "recipientsFieldTransitNumber": "ट्रांज़िट संख्या",
+  "recipientsFieldTransitNumberHint": "ट्रांज़िट संख्या दर्ज करें",
+  "recipientsFieldAccountNumber": "खाता संख्या",
+  "recipientsFieldAccountNumberHint": "खाता संख्या दर्ज करें",
+  "recipientsFieldDefaultComment": "डिफ़ॉल्ट टिप्पणी (वैकल्पिक)",
+  "recipientsFieldDefaultCommentHint": "डिफ़ॉल्ट टिप्पणी दर्ज करें",
+  "recipientsFieldCorporateAccount": "कॉर्पोरेट खाता",
+  "recipientsFieldFirstName": "पहला नाम",
+  "recipientsFieldFirstNameHint": "पहला नाम दर्ज करें",
+  "recipientsFieldLastName": "अंतिम नाम",
+  "recipientsFieldLastNameHint": "अंतिम नाम दर्ज करें",
+  "recipientsFieldCorporateName": "कॉर्पोरेट नाम",
+  "recipientsFieldCorporateNameHint": "कॉर्पोरेट नाम दर्ज करें",
+  "recipientsFieldBillerName": "बिलर का नाम",
+  "recipientsFieldBillerNameHint": "बिलर खोजें और चुनें",
+  "recipientsValidationBillerSearchMin": "खोजने के लिए 3 या अधिक वर्ण दर्ज करें",
+  "recipientsValidationBillerSelect": "कृपया सूची में से एक बिलर चुनें",
+  "recipientsFieldPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
+  "exchangeFileUploadStatusRejectedBadge": "अस्वीकृत",
+  "exchangeFileUploadTapToReupload": "पुनः अपलोड करने के लिए टैप करें",
+  "exchangeSupportChatAttachmentImage": "छवि",
+  "exchangeSupportChatAttachmentUnknownFile": "अज्ञात फ़ाइल",
+  "exchangeSupportChatPermissionDenied": "अनुमति अस्वीकार कर दी गई।",
+  "exchangeSupportChatPermissionDeniedSettings": "अनुमति अस्वीकार कर दी गई। कृपया सेटिंग्स में फ़ोटो लाइब्रेरी की पहुंच प्रदान करें।",
+  "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
+  "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
+  "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
+  "logsViewerDeleteTitle": "लॉग हटाएं",
+  "logsViewerDeleteConfirmation": "क्या आप वाकई सभी लॉग हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+  "logsViewerDeleteButton": "हटाएं",
+  "logsViewerCancelButton": "रद्द करें",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "1 sat/vB से कम वाले लेनदेन की पुष्टि होने में अधिक समय लग सकता है और हो सकता है कि वे सभी नोड्स तक प्रसारित न हों।",
+  "sendBelowMinFeeRateError": "शुल्क दर कम से कम 0.1 sat/vB होनी चाहिए।",
+  "bitboxErrorBluetoothPermissionDenied": "अपने बिटबॉक्स02 Nova से कनेक्ट करने के लिए ब्लूटूथ अनुमति आवश्यक है।",
+  "bitboxErrorBluetoothUnavailable": "ब्लूटूथ उपलब्ध नहीं है। ब्लूटूथ चालू करें और फिर से प्रयास करें।",
+  "bitboxErrorNoBleDevicesFound": "आस-पास कोई बिटबॉक्स02 Nova नहीं मिला। ब्लूटूथ जांचें और फिर से प्रयास करें।",
+  "bitboxErrorMultipleBleDevicesFound": "एकाधिक बिटबॉक्स02 Nova डिवाइस मिले। केवल एक को पास रखें और फिर से प्रयास करें।",
+  "bitboxErrorOperationFailed": "बिटबॉक्स ऑपरेशन विफल रहा। कृपया फिर से प्रयास करें।",
+  "bitboxScreenConnectSubtextBluetooth": "सुनिश्चित करें कि आपका बिटबॉक्स02 Nova अनलॉक है और ब्लूटूथ सक्षम है।",
+  "bitboxScreenScanningSubtextBluetooth": "आपके आस-पास बिटबॉक्स02 Nova की तलाश की जा रही है...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "बिटबॉक्स02 Nova समस्या निवारण",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "यदि आपका डिवाइस अभी भी ऐप से कनेक्ट नहीं होता है, तो निम्नलिखित प्रयास करें:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "सुनिश्चित करें कि ब्लूटूथ चालू है और इस ऐप के लिए अनुमति प्राप्त है।",
+  "bitboxScreenTroubleshootingBluetoothStep2": "सुनिश्चित करें कि आपके बिटबॉक्स02 Nova पर ब्लूटूथ सक्षम है।",
+  "bitboxScreenTroubleshootingBluetoothStep3": "अपने बिटबॉक्स02 Nova को पुनः आरंभ करें और फिर से कनेक्ट करने का प्रयास करें।",
+  "sendErrorInsufficientBalanceFrozenHint": "पर्याप्त खर्च योग्य शेष नहीं है — {amount} फ्रोज़न है। इसका उपयोग करने के लिए \"कॉइन प्रबंधित करें\" में कॉइन अनफ्रीज़ करें।",
+  "importWalletBitBox": "बिटबॉक्स02",
+  "importWalletBitBoxNova": "बिटबॉक्स02 Nova"
 }

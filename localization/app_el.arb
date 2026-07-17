@@ -2889,7 +2889,7 @@
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
   },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
+  "electrumServerUrlHint": "Διεύθυνση URL διακομιστή {network} {environment}",
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
@@ -3431,7 +3431,7 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "dcaBuyingMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -3979,7 +3979,7 @@
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
-  "autoswapMaxBalance": "Max Instant Wallet Balance",
+  "autoswapMaxBalance": "Μέγιστο Υπόλοιπο Instant Wallet",
   "@autoswapMaxBalance": {
     "description": "Field label for max balance threshold"
   },
@@ -4056,7 +4056,7 @@
   "@settingsRecoverbullTitle": {
     "description": "Title for the Recoverbull backup section in app settings"
   },
-  "buyInputKycPending": "KYC ID Verification Pending",
+  "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
   },
@@ -4712,7 +4712,7 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum server (Bitcoin node)",
+  "electrumServerSettingsLabel": "Διακομιστής Electrum (κόμβος Bitcoin)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
   },
@@ -4923,7 +4923,7 @@
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
   },
-  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
+  "walletAutoTransferBlockedMessage": "Προσπάθεια μεταφοράς {amount} BTC. Η τρέχουσα χρέωση είναι {currentFee}% του ποσού μεταφοράς και το όριο χρέωσης έχει οριστεί στο {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -5954,7 +5954,7 @@
   "@bitboxScreenVerifyOnDevice": {
     "description": "Instruction to verify address on device"
   },
-  "ledgerConnectTitle": "Connect Your Ledger Device",
+  "ledgerConnectTitle": "Συνδέστε τη Συσκευή Ledger σας",
   "@ledgerConnectTitle": {
     "description": "Title for initial Ledger connection screen"
   },
@@ -6042,7 +6042,7 @@
   "@transactionDetailLabelLiquidTxId": {
     "description": "Label for Liquid transaction ID"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Μεταφόρτωση {count} {count, plural, =1{αρχείου} other{αρχείων}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -6476,7 +6476,7 @@
   "exportTransactionsButton": "Εξαγωγή CSV",
   "exportTransactionsSuccess": "Οι συναλλαγές εξήχθησαν με επιτυχία",
   "exportTransactionsEmpty": "Δεν υπάρχουν συναλλαγές προς εξαγωγή για την επιλεγμένη περίοδο",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Αποτυχία εξαγωγής συναλλαγών",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -7403,7 +7403,7 @@
       }
     }
   },
-  "buyKycPendingTitle": "KYC ID Verification Pending",
+  "buyKycPendingTitle": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
@@ -7431,7 +7431,7 @@
   "@pasteInputDefaultHint": {
     "description": "Default placeholder hint for paste input field"
   },
-  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "sellKycPendingTitle": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
@@ -7683,7 +7683,7 @@
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
   },
-  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
   "@bip329LabelsHeading": {
     "description": "Main heading on BIP329 labels page"
   },
@@ -7747,7 +7747,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "exchangeDcaSummaryMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -9111,7 +9111,7 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
+  "arkSettleTransactionCount": "Διακανονισμός {count} {transaction}",
   "@arkSettleTransactionCount": {
     "description": "Button label showing number of unsettled transactions",
     "placeholders": {
@@ -10176,7 +10176,7 @@
   "@bitboxScreenVerifyAddress": {
     "description": "Main text when showing address verification"
   },
-  "bitboxScreenConnectDevice": "Connect Your BitBox Device",
+  "bitboxScreenConnectDevice": "Συνδέστε τη Συσκευή BitBox σας",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
   },
@@ -10509,7 +10509,7 @@
   "@dcaOrderTypeLabel": {
     "description": "Label for order type detail row"
   },
-  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
+  "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
   "@dcaSuccessMessageHourly": {
     "description": "Success message for hourly frequency",
     "placeholders": {
@@ -10908,7 +10908,7 @@
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
   },
-  "testBackupPinMessage": "Test to make sure you remember your backup {pinOrPassword}",
+  "testBackupPinMessage": "Δοκιμάστε για να βεβαιωθείτε ότι θυμάστε το εφεδρικό σας {pinOrPassword}",
   "@testBackupPinMessage": {
     "description": "Message prompting user to test backup PIN/password",
     "placeholders": {
@@ -11140,7 +11140,7 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
+  "dcaSuccessMessageMonthly": "Θα αγοράζετε {amount} κάθε μήνα",
   "@dcaSuccessMessageMonthly": {
     "description": "Success message for monthly frequency",
     "placeholders": {
@@ -11319,7 +11319,7 @@
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
-  "dcaSuccessMessageDaily": "Θα αγοράσετε κάθε μέρα",
+  "dcaSuccessMessageDaily": "Θα αγοράσετε {amount} κάθε μέρα",
   "@dcaSuccessMessageDaily": {
     "description": "Success message for daily frequency",
     "placeholders": {
@@ -11741,7 +11741,7 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "dcaSuccessMessageWeekly": "You will buy {amount} every week",
+  "dcaSuccessMessageWeekly": "Θα αγοράζετε {amount} κάθε εβδομάδα",
   "@dcaSuccessMessageWeekly": {
     "description": "Success message for weekly frequency",
     "placeholders": {
@@ -11754,7 +11754,7 @@
   "@autoswapRecipientWalletPlaceholder": {
     "description": "Dropdown placeholder text when no wallet is selected"
   },
-  "enterYourBackupPinTitle": "Enter your backup {pinOrPassword}",
+  "enterYourBackupPinTitle": "Εισαγάγετε το εφεδρικό σας {pinOrPassword}",
   "@enterYourBackupPinTitle": {
     "description": "Title for entering backup PIN or password",
     "placeholders": {
@@ -12368,7 +12368,7 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "autoswapMaxBalanceLabel": "Max Instant Wallet Balance",
+  "autoswapMaxBalanceLabel": "Μέγιστο Υπόλοιπο Instant Wallet",
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
@@ -12424,7 +12424,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Αυτό θα στείλει ένα αίτημα διαγραφής λογαριασμού στην ομάδα υποστήριξής μας. Ο λογαριασμός σας θα διαγραφεί εντός 5 εργάσιμων ημερών.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12436,11 +12436,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Ζητήθηκε Διαγραφή Λογαριασμού",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Το αίτημά σας για διαγραφή λογαριασμού έχει υποβληθεί. Θα επεξεργαστεί εντός 5 εργάσιμων ημερών.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -12562,7 +12562,7 @@
   "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
   "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
   "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
   "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
@@ -13052,5 +13052,212 @@
   "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
-  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "coreSwapsStatusRefunded": "Επιστράφηκε",
+  "swapRestoreTitle": "Επαναφορά ανταλλαγών",
+  "swapRestoreActionable": "{count, plural, =0{Δεν υπάρχουν ανταλλαγές προς ανάκτηση} =1{Μπορείτε να επιχειρήσετε να ανακτήσετε 1 ανταλλαγή. Ενδέχεται να βρίσκεται ήδη σε τελική κατάσταση.} other{Μπορείτε να επιχειρήσετε να ανακτήσετε {count} ανταλλαγές. Σημειώστε ότι ορισμένες από αυτές ενδέχεται να βρίσκονται ήδη σε τελική κατάσταση.}}",
+  "swapRestoreNoSwaps": "Δεν βρέθηκαν ανταλλαγές για επαναφορά",
+  "swapRestoreRecoverableSection": "Ανακτήσιμα",
+  "swapRestoreAllSection": "Όλες οι ανταλλαγές",
+  "swapRestoreFailed": "Δεν ήταν δυνατή η επαναφορά των ανταλλαγών",
+  "swapRestoreKindLightningSend": "Αποστολή Lightning",
+  "swapRestoreKindLightningReceive": "Λήψη Lightning",
+  "swapRestoreKindCrossChain": "Μεταξύ αλυσίδων",
+  "swapRescueTitle": "Διάσωση ανταλλαγής",
+  "swapRescueTypeLabel": "Τύπος",
+  "swapRescueStatusLabel": "Κατάσταση",
+  "swapRescueAmountLabel": "Ποσό",
+  "swapRescueRouteLabel": "Διαδρομή",
+  "swapRescueCreatedLabel": "Δημιουργήθηκε",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "Επαναφορά σε πορτοφόλι",
+  "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
+  "swapRescueButton": "Επαναφορά",
+  "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
+  "mempoolServerStatusOnline": "Σε λειτουργία",
+  "mempoolServerStatusOffline": "Εκτός λειτουργίας",
+  "mempoolServerStatusChecking": "Έλεγχος...",
+  "mempoolServerStatusUnknown": "Άγνωστο",
+  "mempoolCustomServerSaveFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolCustomServerInfoDescription": "Οι διακομιστές mempool χρησιμοποιούνται για την εκτίμηση τελών και το άνοιγμα του block explorer κατά την προβολή λεπτομερειών συναλλαγής.",
+  "mempoolCustomServerUseSsl": "Χρήση SSL",
+  "mempoolCustomServerSslAutoDetected": "(Αυτόματος εντοπισμός)",
+  "mempoolCustomServerSslHelpText": "Για τοπικούς διακομιστές (.local, ιδιωτικές IP) και διακομιστές Tor (.onion), το SSL είναι συνήθως απενεργοποιημένο. Οι δημόσιες IP και τα domains θα πρέπει να χρησιμοποιούν SSL.",
+  "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
+  "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
+  "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
+  "mempoolErrorTorNotRunning": "Δεν είναι δυνατή η πρόσβαση στη διεύθυνση .onion. Βεβαιωθείτε ότι το Tor/Orbot εκτελείται και δοκιμάστε ξανά.",
+  "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
+  "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
+  "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorServerError": "Ο διακομιστής αντιμετώπισε σφάλμα. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorInvalidResponse": "Ο διακομιστής επέστρεψε μη έγκυρη απόκριση.",
+  "mempoolErrorSaveServerFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
+  "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
+  "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
+  "receiveLiquidRiskDisclosureLabel": "Οι πληρωμές θα μετατραπούν σε Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
+  "payViewReceipt": "Προβολή απόδειξης",
+  "paySinpeReceipt": "Απόδειξη SINPE",
+  "transactionFilterWithdraw": "Ανάληψη",
+  "transactionFilterPay": "Πληρωμή",
+  "transactionFilterFunding": "Χρηματοδότηση",
+  "transactionFilterReward": "Ανταμοιβή",
+  "transactionFilterRefund": "Επιστροφή",
+  "transactionFilterBalanceAdjustment": "Προσαρμογή",
+  "transactionListLoadingFailed": "Δεν ήταν δυνατή η φόρτωση των συναλλαγών.",
+  "transactionLabelNetworkFees": "Τέλη δικτύου",
+  "walletLiquidRiskDisclosureLabel": "Αυτά τα κεφάλαια είναι Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
+  "liquidRiskDisclosureSemanticLabel": "Άνοιγμα γνωστοποίησης κινδύνου Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Γνωστοποίηση Κινδύνου Liquid Bitcoin του Instant Payments Wallet",
+  "liquidRiskDisclosureBody": "Τα κεφάλαια στο Instant Payment Wallet δεν είναι «πραγματικά» Bitcoin. Είναι Liquid Network Bitcoin (L-BTC), ένα token με κάλυψη σε Bitcoin που υπάρχει σε ένα ξεχωριστό καθολικό που ονομάζεται «sidechain».\n\nΚάθε Liquid Bitcoin καλύπτεται 1:1 από πραγματικό Bitcoin μέσω ενός διαφανούς μηχανισμού peg που διατηρείται από μια ομοσπονδία 15 εταιρειών. Τα αποθέματα Bitcoin που κατέχει η Liquid Federation είναι πλήρως ελέγξιμα και ο καθένας μπορεί να επαληθεύσει ότι κάθε Liquid Bitcoin καλύπτεται από πραγματικό Bitcoin.\n\nΗ διατήρηση χρημάτων στο Liquid Network είναι πολύ πιο ασφαλής από τη χρήση ενός παραδοσιακού θεματοφυλακτικού πορτοφολιού ή ανταλλακτηρίου. Ωστόσο, η διατήρηση των χρημάτων σας ως Liquid Bitcoin στο Instant Bitcoin Payments wallet είναι πολύ λιγότερο ασφαλής από τη διατήρησή τους ως πραγματικό Bitcoin στο Secure Bitcoin Wallet.\n\nΟι πληρωμές στο Liquid Network είναι πιο γρήγορες, φθηνότερες και πιο ιδιωτικές από τις κανονικές πληρωμές Bitcoin. Έχετε πλήρη αυτο-θεματοφυλακή (self-custody) των περιουσιακών στοιχείων Liquid Bitcoin στο Instant Payments Wallet και δεν χρειάζεστε καμία άδεια από κανέναν για να στέλνετε και να λαμβάνετε πληρωμές.\n\nΕίστε πλήρως και αποκλειστικά υπεύθυνοι για την ασφάλεια της πρόσβασης στο αντίγραφο ασφαλείας του πορτοφολιού σας, χωρίς το οποίο κανείς δεν μπορεί να επαναφέρει την πρόσβαση στα περιουσιακά σας στοιχεία Liquid Bitcoin.\n\nΗ πραγματική αξία του L-BTC εξαρτάται από την ικανότητά σας να τα εξαργυρώσετε για πραγματικό Bitcoin, κάτι που με τη σειρά του εξαρτάται από παρόχους ανταλλαγής (swap) που είναι μέλη του Liquid Network, κάτι που με τη σειρά του εξαρτάται από το να μην τεθεί ποτέ σε κίνδυνο ή να κλείσει η ομοσπονδία του Liquid Network.\n\nΜε άλλα λόγια, σε περίπτωση που τα μέλη της ομοσπονδίας του Liquid Network καταστούν ανίκανα ή απρόθυμα να εξαργυρώσουν το Liquid Bitcoin σας για πραγματικό Bitcoin, η αξία των tokens L-BTC θα καταστεί μηδενική.\n\n> Σύσταση\n> Διατηρείτε μόνο μικρά ποσά στο Instant Payments Wallet. Κρατήστε τις αποταμιεύσεις σας στο Secure Bitcoin Wallet ή σε ένα εισαγόμενο hardware wallet.\n\n## Τι είναι το Instant Payments Wallet;\n\nΚάθε φορά που λαμβάνετε μια πληρωμή Lightning Network με το Instant Payment Wallet, τα κεφάλαια του αποστολέα λαμβάνονται στην πραγματικότητα από έναν τρίτο πάροχο ανταλλαγής (swap), μετατρέπονται σε Liquid Bitcoin και αποστέλλονται στο πορτοφόλι σας.\n\nΚάθε φορά που στέλνετε μια πληρωμή Lightning Network με αυτό το πορτοφόλι, στην πραγματικότητα στέλνετε μια πληρωμή Liquid Bitcoin σε έναν τρίτο πάροχο ανταλλαγής, ο οποίος τη μετατρέπει σε πραγματικό Bitcoin στο Lightning Network και στέλνει μια πληρωμή Lightning Network στον παραλήπτη.\n\nΑυτές οι ανταλλαγές (swaps) είναι πλήρως μη-θεματοφυλακτικές (non-custodial) και χωρίς ανάγκη εμπιστοσύνης, πράγμα που σημαίνει ότι δεν υπάρχει τρόπος για τον πάροχο ανταλλαγής να κλέψει τα κεφάλαιά σας. Η Bull Bitcoin δεν εμπλέκεται στην πραγματοποίηση αυτών των συναλλαγών ανταλλαγής και δεν απαιτεί ούτε αποθηκεύει προσωπικά δεδομένα.\n\n## Τι πρέπει να κάνω με αυτό το πορτοφόλι;\n\nΤο Instant Payments Wallet έχει σχεδιαστεί ώστε να μπορείτε να λαμβάνετε πληρωμές σε Bitcoin (ή να αγοράζετε Bitcoin) και να στέλνετε πληρωμές σε Bitcoin (ή να πουλάτε Bitcoin) σε καθημερινή βάση χωρίς να πληρώνετε τέλη δικτύου Bitcoin.\n\nΑν είστε έμπορος ή συσσωρεύετε Bitcoin, χρησιμοποιήστε αυτό το πορτοφόλι για να λαμβάνετε πληρωμές κάτω από 0.01 BTC και, μόλις συσσωρεύσετε πάνω από 0.01 BTC, μεταφέρετε αυτά τα Bitcoin στο Secure Bitcoin Wallet ή σε οποιοδήποτε άλλο αυτο-θεματοφυλακτικό πορτοφόλι Bitcoin.\n\nΑν θέλετε να ξοδέψετε το Bitcoin σας, μεταφέρετε ένα μικρό ποσό στο Instant Payment Wallet και χρησιμοποιήστε το για να πληρώνετε τα έξοδά σας. Όταν εξαντληθούν τα κεφάλαια στο Instant Payments Wallet, απλώς αναπληρώστε τα.\n\n## Τι είναι το auto-swap και πώς λειτουργεί;\n\nΤο auto-swap, γνωστό και ως Auto-Transfer, είναι ένα χαρακτηριστικό εφευρημένο από την Bull Bitcoin το οποίο μετατρέπει αυτόματα το Liquid Network Bitcoin (L-BTC) σε Bitcoin (BTC) μόλις το ποσό L-BTC στο πορτοφόλι σας φτάσει ένα καθορισμένο όριο.\n\nΤο auto-swap είναι ενεργοποιημένο από προεπιλογή:\n\n- **Μέγιστο υπόλοιπο Instant Wallet:** 0.01 BTC\n- **Υπόλοιπο-στόχος μετά το auto-swap:** 0.005 BTC\n- **Ελάχιστο ποσό μεταφοράς:** 0.005 BTC\n\nΌταν το υπόλοιπό σας φτάσει τα 0.01 BTC, μια μεταφορά θα ξεκινήσει μόλις ανοίξετε την εφαρμογή και οποιαδήποτε κεφάλαια πάνω από 0.005 BTC θα μετατραπούν από L-BTC σε BTC.\n\n### Παράδειγμα\n\nΑν έχετε 0.012 L-BTC και το auto-swap είναι ενεργοποιημένο, θα ξεκινήσει μια μεταφορά 0.007 L-BTC και το εναπομείναν υπόλοιπό σας σε L-BTC θα είναι 0.005 L-BTC, ενώ το υπόλοιπό σας σε BTC θα αυξηθεί κατά 0.007 BTC.\n\n## Πώς μπορώ να χρηματοδοτήσω ή να αποσύρω L-BTC από το Instant Bitcoin Wallet;\n\nΓια να χρηματοδοτήσετε το πορτοφόλι με «πραγματικό» Bitcoin, πατήστε «Λήψη» και επιλέξτε «Lightning Network». Για να αποσύρετε L-BTC, πατήστε «Αποστολή» και επικολλήστε ένα Lightning invoice.\n\n## Πώς λειτουργεί το αντίγραφο ασφαλείας;\n\nΤο Instant Bitcoin Wallet χρησιμοποιεί τις ίδιες λέξεις ανάκτησης (seed words) με το Secure Bitcoin Wallet. Χρειάζεστε μόνο ένα αντίγραφο ασφαλείας και για τα δύο πορτοφόλια.\n\n## Πρέπει να χρησιμοποιώ το Instant Payments wallet αντί για ένα μη-θεματοφυλακτικό πορτοφόλι Lightning Network;\n\nΗ χρήση ενός μη-θεματοφυλακτικού πορτοφολιού Lightning Network, όπως το Phoenix Wallet, θα σας προσφέρει υψηλότερο βαθμό ασφάλειας. Επειδή θα πρέπει να διαχειρίζεστε τα κανάλια Lightning Network, μπορεί να είναι λιγότερο βολικό και πιο δύσκολο στη χρήση.\n\nΕπειδή τα κανάλια Lightning απαιτούν συναλλαγές on-chain για να ανοίξουν και να κλείσουν, και επειδή πιθανότατα θα χρειαστεί να πληρώσετε τέλος σε παρόχους υπηρεσιών Lightning, ενδέχεται σε ορισμένες περιπτώσεις να είναι πιο ακριβό να χρησιμοποιήσετε ένα πλήρως μη-θεματοφυλακτικό πορτοφόλι Lightning.\n\nΑν είστε σε θέση και επιθυμείτε να χρησιμοποιήσετε ένα πλήρως μη-θεματοφυλακτικό, καθαρό πορτοφόλι Lightning, σας συνιστούμε ανεπιφύλακτα να δοκιμάσετε το Phoenix Wallet.\n\n## Ποια είναι τα τέλη συναλλαγών;\n\nΚάθε πληρωμή προς και από το Instant Payments Wallet συνεπάγεται δύο συναλλαγές στο Liquid Network. Αυτές είναι συνήθως πολύ μικρές και θα πρέπει να είναι περίπου 0.00000050 BTC (50 sats).\n\nΑν λαμβάνετε ή στέλνετε πληρωμές Lightning Network με το Secure Bitcoin Wallet, θα πρέπει να πληρώνετε για δύο on-chain συναλλαγές Bitcoin σε κάθε πληρωμή, κάτι που μπορεί να είναι αρκετά ακριβό.\n\nΕπιπλέον, ο πάροχος ανταλλαγής μπορεί επίσης να χρεώσει τέλη ανταλλαγής (swap fees). Αυτή τη στιγμή, ο πάροχος ανταλλαγής (Boltz) χρεώνει τα ακόλουθα τέλη:\n\n- **Λήψη πληρωμών Lightning Network στο Instant Payment Wallet:** 0.25%\n- **Αποστολή πληρωμών Lightning Network από το Instant Payment Wallet:** 0.1%\n- **Λήψη πληρωμών Lightning Network στο Secure Bitcoin Wallet:** 0.5%\n- **Αποστολή πληρωμών Lightning Network από το Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeScamConsentError": "Αποτυχία καταγραφής της συγκατάθεσής σας. Δοκιμάστε ξανά.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Κολομβία",
+  "autoswapActiveCardTitle": "Autoswap είναι ενεργό",
+  "autoswapWarningExplanationBold": "αυτόματα",
+  "autoswapInfoConsentMessage": "Το Autoswap είναι αυτή τη στιγμή ενεργοποιημένο, αλλά δεν θα ενεργοποιηθεί μέχρι να δώσετε τη συγκατάθεσή σας. Θέλετε να παραμείνει ενεργό;",
+  "nfcNotAvailable": "Το NFC δεν υποστηρίζεται σε αυτή τη συσκευή",
+  "nfcDisabled": "Το NFC είναι απενεργοποιημένο. Ενεργοποιήστε το από τις ρυθμίσεις.",
+  "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC",
+  "nfcConnectionLost": "Η σύνδεση NFC χάθηκε. Κρατήστε τη συσκευή σας κοντά στην ετικέτα NFC και δοκιμάστε ξανά.",
+  "nfcWriteFailed": "Η μεταφορά NFC απέτυχε. Δοκιμάστε ξανά.",
+  "nfcError": "Σφάλμα NFC: {error}",
+  "deleteLogsTitle": "Διαγραφή αρχείων καταγραφής",
+  "logsDeletedMessage": "Τα αρχεία καταγραφής διαγράφηκαν",
+  "sendSelfTransfer": "Αυτομεταφορά",
+  "sendCoordinatingPayjoinTransaction": "Συντονισμός συναλλαγής Payjoin.",
+  "sendErrorInvoiceExpired": "Αυτό το invoice έχει λήξει. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Σκεφτείτε να χρηματοδοτήσετε το Instant Payments για να κάνετε μικρότερες πληρωμές.",
+  "psbtFlowSignViaNfc": "Υπογραφή μέσω NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Πλησιάστε το {deviceName} σας για να στείλετε το PSBT μέσω NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
+  "psbtFlowColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardQStep3": "Επιλέξτε την προτιμώμενη μέθοδο υπογραφής:",
+  "psbtFlowColdcardQStep4": "Για κωδικό QR:",
+  "psbtFlowColdcardQStep5": "   - Επιλέξτε «Scan any QR code» στο Coldcard Q σας",
+  "psbtFlowColdcardQStep6": "   - Σαρώστε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "psbtFlowColdcardQStep7": "   - Αν αντιμετωπίζετε πρόβλημα με τη σάρωση:",
+  "psbtFlowColdcardQStep8": "     - Αυξήστε τη φωτεινότητα της οθόνης της συσκευής σας",
+  "psbtFlowColdcardQStep9": "     - Μετακινήστε το κόκκινο λέιζερ πάνω-κάτω πάνω από τον κωδικό QR",
+  "psbtFlowColdcardQStep10": "     - Δοκιμάστε να απομακρύνετε λίγο τη συσκευή σας",
+  "psbtFlowColdcardQStep11": "Για NFC:",
+  "psbtFlowColdcardQStep12": "   - Επιλέξτε «Ready to Sign» στο Coldcard Q σας και μετά πατήστε το κουμπί NFC",
+  "psbtFlowColdcardQStep13": "   - Πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardQStep15": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Q σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardQStep16": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Q σας.",
+  "psbtFlowColdcardQStep17": "Το Coldcard Q θα εμφανίσει τότε έναν κωδικό QR της υπογεγραμμένης συναλλαγής ή θα προετοιμάσει τη μεταφορά μέσω NFC.",
+  "psbtFlowColdcardQStep18": "Αν υπογράψατε με QR, πατήστε «I'm done» στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Το πορτοφόλι Bull Bitcoin θα σας ζητήσει να σαρώσετε τον κωδικό QR της υπογεγραμμένης συναλλαγής ή να χρησιμοποιήσετε NFC για να τη λάβετε.",
+  "psbtFlowColdcardQStep20": "   - Για QR: σαρώστε τον κωδικό QR στο Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Για NFC: πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep22": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardMk4Step3": "Επιλέξτε «Ready to Sign» στο Coldcard Mk4 σας και μετά πατήστε το κουμπί με τον αριθμό 3",
+  "psbtFlowColdcardMk4Step4": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardMk4Step6": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Mk4 σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardMk4Step7": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Mk4 σας.",
+  "psbtFlowColdcardMk4Step8": "Το Coldcard Mk4 θα προετοιμάσει τότε την υπογεγραμμένη συναλλαγή για μεταφορά μέσω NFC.",
+  "psbtFlowColdcardMk4Step9": "Στο πορτοφόλι Bull Bitcoin, πατήστε NFC στην οθόνη μετάδοσης.",
+  "psbtFlowColdcardMk4Step10": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4 για να λάβετε την υπογεγραμμένη συναλλαγή.",
+  "psbtFlowColdcardMk4Step11": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Ελέγξτε τις λεπτομέρειες της συναλλαγής στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Πλησιάστε το Coldcard σας για να λάβετε την υπογεγραμμένη συναλλαγή μέσω NFC",
+  "importColdcardInvalidWalletData": "Μη έγκυρα δεδομένα πορτοφολιού Coldcard",
+  "importColdcardConnectTitle": "Σύνδεση {deviceName}",
+  "importColdcardConnectDescription": "Εισαγωγή του descriptor πορτοφολιού από το {deviceName} σας",
+  "importColdcardScanNfcSheetTitle": "Πλησιάστε το {deviceName} σας για εισαγωγή του descriptor πορτοφολιού μέσω NFC",
+  "importColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
+  "importColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
+  "importColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "importColdcardQStep3": "Επιλέξτε το μενού advanced/settings",
+  "importColdcardQStep4": "Πατήστε «export wallet»",
+  "importColdcardQStep5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
+  "importColdcardQStep6": "Πατήστε «Enter» στην πρώτη οθόνη",
+  "importColdcardQStep7": "Πατήστε «Enter» στη δεύτερη οθόνη",
+  "importColdcardQStep8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
+  "importColdcardQStep9": "Για QR, πατήστε το κουμπί κωδικού QR στη συσκευή. Θα σας εμφανίσει έναν κωδικό QR στη συσκευή",
+  "importColdcardQStep10": "Για NFC, πατήστε το κουμπί NFC στη συσκευή",
+  "importColdcardQStep11": "Πατήστε το κουμπί «Open the camera» / «Scan NFC»",
+  "importColdcardQStep12": "Σαρώστε τον κωδικό QR που βλέπετε στη συσκευή σας ή τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
+  "importColdcardQStep13": "Αυτό είναι όλο!",
+  "importColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
+  "importColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
+  "importColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "importColdcardMk4Step3": "Επιλέξτε το μενού advanced/settings",
+  "importColdcardMk4Step4": "Πατήστε «export wallet»",
+  "importColdcardMk4Step5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
+  "importColdcardMk4Step6": "Πατήστε «Enter» στην πρώτη οθόνη",
+  "importColdcardMk4Step7": "Πατήστε «Enter» στη δεύτερη οθόνη",
+  "importColdcardMk4Step8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
+  "importColdcardMk4Step9": "Πατήστε τον αριθμό 3 για να ξεκινήσετε το NFC του Coldcard",
+  "importColdcardMk4Step10": "Πατήστε το κουμπί «Scan NFC»",
+  "importColdcardMk4Step11": "Τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
+  "importColdcardMk4Step12": "Αυτό είναι όλο!",
+  "fundExchangeCopDailyLimitWarning": "Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.",
+  "fundExchangeCopSenderName": "Όνομα αποστολέα",
+  "fundExchangeCopIssuingBank": "Τράπεζα έκδοσης",
+  "fundExchangeCopSelectBankError": "Επιλέξτε μια τράπεζα έκδοσης",
+  "fundExchangeCopAmount": "Ποσό",
+  "fundExchangeCopEnterAmountError": "Εισάγετε ένα ποσό",
+  "fundExchangeCopValidAmountError": "Εισάγετε ένα έγκυρο ποσό",
+  "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
+  "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
+  "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
+  "fundExchangeCopFailedToOpenLink": "Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πληρωμής. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "priceChartFailedToLoad": "Αποτυχία φόρτωσης ιστορικού τιμών",
+  "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
+  "statusScreenTryAgain": "Δοκιμάστε ξανά",
+  "statusScreenContinue": "Συνέχεια",
+  "noteVisibleToSenderNotice": "Αυτή η σημείωση θα είναι ορατή στον παραλήπτη του QR ή του invoice σας.",
+  "viewerAddressTab": "Διεύθυνση",
+  "viewerPaymentUriTab": "URI πληρωμής",
+  "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
+  "errorReportingProgramTitle": "Πρόγραμμα Αναφοράς Σφαλμάτων",
+  "errorReportingProgramDescriptionP1": "Βοηθήστε μας να βελτιώσουμε το Bull συμμετέχοντας στο πρόγραμμα αναφοράς σφαλμάτων μας.",
+  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά.",
+  "errorReportingProgramDescriptionP3": "Αυτό μας επιτρέπει να δούμε πόσους χρήστες επηρεάζει κάθε σφάλμα και να ιεραρχήσουμε ανάλογα τις διορθώσεις· χωρίς αυτό, δεν έχουμε τρόπο να μετρήσουμε τον αντίκτυπο.",
+  "errorReportingProgramDescriptionP4": "Οι αναφορές αποστέλλονται μόνο στον διακομιστή της Bull, ποτέ σε τρίτους.",
+  "errorReportingProgramDescriptionP5": "Η Bull Bitcoin είναι ανοιχτού κώδικα, οπότε μπορείτε να επαληθεύσετε τι αποστέλλεται.",
+  "errorReportingAcceptButton": "Αποδοχή",
+  "errorReportingCancelButton": "Ακύρωση",
+  "errorReportingRestartSnackbar": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί αυτή η αλλαγή",
+  "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
+  "backupWarningBackupNow": "ΝΑΙ",
+  "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
+  "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
+  "logsViewerDeleteTitle": "Διαγραφή αρχείων καταγραφής",
+  "logsViewerDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα αρχεία καταγραφής; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+  "logsViewerDeleteButton": "Διαγραφή",
+  "logsViewerCancelButton": "Ακύρωση",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
+  "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
+  "sendSubSatVbyteWarning": "Οι συναλλαγές κάτω από 1 sat/vB ενδέχεται να χρειαστούν περισσότερο χρόνο για επιβεβαίωση και μπορεί να μην διαδοθούν σε όλους τους κόμβους.",
+  "sendBelowMinFeeRateError": "Ο ρυθμός τέλους πρέπει να είναι τουλάχιστον 0.1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Απαιτείται άδεια Bluetooth για τη σύνδεση με το BitBox02 Nova σας.",
+  "bitboxErrorBluetoothUnavailable": "Το Bluetooth δεν είναι διαθέσιμο. Ενεργοποιήστε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorNoBleDevicesFound": "Δεν βρέθηκε κοντινό BitBox02 Nova. Ελέγξτε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorMultipleBleDevicesFound": "Βρέθηκαν πολλαπλές συσκευές BitBox02 Nova. Κρατήστε μόνο μία κοντά και δοκιμάστε ξανά.",
+  "bitboxErrorOperationFailed": "Η λειτουργία BitBox απέτυχε. Δοκιμάστε ξανά.",
+  "bitboxScreenConnectSubtextBluetooth": "Βεβαιωθείτε ότι το BitBox02 Nova σας είναι ξεκλείδωτο και ότι το Bluetooth είναι ενεργοποιημένο.",
+  "bitboxScreenScanningSubtextBluetooth": "Αναζήτηση του BitBox02 Nova σας σε κοντινή απόσταση...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Αντιμετώπιση προβλημάτων BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Αν η συσκευή σας εξακολουθεί να μη συνδέεται με την εφαρμογή, δοκιμάστε τα εξής:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο και επιτρέπεται για αυτή την εφαρμογή.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο BitBox02 Nova σας.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Επανεκκινήστε το BitBox02 Nova σας και δοκιμάστε να συνδεθείτε ξανά.",
+  "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

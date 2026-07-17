@@ -40,7 +40,7 @@
   "exchangeDcaUnableToGetConfig": "Невозможно получить конфигурацию DCA",
   "psbtFlowClickScan": "Нажмите кнопку Сканировать",
   "sellInstitutionNumber": "Число учреждений",
-  "recoverbullGoogleDriveErrorDisplay": "Ошибка:",
+  "recoverbullGoogleDriveErrorDisplay": "Ошибка: {error}",
   "@recoverbullGoogleDriveErrorDisplay": {
     "placeholders": {
       "error": {
@@ -191,7 +191,7 @@
     }
   },
   "sendBroadcastingTransaction": "Трансляция сделки.",
-  "pinCodeMinLengthError": "PIN должен быть как минимум X21X",
+  "pinCodeMinLengthError": "PIN должен быть как минимум {minLength} цифр",
   "@pinCodeMinLengthError": {
     "placeholders": {
       "minLength": {
@@ -232,7 +232,7 @@
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
   "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €30,000",
-  "dcaConfirmError": "Что-то пошло не так:",
+  "dcaConfirmError": "Что-то пошло не так: {error}",
   "@dcaConfirmError": {
     "placeholders": {
       "error": {
@@ -275,7 +275,7 @@
   "fundExchangeLabelBankAccountCountry": "Страна с банковским счетом",
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "dcaConfirmDeactivate": "Да, деактивация",
-  "exchangeLandingFeature2": "DCA, Limit orders and Auto-buy",
+  "exchangeLandingFeature2": "DCA, лимитные заказы и автоматическая покупка",
   "payPaymentPending": "Оплата не завершена",
   "payConfirmHighFee": "Плата за этот платеж {percentage}% от суммы. Продолжать?",
   "@payConfirmHighFee": {
@@ -2164,7 +2164,7 @@
   "takeYourTimeTag": "Возьми время",
   "arkAboutDust": "Dust",
   "ledgerSuccessVerifyDescription": "Адрес был проверен на вашем устройстве Ledger.",
-  "bip85Title": "BIP85 Deterministic Entropies",
+  "bip85Title": "Детерминированные энтропии BIP85",
   "sendSwapTimeout": "Время от времени",
   "networkFeesLabel": "Сетевые сборы",
   "backupWalletPhysicalBackupDescription": "Запишите 12 слов на бумаге. Держите их в безопасности и убедитесь, что не потерять их.",
@@ -2215,7 +2215,7 @@
   "mempoolCustomServerLabel": "CUSTOM",
   "arkAboutSessionDuration": "Продолжительность сессии",
   "transferFeeLabel": "Перенос",
-  "pinValidationError": "PIN должен быть как минимум X21X",
+  "pinValidationError": "PIN должен быть как минимум {minLength} цифр",
   "@pinValidationError": {
     "placeholders": {
       "minLength": {
@@ -2538,7 +2538,7 @@
   "exportTransactionsButton": "Экспорт CSV",
   "exportTransactionsSuccess": "Транзакции успешно экспортированы",
   "exportTransactionsEmpty": "Нет транзакций для экспорта за выбранный период",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Не удалось экспортировать транзакции",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -2619,7 +2619,7 @@
   "payFor": "Для",
   "payEnterValidAmount": "Пожалуйста, введите действительный размер",
   "pinButtonRemove": "Удалить PIN",
-  "urProgressLabel": "UR Progress: {parts} parts",
+  "urProgressLabel": "Прогресс UR: {parts} частей",
   "@urProgressLabel": {
     "placeholders": {
       "parts": {
@@ -2835,7 +2835,7 @@
   "exchangeLegacyTransactionsComingSoon": "Наследственные транзакции - Скоро",
   "buyProofOfAddress": "Доказательство адреса",
   "backupWalletInstructionNoDigitalCopies": "Не делайте цифровые копии вашей резервной копии. Запишите его на бумаге или выгравированы в металле.",
-  "psbtFlowError": "Ошибка:",
+  "psbtFlowError": "Ошибка: {error}",
   "@psbtFlowError": {
     "placeholders": {
       "error": {
@@ -3194,7 +3194,7 @@
   "importQrDeviceJadeStep10": "Вот так!",
   "payPayeeAccountNumberHint": "Номер счета",
   "importQrDevicePassportStep8": "На вашем мобильном устройстве нажмите «открытая камера»",
-  "dcaConfirmationError": "Что-то пошло не так:",
+  "dcaConfirmationError": "Что-то пошло не так: {error}",
   "@dcaConfirmationError": {
     "placeholders": {
       "error": {
@@ -3623,7 +3623,7 @@
   "fundExchangeRestrictedTitle": "Пополнение недоступно",
   "fundExchangeRestrictedMessage": "Пополнение недоступно для вашего аккаунта. Пожалуйста, свяжитесь со службой поддержки для получения дополнительной информации.",
   "fundExchangeWarningTitle": "Следите за мошенниками",
-  "receiveError": "Ошибка:",
+  "receiveError": "Ошибка: {error}",
   "@receiveError": {
     "placeholders": {
       "error": {
@@ -3834,7 +3834,7 @@
       }
     }
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
+  "bitcoinSettingsBip85EntropiesTitle": "Детерминированные энтропии BIP85",
   "swapTransferAmount": "Сумма перевода",
   "feePriorityLabel": "Очередность",
   "coreScreensToLabel": "В",
@@ -3987,7 +3987,7 @@
   "buyConfirmExpress": "Подтверждение",
   "fundExchangeBankTransferWireTimeframe": "Любые средства, которые вы отправляете, будут добавлены в ваш Bull Bitcoin в течение 1-2 рабочих дней.",
   "sendDeviceDisconnected": "Устройство отключено",
-  "withdrawConfirmError": "Ошибка:",
+  "withdrawConfirmError": "Ошибка: {error}",
   "@withdrawConfirmError": {
     "placeholders": {
       "error": {
@@ -4238,7 +4238,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Загрузить {count} {count, plural, =1{файл} other{файлов}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4279,7 +4279,7 @@
   "@exchangeFileUploadStatusAccepted": {
     "description": "Status badge when files have been accepted"
   },
-  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "exchangeFileUploadStatusRejected": "Отклонено — нажмите, чтобы загрузить снова",
   "@exchangeFileUploadStatusRejected": {
     "description": "Status badge when files have been rejected, with re-upload option"
   },
@@ -4475,7 +4475,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Это отправит запрос на удаление учётной записи в нашу службу поддержки. Ваша учётная запись будет удалена в течение 5 рабочих дней.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -4487,11 +4487,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Запрос на удаление учётной записи отправлен",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Ваш запрос на удаление учётной записи был отправлен. Он будет обработан в течение 5 рабочих дней.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -4613,7 +4613,7 @@
   "legacyStorageAcceptRisksCheckbox": "Я принимаю риски отказа от резервной копии",
   "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
   "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Что-то пошло не так при настройке кошелька. Пожалуйста, попробуйте снова.",
   "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "coreScreensResolvingInputs": "Разрешение входов транзакции...",
   "coreScreensFeeRateLabel": "Ставка комиссии",
@@ -5103,5 +5103,164 @@
   "logsShareOptionShare": "Поделиться",
   "logsShareOptionExport": "Экспорт",
   "logsExportedMessage": "Журналы успешно экспортированы",
-  "logsExportFailedMessage": "Не удалось экспортировать журналы"
+  "logsExportFailedMessage": "Не удалось экспортировать журналы",
+  "coreSwapsStatusRefunded": "Возвращено",
+  "swapRestoreTitle": "Восстановление свопов",
+  "swapRestoreActionable": "{count, plural, =0{Нет свопов для восстановления} one{Вы можете попробовать восстановить {count} своп. Он уже может находиться в конечном статусе.} few{Вы можете попробовать восстановить {count} свопа. Обратите внимание: некоторые из них уже могут находиться в конечном статусе.} many{Вы можете попробовать восстановить {count} свопов. Обратите внимание: некоторые из них уже могут находиться в конечном статусе.} other{Вы можете попробовать восстановить {count} свопа. Обратите внимание: некоторые из них уже могут находиться в конечном статусе.}}",
+  "swapRestoreNoSwaps": "Свопы для восстановления не найдены",
+  "swapRestoreRecoverableSection": "Восстанавливаемые",
+  "swapRestoreAllSection": "Все свопы",
+  "swapRestoreFailed": "Не удалось восстановить свопы",
+  "swapRestoreKindLightningSend": "Отправка Lightning",
+  "swapRestoreKindLightningReceive": "Получение Lightning",
+  "swapRestoreKindCrossChain": "Кросс-чейн",
+  "swapRescueTitle": "Спасение свопа",
+  "swapRescueTypeLabel": "Тип",
+  "swapRescueStatusLabel": "Статус",
+  "swapRescueAmountLabel": "Сумма",
+  "swapRescueRouteLabel": "Маршрут",
+  "swapRescueCreatedLabel": "Создан",
+  "swapRescueIdLabel": "ID свопа",
+  "swapRescueWalletLabel": "Восстановить в кошелек",
+  "swapRescueWalletHint": "Выберите кошелек",
+  "swapRescueButton": "Восстановить",
+  "swapRescueSuccess": "Своп восстановлен — теперь он будет возобновлён",
+  "receivePayjoinNoUtxos": "Сначала получите средства, чтобы включить эту функцию.\nДля использования Payjoin необходимы UTXO.",
+  "receiveLiquidRiskDisclosureLabel": "Платежи будут конвертированы в Liquid L-BTC (не BTC). Подробнее.",
+  "payViewReceipt": "Просмотреть квитанцию",
+  "paySinpeReceipt": "Квитанция SINPE",
+  "transactionFilterWithdraw": "Вывод",
+  "transactionFilterPay": "Оплата",
+  "transactionFilterFunding": "Пополнение",
+  "transactionFilterReward": "Вознаграждение",
+  "transactionFilterRefund": "Возврат",
+  "transactionFilterBalanceAdjustment": "Корректировка",
+  "transactionListLoadingFailed": "Не удалось загрузить транзакции.",
+  "transactionLabelNetworkFees": "Сетевые сборы",
+  "walletLiquidRiskDisclosureLabel": "Эти средства — Liquid L-BTC (не BTC). Подробнее.",
+  "liquidRiskDisclosureSemanticLabel": "Открыть предупреждение о рисках Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Предупреждение о рисках Liquid Bitcoin в Кошельке мгновенных платежей",
+  "liquidRiskDisclosureBody": "Средства в Кошельке мгновенных платежей — это не «настоящий» Bitcoin. Это Liquid Network Bitcoin (L-BTC) — обеспеченный Bitcoin токен, который существует в отдельном реестре, называемом «сайдчейн».\n\nКаждый Liquid Bitcoin обеспечен настоящим Bitcoin в соотношении 1:1 благодаря прозрачному механизму привязки, который поддерживается федерацией из 15 компаний. Резервы Bitcoin, которые хранит Liquid Federation, полностью поддаются аудиту, и любой может убедиться, что каждый Liquid Bitcoin обеспечен настоящим Bitcoin.\n\nХранить деньги в сети Liquid Network гораздо безопаснее, чем использовать традиционный кастодиальный кошелек или биржу. Однако хранение денег в виде Liquid Bitcoin в Кошельке мгновенных платежей значительно менее безопасно, чем хранение их в виде настоящего Bitcoin в безопасном кошельке Bitcoin.\n\nПлатежи в сети Liquid Network быстрее, дешевле и более приватны, чем обычные платежи Bitcoin. Вы полностью самостоятельно храните активы Liquid Bitcoin в Кошельке мгновенных платежей, и вам не нужно чьё-либо разрешение, чтобы отправлять и получать платежи.\n\nВы несёте полную и исключительную ответственность за защиту доступа к резервной копии вашего кошелька, без которой никто не сможет восстановить доступ к вашим активам Liquid Bitcoin.\n\nРеальная ценность L-BTC зависит от вашей возможности обменять их на настоящий Bitcoin, что, в свою очередь, зависит от поставщиков свопов, являющихся участниками Liquid Network, а это, в свою очередь, зависит от того, что федерация Liquid Network никогда не будет скомпрометирована или закрыта.\n\nДругими словами, если участники федерации Liquid Network не смогут или не захотят обменять ваш Liquid Bitcoin на настоящий Bitcoin, ценность токенов L-BTC станет нулевой.\n\n> Рекомендация\n> Храните в Кошельке мгновенных платежей только небольшие суммы. Свои сбережения держите в безопасном кошельке Bitcoin или на импортированном аппаратном кошельке.\n\n## Что такое Кошелек мгновенных платежей?\n\nКаждый раз, когда вы получаете платеж через Lightning Network в Кошельке мгновенных платежей, средства отправителя на самом деле получает сторонний поставщик свопов, конвертирует их в Liquid Bitcoin и отправляет в ваш кошелек.\n\nКаждый раз, когда вы отправляете платеж через Lightning Network из этого кошелька, вы на самом деле отправляете платеж в Liquid Bitcoin стороннему поставщику свопов, который конвертирует его в настоящий Bitcoin в сети Lightning Network и отправляет платеж Lightning Network получателю.\n\nЭти свопы полностью некастодиальны и не требуют доверия, то есть у поставщика свопов нет возможности украсть ваши средства. Bull Bitcoin не участвует в проведении этих своп-транзакций и не запрашивает и не хранит никакую личную информацию.\n\n## Что делать с этим кошельком?\n\nКошелек мгновенных платежей предназначен для того, чтобы вы могли получать платежи в Bitcoin (или покупать Bitcoin) и отправлять платежи в Bitcoin (или продавать Bitcoin) в повседневных ситуациях, не оплачивая комиссии сети Bitcoin.\n\nЕсли вы продавец или копите Bitcoin, используйте этот кошелек для получения платежей на сумму менее 0.01 BTC, а когда накопите более 0.01 BTC, переведите эти Bitcoin в безопасный кошелек Bitcoin или в любой другой некастодиальный кошелек Bitcoin.\n\nЕсли вы хотите тратить свой Bitcoin, переведите небольшую сумму в Кошелек мгновенных платежей и используйте её для оплаты расходов. Когда средства в Кошельке мгновенных платежей закончатся, просто пополните его.\n\n## Что такое авто-своп и как он работает?\n\nАвто-своп, также называемый Авто-переводом, — это функция, разработанная Bull Bitcoin, которая автоматически конвертирует Liquid Network Bitcoin (L-BTC) в Bitcoin (BTC), как только сумма L-BTC в вашем кошельке достигает заданного порога.\n\nАвто-своп включен по умолчанию:\n\n- **Максимальный баланс Мгновенного кошелька:** 0.01 BTC\n- **Целевой баланс после авто-свопа:** 0.005 BTC\n- **Минимальная сумма перевода:** 0.005 BTC\n\nКогда ваш баланс достигнет 0.01 BTC, перевод будет инициирован сразу после открытия приложения, а все средства сверх 0.005 BTC будут конвертированы из L-BTC в BTC.\n\n### Пример\n\nЕсли у вас есть 0.012 L-BTC и авто-своп включен, будет инициирован перевод 0.007 L-BTC, ваш оставшийся баланс L-BTC составит 0.005 L-BTC, а баланс BTC увеличится на 0.007 BTC.\n\n## Как пополнить или вывести L-BTC из Мгновенного кошелька Bitcoin?\n\nЧтобы пополнить кошелек «настоящим» Bitcoin, нажмите «Получить» и выберите «Lightning Network». Чтобы вывести L-BTC, нажмите «Отправить» и вставьте счёт (инвойс) Lightning.\n\n## Как работает резервное копирование?\n\nМгновенный кошелек Bitcoin использует те же секретные слова резервной копии (seed), что и безопасный кошелек Bitcoin. Вам нужна всего одна резервная копия для обоих кошельков.\n\n## Стоит ли использовать Кошелек мгновенных платежей вместо некастодиального кошелька Lightning Network?\n\nИспользование некастодиального кошелька Lightning Network, такого как Phoenix Wallet, обеспечит более высокий уровень безопасности. Поскольку вам придется заниматься управлением каналами Lightning Network, это может быть менее удобно и сложнее в использовании.\n\nПоскольку для открытия и закрытия каналов Lightning требуются ончейн-транзакции, а также, вероятно, придется платить комиссию поставщикам услуг Lightning, использование полностью некастодиального кошелька Lightning в некоторых случаях может обойтись дороже.\n\nЕсли вы можете и готовы использовать полностью некастодиальный чисто Lightning-кошелек, мы настоятельно рекомендуем попробовать Phoenix Wallet.\n\n## Какие комиссии за транзакции?\n\nКаждый входящий или исходящий платеж в Кошельке мгновенных платежей подразумевает две транзакции в сети Liquid Network. Обычно они очень малы и составляют около 0.00000050 BTC (50 сатоши).\n\nЕсли вы получаете или отправляете платежи Lightning Network через безопасный кошелек Bitcoin, вам придётся платить за две ончейн-транзакции Bitcoin за каждый платеж, что может быть довольно дорого.\n\nКроме того, поставщик свопов может также взимать комиссию за своп. На данный момент поставщик свопов (Boltz) взимает следующие комиссии:\n\n- **Получение платежей Lightning Network в Кошельке мгновенных платежей:** 0.25%\n- **Отправка платежей Lightning Network из Кошелька мгновенных платежей:** 0.1%\n- **Получение платежей Lightning Network в безопасном кошельке Bitcoin:** 0.5%\n- **Отправка платежей Lightning Network из безопасного кошелька Bitcoin:** 0.1%",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Колумбия",
+  "nfcNotAvailable": "NFC не поддерживается на этом устройстве",
+  "nfcDisabled": "NFC отключен. Включите его в настройках.",
+  "nfcInvalidData": "Поддерживаемые данные NFC не найдены",
+  "nfcConnectionLost": "Соединение NFC потеряно. Поднесите устройство к метке NFC и попробуйте снова.",
+  "nfcWriteFailed": "Передача по NFC не удалась. Попробуйте снова.",
+  "nfcError": "Ошибка NFC: {error}",
+  "sendCoordinatingPayjoinTransaction": "Согласование транзакции Payjoin.",
+  "sendErrorInvoiceExpired": "Срок действия этого счета-фактуры истек. Попросите получателя выставить новый.",
+  "psbtFlowSignViaNfc": "Подписать через NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Поднесите {deviceName}, чтобы отправить PSBT через NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Инструкции Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Инструкции Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Войдите в устройство Coldcard Q",
+  "psbtFlowColdcardQStep2": "Добавить пароль, если у вас есть один (факультативно)",
+  "psbtFlowColdcardQStep3": "Выберите предпочитаемый способ подписания:",
+  "psbtFlowColdcardQStep4": "Для QR-кода:",
+  "psbtFlowColdcardQStep5": "   - Выберите «Scan any QR code» на вашем Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - Сканируйте QR-код, показанный в кошельке Bull",
+  "psbtFlowColdcardQStep7": "   - Если у вас есть проблемы со сканированием:",
+  "psbtFlowColdcardQStep8": "     - Увеличьте яркость экрана на вашем устройстве",
+  "psbtFlowColdcardQStep9": "     - Перемещайте красный лазер вверх и вниз по QR-коду",
+  "psbtFlowColdcardQStep10": "     - Попробуйте немного отодвинуть устройство назад",
+  "psbtFlowColdcardQStep11": "Для NFC:",
+  "psbtFlowColdcardQStep12": "   - Выберите «Ready to Sign» на вашем Coldcard Q, затем нажмите кнопку NFC",
+  "psbtFlowColdcardQStep13": "   - Поднесите телефон к Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Дождитесь передачи PSBT",
+  "psbtFlowColdcardQStep15": "Как только транзакция будет импортирована в ваш Coldcard Q, рассмотрите адрес назначения и сумму.",
+  "psbtFlowColdcardQStep16": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Затем Coldcard Q покажет QR-код подписанной транзакции или подготовит передачу по NFC.",
+  "psbtFlowColdcardQStep18": "Если вы подписали с помощью QR, нажмите «I'm done» в кошельке Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Кошелек Bull Bitcoin попросит вас отсканировать QR-код подписанной транзакции или использовать NFC для её получения.",
+  "psbtFlowColdcardQStep20": "   - Для QR: отсканируйте QR-код на Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Для NFC: поднесите телефон к Coldcard Q",
+  "psbtFlowColdcardQStep22": "Сделка будет импортирована в кошельке Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Теперь он готов к трансляции. Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Войдите в устройство Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Добавить пароль, если у вас есть один (факультативно)",
+  "psbtFlowColdcardMk4Step3": "Выберите «Ready to Sign» на вашем Coldcard Mk4, затем нажмите кнопку с цифрой 3",
+  "psbtFlowColdcardMk4Step4": "Поднесите телефон к Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Дождитесь передачи PSBT",
+  "psbtFlowColdcardMk4Step6": "Как только транзакция будет импортирована в ваш Coldcard Mk4, рассмотрите адрес назначения и сумму.",
+  "psbtFlowColdcardMk4Step7": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Затем Coldcard Mk4 подготовит подписанную транзакцию для передачи по NFC.",
+  "psbtFlowColdcardMk4Step9": "В кошельке Bull Bitcoin нажмите NFC на экране трансляции.",
+  "psbtFlowColdcardMk4Step10": "Поднесите телефон к Coldcard Mk4, чтобы получить подписанную транзакцию.",
+  "psbtFlowColdcardMk4Step11": "Подписанная сделка будет импортирована в кошельке Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Просмотрите детали транзакции в кошельке Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Теперь он готов к трансляции. Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Поднесите Coldcard, чтобы получить подписанную транзакцию через NFC",
+  "importColdcardInvalidWalletData": "Неверные данные кошелька Coldcard",
+  "importColdcardConnectTitle": "Подключение {deviceName}",
+  "importColdcardConnectDescription": "Импортируйте дескриптор кошелька с вашего {deviceName}",
+  "importColdcardScanNfcSheetTitle": "Поднесите {deviceName}, чтобы импортировать дескриптор кошелька через NFC",
+  "importColdcardQInstructionsTitle": "Инструкции Coldcard Q",
+  "importColdcardQStep1": "Войдите в устройство Coldcard Q",
+  "importColdcardQStep2": "Добавить пароль, если у вас есть один (факультативно)",
+  "importColdcardQStep3": "Выберите меню «Advanced/Settings»",
+  "importColdcardQStep4": "Нажмите «Export Wallet»",
+  "importColdcardQStep5": "Выберите «Descriptor» в качестве типа экспорта",
+  "importColdcardQStep6": "Нажмите «Enter» на первом экране",
+  "importColdcardQStep7": "Нажмите «Enter» на втором экране",
+  "importColdcardQStep8": "Выберите тип адреса (используйте Segwit, если не уверены)",
+  "importColdcardQStep9": "Для QR нажмите кнопку QR-кода на устройстве. Оно покажет QR-код на экране устройства",
+  "importColdcardQStep10": "Для NFC нажмите кнопку NFC на устройстве",
+  "importColdcardQStep11": "Нажмите кнопку «Open the camera» / «Scan NFC»",
+  "importColdcardQStep12": "Отсканируйте QR-код на вашем устройстве или поднесите NFC телефона к NFC Coldcard",
+  "importColdcardQStep13": "Готово!",
+  "importColdcardMk4InstructionsTitle": "Инструкции Coldcard Mk4",
+  "importColdcardMk4Step1": "Войдите в устройство Coldcard Mk4",
+  "importColdcardMk4Step2": "Добавить пароль, если у вас есть один (факультативно)",
+  "importColdcardMk4Step3": "Выберите меню «Advanced/Settings»",
+  "importColdcardMk4Step4": "Нажмите «Export Wallet»",
+  "importColdcardMk4Step5": "Выберите «Descriptor» в качестве типа экспорта",
+  "importColdcardMk4Step6": "Нажмите «Enter» на первом экране",
+  "importColdcardMk4Step7": "Нажмите «Enter» на втором экране",
+  "importColdcardMk4Step8": "Выберите тип адреса (используйте Segwit, если не уверены)",
+  "importColdcardMk4Step9": "Нажмите цифру 3, чтобы запустить NFC Coldcard",
+  "importColdcardMk4Step10": "Нажмите кнопку «Scan NFC»",
+  "importColdcardMk4Step11": "Поднесите NFC телефона к NFC Coldcard",
+  "importColdcardMk4Step12": "Готово!",
+  "fundExchangeCopDailyLimitWarning": "Если вы превысите дневной лимит транзакций, транзакция не пройдет. Вам придется обратиться в службу поддержки.",
+  "fundExchangeCopSenderName": "Имя отправителя",
+  "fundExchangeCopIssuingBank": "Банк-эмитент",
+  "fundExchangeCopSelectBankError": "Пожалуйста, выберите банк-эмитент",
+  "fundExchangeCopAmount": "Сумма",
+  "fundExchangeCopEnterAmountError": "Пожалуйста, введите сумму",
+  "fundExchangeCopValidAmountError": "Пожалуйста, введите действительную сумму",
+  "fundExchangeCopGeneratePaymentLink": "Создать ссылку для оплаты",
+  "fundExchangeCopRedirectMessage": "Вы будете перенаправлены на внешнюю страницу для совершения платежа.",
+  "fundExchangeCopOpenPaymentLink": "Открыть ссылку для оплаты",
+  "fundExchangeCopFailedToOpenLink": "Не удалось открыть ссылку для оплаты. Попробуйте снова или обратитесь в поддержку.",
+  "noteVisibleToSenderNotice": "Эта заметка будет видна получателю вашего QR-кода или счёта.",
+  "viewerAddressTab": "Адрес",
+  "viewerPaymentUriTab": "Платёжный URI",
+  "transactionSwapOpenWithin24h": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
+  "logsViewerDeleteTitle": "Удалить журналы",
+  "logsViewerDeleteConfirmation": "Вы уверены, что хотите удалить все журналы? Это действие нельзя отменить.",
+  "logsViewerDeleteButton": "Удалить",
+  "logsViewerCancelButton": "Отмена",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "Транзакции со ставкой комиссии ниже 1 sat/vB могут дольше подтверждаться и не распространиться на все узлы сети.",
+  "sendBelowMinFeeRateError": "Ставка комиссии должна быть не менее 0.1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Для подключения к BitBox02 Nova требуется разрешение на использование Bluetooth.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth недоступен. Включите Bluetooth и попробуйте снова.",
+  "bitboxErrorNoBleDevicesFound": "Поблизости не найдено ни одного BitBox02 Nova. Проверьте Bluetooth и попробуйте снова.",
+  "bitboxErrorMultipleBleDevicesFound": "Найдено несколько устройств BitBox02 Nova. Оставьте поблизости только одно устройство и попробуйте снова.",
+  "bitboxErrorOperationFailed": "Операция BitBox не удалась. Попробуйте снова.",
+  "bitboxScreenConnectSubtextBluetooth": "Убедитесь, что ваш BitBox02 Nova разблокирован, а Bluetooth включен.",
+  "bitboxScreenScanningSubtextBluetooth": "Поиск BitBox02 Nova поблизости...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Устранение неполадок BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Если ваше устройство всё ещё не подключается к приложению, попробуйте следующее:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Убедитесь, что Bluetooth включен и разрешён для этого приложения.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Убедитесь, что Bluetooth включен на вашем BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Перезапустите BitBox02 Nova и попробуйте подключиться снова.",
+  "sendErrorInsufficientBalanceFrozenHint": "Недостаточно доступного баланса — {amount} заморожено. Разморозьте монеты в разделе «Управление монетами», чтобы использовать их.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

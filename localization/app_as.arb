@@ -20,7 +20,7 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "sendErrorInvoiceMustContainAmount": "Invoice-ত এটা পৰিমাণ থাকিব লাগিব",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
@@ -38,7 +38,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "ইয়াৰ ফলত আমাৰ সহায়ক দললৈ এটা একাউণ্ট মচাৰ অনুৰোধ পঠিওৱা হ'ব। আপোনাৰ একাউণ্ট ৫ কৰ্মদিনৰ ভিতৰত মচা হ'ব।",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -50,11 +50,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "একাউণ্ট মচাৰ অনুৰোধ কৰা হৈছে",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "আপোনাৰ একাউণ্ট মচাৰ অনুৰোধ কৰা হৈছে। ই ৫ কৰ্মদিনৰ ভিতৰত প্ৰক্ৰিয়াকৰণ কৰা হ'ব।",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -177,7 +177,7 @@
   "legacyStorageAcceptRisksCheckbox": "মই বেকআপ নকৰাৰ বিপদ গ্ৰহণ কৰোঁ",
   "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "আপোনাৰ wallet ছেট আপ কৰোঁতে কিবা ভুল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
@@ -475,7 +475,7 @@
   "exchangeFileUploadSelectFiles": "ফাইল বাছক",
   "exchangeFileUploadAddMoreFiles": "আৰু ফাইল যোগ কৰক",
   "exchangeFileUploadUploading": "আপলোড হৈ আছে...",
-  "exchangeFileUploadUploadCount": "{count} টা {count, plural, =1{ফাইল} other{ফাইল}} আপলোড কৰক",
+  "exchangeFileUploadUploadCount": "{count} টা {count, plural, =1{File} other{Files}} আপলোড কৰক",
   "@exchangeFileUploadUploadCount": {
     "placeholders": {
       "count": {
@@ -5754,7 +5754,7 @@
   "@rbfEstimatedDelivery": {
     "description": "Estimated confirmation time for fastest fee"
   },
-  "rbfFeeRate": "Fee Rate: {rate} sat/vbyte",
+  "rbfFeeRate": "ফি হাৰ: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
     "placeholders": {
@@ -6683,7 +6683,7 @@
   "@importWatchOnlyDisclaimerDescription": {
     "description": "Description explaining derivation path matching requirement"
   },
-  "bip85Title": "BIP85 Deterministic Entropies",
+  "bip85Title": "BIP85 নিৰ্ণায়ক Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
@@ -6725,7 +6725,7 @@
   "exportTransactionsButton": "CSV এক্সপৰ্ট কৰক",
   "exportTransactionsSuccess": "লেনদেন সফলতাৰে এক্সপৰ্ট কৰা হ'ল",
   "exportTransactionsEmpty": "নিৰ্বাচিত সময়ছোৱাৰ বাবে এক্সপৰ্ট কৰিবলৈ কোনো লেনদেন নাই",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "লেনদেন এক্সপৰ্ট কৰিবলৈ ব্যৰ্থ হ'ল",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -9603,19 +9603,19 @@
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
   },
-  "transactionListLoadingFailed": "Could not load transactions.",
+  "transactionListLoadingFailed": "লেনদেনসমূহ লোড কৰিব পৰা নগ'ল।",
   "@transactionListLoadingFailed": {
     "description": "Error message when transaction loading fails"
   },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "errorReportingProgramDescriptionP2": "কিবা ভুল হ'লে Bull Bitcoin-এ বেনামী ত্ৰুটি প্ৰতিবেদন পঠিয়ায়।",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin ওপেন ছ'ৰ্চ, সেয়েহে আপুনি কি পঠিওৱা হৈছে সেয়া যাচাই কৰিব পাৰে।",
   "@errorReportingProgramDescriptionP5": {
     "description": "Bold paragraph: open source verification fact"
   },
-  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "fundExchangeCopSelectBankError": "অনুগ্ৰহ কৰি এটা জাৰীকৰ্তা বেংক নিৰ্বাচন কৰক",
   "@fundExchangeCopSelectBankError": {
     "description": "Validation error when no bank is selected"
   },
@@ -9623,7 +9623,7 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
-  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "fundExchangeCopDailyLimitWarning": "যদি আপুনি আপোনাৰ দৈনিক লেনদেন সীমা অতিক্ৰম কৰে, লেনদেনটো ব্যৰ্থ হ'ব। আপুনি গ্ৰাহক সেৱাৰ সৈতে যোগাযোগ কৰিব লাগিব।",
   "@fundExchangeCopDailyLimitWarning": {
     "description": "Warning about daily transaction limit for COP bank transfer"
   },
@@ -9631,7 +9631,7 @@
   "@fundExchangeCopIssuingBank": {
     "description": "Label for issuing bank dropdown in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "errorReportingProgramDescriptionP1": "আমাৰ ত্ৰুটি প্ৰতিবেদন কাৰ্যক্ৰমত অৱদান দি Bull উন্নত কৰাত আমাক সহায় কৰক।",
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
@@ -9643,7 +9643,7 @@
   "@fundExchangeCopGeneratePaymentLink": {
     "description": "Button label to generate COP payment link"
   },
-  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "fundExchangeCopRedirectMessage": "পৰিশোধ কৰিবলৈ আপোনাক এটা বাহ্যিক পৃষ্ঠালৈ পুনৰনিৰ্দেশিত কৰা হ'ব।",
   "@fundExchangeCopRedirectMessage": {
     "description": "Message about redirect to external payment page"
   },
@@ -9651,7 +9651,7 @@
   "@payViewReceipt": {
     "description": "Button to view SINPE payment receipt"
   },
-  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "errorReportingProgramDescriptionP3": "ইয়াৰ ফলত আমি চাব পাৰোঁ যে প্ৰতিটো bug-এ কিমান ব্যৱহাৰকাৰীক প্ৰভাৱিত কৰে আৰু তদনুসৰি সমাধানৰ অগ্ৰাধিকাৰ দিব পাৰোঁ; ইয়াৰ অবিহনে প্ৰভাৱ জোখাৰ আমাৰ কোনো উপায় নাই।",
   "@errorReportingProgramDescriptionP3": {
     "description": "Impact paragraph of error reporting program description"
   },
@@ -9659,11 +9659,11 @@
   "@fundExchangeCopAmount": {
     "description": "Label for amount field in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "errorReportingProgramDescriptionP4": "প্ৰতিবেদনসমূহ কেৱল Bull ৰ চাৰ্ভাৰলৈহে যায়, কেতিয়াও তৃতীয় পক্ষলৈ নাযায়।",
   "@errorReportingProgramDescriptionP4": {
     "description": "Privacy paragraph of error reporting program description"
   },
-  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "fundExchangeCopValidAmountError": "অনুগ্ৰহ কৰি এটা বৈধ পৰিমাণ লিখক",
   "@fundExchangeCopValidAmountError": {
     "description": "Validation error when amount is invalid"
   },
@@ -9675,7 +9675,7 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "fundExchangeCopFailedToOpenLink": "পৰিশোধ লিংক খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায়ৰ বাবে যোগাযোগ কৰক।",
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
@@ -9683,15 +9683,15 @@
   "@transactionStatusPayjoinCompleted": {
     "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
   },
-  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensResolvingInputs": "লেনদেনৰ ইনপুট সমাধান কৰা হৈছে...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
-  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensChangeOutputUnknown": "পৰিবৰ্তন আউটপুট অজ্ঞাত — সকলো আউটপুট সমানভাৱে দেখুওৱা হৈছে",
   "coreScreensUnknown": "Unknown",
-  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
-  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
-  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
-  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "coreScreensFetchFailed": "Electrum ৰ পৰা লেনদেন {txid} আনিব পৰা নগ'ল।",
+  "coreScreensInputResolutionFailed": "ইনপুট পোৱা নগ'ল: {parentTxId} ৰ আউটপুট {vout} বিদ্যমান নাই।",
+  "coreScreensParseFailed": "লেনদেন পাৰ্ছ কৰিবলৈ ব্যৰ্থ হ'ল: {message}।",
+  "coreScreensNoServersAvailable": "কোনো Electrum চাৰ্ভাৰ উপলব্ধ নাই।",
   "addressViewerTitle": "ঠিকনা",
   "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
   "viewerViewInExplorer": "এক্সপ্ল 'ৰাৰত দৰ্শন কৰক",
@@ -9745,8 +9745,8 @@
   "onboardingAdvancedOptionsDone": "সম্পূৰ্ণ",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
   "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত",
-  "pinCodeSaveError": "Could not save your PIN. Please try again.",
-  "pinCodeDeleteError": "Could not delete your PIN. Please try again.",
+  "pinCodeSaveError": "আপোনাৰ PIN সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "pinCodeDeleteError": "আপোনাৰ PIN মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
   "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
@@ -9791,7 +9791,7 @@
   "@labelErrorSystemCannotDelete": {
     "description": "Error message when trying to delete a system label"
   },
-  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensUnexpectedError": "অপ্ৰত্যাশিত ত্ৰুটি: {message}।",
   "walletButtonCoins": "কইন পৰিচালনা কৰক",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
@@ -10052,5 +10052,253 @@
   "logsShareOptionShare": "শ্বেয়াৰ কৰক",
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
-  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে"
+  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
+  "coreSwapsStatusRefunded": "ঘূৰাই দিয়া হৈছে",
+  "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
+  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
+  "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
+  "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
+  "swapRestoreAllSection": "সকলো swap",
+  "swapRestoreFailed": "Swap পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল",
+  "swapRestoreKindLightningSend": "Lightning প্ৰেৰণ",
+  "swapRestoreKindLightningReceive": "Lightning গ্ৰহণ",
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "swapRescueTitle": "Swap ৰক্ষা কৰক",
+  "swapRescueTypeLabel": "ধৰণ",
+  "swapRescueStatusLabel": "স্থিতি",
+  "swapRescueAmountLabel": "পৰিমাণ",
+  "swapRescueRouteLabel": "ৰুট",
+  "swapRescueCreatedLabel": "তৈয়াৰ হৈছে",
+  "swapRescueIdLabel": "Swap আইডি",
+  "swapRescueWalletLabel": "wallet লৈ পুনৰুদ্ধাৰ কৰক",
+  "swapRescueWalletHint": "এটা wallet বাছনি কৰক",
+  "swapRescueButton": "পুনৰুদ্ধাৰ কৰক",
+  "swapRescueSuccess": "Swap পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
+  "receivePayjoinNoUtxos": "ইয়াক সক্ষম কৰিবলৈ প্ৰথমে পুঁজি গ্ৰহণ কৰক।\npayjoin ব্যৱহাৰ কৰিবলৈ UTXO প্ৰয়োজন।",
+  "receiveLiquidRiskDisclosureLabel": "পৰিশোধবোৰ Liquid L-BTC (BTC নহয়) লৈ ৰূপান্তৰিত কৰা হ'ব। অধিক জানক।",
+  "transactionLabelNetworkFees": "নেটৱৰ্ক ফি",
+  "walletLiquidRiskDisclosureLabel": "এই পুঁজিবোৰ Liquid L-BTC (BTC নহয়)। অধিক জানক।",
+  "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ খোলক",
+  "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ",
+  "liquidRiskDisclosureBody": "Instant Payment Wallet ত থকা পুঁজি \"প্ৰকৃত\" Bitcoin নহয়। সেইবোৰ Liquid Network Bitcoin (L-BTC), এক Bitcoin-সমৰ্থিত টোকেন যিয়ে \"sidechain\" নামৰ এক পৃথক লেজাৰত থাকে।\n\nপ্ৰতিটো Liquid Bitcoin 15 টা কোম্পানীৰ এক ফেডাৰেচনে বজাই ৰখা এক স্বচ্ছ peg ব্যৱস্থাৰ জৰিয়তে প্ৰকৃত Bitcoin দ্বাৰা 1:1 অনুপাতত সমৰ্থিত। Liquid Federation-ৰ ওচৰত থকা Bitcoin ৰিজাৰ্ভ সম্পূৰ্ণৰূপে অডিট কৰিব পৰা যায়, আৰু যিকোনো ব্যক্তিয়ে সত্যাপন কৰিব পাৰে যে প্ৰতিটো Liquid Bitcoin এটা প্ৰকৃত Bitcoin দ্বাৰা সমৰ্থিত।\n\nLiquid Network ত ধন ৰখাটো এটা পৰম্পৰাগত custodial wallet বা exchange ব্যৱহাৰ কৰাতকৈ বহুত বেছি সুৰক্ষিত। কিন্তু, Instant Bitcoin Payments wallet ত আপোনাৰ ধন Liquid Bitcoin হিচাপে ৰখাটো Secure Bitcoin Wallet ত প্ৰকৃত Bitcoin হিচাপে ৰখাতকৈ বহুত কম সুৰক্ষিত।\n\nLiquid Network ৰ পৰিশোধ সাধাৰণ Bitcoin পৰিশোধতকৈ দ্ৰুত, সস্তা আৰু অধিক গোপনীয়। Instant Payments Wallet ত থকা আপোনাৰ Liquid Bitcoin সম্পদৰ ওপৰত আপোনাৰ সম্পূৰ্ণ self-custody আছে আৰু পৰিশোধ পঠিওৱা বা গ্ৰহণ কৰিবলৈ আপোনাক কাৰো পৰা কোনো অনুমতিৰ প্ৰয়োজন নাই।\n\nআপোনাৰ wallet ৰ বেকআপ সুৰক্ষিত ৰখাৰ সম্পূৰ্ণ আৰু একমাত্ৰ দায়িত্ব আপোনাৰ, যিটো অবিহনে কোনেও আপোনাৰ Liquid Bitcoin সম্পদৰ প্ৰৱেশ পুনৰুদ্ধাৰ কৰিব নোৱাৰে।\n\nL-BTC ৰ বাস্তৱ-জগতৰ মূল্য নিৰ্ভৰ কৰে আপুনি সেইবোৰ প্ৰকৃত Bitcoin ৰ বাবে ৰিডিম কৰাৰ সামৰ্থ্যৰ ওপৰত, যিটো পুনৰ নিৰ্ভৰ কৰে Liquid Network ৰ সদস্য swap প্ৰদানকাৰীসকলৰ ওপৰত, যিটো আকৌ নিৰ্ভৰ কৰে Liquid Network ফেডাৰেচন কেতিয়াও আপোচ নোহোৱা বা বন্ধ নহোৱাৰ ওপৰত।\n\nআন কথাত, যদি Liquid Network ফেডাৰেচনৰ সদস্যসকল আপোনাৰ Liquid Bitcoin প্ৰকৃত Bitcoin ৰ বাবে ৰিডিম কৰিবলৈ অক্ষম বা অনিচ্ছুক হৈ পৰে, তেন্তে L-BTC টোকেনৰ মূল্য মূল্যহীন হৈ পৰিব।\n\n> পৰামৰ্শ\n> Instant Payments Wallet ত কেৱল সৰু পৰিমাণৰ ধন ৰাখক। আপোনাৰ সঞ্চয় Secure Bitcoin Wallet ত বা এটা import কৰা hardware wallet ত ৰাখক।\n\n## Instant Payments Wallet টো কি?\n\nযেতিয়াই আপুনি Instant Payment Wallet ৰে এটা Lightning Network পৰিশোধ গ্ৰহণ কৰে, প্ৰেৰকৰ পুঁজি প্ৰকৃততে এজন তৃতীয় পক্ষৰ swap প্ৰদানকাৰীয়ে গ্ৰহণ কৰে, Liquid Bitcoin লৈ ৰূপান্তৰিত কৰে আৰু আপোনাৰ wallet লৈ পঠিয়ায়।\n\nযেতিয়াই আপুনি এই wallet ৰে এটা Lightning Network পৰিশোধ পঠিয়ায়, আপুনি প্ৰকৃততে এজন তৃতীয় পক্ষৰ swap প্ৰদানকাৰীলৈ এটা Liquid Bitcoin পৰিশোধ পঠিয়ায় আছে, যিয়ে সেইবোৰক Lightning Network ত প্ৰকৃত Bitcoin লৈ ৰূপান্তৰিত কৰে আৰু প্ৰাপকলৈ এটা Lightning Network পৰিশোধ পঠিয়ায়।\n\nএই swap বোৰ সম্পূৰ্ণৰূপে non-custodial আৰু trustless, অৰ্থাৎ swap প্ৰদানকাৰীৰ আপোনাৰ পুঁজি চুৰি কৰাৰ কোনো উপায় নাই। Bull Bitcoin এই swap লেনদেনবোৰ কৰাত জড়িত নহয় আৰু কোনো ব্যক্তিগত তথ্যৰ প্ৰয়োজন বা সংৰক্ষণ নকৰে।\n\n## এই wallet ৰে মই কি কৰা উচিত?\n\nInstant Payments Wallet টো ডিজাইন কৰা হৈছে যাতে আপুনি Bitcoin নেটৱৰ্ক ফি নিদিয়াকৈ দৈনন্দিন ভিত্তিত Bitcoin পৰিশোধ গ্ৰহণ (বা Bitcoin ক্ৰয়) আৰু Bitcoin পৰিশোধ পঠিয়াব (বা Bitcoin বিক্ৰী) পাৰে।\n\nযদি আপুনি এজন ব্যৱসায়ী বা Bitcoin সংগ্ৰহ কৰি আছে, তেন্তে এই wallet ব্যৱহাৰ কৰি 0.01 BTC ৰ তলৰ পৰিশোধ গ্ৰহণ কৰক আৰু, এবাৰ 0.01 BTC তকৈ বেছি সংগ্ৰহ হ'লে, সেই Bitcoin বোৰ Secure Bitcoin Wallet বা আন কোনো self-custodial Bitcoin wallet লৈ স্থানান্তৰ কৰক।\n\nযদি আপুনি আপোনাৰ Bitcoin খৰচ কৰিব বিচাৰে, Instant Payment Wallet ত অলপ পৰিমাণ স্থানান্তৰ কৰক আৰু ইয়াক আপোনাৰ খৰচ পৰিশোধ কৰিবলৈ ব্যৱহাৰ কৰক। Instant Payments Wallet ত পুঁজি শেষ হ'লে, কেৱল ইয়াক পুনৰ ভৰাই লওক।\n\n## Auto-swap কি আৰু ই কেনেকৈ কাম কৰে?\n\nAuto-swap, যাক Auto-Transfer বুলিও কোৱা হয়, Bull Bitcoin এ আৱিষ্কাৰ কৰা এক সুবিধা যিয়ে আপোনাৰ wallet ত L-BTC ৰ পৰিমাণে এটা নিৰ্ধাৰিত সীমা স্পৰ্শ কৰামাত্ৰে Liquid Network Bitcoin (L-BTC) ক Bitcoin (BTC) লৈ স্বয়ংক্ৰিয়ভাৱে ৰূপান্তৰিত কৰে।\n\nAuto-swap ডিফল্টভাৱে সক্ষম কৰা থাকে:\n\n- **সৰ্বোচ্চ Instant Wallet বেলেঞ্চ:** 0.01 BTC\n- **Auto-swap ৰ পিছত লক্ষ্য বেলেঞ্চ:** 0.005 BTC\n- **নূন্যতম স্থানান্তৰ পৰিমাণ:** 0.005 BTC\n\nআপোনাৰ বেলেঞ্চ 0.01 BTC পাওঁতে, আপুনি এপটো খোলামাত্ৰে এটা স্থানান্তৰ আৰম্ভ হ'ব আৰু 0.005 BTC তকৈ অতিৰিক্ত যিকোনো পুঁজি L-BTC ৰ পৰা BTC লৈ ৰূপান্তৰিত হ'ব।\n\n### উদাহৰণ\n\nযদি আপোনাৰ ওচৰত 0.012 L-BTC আছে আৰু auto-swap সক্ষম কৰা আছে, তেন্তে 0.007 L-BTC ৰ এটা স্থানান্তৰ আৰম্ভ হ'ব আৰু আপোনাৰ অৱশিষ্ট L-BTC হ'ব 0.005 L-BTC, আৰু আপোনাৰ BTC বেলেঞ্চ 0.007 BTC বৃদ্ধি পাব।\n\n## মই কেনেকৈ Instant Bitcoin Wallet ৰ পৰা L-BTC ফাণ্ড বা withdraw কৰিম?\n\n\"প্ৰকৃত\" Bitcoin ৰে wallet টো ফাণ্ড কৰিবলৈ, \"Receive\" ক্লিক কৰক আৰু \"Lightning Network\" বাছনি কৰক। L-BTC withdraw কৰিবলৈ, \"Send\" ক্লিক কৰক আৰু এটা Lightning invoice পেষ্ট কৰক।\n\n## বেকআপ কেনেকৈ কাম কৰে?\n\nInstant Bitcoin Wallet এ Secure Bitcoin Wallet ৰ একেটা বেকআপ seed শব্দ ব্যৱহাৰ কৰে। দুয়োটা wallet ৰ বাবে আপোনাক কেৱল এটা বেকআপৰ প্ৰয়োজন।\n\n## মই non-custodial Lightning Network Wallet ৰ পৰিৱৰ্তে Instant Payments wallet ব্যৱহাৰ কৰা উচিত নে?\n\nPhoenix Wallet ৰ দৰে এটা non-custodial Lightning Network wallet ব্যৱহাৰ কৰিলে আপুনি উচ্চতৰ মাত্ৰাৰ সুৰক্ষা পাব। যিহেতু আপুনি Lightning Network চেনেল পৰিচালনাৰ সৈতে মোকাবিলা কৰিব লাগিব, ই কম সুবিধাজনক আৰু ব্যৱহাৰ কৰিবলৈ কঠিন হ'ব পাৰে।\n\nযিহেতু Lightning চেনেলবোৰ খুলিবলৈ আৰু বন্ধ কৰিবলৈ on-chain লেনদেনৰ প্ৰয়োজন, আৰু যিহেতু আপুনি সম্ভৱতঃ Lightning সেৱা প্ৰদানকাৰীক এটা ফি দিব লাগিব, কিছুমান ক্ষেত্ৰত এটা সম্পূৰ্ণ non-custodial Lightning wallet ব্যৱহাৰ কৰাটো অধিক ব্যয়বহুল হ'ব পাৰে।\n\nযদি আপুনি এটা সম্পূৰ্ণ non-custodial pure Lightning wallet ব্যৱহাৰ কৰিবলৈ সক্ষম আৰু ইচ্ছুক, আমি দৃঢ়ভাৱে Phoenix Wallet চেষ্টা কৰাৰ পৰামৰ্শ দিওঁ।\n\n## লেনদেনৰ ফি কি কি?\n\nInstant Payments Wallet ৰ পৰা প্ৰতিটো পৰিশোধ গ্ৰহণ আৰু পঠিওৱাত দুটা Liquid Network লেনদেন জড়িত হয়। এইবোৰ সাধাৰণতে বহুত সৰু আৰু প্ৰায় 0.00000050 BTC (50 sats) হোৱা উচিত।\n\nযদি আপুনি Secure Bitcoin Wallet ৰে Lightning Network পৰিশোধ গ্ৰহণ বা পঠিয়াই আছে, আপুনি প্ৰতি পৰিশোধত দুটা on-chain Bitcoin লেনদেনৰ বাবে ফি দিব লাগিব, যিটো যথেষ্ট ব্যয়বহুল হ'ব পাৰে।\n\nইয়াৰ উপৰিও, swap প্ৰদানকাৰীয়ে swap ফিও চাৰ্জ কৰিব পাৰে। বৰ্তমান, swap প্ৰদানকাৰীয়ে (Boltz) তলৰ ফিবোৰ চাৰ্জ কৰে:\n\n- **Instant Payment Wallet ত Lightning Network পৰিশোধ গ্ৰহণ কৰা:** 0.25%\n- **Instant Payment Wallet ৰ পৰা Lightning Network পৰিশোধ পঠিওৱা:** 0.1%\n- **Secure Bitcoin Wallet ত Lightning Network পৰিশোধ গ্ৰহণ কৰা:** 0.5%\n- **Secure Bitcoin Wallet ৰ পৰা Lightning Network পৰিশোধ পঠিওৱা:** 0.1%",
+  "nfcNotAvailable": "এই ডিভাইচত NFC সমৰ্থিত নহয়",
+  "nfcDisabled": "NFC নিষ্ক্ৰিয় কৰা আছে। ছেটিংছত ইয়াক সক্ষম কৰক।",
+  "nfcInvalidData": "কোনো সমৰ্থিত NFC ডাটা পোৱা নগ'ল",
+  "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হ'ল। আপোনাৰ ডিভাইচ NFC ট্যাগৰ ওচৰত ধৰি ৰাখক আৰু পুনৰ চেষ্টা কৰক।",
+  "nfcWriteFailed": "NFC স্থানান্তৰ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "nfcError": "NFC ত্ৰুটি: {error}",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
+  "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
+  "psbtFlowSignViaNfc": "NFC ৰ জৰিয়তে স্বাক্ষৰ কৰক",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT NFC ৰ জৰিয়তে পঠিয়াবলৈ আপোনাৰ {deviceName} টেপ কৰক",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 নিৰ্দেশনা",
+  "psbtFlowColdcardQStep1": "আপোনাৰ Coldcard Q ডিভাইচত লগইন কৰক",
+  "psbtFlowColdcardQStep2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
+  "psbtFlowColdcardQStep3": "আপোনাৰ পছন্দৰ স্বাক্ষৰ পদ্ধতি বাছনি কৰক:",
+  "psbtFlowColdcardQStep4": "QR code ৰ বাবে:",
+  "psbtFlowColdcardQStep5": "   - আপোনাৰ Coldcard Q ত \"Scan any QR code\" বাছনি কৰক",
+  "psbtFlowColdcardQStep6": "   - Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
+  "psbtFlowColdcardQStep7": "   - স্কেন কৰিবলৈ সমস্যা হ'লে:",
+  "psbtFlowColdcardQStep8": "     - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
+  "psbtFlowColdcardQStep9": "     - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
+  "psbtFlowColdcardQStep10": "     - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
+  "psbtFlowColdcardQStep11": "NFC ৰ বাবে:",
+  "psbtFlowColdcardQStep12": "   - আপোনাৰ Coldcard Q ত \"Ready to Sign\" বাছনি কৰক, তাৰপিছত NFC বুটাম টেপ কৰক",
+  "psbtFlowColdcardQStep13": "   - আপোনাৰ ফোন Coldcard Q ত টেপ কৰক",
+  "psbtFlowColdcardQStep14": "   - PSBT স্থানান্তৰ হোৱালৈ অপেক্ষা কৰক",
+  "psbtFlowColdcardQStep15": "আপোনাৰ Coldcard Q ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
+  "psbtFlowColdcardQStep16": "আপোনাৰ Coldcard Q ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
+  "psbtFlowColdcardQStep17": "Coldcard Q এ তেতিয়া এটা স্বাক্ষৰিত লেনদেনৰ QR code দেখুৱাব বা NFC স্থানান্তৰৰ বাবে সাজু হ'ব।",
+  "psbtFlowColdcardQStep18": "যদি আপুনি QR ৰে স্বাক্ষৰ কৰিছে, Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
+  "psbtFlowColdcardQStep19": "Bull Bitcoin wallet এ আপোনাক স্বাক্ষৰিত লেনদেনৰ QR code স্কেন কৰিবলৈ বা ইয়াক ৰিচিভ কৰিবলৈ NFC ব্যৱহাৰ কৰিবলৈ ক'ব।",
+  "psbtFlowColdcardQStep20": "   - QR ৰ বাবে: Coldcard Q ত থকা QR code স্কেন কৰক",
+  "psbtFlowColdcardQStep21": "   - NFC ৰ বাবে: আপোনাৰ ফোন Coldcard Q ত টেপ কৰক",
+  "psbtFlowColdcardQStep22": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
+  "psbtFlowColdcardQStep23": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু। আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব।",
+  "psbtFlowColdcardMk4Step1": "আপোনাৰ Coldcard Mk4 ডিভাইচত লগইন কৰক",
+  "psbtFlowColdcardMk4Step2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
+  "psbtFlowColdcardMk4Step3": "আপোনাৰ Coldcard Mk4 ত \"Ready to Sign\" বাছনি কৰক, তাৰপিছত নম্বৰ 3 বুটাম টেপ কৰক",
+  "psbtFlowColdcardMk4Step4": "আপোনাৰ ফোন Coldcard Mk4 ত টেপ কৰক",
+  "psbtFlowColdcardMk4Step5": "PSBT স্থানান্তৰ হোৱালৈ অপেক্ষা কৰক",
+  "psbtFlowColdcardMk4Step6": "আপোনাৰ Coldcard Mk4 ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
+  "psbtFlowColdcardMk4Step7": "আপোনাৰ Coldcard Mk4 ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 এ তেতিয়া স্বাক্ষৰিত লেনদেনটো NFC স্থানান্তৰৰ বাবে সাজু কৰিব।",
+  "psbtFlowColdcardMk4Step9": "Bull Bitcoin wallet ত, প্ৰচাৰ স্ক্ৰীনত NFC টেপ কৰক।",
+  "psbtFlowColdcardMk4Step10": "স্বাক্ষৰিত লেনদেনটো ৰিচিভ কৰিবলৈ আপোনাৰ ফোন Coldcard Mk4 ত টেপ কৰক।",
+  "psbtFlowColdcardMk4Step11": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
+  "psbtFlowColdcardMk4Step12": "Bull Bitcoin wallet ত লেনদেনৰ বিৱৰণ পৰীক্ষা কৰক।",
+  "psbtFlowColdcardMk4Step13": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু। আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব।",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "স্বাক্ষৰিত লেনদেনটো NFC ৰ জৰিয়তে ৰিচিভ কৰিবলৈ আপোনাৰ Coldcard টেপ কৰক",
+  "importColdcardInvalidWalletData": "অবৈধ Coldcard wallet ডেটা",
+  "importColdcardConnectTitle": "{deviceName} সংযোগ কৰক",
+  "importColdcardConnectDescription": "আপোনাৰ {deviceName} ৰ পৰা wallet descriptor আমদানি কৰক",
+  "importColdcardScanNfcSheetTitle": "wallet descriptor NFC ৰ জৰিয়তে আমদানি কৰিবলৈ আপোনাৰ {deviceName} টেপ কৰক",
+  "importColdcardQInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
+  "importColdcardQStep1": "আপোনাৰ Coldcard Q ডিভাইচত লগইন কৰক",
+  "importColdcardQStep2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
+  "importColdcardQStep3": "advanced/settings মেনু বাছনি কৰক",
+  "importColdcardQStep4": "\"export wallet\" ক্লিক কৰক",
+  "importColdcardQStep5": "export ধৰণ হিচাপে \"descriptor\" বাছনি কৰক",
+  "importColdcardQStep6": "প্ৰথম স্ক্ৰীনত \"Enter\" টিপক",
+  "importColdcardQStep7": "দ্বিতীয় স্ক্ৰীনত \"Enter\" টিপক",
+  "importColdcardQStep8": "আপোনাৰ ঠিকনাৰ ধৰণ বাছনি কৰক (নিশ্চিত নহ'লে Segwit ব্যৱহাৰ কৰক)",
+  "importColdcardQStep9": "QR ৰ বাবে, ডিভাইচত QR code বুটাম ক্লিক কৰক। ই ডিভাইচত এটা QR code দেখুৱাব",
+  "importColdcardQStep10": "NFC ৰ বাবে, ডিভাইচত NFC বুটাম ক্লিক কৰক",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" বুটাম ক্লিক কৰক",
+  "importColdcardQStep12": "আপোনাৰ ডিভাইচত দেখা QR code স্কেন কৰক বা ফোনৰ NFC Coldcard ৰ NFC ৰ ওপৰত থওক",
+  "importColdcardQStep13": "এয়াই সম্পন্ন!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 নিৰ্দেশনা",
+  "importColdcardMk4Step1": "আপোনাৰ Coldcard Mk4 ডিভাইচত লগইন কৰক",
+  "importColdcardMk4Step2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
+  "importColdcardMk4Step3": "advanced/settings মেনু বাছনি কৰক",
+  "importColdcardMk4Step4": "\"export wallet\" ক্লিক কৰক",
+  "importColdcardMk4Step5": "export ধৰণ হিচাপে \"descriptor\" বাছনি কৰক",
+  "importColdcardMk4Step6": "প্ৰথম স্ক্ৰীনত \"Enter\" টিপক",
+  "importColdcardMk4Step7": "দ্বিতীয় স্ক্ৰীনত \"Enter\" টিপক",
+  "importColdcardMk4Step8": "আপোনাৰ ঠিকনাৰ ধৰণ বাছনি কৰক (নিশ্চিত নহ'লে Segwit ব্যৱহাৰ কৰক)",
+  "importColdcardMk4Step9": "Coldcard NFC আৰম্ভ কৰিবলৈ নম্বৰ 3 ক্লিক কৰক",
+  "importColdcardMk4Step10": "\"Scan NFC\" বুটাম ক্লিক কৰক",
+  "importColdcardMk4Step11": "ফোনৰ NFC Coldcard ৰ NFC ৰ ওপৰত থওক",
+  "importColdcardMk4Step12": "এয়াই সম্পন্ন!",
+  "noteVisibleToSenderNotice": "এই টোকা আপোনাৰ QR বা invoice ৰ প্ৰাপকক দেখা যাব।",
+  "viewerAddressTab": "ঠিকনা",
+  "viewerPaymentUriTab": "পৰিশোধ URI",
+  "transactionSwapOpenWithin24h": "আপোনাৰ swap সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
+  "recipientsScreenTitle": "প্ৰাপক বাছক",
+  "recipientsScreenSubtitle": "আপুনি কাক পৰিশোধ কৰি আছে?",
+  "recipientsTabNew": "নতুন প্ৰাপক",
+  "recipientsTabList": "মোৰ fiat প্ৰাপকসমূহ",
+  "recipientsPayoutMethod": "পেআউট পদ্ধতি",
+  "recipientsFilterByJurisdiction": "জুৰিছডিকশ্বন অনুযায়ী ফিল্টাৰ কৰক:",
+  "recipientsListEmpty": "কোনো প্ৰাপক পোৱা নগ'ল।",
+  "recipientsContinue": "অব্যাহত ৰাখক",
+  "recipientsJurisdictionAll": "সকলো জুৰিছডিকশ্বন",
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeBillPayment": "Bill Payment",
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "recipientsTypeSepa": "SEPA Transfer",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "ইমেইল",
+  "recipientsInfoPayee": "পেয়ী",
+  "recipientsInfoAccount": "একাউণ্ট",
+  "recipientsInfoPhone": "ফোন",
+  "recipientsInfoCard": "কাৰ্ড",
+  "recipientsInfoLabel": "লেবেল",
+  "recipientsValidationFieldRequired": "এই ক্ষেত্ৰখন খালী থাকিব নোৱাৰে",
+  "recipientsLabelOptional": "লেবেল (ঐচ্ছিক)",
+  "recipientsLabelHint": "এই প্ৰাপকৰ বাবে এটা লেবেল দিয়ক",
+  "recipientsFieldName": "নাম",
+  "recipientsFieldNameHint": "প্ৰাপকৰ নাম দিয়ক",
+  "recipientsFieldRecipientNameLabel": "প্ৰাপকৰ নাম",
+  "recipientsFieldPhoneNumber": "ফোন নম্বৰ",
+  "recipientsFieldPhoneNumberHint": "ফোন নম্বৰ দিয়ক",
+  "recipientsFieldOwnerName": "মালিকৰ নাম",
+  "recipientsFieldOwnerNameHint": "মালিকৰ নাম দিয়ক",
+  "recipientsAccountOwnerQuestion": "এই একাউণ্টটো কাৰ?",
+  "recipientsAccountOwnerMine": "এইটো মোৰ একাউণ্ট",
+  "recipientsAccountOwnerSomeoneElse": "এইটো আন কাৰোবাৰ একাউণ্ট",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN দিয়ক",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE নম্বৰ দিয়ক",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU নম্বৰ দিয়ক",
+  "recipientsFieldBankInstitution": "বেংক প্ৰতিষ্ঠান",
+  "recipientsFieldBankInstitutionPlaceholder": "বেংক প্ৰতিষ্ঠান বাছনি কৰক",
+  "recipientsValidationBankInstitution": "অনুগ্ৰহ কৰি এটা বেংক প্ৰতিষ্ঠান বাছনি কৰক",
+  "recipientsFieldAccountType": "একাউণ্টৰ ধৰণ",
+  "recipientsAccountTypeSavings": "সঞ্চয়",
+  "recipientsAccountTypeChecking": "চেকিং",
+  "recipientsFieldBankAccountNumber": "বেংক একাউণ্ট নম্বৰ",
+  "recipientsFieldBankAccountNumberHint": "বেংক একাউণ্ট নম্বৰ দিয়ক",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "পাছপৰ্ট",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "ডেবিট কাৰ্ড নম্বৰ",
+  "recipientsFieldDebitCardHint": "ডেবিট কাৰ্ড নম্বৰ দিয়ক",
+  "recipientsFieldOwnerNameSinpeHint": "মালিকৰ নাম ইয়াত দেখা যাব",
+  "recipientsValidationSinpeOwner": "অনুগ্ৰহ কৰি ফোন নম্বৰটো সত্যাপন কৰক",
+  "recipientsFieldEmailAddress": "ইমেইল ঠিকনা",
+  "recipientsFieldEmailAddressHint": "ইমেইল ঠিকনা দিয়ক",
+  "recipientsFieldSecurityQuestion": "সুৰক্ষা প্ৰশ্ন",
+  "recipientsFieldSecurityQuestionHint": "সুৰক্ষা প্ৰশ্ন দিয়ক (10-40 আখৰ)",
+  "recipientsFieldSecurityAnswer": "সুৰক্ষা উত্তৰ",
+  "recipientsFieldSecurityAnswerHint": "সুৰক্ষা উত্তৰ দিয়ক",
+  "recipientsValidationSecurityQuestionMin": "সুৰক্ষা প্ৰশ্ন কমেও 10 আখৰৰ হ'ব লাগিব",
+  "recipientsCharCounter": "{count}/40 আখৰ",
+  "recipientsFieldInstitutionCode": "প্ৰতিষ্ঠানৰ কোড",
+  "recipientsFieldInstitutionCodeHint": "প্ৰতিষ্ঠানৰ কোড দিয়ক",
+  "recipientsFieldInstitutionNumber": "প্ৰতিষ্ঠানৰ নম্বৰ",
+  "recipientsFieldInstitutionNumberHint": "প্ৰতিষ্ঠানৰ নম্বৰ দিয়ক",
+  "recipientsFieldTransitNumber": "Transit নম্বৰ",
+  "recipientsFieldTransitNumberHint": "Transit নম্বৰ দিয়ক",
+  "recipientsFieldAccountNumber": "একাউণ্ট নম্বৰ",
+  "recipientsFieldAccountNumberHint": "একাউণ্ট নম্বৰ দিয়ক",
+  "recipientsFieldDefaultComment": "ডিফল্ট মন্তব্য (ঐচ্ছিক)",
+  "recipientsFieldDefaultCommentHint": "ডিফল্ট মন্তব্য দিয়ক",
+  "recipientsFieldCorporateAccount": "কৰ্পোৰেট একাউণ্ট",
+  "recipientsFieldFirstName": "প্ৰথম নাম",
+  "recipientsFieldFirstNameHint": "প্ৰথম নাম দিয়ক",
+  "recipientsFieldLastName": "শেষ নাম",
+  "recipientsFieldLastNameHint": "শেষ নাম দিয়ক",
+  "recipientsFieldCorporateName": "কৰ্পোৰেট নাম",
+  "recipientsFieldCorporateNameHint": "কৰ্পোৰেট নাম দিয়ক",
+  "recipientsFieldBillerName": "Biller-ৰ নাম",
+  "recipientsFieldBillerNameHint": "সন্ধান কৰক আৰু এজন biller বাছনি কৰক",
+  "recipientsValidationBillerSearchMin": "সন্ধান কৰিবলৈ 3 বা তাতোধিক আখৰ দিয়ক",
+  "recipientsValidationBillerSelect": "অনুগ্ৰহ কৰি তালিকাৰ পৰা এজন biller বাছনি কৰক",
+  "recipientsFieldPayeeAccountNumber": "পেয়ী একাউণ্ট নম্বৰ",
+  "exchangeFileUploadStatusRejectedBadge": "প্ৰত্যাখ্যান কৰা হৈছে",
+  "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
+  "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
+  "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
+  "exchangeSupportChatPermissionDenied": "অনুমতি নাকচ কৰা হৈছে।",
+  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি নাকচ কৰা হৈছে। অনুগ্ৰহ কৰি ছেটিংছত ফটো লাইব্ৰেৰীৰ প্ৰৱেশাধিকাৰ দিয়ক।",
+  "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
+  "logsViewerDeleteTitle": "লগ মচক",
+  "logsViewerDeleteConfirmation": "আপুনি নিশ্চিতভাৱে সকলো লগ মচিব বিচাৰে নে? এই কাৰ্য পূৰ্বাৱস্থালৈ ঘূৰাই আনিব নোৱাৰিব।",
+  "logsViewerDeleteButton": "মচক",
+  "logsViewerCancelButton": "বাতিল কৰক",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "1 sat/vB তকৈ কম হাৰৰ লেনদেন নিশ্চিত হ'বলৈ বেছি সময় ল'ব পাৰে আৰু সকলো node লৈ প্ৰচাৰিত নহ'বও পাৰে।",
+  "sendBelowMinFeeRateError": "ফি হাৰ কমেও 0.1 sat/vB হ'ব লাগিব।",
+  "bitboxErrorBluetoothPermissionDenied": "আপোনাৰ BitBox02 Nova ৰ সৈতে সংযোগ কৰিবলৈ Bluetooth অনুমতিৰ প্ৰয়োজন।",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth উপলব্ধ নাই। Bluetooth অন কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "bitboxErrorNoBleDevicesFound": "ওচৰত কোনো BitBox02 Nova পোৱা নগ'ল। Bluetooth পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "bitboxErrorMultipleBleDevicesFound": "একাধিক BitBox02 Nova ডিভাইচ পোৱা গৈছে। ওচৰত কেৱল এটা ৰাখি পুনৰ চেষ্টা কৰক।",
+  "bitboxErrorOperationFailed": "BitBox কাৰ্য বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "bitboxScreenConnectSubtextBluetooth": "নিশ্চিত কৰক যে আপোনাৰ BitBox02 Nova আনলক আছে আৰু Bluetooth সক্ষম কৰা আছে।",
+  "bitboxScreenScanningSubtextBluetooth": "আপোনাৰ ওচৰৰ BitBox02 Nova বিচাৰি আছোঁ...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova সমস্যা সমাধান",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "যদি আপোনাৰ ডিভাইচ এতিয়াও এপটোৰ সৈতে সংযোগ নহয়, তলৰবোৰ চেষ্টা কৰক:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "নিশ্চিত কৰক যে Bluetooth অন আছে আৰু এই এপৰ বাবে অনুমতি দিয়া আছে।",
+  "bitboxScreenTroubleshootingBluetoothStep2": "নিশ্চিত কৰক যে আপোনাৰ BitBox02 Nova ত Bluetooth সক্ষম কৰা আছে।",
+  "bitboxScreenTroubleshootingBluetoothStep3": "আপোনাৰ BitBox02 Nova পুনৰ আৰম্ভ কৰক আৰু পুনৰ সংযোগ কৰাৰ চেষ্টা কৰক।",
+  "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

@@ -471,7 +471,7 @@
   "@importWatchOnlyWalletGuides": {
     "description": "Button label for wallet documentation and guides"
   },
-  "receiveConfirming": "Confirming... ({count}/{required})",
+  "receiveConfirming": "Onaylanıyor... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
     "placeholders": {
@@ -744,7 +744,7 @@
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
   },
-  "payConfirmHighFee": "Bu ödeme için ücret miktarın% 28X]'dir. Devam et?",
+  "payConfirmHighFee": "Bu ödemenin ücreti tutarın %{percentage} kadarıdır. Devam edilsin mi?",
   "@payConfirmHighFee": {
     "description": "Confirmation prompt when fee percentage is high",
     "placeholders": {
@@ -834,7 +834,7 @@
   "@arkReceiveSegmentBoarding": {
     "description": "Segment option for Boarding (BTC) address type"
   },
-  "exchangeLandingLoginToUseSupport": "Please login or sign up to use the support chat for exchange related issues.",
+  "exchangeLandingLoginToUseSupport": "Değişimle ilgili sorunlar için destek sohbetini kullanmak üzere lütfen giriş yapın veya kaydolun.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
@@ -859,7 +859,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "Saatiniz ({timeoutValue} saniyeler) bu Dur Gap için önerilen değerden daha düşük.",
+  "electrumTimeoutWarning": "Saatiniz ({timeoutValue} saniye) bu Dur Gap için önerilen değerden ({recommended} saniye) daha düşük.",
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
@@ -1098,7 +1098,7 @@
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
   },
-  "psbtFlowPartProgress": "Bölüm {current}",
+  "psbtFlowPartProgress": "Bölüm {current} / {total}",
   "@psbtFlowPartProgress": {
     "description": "Progress indicator for animated QR code parts",
     "placeholders": {
@@ -1162,7 +1162,7 @@
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "seedsignerStep1": "Turn on your SeedSigner device",
+  "seedsignerStep1": "SeedSigner cihazınızı açın",
   "@seedsignerStep1": {
     "description": "SeedSigner instruction step 1"
   },
@@ -2359,7 +2359,7 @@
   "@featureComingSoonTitle": {
     "description": "Title for coming soon bottom sheet"
   },
-  "swapProgressRefundInProgress": "Transfer Refund In Progress",
+  "swapProgressRefundInProgress": "Transfer İadesi Devam Ediyor",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
@@ -2945,7 +2945,7 @@
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
   },
-  "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
+  "recoverbullMemorizeWarning": "Cüzdanınıza erişimi geri kazanmak için bu {inputType}'i ezberlemeniz gerekir. En az 6 basamak olmalıdır. Bu {inputType}'i kaybederseniz yedeklemenizi kurtaramazsınız.",
   "@recoverbullMemorizeWarning": {
     "description": "Warning message about memorizing PIN or password",
     "placeholders": {
@@ -3257,7 +3257,7 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "swapTransferRefundInProgressTitle": "Transfer Refund In Progress",
+  "swapTransferRefundInProgressTitle": "Transfer İadesi Devam Ediyor",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
@@ -3423,7 +3423,7 @@
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
   },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
+  "electrumServerUrlHint": "{network} {environment} Sunucu URL'si",
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
@@ -4091,7 +4091,7 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "dcaBuyingMessage": "Hesabınızda fon bulunduğu sürece, {network} üzerinden her {frequency} {amount} satın alıyorsunuz.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -5017,7 +5017,7 @@
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
   },
-  "psbtFlowSelectSeed": "İşlem sizin [X41X’inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
+  "psbtFlowSelectSeed": "İşlem sizin {device}'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
   "@psbtFlowSelectSeed": {
     "description": "Instruction to select seed on device for signing",
     "placeholders": {
@@ -6593,7 +6593,7 @@
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
   },
-  "bip85Title": "BIP85 Deterministic Entropies",
+  "bip85Title": "BIP85 Deterministik Entropiler",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
@@ -7094,7 +7094,7 @@
   "@bitboxScreenVerifyOnDevice": {
     "description": "Instruction to verify address on device"
   },
-  "ledgerConnectTitle": "Connect Your Ledger Device",
+  "ledgerConnectTitle": "Ledger Cihazınızı Bağlayın",
   "@ledgerConnectTitle": {
     "description": "Title for initial Ledger connection screen"
   },
@@ -7198,7 +7198,7 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "{count} {count, plural, =1{Dosya} other{Dosya}} Yükle",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -7354,7 +7354,7 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Please enter your password on the BitBox device...",
+  "bitboxActionUnlockDeviceProcessingSubtext": "Lütfen şifrenizi BitBox cihazına girin...",
   "@bitboxActionUnlockDeviceProcessingSubtext": {
     "description": "Processing subtext for unlock device"
   },
@@ -7718,7 +7718,7 @@
   "exportTransactionsButton": "CSV olarak dışa aktar",
   "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
   "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "İşlemler dışa aktarılamadı",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -7786,7 +7786,7 @@
   "@sendDustAmount": {
     "description": "Error for uneconomical amount"
   },
-  "allSeedViewExistingWallets": "Existing Wallets ({count})",
+  "allSeedViewExistingWallets": "Mevcut Cüzdanlar ({count})",
   "@allSeedViewExistingWallets": {
     "description": "Section header for existing wallets with count",
     "placeholders": {
@@ -8064,7 +8064,7 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "Turn on your {device} device",
+  "psbtFlowTurnOnDevice": "{device} cihazınızı açın",
   "@psbtFlowTurnOnDevice": {
     "description": "Instruction to power on hardware device",
     "placeholders": {
@@ -8171,7 +8171,7 @@
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
+  "psbtFlowSignTransactionOnDevice": "İşlemi {device} cihazınızda imzalamak için düğmelere tıklayın.",
   "@psbtFlowSignTransactionOnDevice": {
     "description": "Instruction to sign transaction on hardware device",
     "placeholders": {
@@ -9260,7 +9260,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "exchangeDcaSummaryMessage": "Hesabınızda fon bulunduğu sürece, {network} üzerinden her {frequency} {amount} satın alıyorsunuz.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -9455,7 +9455,7 @@
   "@arkUnifiedAddressBip21": {
     "description": "Label for the BIP21 unified address field"
   },
-  "pickPasswordOrPinButton": "Bunun yerine >>",
+  "pickPasswordOrPinButton": "Bunun yerine bir {pinOrPassword} seç >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
     "placeholders": {
@@ -9661,7 +9661,7 @@
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
   },
-  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
+  "importQrDeviceKeystoneStep4": "\"Connect Software Wallet\"'a tıklayın",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
@@ -9802,7 +9802,7 @@
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
   },
-  "usePasswordInsteadButton": "Bunun yerine >>",
+  "usePasswordInsteadButton": "Bunun yerine {pinOrPassword} kullan >>",
   "@usePasswordInsteadButton": {
     "description": "Button to use password/PIN instead",
     "placeholders": {
@@ -9960,7 +9960,7 @@
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
   },
-  "memorizePasswordWarning": "You must memorize this {pinOrPassword} to recover access to your wallet. It must be at least 6 digits. If you lose this {pinOrPassword} you cannot recover your backup.",
+  "memorizePasswordWarning": "Cüzdanınıza erişimi geri kazanmak için bu {pinOrPassword}'i ezberlemeniz gerekir. En az 6 basamak olmalıdır. Bu {pinOrPassword}'i kaybederseniz yedeklemenizi kurtaramazsınız.",
   "@memorizePasswordWarning": {
     "description": "Warning about memorizing PIN/password",
     "placeholders": {
@@ -11001,7 +11001,7 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "[X7X15X]",
+  "arkSettleTransactionCount": "{count} {transaction} sonuçlandır",
   "@arkSettleTransactionCount": {
     "description": "Button label showing number of unsettled transactions",
     "placeholders": {
@@ -11159,7 +11159,7 @@
   "@exchangeLandingFeature3": {
     "description": "Third feature bullet point"
   },
-  "notLoggedInMessage": "Please log in to your Bull Bitcoin account to access exchange settings.",
+  "notLoggedInMessage": "Değişim ayarlarına erişmek için lütfen Bull Bitcoin hesabınıza giriş yapın.",
   "@notLoggedInMessage": {
     "description": "Message prompting user to log in for exchange features"
   },
@@ -11390,7 +11390,7 @@
       }
     }
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministik Entropiler",
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
@@ -12219,7 +12219,7 @@
   "@bitboxScreenVerifyAddress": {
     "description": "Main text when showing address verification"
   },
-  "bitboxScreenConnectDevice": "Connect Your BitBox Device",
+  "bitboxScreenConnectDevice": "BitBox Cihazınızı Bağlayın",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
   },
@@ -12425,7 +12425,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Bu, destek ekibimize bir hesap silme talebi gönderecektir. Hesabınız 5 iş günü içinde silinecektir.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12437,11 +12437,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Hesap Silme Talep Edildi",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Hesap silme talebiniz alındı. 5 iş günü içinde işleme konulacaktır.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -12563,7 +12563,7 @@
   "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
@@ -12934,5 +12934,330 @@
   "logsShareOptionShare": "Paylaş",
   "logsShareOptionExport": "Dışa Aktar",
   "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
-  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı"
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
+  "coreSwapsStatusRefunded": "İade Edildi",
+  "swapRestoreTitle": "Takas Kurtarma",
+  "swapRestoreActionable": "{count, plural, =0{Kurtarılacak takas yok} =1{1 takası kurtarmayı deneyebilirsiniz. Zaten sonlanmış bir durumda olabilir.} other{{count} takası kurtarmayı deneyebilirsiniz. Bazılarının zaten sonlanmış bir durumda olabileceğini unutmayın.}}",
+  "swapRestoreNoSwaps": "Kurtarılacak takas bulunamadı",
+  "swapRestoreRecoverableSection": "Kurtarılabilir",
+  "swapRestoreAllSection": "Tüm takaslar",
+  "swapRestoreFailed": "Takaslar kurtarılamadı",
+  "swapRestoreKindLightningSend": "Lightning Gönderimi",
+  "swapRestoreKindLightningReceive": "Lightning Alımı",
+  "swapRestoreKindCrossChain": "Zincirler Arası",
+  "swapRescueTitle": "Takası Kurtar",
+  "swapRescueTypeLabel": "Tür",
+  "swapRescueStatusLabel": "Durum",
+  "swapRescueAmountLabel": "Miktar",
+  "swapRescueRouteLabel": "Rota",
+  "swapRescueCreatedLabel": "Oluşturulma",
+  "swapRescueIdLabel": "Takas ID",
+  "swapRescueWalletLabel": "Cüzdana geri yükle",
+  "swapRescueWalletHint": "Bir cüzdan seçin",
+  "swapRescueButton": "Geri Yükle",
+  "swapRescueSuccess": "Takas geri yüklendi — şimdi devam edecek",
+  "mempoolServerStatusOnline": "Çevrimiçi",
+  "mempoolServerStatusOffline": "Çevrimdışı",
+  "mempoolServerStatusChecking": "Kontrol ediliyor...",
+  "mempoolServerStatusUnknown": "Bilinmiyor",
+  "mempoolCustomServerSaveFailed": "Sunucu kaydedilemedi",
+  "mempoolCustomServerInfoDescription": "Mempool sunucuları, ücret tahmini yapmak ve işlem detaylarını görüntülerken blok gezginini açmak için kullanılır.",
+  "mempoolCustomServerUseSsl": "SSL kullan",
+  "mempoolCustomServerSslAutoDetected": "(Otomatik algılandı)",
+  "mempoolCustomServerSslHelpText": "Yerel (.local, özel IP'ler) ve Tor (.onion) sunucularında SSL genellikle devre dışıdır. Genel IP'ler ve alan adları SSL kullanmalıdır.",
+  "mempoolErrorSameAsDefault": "Bu URL varsayılan sunucuyla aynı. Lütfen farklı bir URL kullanın.",
+  "mempoolErrorConnectionTimeout": "Bağlantı zaman aşımına uğradı. Sunucu yavaş olabilir veya ulaşılamıyor olabilir.",
+  "mempoolErrorHostNotFound": "Bu sunucu bulunamıyor. Lütfen URL'yi kontrol edip tekrar deneyin.",
+  "mempoolErrorTorNotRunning": ".onion adresine ulaşılamıyor. Tor/Orbot'un çalıştığından emin olun ve tekrar deneyin.",
+  "mempoolErrorConnectionFailed": "Sunucuya bağlanılamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.",
+  "mempoolErrorNotMempoolServer": "Bu URL bir mempool sunucusu gibi görünmüyor. Lütfen adresi doğrulayın.",
+  "mempoolErrorServerUnavailable": "Sunucu kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "mempoolErrorServerError": "Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+  "mempoolErrorInvalidResponse": "Sunucu geçersiz bir yanıt döndürdü.",
+  "mempoolErrorSaveServerFailed": "Sunucu kaydedilemedi",
+  "mempoolErrorLoadFailed": "Mempool sunucu verileri yüklenemedi",
+  "mempoolErrorDeleteFailed": "Özel sunucu silinemedi",
+  "exchangeStatisticsBuySellRatioDesc": "Alım ve satımdan gelen toplam hacim yüzdesi",
+  "exchangeStatisticsBuyVolumeDesc": "Bitcoin satın almak için harcanan toplam miktar",
+  "exchangeStatisticsSellVolumeDesc": "Bitcoin satışından elde edilen toplam miktar",
+  "exchangeStatisticsBuyTradeCountDesc": "Bitcoin satın alma işlemi sayısı",
+  "exchangeStatisticsSellTradeCountDesc": "Bitcoin satış işlemi sayısı",
+  "exchangeStatisticsBuyAvgPriceDesc": "Satın alırken bitcoin başına ödenen ortalama fiyat",
+  "exchangeStatisticsSellAvgPriceDesc": "Satarken bitcoin başına alınan ortalama fiyat",
+  "exchangeStatisticsTotalVolumeDesc": "Fiat para birimlerinde birleştirilmiş alım ve satım hacimleri",
+  "receivePayjoinNoUtxos": "Etkinleştirmek için önce para alın.\nPayjoin kullanmak için UTXO'lar gereklidir.",
+  "receiveLiquidRiskDisclosureLabel": "Ödemeler Liquid L-BTC'ye dönüştürülecektir (BTC değil). Daha fazla bilgi edinin.",
+  "payViewReceipt": "Makbuzu görüntüle",
+  "paySinpeReceipt": "SINPE Makbuzu",
+  "transactionFilterWithdraw": "Çekim",
+  "transactionFilterPay": "Öde",
+  "transactionFilterFunding": "Fonlama",
+  "transactionFilterReward": "Ödül",
+  "transactionFilterRefund": "İade",
+  "transactionFilterBalanceAdjustment": "Düzeltme",
+  "transactionListLoadingFailed": "İşlemler yüklenemedi.",
+  "transactionLabelNetworkFees": "Ağ ücretleri",
+  "walletLiquidRiskDisclosureLabel": "Bu fonlar Liquid L-BTC'dir (BTC değil). Daha fazla bilgi edinin.",
+  "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk bildirimini aç",
+  "liquidRiskDisclosureTitle": "Anında Ödeme Cüzdanı Liquid Bitcoin Risk Bildirimi",
+  "liquidRiskDisclosureBody": "Anında Ödeme Cüzdanındaki fonlar \"gerçek\" Bitcoin değildir. Bunlar, \"yan zincir\" (sidechain) adı verilen ayrı bir defterde bulunan, Bitcoin ile desteklenmiş bir jeton olan Liquid Network Bitcoin'idir (L-BTC).\n\nHer Liquid Bitcoin, 15 şirketten oluşan bir federasyon tarafından yürütülen şeffaf bir sabitleme (peg) mekanizmasıyla 1:1 oranında gerçek Bitcoin ile desteklenir. Liquid Federasyonu'nun elinde bulundurduğu Bitcoin rezervleri tamamen denetlenebilir durumdadır ve herkes her bir Liquid Bitcoin'in gerçek bir Bitcoin ile desteklendiğini doğrulayabilir.\n\nParanızı Liquid Network üzerinde tutmak, geleneksel bir özel saklamalı (custodial) cüzdan veya borsa kullanmaktan çok daha güvenlidir. Ancak paranızı Anında Bitcoin Ödemeleri cüzdanında Liquid Bitcoin olarak tutmak, Güvenli Bitcoin Cüzdanında gerçek Bitcoin olarak tutmaktan çok daha az güvenlidir.\n\nLiquid Network ödemeleri, normal Bitcoin ödemelerinden daha hızlı, daha ucuz ve daha özeldir. Anında Ödeme Cüzdanındaki Liquid Bitcoin varlıkları üzerinde tam öz-saklama (self-custody) hakkına sahipsiniz ve ödeme gönderip almak için kimseden izin almanıza gerek yoktur.\n\nCüzdan yedeğinize erişimi güvence altına almaktan tamamen ve yalnızca siz sorumlusunuz; bu yedek olmadan hiç kimse Liquid Bitcoin varlıklarınıza erişimi geri yükleyemez.\n\nL-BTC'nin gerçek dünyadaki değeri, onları gerçek Bitcoin karşılığında bozdurabilme yeteneğinize bağlıdır; bu da Liquid Network üyesi takas sağlayıcılarına, bu da Liquid Network federasyonunun asla ele geçirilmemesine veya kapatılmamasına bağlıdır.\n\nBaşka bir deyişle, Liquid Network federasyon üyelerinin Liquid Bitcoin'inizi gerçek Bitcoin karşılığında bozdurmaya muktedir veya istekli olamaması durumunda, L-BTC jetonlarının değeri değersiz hale gelecektir.\n\n> Öneri\n> Anında Ödeme Cüzdanında yalnızca küçük miktarlar tutun. Birikimlerinizi Güvenli Bitcoin Cüzdanında veya içe aktarılmış bir donanım cüzdanında saklayın.\n\n## Anında Ödeme Cüzdanı nedir?\n\nAnında Ödeme Cüzdanı ile bir Lightning Network ödemesi aldığınız her seferinde, gönderenin fonları aslında 3. taraf bir takas sağlayıcısı tarafından alınır, Liquid Bitcoin'e dönüştürülür ve cüzdanınıza gönderilir.\n\nBu cüzdanla bir Lightning Network ödemesi gönderdiğiniz her seferinde, aslında 3. taraf bir takas sağlayıcısına bir Liquid Bitcoin ödemesi gönderiyorsunuzdur; bu sağlayıcı bunları Lightning Network üzerinde gerçek Bitcoin'e dönüştürür ve alıcıya bir Lightning Network ödemesi gönderir.\n\nBu takaslar tamamen öz-saklamalı (non-custodial) ve güvene dayanmayan (trustless) işlemlerdir; yani takas sağlayıcısının fonlarınızı çalmasının hiçbir yolu yoktur. Bull Bitcoin bu takas işlemlerinin yapılmasında yer almaz ve herhangi bir kişisel bilgi talep etmez veya saklamaz.\n\n## Bu cüzdanla ne yapmalıyım?\n\nAnında Ödeme Cüzdanı, Bitcoin ağ ücreti ödemeden günlük olarak Bitcoin ödemeleri alabilmeniz (veya Bitcoin satın alabilmeniz) ve Bitcoin ödemeleri gönderebilmeniz (veya Bitcoin satabilmeniz) için tasarlanmıştır.\n\nBir esnafsanız veya Bitcoin biriktiriyorsanız, 0,01 BTC'nin altındaki ödemeleri almak için bu cüzdanı kullanın ve 0,01 BTC'nin üzerine çıktığınızda bu Bitcoin'leri Güvenli Bitcoin Cüzdanına veya başka bir öz-saklamalı Bitcoin cüzdanına transfer edin.\n\nBitcoin'inizi harcamak istiyorsanız, Anında Ödeme Cüzdanına küçük bir miktar transfer edin ve giderlerinizi ödemek için kullanın. Anında Ödeme Cüzdanındaki fonlarınız tükendiğinde, cüzdanı yeniden doldurmanız yeterlidir.\n\n## Otomatik takas (auto-swap) nedir ve nasıl çalışır?\n\nOtomatik Transfer olarak da adlandırılan Otomatik Takas (auto-swap), Bull Bitcoin tarafından geliştirilen ve cüzdanınızdaki L-BTC miktarı belirlenen bir eşiğe ulaştığında Liquid Network Bitcoin'ini (L-BTC) otomatik olarak Bitcoin'e (BTC) dönüştüren bir özelliktir.\n\nOtomatik takas varsayılan olarak etkindir:\n\n- **Maksimum Anlık Cüzdan bakiyesi:** 0,01 BTC\n- **Otomatik takas sonrası hedef bakiye:** 0,005 BTC\n- **Minimum transfer miktarı:** 0,005 BTC\n\nBakiyeniz 0,01 BTC'ye ulaştığında, uygulamayı açar açmaz bir transfer başlatılır ve 0,005 BTC'yi aşan fonlar L-BTC'den BTC'ye dönüştürülür.\n\n### Örnek\n\n0,012 L-BTC'niz varsa ve otomatik takas etkinse, 0,007 L-BTC'lik bir transfer başlatılır; kalan L-BTC'niz 0,005 L-BTC olur ve BTC bakiyeniz 0,007 BTC artar.\n\n## Anında Bitcoin Cüzdanına L-BTC nasıl yatırır veya çekerim?\n\nCüzdanı \"gerçek\" Bitcoin ile fonlamak için \"Al\"a tıklayın ve \"Lightning Network\"ü seçin. L-BTC çekmek için \"Gönder\"e tıklayın ve bir Lightning faturası yapıştırın.\n\n## Yedekleme nasıl çalışır?\n\nAnında Bitcoin Cüzdanı, Güvenli Bitcoin Cüzdanı ile aynı yedekleme tohum kelimelerini kullanır. Her iki cüzdan için de tek bir yedeğe ihtiyacınız vardır.\n\n## Öz-saklamalı olmayan bir Lightning Network Cüzdanı yerine Anında Ödeme cüzdanını mı kullanmalıyım?\n\nPhoenix Wallet gibi öz-saklamalı bir Lightning Network cüzdanı kullanmak size daha yüksek düzeyde bir güvenlik sağlar. Lightning Network kanal yönetimiyle uğraşmanız gerekeceğinden, kullanımı daha az pratik ve daha zor olabilir.\n\nLightning kanallarının açılması ve kapatılması zincir üstü (on-chain) işlemler gerektirdiğinden ve muhtemelen Lightning hizmet sağlayıcılarına ücret ödemeniz gerekeceğinden, bazı durumlarda tamamen öz-saklamalı bir Lightning cüzdanı kullanmak daha maliyetli olabilir.\n\nTamamen öz-saklamalı, saf bir Lightning cüzdanı kullanmaya istekli ve muktedirseniz, Phoenix Wallet'ı denemenizi şiddetle tavsiye ederiz.\n\n## İşlem ücretleri nelerdir?\n\nAnında Ödeme Cüzdanına giren veya çıkan her ödeme iki Liquid Network işlemi gerektirir. Bunlar genellikle çok küçüktür ve yaklaşık 0,00000050 BTC (50 sat) civarında olmalıdır.\n\nGüvenli Bitcoin Cüzdanı ile Lightning Network ödemeleri alıyor veya gönderiyorsanız, her ödeme için iki zincir üstü Bitcoin işlemi ücreti ödemeniz gerekir; bu oldukça pahalı olabilir.\n\nAyrıca takas sağlayıcısı takas ücretleri de talep edebilir. Şu anda takas sağlayıcısı (Boltz) aşağıdaki ücretleri uygulamaktadır:\n\n- **Anında Ödeme Cüzdanında Lightning Network ödemesi almak:** %0,25\n- **Anında Ödeme Cüzdanından Lightning Network ödemesi göndermek:** %0,1\n- **Güvenli Bitcoin Cüzdanında Lightning Network ödemesi almak:** %0,5\n- **Güvenli Bitcoin Cüzdanından Lightning Network ödemesi göndermek:** %0,1",
+  "fundExchangeScamConsentError": "Onayınız kaydedilemedi. Lütfen tekrar deneyin.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Kolombiya",
+  "autoswapActiveCardTitle": "Autoswap aktif",
+  "autoswapWarningExplanationBold": "otomatik olarak",
+  "autoswapInfoConsentMessage": "Autoswap şu anda etkin, ancak siz onay verene kadar tetiklenmeyecek. Etkin kalmasını ister misiniz?",
+  "nfcNotAvailable": "Bu cihazda NFC desteklenmiyor",
+  "nfcDisabled": "NFC devre dışı. Ayarlardan etkinleştirin.",
+  "nfcInvalidData": "Desteklenen bir NFC verisi bulunamadı",
+  "nfcConnectionLost": "NFC bağlantısı kesildi. Cihazınızı NFC etiketine yakın tutun ve tekrar deneyin.",
+  "nfcWriteFailed": "NFC aktarımı başarısız oldu. Lütfen tekrar deneyin.",
+  "nfcError": "NFC hatası: {error}",
+  "deleteLogsTitle": "Günlükleri sil",
+  "logsDeletedMessage": "Günlükler silindi",
+  "sendSelfTransfer": "Kendine transfer",
+  "sendCoordinatingPayjoinTransaction": "Bir Payjoin işlemi koordine ediliyor.",
+  "sendErrorInvoiceExpired": "Bu faturanın süresi doldu. Alıcıdan yeni bir fatura isteyin.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Daha küçük ödemeler yapmak için Anında Ödemeleri fonlamayı düşünün.",
+  "psbtFlowSignViaNfc": "NFC ile imzala",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT'yi NFC ile göndermek için {deviceName} cihazınıza dokunun",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Talimatları",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Talimatları",
+  "psbtFlowColdcardQStep1": "Coldcard Q cihazınıza giriş yapın",
+  "psbtFlowColdcardQStep2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "psbtFlowColdcardQStep3": "Tercih ettiğiniz imzalama yöntemini seçin:",
+  "psbtFlowColdcardQStep4": "QR kodu için:",
+  "psbtFlowColdcardQStep5": "   - Coldcard Q'nuzda \"Scan any QR code\" seçeneğini seçin",
+  "psbtFlowColdcardQStep6": "   - Bull cüzdanında gösterilen QR kodunu tarayın",
+  "psbtFlowColdcardQStep7": "   - Taramada sorun yaşarsanız:",
+  "psbtFlowColdcardQStep8": "     - Cihazınızın ekran parlaklığını artırın",
+  "psbtFlowColdcardQStep9": "     - Kırmızı lazeri QR kodunun üzerinde yukarı aşağı hareket ettirin",
+  "psbtFlowColdcardQStep10": "     - Cihazınızı biraz geriye çekmeyi deneyin",
+  "psbtFlowColdcardQStep11": "NFC için:",
+  "psbtFlowColdcardQStep12": "   - Coldcard Q'nuzda \"Ready to Sign\" seçeneğini seçin, ardından NFC düğmesine dokunun",
+  "psbtFlowColdcardQStep13": "   - Telefonunuzu Coldcard Q'ya dokundurun",
+  "psbtFlowColdcardQStep14": "   - PSBT'nin aktarılmasını bekleyin",
+  "psbtFlowColdcardQStep15": "İşlem Coldcard Q'nuza aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
+  "psbtFlowColdcardQStep16": "İşlemi Coldcard Q'nuzda imzalamak için düğmelere tıklayın.",
+  "psbtFlowColdcardQStep17": "Coldcard Q daha sonra imzalanmış işlemin QR kodunu gösterecek veya NFC aktarımını hazırlayacaktır.",
+  "psbtFlowColdcardQStep18": "QR ile imzaladıysanız, Bull Bitcoin cüzdanında \"Ben yaptım\"a tıklayın.",
+  "psbtFlowColdcardQStep19": "Bull Bitcoin cüzdanı, imzalanmış işlemin QR kodunu taramanızı veya NFC ile almanızı isteyecektir.",
+  "psbtFlowColdcardQStep20": "   - QR için: Coldcard Q'daki QR kodunu tarayın",
+  "psbtFlowColdcardQStep21": "   - NFC için: telefonunuzu Coldcard Q'ya dokundurun",
+  "psbtFlowColdcardQStep22": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
+  "psbtFlowColdcardQStep23": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
+  "psbtFlowColdcardMk4Step1": "Coldcard Mk4 cihazınıza giriş yapın",
+  "psbtFlowColdcardMk4Step2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "psbtFlowColdcardMk4Step3": "Coldcard Mk4'ünüzde \"Ready to Sign\" seçeneğini seçin, ardından 3 numaralı düğmeye dokunun",
+  "psbtFlowColdcardMk4Step4": "Telefonunuzu Coldcard Mk4'e dokundurun",
+  "psbtFlowColdcardMk4Step5": "PSBT'nin aktarılmasını bekleyin",
+  "psbtFlowColdcardMk4Step6": "İşlem Coldcard Mk4'ünüze aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
+  "psbtFlowColdcardMk4Step7": "İşlemi Coldcard Mk4'ünüzde imzalamak için düğmelere tıklayın.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 daha sonra imzalanmış işlemi NFC aktarımı için hazırlayacaktır.",
+  "psbtFlowColdcardMk4Step9": "Bull Bitcoin cüzdanında, yayın ekranında NFC'ye dokunun.",
+  "psbtFlowColdcardMk4Step10": "İmzalanmış işlemi almak için telefonunuzu Coldcard Mk4'e dokundurun.",
+  "psbtFlowColdcardMk4Step11": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
+  "psbtFlowColdcardMk4Step12": "Bull Bitcoin cüzdanında işlem detaylarını gözden geçirin.",
+  "psbtFlowColdcardMk4Step13": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "İmzalanmış işlemi NFC ile almak için Coldcard'ınıza dokunun",
+  "importColdcardInvalidWalletData": "Geçersiz Coldcard cüzdan verisi",
+  "importColdcardConnectTitle": "{deviceName} Bağlayın",
+  "importColdcardConnectDescription": "{deviceName} cihazınızdan cüzdan tanımlayıcısını içe aktarın",
+  "importColdcardScanNfcSheetTitle": "Cüzdan tanımlayıcısını NFC ile içe aktarmak için {deviceName} cihazınıza dokunun",
+  "importColdcardQInstructionsTitle": "Coldcard Q Talimatları",
+  "importColdcardQStep1": "Coldcard Q cihazınıza giriş yapın",
+  "importColdcardQStep2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "importColdcardQStep3": "Gelişmiş/ayarlar menüsünü seçin",
+  "importColdcardQStep4": "\"export wallet\" seçeneğine tıklayın",
+  "importColdcardQStep5": "Dışa aktarma türü olarak \"descriptor\" seçin",
+  "importColdcardQStep6": "İlk ekranda \"Enter\" tuşuna basın",
+  "importColdcardQStep7": "İkinci ekranda \"Enter\" tuşuna basın",
+  "importColdcardQStep8": "Adres türünüzü seçin (emin değilseniz Segwit kullanın)",
+  "importColdcardQStep9": "QR için, cihazdaki QR kodu düğmesine tıklayın. Cihazda size bir QR kodu gösterecektir",
+  "importColdcardQStep10": "NFC için, cihazdaki NFC düğmesine tıklayın",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" düğmesine tıklayın",
+  "importColdcardQStep12": "Cihazınızda gördüğünüz QR kodunu tarayın veya telefonun NFC'sini Coldcard'ın NFC'sinin üzerine koyun",
+  "importColdcardQStep13": "Bu kadar!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Talimatları",
+  "importColdcardMk4Step1": "Coldcard Mk4 cihazınıza giriş yapın",
+  "importColdcardMk4Step2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "importColdcardMk4Step3": "Gelişmiş/ayarlar menüsünü seçin",
+  "importColdcardMk4Step4": "\"export wallet\" seçeneğine tıklayın",
+  "importColdcardMk4Step5": "Dışa aktarma türü olarak \"descriptor\" seçin",
+  "importColdcardMk4Step6": "İlk ekranda \"Enter\" tuşuna basın",
+  "importColdcardMk4Step7": "İkinci ekranda \"Enter\" tuşuna basın",
+  "importColdcardMk4Step8": "Adres türünüzü seçin (emin değilseniz Segwit kullanın)",
+  "importColdcardMk4Step9": "Coldcard NFC'yi başlatmak için 3 numarasına tıklayın",
+  "importColdcardMk4Step10": "\"Scan NFC\" düğmesine tıklayın",
+  "importColdcardMk4Step11": "Telefonun NFC'sini Coldcard'ın NFC'sinin üzerine koyun",
+  "importColdcardMk4Step12": "Bu kadar!",
+  "fundExchangeCopDailyLimitWarning": "Günlük işlem limitinizi aşarsanız işlem başarısız olur. Müşteri desteğiyle iletişime geçmeniz gerekecektir.",
+  "fundExchangeCopSenderName": "Gönderen Adı",
+  "fundExchangeCopIssuingBank": "Banka",
+  "fundExchangeCopSelectBankError": "Lütfen bir banka seçin",
+  "fundExchangeCopAmount": "Miktar",
+  "fundExchangeCopEnterAmountError": "Lütfen bir miktar girin",
+  "fundExchangeCopValidAmountError": "Lütfen geçerli bir miktar girin",
+  "fundExchangeCopGeneratePaymentLink": "Ödeme Bağlantısı Oluştur",
+  "fundExchangeCopRedirectMessage": "Ödemeyi yapmak için harici bir sayfaya yönlendirileceksiniz.",
+  "fundExchangeCopOpenPaymentLink": "Ödeme Bağlantısını Aç",
+  "fundExchangeCopFailedToOpenLink": "Ödeme bağlantısı açılamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
+  "priceChartFailedToLoad": "Fiyat geçmişi yüklenemedi",
+  "priceFailedToLoad": "Fiyat yüklenemedi",
+  "statusScreenTryAgain": "Tekrar Dene",
+  "statusScreenContinue": "Devam Et",
+  "noteVisibleToSenderNotice": "Bu not, QR kodunuzun veya faturanızın alıcısı tarafından görülebilecektir.",
+  "viewerAddressTab": "Adres",
+  "viewerPaymentUriTab": "Ödeme URI'si",
+  "settingsErrorReportingTitle": "Hata bildirimi",
+  "errorReportingProgramTitle": "Hata Bildirimi Programı",
+  "errorReportingProgramDescriptionP1": "Hata bildirimi programımıza katkıda bulunarak Bull'u geliştirmemize yardımcı olun.",
+  "errorReportingProgramDescriptionP2": "Bir şeyler bozulduğunda Bull Bitcoin anonimleştirilmiş hata raporları gönderir.",
+  "errorReportingProgramDescriptionP3": "Bu, her bir hatanın kaç kullanıcıyı etkilediğini görmemizi ve buna göre düzeltmelere öncelik vermemizi sağlar; bu olmadan etkiyi ölçmenin bir yolu yoktur.",
+  "errorReportingProgramDescriptionP4": "Raporlar yalnızca Bull'un sunucusuna gider, asla üçüncü taraflara gönderilmez.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin açık kaynaklıdır, bu yüzden nelerin gönderildiğini doğrulayabilirsiniz.",
+  "errorReportingAcceptButton": "Kabul Et",
+  "errorReportingCancelButton": "İptal",
+  "errorReportingRestartSnackbar": "Bu değişikliği uygulamak için uygulamayı yeniden başlatın",
+  "backupWarningTitle": "CÜZDANINIZI ŞİMDİ YEDEKLEYİN",
+  "backupWarningBackupNow": "EVET",
+  "backupWarningBackupLater": "HAYIR, RİSKİ ANLIYORUM",
+  "transactionSwapOpenWithin24h": "Takasınızı tamamlamak için uygulamayı 24 saat içinde açın.",
+  "recipientsScreenTitle": "Alıcı Seç",
+  "recipientsScreenSubtitle": "Kime ödeme yapıyorsunuz?",
+  "recipientsTabNew": "Yeni Alıcı",
+  "recipientsTabList": "Fiat Alıcılarım",
+  "recipientsPayoutMethod": "Ödeme yöntemi",
+  "recipientsFilterByJurisdiction": "Ülkeye Göre Filtrele:",
+  "recipientsListEmpty": "Alıcı bulunamadı.",
+  "recipientsContinue": "Devam Et",
+  "recipientsJurisdictionAll": "Tüm Ülkeler",
+  "recipientsJurisdictionCanada": "🇨🇦 Kanada",
+  "recipientsJurisdictionEurope": "🇪🇺 Avrupa (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Meksika",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Kosta Rika",
+  "recipientsJurisdictionArgentina": "🇦🇷 Arjantin",
+  "recipientsJurisdictionColombia": "🇨🇴 Kolombiya",
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeBillPayment": "Fatura Ödemesi",
+  "recipientsTypeBankTransfer": "Banka Transferi",
+  "recipientsTypeSepa": "SEPA Transferi",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Kart",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Arjantin",
+  "recipientsTypeBankAccountCo": "Banka Hesabı (COP)",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "E-posta",
+  "recipientsInfoPayee": "Alıcı",
+  "recipientsInfoAccount": "Hesap",
+  "recipientsInfoPhone": "Telefon",
+  "recipientsInfoCard": "Kart",
+  "recipientsInfoLabel": "Etiket",
+  "recipientsValidationFieldRequired": "Bu alan boş bırakılamaz",
+  "recipientsLabelOptional": "Etiket (isteğe bağlı)",
+  "recipientsLabelHint": "Bu alıcı için bir etiket girin",
+  "recipientsFieldName": "Ad",
+  "recipientsFieldNameHint": "Alıcı adını girin",
+  "recipientsFieldRecipientNameLabel": "Alıcının adı",
+  "recipientsFieldPhoneNumber": "Telefon Numarası",
+  "recipientsFieldPhoneNumberHint": "Telefon numarasını girin",
+  "recipientsFieldOwnerName": "Hesap Sahibinin Adı",
+  "recipientsFieldOwnerNameHint": "Hesap sahibinin adını girin",
+  "recipientsAccountOwnerQuestion": "Bu hesap kime ait?",
+  "recipientsAccountOwnerMine": "Bu benim hesabım",
+  "recipientsAccountOwnerSomeoneElse": "Bu başka birinin hesabı",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN girin",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE numarasını girin",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU numarasını girin",
+  "recipientsFieldBankInstitution": "Banka Kurumu",
+  "recipientsFieldBankInstitutionPlaceholder": "Banka Kurumu Seçin",
+  "recipientsValidationBankInstitution": "Lütfen bir banka kurumu seçin",
+  "recipientsFieldAccountType": "Hesap Türü",
+  "recipientsAccountTypeSavings": "Tasarruf",
+  "recipientsAccountTypeChecking": "Vadesiz",
+  "recipientsFieldBankAccountNumber": "Banka Hesap Numarası",
+  "recipientsFieldBankAccountNumberHint": "Banka hesap numarasını girin",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Pasaport",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Banka Kartı Numarası",
+  "recipientsFieldDebitCardHint": "Banka kartı numarasını girin",
+  "recipientsFieldOwnerNameSinpeHint": "Hesap sahibinin adı burada görünecek",
+  "recipientsValidationSinpeOwner": "Lütfen telefon numarasını doğrulayın",
+  "recipientsFieldEmailAddress": "E-posta Adresi",
+  "recipientsFieldEmailAddressHint": "E-posta adresini girin",
+  "recipientsFieldSecurityQuestion": "Güvenlik Sorusu",
+  "recipientsFieldSecurityQuestionHint": "Güvenlik sorusunu girin (10-40 karakter)",
+  "recipientsFieldSecurityAnswer": "Güvenlik Cevabı",
+  "recipientsFieldSecurityAnswerHint": "Güvenlik cevabını girin",
+  "recipientsValidationSecurityQuestionMin": "Güvenlik sorusu en az 10 karakter olmalıdır",
+  "recipientsCharCounter": "{count}/40 karakter",
+  "recipientsFieldInstitutionCode": "Kurum Kodu",
+  "recipientsFieldInstitutionCodeHint": "Kurum kodunu girin",
+  "recipientsFieldInstitutionNumber": "Kurum Numarası",
+  "recipientsFieldInstitutionNumberHint": "Kurum numarasını girin",
+  "recipientsFieldTransitNumber": "Şube Numarası",
+  "recipientsFieldTransitNumberHint": "Şube numarasını girin",
+  "recipientsFieldAccountNumber": "Hesap Numarası",
+  "recipientsFieldAccountNumberHint": "Hesap numarasını girin",
+  "recipientsFieldDefaultComment": "Varsayılan Açıklama (isteğe bağlı)",
+  "recipientsFieldDefaultCommentHint": "Varsayılan açıklamayı girin",
+  "recipientsFieldCorporateAccount": "Kurumsal hesap",
+  "recipientsFieldFirstName": "Ad",
+  "recipientsFieldFirstNameHint": "Adı girin",
+  "recipientsFieldLastName": "Soyad",
+  "recipientsFieldLastNameHint": "Soyadı girin",
+  "recipientsFieldCorporateName": "Şirket Adı",
+  "recipientsFieldCorporateNameHint": "Şirket adını girin",
+  "recipientsFieldBillerName": "Fatura Kuruluşu Adı",
+  "recipientsFieldBillerNameHint": "Bir fatura kuruluşu arayın ve seçin",
+  "recipientsValidationBillerSearchMin": "Arama yapmak için 3 veya daha fazla karakter girin",
+  "recipientsValidationBillerSelect": "Lütfen listeden bir fatura kuruluşu seçin",
+  "recipientsFieldPayeeAccountNumber": "Alıcı Hesap Numarası",
+  "exchangeFileUploadStatusRejectedBadge": "Reddedildi",
+  "exchangeFileUploadTapToReupload": "Yeniden yüklemek için dokunun",
+  "exchangeSupportChatAttachmentImage": "Görsel",
+  "exchangeSupportChatAttachmentUnknownFile": "Bilinmeyen dosya",
+  "exchangeSupportChatPermissionDenied": "İzin reddedildi.",
+  "exchangeSupportChatPermissionDeniedSettings": "İzin reddedildi. Lütfen Ayarlar'dan fotoğraf kitaplığı erişimine izin verin.",
+  "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
+  "logsViewerDeleteTitle": "Günlükleri sil",
+  "logsViewerDeleteConfirmation": "Tüm günlükleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "logsViewerDeleteButton": "Sil",
+  "logsViewerCancelButton": "İptal",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "Beklenmeyen bir hata oluştu",
+  "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
+  "sendSubSatVbyteWarning": "1 sat/vB altındaki işlemlerin onaylanması daha uzun sürebilir ve tüm düğümlere yayılmayabilir.",
+  "sendBelowMinFeeRateError": "Ücret oranı en az 0,1 sat/vB olmalıdır.",
+  "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova'nıza bağlanmak için Bluetooth izni gereklidir.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth kullanılamıyor. Bluetooth'u açın ve tekrar deneyin.",
+  "bitboxErrorNoBleDevicesFound": "Yakında BitBox02 Nova bulunamadı. Bluetooth'u kontrol edip tekrar deneyin.",
+  "bitboxErrorMultipleBleDevicesFound": "Birden fazla BitBox02 Nova cihazı bulundu. Yakında yalnızca bir tane bırakın ve tekrar deneyin.",
+  "bitboxErrorOperationFailed": "BitBox işlemi başarısız oldu. Lütfen tekrar deneyin.",
+  "bitboxScreenConnectSubtextBluetooth": "BitBox02 Nova'nızın kilidinin açık ve Bluetooth'un etkin olduğundan emin olun.",
+  "bitboxScreenScanningSubtextBluetooth": "Yakınlarda BitBox02 Nova'nız aranıyor...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Sorun Giderme",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Cihazınız uygulamayla hâlâ bağlanmıyorsa, şunları deneyin:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Bluetooth'un açık ve bu uygulama için izinli olduğundan emin olun.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "BitBox02 Nova'nızda Bluetooth'un etkin olduğundan emin olun.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova'nızı yeniden başlatın ve tekrar bağlanmayı deneyin.",
+  "sendErrorInsufficientBalanceFrozenHint": "Yeterli harcanabilir bakiye yok — {amount} donduruldu. Kullanmak için Coin'leri yönet bölümünden dondurmayı kaldırın.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }
