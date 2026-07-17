@@ -21,6 +21,9 @@ Read:
 | `get KEY [--locale L]` | Print the description and the value across locales |
 | `check KEY` | Which locales have KEY, which are missing it |
 | `missing [--locale L] [--list]` | Keys in the `en` template absent from a locale |
+| `missing-detail LOCALE` | JSON `{key: {en, description, placeholders}}` for every key missing in LOCALE — feed to a translator, then to `fill` |
+| `audit-identical [--locale L] [--list]` | Values byte-identical to the `en` template — a likely untranslated/copy-pasted string (brand names, acronyms, or shared official document names are expected false positives) |
+| `audit-placeholders [--locale L] [--list]` | Values whose top-level `{placeholder}` tokens don't match the `en` template's — a near-certain bug, since a missing placeholder silently drops data at render time |
 | `dead [--list]` | Template keys with no apparent reference in `lib/` or `test/` (heuristic) |
 | `validate` | Parse every file and confirm the layout invariant |
 
@@ -30,6 +33,7 @@ Write (other keys left untouched):
 | --- | --- |
 | `add KEY --translations '{"en":"...","fr":"..."}' [--description ...] [--placeholders '{"count":{"type":"int"}}']` | Add a new key. `en` is required; the template also gets the metadata block |
 | `set KEY LOCALE VALUE` | Set or update one locale's value (KEY must already be in the template) |
+| `fill LOCALE --translations-file PATH [--overwrite]` | Bulk-add/update many key/value translations for one locale in a single pass (PATH is `{"key":"value",...}`, typically produced by translating the output of `missing-detail`). Existing keys are left untouched unless `--overwrite` |
 | `set-meta KEY [--description ...] [--placeholders '{...}']` | Update an existing key's template metadata in place, without touching translations |
 | `rename OLD NEW` | Rename a key across every locale in place, preserving values + metadata |
 | `delete KEY` | Remove KEY and its `@KEY` metadata from every file |
