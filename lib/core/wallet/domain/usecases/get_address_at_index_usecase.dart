@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 class GetAddressAtIndexUsecase {
   final WalletAddressRepository _walletAddressRepository;
 
-  GetAddressAtIndexUsecase({
-    required this._walletAddressRepository,
-  });
+  GetAddressAtIndexUsecase({required this._walletAddressRepository});
 
   Future<WalletAddress> execute({
     required String walletId,

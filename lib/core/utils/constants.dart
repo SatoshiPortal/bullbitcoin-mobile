@@ -15,6 +15,7 @@ class SettingsConstants {
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
+  static const btcMapUrl = 'https://btcmap.org/map';
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
@@ -28,6 +29,10 @@ class ConversionConstants {
 class SecureStorageKeyPrefixConstants {
   static const seed = 'seed_';
   static const swap = 'swap_';
+  static const swapMasterKey = 'swap_master_key_';
+  // Fresh key (the old `swap_key_index_` was seeded high by a now-removed bug);
+  // this resets the per-network swap index counter to 0.
+  static const swapKeyIndex = 'swap_master_key_index_';
 }
 
 class HiveBoxNameConstants {

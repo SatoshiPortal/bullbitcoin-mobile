@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
   "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
   "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
@@ -523,6 +524,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Tento server již existuje",
+  "electrumServerUnreachable": "Server je nedostupný. Zkontrolujte adresu a zkuste to znovu.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -892,6 +894,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "Čeština",
+  "appUnlockPinCheckError": "Nelze načíst nastavení zabezpečení. Restartujte prosím aplikaci.",
+  "appUnlockPinVerifyError": "Nelze ověřit váš PIN. Zkuste to prosím znovu.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -1464,10 +1468,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "Chyba došlo při pokusu o nahrazení transakce",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "Zeptají se, aby poslal Bitcoin na jinou platformu",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1733,15 +1733,6 @@
   "payPasteInvoice": "Vložte fakturu",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
-  },
-  "labelErrorUnexpected": "Chybná chyba: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
   },
   "arkStatusSettled": "Čeština",
   "@arkStatusSettled": {
@@ -3691,14 +3682,9 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Vypnuto načíst servery{reason}",
+  "electrumLoadFailedError": "Vypnuto načíst servery",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Adresa pro ověření:",
   "@ledgerVerifyAddressLabel": {
@@ -4201,6 +4187,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "Nepodařilo se načíst seedy. Zkuste to prosím znovu.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Nepodařilo se smazat seed. Zkuste to prosím znovu.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "Kupujete {amount} každý {frequency} prostřednictvím {network}, pokud máte prostředky ve vašem účtu.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4500,10 +4494,6 @@
   "payDefaultCommentHint": "Zadejte výchozí komentář",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "Čeština",
   "@copyDialogButton": {
@@ -5582,15 +5572,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "Tento typ {type} není podporován",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -6580,14 +6561,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Vymazat vlastní server{reason}",
+  "electrumDeleteFailedError": "Vymazat vlastní server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap poplatek",
   "@receiveBoltzSwapFee": {
@@ -6888,10 +6864,6 @@
   "sendAbsoluteFees": "Absolutní poplatky",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "Původní transakce byla potvrzena",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "Musíte zvýšit poplatek minimálně 1 sat/vbyte ve srovnání s původní transakcí",
   "@rbfErrorFeeTooLow": {
@@ -7198,7 +7170,7 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Nahrát {count} {count, plural, =1{soubor} other{souborů}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -7612,14 +7584,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru{reason}",
+  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Okamžité platby",
   "@globalDefaultLiquidWalletLabel": {
@@ -7708,7 +7675,7 @@
   "exportTransactionsButton": "Exportovat CSV",
   "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
   "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Nepodařilo se exportovat transakce.",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -9012,14 +8979,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Přešel přidat vlastní server{reason}",
+  "electrumAddFailedError": "Přešel přidat vlastní server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Převod poplatků",
   "@transactionDetailLabelTransferFees": {
@@ -9362,15 +9324,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Privátní platba",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9567,6 +9520,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -10658,6 +10612,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Financování není k dispozici",
+  "fundExchangeRestrictedMessage": "Financování není pro váš účet k dispozici. Pro více informací kontaktujte podporu.",
   "fundExchangeWarningTitle": "Podívejte se na podvodníky",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -10731,8 +10687,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "hodiny",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "hodiny",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "Každý měsíc",
@@ -10832,7 +10788,7 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
+  "arkSettleTransactionCount": "Vypořádat {count} {transaction}",
   "@arkSettleTransactionCount": {
     "description": "Button label showing number of unsettled transactions",
     "placeholders": {
@@ -11719,7 +11675,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
-  "broadcastSignedTxBroadcastError": "Nepodařilo se odvysílat transakci",
+  "broadcastSignedTxBroadcastError": "Vaši transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "importWatchOnlyErrorNoWalletSelected": "Nejprve vložte nebo naskenujte veřejný klíč nebo deskriptor.",
+  "importWatchOnlyErrorLabelRequired": "Před importem pojmenujte svou peněženku.",
+  "importWatchOnlyErrorInvalidFormat": "Tohle nevypadá jako platný veřejný klíč nebo deskriptor. Zkontrolujte, co jste vložili.",
+  "importWatchOnlyErrorImportFailed": "Tuto peněženku pouze pro sledování se nepodařilo importovat. Zkontrolujte údaje a zkuste to znovu.",
+  "broadcastSignedTxErrorInvalidTransaction": "Tohle nevypadá jako platná podepsaná transakce. Ujistěte se, že jste vložili celý PSBT nebo celou transakci.",
+  "broadcastSignedTxErrorInvalidPushTx": "Z tohoto štítku se nepodařilo načíst transakci. Zkuste skenování znovu.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12462,7 +12424,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Tímto odešlete žádost o smazání účtu našemu týmu podpory. Váš účet bude smazán do 5 pracovních dnů.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12474,11 +12436,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Žádost o smazání účtu odeslána",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
@@ -12600,7 +12562,7 @@
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "coreScreensResolvingInputs": "Načítání vstupů transakce...",
   "coreScreensFeeRateLabel": "Sazba poplatku",
@@ -12610,7 +12572,6 @@
   "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
   "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
   "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
-  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
   "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
   "addressViewerTitle": "Adresa",
   "viewerTapToCopy": "Klepněte pro kopírování",
@@ -12633,6 +12594,7 @@
   "recipientsPayoutMethod": "Způsob platby",
   "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
   "recipientsListEmpty": "Nenalezeni žádní příjemci.",
+  "recipientsListLoadError": "Příjemce se nepodařilo načíst. Zatažením dolů to zkuste znovu.",
   "recipientsContinue": "Pokračovat",
   "recipientsJurisdictionAll": "Všechny jurisdikce",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -12691,7 +12653,7 @@
   "recipientsFieldBankAccountNumberHint": "Zadejte číslo bankovního účtu",
   "recipientsCopDocCc": "Cédula de Ciudadanía",
   "recipientsCopDocCe": "Cédula de Extranjería",
-  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocNit": "Daňové identifikační číslo (NIT)",
   "recipientsCopDocPassport": "Pas",
   "recipientsCopDocTi": "Tarjeta de Identidad",
   "recipientsCopDocRegistroCivil": "Registro Civil",
@@ -12784,106 +12746,305 @@
   "onboardingAdvancedOptionsDone": "Hotovo",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
+  "pinCodeSaveError": "PIN nelze uložit. Zkuste to prosím znovu.",
+  "pinCodeDeleteError": "PIN nelze smazat. Zkuste to prosím znovu.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
+  "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
+  "mempoolErrorInvalidUrl": "Neplatná adresa serveru. Zadejte platnou doménu nebo IP adresu.",
+  "labelErrorUnexpected": "Chybná chyba: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "Tento typ {type} není podporován",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "hodiny",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
   "walletButtonCoins": "Spravovat mince",
-  "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
   "coinsTitle": "Mince",
-  "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
   "coinsSummaryCoinsCount": "{count, plural, one{1 mince} few{{count} mince} many{{count} mince} other{{count} mincí}}",
-  "@coinsSummaryCoinsCount": {"description": "Coin count in the summary bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFrozen": "Zmrazené",
-  "@coinsFrozen": {"description": "Label for the frozen amount stat and frozen pill"},
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
   "coinsSpendable": "K utracení",
-  "@coinsSpendable": {"description": "Label for the spendable amount sub-stat"},
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
   "coinsNoneFrozen": "Žádné zmrazené",
-  "@coinsNoneFrozen": {"description": "Sub-text shown in the frozen stat when nothing is frozen"},
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
   "coinsSortFilter": "Řazení a filtr",
-  "@coinsSortFilter": {"description": "Label for the sort & filter sheet button"},
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
   "coinsShownOf": "zobrazeno {visible} z {total}",
-  "@coinsShownOf": {"description": "Result count shown when the list is filtered", "placeholders": {"visible": {"type": "int"}, "total": {"type": "int"}}},
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnspentOutputsCount": "{count, plural, one{1 neutracený výstup} few{{count} neutracené výstupy} many{{count} neutraceného výstupu} other{{count} neutracených výstupů}}",
-  "@coinsUnspentOutputsCount": {"description": "Result count shown when the list is unfiltered", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSync": "Synchronizovat",
-  "@coinsSync": {"description": "Label for the manual sync button on the Coins screen"},
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
   "coinsClearAll": "Vymazat vše",
-  "@coinsClearAll": {"description": "Label for the clear-all-filters action"},
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
   "coinsSortAmountDesc": "Částka: od nejvyšší",
-  "@coinsSortAmountDesc": {"description": "Sort option: amount descending"},
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
   "coinsSortAmountAsc": "Částka: od nejnižší",
-  "@coinsSortAmountAsc": {"description": "Sort option: amount ascending"},
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
   "coinsSortDateNew": "Datum: nejnovější",
-  "@coinsSortDateNew": {"description": "Sort option: newest first"},
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
   "coinsSortDateOld": "Datum: nejstarší",
-  "@coinsSortDateOld": {"description": "Sort option: oldest first"},
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
   "coinsKeychain": "Klíčenka",
-  "@coinsKeychain": {"description": "Label for the keychain filter segment"},
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
   "coinsKeychainAll": "Vše",
-  "@coinsKeychainAll": {"description": "Keychain filter option: all"},
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
   "coinsKeychainReceive": "Příjem",
-  "@coinsKeychainReceive": {"description": "Keychain filter / badge: receive (external) keychain"},
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
   "coinsKeychainChange": "Výdaj",
-  "@coinsKeychainChange": {"description": "Keychain filter / badge: change (internal) keychain"},
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
   "coinsFrozenStatus": "Stav zmrazení",
-  "@coinsFrozenStatus": {"description": "Label for the frozen-status filter segment"},
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
   "coinsFrozenStatusAll": "Vše",
-  "@coinsFrozenStatusAll": {"description": "Frozen-status filter option: all"},
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
   "coinsFrozenStatusFrozen": "Zmrazené",
-  "@coinsFrozenStatusFrozen": {"description": "Frozen-status filter option: frozen only"},
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
   "coinsFrozenStatusUnfrozen": "Nezmrazené",
-  "@coinsFrozenStatusUnfrozen": {"description": "Frozen-status filter option: unfrozen only"},
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
   "coinsLabels": "Štítky",
-  "@coinsLabels": {"description": "Label for the labels filter section"},
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
   "coinsReset": "Obnovit",
-  "@coinsReset": {"description": "Reset filters button in the sort & filter sheet"},
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
   "coinsApply": "Použít",
-  "@coinsApply": {"description": "Apply filters button in the sort & filter sheet"},
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
   "coinsSelectedCount": "{count, plural, one{1 vybraná} few{{count} vybrané} many{{count} vybrané} other{{count} vybraných}}",
-  "@coinsSelectedCount": {"description": "Selection count in the selection app bar / action bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSelectAll": "Vybrat vše",
-  "@coinsSelectAll": {"description": "Selects all unfrozen visible coins"},
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
   "coinsFreeze": "Zmrazit",
-  "@coinsFreeze": {"description": "Freeze action label"},
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
   "coinsUnfreeze": "Rozmrazit",
-  "@coinsUnfreeze": {"description": "Unfreeze action label"},
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
   "coinsUndo": "Zpět",
-  "@coinsUndo": {"description": "Undo action on the unfreeze toast"},
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
   "coinsFreezeConfirmTitle": "{count, plural, one{Zmrazit 1 minci?} few{Zmrazit {count} mince?} many{Zmrazit {count} mince?} other{Zmrazit {count} mincí?}}",
-  "@coinsFreezeConfirmTitle": {"description": "Title of the freeze confirmation dialog", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFreezeConfirmBody": "Zmrazené mince zůstávají v peněžence, ale jsou vyloučeny z utrácení, dokud je nerozmrazíte.",
-  "@coinsFreezeConfirmBody": {"description": "Body of the freeze confirmation dialog"},
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
   "coinsFreezeZeroWarning": "Zmrazením těchto mincí zůstanete bez zůstatku k utracení.",
-  "@coinsFreezeZeroWarning": {"description": "Warning shown when freezing would drop spendable balance to zero"},
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
   "coinsFrozenToast": "{count, plural, one{1 mince zmrazena · vyloučena z utrácení} few{{count} mince zmrazeny · vyloučeny z utrácení} many{{count} mince zmrazeno · vyloučeno z utrácení} other{{count} mincí zmrazeno · vyloučeno z utrácení}}",
-  "@coinsFrozenToast": {"description": "Toast shown after freezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnfrozenToast": "{count, plural, one{1 mince rozmrazena} few{{count} mince rozmrazeny} many{{count} mince rozmrazeno} other{{count} mincí rozmrazeno}}",
-  "@coinsUnfrozenToast": {"description": "Toast shown after unfreezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsConfsCount": "{count, plural, one{1 potvrzení} few{{count} potvrzení} many{{count} potvrzení} other{{count} potvrzení}}",
-  "@coinsConfsCount": {"description": "Confirmation count pill", "placeholders": {"count": {"type": "int"}}},
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsPending": "Čeká se",
-  "@coinsPending": {"description": "Confirmation pill text for an unconfirmed (0-conf) coin"},
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
   "coinsEmptyTitle": "Zatím žádné mince",
-  "@coinsEmptyTitle": {"description": "Empty-state title when the wallet has no UTXOs"},
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
   "coinsEmptyBody": "Mince se zde zobrazí, jakmile přijmete bitcoin.",
-  "@coinsEmptyBody": {"description": "Empty-state body when the wallet has no UTXOs"},
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
   "coinsFilteredEmptyTitle": "Žádné odpovídající mince",
-  "@coinsFilteredEmptyTitle": {"description": "Title shown when filters exclude all coins"},
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
   "coinsClearFilters": "Vymazat filtry",
-  "@coinsClearFilters": {"description": "Button to clear filters from the filtered-empty state"},
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
   "coinsErrorRetry": "Zkusit znovu",
-  "@coinsErrorRetry": {"description": "Retry button on the Coins error state"},
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
   "coinsSwipeHint": "Přejetím mince ji zmrazíte · dlouhým stiskem vyberete",
-  "@coinsSwipeHint": {"description": "Footer hint shown when not selecting"},
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
   "coinsErrorLoadFailed": "Nepodařilo se načíst vaše mince. Obnovte tažením dolů a zkuste to znovu.",
-  "@coinsErrorLoadFailed": {"description": "Error message when loading UTXOs fails"},
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
   "coinsErrorFreezeFailed": "Nepodařilo se zmrazit vybrané mince. Zkuste to prosím znovu.",
-  "@coinsErrorFreezeFailed": {"description": "Error message when freezing fails"},
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
   "coinsErrorUnfreezeFailed": "Nepodařilo se rozmrazit vybrané mince. Zkuste to prosím znovu.",
-  "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
   "coinsErrorUnexpected": "Něco se pokazilo. Zkuste to prosím znovu.",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
   "walletCoinsEntryUtxoCount": "{count, plural, one{1 UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "walletCoinsEntryFrozen": "{amount} zmrazeno",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "Filtrovat podle data",
   "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
   "logsViewerClearFilter": "Vymazat filtr",
@@ -12891,5 +13052,212 @@
   "logsShareOptionShare": "Sdílet",
   "logsShareOptionExport": "Exportovat",
   "logsExportedMessage": "Záznamy byly úspěšně exportovány",
-  "logsExportFailedMessage": "Export záznamů se nezdařil"
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "coreSwapsStatusRefunded": "Vráceno",
+  "swapRestoreTitle": "Obnovení swapu",
+  "swapRestoreActionable": "{count, plural, =0{Žádné swapy k obnovení} =1{Můžete se pokusit obnovit 1 swap. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} swapů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
+  "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
+  "swapRestoreRecoverableSection": "Obnovitelné",
+  "swapRestoreAllSection": "Všechny swapy",
+  "swapRestoreFailed": "Swapy se nepodařilo obnovit",
+  "swapRestoreKindLightningSend": "Odeslání přes Lightning",
+  "swapRestoreKindLightningReceive": "Příjem přes Lightning",
+  "swapRestoreKindCrossChain": "Mezi řetězci",
+  "swapRescueTitle": "Záchrana swapu",
+  "swapRescueTypeLabel": "Typ",
+  "swapRescueStatusLabel": "Stav",
+  "swapRescueAmountLabel": "Částka",
+  "swapRescueRouteLabel": "Trasa",
+  "swapRescueCreatedLabel": "Vytvořeno",
+  "swapRescueIdLabel": "ID swapu",
+  "swapRescueWalletLabel": "Obnovit do peněženky",
+  "swapRescueWalletHint": "Vyberte peněženku",
+  "swapRescueButton": "Obnovit",
+  "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Kontrola...",
+  "mempoolServerStatusUnknown": "Neznámý",
+  "mempoolCustomServerSaveFailed": "Nepodařilo se uložit server",
+  "mempoolCustomServerInfoDescription": "Mempool servery se používají k odhadu poplatků a k otevření prohlížeče bloků při zobrazení podrobností transakce.",
+  "mempoolCustomServerUseSsl": "Použít SSL",
+  "mempoolCustomServerSslAutoDetected": "(Automaticky zjištěno)",
+  "mempoolCustomServerSslHelpText": "U lokálních serverů (.local, privátní IP adresy) a Tor serverů (.onion) bývá SSL obvykle vypnuté. U veřejných IP adres a domén byste měli SSL používat.",
+  "mempoolErrorSameAsDefault": "Tato adresa URL je stejná jako výchozí server. Použijte prosím jinou adresu URL.",
+  "mempoolErrorConnectionTimeout": "Časový limit připojení vypršel. Server může být pomalý nebo nedostupný.",
+  "mempoolErrorHostNotFound": "Tento server se nepodařilo najít. Zkontrolujte adresu URL a zkuste to znovu.",
+  "mempoolErrorTorNotRunning": "Nelze se připojit k adrese .onion. Ujistěte se, že běží Tor/Orbot, a zkuste to znovu.",
+  "mempoolErrorConnectionFailed": "Nelze se připojit k serveru. Zkontrolujte své síťové připojení a zkuste to znovu.",
+  "mempoolErrorNotMempoolServer": "Tato adresa URL nevypadá jako mempool server. Ověřte prosím adresu.",
+  "mempoolErrorServerUnavailable": "Server je nedostupný. Zkuste to prosím později.",
+  "mempoolErrorServerError": "Na serveru došlo k chybě. Zkuste to prosím později.",
+  "mempoolErrorInvalidResponse": "Server vrátil neplatnou odpověď.",
+  "mempoolErrorSaveServerFailed": "Nepodařilo se uložit server",
+  "mempoolErrorLoadFailed": "Nepodařilo se načíst data mempool serveru",
+  "mempoolErrorDeleteFailed": "Nepodařilo se odstranit vlastní server",
+  "receivePayjoinNoUtxos": "Nejprve přijměte prostředky, abyste to mohli povolit.\nK použití payjoin jsou potřeba UTXO.",
+  "receiveLiquidRiskDisclosureLabel": "Platby budou převedeny na Liquid L-BTC (nikoli BTC). Více informací.",
+  "payViewReceipt": "Zobrazit účtenku",
+  "paySinpeReceipt": "Účtenka SINPE",
+  "transactionFilterWithdraw": "Výběr",
+  "transactionFilterPay": "Platba",
+  "transactionFilterFunding": "Financování",
+  "transactionFilterReward": "Odměna",
+  "transactionFilterRefund": "Vrácení",
+  "transactionFilterBalanceAdjustment": "Úprava",
+  "transactionListLoadingFailed": "Transakce se nepodařilo načíst.",
+  "transactionLabelNetworkFees": "Síťové poplatky",
+  "walletLiquidRiskDisclosureLabel": "Tyto prostředky jsou Liquid L-BTC (nikoli BTC). Více informací.",
+  "liquidRiskDisclosureSemanticLabel": "Otevřít upozornění na rizika Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Upozornění na rizika Liquid Bitcoin v peněžence Instant Payments",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeScamConsentError": "Nepodařilo se zaregistrovat váš souhlas. Zkuste to prosím znovu.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbie",
+  "autoswapActiveCardTitle": "Autoswap je aktivní",
+  "autoswapWarningExplanationBold": "automaticky",
+  "autoswapInfoConsentMessage": "Autoswap je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
+  "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
+  "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
+  "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
+  "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
+  "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
+  "nfcError": "Chyba NFC: {error}",
+  "deleteLogsTitle": "Smazat logy",
+  "logsDeletedMessage": "Logy smazány",
+  "sendSelfTransfer": "Vlastní převod",
+  "sendCoordinatingPayjoinTransaction": "Koordinace transakce Payjoin.",
+  "sendErrorInvoiceExpired": "Platnost této faktury vypršela. Požádejte příjemce o novou fakturu.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Zvažte financování Instant Payments, abyste mohli provádět menší platby.",
+  "psbtFlowSignViaNfc": "Podepsat přes NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Přiložte {deviceName} pro odeslání PSBT přes NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "psbtFlowColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "psbtFlowColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardQStep3": "Zvolte preferovaný způsob podepisování:",
+  "psbtFlowColdcardQStep4": "Pro QR kód:",
+  "psbtFlowColdcardQStep5": "   - Na Coldcard Q vyberte možnost \"Scan any QR code\"",
+  "psbtFlowColdcardQStep6": "   - Naskenujte QR kód zobrazený v peněžence Bull",
+  "psbtFlowColdcardQStep7": "   - Pokud máte problém se skenováním:",
+  "psbtFlowColdcardQStep8": "     - Zvyšte jas obrazovky na svém zařízení",
+  "psbtFlowColdcardQStep9": "     - Pohybujte červeným laserem nahoru a dolů přes QR kód",
+  "psbtFlowColdcardQStep10": "     - Zkuste zařízení trochu oddálit",
+  "psbtFlowColdcardQStep11": "Pro NFC:",
+  "psbtFlowColdcardQStep12": "   - Na Coldcard Q vyberte \"Ready to Sign\" a poté klepněte na tlačítko NFC",
+  "psbtFlowColdcardQStep13": "   - Přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Počkejte na přenos PSBT",
+  "psbtFlowColdcardQStep15": "Jakmile je transakce importována ve vašem Coldcard Q, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardQStep16": "Klepnutím na tlačítka podepište transakci na svém Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Coldcard Q poté zobrazí QR kód podepsané transakce nebo připraví přenos přes NFC.",
+  "psbtFlowColdcardQStep18": "Pokud jste podepsali pomocí QR, klepněte v peněžence Bull Bitcoin na \"I'm done\".",
+  "psbtFlowColdcardQStep19": "Peněženka Bull Bitcoin vás požádá o naskenování QR kódu podepsané transakce nebo o její přijetí přes NFC.",
+  "psbtFlowColdcardQStep20": "   - Pro QR: naskenujte QR kód na Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Pro NFC: přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep22": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardMk4Step3": "Na Coldcard Mk4 vyberte \"Ready to Sign\" a poté stiskněte tlačítko s číslem 3",
+  "psbtFlowColdcardMk4Step4": "Přiložte telefon ke Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Počkejte na přenos PSBT",
+  "psbtFlowColdcardMk4Step6": "Jakmile je transakce importována ve vašem Coldcard Mk4, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardMk4Step7": "Klepnutím na tlačítka podepište transakci na svém Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 poté připraví podepsanou transakci k přenosu přes NFC.",
+  "psbtFlowColdcardMk4Step9": "V peněžence Bull Bitcoin klepněte na NFC na obrazovce vysílání.",
+  "psbtFlowColdcardMk4Step10": "Přiložte telefon ke Coldcard Mk4, abyste přijali podepsanou transakci.",
+  "psbtFlowColdcardMk4Step11": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Zkontrolujte podrobnosti transakce v peněžence Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Přiložte Coldcard, abyste přijali podepsanou transakci přes NFC",
+  "importColdcardInvalidWalletData": "Neplatná data peněženky Coldcard",
+  "importColdcardConnectTitle": "Připojení {deviceName}",
+  "importColdcardConnectDescription": "Importujte deskriptor peněženky z vašeho {deviceName}",
+  "importColdcardScanNfcSheetTitle": "Přiložte {deviceName} pro import deskriptoru peněženky přes NFC",
+  "importColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "importColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "importColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardQStep3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardQStep4": "Klikněte na \"export wallet\"",
+  "importColdcardQStep5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardQStep6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardQStep9": "Pro QR klepněte na zařízení na tlačítko QR kódu. Na zařízení se poté zobrazí QR kód",
+  "importColdcardQStep10": "Pro NFC klepněte na zařízení na tlačítko NFC",
+  "importColdcardQStep11": "Klepněte na tlačítko \"Open the camera\" / \"Scan NFC\"",
+  "importColdcardQStep12": "Naskenujte QR kód zobrazený na vašem zařízení, nebo přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardQStep13": "To je vše!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "importColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "importColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardMk4Step3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardMk4Step4": "Klikněte na \"export wallet\"",
+  "importColdcardMk4Step5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardMk4Step6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardMk4Step9": "Klikněte na číslo 3 pro spuštění NFC na Coldcard",
+  "importColdcardMk4Step10": "Klikněte na tlačítko \"Scan NFC\"",
+  "importColdcardMk4Step11": "Přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardMk4Step12": "To je vše!",
+  "fundExchangeCopDailyLimitWarning": "Pokud překročíte svůj denní transakční limit, transakce selže. Budete muset kontaktovat zákaznickou podporu.",
+  "fundExchangeCopSenderName": "Jméno odesílatele",
+  "fundExchangeCopIssuingBank": "Vydávající banka",
+  "fundExchangeCopSelectBankError": "Vyberte prosím vydávající banku",
+  "fundExchangeCopAmount": "Částka",
+  "fundExchangeCopEnterAmountError": "Zadejte částku",
+  "fundExchangeCopValidAmountError": "Zadejte platnou částku",
+  "fundExchangeCopGeneratePaymentLink": "Vygenerovat platební odkaz",
+  "fundExchangeCopRedirectMessage": "Budete přesměrováni na externí stránku, kde provedete platbu.",
+  "fundExchangeCopOpenPaymentLink": "Otevřít platební odkaz",
+  "fundExchangeCopFailedToOpenLink": "Nepodařilo se otevřít platební odkaz. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "priceChartFailedToLoad": "Nepodařilo se načíst historii cen",
+  "priceFailedToLoad": "Nepodařilo se načíst cenu",
+  "statusScreenTryAgain": "Zkusit znovu",
+  "statusScreenContinue": "Pokračovat",
+  "noteVisibleToSenderNotice": "Tato poznámka bude viditelná příjemci vašeho QR kódu nebo faktury.",
+  "viewerAddressTab": "Adresa",
+  "viewerPaymentUriTab": "Platební URI",
+  "settingsErrorReportingTitle": "Hlášení chyb",
+  "errorReportingProgramTitle": "Program hlášení chyb",
+  "errorReportingProgramDescriptionP1": "Pomozte nám vylepšit Bull tím, že se zapojíte do našeho programu hlášení chyb.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat.",
+  "errorReportingProgramDescriptionP3": "Díky tomu vidíme, kolik uživatelů daná chyba postihuje, a můžeme podle toho stanovit prioritu oprav. Bez toho nemáme žádný způsob, jak dopad změřit.",
+  "errorReportingProgramDescriptionP4": "Hlášení jsou odesílána pouze na server Bull, nikdy třetím stranám.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin je open source, takže si můžete ověřit, co se odesílá.",
+  "errorReportingAcceptButton": "Přijmout",
+  "errorReportingCancelButton": "Zrušit",
+  "errorReportingRestartSnackbar": "Restartujte aplikaci, aby se tato změna projevila",
+  "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ",
+  "backupWarningBackupNow": "ANO",
+  "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
+  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
+  "logsViewerDeleteTitle": "Smazat logy",
+  "logsViewerDeleteConfirmation": "Opravdu chcete smazat všechny logy? Tuto akci nelze vrátit zpět.",
+  "logsViewerDeleteButton": "Smazat",
+  "logsViewerCancelButton": "Zrušit",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
+  "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",
+  "sendSubSatVbyteWarning": "Transakce s poplatkem pod 1 sat/vB se mohou potvrzovat déle a nemusí se rozšířit na všechny uzly.",
+  "sendBelowMinFeeRateError": "Poplatek musí být alespoň 0,1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Pro připojení k zařízení BitBox02 Nova je zapotřebí oprávnění Bluetooth.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth není k dispozici. Zapněte Bluetooth a zkuste to znovu.",
+  "bitboxErrorNoBleDevicesFound": "V okolí nebyl nalezen žádný BitBox02 Nova. Zkontrolujte Bluetooth a zkuste to znovu.",
+  "bitboxErrorMultipleBleDevicesFound": "Bylo nalezeno více zařízení BitBox02 Nova. Ujistěte se, že je v okolí pouze jedno, a zkuste to znovu.",
+  "bitboxErrorOperationFailed": "Operace BitBox se nezdařila. Zkuste to prosím znovu.",
+  "bitboxScreenConnectSubtextBluetooth": "Ujistěte se, že BitBox02 Nova je odemčen a Bluetooth je zapnutý.",
+  "bitboxScreenScanningSubtextBluetooth": "Hledáte v okolí zařízení BitBox02 Nova...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Odstraňování problémů",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Pokud se vaše zařízení stále nepřipojí s aplikací, zkuste následující:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Ujistěte se, že je zapnutý Bluetooth a že je pro tuto aplikaci povolen.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Ujistěte se, že je Bluetooth zapnutý na vašem BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restartujte BitBox02 Nova a zkuste se připojit znovu.",
+  "sendErrorInsufficientBalanceFrozenHint": "Nedostatečný disponibilní zůstatek – {amount} je zmrazeno. Rozmrazte mince v sekci Spravovat mince, abyste je mohli použít.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

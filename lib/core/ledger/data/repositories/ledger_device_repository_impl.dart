@@ -11,10 +11,10 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   LedgerDeviceRepositoryImpl({required this._datasource});
 
   @override
-  Future<List<LedgerDeviceEntity>> scanDevices({SignerDeviceEntity? deviceType}) async {
-    final models = await _datasource.scanDevices(
-      deviceType: deviceType,
-    );
+  Future<List<LedgerDeviceEntity>> scanDevices({
+    SignerDeviceEntity? deviceType,
+  }) async {
+    final models = await _datasource.scanDevices(deviceType: deviceType);
     return models.map((model) => model.toEntity()).toList();
   }
 

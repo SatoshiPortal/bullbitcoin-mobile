@@ -5,6 +5,7 @@ enum QrType { none, bbqr, urqr }
 enum SignerDeviceEntity {
   bitbox02,
   coldcardQ,
+  coldcardMk4,
   jade,
   keystone,
   krux,
@@ -17,8 +18,10 @@ enum SignerDeviceEntity {
   specter,
   trezor;
 
-  String get displayName =>
-      StringFormatting.camelCaseToTitleCase(name, separator: ' ');
+  String get displayName => switch (this) {
+    SignerDeviceEntity.bitbox02 => 'BitBox02',
+    _ => StringFormatting.camelCaseToTitleCase(name, separator: ' '),
+  };
 
   bool get isLedger => name.startsWith('ledger');
 

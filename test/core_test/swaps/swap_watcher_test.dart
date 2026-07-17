@@ -165,33 +165,37 @@ class FakeWalletAddressRepository implements WalletAddressRepository {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  LnReceiveSwap claimableSwap() => Swap.lnReceive(
-        id: 'rcv123456789',
-        keyIndex: 0,
-        type: SwapType.lightningToLiquid,
-        status: SwapStatus.claimable,
-        environment: Environment.mainnet,
-        creationTime: DateTime(2026, 6, 12),
-        receiveWalletId: 'w1',
-        invoice: 'lnbc10u1invoice',
-        receiveAddress: 'lq1qqaddress',
-        fees: const SwapFees(claimFee: 100),
-      ) as LnReceiveSwap;
+  LnReceiveSwap claimableSwap() =>
+      Swap.lnReceive(
+            id: 'rcv123456789',
+            keyIndex: 0,
+            type: SwapType.lightningToLiquid,
+            status: SwapStatus.claimable,
+            environment: Environment.mainnet,
+            creationTime: DateTime(2026, 6, 12),
+            receiveWalletId: 'w1',
+            invoice: 'lnbc10u1invoice',
+            receiveAddress: 'lq1qqaddress',
+            fees: const SwapFees(claimFee: 100),
+          )
+          as LnReceiveSwap;
 
-  LnSendSwap refundableSwap() => Swap.lnSend(
-        id: 'snd123456789',
-        keyIndex: 0,
-        type: SwapType.liquidToLightning,
-        status: SwapStatus.refundable,
-        environment: Environment.mainnet,
-        creationTime: DateTime(2026, 6, 12),
-        sendWalletId: 'w1',
-        invoice: 'lnbc10u1invoice',
-        paymentAddress: 'lq1qqlockup',
-        paymentAmount: 10000,
-        sendTxid: 'lockup-txid',
-        refundAddress: 'lq1qqrefund',
-      ) as LnSendSwap;
+  LnSendSwap refundableSwap() =>
+      Swap.lnSend(
+            id: 'snd123456789',
+            keyIndex: 0,
+            type: SwapType.liquidToLightning,
+            status: SwapStatus.refundable,
+            environment: Environment.mainnet,
+            creationTime: DateTime(2026, 6, 12),
+            sendWalletId: 'w1',
+            invoice: 'lnbc10u1invoice',
+            paymentAddress: 'lq1qqlockup',
+            paymentAmount: 10000,
+            sendTxid: 'lockup-txid',
+            refundAddress: 'lq1qqrefund',
+          )
+          as LnSendSwap;
 
   SwapWatcherService watcher(FakeBoltzSwapRepository repo) =>
       SwapWatcherService(
@@ -202,67 +206,97 @@ void main() {
       );
 
   group('claim execution', () {
-    test('claims once, persists completed status and the actual fee used',
-        () async {
-      final repo = FakeBoltzSwapRepository(claimableSwap());
-      final service = watcher(repo);
+    test(
+      'claims once, persists completed status and the actual fee used',
+      () async {
+        final repo = FakeBoltzSwapRepository(claimableSwap());
+        final service = watcher(repo);
 
-      await service.processSwap(repo.swap);
-      await Future<void>.delayed(Duration.zero);
+        await service.processSwap(repo.swap);
+        await Future<void>.delayed(Duration.zero);
 
-      expect(repo.claimCalls, 1);
-      expect(repo.swap.status, SwapStatus.completed);
-      expect((repo.swap as LnReceiveSwap).receiveTxid, 'claim-txid');
-      // 1000 vb at 0.5 sat/vb live estimate = 500 sats — NOT the stale
-      // creation-time estimate of 100.
-      expect(repo.swap.fees?.claimFee, 500);
-    });
+        expect(repo.claimCalls, 1);
+        expect(repo.swap.status, SwapStatus.completed);
+        expect((repo.swap as LnReceiveSwap).receiveTxid, 'claim-txid');
+        // The claim is pinned to the stored creation-time claimFee (100) so the
+        // user receives exactly what the receive screen promised — NOT the live
+        // estimate of 500 (1000 vb at 0.5 sat/vb).
+        expect(repo.swap.fees?.claimFee, 100);
+      },
+    );
 
-    test('concurrent events for the same swap broadcast exactly once',
-        () async {
-      final repo = FakeBoltzSwapRepository(claimableSwap())
-        ..claimDelay = const Duration(milliseconds: 50);
-      final service = watcher(repo);
+    test(
+      'falls back to live fee estimation when no claimFee is stored',
+      () async {
+        final repo = FakeBoltzSwapRepository(
+          claimableSwap().copyWith(fees: null),
+        );
+        final service = watcher(repo);
 
-      final first = service.processSwap(repo.swap);
-      final second = service.processSwap(repo.swap);
-      final third = service.processSwap(repo.swap);
-      await Future.wait([first, second, third]);
-      // Drain the coalesced re-run.
-      await Future<void>.delayed(const Duration(milliseconds: 150));
+        await service.processSwap(repo.swap);
+        await Future<void>.delayed(Duration.zero);
 
-      expect(repo.claimCalls, 1);
-      expect(repo.swap.status, SwapStatus.completed);
-    });
+        expect(repo.claimCalls, 1);
+        expect(repo.swap.status, SwapStatus.completed);
+        // 1000 vb at 0.5 sat/vb live estimate = 500 sats.
+        expect(repo.swap.fees?.claimFee, 500);
+      },
+    );
 
-    test('failed claim backs off instead of retrying on the next event',
-        () async {
-      final repo = FakeBoltzSwapRepository(claimableSwap())
-        ..claimError = Exception('broadcast failed');
-      final service = watcher(repo);
+    test(
+      'concurrent events for the same swap broadcast exactly once',
+      () async {
+        final repo = FakeBoltzSwapRepository(claimableSwap())
+          ..claimDelay = const Duration(milliseconds: 50);
+        final service = watcher(repo);
 
-      await service.processSwap(repo.swap);
-      // coop + script-path fallback both fail -> 2 attempts in one action
-      expect(repo.claimCalls, 2);
+        final first = service.processSwap(repo.swap);
+        final second = service.processSwap(repo.swap);
+        final third = service.processSwap(repo.swap);
+        await Future.wait([first, second, third]);
+        // Drain the coalesced re-run.
+        await Future<void>.delayed(const Duration(milliseconds: 150));
 
-      await service.processSwap(repo.swap);
-      // Backoff: no new attempts on an immediately replayed event.
-      expect(repo.claimCalls, 2);
-      expect(repo.swap.status, SwapStatus.claimable);
-    });
+        expect(repo.claimCalls, 1);
+        expect(repo.swap.status, SwapStatus.completed);
+      },
+    );
 
-    test('recovers via outspend check when broadcast fails but tx exists',
-        () async {
-      final repo = FakeBoltzSwapRepository(claimableSwap())
-        ..claimError = Exception('bad-txns-inputs-missingorspent')
-        ..outspendTxid = 'already-claimed-txid';
-      final service = watcher(repo);
+    test(
+      'failed claim backs off instead of retrying on the next event',
+      () async {
+        final repo = FakeBoltzSwapRepository(claimableSwap())
+          ..claimError = Exception('broadcast failed');
+        final service = watcher(repo);
 
-      await service.processSwap(repo.swap);
+        await service.processSwap(repo.swap);
+        // coop + script-path fallback both fail -> 2 attempts in one action
+        expect(repo.claimCalls, 2);
 
-      expect(repo.swap.status, SwapStatus.completed);
-      expect((repo.swap as LnReceiveSwap).receiveTxid, 'already-claimed-txid');
-    });
+        await service.processSwap(repo.swap);
+        // Backoff: no new attempts on an immediately replayed event.
+        expect(repo.claimCalls, 2);
+        expect(repo.swap.status, SwapStatus.claimable);
+      },
+    );
+
+    test(
+      'recovers via outspend check when broadcast fails but tx exists',
+      () async {
+        final repo = FakeBoltzSwapRepository(claimableSwap())
+          ..claimError = Exception('bad-txns-inputs-missingorspent')
+          ..outspendTxid = 'already-claimed-txid';
+        final service = watcher(repo);
+
+        await service.processSwap(repo.swap);
+
+        expect(repo.swap.status, SwapStatus.completed);
+        expect(
+          (repo.swap as LnReceiveSwap).receiveTxid,
+          'already-claimed-txid',
+        );
+      },
+    );
 
     test('direct (MRH) payments are never claimed', () async {
       final repo = FakeBoltzSwapRepository(

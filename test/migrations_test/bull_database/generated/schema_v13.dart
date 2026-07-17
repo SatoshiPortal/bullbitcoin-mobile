@@ -5170,6 +5170,15 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
         'NOT NULL DEFAULT 0 CHECK (was_direct_payment IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
+  late final GeneratedColumn<int> recovered = GeneratedColumn<int>(
+    'recovered',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (recovered IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5197,6 +5206,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     refundFees,
     serverNetworkFees,
     wasDirectPayment,
+    recovered,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5309,6 +5319,10 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
         DriftSqlType.int,
         data['${effectivePrefix}was_direct_payment'],
       )!,
+      recovered: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recovered'],
+      )!,
     );
   }
 
@@ -5349,6 +5363,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
   final int? refundFees;
   final int? serverNetworkFees;
   final int wasDirectPayment;
+  final int recovered;
   const SwapsData({
     required this.id,
     required this.type,
@@ -5375,6 +5390,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     this.refundFees,
     this.serverNetworkFees,
     required this.wasDirectPayment,
+    required this.recovered,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5438,6 +5454,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       map['server_network_fees'] = Variable<int>(serverNetworkFees);
     }
     map['was_direct_payment'] = Variable<int>(wasDirectPayment);
+    map['recovered'] = Variable<int>(recovered);
     return map;
   }
 
@@ -5502,6 +5519,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           ? const Value.absent()
           : Value(serverNetworkFees),
       wasDirectPayment: Value(wasDirectPayment),
+      recovered: Value(recovered),
     );
   }
 
@@ -5536,6 +5554,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       refundFees: serializer.fromJson<int?>(json['refundFees']),
       serverNetworkFees: serializer.fromJson<int?>(json['serverNetworkFees']),
       wasDirectPayment: serializer.fromJson<int>(json['wasDirectPayment']),
+      recovered: serializer.fromJson<int>(json['recovered']),
     );
   }
   @override
@@ -5567,6 +5586,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       'refundFees': serializer.toJson<int?>(refundFees),
       'serverNetworkFees': serializer.toJson<int?>(serverNetworkFees),
       'wasDirectPayment': serializer.toJson<int>(wasDirectPayment),
+      'recovered': serializer.toJson<int>(recovered),
     };
   }
 
@@ -5596,6 +5616,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     Value<int?> refundFees = const Value.absent(),
     Value<int?> serverNetworkFees = const Value.absent(),
     int? wasDirectPayment,
+    int? recovered,
   }) => SwapsData(
     id: id ?? this.id,
     type: type ?? this.type,
@@ -5636,6 +5657,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
         ? serverNetworkFees.value
         : this.serverNetworkFees,
     wasDirectPayment: wasDirectPayment ?? this.wasDirectPayment,
+    recovered: recovered ?? this.recovered,
   );
   SwapsData copyWithCompanion(SwapsCompanion data) {
     return SwapsData(
@@ -5692,6 +5714,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       wasDirectPayment: data.wasDirectPayment.present
           ? data.wasDirectPayment.value
           : this.wasDirectPayment,
+      recovered: data.recovered.present ? data.recovered.value : this.recovered,
     );
   }
 
@@ -5722,7 +5745,8 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           ..write('claimFees: $claimFees, ')
           ..write('refundFees: $refundFees, ')
           ..write('serverNetworkFees: $serverNetworkFees, ')
-          ..write('wasDirectPayment: $wasDirectPayment')
+          ..write('wasDirectPayment: $wasDirectPayment, ')
+          ..write('recovered: $recovered')
           ..write(')'))
         .toString();
   }
@@ -5754,6 +5778,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     refundFees,
     serverNetworkFees,
     wasDirectPayment,
+    recovered,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -5783,7 +5808,8 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
           other.claimFees == this.claimFees &&
           other.refundFees == this.refundFees &&
           other.serverNetworkFees == this.serverNetworkFees &&
-          other.wasDirectPayment == this.wasDirectPayment);
+          other.wasDirectPayment == this.wasDirectPayment &&
+          other.recovered == this.recovered);
 }
 
 class SwapsCompanion extends UpdateCompanion<SwapsData> {
@@ -5812,6 +5838,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
   final Value<int?> refundFees;
   final Value<int?> serverNetworkFees;
   final Value<int> wasDirectPayment;
+  final Value<int> recovered;
   final Value<int> rowid;
   const SwapsCompanion({
     this.id = const Value.absent(),
@@ -5839,6 +5866,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     this.refundFees = const Value.absent(),
     this.serverNetworkFees = const Value.absent(),
     this.wasDirectPayment = const Value.absent(),
+    this.recovered = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SwapsCompanion.insert({
@@ -5867,6 +5895,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     this.refundFees = const Value.absent(),
     this.serverNetworkFees = const Value.absent(),
     this.wasDirectPayment = const Value.absent(),
+    this.recovered = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        type = Value(type),
@@ -5901,6 +5930,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Expression<int>? refundFees,
     Expression<int>? serverNetworkFees,
     Expression<int>? wasDirectPayment,
+    Expression<int>? recovered,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -5929,6 +5959,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
       if (refundFees != null) 'refund_fees': refundFees,
       if (serverNetworkFees != null) 'server_network_fees': serverNetworkFees,
       if (wasDirectPayment != null) 'was_direct_payment': wasDirectPayment,
+      if (recovered != null) 'recovered': recovered,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5959,6 +5990,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Value<int?>? refundFees,
     Value<int?>? serverNetworkFees,
     Value<int>? wasDirectPayment,
+    Value<int>? recovered,
     Value<int>? rowid,
   }) {
     return SwapsCompanion(
@@ -5987,6 +6019,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
       refundFees: refundFees ?? this.refundFees,
       serverNetworkFees: serverNetworkFees ?? this.serverNetworkFees,
       wasDirectPayment: wasDirectPayment ?? this.wasDirectPayment,
+      recovered: recovered ?? this.recovered,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6069,6 +6102,9 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     if (wasDirectPayment.present) {
       map['was_direct_payment'] = Variable<int>(wasDirectPayment.value);
     }
+    if (recovered.present) {
+      map['recovered'] = Variable<int>(recovered.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6103,6 +6139,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
           ..write('refundFees: $refundFees, ')
           ..write('serverNetworkFees: $serverNetworkFees, ')
           ..write('wasDirectPayment: $wasDirectPayment, ')
+          ..write('recovered: $recovered, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7690,6 +7727,235 @@ class PricesCompanion extends UpdateCompanion<PricesData> {
   }
 }
 
+class FrozenUtxos extends Table with TableInfo<FrozenUtxos, FrozenUtxosData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  FrozenUtxos(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> txId = GeneratedColumn<String>(
+    'tx_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vout = GeneratedColumn<int>(
+    'vout',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [walletId, txId, vout];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'frozen_utxos';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId, txId, vout};
+  @override
+  FrozenUtxosData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FrozenUtxosData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      txId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tx_id'],
+      )!,
+      vout: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vout'],
+      )!,
+    );
+  }
+
+  @override
+  FrozenUtxos createAlias(String alias) {
+    return FrozenUtxos(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id, tx_id, vout)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class FrozenUtxosData extends DataClass implements Insertable<FrozenUtxosData> {
+  final String walletId;
+  final String txId;
+  final int vout;
+  const FrozenUtxosData({
+    required this.walletId,
+    required this.txId,
+    required this.vout,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['tx_id'] = Variable<String>(txId);
+    map['vout'] = Variable<int>(vout);
+    return map;
+  }
+
+  FrozenUtxosCompanion toCompanion(bool nullToAbsent) {
+    return FrozenUtxosCompanion(
+      walletId: Value(walletId),
+      txId: Value(txId),
+      vout: Value(vout),
+    );
+  }
+
+  factory FrozenUtxosData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FrozenUtxosData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      txId: serializer.fromJson<String>(json['txId']),
+      vout: serializer.fromJson<int>(json['vout']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'txId': serializer.toJson<String>(txId),
+      'vout': serializer.toJson<int>(vout),
+    };
+  }
+
+  FrozenUtxosData copyWith({String? walletId, String? txId, int? vout}) =>
+      FrozenUtxosData(
+        walletId: walletId ?? this.walletId,
+        txId: txId ?? this.txId,
+        vout: vout ?? this.vout,
+      );
+  FrozenUtxosData copyWithCompanion(FrozenUtxosCompanion data) {
+    return FrozenUtxosData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      txId: data.txId.present ? data.txId.value : this.txId,
+      vout: data.vout.present ? data.vout.value : this.vout,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrozenUtxosData(')
+          ..write('walletId: $walletId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(walletId, txId, vout);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FrozenUtxosData &&
+          other.walletId == this.walletId &&
+          other.txId == this.txId &&
+          other.vout == this.vout);
+}
+
+class FrozenUtxosCompanion extends UpdateCompanion<FrozenUtxosData> {
+  final Value<String> walletId;
+  final Value<String> txId;
+  final Value<int> vout;
+  final Value<int> rowid;
+  const FrozenUtxosCompanion({
+    this.walletId = const Value.absent(),
+    this.txId = const Value.absent(),
+    this.vout = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FrozenUtxosCompanion.insert({
+    required String walletId,
+    required String txId,
+    required int vout,
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       txId = Value(txId),
+       vout = Value(vout);
+  static Insertable<FrozenUtxosData> custom({
+    Expression<String>? walletId,
+    Expression<String>? txId,
+    Expression<int>? vout,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (txId != null) 'tx_id': txId,
+      if (vout != null) 'vout': vout,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FrozenUtxosCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? txId,
+    Value<int>? vout,
+    Value<int>? rowid,
+  }) {
+    return FrozenUtxosCompanion(
+      walletId: walletId ?? this.walletId,
+      txId: txId ?? this.txId,
+      vout: vout ?? this.vout,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (txId.present) {
+      map['tx_id'] = Variable<String>(txId.value);
+    }
+    if (vout.present) {
+      map['vout'] = Variable<int>(vout.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrozenUtxosCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV13 extends GeneratedDatabase {
   DatabaseAtV13(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -7707,6 +7973,7 @@ class DatabaseAtV13 extends GeneratedDatabase {
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
   late final Prices prices = Prices(this);
+  late final FrozenUtxos frozenUtxos = FrozenUtxos(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7727,6 +7994,7 @@ class DatabaseAtV13 extends GeneratedDatabase {
     bip85Derivations,
     recoverbull,
     prices,
+    frozenUtxos,
   ];
   @override
   int get schemaVersion => 13;

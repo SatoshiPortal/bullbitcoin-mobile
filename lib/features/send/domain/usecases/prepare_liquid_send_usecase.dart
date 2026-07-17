@@ -6,9 +6,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
-  PrepareLiquidSendUsecase({
-    required this._liquidWalletRepository,
-  });
+  PrepareLiquidSendUsecase({required this._liquidWalletRepository});
 
   Future<String> execute({
     required String walletId,

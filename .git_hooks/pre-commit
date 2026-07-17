@@ -3,62 +3,100 @@ echo "Begin pre-commit hook"
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
+# Capture the staged file list BEFORE clearing git env vars below: the unset
+# drops GIT_INDEX_FILE, which `git diff --cached` needs to read the right index
+# (matters during rebase/merge/temp-index commits). Paths are repo-root-relative.
+staged="$(git diff --cached --name-only --diff-filter=ACMR)"
+
 # Git sets GIT_DIR/etc. for hook subprocesses; Flutter's bin/flutter
 # uses `git describe` to detect its own SDK version and these vars
 # point it at the wrong repo. Clear them before invoking Flutter.
 unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
 
-# Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter
-if [[ -x "$REPO_ROOT/.fvm/flutter_sdk/bin/flutter" ]]; then
-  FLUTTER="$REPO_ROOT/.fvm/flutter_sdk/bin/flutter"
-  DART="$REPO_ROOT/.fvm/flutter_sdk/bin/dart"
-elif command -v fvm >/dev/null 2>&1; then
-  FLUTTER="fvm flutter"
-  DART="fvm dart"
+# The Dart toolchain checks (analyze + dart fix) only matter when a Dart source
+# changes. Skip them entirely otherwise (e.g. a YAML/CI/docs-only change) —
+# running a full `flutter analyze` there is wasted.
+if echo "$staged" | grep -q '\.dart$'; then
+  # Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter
+  if [[ -x "$REPO_ROOT/.fvm/flutter_sdk/bin/flutter" ]]; then
+    FLUTTER="$REPO_ROOT/.fvm/flutter_sdk/bin/flutter"
+    DART="$REPO_ROOT/.fvm/flutter_sdk/bin/dart"
+  elif command -v fvm >/dev/null 2>&1; then
+    FLUTTER="fvm flutter"
+    DART="fvm dart"
+  else
+    FLUTTER="flutter"
+    DART="dart"
+  fi
+
+  echo "Using Flutter: $($FLUTTER --version | head -n1)"
+
+  # Run analyze and dart fix in parallel; they are independent read-only checks.
+  analyzeOut="$(mktemp)"
+  fixOut="$(mktemp)"
+  fmtOut="$(mktemp)"
+  trap 'rm -f "$analyzeOut" "$fixOut" "$fmtOut"' EXIT
+
+  start=$SECONDS
+
+  make analyze >"$analyzeOut" 2>&1 &
+  analyzePid=$!
+
+  $DART fix --dry-run >"$fixOut" 2>&1 &
+  fixPid=$!
+
+  # Format check on staged Dart source only (check-only, like analyze/fix
+  # above — never rewrites the working tree). Generated files are excluded so
+  # regenerated output can't fail the commit: by suffix and by /generated/
+  # path segment (drift schema snapshots). `dart format` ignores the analyzer's
+  # `exclude:`, so the filter lives here — keep the regex in sync with the
+  # format-check target in the makefile (which CI invokes). xargs -r no-ops when
+  # the staged set is all-generated. Exits non-zero if any staged file is
+  # unformatted.
+  # $DART is intentionally unquoted: the fallback sets DART="fvm dart" (two
+  # words), and quoting it makes xargs exec a literal binary named "fvm dart"
+  # (exit 127). Word splitting here matches the `$DART fix` call above.
+  echo "$staged" | grep '\.dart$' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' \
+    | xargs -r $DART format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
+  fmtPid=$!
+
+  wait $analyzePid; analyzeExit=$?
+  wait $fixPid;     fixExit=$?
+  wait $fmtPid;     fmtExit=$?
+
+  echo "analyze + dart fix + format took $((SECONDS - start))s (parallel)"
+
+  if [ $analyzeExit -ne 0 ]; then
+    cat "$analyzeOut"
+    echo "Flutter analyze found issues, please fix them."
+    exit 1
+  fi
+
+  if ! grep -q "Nothing to fix!" "$fixOut"; then
+    cat "$fixOut"
+    echo "dart fix has suggestions, run \`dart fix --apply\` and commit the result."
+    exit 1
+  fi
+
+  if [ $fmtExit -ne 0 ]; then
+    cat "$fmtOut"
+    echo "dart format found unformatted staged files, run \`dart format .\` and commit the result."
+    exit 1
+  fi
 else
-  FLUTTER="flutter"
-  DART="dart"
-fi
-
-echo "Using Flutter: $($FLUTTER --version | head -n1)"
-
-# Run analyze and dart fix in parallel; they are independent read-only checks.
-analyzeOut="$(mktemp)"
-fixOut="$(mktemp)"
-trap 'rm -f "$analyzeOut" "$fixOut"' EXIT
-
-start=$SECONDS
-
-make analyze >"$analyzeOut" 2>&1 &
-analyzePid=$!
-
-$DART fix --dry-run >"$fixOut" 2>&1 &
-fixPid=$!
-
-wait $analyzePid; analyzeExit=$?
-wait $fixPid;     fixExit=$?
-
-echo "analyze + dart fix took $((SECONDS - start))s (parallel)"
-
-if [ $analyzeExit -ne 0 ]; then
-  cat "$analyzeOut"
-  echo "Flutter analyze found issues, please fix them."
-  exit 1
-fi
-
-if ! grep -q "Nothing to fix!" "$fixOut"; then
-  cat "$fixOut"
-  echo "dart fix has suggestions, run \`dart fix --apply\` and commit the result."
-  exit 1
+  echo "No Dart/pub files staged — skipping analyze + dart fix + format."
 fi
 
 # bull_ui import boundary: feature UI built on the design system must import
 # only `package:bull_ui/bull_ui.dart` for widgets — never Flutter UI directly.
 # (Until a first-party analyzer rule lands, this grep is the enforcement.)
-if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui" >/dev/null 2>&1; then
-  echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not package:flutter/{material,cupertino,widgets}.dart:"
-  grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui"
-  exit 1
+# Only relevant when files under the coins UI are staged.
+if echo "$staged" | grep -q '^lib/features/coins/ui/'; then
+  if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui" >/dev/null 2>&1; then
+    echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not package:flutter/{material,cupertino,widgets}.dart:"
+    grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui"
+    exit 1
+  fi
 fi
 
 echo "End pre-commit hook"

@@ -57,7 +57,9 @@ class BullTopBar extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colors.text),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: colors.text),
               ),
             ),
           ),

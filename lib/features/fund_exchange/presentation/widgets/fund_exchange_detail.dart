@@ -39,13 +39,12 @@ class FundExchangeDetail extends StatelessWidget {
               ? BBText(value!, style: theme.textTheme.bodyLarge)
               : const LoadingLineContent(),
           trailing: IconButton(
-            onPressed:
-                value != null
-                    ? () {
-                      final data = ClipboardData(text: value!);
-                      Clipboard.setData(data);
-                    }
-                    : null,
+            onPressed: value != null
+                ? () {
+                    final data = ClipboardData(text: value!);
+                    Clipboard.setData(data);
+                  }
+                : null,
             icon: const Icon(Icons.copy),
           ),
         ),

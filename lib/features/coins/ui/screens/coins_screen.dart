@@ -347,9 +347,8 @@ class _SubHeader extends StatelessWidget {
           label: filter.keychain == KeychainFilter.receive
               ? loc.coinsKeychainReceive
               : loc.coinsKeychainChange,
-          onRemove: () => cubit.applyFilter(
-            filter.copyWith(keychain: KeychainFilter.all),
-          ),
+          onRemove: () =>
+              cubit.applyFilter(filter.copyWith(keychain: KeychainFilter.all)),
         ),
       );
     }
@@ -412,12 +411,10 @@ class _UtxoList extends StatelessWidget {
 
     return BullRefreshIndicator(
       onRefresh: () async {
-        final walletBloc = context.read<WalletBloc>();
-        walletBloc.add(const WalletRefreshed(force: true));
-        // Wait for the chain sync to actually finish (same pattern as wallet
-        // detail) so the pull-to-refresh spinner reflects the real sync, not
-        // just the near-instant local reload.
-        await walletBloc.stream.firstWhere((s) => !s.isRefreshing);
+        // Wait for the chain sync (bitcoin + liquid + swaps) to actually
+        // finish before reloading local UTXOs, so the spinner reflects the
+        // real sync rather than the near-instant local reload.
+        await context.read<WalletBloc>().refresh();
         await cubit.refresh();
       },
       child: ListView.builder(
@@ -445,11 +442,7 @@ class _UtxoList extends StatelessWidget {
     );
   }
 
-  Future<void> _onSwipe(
-    BuildContext context,
-    bool isFrozen,
-    String key,
-  ) async {
+  Future<void> _onSwipe(BuildContext context, bool isFrozen, String key) async {
     final cubit = context.read<CoinsCubit>();
     if (isFrozen) {
       final ok = await cubit.unfreeze([key]);
@@ -579,11 +572,7 @@ class _FilteredEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BullIcon(
-              BullIcons.filterAltOff,
-              size: 40,
-              color: colors.textMuted,
-            ),
+            BullIcon(BullIcons.filterAltOff, size: 40, color: colors.textMuted),
             const SizedBox(height: 12),
             Text(
               context.loc.coinsFilteredEmptyTitle,

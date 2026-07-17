@@ -61,6 +61,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.restore,
+                  title: context.loc.swapRestoreTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.swapRestore.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.satellite_alt,
                   title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
                   onTap: () => context.pushNamed(

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -43,6 +44,7 @@ class ReceiveQrPage extends StatelessWidget {
     final isBitBox = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
     );
+    final showAddressVerification = !isLightning && (isLedger || isBitBox);
 
     final isTrezor = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isTrezor ?? false,
@@ -63,6 +65,13 @@ class ReceiveQrPage extends StatelessWidget {
           if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
           if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
           if (isTrezor) const Column(children: [VerifyAddressOnTrezorButton()]),
+          if (showAddressVerification) ...[
+            if (isLedger)
+              const Column(children: [VerifyAddressOnLedgerButton()]),
+            if (isBitBox)
+              const Column(children: [VerifyAddressOnBitBoxButton()]),
+            Gap(gap),
+          ],
           if (!isLightning) const ReceiveNewAddressButton(),
           const Gap(40),
         ],
@@ -318,6 +327,9 @@ class ReceiveLnInfoDetails extends StatelessWidget {
     );
     final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
     final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
+    final showsLiquidDisclosure = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.wallet?.isLiquid ?? false,
+    );
 
     return AnimatedContainer(
       duration: 300.ms,
@@ -426,6 +438,15 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ],
           const ReceiveLnFeesDetails(),
+          if (showsLiquidDisclosure) ...[
+            Container(color: context.appColors.surface, height: 1),
+            DisclosureLink(
+              label: context.loc.receiveLiquidRiskDisclosureLabel,
+              semanticLabel: context.loc.liquidRiskDisclosureSemanticLabel,
+              title: context.loc.liquidRiskDisclosureTitle,
+              body: context.loc.liquidRiskDisclosureBody,
+            ),
+          ],
         ],
       ),
     );
@@ -759,14 +780,14 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
-        label: 'Verify Address on BitBox',
+        label: context.loc.bitboxActionVerifyAddressTitle,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
             SnackBarUtils.showSnackBar(
               context,
-              'Unable to verify address: Missing wallet or address information',
+              context.loc.receiveVerifyAddressError,
             );
             return;
           }

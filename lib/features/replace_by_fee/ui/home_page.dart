@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
+import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,19 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           builder: (context, state) {
             final cubit = context.read<ReplaceByFeeCubit>();
 
+            if (state.failure != null && state.newFeeRate == null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: BBText(
+                    state.failure!.toTranslated(context),
+                    style: context.font.bodyMedium,
+                    color: context.appColors.error,
+                  ),
+                ),
+              );
+            }
+
             if (state.newFeeRate == null) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -69,10 +83,10 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       focusNode: _feeNode,
                       minRelay: state.minRelay,
                     ),
-                    if (state.error != null) ...[
+                    if (state.failure != null) ...[
                       const Gap(16),
                       BBText(
-                        state.error!.toTranslated(context),
+                        state.failure!.toTranslated(context),
                         style: context.font.bodyMedium,
                         color: context.appColors.error,
                       ),

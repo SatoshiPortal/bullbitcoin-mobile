@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 class GetUnconfirmedIncomingBalanceUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
-  GetUnconfirmedIncomingBalanceUsecase({
-    required this._boltzSwapRepository,
-  });
+  GetUnconfirmedIncomingBalanceUsecase({required this._boltzSwapRepository});
 
   Future<int> execute({required List<String> walletIds}) async {
     final allSwaps = await _boltzSwapRepository.getAllSwaps();

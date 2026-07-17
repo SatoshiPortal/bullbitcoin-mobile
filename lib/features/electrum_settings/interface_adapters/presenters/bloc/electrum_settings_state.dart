@@ -15,8 +15,8 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     @Default(false) bool isPrioritizingCustomServer,
     @Default(false) bool isDeletingCustomServer,
     @Default(false) bool isSavingAdvancedOptions,
-    ElectrumServersException? electrumServersError,
-    AdvancedOptionsException? advancedOptionsError,
+    ElectrumServersFailure? electrumServersError,
+    AdvancedOptionsFailure? advancedOptionsError,
   }) = _ElectrumSettingsState;
   const ElectrumSettingsState._();
 

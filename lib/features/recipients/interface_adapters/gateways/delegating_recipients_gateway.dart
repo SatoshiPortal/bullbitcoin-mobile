@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/recipients/application/ports/recipients_gatew
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
 // This class delegates recipient-related operations to the appropriate
 // gateway based on whether the operation is for testnet or mainnet.
@@ -22,15 +23,15 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.saveRecipient(
-          recipientDetails,
-          isFiatRecipient: isFiatRecipient,
-          isTestnet: isTestnet,
-        )
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.saveRecipient(
-          recipientDetails,
-          isFiatRecipient: isFiatRecipient,
-          isTestnet: isTestnet,
-        );
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          );
   }
 
   @override
@@ -39,20 +40,29 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
     required bool isTestnet,
     int page = 1,
     int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listRecipients(
-          fiatOnly: fiatOnly,
-          isTestnet: isTestnet,
-          page: page,
-          pageSize: pageSize,
-        )
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+            recipientTypes: recipientTypes,
+            isOwner: isOwner,
+            search: search,
+          )
         : _bullbitcoinApiClient.listRecipients(
-          fiatOnly: fiatOnly,
-          isTestnet: isTestnet,
-          page: page,
-          pageSize: pageSize,
-        );
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+            recipientTypes: recipientTypes,
+            isOwner: isOwner,
+            search: search,
+          );
   }
 
   @override
@@ -62,13 +72,13 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.checkSinpe(
-          phoneNumber: phoneNumber,
-          isTestnet: isTestnet,
-        )
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.checkSinpe(
-          phoneNumber: phoneNumber,
-          isTestnet: isTestnet,
-        );
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          );
   }
 
   @override
@@ -78,12 +88,12 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listCadBillers(
-          searchTerm: searchTerm,
-          isTestnet: isTestnet,
-        )
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.listCadBillers(
-          searchTerm: searchTerm,
-          isTestnet: isTestnet,
-        );
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          );
   }
 }

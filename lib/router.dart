@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
-import 'package:bb_mobile/features/import_coldcard_q/router.dart';
+import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
@@ -74,9 +74,7 @@ class AppRouter {
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
-    observers: [
-      SentryNavigatorObserver(enableAutoTransactions: false),
-    ],
+    observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     routes: [
       ShellRoute(
         notifyRootObserver: true,
@@ -178,7 +176,7 @@ class AppRouter {
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
       ImportWalletRouter.route,
-      ImportColdcardRouter.route,
+      ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
       ...TrezorRouter.routes,

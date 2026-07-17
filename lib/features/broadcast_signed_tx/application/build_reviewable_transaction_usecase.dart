@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
+import 'package:meta/meta.dart';
 
 /// Build a [ReviewableTransaction] from a domain [Transaction], resolving
 /// each input's value by fetching the parent transaction via [TransactionPort].
@@ -14,10 +17,13 @@ class BuildReviewableTransactionUsecase {
 
   BuildReviewableTransactionUsecase({required this._transactionPort});
 
-  /// Throws [TransactionReviewError] on failure. Port-layer errors are
-  /// translated into feature-layer variants at the boundary so the
-  /// presentation layer never sees a foreign error type.
-  Future<ReviewableTransaction> execute(Transaction tx) async {
+  /// This use-case is the boundary: it catches the throwing [TransactionPort],
+  /// maps the foreign error into a sanitized [TransactionReviewFailure], and
+  /// returns a [Result]. The presentation layer never sees a foreign type.
+  @useResult
+  Future<Result<ReviewableTransaction, TransactionReviewFailure>> execute(
+    Transaction tx,
+  ) async {
     final resolvedInputs = <ResolvedInput>[];
 
     for (final input in tx.inputs) {
@@ -25,9 +31,11 @@ class BuildReviewableTransactionUsecase {
         final parentTx = await _transactionPort.fetch(txid: input.previousTxId);
 
         if (input.previousVout >= parentTx.outputs.length) {
-          throw TransactionReviewError.inputResolutionFailed(
-            parentTxId: input.previousTxId,
-            vout: input.previousVout,
+          return Err(
+            TransactionReviewInputResolutionFailure(
+              parentTxId: input.previousTxId,
+              vout: input.previousVout,
+            ),
           );
         }
 
@@ -40,26 +48,29 @@ class BuildReviewableTransactionUsecase {
             address: parentOutput.address,
           ),
         );
-      } on TransactionReviewError {
-        rethrow;
       } on TransactionPortError catch (e) {
-        throw _mapPortError(e);
-      } catch (e) {
-        throw TransactionReviewError.unexpected(e.toString());
+        return Err(_mapPortError(e));
+      } catch (e, st) {
+        // Genuinely unexpected escape — the raw reason is born here, so it is
+        // logged here (Sentry) and the UI shows a generic message.
+        log.severe(
+          message: 'Unexpected failure building reviewable transaction',
+          error: e,
+          trace: st,
+        );
+        return Err(TransactionReviewUnexpectedFailure(e.toString()));
       }
     }
 
-    return ReviewableTransaction(
-      transaction: tx,
-      resolvedInputs: resolvedInputs,
+    return Ok(
+      ReviewableTransaction(transaction: tx, resolvedInputs: resolvedInputs),
     );
   }
 
-  TransactionReviewError _mapPortError(TransactionPortError e) =>
-      switch (e) {
-        TransactionPortFetchFailed(:final txid, :final message) =>
-          TransactionReviewError.fetchFailed(txid: txid, message: message),
-        TransactionPortNoServersAvailable(:final network) =>
-          TransactionReviewError.noServersAvailable(network: network),
-      };
+  TransactionReviewFailure _mapPortError(TransactionPortError e) => switch (e) {
+    TransactionPortFetchFailed(:final txid, :final message) =>
+      TransactionReviewFetchFailure(txid: txid, logMessage: message),
+    TransactionPortNoServersAvailable(:final network) =>
+      TransactionReviewNoServersFailure(network: network),
+  };
 }

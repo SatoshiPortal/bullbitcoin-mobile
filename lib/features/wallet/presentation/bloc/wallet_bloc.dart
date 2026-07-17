@@ -10,9 +10,11 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/ensure_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -58,6 +60,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._checkArkWalletSetupUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
+    required this._ensureSwapMasterKeyUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
@@ -97,6 +100,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
+  final EnsureSwapMasterKeyUsecase _ensureSwapMasterKeyUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -147,6 +151,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       add(const RefreshArkWalletBalance());
 
+      // Derive + persist the swap master key from the default wallet seed now
+      // that wallets are ready, so swaps read it from storage and never derive
+      // it lazily. Best-effort: a failure here must not break wallet loading.
+      try {
+        await _ensureSwapMasterKeyUsecase.execute();
+      } catch (e, st) {
+        log.severe(
+          message: 'Failed to ensure swap master key',
+          error: e,
+          trace: st,
+        );
+      }
+
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
 
@@ -176,6 +193,28 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
   }
 
+  /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
+  /// refresh (so the data reload and `isRefreshing` transitions still happen)
+  /// and awaits the [SyncCoordinator] directly, so the returned future — and
+  /// therefore the RefreshIndicator spinner — resolves only once bitcoin,
+  /// liquid and swaps have all synced, rather than tracking the shared
+  /// `isRefreshing` flag (which a throttled background refresh can clear after
+  /// bitcoin alone). Awaiting the coordinator also bypasses the `droppable()`
+  /// event lane, so the gesture is never swallowed by an in-flight background
+  /// refresh.
+  ///
+  /// Never throws: a failed sync is already surfaced through [WalletState] by
+  /// [_onRefreshed] and logged (sanitized) by the coordinator, and a
+  /// RefreshIndicator callback must not complete with an error.
+  Future<void> refresh() async {
+    add(const WalletRefreshed(trigger: SyncTrigger.user));
+    try {
+      await _syncCoordinator.sync(trigger: SyncTrigger.user);
+    } catch (e) {
+      log.fine('[WalletBloc] pull-to-refresh sync failed: ${e.runtimeType}');
+    }
+  }
+
   Future<void> _onRefreshed(
     WalletRefreshed event,
     Emitter<WalletState> emit,
@@ -183,10 +222,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(isRefreshing: true));
     try {
       // SyncCoordinator schedules bitcoin → liquid → swaps sequentially with
-      // per-kind dedup, throttling, and a lifecycle gate. `event.force`
-      // bypasses the throttle for explicit user gestures (pull-to-refresh);
-      // route-driven navigation triggers leave it at `false`.
-      await _syncCoordinator.sync(force: event.force);
+      // per-kind dedup, throttling, and a lifecycle gate. A user-triggered
+      // refresh (pull-to-refresh) bypasses the throttle; route-driven
+      // navigation triggers use SyncTrigger.automatic.
+      await _syncCoordinator.sync(trigger: event.trigger);
 
       final wallets = await _getWalletsUsecase.execute();
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
@@ -582,8 +621,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final updatedSettings =
-          await _disableAutoswapWarningUsecase.execute();
+      final updatedSettings = await _disableAutoswapWarningUsecase.execute();
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {

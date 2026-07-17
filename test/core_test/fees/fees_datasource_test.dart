@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,7 +34,10 @@ DioException _dioError(String path, {int? statusCode}) => DioException(
   requestOptions: RequestOptions(path: path),
   response: statusCode == null
       ? null
-      : Response(requestOptions: RequestOptions(path: path), statusCode: statusCode),
+      : Response(
+          requestOptions: RequestOptions(path: path),
+          statusCode: statusCode,
+        ),
 );
 
 void main() {
@@ -60,12 +64,14 @@ void main() {
     // Use BB's mempool (no custom server) so the active-server usecase isn't
     // involved — keeps the test focused on the precise/recommended fallback.
     when(() => settingsRepo.fetchByNetwork(any())).thenAnswer(
-      (_) async => MempoolSettings.existing(
-        network: MempoolServerNetwork.fromEnvironment(
-          isTestnet: false,
-          isLiquid: false,
+      (_) async => Ok(
+        MempoolSettings.existing(
+          network: MempoolServerNetwork.fromEnvironment(
+            isTestnet: false,
+            isLiquid: false,
+          ),
+          useForFeeEstimation: false,
         ),
-        useForFeeEstimation: false,
       ),
     );
   });

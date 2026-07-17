@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
-import 'package:bb_mobile/features/mempool_settings/utils/mempool_settings_error_helper.dart';
+import 'package:bb_mobile/features/mempool_settings/presentation/mempool_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -116,13 +116,11 @@ class _SetCustomServerBottomSheetState
     if (success) {
       Navigator.of(context).pop(true);
     } else {
-      final state = context.read<MempoolSettingsCubit>().state;
+      final failure = context.read<MempoolSettingsCubit>().state.failure;
       setState(() {
-        _errorMessage = getMempoolSettingsErrorMessage(
-          context,
-          state,
-          fallback: context.loc.mempoolCustomServerSaveFailed,
-        );
+        _errorMessage =
+            failure?.toTranslated(context) ??
+            context.loc.mempoolCustomServerSaveFailed;
       });
       context.read<MempoolSettingsCubit>().clearError();
     }
@@ -257,7 +255,10 @@ class _SetCustomServerBottomSheetState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(context.loc.mempoolCustomServerUseSsl, style: context.font.bodyMedium),
+                            Text(
+                              context.loc.mempoolCustomServerUseSsl,
+                              style: context.font.bodyMedium,
+                            ),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(

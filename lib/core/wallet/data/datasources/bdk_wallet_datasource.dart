@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -835,13 +835,16 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
   final bdkNetwork = params.isTestnet
       ? bdk.Network.testnet
       : bdk.Network.bitcoin;
+  final bdkNetworkKind = params.isTestnet
+      ? bdk.NetworkKind.test
+      : bdk.NetworkKind.main;
 
   final bdkMnemonic = bdk.Mnemonic.fromEntropy(
     entropy: Uint8List.fromList(params.entropy),
   );
 
   final descriptorSecretKey = bdk.DescriptorSecretKey(
-    network: bdkNetwork,
+    networkKind: bdkNetworkKind,
     mnemonic: bdkMnemonic,
     password: params.passphrase,
   );
@@ -851,36 +854,36 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
       bdk.Descriptor.newBip84(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip84(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
     ScriptType.bip49 => (
       bdk.Descriptor.newBip49(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip49(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
     ScriptType.bip44 => (
       bdk.Descriptor.newBip44(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip44(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
   };

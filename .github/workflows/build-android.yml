@@ -17,11 +17,23 @@ jobs:
     # Pinned to 24.04. 26.04 runner not yet provided by GitHub
     # (tracked in actions/runner-images#13855). Bump when available.
     runs-on: ubuntu-24.04
+    # Least privilege: this job only checks out and uploads an artifact.
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+
+      # Short SHA for the artifact name so each build is traceable to a commit.
+      # `github` context has no short-SHA field; compute it from the checkout.
+      - name: Resolve short commit SHA
+        id: meta
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Free disk space
-        uses: jlumbroso/free-disk-space@v1.3.1
+        # Pinned to a commit SHA (not the mutable v1.3.1 tag): this third-party
+        # action runs on a runner that holds the beta signing secrets, so a
+        # retagged/compromised release must not be able to execute here.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         with:
           tool-cache: true
           android: true
@@ -65,6 +77,6 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: BULL-${{ inputs.mode }}-${{ inputs.format }}
+          name: BULL-${{ inputs.mode }}-${{ steps.meta.outputs.sha_short }}-${{ inputs.format }}
           path: BULL-${{ inputs.mode }}.${{ inputs.format }}
           retention-days: 30

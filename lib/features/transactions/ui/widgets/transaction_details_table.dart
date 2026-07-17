@@ -56,21 +56,34 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
-    // "Send Network fee" for a send/chain swap is the user's lockup tx fee.
-    // Prefer the persisted lockupFee; fall back to the linked lockup tx's
-    // actual fee when it wasn't recorded (e.g. older swaps).
-    final swapSendNetworkFee = (swap?.fees?.lockupFee ?? 0) > 0
-        ? swap!.fees!.lockupFee
-        : txFee;
+    final swapSendNetworkFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
+    );
 
     final amountSent = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
+    );
+    // Null when the sent amount is genuinely unknown (e.g. a recovered swap
+    // whose lockup leg isn't linked) — the row is hidden rather than showing 0.
+    final displayAmountSent = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.displayAmountSentSat,
     );
     final amountReceived = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountReceived(),
     );
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
+    );
+    // A recovered swap shows only trustworthy figures; the derivation lives in
+    // TransactionDetailsState (see Swap.recovered).
+    final recovered = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.isRecoveredSwap,
+    );
+    final recoveredBoltzFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.recoveredBoltzFeeSat,
+    );
+    final recoveredNetworkFee = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.recoveredNetworkFeeSat,
     );
     return DetailsTable(
       items: [
@@ -105,7 +118,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
-        if (counterpartWalletLabel.isNotEmpty)
+        if (counterpartWalletLabel.isNotEmpty && !recovered)
           DetailsTableItem(
             label: transaction?.isOutgoing == true
                 ? context.loc.transactionDetailLabelToWallet
@@ -133,7 +146,8 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.
-        if (!isOrder)
+        if (!isOrder &&
+            (transaction?.isIncoming == true || displayAmountSent != null))
           DetailsTableItem(
             label: transaction?.isIncoming == true
                 ? context.loc.transactionDetailLabelAmountReceived
@@ -142,13 +156,13 @@ class TransactionDetailsTable extends StatelessWidget {
                 ? FormatAmount.sats(
                     transaction?.isIncoming == true
                         ? amountReceived
-                        : amountSent,
+                        : (displayAmountSent ?? amountSent),
                   ).toUpperCase()
                 : FormatAmount.btc(
                     ConvertAmount.satsToBtc(
                       transaction?.isIncoming == true
                           ? amountReceived
-                          : amountSent,
+                          : (displayAmountSent ?? amountSent),
                     ),
                   ).toUpperCase(),
           ),
@@ -793,7 +807,45 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               copyValue: swapCounterpartTxId,
             ),
-          if (swap.fees != null) ...[
+          if (recovered) ...[
+            if (amountSent > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelSendAmount,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountSent).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountSent),
+                      ).toUpperCase(),
+              ),
+            if (amountReceived > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelReceiveAmount,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountReceived).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountReceived),
+                      ).toUpperCase(),
+              ),
+            if (recoveredBoltzFee > 0)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelTransferFee,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(recoveredBoltzFee).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(recoveredBoltzFee),
+                      ).toUpperCase(),
+              ),
+            if (amountReceived > 0 && recoveredNetworkFee > 0)
+              DetailsTableItem(
+                label: context.loc.transactionLabelNetworkFees,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(recoveredNetworkFee).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(recoveredNetworkFee),
+                      ).toUpperCase(),
+              ),
+          ],
+          if (!recovered && swap.fees != null) ...[
             if (swap.isChainSwap) ...[
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
@@ -877,7 +929,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
             ],
           ],
-          if (swap.fees != null)
+          if (!recovered && swap.fees != null)
             DetailsTableItem(
               label: swap.type.isChain
                   ? context.loc.transactionDetailLabelTransferFees

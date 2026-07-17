@@ -45,9 +45,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               const SizedBox(height: 16),
               BBText(
                 'You Are Not Logged in',
-                style: context.font.headlineSmall?.copyWith(
-                  fontWeight: .bold,
-                ),
+                style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),

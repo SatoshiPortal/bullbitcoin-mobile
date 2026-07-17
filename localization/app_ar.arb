@@ -1,4 +1,6 @@
 {
+  "settingsBtcMapTitle": "خريطة",
+  "recipientsListLoadError": "تعذّر تحميل المستلمين. اسحب للأسفل لإعادة المحاولة.",
   "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
   "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
   "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
@@ -218,6 +220,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "هذا الخادم موجود بالفعل",
+  "electrumServerUnreachable": "تعذّر الوصول إلى الخادم. تحقّق من العنوان وحاول مرة أخرى.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -585,6 +588,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "إفتح",
+  "appUnlockPinCheckError": "تعذّر تحميل إعدادات الأمان. يرجى إعادة تشغيل التطبيق.",
+  "appUnlockPinVerifyError": "تعذّر التحقق من رمز PIN. يرجى المحاولة مرة أخرى.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -604,7 +609,7 @@
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
-  "dcaConfirmError": "حدث شيء خاطئ",
+  "dcaConfirmError": "حدث شيء خاطئ: {error}",
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
@@ -1147,10 +1152,6 @@
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
   },
-  "replaceByFeeErrorGeneric": "وقع خطأ أثناء محاولة استبدال الصفقة",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "fundExchangeWarningTactic5": "يطلبون إرسال (بيتكوين) على منصة أخرى",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1414,15 +1415,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "خطأ غير متوقع: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "ثابتة",
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
@@ -1479,7 +1471,7 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "psbtFlowScanDeviceQr": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على الـ (X64X افحصه.",
+  "psbtFlowScanDeviceQr": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على {device}. افحصه.",
   "@psbtFlowScanDeviceQr": {
     "description": "Instruction to scan QR code from hardware device",
     "placeholders": {
@@ -1837,7 +1829,7 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "لوجين إلى جهازك",
+  "psbtFlowLoginToDevice": "لوجين إلى جهاز {device} الخاص بك",
   "@psbtFlowLoginToDevice": {
     "description": "Instruction to login to hardware device",
     "placeholders": {
@@ -3347,14 +3339,9 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "electrumLoadFailedError": "Failed to load servers",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "عنوان التحقق:",
   "@ledgerVerifyAddressLabel": {
@@ -3874,6 +3861,14 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
+  "allSeedViewErrorFetch": "فشل تحميل البذور. يرجى المحاولة مرة أخرى.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "فشل حذف البذرة. يرجى المحاولة مرة أخرى.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
   "dcaBuyingMessage": "أنت تشتري {amount} كل {frequency} عبر {network} طالما هناك أموال في حسابك.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
@@ -4177,10 +4172,6 @@
   "payDefaultCommentHint": "التعليق على التقصير",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "copyDialogButton": "نسخ",
   "@copyDialogButton": {
@@ -4645,7 +4636,7 @@
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
-  "recoverbullReenterRequired": "أعيدي دخولك",
+  "recoverbullReenterRequired": "أعيدي إدخال {inputType}",
   "@recoverbullReenterRequired": {
     "description": "Label for confirmation input field",
     "placeholders": {
@@ -4992,7 +4983,7 @@
   "@keyServerLabel": {
     "description": "Label for key server status"
   },
-  "recoverbullEnterToView": "من فضلك أدخل مفتاح الخزنة الخاص بك.",
+  "recoverbullEnterToView": "من فضلك أدخل {inputType} لعرض مفتاح الخزنة الخاص بك.",
   "@recoverbullEnterToView": {
     "description": "Instruction to enter PIN or password to view vault key",
     "placeholders": {
@@ -5267,15 +5258,6 @@
   "backupWalletGoogleDrivePrivacyMessage1": "هذه المعلومات ",
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
-  },
-  "labelErrorUnsupportedType": "هذا النوع {type} غير مدعم",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
   },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
@@ -6208,14 +6190,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -6513,10 +6490,6 @@
   "arkSendConfirm": "Confirm",
   "@arkSendConfirm": {
     "description": "Confirm button on send screen"
-  },
-  "replaceByFeeErrorTransactionConfirmed": "تم تأكيد الصفقة الأصلية",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
   },
   "rbfErrorFeeTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@rbfErrorFeeTooLow": {
@@ -7219,14 +7192,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "electrumSavePriorityFailedError": "Failed to save server priority",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
@@ -7645,7 +7613,7 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "شغل جهازك",
+  "psbtFlowTurnOnDevice": "شغل جهاز {device} الخاص بك",
   "@psbtFlowTurnOnDevice": {
     "description": "Instruction to power on hardware device",
     "placeholders": {
@@ -7752,7 +7720,7 @@
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "psbtFlowSignTransactionOnDevice": "اضغط على الأزرار لتوقيع الصفقة على.",
+  "psbtFlowSignTransactionOnDevice": "اضغط على الأزرار لتوقيع الصفقة على {device} الخاص بك.",
   "@psbtFlowSignTransactionOnDevice": {
     "description": "Instruction to sign transaction on hardware device",
     "placeholders": {
@@ -8607,14 +8575,9 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "electrumAddFailedError": "Failed to add custom server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "رسوم التحويل",
   "@transactionDetailLabelTransferFees": {
@@ -8960,15 +8923,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "(لابل) لم يعثر عليه.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "المدفوعات الخاصة",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9125,7 +9079,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "dcaConfirmationError": "حدث شيء خاطئ",
+  "dcaConfirmationError": "حدث شيء خاطئ: {error}",
   "@dcaConfirmationError": {
     "description": "Error message displayed when confirmation fails",
     "placeholders": {
@@ -9135,6 +9089,7 @@
     }
   },
   "oopsSomethingWentWrong": "! شيء ما حدث",
+  "bip85NoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -9142,7 +9097,7 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "enterYourPinTitle": "أدخلي",
+  "enterYourPinTitle": "أدخلي {pinOrPassword}",
   "@enterYourPinTitle": {
     "description": "Title for entering PIN or password",
     "placeholders": {
@@ -10228,7 +10183,7 @@
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
   },
-  "recoverbullEnterInput": "أدخلي",
+  "recoverbullEnterInput": "أدخلي {inputType}",
   "@recoverbullEnterInput": {
     "description": "Input field label prompting for PIN or password",
     "placeholders": {
@@ -10249,6 +10204,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "التمويل غير متاح",
+  "fundExchangeRestrictedMessage": "التمويل غير متاح على حسابك. يرجى التواصل مع الدعم لمزيد من المعلومات.",
   "fundExchangeWarningTitle": "احترس من المسامير",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -10314,8 +10271,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "ساعات",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "ساعات قليلة",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "كل شهر",
@@ -11281,7 +11238,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "البث...",
-  "broadcastSignedTxBroadcastError": "فشل بث المعاملة",
+  "broadcastSignedTxBroadcastError": "تعذّر علينا بث معاملتك. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "importWatchOnlyErrorNoWalletSelected": "الصق أو امسح مفتاحًا عامًا أو واصفًا أولًا.",
+  "importWatchOnlyErrorLabelRequired": "امنح محفظتك اسمًا قبل الاستيراد.",
+  "importWatchOnlyErrorInvalidFormat": "لا يبدو هذا مفتاحًا عامًا أو واصفًا صالحًا. تحقق مجددًا مما لصقته.",
+  "importWatchOnlyErrorImportFailed": "تعذّر علينا استيراد هذه المحفظة للعرض فقط. يُرجى التحقق من التفاصيل والمحاولة مرة أخرى.",
+  "broadcastSignedTxErrorInvalidTransaction": "لا تبدو هذه معاملة موقّعة صالحة. تأكد من أنك لصقت PSBT أو المعاملة كاملةً.",
+  "broadcastSignedTxErrorInvalidPushTx": "تعذّر علينا قراءة معاملة من هذا الوسم. يُرجى المحاولة بالمسح مرة أخرى.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12615,7 +12578,6 @@
   "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
   "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
   "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
-  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
   "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
   "addressViewerTitle": "العنوان",
   "viewerTapToCopy": "انقر للنسخ",
@@ -12670,106 +12632,305 @@
   "onboardingAdvancedOptionsDone": "تم",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
+  "pinCodeSaveError": "تعذر حفظ رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
+  "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
+  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
+  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا.",
+  "labelErrorUnexpected": "خطأ غير متوقع: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "هذا النوع {type} غير مدعم",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "لابل «{label}» لم يعثر عليه.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ساعات",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
   "walletButtonCoins": "إدارة العملات",
-  "@walletButtonCoins": {"description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"},
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
   "coinsTitle": "العملات",
-  "@coinsTitle": {"description": "Title of the Coins (UTXO) screen"},
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
   "coinsSummaryCoinsCount": "{count, plural, zero{لا توجد عملات} one{عملة واحدة} two{عملتان} few{{count} عملات} many{{count} عملة} other{{count} عملة}}",
-  "@coinsSummaryCoinsCount": {"description": "Coin count in the summary bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFrozen": "مجمّدة",
-  "@coinsFrozen": {"description": "Label for the frozen amount stat and frozen pill"},
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
   "coinsSpendable": "قابلة للإنفاق",
-  "@coinsSpendable": {"description": "Label for the spendable amount sub-stat"},
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
   "coinsNoneFrozen": "لا شيء مجمّد",
-  "@coinsNoneFrozen": {"description": "Sub-text shown in the frozen stat when nothing is frozen"},
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
   "coinsSortFilter": "الترتيب والتصفية",
-  "@coinsSortFilter": {"description": "Label for the sort & filter sheet button"},
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
   "coinsShownOf": "يتم عرض {visible} من {total}",
-  "@coinsShownOf": {"description": "Result count shown when the list is filtered", "placeholders": {"visible": {"type": "int"}, "total": {"type": "int"}}},
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnspentOutputsCount": "{count, plural, zero{لا مخرجات غير منفقة} one{مخرج غير منفق واحد} two{مخرجان غير منفقَين} few{{count} مخرجات غير منفقة} many{{count} مخرجًا غير منفق} other{{count} مخرج غير منفق}}",
-  "@coinsUnspentOutputsCount": {"description": "Result count shown when the list is unfiltered", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSync": "مزامنة",
-  "@coinsSync": {"description": "Label for the manual sync button on the Coins screen"},
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
   "coinsClearAll": "مسح الكل",
-  "@coinsClearAll": {"description": "Label for the clear-all-filters action"},
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
   "coinsSortAmountDesc": "المبلغ: من الأعلى إلى الأدنى",
-  "@coinsSortAmountDesc": {"description": "Sort option: amount descending"},
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
   "coinsSortAmountAsc": "المبلغ: من الأدنى إلى الأعلى",
-  "@coinsSortAmountAsc": {"description": "Sort option: amount ascending"},
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
   "coinsSortDateNew": "التاريخ: الأحدث",
-  "@coinsSortDateNew": {"description": "Sort option: newest first"},
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
   "coinsSortDateOld": "التاريخ: الأقدم",
-  "@coinsSortDateOld": {"description": "Sort option: oldest first"},
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
   "coinsKeychain": "سلسلة المفاتيح",
-  "@coinsKeychain": {"description": "Label for the keychain filter segment"},
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
   "coinsKeychainAll": "الكل",
-  "@coinsKeychainAll": {"description": "Keychain filter option: all"},
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
   "coinsKeychainReceive": "الاستلام",
-  "@coinsKeychainReceive": {"description": "Keychain filter / badge: receive (external) keychain"},
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
   "coinsKeychainChange": "الفكة",
-  "@coinsKeychainChange": {"description": "Keychain filter / badge: change (internal) keychain"},
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
   "coinsFrozenStatus": "حالة التجميد",
-  "@coinsFrozenStatus": {"description": "Label for the frozen-status filter segment"},
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
   "coinsFrozenStatusAll": "الكل",
-  "@coinsFrozenStatusAll": {"description": "Frozen-status filter option: all"},
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
   "coinsFrozenStatusFrozen": "مجمّدة",
-  "@coinsFrozenStatusFrozen": {"description": "Frozen-status filter option: frozen only"},
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
   "coinsFrozenStatusUnfrozen": "غير مجمّدة",
-  "@coinsFrozenStatusUnfrozen": {"description": "Frozen-status filter option: unfrozen only"},
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
   "coinsLabels": "التسميات",
-  "@coinsLabels": {"description": "Label for the labels filter section"},
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
   "coinsReset": "إعادة تعيين",
-  "@coinsReset": {"description": "Reset filters button in the sort & filter sheet"},
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
   "coinsApply": "تطبيق",
-  "@coinsApply": {"description": "Apply filters button in the sort & filter sheet"},
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
   "coinsSelectedCount": "{count, plural, zero{لم يتم التحديد} one{تم تحديد عنصر واحد} two{تم تحديد عنصرين} few{تم تحديد {count} عناصر} many{تم تحديد {count} عنصرًا} other{تم تحديد {count} عنصر}}",
-  "@coinsSelectedCount": {"description": "Selection count in the selection app bar / action bar", "placeholders": {"count": {"type": "int"}}},
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsSelectAll": "تحديد الكل",
-  "@coinsSelectAll": {"description": "Selects all unfrozen visible coins"},
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
   "coinsFreeze": "تجميد",
-  "@coinsFreeze": {"description": "Freeze action label"},
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
   "coinsUnfreeze": "إلغاء التجميد",
-  "@coinsUnfreeze": {"description": "Unfreeze action label"},
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
   "coinsUndo": "تراجع",
-  "@coinsUndo": {"description": "Undo action on the unfreeze toast"},
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
   "coinsFreezeConfirmTitle": "{count, plural, zero{تجميد العملات؟} one{تجميد عملة واحدة؟} two{تجميد عملتين؟} few{تجميد {count} عملات؟} many{تجميد {count} عملة؟} other{تجميد {count} عملة؟}}",
-  "@coinsFreezeConfirmTitle": {"description": "Title of the freeze confirmation dialog", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsFreezeConfirmBody": "تبقى العملات المجمّدة في محفظتك لكنها مستبعدة من الإنفاق حتى تلغي تجميدها.",
-  "@coinsFreezeConfirmBody": {"description": "Body of the freeze confirmation dialog"},
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
   "coinsFreezeZeroWarning": "سيؤدي تجميد هذه العملات إلى ترك رصيد قابل للإنفاق صفر.",
-  "@coinsFreezeZeroWarning": {"description": "Warning shown when freezing would drop spendable balance to zero"},
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
   "coinsFrozenToast": "{count, plural, zero{لا عملات مجمّدة} one{تم تجميد عملة واحدة · مستبعدة من الإنفاق} two{تم تجميد عملتين · مستبعدتان من الإنفاق} few{تم تجميد {count} عملات · مستبعدة من الإنفاق} many{تم تجميد {count} عملة · مستبعدة من الإنفاق} other{تم تجميد {count} عملة · مستبعدة من الإنفاق}}",
-  "@coinsFrozenToast": {"description": "Toast shown after freezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsUnfrozenToast": "{count, plural, zero{لا عملات} one{تم إلغاء تجميد عملة واحدة} two{تم إلغاء تجميد عملتين} few{تم إلغاء تجميد {count} عملات} many{تم إلغاء تجميد {count} عملة} other{تم إلغاء تجميد {count} عملة}}",
-  "@coinsUnfrozenToast": {"description": "Toast shown after unfreezing coins", "placeholders": {"count": {"type": "int"}}},
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsConfsCount": "{count, plural, zero{لا تأكيدات} one{تأكيد واحد} two{تأكيدان} few{{count} تأكيدات} many{{count} تأكيدًا} other{{count} تأكيد}}",
-  "@coinsConfsCount": {"description": "Confirmation count pill", "placeholders": {"count": {"type": "int"}}},
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "coinsPending": "قيد الانتظار",
-  "@coinsPending": {"description": "Confirmation pill text for an unconfirmed (0-conf) coin"},
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
   "coinsEmptyTitle": "لا توجد عملات بعد",
-  "@coinsEmptyTitle": {"description": "Empty-state title when the wallet has no UTXOs"},
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
   "coinsEmptyBody": "ستظهر العملات هنا بمجرد استلامك للبيتكوين.",
-  "@coinsEmptyBody": {"description": "Empty-state body when the wallet has no UTXOs"},
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
   "coinsFilteredEmptyTitle": "لا توجد عملات مطابقة",
-  "@coinsFilteredEmptyTitle": {"description": "Title shown when filters exclude all coins"},
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
   "coinsClearFilters": "مسح عوامل التصفية",
-  "@coinsClearFilters": {"description": "Button to clear filters from the filtered-empty state"},
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
   "coinsErrorRetry": "إعادة المحاولة",
-  "@coinsErrorRetry": {"description": "Retry button on the Coins error state"},
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
   "coinsSwipeHint": "اسحب عملة للتجميد · اضغط مطولًا للتحديد",
-  "@coinsSwipeHint": {"description": "Footer hint shown when not selecting"},
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
   "coinsErrorLoadFailed": "تعذّر تحميل عملاتك. اسحب للأسفل للتحديث والمحاولة مرة أخرى.",
-  "@coinsErrorLoadFailed": {"description": "Error message when loading UTXOs fails"},
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
   "coinsErrorFreezeFailed": "تعذّر تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorFreezeFailed": {"description": "Error message when freezing fails"},
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
   "coinsErrorUnfreezeFailed": "تعذّر إلغاء تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorUnfreezeFailed": {"description": "Error message when unfreezing fails"},
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
   "coinsErrorUnexpected": "حدث خطأ ما. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorUnexpected": {"description": "Generic Coins error message for unexpected failures"},
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
   "walletCoinsEntryUtxoCount": "{count, plural, zero{لا توجد UTXO} one{UTXO واحد} two{UTXO اثنان} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {"description":"UTXO count in the wallet-detail Manage coins entry subtitle","placeholders":{"count":{"type":"int"}}},
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "walletCoinsEntryFrozen": "{amount} مجمّد",
-  "@walletCoinsEntryFrozen": {"description":"Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'","placeholders":{"amount":{"type":"String"}}},
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "logsViewerFilterByDate": "تصفية حسب التاريخ",
   "logsViewerShowingCount": "عرض {shown} من {total} سجل",
   "logsViewerClearFilter": "مسح التصفية",
@@ -12777,5 +12938,329 @@
   "logsShareOptionShare": "مشاركة",
   "logsShareOptionExport": "تصدير",
   "logsExportedMessage": "تم تصدير السجلات بنجاح",
-  "logsExportFailedMessage": "فشل تصدير السجلات"
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "coreSwapsStatusRefunded": "مستردة",
+  "swapRestoreTitle": "استعادة المبادلات",
+  "swapRestoreActionable": "{count, plural, =0{لا توجد مبادلات لاستعادتها} =1{يمكنك محاولة استعادة مبادلة واحدة. قد تكون بالفعل في حالة نهائية.} other{يمكنك محاولة استعادة {count} مبادلات. لاحظ أن بعضها قد يكون بالفعل في حالة نهائية.}}",
+  "swapRestoreNoSwaps": "لم يُعثر على مبادلات لاستعادتها",
+  "swapRestoreRecoverableSection": "قابلة للاستعادة",
+  "swapRestoreAllSection": "جميع المبادلات",
+  "swapRestoreFailed": "تعذّرت استعادة المبادلات",
+  "swapRestoreKindLightningSend": "إرسال عبر البرق",
+  "swapRestoreKindLightningReceive": "استلام عبر البرق",
+  "swapRestoreKindCrossChain": "عبر السلاسل",
+  "swapRescueTitle": "إنقاذ المبادلة",
+  "swapRescueTypeLabel": "النوع",
+  "swapRescueStatusLabel": "الحالة",
+  "swapRescueAmountLabel": "المبلغ",
+  "swapRescueRouteLabel": "المسار",
+  "swapRescueCreatedLabel": "تاريخ الإنشاء",
+  "swapRescueIdLabel": "معرّف المبادلة",
+  "swapRescueWalletLabel": "استعادة إلى محفظة",
+  "swapRescueWalletHint": "اختر محفظة",
+  "swapRescueButton": "استعادة",
+  "swapRescueSuccess": "تمت استعادة المبادلة — ستُستأنف الآن",
+  "mempoolServerStatusOnline": "متصل",
+  "mempoolServerStatusOffline": "غير متصل",
+  "mempoolServerStatusChecking": "جارٍ التحقق...",
+  "mempoolServerStatusUnknown": "غير معروف",
+  "mempoolCustomServerSaveFailed": "فشل حفظ الخادم",
+  "mempoolCustomServerInfoDescription": "تُستخدم خوادم Mempool لتقدير الرسوم ولفتح مستكشف الكتل عند عرض تفاصيل المعاملات.",
+  "mempoolCustomServerUseSsl": "استخدام SSL",
+  "mempoolCustomServerSslAutoDetected": "(تم الاكتشاف تلقائيًا)",
+  "mempoolCustomServerSslHelpText": "بالنسبة للخوادم المحلية (.local، عناوين IP الخاصة) وخوادم Tor (.onion)، عادةً ما يكون SSL معطّلاً. يجب استخدام SSL مع عناوين IP والنطاقات العامة.",
+  "mempoolErrorSameAsDefault": "هذا الرابط مطابق للخادم الافتراضي. يرجى استخدام رابط مختلف.",
+  "mempoolErrorConnectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم بطيئًا أو غير متاح.",
+  "mempoolErrorHostNotFound": "تعذّر العثور على هذا الخادم. يرجى التحقق من الرابط والمحاولة مجددًا.",
+  "mempoolErrorTorNotRunning": "تعذّر الوصول إلى عنوان .onion. تأكد من تشغيل Tor/Orbot وحاول مجددًا.",
+  "mempoolErrorConnectionFailed": "تعذّر الاتصال بالخادم. تحقق من اتصال الشبكة وحاول مجددًا.",
+  "mempoolErrorNotMempoolServer": "لا يبدو أن هذا الرابط خادم Mempool. يرجى التحقق من العنوان.",
+  "mempoolErrorServerUnavailable": "الخادم غير متاح حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+  "mempoolErrorServerError": "واجه الخادم خطأً. يرجى المحاولة مرة أخرى لاحقًا.",
+  "mempoolErrorInvalidResponse": "أرسل الخادم استجابة غير صالحة.",
+  "mempoolErrorSaveServerFailed": "فشل حفظ الخادم",
+  "mempoolErrorLoadFailed": "فشل تحميل بيانات خادم Mempool",
+  "mempoolErrorDeleteFailed": "فشل حذف الخادم المخصص",
+  "exchangeStatisticsBuySellRatioDesc": "نسبة إجمالي الحجم بين الشراء والبيع",
+  "exchangeStatisticsBuyVolumeDesc": "المبلغ الإجمالي المُنفَق في شراء البيتكوين",
+  "exchangeStatisticsSellVolumeDesc": "المبلغ الإجمالي المُستلَم من بيع البيتكوين",
+  "exchangeStatisticsBuyTradeCountDesc": "عدد معاملات شراء البيتكوين",
+  "exchangeStatisticsSellTradeCountDesc": "عدد معاملات بيع البيتكوين",
+  "exchangeStatisticsBuyAvgPriceDesc": "متوسط السعر المدفوع لكل بيتكوين عند الشراء",
+  "exchangeStatisticsSellAvgPriceDesc": "متوسط السعر المستلَم لكل بيتكوين عند البيع",
+  "exchangeStatisticsTotalVolumeDesc": "مجموع أحجام الشراء والبيع بالعملات التقليدية",
+  "receivePayjoinNoUtxos": "استلم الأموال أولاً لتفعيله.\nيتطلب استخدام Payjoin وجود مخرجات معاملات غير منفقة (UTXOs).",
+  "receiveLiquidRiskDisclosureLabel": "ستُحوَّل المدفوعات إلى L-BTC على شبكة السائل (وليس BTC). اطّلع على المزيد.",
+  "payViewReceipt": "عرض الإيصال",
+  "paySinpeReceipt": "إيصال SINPE",
+  "transactionFilterWithdraw": "سحب",
+  "transactionFilterPay": "دفع",
+  "transactionFilterFunding": "تمويل",
+  "transactionFilterReward": "مكافأة",
+  "transactionFilterRefund": "استرداد",
+  "transactionFilterBalanceAdjustment": "تسوية",
+  "transactionListLoadingFailed": "تعذّر تحميل المعاملات.",
+  "transactionLabelNetworkFees": "رسوم الشبكة",
+  "walletLiquidRiskDisclosureLabel": "هذه الأموال هي L-BTC على شبكة السائل (وليست BTC). اطّلع على المزيد.",
+  "liquidRiskDisclosureSemanticLabel": "فتح بيان مخاطر بيتكوين السائل",
+  "liquidRiskDisclosureTitle": "بيان مخاطر بيتكوين السائل لمحفظة المدفوعات الفورية",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeScamConsentError": "فشل تسجيل موافقتك. يرجى المحاولة مرة أخرى.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 كولومبيا",
+  "autoswapActiveCardTitle": "النقل الآلي مفعّل",
+  "autoswapWarningExplanationBold": "تلقائيًا",
+  "autoswapInfoConsentMessage": "النقل الآلي مفعّل حاليًا لكنه لن يُنفَّذ حتى توافق عليه. هل ترغب في إبقائه مفعّلاً؟",
+  "nfcNotAvailable": "خاصية NFC غير مدعومة على هذا الجهاز",
+  "nfcDisabled": "خاصية NFC معطّلة. فعّلها من الإعدادات.",
+  "nfcInvalidData": "لم يُعثر على بيانات NFC مدعومة",
+  "nfcConnectionLost": "انقطع اتصال NFC. قرّب جهازك من علامة NFC وحاول مجددًا.",
+  "nfcWriteFailed": "فشل نقل البيانات عبر NFC. يرجى المحاولة مرة أخرى.",
+  "nfcError": "خطأ NFC: {error}",
+  "deleteLogsTitle": "حذف السجلات",
+  "logsDeletedMessage": "تم حذف السجلات",
+  "sendSelfTransfer": "تحويل ذاتي",
+  "sendCoordinatingPayjoinTransaction": "جارٍ تنسيق معاملة Payjoin.",
+  "sendErrorInvoiceExpired": "انتهت صلاحية هذه الفاتورة. اطلب من المستلم فاتورة جديدة.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "فكّر في تمويل محفظة المدفوعات الفورية لإجراء مدفوعات أصغر.",
+  "psbtFlowSignViaNfc": "توقيع عبر NFC",
+  "psbtFlowSignViaNfcSheetTitle": "قرّب جهاز {deviceName} لإرسال PSBT عبر NFC",
+  "psbtFlowColdcardQInstructionsTitle": "تعليمات Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
+  "psbtFlowColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "psbtFlowColdcardQStep3": "اختر طريقة التوقيع المفضّلة لديك:",
+  "psbtFlowColdcardQStep4": "بالنسبة لرمز QR:",
+  "psbtFlowColdcardQStep5": "   - اختر \"مسح أي رمز QR\" على جهاز Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - امسح رمز QR الظاهر في محفظة Bull",
+  "psbtFlowColdcardQStep7": "   - إذا واجهت صعوبة في المسح:",
+  "psbtFlowColdcardQStep8": "     - زِد سطوع شاشة جهازك",
+  "psbtFlowColdcardQStep9": "     - حرّك الليزر الأحمر لأعلى ولأسفل فوق رمز QR",
+  "psbtFlowColdcardQStep10": "     - حاول إبعاد جهازك قليلاً للخلف",
+  "psbtFlowColdcardQStep11": "بالنسبة لـ NFC:",
+  "psbtFlowColdcardQStep12": "   - اختر \"جاهز للتوقيع\" على جهاز Coldcard Q، ثم اضغط زر NFC",
+  "psbtFlowColdcardQStep13": "   - قرّب هاتفك من جهاز Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - انتظر حتى يتم نقل PSBT",
+  "psbtFlowColdcardQStep15": "بمجرد استيراد المعاملة في جهاز Coldcard Q، راجع عنوان الوجهة والمبلغ.",
+  "psbtFlowColdcardQStep16": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Q.",
+  "psbtFlowColdcardQStep17": "سيعرض جهاز Coldcard Q بعد ذلك رمز QR للمعاملة الموقّعة أو يُجهّز نقلها عبر NFC.",
+  "psbtFlowColdcardQStep18": "إذا وقّعت باستخدام رمز QR، اضغط \"انتهيت\" في محفظة بول بيتكوين.",
+  "psbtFlowColdcardQStep19": "ستطلب منك محفظة بول بيتكوين مسح رمز QR للمعاملة الموقّعة أو استخدام NFC لاستلامها.",
+  "psbtFlowColdcardQStep20": "   - بالنسبة لرمز QR: امسح الرمز الظاهر على جهاز Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - بالنسبة لـ NFC: قرّب هاتفك من جهاز Coldcard Q",
+  "psbtFlowColdcardQStep22": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardQStep23": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
+  "psbtFlowColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
+  "psbtFlowColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "psbtFlowColdcardMk4Step3": "اختر \"جاهز للتوقيع\" على جهاز Coldcard Mk4، ثم اضغط الزر رقم 3",
+  "psbtFlowColdcardMk4Step4": "قرّب هاتفك من جهاز Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "انتظر حتى يتم نقل PSBT",
+  "psbtFlowColdcardMk4Step6": "بمجرد استيراد المعاملة في جهاز Coldcard Mk4، راجع عنوان الوجهة والمبلغ.",
+  "psbtFlowColdcardMk4Step7": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "سيُجهّز جهاز Coldcard Mk4 بعد ذلك المعاملة الموقّعة لنقلها عبر NFC.",
+  "psbtFlowColdcardMk4Step9": "في محفظة بول بيتكوين، اضغط NFC في شاشة البث.",
+  "psbtFlowColdcardMk4Step10": "قرّب هاتفك من جهاز Coldcard Mk4 لاستلام المعاملة الموقّعة.",
+  "psbtFlowColdcardMk4Step11": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardMk4Step12": "راجع تفاصيل المعاملة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardMk4Step13": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "قرّب جهاز Coldcard لاستلام المعاملة الموقّعة عبر NFC",
+  "importColdcardInvalidWalletData": "بيانات محفظة Coldcard غير صالحة",
+  "importColdcardConnectTitle": "الاتصال بـ {deviceName}",
+  "importColdcardConnectDescription": "استورد واصف المحفظة من جهاز {deviceName} الخاص بك",
+  "importColdcardScanNfcSheetTitle": "قرّب جهاز {deviceName} لاستيراد واصف المحفظة عبر NFC",
+  "importColdcardQInstructionsTitle": "تعليمات Coldcard Q",
+  "importColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
+  "importColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "importColdcardQStep3": "اختر قائمة الإعدادات المتقدمة",
+  "importColdcardQStep4": "اضغط \"تصدير المحفظة\"",
+  "importColdcardQStep5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
+  "importColdcardQStep6": "اضغط \"Enter\" في الشاشة الأولى",
+  "importColdcardQStep7": "اضغط \"Enter\" في الشاشة الثانية",
+  "importColdcardQStep8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
+  "importColdcardQStep9": "بالنسبة لرمز QR، اضغط زر رمز QR على الجهاز. سيعرض الجهاز رمز QR",
+  "importColdcardQStep10": "بالنسبة لـ NFC، اضغط زر NFC على الجهاز",
+  "importColdcardQStep11": "اضغط زر \"فتح الكاميرا\" / \"مسح NFC\"",
+  "importColdcardQStep12": "امسح رمز QR الظاهر على جهازك أو قرّب NFC هاتفك من NFC جهاز Coldcard",
+  "importColdcardQStep13": "هذا كل شيء!",
+  "importColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
+  "importColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
+  "importColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "importColdcardMk4Step3": "اختر قائمة الإعدادات المتقدمة",
+  "importColdcardMk4Step4": "اضغط \"تصدير المحفظة\"",
+  "importColdcardMk4Step5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
+  "importColdcardMk4Step6": "اضغط \"Enter\" في الشاشة الأولى",
+  "importColdcardMk4Step7": "اضغط \"Enter\" في الشاشة الثانية",
+  "importColdcardMk4Step8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
+  "importColdcardMk4Step9": "اضغط الرقم 3 لتشغيل NFC على Coldcard",
+  "importColdcardMk4Step10": "اضغط زر \"مسح NFC\"",
+  "importColdcardMk4Step11": "قرّب NFC هاتفك من NFC جهاز Coldcard",
+  "importColdcardMk4Step12": "هذا كل شيء!",
+  "fundExchangeCopDailyLimitWarning": "إذا تجاوزت حد المعاملات اليومي، ستفشل المعاملة. سيتعيّن عليك الاتصال بدعم العملاء.",
+  "fundExchangeCopSenderName": "اسم المرسل",
+  "fundExchangeCopIssuingBank": "البنك المُصدِر",
+  "fundExchangeCopSelectBankError": "يرجى اختيار البنك المُصدِر",
+  "fundExchangeCopAmount": "المبلغ",
+  "fundExchangeCopEnterAmountError": "يرجى إدخال مبلغ",
+  "fundExchangeCopValidAmountError": "يرجى إدخال مبلغ صالح",
+  "fundExchangeCopGeneratePaymentLink": "إنشاء رابط الدفع",
+  "fundExchangeCopRedirectMessage": "سيتم تحويلك إلى صفحة خارجية لإجراء الدفع.",
+  "fundExchangeCopOpenPaymentLink": "فتح رابط الدفع",
+  "fundExchangeCopFailedToOpenLink": "تعذّر فتح رابط الدفع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.",
+  "priceChartFailedToLoad": "فشل تحميل سجل الأسعار",
+  "priceFailedToLoad": "فشل تحميل السعر",
+  "statusScreenTryAgain": "حاول مرة أخرى",
+  "statusScreenContinue": "متابعة",
+  "noteVisibleToSenderNotice": "ستكون هذه الملاحظة مرئية لمستلم رمز QR أو الفاتورة الخاصة بك.",
+  "viewerAddressTab": "العنوان",
+  "viewerPaymentUriTab": "رابط الدفع (URI)",
+  "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
+  "errorReportingProgramTitle": "برنامج الإبلاغ عن الأخطاء",
+  "errorReportingProgramDescriptionP1": "ساعدنا في تحسين Bull من خلال المشاركة في برنامج الإبلاغ عن الأخطاء.",
+  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما.",
+  "errorReportingProgramDescriptionP3": "يتيح لنا هذا معرفة عدد المستخدمين المتأثرين بكل خلل وتحديد أولويات الإصلاح وفقًا لذلك، وبدونه لا نملك وسيلة لقياس التأثير.",
+  "errorReportingProgramDescriptionP4": "تُرسَل التقارير فقط إلى خادم بول، ولا تُرسَل أبدًا إلى أطراف ثالثة.",
+  "errorReportingProgramDescriptionP5": "بول بيتكوين مفتوحة المصدر، لذا يمكنك التحقق مما يتم إرساله.",
+  "errorReportingAcceptButton": "قبول",
+  "errorReportingCancelButton": "إلغاء",
+  "errorReportingRestartSnackbar": "أعِد تشغيل التطبيق لتطبيق هذا التغيير",
+  "backupWarningTitle": "انسخ محفظتك احتياطيًا الآن",
+  "backupWarningBackupNow": "نعم",
+  "backupWarningBackupLater": "لا، أنا أتفهّم المخاطرة",
+  "recipientsScreenTitle": "اختر المستلم",
+  "recipientsScreenSubtitle": "لمن تدفع؟",
+  "recipientsTabNew": "مستلم جديد",
+  "recipientsTabList": "مستلمو عملتي الورقية",
+  "recipientsPayoutMethod": "طريقة الدفع",
+  "recipientsFilterByJurisdiction": "تصفية حسب الدولة:",
+  "recipientsListEmpty": "لم يُعثر على مستلمين.",
+  "recipientsContinue": "متابعة",
+  "recipientsJurisdictionAll": "جميع الدول",
+  "recipientsJurisdictionCanada": "🇨🇦 كندا",
+  "recipientsJurisdictionEurope": "🇪🇺 أوروبا (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 المكسيك",
+  "recipientsJurisdictionCostaRica": "🇨🇷 كوستاريكا",
+  "recipientsJurisdictionArgentina": "🇦🇷 الأرجنتين",
+  "recipientsJurisdictionColombia": "🇨🇴 كولومبيا",
+  "recipientsTypeInteracEmail": "تحويل Interac الإلكتروني",
+  "recipientsTypeBillPayment": "دفع فاتورة",
+  "recipientsTypeBankTransfer": "تحويل مصرفي",
+  "recipientsTypeSepa": "تحويل SEPA",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI عبر SMS",
+  "recipientsTypeSpeiCard": "بطاقة SPEI",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (بالدولار)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (بالكولون)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU الأرجنتين",
+  "recipientsTypeBankAccountCo": "حساب مصرفي (بيزو كولومبي)",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "البريد الإلكتروني",
+  "recipientsInfoPayee": "المستفيد",
+  "recipientsInfoAccount": "الحساب",
+  "recipientsInfoPhone": "الهاتف",
+  "recipientsInfoCard": "البطاقة",
+  "recipientsInfoLabel": "التسمية",
+  "recipientsValidationFieldRequired": "لا يمكن ترك هذا الحقل فارغًا",
+  "recipientsLabelOptional": "تسمية (اختياري)",
+  "recipientsLabelHint": "أدخل تسمية لهذا المستلم",
+  "recipientsFieldName": "الاسم",
+  "recipientsFieldNameHint": "أدخل اسم المستلم",
+  "recipientsFieldRecipientNameLabel": "اسم المستلم",
+  "recipientsFieldPhoneNumber": "رقم الهاتف",
+  "recipientsFieldPhoneNumberHint": "أدخل رقم الهاتف",
+  "recipientsFieldOwnerName": "اسم صاحب الحساب",
+  "recipientsFieldOwnerNameHint": "أدخل اسم صاحب الحساب",
+  "recipientsAccountOwnerQuestion": "لمن يعود هذا الحساب؟",
+  "recipientsAccountOwnerMine": "هذا حسابي",
+  "recipientsAccountOwnerSomeoneElse": "هذا حساب شخص آخر",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "أدخل رقم IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "أدخل رقم CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "أدخل رقم CVU/CBU",
+  "recipientsFieldBankInstitution": "المؤسسة المصرفية",
+  "recipientsFieldBankInstitutionPlaceholder": "اختر المؤسسة المصرفية",
+  "recipientsValidationBankInstitution": "يرجى اختيار مؤسسة مصرفية",
+  "recipientsFieldAccountType": "نوع الحساب",
+  "recipientsAccountTypeSavings": "توفير",
+  "recipientsAccountTypeChecking": "جاري",
+  "recipientsFieldBankAccountNumber": "رقم الحساب المصرفي",
+  "recipientsFieldBankAccountNumberHint": "أدخل رقم الحساب المصرفي",
+  "recipientsCopDocCc": "بطاقة المواطنة (Cédula de Ciudadanía)",
+  "recipientsCopDocCe": "بطاقة الإقامة الأجنبية (Cédula de Extranjería)",
+  "recipientsCopDocNit": "رقم التعريف الضريبي (NIT)",
+  "recipientsCopDocPassport": "جواز السفر",
+  "recipientsCopDocTi": "بطاقة الهوية للقاصرين (Tarjeta de Identidad)",
+  "recipientsCopDocRegistroCivil": "السجل المدني (Registro Civil)",
+  "recipientsFieldDebitCard": "رقم بطاقة الخصم",
+  "recipientsFieldDebitCardHint": "أدخل رقم بطاقة الخصم",
+  "recipientsFieldOwnerNameSinpeHint": "سيظهر اسم صاحب الحساب هنا",
+  "recipientsValidationSinpeOwner": "يرجى التحقق من رقم الهاتف",
+  "recipientsFieldEmailAddress": "البريد الإلكتروني",
+  "recipientsFieldEmailAddressHint": "أدخل عنوان البريد الإلكتروني",
+  "recipientsFieldSecurityQuestion": "سؤال الأمان",
+  "recipientsFieldSecurityQuestionHint": "أدخل سؤال الأمان (10-40 حرفًا)",
+  "recipientsFieldSecurityAnswer": "إجابة الأمان",
+  "recipientsFieldSecurityAnswerHint": "أدخل إجابة الأمان",
+  "recipientsValidationSecurityQuestionMin": "يجب أن يتكون سؤال الأمان من 10 أحرف على الأقل",
+  "recipientsCharCounter": "{count}/40 حرفًا",
+  "recipientsFieldInstitutionCode": "رمز المؤسسة",
+  "recipientsFieldInstitutionCodeHint": "أدخل رمز المؤسسة",
+  "recipientsFieldInstitutionNumber": "رقم المؤسسة",
+  "recipientsFieldInstitutionNumberHint": "أدخل رقم المؤسسة",
+  "recipientsFieldTransitNumber": "رقم الفرع المصرفي",
+  "recipientsFieldTransitNumberHint": "أدخل رقم الفرع المصرفي",
+  "recipientsFieldAccountNumber": "رقم الحساب",
+  "recipientsFieldAccountNumberHint": "أدخل رقم الحساب",
+  "recipientsFieldDefaultComment": "تعليق افتراضي (اختياري)",
+  "recipientsFieldDefaultCommentHint": "أدخل تعليقًا افتراضيًا",
+  "recipientsFieldCorporateAccount": "حساب تجاري",
+  "recipientsFieldFirstName": "الاسم الأول",
+  "recipientsFieldFirstNameHint": "أدخل الاسم الأول",
+  "recipientsFieldLastName": "اسم العائلة",
+  "recipientsFieldLastNameHint": "أدخل اسم العائلة",
+  "recipientsFieldCorporateName": "اسم الشركة",
+  "recipientsFieldCorporateNameHint": "أدخل اسم الشركة",
+  "recipientsFieldBillerName": "اسم جهة الفوترة",
+  "recipientsFieldBillerNameHint": "ابحث عن جهة الفوترة واخترها",
+  "recipientsValidationBillerSearchMin": "أدخل 3 أحرف أو أكثر للبحث",
+  "recipientsValidationBillerSelect": "يرجى اختيار جهة فوترة من القائمة",
+  "recipientsFieldPayeeAccountNumber": "رقم حساب المستفيد",
+  "exchangeFileUploadStatusRejectedBadge": "مرفوض",
+  "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
+  "exchangeSupportChatAttachmentImage": "صورة",
+  "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
+  "exchangeSupportChatPermissionDenied": "تم رفض الإذن.",
+  "exchangeSupportChatPermissionDeniedSettings": "تم رفض الإذن. يرجى منح صلاحية الوصول إلى مكتبة الصور من الإعدادات.",
+  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
+  "logsViewerDeleteTitle": "حذف السجلات",
+  "logsViewerDeleteConfirmation": "هل أنت متأكد من رغبتك في حذف جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.",
+  "logsViewerDeleteButton": "حذف",
+  "logsViewerCancelButton": "إلغاء",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
+  "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
+  "sendSubSatVbyteWarning": "قد تستغرق المعاملات بمعدل أقل من 1 ساتوشي/بايت افتراضي وقتًا أطول للتأكيد وقد لا تنتشر إلى جميع العُقد.",
+  "sendBelowMinFeeRateError": "يجب ألا يقل معدل الرسوم عن 0.1 ساتوشي/بايت افتراضي.",
+  "bitboxErrorBluetoothPermissionDenied": "يلزم إذن البلوتوث للاتصال بجهاز BitBox02 Nova الخاص بك.",
+  "bitboxErrorBluetoothUnavailable": "البلوتوث غير متاح. فعّل البلوتوث وحاول مرة أخرى.",
+  "bitboxErrorNoBleDevicesFound": "لم يُعثر على جهاز BitBox02 Nova قريب. تحقق من البلوتوث وحاول مرة أخرى.",
+  "bitboxErrorMultipleBleDevicesFound": "تم العثور على عدة أجهزة BitBox02 Nova. أبقِ جهازًا واحدًا فقط قريبًا وحاول مرة أخرى.",
+  "bitboxErrorOperationFailed": "فشلت عملية BitBox. يرجى المحاولة مرة أخرى.",
+  "bitboxScreenConnectSubtextBluetooth": "تأكد من أن جهاز BitBox02 Nova غير مُقفل وأن البلوتوث مفعّل.",
+  "bitboxScreenScanningSubtextBluetooth": "جارٍ البحث عن جهاز BitBox02 Nova القريب...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "استكشاف أخطاء BitBox02 Nova وإصلاحها",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "إذا لم يتصل جهازك بالتطبيق، جرّب ما يلي:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "تأكد من تفعيل البلوتوث والسماح به لهذا التطبيق.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "تأكد من تفعيل البلوتوث على جهاز BitBox02 Nova الخاص بك.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "أعِد تشغيل جهاز BitBox02 Nova وحاول الاتصال مرة أخرى.",
+  "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

@@ -59,7 +59,8 @@ class UtxoTile extends StatelessWidget {
     final hideAmounts =
         context.select((SettingsCubit c) => c.state.hideAmounts) ?? true;
     final fiat = context.select(
-      (BitcoinPriceBloc b) => b.state.calculateFiatPrice(utxo.amountSat.toInt()),
+      (BitcoinPriceBloc b) =>
+          b.state.calculateFiatPrice(utxo.amountSat.toInt()),
     );
 
     final amount = bitcoinUnit == BitcoinUnit.btc
@@ -184,8 +185,7 @@ class UtxoTile extends StatelessWidget {
 
   Widget _keychainBadge(BuildContext context) {
     final colors = context.bull;
-    final isReceive =
-        utxo.addressKeyChain == WalletAddressKeyChain.external;
+    final isReceive = utxo.addressKeyChain == WalletAddressKeyChain.external;
     // Receive = bitcoin-orange text on orange@14%; Change = muted on muted@16%.
     final accent = isReceive ? colors.bitcoinOrange : colors.textMuted;
     return BullBadge(

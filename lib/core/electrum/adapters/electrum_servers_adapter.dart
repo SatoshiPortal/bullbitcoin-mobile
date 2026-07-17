@@ -31,11 +31,24 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     // Resolve the active set + settings exactly once per call. The active
     // set is the chokepoint: when a custom server is configured this list
     // contains only custom servers, so the loop can never reach a default.
-    final (servers, settings, appSettings) = await (
+    final (serversResult, settingsResult, appSettings) = await (
       _serverRepository.fetchActiveServers(network: network),
       _settingsRepository.fetchByNetwork(network),
       _appSettingsRepository.fetch(),
     ).wait;
+
+    final servers = serversResult.fold(
+      (value) => value,
+      (failure) => throw Exception(
+        failure.logMessage ?? 'Failed to fetch active electrum servers',
+      ),
+    );
+    final settings = settingsResult.fold(
+      (value) => value,
+      (failure) => throw Exception(
+        failure.logMessage ?? 'Failed to fetch electrum settings',
+      ),
+    );
 
     if (servers.isEmpty) {
       throw NoElectrumServersConfiguredException(network);

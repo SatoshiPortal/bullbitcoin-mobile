@@ -51,10 +51,16 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     throw UnimplementedError();
   }
 
-  static Future<WatchOnlyWalletEntity> parse(String value) async {
+  static Future<WatchOnlyWalletEntity> parse(
+    String value, {
+    SignerDeviceEntity? signerDevice,
+  }) async {
     final satoshified = await satoshifier.Satoshifier.parse(value);
     if (satoshified is satoshifier.WatchOnlyDescriptor) {
-      return WatchOnlyWalletEntity.descriptor(watchOnlyDescriptor: satoshified);
+      return WatchOnlyWalletEntity.descriptor(
+        watchOnlyDescriptor: satoshified,
+        signerDevice: signerDevice,
+      );
     } else if (satoshified is satoshifier.WatchOnlyXpub) {
       return WatchOnlyWalletEntity.xpub(watchOnlyXpub: satoshified);
     }

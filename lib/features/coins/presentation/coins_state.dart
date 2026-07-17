@@ -29,12 +29,12 @@ abstract class CoinsState with _$CoinsState {
   List<WalletUtxo> get visible => sortAndFilterUtxos(utxos, filter);
 
   /// The selected UTXO entities (intersection of selection with current utxos).
-  List<WalletUtxo> get selectedUtxos =>
-      utxos.where((u) => selectedOutpoints.contains(utxoOutpointKey(u))).toList();
+  List<WalletUtxo> get selectedUtxos => utxos
+      .where((u) => selectedOutpoints.contains(utxoOutpointKey(u)))
+      .toList();
 
   /// Total amount across all UTXOs, in sats.
-  BigInt get totalSat =>
-      utxos.fold(BigInt.zero, (sum, u) => sum + u.amountSat);
+  BigInt get totalSat => utxos.fold(BigInt.zero, (sum, u) => sum + u.amountSat);
 
   /// Total frozen amount, in sats.
   BigInt get frozenSat => utxos
@@ -51,9 +51,7 @@ abstract class CoinsState with _$CoinsState {
   bool get isFilteredEmpty =>
       visible.isEmpty && utxos.isNotEmpty && filter.hasActiveFilter;
 
-  bool get anySelectedFrozen =>
-      selectedUtxos.any((u) => u.isFrozen);
+  bool get anySelectedFrozen => selectedUtxos.any((u) => u.isFrozen);
 
-  bool get anySelectedUnfrozen =>
-      selectedUtxos.any((u) => !u.isFrozen);
+  bool get anySelectedUnfrozen => selectedUtxos.any((u) => !u.isFrozen);
 }

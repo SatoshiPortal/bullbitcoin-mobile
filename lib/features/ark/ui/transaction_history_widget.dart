@@ -45,8 +45,8 @@ class TransactionHistoryWidget extends StatelessWidget {
       }
     }
 
-    final sortedEntries =
-        grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key));
+    final sortedEntries = grouped.entries.toList()
+      ..sort((a, b) => b.key.compareTo(a.key));
 
     return Map.fromEntries(sortedEntries);
   }

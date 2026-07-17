@@ -58,7 +58,8 @@ class MempoolServerList extends StatelessWidget {
               MempoolServerItem(
                 server: customServer,
                 isCustom: true,
-                useForFeeEstimation: state.settings?.useForFeeEstimation ?? true,
+                useForFeeEstimation:
+                    state.settings?.useForFeeEstimation ?? true,
                 isProcessing: isProcessing,
                 onFeeEstimationChanged: (value) {
                   context
@@ -66,7 +67,11 @@ class MempoolServerList extends StatelessWidget {
                       .updateUseForFeeEstimation(value);
                 },
                 onDelete: () => _showDeleteConfirmation(context),
-                onEdit: () => _showEditServerSheet(context, customServer.url, customServer.enableSsl),
+                onEdit: () => _showEditServerSheet(
+                  context,
+                  customServer.url,
+                  customServer.enableSsl,
+                ),
               ),
             ],
             const Gap(16),
@@ -96,7 +101,11 @@ class MempoolServerList extends StatelessWidget {
     SetCustomServerBottomSheet.show(context);
   }
 
-  void _showEditServerSheet(BuildContext context, String currentUrl, bool enableSsl) {
+  void _showEditServerSheet(
+    BuildContext context,
+    String currentUrl,
+    bool enableSsl,
+  ) {
     SetCustomServerBottomSheet.show(
       context,
       initialUrl: currentUrl,

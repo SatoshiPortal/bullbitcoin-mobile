@@ -991,6 +991,7 @@ class _OnchainTransactionReview extends StatelessWidget {
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
+    final label = context.select((SendCubit cubit) => cubit.state.label);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1003,6 +1004,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
+          note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null
               : () async {
@@ -1075,6 +1077,8 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
 
+    final label = context.select((SendCubit cubit) => cubit.state.label);
+
     return CommonOnchainSendInfoSection(
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
@@ -1082,6 +1086,7 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       formattedFiatEquivalent: '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
+      note: label,
       // Liquid has fixed fees — no fee priority selector
       onFeePriorityTap: null,
     );
@@ -1112,6 +1117,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final isSlowPayment = context.select(
       (SendCubit cubit) => cubit.state.isSlowPayment,
     );
+    final label = context.select((SendCubit cubit) => cubit.state.label);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -1186,7 +1192,18 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-
+          if (label.isNotEmpty) ...[
+            InfoRow(
+              title: context.loc.receiveNote,
+              details: BBText(
+                label,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+                textAlign: .end,
+              ),
+            ),
+            _divider(context),
+          ],
           if (swap.sendAmount != null)
             InfoRow(
               title: context.loc.sendSendAmount,
@@ -2009,7 +2026,17 @@ class SignBitBoxButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          final finalizedTx = await _finalizePsbt(result);
+          final String finalizedTx;
+          try {
+            finalizedTx = await _finalizePsbt(result);
+          } catch (_) {
+            if (!context.mounted) return;
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.sendErrorConfirmationFailed,
+            );
+            return;
+          }
           if (context.mounted) {
             await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
           }
@@ -2026,12 +2053,11 @@ class SignBitBoxButton extends StatelessWidget {
         final psbt = Psbt.fromBase64(signedPsbt);
         final builder = PsbtBuilder.fromPsbt(psbt);
         return builder.finalizeAll().toHex();
-      } else {
-        return signedPsbt;
       }
-    } catch (e) {
-      log.warning('Failed to finalize PSBT');
       return signedPsbt;
+    } catch (e, st) {
+      log.warning('Failed to finalize BitBox signed PSBT', error: e, trace: st);
+      Error.throwWithStackTrace(e, st);
     }
   }
 }

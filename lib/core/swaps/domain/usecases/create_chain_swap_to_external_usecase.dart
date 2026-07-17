@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -8,12 +6,10 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateChainSwapToExternalUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
 
   CreateChainSwapToExternalUsecase({
     required this._walletRepository,
     required this._swapRepository,
-    required this._seedRepository,
   });
 
   Future<ChainSwap> execute({
@@ -34,19 +30,14 @@ class CreateChainSwapToExternalUsecase {
       }
 
       final swapRepository = _swapRepository;
-      final sendWalletMnemonic =
-          await _seedRepository.get(sendWallet.masterFingerprint)
-              as MnemonicSeed;
 
-      final btcElectrumUrl =
-          sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl = sendWallet.network.isTestnet
+          ? ApiServiceConstants.publicElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl =
-          sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl = sendWallet.network.isTestnet
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.bitcoinToLiquid:
@@ -56,7 +47,6 @@ class CreateChainSwapToExternalUsecase {
             );
           }
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,
@@ -70,7 +60,6 @@ class CreateChainSwapToExternalUsecase {
             );
           }
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,

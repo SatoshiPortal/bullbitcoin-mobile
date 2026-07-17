@@ -7,13 +7,14 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 extension _CurrencyIconExtension on String {
@@ -46,101 +47,114 @@ class PriceChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PriceChartCubit, PriceChartState>(
-      builder: (context, state) {
-        final rates = state.prices;
-        final hasNoLocalData = rates.isEmpty;
+    return BlocListener<BitcoinPriceBloc, BitcoinPriceState>(
+      listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
+      listener: (context, state) {
+        BullSnackBar.show(
+          context,
+          message: state.failure!.toTranslated(context),
+        );
+      },
+      child: BlocBuilder<PriceChartCubit, PriceChartState>(
+        builder: (context, state) {
+          final rates = state.prices;
+          final hasNoLocalData = rates.isEmpty;
 
-        if (state.error != null && hasNoLocalData) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BBText(
-                  context.loc.priceChartFailedToLoad,
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.onPrimary,
-                  ),
-                ),
-                const Gap(16),
-                IconButton(
-                  onPressed: () {
-                    context.read<PriceChartCubit>().loadPriceHistory(
-                      currency: state.currency,
-                    );
-                  },
-                  icon: Icon(
-                    Icons.refresh,
-                    color: context.appColors.onPrimary,
-                    size: 32,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state.isLoading || hasNoLocalData) {
-          if (state.isLoading) {
+          if (state.failure != null && hasNoLocalData) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: context.appColors.onPrimary),
-                  const Gap(16),
                   BBText(
-                    context.loc.priceChartFetchingHistory,
+                    state.failure!.toTranslated(context),
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onPrimary,
+                    ),
+                  ),
+                  const Gap(16),
+                  IconButton(
+                    onPressed: () {
+                      context.read<PriceChartCubit>().loadPriceHistory(
+                        currency: state.currency,
+                      );
+                    },
+                    icon: Icon(
+                      Icons.refresh,
+                      color: context.appColors.onPrimary,
+                      size: 32,
                     ),
                   ),
                 ],
               ),
             );
           }
-          return const SizedBox.shrink();
-        }
-        final selectedIndex = state.selectedDataPointIndex;
-        final currency =
-            state.currency ??
-            context.select((SettingsCubit cubit) => cubit.state.currencyCode) ??
-            'CAD';
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 40.0),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  const Gap(72),
-                  if (selectedIndex != null && selectedIndex < rates.length)
-                    _PriceDisplay(
-                      rate: rates[selectedIndex],
-                      currency: currency,
-                    )
-                  else if (rates.isNotEmpty)
-                    _PriceDisplay(rate: rates.last, currency: currency),
-                  const Gap(16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: _Chart(
-                        rates: rates,
-                        selectedIndex: selectedIndex,
-                        onTap: (index) {
-                          context.read<PriceChartCubit>().selectDataPoint(
-                            index,
-                          );
-                        },
+          if (state.isLoading || hasNoLocalData) {
+            if (state.isLoading) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: context.appColors.onPrimary,
+                    ),
+                    const Gap(16),
+                    BBText(
+                      context.loc.priceChartFetchingHistory,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onPrimary,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          final selectedIndex = state.selectedDataPointIndex;
+          final currency =
+              state.currency ??
+              context.select(
+                (SettingsCubit cubit) => cubit.state.currencyCode,
+              ) ??
+              'CAD';
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 40.0),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    const Gap(72),
+                    if (selectedIndex != null && selectedIndex < rates.length)
+                      _PriceDisplay(
+                        rate: rates[selectedIndex],
+                        currency: currency,
+                      )
+                    else if (rates.isNotEmpty)
+                      _PriceDisplay(rate: rates.last, currency: currency),
+                    const Gap(16),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: _Chart(
+                          rates: rates,
+                          selectedIndex: selectedIndex,
+                          onTap: (index) {
+                            context.read<PriceChartCubit>().selectDataPoint(
+                              index,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

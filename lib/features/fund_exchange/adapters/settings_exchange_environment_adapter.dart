@@ -6,9 +6,7 @@ class SettingsExchangeEnvironmentAdapter implements ExchangeEnvironmentPort {
   // use the defined public API/facade instead of the usecase directly
   final GetSettingsUsecase _getSettingsUsecase;
 
-  SettingsExchangeEnvironmentAdapter({
-    required this._getSettingsUsecase,
-  });
+  SettingsExchangeEnvironmentAdapter({required this._getSettingsUsecase});
 
   @override
   Future<bool> get isTestnet async {

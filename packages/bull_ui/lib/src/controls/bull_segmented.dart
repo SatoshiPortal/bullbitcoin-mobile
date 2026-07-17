@@ -79,7 +79,9 @@ class _BullSegmentedState extends State<BullSegmented> {
                     ? Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: colors.textMuted.withValues(alpha: 0.5),
                       )
-                    : Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.text),
+                    : Theme.of(
+                        context,
+                      ).textTheme.labelMedium?.copyWith(color: colors.text),
               ),
           },
         ),

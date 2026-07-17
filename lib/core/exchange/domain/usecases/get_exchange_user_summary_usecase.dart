@@ -18,10 +18,9 @@ class GetExchangeUserSummaryUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeUserRepository
-              : _mainnetExchangeUserRepository;
+      final repo = isTestnet
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
       final userSummary = await repo.getUserSummary();
 
       if (userSummary == null) {

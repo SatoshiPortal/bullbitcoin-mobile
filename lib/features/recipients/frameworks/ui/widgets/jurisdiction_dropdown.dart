@@ -18,10 +18,12 @@ class JurisdictionsDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the possible jurisdictions
-    final jurisdictions = context.select(
-      (RecipientsBloc bloc) => bloc.state.availableJurisdictions,
+    final filters = context.select(
+      (RecipientsBloc bloc) => bloc.state.allowedRecipientFilters,
     );
+    final jurisdictions = filters.types
+        .map((type) => type.jurisdictionCode)
+        .toSet();
 
     return Material(
       elevation: 4,

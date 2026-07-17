@@ -44,9 +44,25 @@ analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
 
+# Check-only gates, one target per gate of the CI `checks` job in analyze_and_test.yml (which invokes these targets so each definition lives in exactly one place). `make checks` runs the whole job locally: green here means the checks job is green in CI. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
+fix-check:
+	@echo "🧹 dart fix should have nothing to suggest"
+	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
+
+# Formatting gate scoped to git-tracked source via git ls-files: untracked generated code never trips it, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
+format-check:
+	@echo "🎨 dart format should have nothing to change"
+	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | xargs -r fvm dart format --output=none --set-exit-if-changed'
+
+bull-ui-check:
+	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
+	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+
+checks: analyze bull-ui-check fix-check format-check unit-test
+
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit
+	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
@@ -262,11 +278,11 @@ unit-test:
 # invocation, so running this one file builds + launches once for the whole
 # suite (instead of failing every file but the first, as `flutter test
 # integration_test/` does). all_test.dart is a generated, gitignored artifact —
-# tool/gen_all_test.dart regenerates it from disk below, so adding a test file
+# tools/gen_all_test.dart regenerates it from disk below, so adding a test file
 # needs no manual wiring.
 integration-test:
 	@echo "🧪 integration tests"
-	@fvm dart run tool/gen_all_test.dart
+	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
 
 # Build & render the bull_ui design-system catalogue (Widgetbook) locally in the

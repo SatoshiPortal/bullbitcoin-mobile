@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
+import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -31,8 +32,11 @@ class SelectScriptTypePage extends StatelessWidget {
       ),
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
-          if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.toString());
+          if (state.failure != null) {
+            SnackBarUtils.showSnackBar(
+              context,
+              state.failure!.toTranslated(context),
+            );
           }
         },
         builder: (context, state) {

@@ -62,7 +62,9 @@ class OrderStatsModel {
       averageBitcoinBuyPrice: _parseAmountList(json['averageBitcoinBuyPrice']),
       bitcoinSellVolume: _parseAmountList(json['bitcoinSellVolume']),
       bitcoinSellTradeCount: _parseAmountList(json['bitcoinSellTradeCount']),
-      averageBitcoinSellPrice: _parseAmountList(json['averageBitcoinSellPrice']),
+      averageBitcoinSellPrice: _parseAmountList(
+        json['averageBitcoinSellPrice'],
+      ),
       totalBitcoinTradingVolume: _parseAmountList(
         json['totalBitcoinTradingVolume'],
       ),
@@ -82,17 +84,22 @@ class OrderStatsModel {
   OrderStats toEntity() {
     return OrderStats(
       bitcoinBuyVolume: bitcoinBuyVolume.map((e) => e.toEntity()).toList(),
-      bitcoinBuyTradeCount:
-          bitcoinBuyTradeCount.map((e) => e.toEntity()).toList(),
-      averageBitcoinBuyPrice:
-          averageBitcoinBuyPrice.map((e) => e.toEntity()).toList(),
+      bitcoinBuyTradeCount: bitcoinBuyTradeCount
+          .map((e) => e.toEntity())
+          .toList(),
+      averageBitcoinBuyPrice: averageBitcoinBuyPrice
+          .map((e) => e.toEntity())
+          .toList(),
       bitcoinSellVolume: bitcoinSellVolume.map((e) => e.toEntity()).toList(),
-      bitcoinSellTradeCount:
-          bitcoinSellTradeCount.map((e) => e.toEntity()).toList(),
-      averageBitcoinSellPrice:
-          averageBitcoinSellPrice.map((e) => e.toEntity()).toList(),
-      totalBitcoinTradingVolume:
-          totalBitcoinTradingVolume.map((e) => e.toEntity()).toList(),
+      bitcoinSellTradeCount: bitcoinSellTradeCount
+          .map((e) => e.toEntity())
+          .toList(),
+      averageBitcoinSellPrice: averageBitcoinSellPrice
+          .map((e) => e.toEntity())
+          .toList(),
+      totalBitcoinTradingVolume: totalBitcoinTradingVolume
+          .map((e) => e.toEntity())
+          .toList(),
       buySellRatio: buySellRatio,
     );
   }
@@ -125,10 +132,7 @@ class BillerStatsModel {
   final String currency;
   final List<BillerStatModel> stats;
 
-  const BillerStatsModel({
-    required this.currency,
-    required this.stats,
-  });
+  const BillerStatsModel({required this.currency, required this.stats});
 
   factory BillerStatsModel.fromJson(Map<String, dynamic> json) {
     return BillerStatsModel(
@@ -184,4 +188,3 @@ class BillerStatModel {
     );
   }
 }
-

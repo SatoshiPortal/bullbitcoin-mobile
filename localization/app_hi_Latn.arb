@@ -1,4 +1,6 @@
 {
+  "settingsBtcMapTitle": "Naksha",
+  "recipientsListLoadError": "Recipients load nahi ho sake. Dobara try karne ke liye neeche kheenchein.",
   "backupWarningDescription": "Backup ke bina, aap apne bitcoin access kho denge agar:",
   "backupWarningLoseReasonLostPhone": "Aap apna phone kho dete hain",
   "backupWarningLoseReasonDeletedApp": "Aap app delete karte hain",
@@ -640,52 +642,21 @@
     "description": "Error when mempool server returns 500 error"
   },
   "mempoolErrorInvalidResponse": "Server ne galat response diya.",
+  "mempoolErrorInvalidUrl": "Amanya server URL. Ek manya domain ya IP pata darj karein.",
   "@mempoolErrorInvalidResponse": {
     "description": "Error when mempool server returns an invalid response"
   },
-  "mempoolErrorUnexpected": "Ek unexpected error aayi",
-  "@mempoolErrorUnexpected": {
-    "description": "Generic unexpected error message"
-  },
-  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya: {error}",
+  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
   "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when saving mempool server fails"
   },
-  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya: {error}",
+  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya",
   "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when loading mempool server data fails"
   },
-  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya: {error}",
+  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya",
   "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
-  },
-  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya: {error}",
-  "@mempoolErrorUpdateSettingsFailed": {
-    "description": "Error when updating mempool settings fails",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error details"
-      }
-    }
+    "description": "Error when deleting custom mempool server fails"
   },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
@@ -1353,8 +1324,8 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryHours": "ghante",
-  "@sendEstimatedDeliveryHours": {
+  "sendEstimatedDeliveryFewHours": "kuch ghante",
+  "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "sendEstimatedDeliveryHoursToDays": "ghanton se dinontak",
@@ -2958,6 +2929,8 @@
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
+  "fundExchangeRestrictedTitle": "Funding uplabdh nahi hai",
+  "fundExchangeRestrictedMessage": "Aapke account par funding uplabdh nahi hai. Adhik jaankari ke liye kripya support se sampark karein.",
   "fundExchangeWarningTitle": "Thagoon se bachke raho",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -3910,6 +3883,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "bip85NoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -4293,6 +4267,8 @@
     "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "appUnlockButton": "Unlock Karo",
+  "appUnlockPinCheckError": "Security settings load nahi ho sake. Kripaya app restart karein.",
+  "appUnlockPinVerifyError": "Aapka PIN verify nahi ho saka. Kripaya dobara try karein.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -5225,14 +5201,6 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "replaceByFeeErrorTransactionConfirmed": "Original transaction already confirm ho chuki hai",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
-  "replaceByFeeErrorGeneric": "Transaction replace karne ki koshish mein error aaya",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
-  },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minute",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -5356,7 +5324,7 @@
       }
     }
   },
-  "urProgressLabel": "UR Progress: {parts} parts",
+  "urProgressLabel": "UR ke {parts} parts process ho chuke hain",
   "@urProgressLabel": {
     "description": "Progress message showing parts processed for multi-part UR codes",
     "placeholders": {
@@ -8783,6 +8751,10 @@
       }
     }
   },
+  "importMnemonicEmptyLabelError": "Mnemonic import karne ke liye ek label aavashyak hai",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
   "importWatchOnlyTitle": "Watch-only import karo",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"
@@ -8925,7 +8897,7 @@
   "exportTransactionsButton": "CSV export karein",
   "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
   "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Lenden export nahi ho saka.",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -8937,7 +8909,7 @@
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
   },
-  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "bip329LabelsHeading": "BIP329 Labels Import aur Export",
   "@bip329LabelsHeading": {
     "description": "Main heading on BIP329 labels page"
   },
@@ -8999,7 +8971,13 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
-  "broadcastSignedTxBroadcastError": "Len-den prasarit karne mein viphal raha",
+  "broadcastSignedTxBroadcastError": "Hum aapka transaction broadcast nahi kar sake. Apna internet connection jaanchein aur phir se koshish karein.",
+  "importWatchOnlyErrorNoWalletSelected": "Pehle koi public key ya descriptor paste ya scan karein.",
+  "importWatchOnlyErrorLabelRequired": "Import karne se pehle apne wallet ko ek naam dein.",
+  "importWatchOnlyErrorInvalidFormat": "Yeh valid public key ya descriptor nahi lagta. Aapne jo paste kiya hai use dobara jaanch lein.",
+  "importWatchOnlyErrorImportFailed": "Hum is watch-only wallet ko import nahi kar sake. Kripya jaankari jaanchein aur phir se koshish karein.",
+  "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -9517,7 +9495,7 @@
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
   },
-  "exchangeLandingFeature6": "Unified transaction history",
+  "exchangeLandingFeature6": "Sabhi transactions ek hi jagah dekho",
   "@exchangeLandingFeature6": {
     "description": "Sixth feature bullet point"
   },
@@ -9879,7 +9857,7 @@
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
   },
-  "buyInputKycPending": "KYC ID Verification Pending",
+  "buyInputKycPending": "KYC ID Verification Baaki Hai",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
   },
@@ -10326,7 +10304,7 @@
       }
     }
   },
-  "electrumInvalidStopGapError": "Invalid Stop Gap value: {value}",
+  "electrumInvalidStopGapError": "Stop Gap ki value galat hai: {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
@@ -10335,7 +10313,7 @@
       }
     }
   },
-  "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
+  "electrumInvalidTimeoutError": "Timeout ki value galat hai: {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
@@ -10344,7 +10322,7 @@
       }
     }
   },
-  "electrumInvalidRetryError": "Invalid Retry Count value: {value}",
+  "electrumInvalidRetryError": "Retry Count ki value galat hai: {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
@@ -10410,43 +10388,24 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumLoadFailedError": "Servers load karne mein fail{reason}",
+  "electrumLoadFailedError": "Servers load karne mein fail",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
-  "electrumSavePriorityFailedError": "Server priority save karne mein fail{reason}",
+  "electrumSavePriorityFailedError": "Server priority save karne mein fail",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
-  "electrumAddFailedError": "Custom server add karne mein fail{reason}",
+  "electrumAddFailedError": "Custom server add karne mein fail",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
-  "electrumDeleteFailedError": "Custom server delete karne mein fail{reason}",
+  "electrumDeleteFailedError": "Custom server delete karne mein fail",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
+  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -10947,7 +10906,7 @@
   "@ledgerWalletTypeSegwit": {
     "description": "Display name for Segwit wallet type (BIP84)"
   },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommended",
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommend Kiya Gaya",
   "@ledgerWalletTypeSegwitDescription": {
     "description": "Description for Segwit wallet type"
   },
@@ -11015,7 +10974,7 @@
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
-  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
+  "exchangeLandingRecommendedExchange": "Sujhaya Gaya Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
@@ -11039,7 +10998,7 @@
   "@exchangeFeatureCustomerSupport": {
     "description": "Feature bullet point describing customer support chat feature"
   },
-  "exchangeFeatureUnifiedHistory": "• Unified transaction history",
+  "exchangeFeatureUnifiedHistory": "• Sabhi transactions ek hi jagah dekho",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
@@ -11285,7 +11244,7 @@
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
   },
-  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "sellKycPendingTitle": "KYC ID Verification Baaki Hai",
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
@@ -11355,7 +11314,7 @@
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
   },
-  "allSeedViewExistingWallets": "Existing Wallets ({count})",
+  "allSeedViewExistingWallets": "Maujooda Wallets ({count})",
   "@allSeedViewExistingWallets": {
     "description": "Section header for existing wallets with count",
     "placeholders": {
@@ -11398,6 +11357,14 @@
   "allSeedViewPassphraseLabel": "Passphrase:",
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
+  },
+  "allSeedViewErrorFetch": "Seeds load karne mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Seed hatane mein vifal. Kripya punah prayas karein.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
   },
   "cancel": "Cancel",
   "@cancel": {
@@ -11751,37 +11718,6 @@
   "systemLabelExchangeSell": "Sell",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
-  },
-  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "labelDeleteFailed": "\"{label}\" delete karne mein asmarth. Kripya dobara try karo.",
   "@labelDeleteFailed": {
@@ -13139,6 +13075,60 @@
   "onboardingAdvancedOptionsDone": "Done",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
   "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
+  "pinCodeSaveError": "Aapka PIN save nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
+  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein.",
+  "mempoolErrorUnexpected": "Ek unexpected error aayi",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorUpdateSettingsFailed": "Settings update karna fail ho gaya: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "ghante",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Anayaas error: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
   "walletButtonCoins": "Coins manage karein",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
@@ -13312,7 +13302,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen} other{{count} coins unfrozen}}",
+  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen · spending ke liye available} other{{count} coins unfrozen · spending ke liye available}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -13399,5 +13389,270 @@
   "logsShareOptionShare": "Share karein",
   "logsShareOptionExport": "Export karein",
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
-  "logsExportFailedMessage": "Logs export karne mein vifal"
+  "logsExportFailedMessage": "Logs export karne mein vifal",
+  "coreSwapsStatusRefunded": "Refund Hua",
+  "swapRestoreTitle": "Swap Restore",
+  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
+  "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
+  "swapRestoreRecoverableSection": "Recoverable",
+  "swapRestoreAllSection": "Sabhi swaps",
+  "swapRestoreFailed": "Swaps restore nahi ho sake",
+  "swapRestoreKindLightningSend": "Lightning Send",
+  "swapRestoreKindLightningReceive": "Lightning Receive",
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "swapRescueTitle": "Swap Rescue",
+  "swapRescueTypeLabel": "Type",
+  "swapRescueStatusLabel": "Status",
+  "swapRescueAmountLabel": "Amount",
+  "swapRescueRouteLabel": "Route",
+  "swapRescueCreatedLabel": "Banaya Gaya",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "Wallet mein restore karo",
+  "swapRescueWalletHint": "Ek wallet chuniye",
+  "swapRescueButton": "Restore Karo",
+  "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
+  "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
+  "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
+  "transactionLabelNetworkFees": "Network fees",
+  "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",
+  "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk disclosure kholo",
+  "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Jaankari",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "nfcNotAvailable": "NFC is device par supported nahi hai",
+  "nfcDisabled": "NFC disabled hai. Settings mein ise enable karo.",
+  "nfcInvalidData": "Koi supported NFC data nahi mila",
+  "nfcConnectionLost": "NFC connection toot gaya. Apna device NFC tag ke paas rakho aur phir try karo.",
+  "nfcWriteFailed": "NFC transfer fail ho gaya. Kripya phir try karo.",
+  "nfcError": "NFC error: {error}",
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
+  "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
+  "psbtFlowSignViaNfc": "NFC Se Sign Karo",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT NFC se bhejne ke liye apna {deviceName} tap karo",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "psbtFlowColdcardQStep1": "Apne Coldcard Q device mein login karo",
+  "psbtFlowColdcardQStep2": "Agar passphrase hai toh add karo (optional)",
+  "psbtFlowColdcardQStep3": "Apna pasandida signing method chuno:",
+  "psbtFlowColdcardQStep4": "QR code ke liye:",
+  "psbtFlowColdcardQStep5": "   - Apne Coldcard Q par \"Scan any QR code\" select karo",
+  "psbtFlowColdcardQStep6": "   - Bull wallet mein dikha QR code scan karo",
+  "psbtFlowColdcardQStep7": "   - Agar scan karne mein dikkat aa rahi hai:",
+  "psbtFlowColdcardQStep8": "     - Apne device ki screen brightness badhaao",
+  "psbtFlowColdcardQStep9": "     - Red laser ko QR code ke upar neeche ghumao",
+  "psbtFlowColdcardQStep10": "     - Device ko thoda peeche le jaane ki koshish karo",
+  "psbtFlowColdcardQStep11": "NFC ke liye:",
+  "psbtFlowColdcardQStep12": "   - Apne Coldcard Q par \"Ready to Sign\" select karo, phir NFC button tap karo",
+  "psbtFlowColdcardQStep13": "   - Apna phone Coldcard Q ke paas tap karo",
+  "psbtFlowColdcardQStep14": "   - PSBT transfer hone ka wait karo",
+  "psbtFlowColdcardQStep15": "Jab transaction Coldcard Q mein import ho jaye, destination address aur amount review karo.",
+  "psbtFlowColdcardQStep16": "Coldcard Q pe transaction sign karne ke liye buttons click karo.",
+  "psbtFlowColdcardQStep17": "Coldcard Q phir signed transaction ka QR code dikhayega ya NFC transfer prepare karega.",
+  "psbtFlowColdcardQStep18": "Agar QR se sign kiya hai, toh Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
+  "psbtFlowColdcardQStep19": "Bull Bitcoin wallet aapko signed transaction ka QR code scan karne ya NFC use karke receive karne ko bolega.",
+  "psbtFlowColdcardQStep20": "   - QR ke liye: Coldcard Q par dikha QR code scan karo",
+  "psbtFlowColdcardQStep21": "   - NFC ke liye: apna phone Coldcard Q ke paas tap karo",
+  "psbtFlowColdcardQStep22": "Signed transaction Bull Bitcoin wallet mein import ho jayegi.",
+  "psbtFlowColdcardQStep23": "Ab broadcast ke liye ready hai. Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi.",
+  "psbtFlowColdcardMk4Step1": "Apne Coldcard Mk4 device mein login karo",
+  "psbtFlowColdcardMk4Step2": "Agar passphrase hai toh add karo (optional)",
+  "psbtFlowColdcardMk4Step3": "Apne Coldcard Mk4 par \"Ready to Sign\" select karo, phir number 3 button tap karo",
+  "psbtFlowColdcardMk4Step4": "Apna phone Coldcard Mk4 ke paas tap karo",
+  "psbtFlowColdcardMk4Step5": "PSBT transfer hone ka wait karo",
+  "psbtFlowColdcardMk4Step6": "Jab transaction Coldcard Mk4 mein import ho jaye, destination address aur amount review karo.",
+  "psbtFlowColdcardMk4Step7": "Coldcard Mk4 pe transaction sign karne ke liye buttons click karo.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 phir signed transaction ko NFC transfer ke liye prepare karega.",
+  "psbtFlowColdcardMk4Step9": "Bull Bitcoin wallet mein, broadcast screen par NFC tap karo.",
+  "psbtFlowColdcardMk4Step10": "Signed transaction receive karne ke liye apna phone Coldcard Mk4 ke paas tap karo.",
+  "psbtFlowColdcardMk4Step11": "Signed transaction Bull Bitcoin wallet mein import ho jayegi.",
+  "psbtFlowColdcardMk4Step12": "Bull Bitcoin wallet mein transaction details review karo.",
+  "psbtFlowColdcardMk4Step13": "Ab broadcast ke liye ready hai. Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Signed transaction NFC se receive karne ke liye apna Coldcard tap karo",
+  "importColdcardInvalidWalletData": "Coldcard wallet data galat hai",
+  "importColdcardConnectTitle": "{deviceName} Connect Karo",
+  "importColdcardConnectDescription": "Apne {deviceName} se wallet descriptor import karo",
+  "importColdcardScanNfcSheetTitle": "Wallet descriptor NFC se import karne ke liye apna {deviceName} tap karo",
+  "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
+  "importColdcardQStep1": "Apne Coldcard Q device mein login karo",
+  "importColdcardQStep2": "Agar passphrase hai toh add karo (optional)",
+  "importColdcardQStep3": "Advanced/settings menu select karo",
+  "importColdcardQStep4": "\"export wallet\" click karo",
+  "importColdcardQStep5": "Export type mein \"descriptor\" select karo",
+  "importColdcardQStep6": "Pehli screen par \"Enter\" press karo",
+  "importColdcardQStep7": "Dusri screen par \"Enter\" press karo",
+  "importColdcardQStep8": "Apna address type select karo (agar pata na ho toh Segwit use karo)",
+  "importColdcardQStep9": "QR ke liye, device par QR code button click karo. Ye aapko device par ek QR code dikhayega",
+  "importColdcardQStep10": "NFC ke liye, device par NFC button click karo",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" button click karo",
+  "importColdcardQStep12": "Apne device par dikha QR code scan karo ya phone ka NFC Coldcard ke NFC ke upar rakho",
+  "importColdcardQStep13": "Bas, ho gaya!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "importColdcardMk4Step1": "Apne Coldcard Mk4 device mein login karo",
+  "importColdcardMk4Step2": "Agar passphrase hai toh add karo (optional)",
+  "importColdcardMk4Step3": "Advanced/settings menu select karo",
+  "importColdcardMk4Step4": "\"export wallet\" click karo",
+  "importColdcardMk4Step5": "Export type mein \"descriptor\" select karo",
+  "importColdcardMk4Step6": "Pehli screen par \"Enter\" press karo",
+  "importColdcardMk4Step7": "Dusri screen par \"Enter\" press karo",
+  "importColdcardMk4Step8": "Apna address type select karo (agar pata na ho toh Segwit use karo)",
+  "importColdcardMk4Step9": "Coldcard NFC start karne ke liye number 3 click karo",
+  "importColdcardMk4Step10": "\"Scan NFC\" button click karo",
+  "importColdcardMk4Step11": "Phone ka NFC Coldcard ke NFC ke upar rakho",
+  "importColdcardMk4Step12": "Bas, ho gaya!",
+  "coreScreensResolvingInputs": "Transaction inputs resolve ho rahe hain...",
+  "coreScreensFeeRateLabel": "Fee Rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output pata nahi hai — sabhi outputs barabar dikhaye gaye hain",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Electrum se transaction {txid} fetch nahi ho saka.",
+  "coreScreensInputResolutionFailed": "Input nahi mila: {parentTxId} ka output {vout} exist nahi karta.",
+  "coreScreensParseFailed": "Transaction parse karna fail ho gaya: {message}.",
+  "coreScreensNoServersAvailable": "Koi Electrum server uplabdh nahi hai.",
+  "coreScreensUnexpectedError": "Anayaas error: {message}.",
+  "addressViewerTitle": "Address",
+  "viewerTapToCopy": "Copy karne ke liye tap karo",
+  "viewerViewInExplorer": "Explorer mein dekho",
+  "viewerCopyLink": "Link copy karo",
+  "transactionViewerTitle": "Transaction ID",
+  "invoiceViewerTitle": "Invoice",
+  "noteVisibleToSenderNotice": "Ye note aapke QR ya invoice ke praaptakarta ko dikhega.",
+  "viewerAddressTab": "Address",
+  "viewerPaymentUriTab": "Payment URI",
+  "transactionSwapOpenWithin24h": "Apna swap poora karne ke liye 24 ghante ke andar app kholo.",
+  "recipientsScreenTitle": "Recipient Select Karo",
+  "recipientsScreenSubtitle": "Aap kise pay kar rahe ho?",
+  "recipientsTabNew": "Naya recipient",
+  "recipientsTabList": "Mere fiat recipients",
+  "recipientsPayoutMethod": "Payout ka tarika",
+  "recipientsFilterByJurisdiction": "Jurisdiction ke hisab se filter karo:",
+  "recipientsListEmpty": "Koi recipient nahi mila.",
+  "recipientsContinue": "Continue",
+  "recipientsJurisdictionAll": "Sabhi Jurisdictions",
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeBillPayment": "Bill Payment",
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "recipientsTypeSepa": "SEPA Transfer",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "Email",
+  "recipientsInfoPayee": "Payee",
+  "recipientsInfoAccount": "Account",
+  "recipientsInfoPhone": "Phone",
+  "recipientsInfoCard": "Card",
+  "recipientsInfoLabel": "Label",
+  "recipientsValidationFieldRequired": "Ye field khali nahi reh sakta",
+  "recipientsLabelOptional": "Label (optional)",
+  "recipientsLabelHint": "Is recipient ke liye ek label enter karein",
+  "recipientsFieldName": "Name",
+  "recipientsFieldNameHint": "Recipient ka naam daalein",
+  "recipientsFieldRecipientNameLabel": "Recipient ka naam",
+  "recipientsFieldPhoneNumber": "Phone Number",
+  "recipientsFieldPhoneNumberHint": "Phone number enter karein",
+  "recipientsFieldOwnerName": "Owner Name",
+  "recipientsFieldOwnerNameHint": "Owner name enter karein",
+  "recipientsAccountOwnerQuestion": "Ye account kiska hai?",
+  "recipientsAccountOwnerMine": "Ye mera account hai",
+  "recipientsAccountOwnerSomeoneElse": "Ye kisi aur ka account hai",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN enter karein",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE number enter karein",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU number enter karein",
+  "recipientsFieldBankInstitution": "Bank Institution",
+  "recipientsFieldBankInstitutionPlaceholder": "Bank Institution Chuniye",
+  "recipientsValidationBankInstitution": "Kripya ek bank institution chuniye",
+  "recipientsFieldAccountType": "Account Type",
+  "recipientsAccountTypeSavings": "Savings",
+  "recipientsAccountTypeChecking": "Checking",
+  "recipientsFieldBankAccountNumber": "Bank Account Number",
+  "recipientsFieldBankAccountNumberHint": "Bank account number enter karein",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Passport",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Debit Card Number",
+  "recipientsFieldDebitCardHint": "Debit card number enter karein",
+  "recipientsFieldOwnerNameSinpeHint": "Owner ka naam yahan dikhega",
+  "recipientsValidationSinpeOwner": "Kripya phone number validate karein",
+  "recipientsFieldEmailAddress": "Email Address",
+  "recipientsFieldEmailAddressHint": "Email address enter karein",
+  "recipientsFieldSecurityQuestion": "Security Question",
+  "recipientsFieldSecurityQuestionHint": "Security question enter karein (10-40 characters)",
+  "recipientsFieldSecurityAnswer": "Security Answer",
+  "recipientsFieldSecurityAnswerHint": "Security answer enter karein",
+  "recipientsValidationSecurityQuestionMin": "Security question kam se kam 10 characters ka hona chahiye",
+  "recipientsCharCounter": "{count}/40 characters",
+  "recipientsFieldInstitutionCode": "Institution Code",
+  "recipientsFieldInstitutionCodeHint": "Institution code enter karein",
+  "recipientsFieldInstitutionNumber": "Institution Number",
+  "recipientsFieldInstitutionNumberHint": "Institution number enter karein",
+  "recipientsFieldTransitNumber": "Transit Number",
+  "recipientsFieldTransitNumberHint": "Transit number enter karein",
+  "recipientsFieldAccountNumber": "Account Number",
+  "recipientsFieldAccountNumberHint": "Account number enter karein",
+  "recipientsFieldDefaultComment": "Default Comment (optional)",
+  "recipientsFieldDefaultCommentHint": "Default comment enter karein",
+  "recipientsFieldCorporateAccount": "Corporate account",
+  "recipientsFieldFirstName": "First Name",
+  "recipientsFieldFirstNameHint": "First name enter karein",
+  "recipientsFieldLastName": "Last Name",
+  "recipientsFieldLastNameHint": "Last name enter karein",
+  "recipientsFieldCorporateName": "Corporate Name",
+  "recipientsFieldCorporateNameHint": "Corporate name enter karein",
+  "recipientsFieldBillerName": "Biller Name",
+  "recipientsFieldBillerNameHint": "Ek biller search karke select karein",
+  "recipientsValidationBillerSearchMin": "Search karne ke liye 3 ya zyada characters daalein",
+  "recipientsValidationBillerSelect": "Kripya list mein se ek biller select karein",
+  "recipientsFieldPayeeAccountNumber": "Payee Account Number",
+  "exchangeFileUploadStatusRejectedBadge": "Rejected",
+  "exchangeFileUploadTapToReupload": "Phir se upload karne ke liye tap karo",
+  "exchangeSupportChatAttachmentImage": "Image",
+  "exchangeSupportChatAttachmentUnknownFile": "Anjaan file",
+  "exchangeSupportChatPermissionDenied": "Permission deny hua.",
+  "exchangeSupportChatPermissionDeniedSettings": "Permission deny hua. Kripya Settings mein photo library ka access do.",
+  "exchangeSupportChatPickFilesFailed": "Files select nahi ho saki. Kripya dobara try karein.",
+  "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
+  "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
+  "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
+  "logsViewerDeleteTitle": "Logs Delete Karo",
+  "logsViewerDeleteConfirmation": "Kya aap sach mein saare logs delete karna chahte hain? Ye action wapas nahi liya ja sakta.",
+  "logsViewerDeleteButton": "Delete",
+  "logsViewerCancelButton": "Cancel",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions confirm hone mein zyada time le sakte hain aur sabhi nodes tak propagate nahi ho sakte.",
+  "sendBelowMinFeeRateError": "Fee rate kam se kam 0.1 sat/vB honi chahiye.",
+  "bitboxErrorBluetoothPermissionDenied": "Apne BitBox02 Nova se connect karne ke liye Bluetooth permission zaroori hai.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth uplabdh nahi hai. Bluetooth on karo aur phir try karo.",
+  "bitboxErrorNoBleDevicesFound": "Aas paas koi BitBox02 Nova nahi mila. Bluetooth check karo aur phir try karo.",
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices mile. Sirf ek device paas rakho aur phir try karo.",
+  "bitboxErrorOperationFailed": "BitBox operation fail ho gaya. Kripya phir try karo.",
+  "bitboxScreenConnectSubtextBluetooth": "Dhyan rakho ki BitBox02 Nova unlock hai aur Bluetooth enable hai.",
+  "bitboxScreenScanningSubtextBluetooth": "Aapka BitBox02 Nova aas paas dhoondh rahe hain...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Agar aapka device abhi bhi app se connect nahi ho raha, toh yeh try karo:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Dhyan rakho ki Bluetooth on hai aur is app ke liye permitted hai.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Dhyan rakho ki aapke BitBox02 Nova pe Bluetooth enable hai.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Apna BitBox02 Nova restart karo aur phir se connect karne ki koshish karo.",
+  "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova"
 }

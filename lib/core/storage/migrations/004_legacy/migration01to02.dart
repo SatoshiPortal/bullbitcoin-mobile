@@ -229,7 +229,7 @@ Future<OldWallet> createLiquidWallet(OldSeed liquidMainnetSeed) async {
   final mnemonic = liquidMainnetSeed.mnemonic;
   final descriptor = await lwk.Descriptor.newConfidential(
     mnemonic: mnemonic,
-    network: lwk.Network.mainnet,
+    network: lwk.LiquidNetwork.mainnet,
   );
   final walletId = createDescriptorHashId(
     descriptor.ctDescriptor,

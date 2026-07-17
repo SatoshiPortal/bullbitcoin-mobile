@@ -67,10 +67,7 @@ class InfoCard extends StatelessWidget {
                               description,
                               style: context.font.bodyMedium?.copyWith(
                                 color: context.appColors.onSurfaceVariant,
-                                fontWeight:
-                                    boldDescription
-                                        ? .bold
-                                        : .normal,
+                                fontWeight: boldDescription ? .bold : .normal,
                               ),
                             ),
                           ],

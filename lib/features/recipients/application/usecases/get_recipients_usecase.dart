@@ -1,16 +1,23 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
 class GetRecipientsParams {
   final bool fiatOnly;
   final int page;
   final int pageSize;
+  final List<RecipientType>? recipientTypes;
+  final bool? isOwner;
+  final String? search;
 
   GetRecipientsParams({
     this.fiatOnly = true,
     this.page = 1,
     this.pageSize = 50,
+    this.recipientTypes,
+    this.isOwner,
+    this.search,
   });
 }
 
@@ -45,12 +52,14 @@ class GetRecipientsUsecase {
       fiatOnly: params.fiatOnly,
       page: params.page,
       pageSize: params.pageSize,
+      recipientTypes: params.recipientTypes,
+      isOwner: params.isOwner,
+      search: params.search,
     );
     return GetRecipientsResult(
-      recipients:
-          recipientsResult.recipients
-              .map((e) => RecipientDto.fromDomain(e))
-              .toList(),
+      recipients: recipientsResult.recipients
+          .map((e) => RecipientDto.fromDomain(e))
+          .toList(),
       totalRecipients: recipientsResult.totalRecipients,
     );
   }

@@ -12,11 +12,17 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<SwapRestoreCubit>(
+      () =>
+          SwapRestoreCubit(restoreSwapsUsecase: locator<RestoreSwapsUsecase>()),
+    );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(

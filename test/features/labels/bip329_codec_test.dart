@@ -21,19 +21,22 @@ void main() {
       .toList();
 
   group('encode — freeze projected onto spendable', () {
-    test('frozen-but-unlabeled coin → bare output record (spendable:false)', () {
-      final jsonl = codec.encode(
-        const [],
-        frozen: [(walletId: walletId, txId: txId, vout: 0)],
-      );
+    test(
+      'frozen-but-unlabeled coin → bare output record (spendable:false)',
+      () {
+        final jsonl = codec.encode(
+          const [],
+          frozen: [(walletId: walletId, txId: txId, vout: 0)],
+        );
 
-      final record = lines(jsonl).single;
-      expect(record['type'], 'output');
-      expect(record['ref'], ref);
-      expect(record['label'], '');
-      expect(record['spendable'], false);
-      expect(record['origin'], bip329Origin);
-    });
+        final record = lines(jsonl).single;
+        expect(record['type'], 'output');
+        expect(record['ref'], ref);
+        expect(record['label'], '');
+        expect(record['spendable'], false);
+        expect(record['origin'], bip329Origin);
+      },
+    );
 
     test('a non-output label is emitted unchanged alongside freezes', () {
       final jsonl = codec.encode(
@@ -50,26 +53,26 @@ void main() {
 
       final records = lines(jsonl);
       expect(records, hasLength(2));
-      expect(
-        records.firstWhere((r) => r['type'] == 'tx')['label'],
-        'coffee',
-      );
+      expect(records.firstWhere((r) => r['type'] == 'tx')['label'], 'coffee');
       expect(
         records.firstWhere((r) => r['type'] == 'output')['spendable'],
         false,
       );
     });
 
-    test('unparseable wallet origin → record without origin (still frozen)', () {
-      final jsonl = codec.encode(
-        const [],
-        // A multisig-ish id we cannot reduce to a single key origin.
-        frozen: const [(walletId: 'multi(...)', txId: 'abcd', vout: 1)],
-      );
-      final record = lines(jsonl).single;
-      expect(record['spendable'], false);
-      expect(record['origin'], isNull);
-    });
+    test(
+      'unparseable wallet origin → record without origin (still frozen)',
+      () {
+        final jsonl = codec.encode(
+          const [],
+          // A multisig-ish id we cannot reduce to a single key origin.
+          frozen: const [(walletId: 'multi(...)', txId: 'abcd', vout: 1)],
+        );
+        final record = lines(jsonl).single;
+        expect(record['spendable'], false);
+        expect(record['origin'], isNull);
+      },
+    );
 
     test('origin is omitted when it would not round-trip (Liquid-testnet)', () {
       // [fp/84h/1h/0h] can't disambiguate Liquid-testnet from Bitcoin-testnet,
@@ -110,15 +113,17 @@ void main() {
       expect(decoded.frozen, [(walletId: walletId, txId: txId, vout: 0)]);
     });
 
-    test('spendable:false without origin → unattributed freeze (walletId null)',
-        () {
-      final jsonl =
-          '{"type":"output","ref":"$ref","label":"","spendable":false}';
+    test(
+      'spendable:false without origin → unattributed freeze (walletId null)',
+      () {
+        final jsonl =
+            '{"type":"output","ref":"$ref","label":"","spendable":false}';
 
-      final decoded = codec.decode(jsonl);
-      expect(decoded.labels, isEmpty);
-      expect(decoded.frozen, [(walletId: null, txId: txId, vout: 0)]);
-    });
+        final decoded = codec.decode(jsonl);
+        expect(decoded.labels, isEmpty);
+        expect(decoded.frozen, [(walletId: null, txId: txId, vout: 0)]);
+      },
+    );
 
     test('a frozen output that also has a label yields both channels', () {
       final jsonl =

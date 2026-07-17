@@ -1,21 +1,15 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
-import 'package:bb_mobile/features/replace_by_fee/errors.dart';
+import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockBumpFee extends Mock implements BumpFeeUsecase {}
-
-class _MockBroadcast extends Mock
-    implements BroadcastBitcoinTransactionUsecase {}
-
-class _MockGetFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockBumpFeeUsecase extends Mock implements BumpFeeUsecase {}
 
 WalletTransaction _tx() => const WalletTransaction(
   walletId: 'w1',
@@ -43,19 +37,13 @@ void main() {
     registerFallbackValue(const RelativeFee(250));
   });
 
-  late _MockBumpFee bumpFee;
-  late _MockBroadcast broadcast;
-  late _MockGetFees getFees;
+  late _MockBumpFeeUsecase bumpFee;
 
   Future<ReplaceByFeeCubit> buildCubit() async {
-    when(
-      () => getFees.execute(isLiquid: false),
-    ).thenAnswer((_) async => _fees());
+    when(() => bumpFee.getNetworkFees()).thenAnswer((_) async => Ok(_fees()));
     final cubit = ReplaceByFeeCubit(
       originalTransaction: _tx(),
       bumpFeeUsecase: bumpFee,
-      broadcastBitcoinTransactionUsecase: broadcast,
-      getNetworkFeesUsecase: getFees,
     );
     // init() is async in the constructor — let it settle.
     await Future<void>.delayed(Duration.zero);
@@ -63,9 +51,7 @@ void main() {
   }
 
   setUp(() {
-    bumpFee = _MockBumpFee();
-    broadcast = _MockBroadcast();
-    getFees = _MockGetFees();
+    bumpFee = _MockBumpFeeUsecase();
   });
 
   group('ReplaceByFeeCubit — below-floor selection gate', () {
@@ -77,7 +63,7 @@ void main() {
 
       await cubit.broadcast();
 
-      expect(cubit.state.error, isA<FeeRateTooLowError>());
+      expect(cubit.state.failure, isA<ReplaceByFeeFeeRateTooLowFailure>());
       verifyNever(
         () => bumpFee.execute(
           walletId: any(named: 'walletId'),
@@ -102,15 +88,12 @@ void main() {
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
         ),
-      ).thenAnswer((_) async => 'psbt');
-      when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
-      ).thenAnswer((_) async => 'txid-1');
+      ).thenAnswer((_) async => const Ok('txid-1'));
 
       await cubit.broadcast();
 
       expect(cubit.state.txid, 'txid-1');
-      expect(cubit.state.error, isNull);
+      expect(cubit.state.failure, isNull);
     });
   });
 }

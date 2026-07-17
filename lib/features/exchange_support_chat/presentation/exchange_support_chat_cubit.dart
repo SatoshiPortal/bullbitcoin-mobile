@@ -186,8 +186,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
               storageStatus.isPermanentlyDenied) {
             emit(
               state.copyWith(
-                errorCode:
-                    SupportChatErrorCode.permissionDeniedNeedsSettings,
+                errorCode: SupportChatErrorCode.permissionDeniedNeedsSettings,
               ),
             );
             return;
@@ -262,9 +261,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
           ),
         );
       } else {
-        emit(
-          state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed),
-        );
+        emit(state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed));
       }
     } catch (e) {
       emit(state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed));

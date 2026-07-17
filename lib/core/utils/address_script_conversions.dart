@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
 class AddressScriptConversions {

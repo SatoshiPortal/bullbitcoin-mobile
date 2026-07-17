@@ -45,11 +45,9 @@ class ArkSetupPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24),
                         child: BBButton.big(
-                          onPressed:
-                              () =>
-                                  context
-                                      .read<ArkSetupCubit>()
-                                      .createArkSecretKey(),
+                          onPressed: () => context
+                              .read<ArkSetupCubit>()
+                              .createArkSecretKey(),
                           label: context.loc.arkSetupEnable,
                           bgColor: context.appColors.primary,
                           textColor: context.appColors.onPrimary,

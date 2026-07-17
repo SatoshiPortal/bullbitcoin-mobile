@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 class CalculateLiquidAbsoluteFeesUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
-  CalculateLiquidAbsoluteFeesUsecase({
-    required this._liquidWalletRepository,
-  });
+  CalculateLiquidAbsoluteFeesUsecase({required this._liquidWalletRepository});
 
   /// Returns (size, absFees)
   Future<int> execute({required String pset}) async {

@@ -116,6 +116,18 @@ class SwapStatusMapper {
           to == swap_entity.SwapStatus.refunded;
     }
 
+    // A refundable swap has funds locked awaiting refund; a later boltz
+    // failure/expiry event must not regress it to terminal failed/expired and
+    // strand them. (Rescued swaps don't record a sendTxid for _failureOutcome
+    // to key on, so its reconcile re-map would otherwise downgrade them.) Only
+    // resolved outcomes and the lateral move to claimable stay valid.
+    if (from == swap_entity.SwapStatus.refundable) {
+      return to == swap_entity.SwapStatus.refunded ||
+          to == swap_entity.SwapStatus.completed ||
+          to == swap_entity.SwapStatus.claimable ||
+          to == swap_entity.SwapStatus.canCoop;
+    }
+
     final fromRank = _rank(from);
     final toRank = _rank(to);
     if (toRank > fromRank) return true;
