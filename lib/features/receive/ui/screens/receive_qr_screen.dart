@@ -44,11 +44,11 @@ class ReceiveQrPage extends StatelessWidget {
     final isBitBox = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
     );
-    final showAddressVerification = !isLightning && (isLedger || isBitBox);
-
     final isTrezor = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isTrezor ?? false,
     );
+    final showAddressVerification =
+        !isLightning && (isLedger || isBitBox || isTrezor);
 
     final gap = Device.screen.height * 0.02;
     return SingleChildScrollView(
@@ -62,14 +62,13 @@ class ReceiveQrPage extends StatelessWidget {
           Gap(gap),
           ReceiveInfoDetails(wallet: wallet),
           Gap(gap),
-          if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
-          if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
-          if (isTrezor) const Column(children: [VerifyAddressOnTrezorButton()]),
           if (showAddressVerification) ...[
             if (isLedger)
               const Column(children: [VerifyAddressOnLedgerButton()]),
             if (isBitBox)
               const Column(children: [VerifyAddressOnBitBoxButton()]),
+            if (isTrezor)
+              const Column(children: [VerifyAddressOnTrezorButton()]),
             Gap(gap),
           ],
           if (!isLightning) const ReceiveNewAddressButton(),
