@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
@@ -7,10 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'support/fake_bullnym_client.dart';
-import 'support/fake_nostr_relay.dart';
 import 'support/get_paid_fixtures.dart';
-import 'support/test_locator_overrides.dart';
-import 'support/wipe_app_state.dart';
 
 // SPEC-INV-01 — the fake-backed Invoices lifecycle round-trip.
 //
@@ -32,11 +30,8 @@ Future<void> main({bool isInitialized = false}) async {
   if (!isInitialized) await Bull.init();
 
   Future<void> bootstrap(FakeBullnymClient bullnym) async {
-    final relay = FakeNostrRelay();
-    await wipeAppState(locator);
-    await overrideBoundariesForTest(locator, relay: relay, bullnym: bullnym);
-    // Freeze the clock for deterministic timestamps across the round-trip.
-    await overrideClockForTest(locator);
+    await locator.unregister<BullnymClientPort>();
+    locator.registerLazySingleton<BullnymClientPort>(() => bullnym);
     // Default wallets only: invoices own no reserved wallet and need no nym.
     await locator<CreateDefaultWalletsUsecase>().execute(
       mnemonicWords: getPaidFixtureMnemonicWords,
