@@ -52,10 +52,19 @@ class ApplyPendingWizardChoicesUsecase {
     Result<WalletMetadataBackupState, WalletMetadataBackupFailure> result,
   ) {
     if (result case Err(:final failure)) {
-      throw StateError(
+      throw _ApplyPendingWizardChoicesException(
         'Could not apply wizard metadata backup choice: '
         '${failure.runtimeType}',
       );
     }
   }
+}
+
+final class _ApplyPendingWizardChoicesException implements Exception {
+  final String message;
+
+  const _ApplyPendingWizardChoicesException(this.message);
+
+  @override
+  String toString() => message;
 }

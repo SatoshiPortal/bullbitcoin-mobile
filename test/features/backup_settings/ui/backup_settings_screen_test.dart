@@ -127,7 +127,7 @@ void main() {
     expect(cubit.deleteCalls, 1);
   });
 
-  testWidgets('shows the last verified metadata backup time', (tester) async {
+  testWidgets('shows the last metadata backup time', (tester) async {
     final cubit = _StubBackupSettingsCubit(
       BackupSettingsState(
         status: BackupSettingsStatus.success,
@@ -137,7 +137,7 @@ void main() {
     );
     await _pump(tester, cubit);
 
-    expect(find.textContaining('Last verified:'), findsOneWidget);
+    expect(find.textContaining('Last backup:'), findsOneWidget);
   });
 
   testWidgets('reports successful remote deletion', (tester) async {

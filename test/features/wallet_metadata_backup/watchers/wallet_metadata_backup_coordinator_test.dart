@@ -15,6 +15,7 @@ void main() {
   late StreamController<void> changes;
   late StreamController<void> syncs;
   late _StateRepository states;
+  late WalletMetadataPublicationGuard guard;
   late WalletMetadataBackupCoordinator coordinator;
   var publishes = 0;
 
@@ -23,6 +24,7 @@ void main() {
     changes = StreamController<void>.broadcast();
     syncs = StreamController<void>.broadcast();
     states = _StateRepository();
+    guard = WalletMetadataPublicationGuard();
     coordinator = WalletMetadataBackupCoordinator(
       markDirty: MarkWalletMetadataBackupDirtyUsecase(states),
       publishCurrent: () async {
@@ -33,7 +35,7 @@ void main() {
           ),
         );
       },
-      guard: WalletMetadataPublicationGuard(),
+      guard: guard,
       sources: () => [_ChangeSource(changes.stream)],
       successfulSyncs: () => syncs.stream,
       fallbackDelay: const Duration(days: 1),
@@ -142,7 +144,7 @@ void main() {
           ),
         );
       },
-      guard: WalletMetadataPublicationGuard(),
+      guard: guard,
       sources: () => [_ChangeSource(changes.stream)],
       successfulSyncs: () => syncs.stream,
       fallbackDelay: const Duration(days: 1),
@@ -165,6 +167,23 @@ void main() {
     );
 
     suppression.close();
+  });
+
+  test('marks dirty after a source changes during recovery apply', () async {
+    await coordinator.start();
+    final suppression = await coordinator.beginRecoverySession();
+
+    await guard.suppressApplyChangesWhile(() async {
+      changes.add(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.state.dirty, isFalse);
+    });
+
+    suppression.close();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(states.state.dirty, isTrue);
+    expect(publishes, 0);
   });
 }
 

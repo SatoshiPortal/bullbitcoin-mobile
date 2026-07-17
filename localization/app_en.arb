@@ -16691,9 +16691,9 @@
   "@walletMetadataBackupDeleteBody": {
     "description": "Confirmation body for remote metadata deletion."
   },
-  "walletMetadataBackupSaved": "Wallet metadata backup verified.",
+  "walletMetadataBackupSaved": "Wallet metadata backup saved.",
   "@walletMetadataBackupSaved": {
-    "description": "Confirmation after a wallet metadata backup is read back successfully."
+    "description": "Confirmation after Bullnym accepts a wallet metadata backup."
   },
   "walletMetadataBackupUnchanged": "Wallet metadata is already up to date.",
   "@walletMetadataBackupUnchanged": {
@@ -16711,7 +16711,7 @@
   "@wizardMetadataBackupTitle": {
     "description": "Title of the onboarding wallet metadata backup choice."
   },
-  "wizardMetadataBackupBody": "Automatically store one encrypted copy of transaction labels, frozen-coin state, and wallet preferences on Bullnym. Bull Bitcoin can observe backup timing and size but cannot read the metadata. This uses a separate identity and encryption key from your wallet-discovery backup. Turning it off later stops new updates, and the remote copy can be deleted separately.",
+  "wizardMetadataBackupBody": "Automatically store one encrypted copy of wallet labels, frozen-coin state, and wallet preferences on Bullnym. Bull Bitcoin can observe backup timing and size but cannot read the metadata. This uses a separate identity and encryption key from your wallet-discovery backup. Turning it off later stops new updates, and the remote copy can be deleted separately.",
   "@wizardMetadataBackupBody": {
     "description": "Privacy disclosure for the onboarding wallet metadata backup choice."
   },
@@ -16735,9 +16735,9 @@
   "@walletMetadataBackupDeleted": {
     "description": "Confirmation after the encrypted metadata copy is deleted from Bullnym."
   },
-  "walletMetadataBackupLastVerified": "Last verified: {timestamp}",
+  "walletMetadataBackupLastVerified": "Last backup: {timestamp}",
   "@walletMetadataBackupLastVerified": {
-    "description": "Timestamp of the last successfully verified Bullnym metadata backup.",
+    "description": "Timestamp of the last Bullnym metadata backup accepted by the server.",
     "placeholders": {
       "timestamp": {
         "type": "String"

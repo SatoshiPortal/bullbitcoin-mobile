@@ -27,6 +27,7 @@ final class WalletMetadataBackupCoordinator {
   Timer? _fallbackTimer;
   bool _dirtyWriteQueued = false;
   bool _retryAfterPublication = false;
+  bool _ownerChangeObservedWhileSuppressed = false;
   bool _started = false;
 
   WalletMetadataBackupCoordinator({
@@ -142,7 +143,7 @@ final class WalletMetadataBackupCoordinator {
 
   Future<WalletMetadataPublicationSuppression> beginRecoverySession() async {
     final suppression = _guard.beginPublicationSuppression(
-      onReleased: scheduleFallbackRetry,
+      onReleased: _handleRecoverySessionReleased,
     );
     _fallbackTimer?.cancel();
     _fallbackTimer = null;
@@ -179,6 +180,7 @@ final class WalletMetadataBackupCoordinator {
   Future<void> dispose() async {
     _started = false;
     _retryAfterPublication = false;
+    _ownerChangeObservedWhileSuppressed = false;
     _fallbackTimer?.cancel();
     _fallbackTimer = null;
     for (final subscription in _subscriptions) {
@@ -188,7 +190,10 @@ final class WalletMetadataBackupCoordinator {
   }
 
   void _handleSourceChange() {
-    if (_guard.ignoresOwnerChanges) return;
+    if (_guard.ignoresOwnerChanges) {
+      _ownerChangeObservedWhileSuppressed = true;
+      return;
+    }
     if (_publicationInFlight != null) _retryAfterPublication = true;
     if (_dirtyWriteQueued) return;
     _dirtyWriteQueued = true;
@@ -198,6 +203,17 @@ final class WalletMetadataBackupCoordinator {
       if (failure == null) scheduleFallbackRetry();
       return failure;
     });
+  }
+
+  void _handleRecoverySessionReleased() {
+    if (!_started) return;
+    if (_guard.isPublicationSuppressed) return;
+    if (_ownerChangeObservedWhileSuppressed) {
+      _ownerChangeObservedWhileSuppressed = false;
+      _handleSourceChange();
+      return;
+    }
+    scheduleFallbackRetry();
   }
 
   Future<WalletMetadataBackupFailure?> _markDirtyOnce() async {
