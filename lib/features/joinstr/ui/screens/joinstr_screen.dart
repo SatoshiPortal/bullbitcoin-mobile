@@ -390,7 +390,16 @@ class _OtherPoolsTab extends StatelessWidget {
         ),
         Expanded(
           child: state.status == JoinstrStatus.loadingPools
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const Gap(12),
+                      Text(context.loc.joinstrConnectingTor),
+                    ],
+                  ),
+                )
               : state.pools.isEmpty
               ? _EmptyState(message: context.loc.joinstrNoActivePools)
               : ListView.separated(

@@ -475,6 +475,10 @@
   "@joinstrRoundInProgress": {
     "description": "Hint shown when the create button is disabled because a round is active"
   },
+  "joinstrConnectingTor": "Connecting to Tor and loading pools…",
+  "@joinstrConnectingTor": {
+    "description": "Shown while the embedded Tor bootstraps and the pool list loads"
+  },
   "joinstrCoinjoinBroadcast": "Coinjoin broadcast: {txid}",
   "@joinstrCoinjoinBroadcast": {
     "description": "Snackbar shown when a coinjoin transaction is broadcast",
