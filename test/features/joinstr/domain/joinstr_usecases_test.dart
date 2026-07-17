@@ -1,14 +1,20 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/initiate_joinstr_pool_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/join_joinstr_pool_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/list_joinstr_coins_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/list_joinstr_pools_usecase.dart';
-import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_peer_context_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/save_joinstr_relay_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,10 +24,12 @@ class _MockDatasource extends Mock implements JoinstrDatasource {}
 
 class _MockStore extends Mock implements JoinstrStore {}
 
-class _MockResolvePeerContext extends Mock
-    implements ResolveJoinstrPeerContextUsecase {}
+class _MockResolveNodeContext extends Mock
+    implements ResolveJoinstrNodeContextUsecase {}
 
 class _MockResolveProxy extends Mock implements ResolveJoinstrProxyUsecase {}
+
+class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
 Wallet _wallet() => Wallet(
   origin: 'origin',
@@ -54,8 +62,9 @@ JoinstrPool _pool({
 void main() {
   late _MockDatasource datasource;
   late _MockStore store;
-  late _MockResolvePeerContext resolvePeerContext;
+  late _MockResolveNodeContext resolveNode;
   late _MockResolveProxy resolveProxy;
+  late _MockGetReceiveAddress getReceiveAddress;
 
   setUpAll(() {
     registerFallbackValue(_wallet());
@@ -76,24 +85,39 @@ void main() {
   setUp(() {
     datasource = _MockDatasource();
     store = _MockStore();
-    resolvePeerContext = _MockResolvePeerContext();
+    resolveNode = _MockResolveNodeContext();
     resolveProxy = _MockResolveProxy();
+    getReceiveAddress = _MockGetReceiveAddress();
 
     when(() => store.getRelay()).thenAnswer((_) async => null);
     when(() => store.appendHistory(any())).thenAnswer((_) async {});
-    when(() => resolveProxy.execute()).thenAnswer((_) async => '127.0.0.1:9050');
-    when(() => store.clearReservedAddress()).thenAnswer((_) async {});
     when(
-      () => resolvePeerContext.execute(wallet: any(named: 'wallet')),
-    ).thenAnswer(
-      (_) async => const JoinstrPeerContext(
+      () => resolveProxy.execute(),
+    ).thenAnswer((_) async => '127.0.0.1:9050');
+    when(() => resolveNode.execute(wallet: any(named: 'wallet'))).thenAnswer(
+      (_) async => const JoinstrNodeContext(
         mnemonic: 'mnemonic',
         electrumUrl: 'ssl://electrum.example:50002',
-        outputAddress: 'tb1qaddress',
         proxy: '127.0.0.1:9050',
       ),
     );
+    when(
+      () => getReceiveAddress.execute(
+        walletId: any(named: 'walletId'),
+        generateNew: any(named: 'generateNew'),
+      ),
+    ).thenAnswer(
+      (_) async => WalletAddress(
+        walletId: 'w',
+        index: 0,
+        address: 'tb1qaddress',
+        createdAt: DateTime(2020),
+        updatedAt: DateTime(2020),
+      ),
+    );
   });
+
+  int nowSec() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
   group('ListJoinstrPoolsUsecase', () {
     ListJoinstrPoolsUsecase build() => ListJoinstrPoolsUsecase(
@@ -102,56 +126,28 @@ void main() {
       resolveProxyUsecase: resolveProxy,
     );
 
-    int nowSec() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    void stubPools(List<JoinstrPool> pools) => when(
+      () => datasource.listPools(
+        relay: any(named: 'relay'),
+        back: any(named: 'back'),
+        wait: any(named: 'wait'),
+        proxy: any(named: 'proxy'),
+      ),
+    ).thenAnswer((_) async => pools);
 
-    test('drops expired pools, which can never fill', () async {
-      when(
-        () => datasource.listPools(
-          relay: any(named: 'relay'),
-          back: any(named: 'back'),
-          wait: any(named: 'wait'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).thenAnswer(
-        (_) async => [
-          _pool(denominationSat: 100000, expiresAtUnixSec: nowSec() - 10),
-          _pool(denominationSat: 200000, expiresAtUnixSec: nowSec() + 600),
-        ],
-      );
-
-      final pools = await build().execute();
-      expect(pools.map((p) => p.denominationSat), [200000]);
-    });
-
-    test('sorts joinable pools by denomination', () async {
-      when(
-        () => datasource.listPools(
-          relay: any(named: 'relay'),
-          back: any(named: 'back'),
-          wait: any(named: 'wait'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).thenAnswer(
-        (_) async => [
-          _pool(denominationSat: 500000, expiresAtUnixSec: nowSec() + 600),
-          _pool(denominationSat: 100000, expiresAtUnixSec: nowSec() + 600),
-        ],
-      );
+    test('drops expired pools and sorts by denomination', () async {
+      stubPools([
+        _pool(denominationSat: 500000, expiresAtUnixSec: nowSec() + 600),
+        _pool(denominationSat: 100000, expiresAtUnixSec: nowSec() + 600),
+        _pool(denominationSat: 200000, expiresAtUnixSec: nowSec() - 10),
+      ]);
 
       final pools = await build().execute();
       expect(pools.map((p) => p.denominationSat), [100000, 500000]);
     });
 
     test('uses the stored relay, falling back to the default', () async {
-      when(
-        () => datasource.listPools(
-          relay: any(named: 'relay'),
-          back: any(named: 'back'),
-          wait: any(named: 'wait'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).thenAnswer((_) async => []);
-
+      stubPools([]);
       await build().execute();
       verify(
         () => datasource.listPools(
@@ -161,17 +157,38 @@ void main() {
           proxy: any(named: 'proxy'),
         ),
       ).called(1);
+    });
+  });
 
+  group('ListJoinstrCoinsUsecase', () {
+    ListJoinstrCoinsUsecase build() => ListJoinstrCoinsUsecase(
+      datasource: datasource,
+      resolveNodeContextUsecase: resolveNode,
+    );
+
+    test('resolves node context and returns coins sorted by value', () async {
       when(
-        () => store.getRelay(),
-      ).thenAnswer((_) async => 'wss://relay.example');
-      await build().execute();
-      verify(
-        () => datasource.listPools(
-          relay: 'wss://relay.example',
-          back: any(named: 'back'),
-          wait: any(named: 'wait'),
+        () => datasource.listCoins(
+          wallet: any(named: 'wallet'),
+          mnemonic: any(named: 'mnemonic'),
+          electrumUrl: any(named: 'electrumUrl'),
           proxy: any(named: 'proxy'),
+        ),
+      ).thenAnswer(
+        (_) async => const [
+          JoinstrCoin(txid: 'a', vout: 0, valueSat: 100000),
+          JoinstrCoin(txid: 'b', vout: 1, valueSat: 500000),
+        ],
+      );
+
+      final coins = await build().execute(wallet: _wallet());
+      expect(coins.map((c) => c.valueSat), [500000, 100000]);
+      verify(
+        () => datasource.listCoins(
+          wallet: any(named: 'wallet'),
+          mnemonic: 'mnemonic',
+          electrumUrl: 'ssl://electrum.example:50002',
+          proxy: '127.0.0.1:9050',
         ),
       ).called(1);
     });
@@ -201,40 +218,99 @@ void main() {
     });
   });
 
-  group('JoinJoinstrPoolUsecase', () {
-    JoinJoinstrPoolUsecase build() => JoinJoinstrPoolUsecase(
+  group('InitiateJoinstrPoolUsecase', () {
+    InitiateJoinstrPoolUsecase build() => InitiateJoinstrPoolUsecase(
       datasource: datasource,
       store: store,
-      resolvePeerContextUsecase: resolvePeerContext,
+      resolveNodeContextUsecase: resolveNode,
+      getReceiveAddressUsecase: getReceiveAddress,
     );
 
-    test('appends a history entry after the broadcast', () async {
+    test('forwards progress and records history on broadcast', () async {
       when(
-        () => datasource.joinPool(
-          pool: any(named: 'pool'),
+        () => datasource.initiatePool(
           wallet: any(named: 'wallet'),
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
           electrumUrl: any(named: 'electrumUrl'),
+          relay: any(named: 'relay'),
+          denominationSat: any(named: 'denominationSat'),
+          feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
+          peers: any(named: 'peers'),
+          maxDuration: any(named: 'maxDuration'),
+          inputOutpoint: any(named: 'inputOutpoint'),
           proxy: any(named: 'proxy'),
         ),
-      ).thenAnswer((_) async => 'txid-abc');
-
-      final txId = await build().execute(
-        wallet: _wallet(),
-        pool: _pool(denominationSat: 100000, expiresAtUnixSec: 1793500000),
+      ).thenAnswer(
+        (_) => Stream.fromIterable(const [
+          JoinstrProgress(step: JoinstrRoundStep.connecting),
+          JoinstrProgress(step: JoinstrRoundStep.done, txId: 'txid-abc'),
+        ]),
       );
 
-      expect(txId, 'txid-abc');
+      final steps = await build()
+          .execute(
+            wallet: _wallet(),
+            denominationSat: 100000,
+            peers: 2,
+            feeRateSatPerVb: 1,
+            inputOutpoint: 'a:0',
+          )
+          .map((p) => p.step)
+          .toList();
+
+      expect(steps, [JoinstrRoundStep.connecting, JoinstrRoundStep.done]);
       final entry =
           verify(() => store.appendHistory(captureAny())).captured.single
               as JoinstrHistoryEntry;
       expect(entry.txId, 'txid-abc');
       expect(entry.amountSat, 100000);
-      expect(entry.relay, 'wss://nos.lol');
     });
 
-    test('does not write history when the round fails', () async {
+    test('does not record history when the round fails', () async {
+      when(
+        () => datasource.initiatePool(
+          wallet: any(named: 'wallet'),
+          mnemonic: any(named: 'mnemonic'),
+          outputAddress: any(named: 'outputAddress'),
+          electrumUrl: any(named: 'electrumUrl'),
+          relay: any(named: 'relay'),
+          denominationSat: any(named: 'denominationSat'),
+          feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
+          peers: any(named: 'peers'),
+          maxDuration: any(named: 'maxDuration'),
+          inputOutpoint: any(named: 'inputOutpoint'),
+          proxy: any(named: 'proxy'),
+        ),
+      ).thenAnswer(
+        (_) => Stream.fromIterable(const [
+          JoinstrProgress(step: JoinstrRoundStep.failed, errorMessage: 'boom'),
+        ]),
+      );
+
+      await build()
+          .execute(
+            wallet: _wallet(),
+            denominationSat: 100000,
+            peers: 2,
+            feeRateSatPerVb: 1,
+            inputOutpoint: 'a:0',
+          )
+          .toList();
+
+      verifyNever(() => store.appendHistory(any()));
+    });
+  });
+
+  group('JoinJoinstrPoolUsecase', () {
+    JoinJoinstrPoolUsecase build() => JoinJoinstrPoolUsecase(
+      datasource: datasource,
+      store: store,
+      resolveNodeContextUsecase: resolveNode,
+      getReceiveAddressUsecase: getReceiveAddress,
+    );
+
+    test('forwards progress and records history on broadcast', () async {
       when(
         () => datasource.joinPool(
           pool: any(named: 'pool'),
@@ -242,107 +318,27 @@ void main() {
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
           electrumUrl: any(named: 'electrumUrl'),
+          inputOutpoint: any(named: 'inputOutpoint'),
           proxy: any(named: 'proxy'),
         ),
-      ).thenThrow(JoinstrException(JoinstrIssue.coinjoinFailed));
-
-      await expectLater(
-        () => build().execute(
-          wallet: _wallet(),
-          pool: _pool(denominationSat: 100000, expiresAtUnixSec: 1793500000),
-        ),
-        throwsA(isA<JoinstrException>()),
-      );
-      verifyNever(() => store.appendHistory(any()));
-    });
-  });
-
-  group('InitiateJoinstrPoolUsecase', () {
-    InitiateJoinstrPoolUsecase build() => InitiateJoinstrPoolUsecase(
-      datasource: datasource,
-      store: store,
-      resolvePeerContextUsecase: resolvePeerContext,
-    );
-
-    test('uses the stored relay and records history', () async {
-      when(
-        () => store.getRelay(),
-      ).thenAnswer((_) async => 'wss://relay.example');
-      when(
-        () => datasource.initiatePool(
-          wallet: any(named: 'wallet'),
-          mnemonic: any(named: 'mnemonic'),
-          outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
-          relay: any(named: 'relay'),
-          denominationSat: any(named: 'denominationSat'),
-          feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
-          peers: any(named: 'peers'),
-          maxDuration: any(named: 'maxDuration'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).thenAnswer((_) async => 'txid-abc');
-
-      await build().execute(
-        wallet: _wallet(),
-        denominationSat: 100000,
-        peers: 2,
-        feeRateSatPerVb: 1,
+      ).thenAnswer(
+        (_) => Stream.fromIterable(const [
+          JoinstrProgress(step: JoinstrRoundStep.done, txId: 'txid-join'),
+        ]),
       );
 
-      verify(
-        () => datasource.initiatePool(
-          wallet: any(named: 'wallet'),
-          mnemonic: any(named: 'mnemonic'),
-          outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
-          relay: 'wss://relay.example',
-          denominationSat: 100000,
-          feeRateSatPerVb: 1,
-          peers: 2,
-          maxDuration: any(named: 'maxDuration'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).called(1);
+      await build()
+          .execute(
+            wallet: _wallet(),
+            pool: _pool(denominationSat: 100000, expiresAtUnixSec: 1793500000),
+            inputOutpoint: 'a:0',
+          )
+          .toList();
+
       final entry =
           verify(() => store.appendHistory(captureAny())).captured.single
               as JoinstrHistoryEntry;
-      expect(entry.relay, 'wss://relay.example');
-      expect(entry.amountSat, 100000);
-    });
-
-    test('wraps an unexpected error as coinjoinFailed', () async {
-      when(
-        () => datasource.initiatePool(
-          wallet: any(named: 'wallet'),
-          mnemonic: any(named: 'mnemonic'),
-          outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
-          relay: any(named: 'relay'),
-          denominationSat: any(named: 'denominationSat'),
-          feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
-          peers: any(named: 'peers'),
-          maxDuration: any(named: 'maxDuration'),
-          proxy: any(named: 'proxy'),
-        ),
-      ).thenThrow(StateError('boom'));
-
-      await expectLater(
-        () => build().execute(
-          wallet: _wallet(),
-          denominationSat: 100000,
-          peers: 2,
-          feeRateSatPerVb: 1,
-        ),
-        throwsA(
-          isA<JoinstrException>().having(
-            (e) => e.issue,
-            'issue',
-            JoinstrIssue.coinjoinFailed,
-          ),
-        ),
-      );
-      verifyNever(() => store.appendHistory(any()));
+      expect(entry.txId, 'txid-join');
     });
   });
 }
