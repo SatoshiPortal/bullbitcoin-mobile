@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/liquid_receive_address_with_blinding_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/liquid_receive_address_with_blinding_secret.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
@@ -156,13 +156,14 @@ void main() {
           addrRepo.generateNewReceiveAddress(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => btcWalletAddress);
     when(
-      () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+      () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer(
-      (_) async => const LiquidReceiveAddressWithBlindingKey(
+      (_) async => const LiquidReceiveAddressWithBlindingSecret(
         address: 'lq1qfresh',
-        blindingKeyHex: 'deadbeef',
+        blindingSecretHex:
+            '1111111111111111111111111111111111111111111111111111111111111111',
       ),
     );
 
@@ -219,7 +220,7 @@ void main() {
     });
 
     test(
-      'Liquid rail: fresh confidential address + its blinding key supplied',
+      'Liquid rail: fresh confidential address + blinding secret supplied',
       () async {
         _unwrap(await usecase.execute(command(acceptLiquid: true)));
 
@@ -234,9 +235,12 @@ void main() {
         ).captured;
         expect(captured[0], isNull); // no BTC address for a Liquid-only invoice
         expect(captured[1], 'lq1qfresh');
-        expect(captured[2], 'deadbeef');
+        expect(
+          captured[2],
+          '1111111111111111111111111111111111111111111111111111111111111111',
+        );
         verify(
-          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
             walletId: 'liquid-default',
           ),
         ).called(1);
@@ -244,7 +248,7 @@ void main() {
     );
 
     test(
-      'LN-only invoice supplies the Liquid address WITHOUT the blinding key',
+      'LN-only invoice supplies the Liquid address without the secret',
       () async {
         _unwrap(
           await usecase.execute(command(acceptLn: true, acceptLiquid: false)),
@@ -442,7 +446,7 @@ void main() {
       expect(r.invoiceId.value, 'inv-1');
       // one initial + one regenerate = two address derivations.
       verify(
-        () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+        () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
           walletId: 'liquid-default',
         ),
       ).called(2);
@@ -468,7 +472,7 @@ void main() {
         );
         expect(failure.kind, InvoicesFailureKind.reusedLiquidAddress);
         verify(
-          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingKey(
+          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
             walletId: 'liquid-default',
           ),
         ).called(2);

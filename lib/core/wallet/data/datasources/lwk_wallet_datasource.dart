@@ -205,24 +205,25 @@ class LwkWalletDatasource {
     }
   }
 
-  // Like [getAddressByIndex] but also returns the per-address blinding key hex
-  // (lwk `Address.blindingKey`), which the confidential-invoice payout path
-  // needs so the server can detect Liquid payment to this address.
+  // Returns the address and its matching per-address blinding secret as one
+  // SDK result so callers cannot accidentally pair key material from another
+  // derivation index.
   Future<
-    ({String standard, String confidential, int index, String? blindingKey})
+    ({String standard, String confidential, int index, String blindingSecret})
   >
-  getAddressWithBlindingKeyByIndex(
+  getAddressWithBlindingSecretByIndex(
     int index, {
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final addressInfo = await lwkWallet.address(index: index);
+      final derived = await lwkWallet.addressWithBlindingSecret(index: index);
+      final addressInfo = derived.address;
       return (
         index: addressInfo.index!,
         standard: addressInfo.standard,
         confidential: addressInfo.confidential,
-        blindingKey: addressInfo.blindingKey,
+        blindingSecret: derived.blindingSecret,
       );
     } catch (e) {
       if (e is lwk.LwkError) {

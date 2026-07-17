@@ -103,9 +103,9 @@ class CreateInvoiceUsecase {
         switch (generatedResult) {
           case Ok(:final value):
             liquidAddress = value.$1;
-            // The blinding key is sent ONLY when the Liquid rail itself is
+            // The blinding secret is sent ONLY when the Liquid rail itself is
             // accepted; an LN-only invoice supplies the address without the
-            // key (§3.5/§3.19).
+            // secret (§3.5/§3.19).
             liquidBlindingKeyHex = command.acceptLiquid ? value.$2 : null;
           case Err(:final failure):
             await _releaseReservations(reservedLabelIds);
@@ -220,13 +220,13 @@ class CreateInvoiceUsecase {
     return address.address;
   }
 
-  // (address, blindingKeyHex)
+  // (address, blindingSecretHex)
   //
   // RESERVE the issued Liquid address the same way swaps/payjoin/exchange do —
   // by storing a system label on it. The address repository's generate loop
   // skips any index carrying a system label, so this makes a back-to-back
   // invoice (created before the first is funded) derive a DIFFERENT address +
-  // blinding key instead of colliding on the same unfunded index. Unlike the
+  // blinding secret instead of colliding on the same unfunded index. Unlike the
   // best-effort private memo, this reservation is correctness-critical, so a
   // persistence failure MUST fail the create (it is caught by [execute] and the
   // label released). The stored label id is appended to [reservedLabelIds].
@@ -235,7 +235,7 @@ class CreateInvoiceUsecase {
     List<int> reservedLabelIds,
   ) async {
     final generated = await _walletAddressRepository
-        .generateNewLiquidReceiveAddressWithBlindingKey(walletId: walletId);
+        .generateNewLiquidReceiveAddressWithBlindingSecret(walletId: walletId);
     final reservation = await _labels.store(
       NewLabel.addr(
         address: generated.address,
@@ -246,7 +246,7 @@ class CreateInvoiceUsecase {
     switch (reservation) {
       case Ok(:final value):
         reservedLabelIds.add(value.id);
-        return Ok((generated.address, generated.blindingKeyHex));
+        return Ok((generated.address, generated.blindingSecretHex));
       case Err():
         return const Err(InvoicesFailure.unexpected());
     }

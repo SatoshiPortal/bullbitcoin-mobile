@@ -23,6 +23,10 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 const _liquidWalletId = '[abcd1234/84h/1776h/0h]';
 // Bitcoin mainnet origin (network path 0h) → PublicBdkWalletModel.
 const _bitcoinWalletId = '[abcd1234/84h/0h/0h]';
+const _secret5 =
+    '1111111111111111111111111111111111111111111111111111111111111111';
+const _secret6 =
+    '2222222222222222222222222222222222222222222222222222222222222222';
 
 WalletMetadataModel _metadata(String id) {
   return WalletMetadataModel(
@@ -70,39 +74,42 @@ void main() {
     );
   });
 
-  group('generateNewLiquidReceiveAddressWithBlindingKey', () {
-    test('returns the fresh next-index address + its blinding key', () async {
-      when(
-        () => metadata.fetch(_liquidWalletId),
-      ).thenAnswer((_) async => _metadata(_liquidWalletId));
-      when(
-        () => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')),
-      ).thenAnswer(
-        (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
-      );
-      when(
-        () => lwk.getAddressWithBlindingKeyByIndex(
-          5,
-          wallet: any(named: 'wallet'),
-        ),
-      ).thenAnswer(
-        (_) async => (
-          index: 5,
-          standard: 'std5',
-          confidential: 'lq1qfresh5',
-          blindingKey: 'bkey5',
-        ),
-      );
-      when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+  group('generateNewLiquidReceiveAddressWithBlindingSecret', () {
+    test(
+      'returns the fresh next-index address + its blinding secret',
+      () async {
+        when(
+          () => metadata.fetch(_liquidWalletId),
+        ).thenAnswer((_) async => _metadata(_liquidWalletId));
+        when(
+          () => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')),
+        ).thenAnswer(
+          (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
+        );
+        when(
+          () => lwk.getAddressWithBlindingSecretByIndex(
+            5,
+            wallet: any(named: 'wallet'),
+          ),
+        ).thenAnswer(
+          (_) async => (
+            index: 5,
+            standard: 'std5',
+            confidential: 'lq1qfresh5',
+            blindingSecret: _secret5,
+          ),
+        );
+        when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
 
-      final result = await repository
-          .generateNewLiquidReceiveAddressWithBlindingKey(
-            walletId: _liquidWalletId,
-          );
+        final result = await repository
+            .generateNewLiquidReceiveAddressWithBlindingSecret(
+              walletId: _liquidWalletId,
+            );
 
-      expect(result.address, 'lq1qfresh5');
-      expect(result.blindingKeyHex, 'bkey5');
-    });
+        expect(result.address, 'lq1qfresh5');
+        expect(result.blindingSecretHex, _secret5);
+      },
+    );
 
     test('skips a system-labelled index and advances to a clean one', () async {
       when(
@@ -114,7 +121,7 @@ void main() {
         (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
       );
       when(
-        () => lwk.getAddressWithBlindingKeyByIndex(
+        () => lwk.getAddressWithBlindingSecretByIndex(
           5,
           wallet: any(named: 'wallet'),
         ),
@@ -123,11 +130,11 @@ void main() {
           index: 5,
           standard: 'std5',
           confidential: 'lq1qsystem5',
-          blindingKey: 'bkey5',
+          blindingSecret: _secret5,
         ),
       );
       when(
-        () => lwk.getAddressWithBlindingKeyByIndex(
+        () => lwk.getAddressWithBlindingSecretByIndex(
           6,
           wallet: any(named: 'wallet'),
         ),
@@ -136,7 +143,7 @@ void main() {
           index: 6,
           standard: 'std6',
           confidential: 'lq1qclean6',
-          blindingKey: 'bkey6',
+          blindingSecret: _secret6,
         ),
       );
       when(
@@ -147,12 +154,44 @@ void main() {
       ).thenAnswer((_) async => []);
 
       final result = await repository
-          .generateNewLiquidReceiveAddressWithBlindingKey(
+          .generateNewLiquidReceiveAddressWithBlindingSecret(
             walletId: _liquidWalletId,
           );
 
       expect(result.address, 'lq1qclean6');
-      expect(result.blindingKeyHex, 'bkey6');
+      expect(result.blindingSecretHex, _secret6);
+    });
+
+    test('rejects malformed secret material from the SDK', () async {
+      when(
+        () => metadata.fetch(_liquidWalletId),
+      ).thenAnswer((_) async => _metadata(_liquidWalletId));
+      when(
+        () => lwk.getLastUnusedAddress(wallet: any(named: 'wallet')),
+      ).thenAnswer(
+        (_) async => (index: 4, standard: 'std4', confidential: 'conf4'),
+      );
+      when(
+        () => lwk.getAddressWithBlindingSecretByIndex(
+          5,
+          wallet: any(named: 'wallet'),
+        ),
+      ).thenAnswer(
+        (_) async => (
+          index: 5,
+          standard: 'std5',
+          confidential: 'lq1qfresh5',
+          blindingSecret: 'not-a-secret-key',
+        ),
+      );
+      when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+
+      await expectLater(
+        repository.generateNewLiquidReceiveAddressWithBlindingSecret(
+          walletId: _liquidWalletId,
+        ),
+        throwsA(isA<WalletError>()),
+      );
     });
 
     test(
@@ -163,13 +202,13 @@ void main() {
         ).thenAnswer((_) async => _metadata(_bitcoinWalletId));
 
         await expectLater(
-          repository.generateNewLiquidReceiveAddressWithBlindingKey(
+          repository.generateNewLiquidReceiveAddressWithBlindingSecret(
             walletId: _bitcoinWalletId,
           ),
           throwsA(isA<WalletError>()),
         );
         verifyNever(
-          () => lwk.getAddressWithBlindingKeyByIndex(
+          () => lwk.getAddressWithBlindingSecretByIndex(
             any(),
             wallet: any(named: 'wallet'),
           ),
@@ -180,7 +219,7 @@ void main() {
     test('throws when the wallet is unknown', () async {
       when(() => metadata.fetch(any())).thenAnswer((_) async => null);
       await expectLater(
-        repository.generateNewLiquidReceiveAddressWithBlindingKey(
+        repository.generateNewLiquidReceiveAddressWithBlindingSecret(
           walletId: 'missing',
         ),
         throwsA(isA<WalletError>()),

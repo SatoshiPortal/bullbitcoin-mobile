@@ -9,7 +9,8 @@ tracked to a terminal state.
 
 This feature has its OWN hexagon, entry tile, screens, and routes. It REUSES the
 shared `bullnym` client (adding the three signed `invoice-*` actions) and adds
-one core-wallet primitive (a Liquid receive address WITH its blinding key). It
+one core-wallet primitive (a Liquid receive address WITH its blinding secret).
+It
 edits neither `features/payment_page` nor `features/pos`.
 
 ## The 2-path contract (DG-I1: UNLINKED-ONLY in v1)
@@ -37,7 +38,7 @@ they hand the server one fresh address per rail per invoice. So the payout
 wallet is the user's **DEFAULT spending wallet**:
 
 - LN or Liquid accepted → one fresh confidential Liquid receive address (+ its
-  per-address blinding key) from the DEFAULT Liquid wallet;
+  per-address blinding secret) from the DEFAULT Liquid wallet;
 - BTC accepted → one fresh Bitcoin receive address from the DEFAULT Bitcoin
   wallet.
 
@@ -49,9 +50,11 @@ hidden/autosweep posture (none is needed: an invoice discloses a single
 per-invoice address, never a descriptor), **no keychain-manifest classification,
 and no recovery heal** — a major simplification versus page/POS.
 
-The `liquid_blinding_key_hex` sent to the server is the **per-address** blinding
-key (what a watcher needs to detect payment to that specific output), NEVER the
-wallet master blinding key.
+The `liquid_blinding_key_hex` sent to the server is the **per-address blinding
+secret** (what its watcher needs to unblind and detect payment to that specific
+output), NEVER the wallet master blinding key or the confidential address's
+public blinding key. LWK derives and returns the address/secret pair atomically;
+the app does not implement SLIP77 derivation in Dart.
 
 ## Signed byte layout (KR-3-analog, DG-I3)
 
