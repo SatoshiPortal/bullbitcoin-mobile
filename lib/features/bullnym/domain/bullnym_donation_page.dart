@@ -16,7 +16,7 @@ const String bullnymDonationPageKindPos = 'pos';
 /// The view NEVER echoes `ct_descriptor`, so this DTO does not carry it. JSON
 /// keys mirror the server exactly: `display_currency`, `is_archived`,
 /// `avatar_sha256`, `og_sha256`, `public_url`. `posMode` is not a wire field:
-/// the client derives it from `kind`.
+/// the server dropped `pos_mode` and the client derives it from `kind`.
 class BullnymDonationPage {
   final String nym;
   final String header;

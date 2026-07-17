@@ -99,7 +99,6 @@ Map<String, dynamic> _donationPageView({
     'twitter': 'me',
     'instagram': null,
     'kind': kind,
-    'pos_mode': false,
     'enabled': enabled,
     'is_archived': isArchived,
     'avatar_sha256': null,
@@ -454,6 +453,38 @@ void main() {
         expect(request.queryParameters['kind'], 'payment_page');
       },
     );
+
+    test('derives posMode from kind for a view without pos_mode', () async {
+      final stub = _stubDio([
+        _donationPageView(kind: 'payment_page'),
+        _donationPageView(kind: 'pos'),
+      ]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      final page = _unwrap(
+        await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+      );
+      final pos = _unwrap(
+        await facade.getDonationPage(nym: 'alice', kind: 'pos'),
+      );
+
+      expect(page.kind, 'payment_page');
+      expect(page.posMode, isFalse);
+      expect(pos.kind, 'pos');
+      expect(pos.posMode, isTrue);
+    });
+
+    test('rejects a view missing the kind discriminator', () async {
+      final stub = _stubDio([_donationPageView()..remove('kind')]);
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
+
+      expect(
+        _unwrapFailure(
+          await facade.getDonationPage(nym: 'alice', kind: 'payment_page'),
+        ).kind,
+        BullnymFailureKind.invalidServerResponse,
+      );
+    });
 
     test('maps DonationPageNotFound envelope to a typed rejection', () async {
       final stub = _stubDio([
