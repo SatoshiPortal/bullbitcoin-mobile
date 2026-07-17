@@ -95,10 +95,7 @@ Publication performs these steps:
 An initially empty inventory creates no object. Once an object exists, an
 intentional later empty inventory is a valid replacement.
 
-Owner post-commit streams only mark durable dirty state. They do not upload on a
-timer. A successful foreground wallet sync is the normal flush trigger. Startup
-has one delayed fallback when no sync arrives, `Back up now` bypasses the wait,
-and only one store may be in flight.
+Owner post-commit streams mark durable dirty state and arm one debounced delayed fallback. A successful foreground wallet sync is the normal flush trigger, resuming the app retries pending work, and `Back up now` bypasses the wait. Only one store may be in flight.
 
 ## Recovery
 
