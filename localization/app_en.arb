@@ -14535,6 +14535,7 @@
   "trezorErrorUnknown": "Something went wrong with Trezor. Try again.",
   "@trezorErrorUnknown": {
     "description": "Generic user-facing message for an unexpected Trezor failure. NEVER includes the raw dev error text — that goes to logs only."
+  },
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"
