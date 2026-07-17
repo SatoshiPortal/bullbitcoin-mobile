@@ -10084,5 +10084,11 @@
   "logsShareOptionShare": "Споделяне",
   "logsShareOptionExport": "Експортиране",
   "logsExportedMessage": "Журналите са експортирани успешно",
-  "logsExportFailedMessage": "Неуспешно експортиране на журналите"
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите",
+  "transactionStatusPayjoinAborted": "Payjoin отменен",
+  "transactionDetailLabelPayjoinAborted": "Отменен",
+  "transactionDetailLabelPayjoinInProgress": "В процес",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin разкрит"
 }

@@ -12934,5 +12934,11 @@
   "logsShareOptionShare": "Paylaş",
   "logsShareOptionExport": "Dışa Aktar",
   "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
-  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı"
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
+  "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
+  "transactionDetailLabelPayjoinAborted": "İptal edildi",
+  "transactionDetailLabelPayjoinInProgress": "Devam ediyor",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin açığa çıktı"
 }

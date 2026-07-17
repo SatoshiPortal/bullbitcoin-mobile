@@ -13052,5 +13052,11 @@
   "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
-  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
+  "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
+  "transactionDetailLabelPayjoinInProgress": "Σε εξέλιξη",
+  "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "systemLabelPayjoinExposed": "Το Payjoin αποκαλύφθηκε"
 }

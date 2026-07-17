@@ -10052,5 +10052,11 @@
   "logsShareOptionShare": "শ্বেয়াৰ কৰক",
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
-  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে"
+  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
+  "transactionDetailLabelPayjoinInProgress": "চলি আছে",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "systemLabelPayjoinExposed": "Payjoin উন্মুক্ত"
 }

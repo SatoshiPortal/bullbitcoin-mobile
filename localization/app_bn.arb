@@ -13222,5 +13222,11 @@
   "logsShareOptionShare": "শেয়ার করুন",
   "logsShareOptionExport": "এক্সপোর্ট করুন",
   "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
-  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে"
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinInProgress": "চলমান",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "systemLabelPayjoinExposed": "Payjoin উন্মুক্ত"
 }

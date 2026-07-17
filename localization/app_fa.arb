@@ -12934,5 +12934,11 @@
   "logsShareOptionShare": "اشتراک‌گذاری",
   "logsShareOptionExport": "صدور",
   "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
-  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود"
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
+  "transactionStatusPayjoinAborted": "Payjoin لغو شد",
+  "transactionDetailLabelPayjoinAborted": "لغو شده",
+  "transactionDetailLabelPayjoinInProgress": "در حال انجام",
+  "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin افشا شده"
 }

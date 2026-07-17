@@ -12938,5 +12938,11 @@
   "logsShareOptionShare": "مشاركة",
   "logsShareOptionExport": "تصدير",
   "logsExportedMessage": "تم تصدير السجلات بنجاح",
-  "logsExportFailedMessage": "فشل تصدير السجلات"
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
+  "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
+  "transactionDetailLabelPayjoinAborted": "ملغى",
+  "transactionDetailLabelPayjoinInProgress": "قيد التنفيذ",
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin مكشوف"
 }

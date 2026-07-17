@@ -5094,5 +5094,11 @@
   "logsShareOptionShare": "Condividi",
   "logsShareOptionExport": "Esporta",
   "logsExportedMessage": "Registri esportati con successo",
-  "logsExportFailedMessage": "Esportazione dei registri non riuscita"
+  "logsExportFailedMessage": "Esportazione dei registri non riuscita",
+  "transactionStatusPayjoinAborted": "Payjoin annullato",
+  "transactionDetailLabelPayjoinAborted": "Annullato",
+  "transactionDetailLabelPayjoinInProgress": "In corso",
+  "transactionDetailLabelPayjoinFeeContribution": "Contributo commissione Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin aggiunge una delle tue monete come input aggiuntivo al pagamento per migliorare la privacy. La commissione di mining per quell'input aggiunto viene detratta dall'importo che ricevi (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin esposto"
 }

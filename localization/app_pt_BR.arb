@@ -13048,5 +13048,11 @@
   "logsShareOptionShare": "Compartilhar",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados com sucesso",
-  "logsExportFailedMessage": "Falha ao exportar os registros"
+  "logsExportFailedMessage": "Falha ao exportar os registros",
+  "transactionStatusPayjoinAborted": "Payjoin cancelado",
+  "transactionDetailLabelPayjoinAborted": "Cancelado",
+  "transactionDetailLabelPayjoinInProgress": "Em progresso",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin exposto"
 }

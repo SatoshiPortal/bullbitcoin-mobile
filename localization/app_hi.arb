@@ -13202,5 +13202,11 @@
   "logsShareOptionShare": "शेयर करें",
   "logsShareOptionExport": "निर्यात करें",
   "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
-  "logsExportFailedMessage": "लॉग निर्यात करने में विफल"
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
+  "transactionStatusPayjoinAborted": "Payjoin रद्द किया गया",
+  "transactionDetailLabelPayjoinAborted": "रद्द किया गया",
+  "transactionDetailLabelPayjoinInProgress": "प्रगति में",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin शुल्क योगदान",
+  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।",
+  "systemLabelPayjoinExposed": "Payjoin उजागर"
 }

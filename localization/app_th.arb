@@ -12934,5 +12934,11 @@
   "logsShareOptionShare": "แชร์",
   "logsShareOptionExport": "ส่งออก",
   "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
-  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ"
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ",
+  "transactionStatusPayjoinAborted": "Payjoin ถูกยกเลิก",
+  "transactionDetailLabelPayjoinAborted": "ถูกยกเลิก",
+  "transactionDetailLabelPayjoinInProgress": "กำลังดำเนินการ",
+  "transactionDetailLabelPayjoinFeeContribution": "ค่าธรรมเนียมส่วนร่วม Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)",
+  "systemLabelPayjoinExposed": "Payjoin ถูกเปิดเผย"
 }

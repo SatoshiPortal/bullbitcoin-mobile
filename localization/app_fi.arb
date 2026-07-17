@@ -5086,5 +5086,11 @@
   "logsShareOptionShare": "Jaa",
   "logsShareOptionExport": "Vie",
   "logsExportedMessage": "Lokit viety onnistuneesti",
-  "logsExportFailedMessage": "Lokien vienti epäonnistui"
+  "logsExportFailedMessage": "Lokien vienti epäonnistui",
+  "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
+  "transactionDetailLabelPayjoinAborted": "Keskeytetty",
+  "transactionDetailLabelPayjoinInProgress": "Käynnissä",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin paljastettu"
 }

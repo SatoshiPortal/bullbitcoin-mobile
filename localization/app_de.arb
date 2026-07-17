@@ -5090,5 +5090,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "transactionStatusPayjoinAborted": "Payjoin abgebrochen",
+  "transactionDetailLabelPayjoinAborted": "Abgebrochen",
+  "transactionDetailLabelPayjoinInProgress": "In Bearbeitung",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
+  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78).",
+  "systemLabelPayjoinExposed": "Payjoin offengelegt"
 }
