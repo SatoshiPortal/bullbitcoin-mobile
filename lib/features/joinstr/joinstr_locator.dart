@@ -10,8 +10,9 @@ import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/get_joinstr_settings_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/initiate_joinstr_pool_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/join_joinstr_pool_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/list_joinstr_coins_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/list_joinstr_pools_usecase.dart';
-import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_peer_context_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/save_joinstr_relay_usecase.dart';
 import 'package:bb_mobile/features/joinstr/presentation/joinstr_cubit.dart';
@@ -31,17 +32,13 @@ class JoinstrLocator {
     );
 
     locator.registerFactory<ResolveJoinstrProxyUsecase>(
-      () => ResolveJoinstrProxyUsecase(
-        torDatasource: locator<TorDatasource>(),
-      ),
+      () => ResolveJoinstrProxyUsecase(torDatasource: locator<TorDatasource>()),
     );
-    locator.registerFactory<ResolveJoinstrPeerContextUsecase>(
-      () => ResolveJoinstrPeerContextUsecase(
+    locator.registerFactory<ResolveJoinstrNodeContextUsecase>(
+      () => ResolveJoinstrNodeContextUsecase(
         seedRepository: locator<SeedRepository>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         resolveProxyUsecase: locator<ResolveJoinstrProxyUsecase>(),
-        store: locator<JoinstrStore>(),
       ),
     );
     locator.registerFactory<GetJoinstrSettingsUsecase>(
@@ -57,18 +54,26 @@ class JoinstrLocator {
         resolveProxyUsecase: locator<ResolveJoinstrProxyUsecase>(),
       ),
     );
+    locator.registerFactory<ListJoinstrCoinsUsecase>(
+      () => ListJoinstrCoinsUsecase(
+        datasource: locator<JoinstrDatasource>(),
+        resolveNodeContextUsecase: locator<ResolveJoinstrNodeContextUsecase>(),
+      ),
+    );
     locator.registerFactory<JoinJoinstrPoolUsecase>(
       () => JoinJoinstrPoolUsecase(
         datasource: locator<JoinstrDatasource>(),
         store: locator<JoinstrStore>(),
-        resolvePeerContextUsecase: locator<ResolveJoinstrPeerContextUsecase>(),
+        resolveNodeContextUsecase: locator<ResolveJoinstrNodeContextUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
       ),
     );
     locator.registerFactory<InitiateJoinstrPoolUsecase>(
       () => InitiateJoinstrPoolUsecase(
         datasource: locator<JoinstrDatasource>(),
         store: locator<JoinstrStore>(),
-        resolvePeerContextUsecase: locator<ResolveJoinstrPeerContextUsecase>(),
+        resolveNodeContextUsecase: locator<ResolveJoinstrNodeContextUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
       ),
     );
 
@@ -81,6 +86,7 @@ class JoinstrLocator {
         getJoinstrSettingsUsecase: locator<GetJoinstrSettingsUsecase>(),
         saveJoinstrRelayUsecase: locator<SaveJoinstrRelayUsecase>(),
         listJoinstrPoolsUsecase: locator<ListJoinstrPoolsUsecase>(),
+        listJoinstrCoinsUsecase: locator<ListJoinstrCoinsUsecase>(),
         joinJoinstrPoolUsecase: locator<JoinJoinstrPoolUsecase>(),
         initiateJoinstrPoolUsecase: locator<InitiateJoinstrPoolUsecase>(),
       ),

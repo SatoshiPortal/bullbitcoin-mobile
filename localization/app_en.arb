@@ -463,11 +463,11 @@
   "@joinstrWaitingForCredentials": {
     "description": "Status on a pool this device is joining, waiting for the initiator's credentials"
   },
-  "joinstrPoolCreatedSnack": "Pool created. Waiting for peers to join.",
+  "joinstrPoolCreatedSnack": "New pool created!",
   "@joinstrPoolCreatedSnack": {
     "description": "Snackbar shown right after a pool is announced"
   },
-  "joinstrJoinRequestSnack": "Join request sent. Waiting for pool credentials.",
+  "joinstrJoinRequestSnack": "Join request sent.",
   "@joinstrJoinRequestSnack": {
     "description": "Snackbar shown right after a join request is sent"
   },
@@ -478,6 +478,59 @@
   "joinstrConnectingTor": "Connecting to Tor and loading pools…",
   "@joinstrConnectingTor": {
     "description": "Shown while the embedded Tor bootstraps and the pool list loads"
+  },
+  "joinstrSelectInput": "Select input",
+  "@joinstrSelectInput": {
+    "description": "Heading for the UTXO picker where the user chooses the coin to mix"
+  },
+  "joinstrEnterDenomFirst": "Enter a denomination above, then choose the coin to mix.",
+  "@joinstrEnterDenomFirst": {
+    "description": "Shown on the create form before a valid denomination is entered"
+  },
+  "joinstrNoEligibleCoins": "No coin matches this denomination.",
+  "@joinstrNoEligibleCoins": {
+    "description": "Shown when no wallet coin fits the denomination window"
+  },
+  "joinstrLoadingCoins": "Loading coins…",
+  "@joinstrLoadingCoins": {
+    "description": "Shown while the wallet coins are scanned over Tor"
+  },
+  "joinstrRefreshCoins": "Refresh coins",
+  "@joinstrRefreshCoins": {
+    "description": "Button that rescans the wallet coins"
+  },
+  "joinstrInputLine": "Input: {outpoint}",
+  "@joinstrInputLine": {
+    "description": "Round card line showing the input coin outpoint",
+    "placeholders": {
+      "outpoint": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrStepConnecting": "Connecting",
+  "@joinstrStepConnecting": {
+    "description": "Coinjoin timeline step"
+  },
+  "joinstrStepPosting": "Announce Pool",
+  "@joinstrStepPosting": {
+    "description": "Coinjoin timeline step"
+  },
+  "joinstrStepOutputRegistration": "Register Output",
+  "@joinstrStepOutputRegistration": {
+    "description": "Coinjoin timeline step"
+  },
+  "joinstrStepInputRegistration": "Register Input",
+  "@joinstrStepInputRegistration": {
+    "description": "Coinjoin timeline step"
+  },
+  "joinstrStepBroadcast": "Finalize Coinjoin Tx",
+  "@joinstrStepBroadcast": {
+    "description": "Coinjoin timeline step"
+  },
+  "joinstrStepMined": "Broadcast Tx",
+  "@joinstrStepMined": {
+    "description": "Coinjoin timeline step"
   },
   "joinstrCoinjoinBroadcast": "Coinjoin broadcast: {txid}",
   "@joinstrCoinjoinBroadcast": {
@@ -678,6 +731,10 @@
         "type": "int"
       }
     }
+  },
+  "joinstrErrorCoinUnavailable": "The selected coin is no longer available. Refresh coins and pick another.",
+  "@joinstrErrorCoinUnavailable": {
+    "description": "Error when the chosen input coin was spent or is missing at coinjoin time"
   },
   "joinstrErrorElectrum": "No usable Electrum server for this network.",
   "@joinstrErrorElectrum": {

@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:joinstr_flutter/joinstr_flutter.dart' as jns;
 
 /// Wraps the joinstr bindings. Everything above this layer works in satoshis
@@ -53,31 +56,61 @@ class JoinstrDatasource {
         .toList();
   }
 
-  /// Blocks until the coinjoin broadcasts or the pool times out, then returns
-  /// the txid.
-  Future<String> joinPool({
+  /// Lists the wallet's spendable coins by scanning electrum over Tor. The
+  /// caller filters these to the coins eligible for a given denomination.
+  Future<List<JoinstrCoin>> listCoins({
+    required Wallet wallet,
+    required String mnemonic,
+    required String electrumUrl,
+    String? proxy,
+  }) async {
+    final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
+    final coins = await _call(
+      () => jns.listCoins(
+        mnemonic: mnemonic,
+        electrumAddress: endpoint.address,
+        electrumPort: endpoint.port,
+        rangeStart: 0,
+        rangeEnd: Joinstr.scanDepth,
+        network: _network(wallet.network),
+        proxy: proxy,
+      ),
+    );
+    return coins
+        .map(
+          (c) => JoinstrCoin(
+            txid: c.txid,
+            vout: c.vout,
+            valueSat: c.valueSat.toInt(),
+          ),
+        )
+        .toList();
+  }
+
+  /// Streams coinjoin progress until it broadcasts or the pool times out.
+  Stream<JoinstrProgress> joinPool({
     required JoinstrPool pool,
     required Wallet wallet,
     required String mnemonic,
     required String outputAddress,
     required String electrumUrl,
+    required String inputOutpoint,
     String? proxy,
-  }) async {
-    return _call(() async {
-      final peer = await _peerConfig(
-        wallet: wallet,
-        mnemonic: mnemonic,
-        outputAddress: outputAddress,
-        electrumUrl: electrumUrl,
-        relay: pool.relay,
-        denominationSat: pool.denominationSat,
-        proxy: proxy,
-      );
-      return jns.joinCoinjoin(poolRawJson: pool.rawJson, peer: peer);
-    });
+  }) async* {
+    final peer = await _peerConfig(
+      wallet: wallet,
+      mnemonic: mnemonic,
+      outputAddress: outputAddress,
+      electrumUrl: electrumUrl,
+      relay: pool.relay,
+      denominationSat: pool.denominationSat,
+      inputOutpoint: inputOutpoint,
+      proxy: proxy,
+    );
+    yield* _run(jns.joinCoinjoin(poolRawJson: pool.rawJson, peer: peer));
   }
 
-  Future<String> initiatePool({
+  Stream<JoinstrProgress> initiatePool({
     required Wallet wallet,
     required String mnemonic,
     required String outputAddress,
@@ -87,19 +120,21 @@ class JoinstrDatasource {
     required int feeRateSatPerVb,
     required int peers,
     required Duration maxDuration,
+    required String inputOutpoint,
     String? proxy,
-  }) async {
-    return _call(() async {
-      final peer = await _peerConfig(
-        wallet: wallet,
-        mnemonic: mnemonic,
-        outputAddress: outputAddress,
-        electrumUrl: electrumUrl,
-        relay: relay,
-        denominationSat: denominationSat,
-        proxy: proxy,
-      );
-      return jns.initiateCoinjoin(
+  }) async* {
+    final peer = await _peerConfig(
+      wallet: wallet,
+      mnemonic: mnemonic,
+      outputAddress: outputAddress,
+      electrumUrl: electrumUrl,
+      relay: relay,
+      denominationSat: denominationSat,
+      inputOutpoint: inputOutpoint,
+      proxy: proxy,
+    );
+    yield* _run(
+      jns.initiateCoinjoin(
         config: jns.FfiPoolConfig(
           denominationBtc: Joinstr.denominationBtc(denominationSat),
           fee: feeRateSatPerVb,
@@ -108,9 +143,38 @@ class JoinstrDatasource {
           network: _network(wallet.network),
         ),
         peer: peer,
-      );
-    });
+      ),
+    );
   }
+
+  /// Maps the binding's progress stream onto the domain, translating a binding
+  /// error into a [JoinstrException] the way [_call] does for one-shot calls.
+  Stream<JoinstrProgress> _run(Stream<jns.FfiCoinjoinUpdate> updates) async* {
+    try {
+      await for (final u in updates) {
+        yield JoinstrProgress(
+          step: _step(u.step),
+          txId: u.txid,
+          errorMessage: u.error,
+        );
+      }
+    } on jns.JoinstrError catch (e) {
+      throw JoinstrException(JoinstrIssue.coinjoinFailed, detail: e.message);
+    }
+  }
+
+  JoinstrRoundStep _step(jns.FfiCoinjoinStep step) => switch (step) {
+    jns.FfiCoinjoinStep.connecting => JoinstrRoundStep.connecting,
+    jns.FfiCoinjoinStep.posting => JoinstrRoundStep.posting,
+    jns.FfiCoinjoinStep.outputRegistration =>
+      JoinstrRoundStep.outputRegistration,
+    jns.FfiCoinjoinStep.inputRegistration => JoinstrRoundStep.inputRegistration,
+    jns.FfiCoinjoinStep.broadcast => JoinstrRoundStep.broadcast,
+    jns.FfiCoinjoinStep.mined => JoinstrRoundStep.mined,
+    jns.FfiCoinjoinStep.done => JoinstrRoundStep.done,
+    jns.FfiCoinjoinStep.failed => JoinstrRoundStep.failed,
+    jns.FfiCoinjoinStep.other => JoinstrRoundStep.other,
+  };
 
   Future<jns.FfiPeerConfig> _peerConfig({
     required Wallet wallet,
@@ -119,6 +183,7 @@ class JoinstrDatasource {
     required String electrumUrl,
     required String relay,
     required int denominationSat,
+    required String inputOutpoint,
     String? proxy,
   }) async {
     final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
@@ -134,14 +199,26 @@ class JoinstrDatasource {
       proxy: proxy,
     );
 
+    // Use the coin the user picked. Re-listing here keeps it fresh: a coin that
+    // was spent since the picker loaded is simply gone from the wallet.
+    jns.FfiCoin? input;
+    for (final c in coins) {
+      if ('${c.txid}:${c.vout}' == inputOutpoint) {
+        input = c;
+        break;
+      }
+    }
+    if (input == null) {
+      throw JoinstrException(JoinstrIssue.coinUnavailable);
+    }
+
     // The window is enforced by every other peer only *after* we broadcast a
     // SIGHASH_ALL|SIGHASH_ANYONECANPAY signature over the coin, so an
     // ineligible coin must never reach the signer.
-    final index = Joinstr.selectEligibleCoin(
-      coinValuesSat: coins.map((c) => c.valueSat.toInt()).toList(),
+    if (!Joinstr.isEligibleCoin(
+      valueSat: input.valueSat.toInt(),
       denominationSat: denominationSat,
-    );
-    if (index == null) {
+    )) {
       throw JoinstrException(
         JoinstrIssue.noEligibleCoin,
         denominationSat: denominationSat,
@@ -152,7 +229,7 @@ class JoinstrDatasource {
       mnemonic: mnemonic,
       electrumAddress: endpoint.address,
       electrumPort: endpoint.port,
-      input: coins[index],
+      input: input,
       outputAddress: outputAddress,
       relay: relay,
       network: network,

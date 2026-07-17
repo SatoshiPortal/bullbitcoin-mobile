@@ -1,63 +1,67 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
-import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_peer_context_usecase.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 
-/// Joins an advertised pool. Blocks until the coinjoin broadcasts or the pool
-/// times out, which can be the pool's full duration.
+/// Joins an advertised pool with a user-chosen input coin, streaming coinjoin
+/// progress until it broadcasts or the pool times out.
 class JoinJoinstrPoolUsecase {
   final JoinstrDatasource _datasource;
   final JoinstrStore _store;
-  final ResolveJoinstrPeerContextUsecase _resolvePeerContext;
+  final ResolveJoinstrNodeContextUsecase _resolveNodeContext;
+  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
 
   JoinJoinstrPoolUsecase({
     required this._datasource,
     required this._store,
-    required ResolveJoinstrPeerContextUsecase resolvePeerContextUsecase,
-  }) : _resolvePeerContext = resolvePeerContextUsecase;
+    required ResolveJoinstrNodeContextUsecase resolveNodeContextUsecase,
+    required this._getReceiveAddressUsecase,
+  }) : _resolveNodeContext = resolveNodeContextUsecase;
 
-  Future<String> execute({
+  Stream<JoinstrProgress> execute({
     required Wallet wallet,
     required JoinstrPool pool,
-  }) async {
-    final context = await _resolvePeerContext.execute(wallet: wallet);
+    required String inputOutpoint,
+  }) async* {
+    final context = await _resolveNodeContext.execute(wallet: wallet);
+
+    // A fresh receive address per pool, like the reference wallets.
+    final address = await _getReceiveAddressUsecase.execute(
+      walletId: wallet.id,
+      generateNew: true,
+    );
 
     log.info(
       'Joinstr joining pool ${pool.id}: '
-      '${pool.denominationSat} sat, ${pool.peers} peers',
+      '${pool.denominationSat} sat, ${pool.peers} peers, input $inputOutpoint',
     );
 
-    try {
-      final txId = await _datasource.joinPool(
-        pool: pool,
-        wallet: wallet,
-        mnemonic: context.mnemonic,
-        outputAddress: context.outputAddress,
-        electrumUrl: context.electrumUrl,
-        proxy: context.proxy,
-      );
-      // Recorded here rather than in the cubit: a round outlives the screen
-      // that started it, and its outcome must reach the history regardless.
-      await _store.appendHistory(
-        JoinstrHistoryEntry(
-          amountSat: pool.denominationSat,
-          txId: txId,
-          relay: pool.relay,
-          completedAtUnixSec: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ),
-      );
-      // The reserved output address received this coinjoin: release it so the
-      // next round gets a fresh one instead of reusing it on-chain.
-      await _store.clearReservedAddress();
-      return txId;
-    } on JoinstrException {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw JoinstrException(JoinstrIssue.coinjoinFailed, detail: e.toString());
+    await for (final progress in _datasource.joinPool(
+      pool: pool,
+      wallet: wallet,
+      mnemonic: context.mnemonic,
+      outputAddress: address.address,
+      electrumUrl: context.electrumUrl,
+      inputOutpoint: inputOutpoint,
+      proxy: context.proxy,
+    )) {
+      if (progress.step == JoinstrRoundStep.done && progress.txId != null) {
+        await _store.appendHistory(
+          JoinstrHistoryEntry(
+            amountSat: pool.denominationSat,
+            txId: progress.txId!,
+            relay: pool.relay,
+            completedAtUnixSec: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          ),
+        );
+      }
+      yield progress;
     }
   }
 }

@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
 class JoinstrStore {
   static const relayKey = 'joinstr_relay';
   static const historyKey = 'joinstr_history';
-  static const reservedAddressKey = 'joinstr_reserved_address';
 
   final KeyValueStorageDatasource<String> _storage;
 
@@ -19,18 +18,6 @@ class JoinstrStore {
 
   Future<void> saveRelay(String relay) =>
       _storage.saveValue(key: relayKey, value: relay.trim());
-
-  /// The receive address reserved for the current round. It is reused across
-  /// retries so repeated failed attempts do not walk the receive chain toward
-  /// the gap limit, and cleared on a successful broadcast so the next round
-  /// gets a fresh address rather than reusing a now-funded one on-chain.
-  Future<String?> getReservedAddress() => _storage.getValue(reservedAddressKey);
-
-  Future<void> saveReservedAddress(String address) =>
-      _storage.saveValue(key: reservedAddressKey, value: address);
-
-  Future<void> clearReservedAddress() =>
-      _storage.deleteValue(reservedAddressKey);
 
   Future<List<JoinstrHistoryEntry>> getHistory() async {
     final raw = await _storage.getValue(historyKey);

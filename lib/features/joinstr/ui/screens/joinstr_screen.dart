@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:bb_mobile/features/joinstr/presentation/joinstr_cubit.dart';
@@ -10,9 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-/// Tab layout, labels and dialogs mirror joinstr-kmp and floresta_wallet:
-/// Create New Pool, My Pools, View Other Pools, History; a waiting dialog
-/// while a round is in flight; snackbars for outcomes.
+/// Tabs, labels, the input picker and the coinjoin timeline mirror joinstr-kmp
+/// and floresta_wallet: Create New Pool, My Pools, View Other Pools, History.
 class JoinstrScreen extends StatefulWidget {
   const JoinstrScreen({super.key});
 
@@ -21,10 +21,7 @@ class JoinstrScreen extends StatefulWidget {
 }
 
 class _JoinstrScreenState extends State<JoinstrScreen> {
-  // Snapshot used to fire snackbars exactly once per transition, rather than
-  // on every rebuild.
   int _seenRounds = 0;
-  JoinstrRoundStatus? _seenTopStatus;
   JoinstrException? _seenError;
 
   @override
@@ -54,13 +51,9 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
         body: BlocConsumer<JoinstrCubit, JoinstrState>(
           listenWhen: (prev, curr) =>
               prev.rounds.length != curr.rounds.length ||
-              _topStatus(prev) != _topStatus(curr) ||
               prev.error != curr.error,
           listener: _onStateChange,
           builder: (context, state) {
-            // A wallet-level problem (watch-only, mainnet, none eligible) is
-            // terminal: the feature cannot be used, so show it in place rather
-            // than as a transient snackbar.
             if (state.wallet == null && state.error != null) {
               return _EmptyState(
                 message: joinstrErrorMessage(context, state.error!),
@@ -80,17 +73,9 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
     );
   }
 
-  /// A coinjoin round is created or joined without blocking the screen: it
-  /// runs in the background and shows up on the My Pools tab. This only turns
-  /// state transitions into one-shot snackbars, and jumps to My Pools when a
-  /// round starts so the user sees the pool they just created/joined.
-  JoinstrRoundStatus? _topStatus(JoinstrState state) =>
-      state.rounds.isEmpty ? null : state.rounds.first.status;
-
   void _onStateChange(BuildContext context, JoinstrState state) {
-    final top = state.rounds.isEmpty ? null : state.rounds.first;
-
-    if (state.rounds.length > _seenRounds && top != null) {
+    if (state.rounds.length > _seenRounds && state.rounds.isNotEmpty) {
+      final top = state.rounds.first;
       _snack(
         context,
         top.initiated
@@ -98,20 +83,12 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
             : context.loc.joinstrJoinRequestSnack,
       );
       DefaultTabController.of(context).animateTo(1); // My Pools
-    } else if (top != null && top.status != _seenTopStatus) {
-      if (top.status == JoinstrRoundStatus.broadcast) {
-        _snack(context, context.loc.joinstrCoinjoinBroadcast(top.txId!));
-      } else if (top.status == JoinstrRoundStatus.failed) {
-        _snack(context, joinstrErrorMessage(context, top.error!));
-      }
     } else if (state.wallet != null &&
         state.error != null &&
         state.error != _seenError) {
       _snack(context, joinstrErrorMessage(context, state.error!));
     }
-
     _seenRounds = state.rounds.length;
-    _seenTopStatus = top?.status;
     _seenError = state.error;
   }
 
@@ -160,23 +137,46 @@ class _CreatePoolTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<JoinstrCubit>();
+    final feeRate = int.tryParse(state.feeRate) ?? 0;
+    final coin = state.selectedCoin;
+    final denomination = coin == null || feeRate <= 0
+        ? null
+        : Joinstr.deriveDenominationSat(
+            coinValueSat: coin.valueSat,
+            feeRateSatPerVb: feeRate,
+          );
+    final ready =
+        coin != null &&
+        (int.tryParse(state.peers) ?? 0) >= 2 &&
+        feeRate > 0 &&
+        denomination != null;
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          context.loc.joinstrPoolDetails,
-          style: Theme.of(context).textTheme.titleMedium,
+        // Coin first: the denomination is derived from whichever input the
+        // user picks, so there is nothing to type and no ineligible-coin trap.
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              context.loc.joinstrSelectInput,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: context.loc.joinstrRefreshCoins,
+              onPressed: state.loadingCoins ? null : cubit.loadCoins,
+            ),
+          ],
         ),
-        const Gap(12),
-        _FilteredTextField(
-          value: state.denominationBtc,
-          label: context.loc.joinstrDenomination,
-          helper: context.loc.joinstrDenominationSupport,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          onChanged: cubit.denominationChanged,
+        const Gap(4),
+        _CreateInputPicker(
+          state: state,
+          selected: coin,
+          onSelect: cubit.selectCoin,
         ),
-        const Gap(12),
+        const Gap(16),
         _FilteredTextField(
           value: state.peers,
           label: context.loc.joinstrPeers,
@@ -190,44 +190,119 @@ class _CreatePoolTab extends StatelessWidget {
           keyboardType: TextInputType.number,
           onChanged: cubit.feeRateChanged,
         ),
-        const Gap(16),
-        FilledButton(
-          onPressed:
-              state.canInteract &&
-                  state.denominationBtc.isNotEmpty &&
-                  state.peers.isNotEmpty
-              ? cubit.initiatePool
-              : null,
-          child: Text(context.loc.joinstrCreate),
-        ),
-        if (state.isRunning) ...[
-          const Gap(8),
+        if (denomination != null) ...[
+          const Gap(12),
           Text(
-            context.loc.joinstrRoundInProgress,
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
+            context.loc.joinstrDenominationLine(
+              Joinstr.formatBtc(denomination),
+            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
+        const Gap(16),
+        FilledButton(
+          onPressed: ready ? cubit.initiatePool : null,
+          child: Text(context.loc.joinstrCreate),
+        ),
       ],
     );
   }
 }
 
-/// A text field that stays in sync with the cubit's filtered value: when the
-/// cubit rejects input (a letter in a numeric field), the field snaps back
-/// instead of displaying text the state does not hold.
+/// The coin picker for creating a pool: every spendable coin large enough to
+/// form a pool. Whichever the user taps sets the denomination.
+class _CreateInputPicker extends StatelessWidget {
+  const _CreateInputPicker({
+    required this.state,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final JoinstrState state;
+  final JoinstrCoin? selected;
+  final ValueChanged<JoinstrCoin?> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.loadingCoins) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const Gap(12),
+            Text(context.loc.joinstrLoadingCoins),
+          ],
+        ),
+      );
+    }
+    final coins = state.createCoins;
+    if (coins.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(context.loc.joinstrNoEligibleCoins),
+      );
+    }
+    return Column(
+      children: [
+        for (final coin in coins)
+          _CoinTile(
+            coin: coin,
+            selected: coin.outpoint == selected?.outpoint,
+            onTap: () => onSelect(coin),
+          ),
+      ],
+    );
+  }
+}
+
+class _CoinTile extends StatelessWidget {
+  const _CoinTile({
+    required this.coin,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final JoinstrCoin coin;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: selected ? Theme.of(context).colorScheme.primaryContainer : null,
+      child: ListTile(
+        onTap: onTap,
+        leading: Icon(
+          selected ? Icons.radio_button_checked : Icons.radio_button_off,
+        ),
+        title: Text(
+          '${Joinstr.formatBtc(coin.valueSat)} BTC',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          '${coin.txid.substring(0, 16)}…:${coin.vout}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ),
+    );
+  }
+}
+
 class _FilteredTextField extends StatefulWidget {
   const _FilteredTextField({
     required this.value,
     required this.label,
     required this.keyboardType,
     required this.onChanged,
-    this.helper,
   });
 
   final String value;
   final String label;
-  final String? helper;
   final TextInputType keyboardType;
   final ValueChanged<String> onChanged;
 
@@ -266,10 +341,7 @@ class _FilteredTextFieldState extends State<_FilteredTextField> {
     return TextField(
       controller: _controller,
       keyboardType: widget.keyboardType,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        helperText: widget.helper,
-      ),
+      decoration: InputDecoration(labelText: widget.label),
       onChanged: widget.onChanged,
     );
   }
@@ -294,6 +366,7 @@ class _MyPoolsTab extends StatelessWidget {
   }
 }
 
+/// A compact My Pools row. Tapping it opens the round's coinjoin timeline.
 class _RoundCard extends StatelessWidget {
   const _RoundCard({required this.round});
 
@@ -302,72 +375,229 @@ class _RoundCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
+    final Widget trailing;
+    if (round.isBroadcast) {
+      trailing = Icon(
+        Icons.check_circle,
+        color: Theme.of(context).colorScheme.primary,
+      );
+    } else if (round.isFailed) {
+      trailing = Icon(
+        Icons.error_outline,
+        color: Theme.of(context).colorScheme.error,
+      );
+    } else {
+      trailing = const SizedBox(
+        width: 18,
+        height: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              loc.joinstrDenominationLine(
-                Joinstr.formatBtc(round.denominationSat),
-              ),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const Gap(4),
-            Text(loc.joinstrPeersLine(round.peers)),
-            Text(
-              loc.joinstrRelayLine(round.relay),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            if (round.publicKey != null)
-              Text(
-                loc.joinstrPublicKeyLine(_short(round.publicKey!)),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            const Gap(4),
-            switch (round.status) {
-              // A pool this device created waits for peers; a pool it is
-              // joining waits for the initiator's credentials. These are
-              // different states in the protocol and must not read alike.
-              JoinstrRoundStatus.waiting => Row(
-                children: [
-                  const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  const Gap(8),
-                  Expanded(
-                    child: Text(
-                      round.initiated
-                          ? loc.joinstrWaitingForPeers
-                          : loc.joinstrWaitingForCredentials,
-                    ),
-                  ),
-                ],
-              ),
-              JoinstrRoundStatus.broadcast => Text(
-                '${loc.joinstrBroadcast}: ${_short(round.txId!)}',
-              ),
-              JoinstrRoundStatus.failed => Text(
-                joinstrErrorMessage(context, round.error!),
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            },
-            if (round.isWaiting) ...[
-              const Gap(2),
-              _CountdownText(expiresAtUnixSec: round.expiresAtUnixSec),
-            ],
-          ],
+      child: ListTile(
+        title: Text(
+          loc.joinstrDenominationLine(Joinstr.formatBtc(round.denominationSat)),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
+        subtitle: Text(
+          round.isWaiting
+              ? _stepLabel(context, round.step)
+              : round.isBroadcast
+              ? loc.joinstrBroadcast
+              : joinstrErrorMessage(context, round.error!),
+        ),
+        trailing: trailing,
+        onTap: () {
+          final cubit = context.read<JoinstrCubit>();
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => BlocProvider.value(
+                value: cubit,
+                child: _RoundTimelineScreen(roundId: round.id),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
-
-  String _short(String value) =>
-      value.length <= 20 ? value : '${value.substring(0, 20)}…';
 }
+
+/// Full-screen coinjoin timeline for one round, rebuilt live from the cubit so
+/// the steps advance while it is open.
+class _RoundTimelineScreen extends StatelessWidget {
+  const _RoundTimelineScreen({required this.roundId});
+
+  final int roundId;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<JoinstrCubit, JoinstrState>(
+      builder: (context, state) {
+        final matches = state.rounds.where((r) => r.id == roundId).toList();
+        final round = matches.isEmpty ? null : matches.first;
+        return Scaffold(
+          appBar: AppBar(title: Text(context.loc.joinstrTitle)),
+          body: round == null
+              ? const SizedBox.shrink()
+              : ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [_RoundDetail(round: round)],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _RoundDetail extends StatelessWidget {
+  const _RoundDetail({required this.round});
+
+  final JoinstrRound round;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.loc;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          loc.joinstrDenominationLine(Joinstr.formatBtc(round.denominationSat)),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const Gap(4),
+        Text(loc.joinstrPeersLine(round.peers)),
+        Text(
+          loc.joinstrInputLine(round.inputOutpoint),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          loc.joinstrRelayLine(round.relay),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        if (round.isWaiting) ...[
+          const Gap(4),
+          _CountdownText(expiresAtUnixSec: round.expiresAtUnixSec),
+        ],
+        const Gap(16),
+        _CoinjoinTimeline(round: round),
+        if (round.isBroadcast) ...[
+          const Gap(12),
+          SelectableText(
+            '${loc.joinstrBroadcast}: ${round.txId}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+        if (round.isFailed) ...[
+          const Gap(12),
+          Text(
+            joinstrErrorMessage(context, round.error!),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// The coinjoin progress timeline from the reference wallets: each step is
+/// checked off as the round advances, the current one spins, later ones wait.
+class _CoinjoinTimeline extends StatelessWidget {
+  const _CoinjoinTimeline({required this.round});
+
+  final JoinstrRound round;
+
+  @override
+  Widget build(BuildContext context) {
+    const steps = JoinstrRoundStep.timeline;
+    final currentIndex = round.isBroadcast
+        ? steps
+              .length // every step done
+        : steps.indexOf(round.step).clamp(0, steps.length - 1);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final (i, step) in steps.indexed)
+          _TimelineRow(
+            label: _stepLabel(context, step),
+            done: i < currentIndex,
+            current: i == currentIndex && !round.isBroadcast && !round.isFailed,
+            failed: round.isFailed && i == currentIndex,
+          ),
+      ],
+    );
+  }
+}
+
+class _TimelineRow extends StatelessWidget {
+  const _TimelineRow({
+    required this.label,
+    required this.done,
+    required this.current,
+    required this.failed,
+  });
+
+  final String label;
+  final bool done;
+  final bool current;
+  final bool failed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final Widget marker;
+    if (failed) {
+      marker = Icon(Icons.error_outline, size: 18, color: scheme.error);
+    } else if (done) {
+      marker = Icon(Icons.check_circle, size: 18, color: scheme.primary);
+    } else if (current) {
+      marker = const SizedBox(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    } else {
+      marker = Icon(
+        Icons.radio_button_unchecked,
+        size: 18,
+        color: scheme.outlineVariant,
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(width: 18, child: Center(child: marker)),
+          const Gap(12),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: (done || current) ? null : scheme.outline,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _stepLabel(BuildContext context, JoinstrRoundStep step) =>
+    switch (step) {
+      JoinstrRoundStep.connecting => context.loc.joinstrStepConnecting,
+      JoinstrRoundStep.posting => context.loc.joinstrStepPosting,
+      JoinstrRoundStep.outputRegistration =>
+        context.loc.joinstrStepOutputRegistration,
+      JoinstrRoundStep.inputRegistration =>
+        context.loc.joinstrStepInputRegistration,
+      JoinstrRoundStep.broadcast => context.loc.joinstrStepBroadcast,
+      JoinstrRoundStep.mined => context.loc.joinstrStepMined,
+      JoinstrRoundStep.done ||
+      JoinstrRoundStep.failed ||
+      JoinstrRoundStep.other => '',
+    };
 
 class _OtherPoolsTab extends StatelessWidget {
   const _OtherPoolsTab({required this.state});
@@ -406,10 +636,8 @@ class _OtherPoolsTab extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   itemCount: state.pools.length,
                   separatorBuilder: (_, _) => const Gap(12),
-                  itemBuilder: (context, index) => _PoolCard(
-                    pool: state.pools[index],
-                    enabled: state.canInteract,
-                  ),
+                  itemBuilder: (context, index) =>
+                      _PoolCard(pool: state.pools[index], state: state),
                 ),
         ),
       ],
@@ -418,10 +646,10 @@ class _OtherPoolsTab extends StatelessWidget {
 }
 
 class _PoolCard extends StatelessWidget {
-  const _PoolCard({required this.pool, required this.enabled});
+  const _PoolCard({required this.pool, required this.state});
 
   final JoinstrPool pool;
-  final bool enabled;
+  final JoinstrState state;
 
   @override
   Widget build(BuildContext context) {
@@ -450,7 +678,9 @@ class _PoolCard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: enabled ? () => _confirmJoin(context, pool) : null,
+                onPressed: state.canInteract
+                    ? () => _pickInputAndJoin(context, pool)
+                    : null,
                 child: Text(loc.joinstrJoin),
               ),
             ),
@@ -460,35 +690,58 @@ class _PoolCard extends StatelessWidget {
     );
   }
 
-  /// Matches the references: joining is confirmed against the initiator's
-  /// nostr public key, the only identity a pool announcement carries.
-  void _confirmJoin(BuildContext context, JoinstrPool pool) {
+  /// Joining also needs a user-chosen input coin, so present the same picker
+  /// filtered to this pool's denomination before starting the join.
+  void _pickInputAndJoin(BuildContext context, JoinstrPool pool) {
     final cubit = context.read<JoinstrCubit>();
-    showDialog<void>(
+    final coins = state.eligibleCoins(pool.denominationSat);
+    showModalBottomSheet<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.loc.joinstrJoin),
-        content: Text(dialogContext.loc.joinstrPublicKeyLine(pool.publicKey)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(dialogContext.loc.joinstrCancel),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                sheetContext.loc.joinstrPublicKeyLine(pool.publicKey),
+                style: Theme.of(sheetContext).textTheme.bodySmall,
+              ),
+              const Gap(12),
+              Text(
+                sheetContext.loc.joinstrSelectInput,
+                style: Theme.of(sheetContext).textTheme.titleMedium,
+              ),
+              const Gap(8),
+              if (coins.isEmpty)
+                Text(sheetContext.loc.joinstrNoEligibleCoins)
+              else
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (final coin in coins)
+                          _CoinTile(
+                            coin: coin,
+                            selected: false,
+                            onTap: () {
+                              Navigator.of(sheetContext).pop();
+                              cubit.joinPool(pool, coin);
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              cubit.joinPool(pool);
-            },
-            child: Text(dialogContext.loc.joinstrContinue),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-/// Ticks once a second while the pool is live, like the countdowns in
-/// joinstr-kmp and floresta_wallet.
 class _CountdownText extends StatefulWidget {
   const _CountdownText({required this.expiresAtUnixSec});
 
@@ -603,6 +856,7 @@ String joinstrErrorMessage(BuildContext context, JoinstrException error) {
       (error.denominationSat ?? 0) + Joinstr.maxInputSurplusSat,
       Joinstr.scanDepth,
     ),
+    JoinstrIssue.coinUnavailable => context.loc.joinstrErrorCoinUnavailable,
     JoinstrIssue.invalidElectrumUrl => context.loc.joinstrErrorElectrum,
     JoinstrIssue.invalidPoolConfig => context.loc.joinstrErrorPoolConfig,
     JoinstrIssue.invalidRelayUrl => context.loc.joinstrErrorRelay,

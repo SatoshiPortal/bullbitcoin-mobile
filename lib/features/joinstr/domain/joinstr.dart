@@ -7,6 +7,7 @@ enum JoinstrIssue {
   watchOnlyWallet,
   unsupportedScriptType,
   noEligibleCoin,
+  coinUnavailable,
   invalidElectrumUrl,
   invalidPoolConfig,
   invalidRelayUrl,
@@ -81,6 +82,23 @@ abstract final class Joinstr {
   }) =>
       valueSat >= denominationSat + minInputSurplusSat &&
       valueSat <= denominationSat + maxInputSurplusSat;
+
+  /// The surplus (input value above the denomination) reserved to cover fees,
+  /// clamped to the window every other peer enforces.
+  static int surplusForFeeRate(int feeRateSatPerVb) =>
+      (feeRateSatPerVb * 100).clamp(minInputSurplusSat, maxInputSurplusSat);
+
+  /// When creating a pool the denomination follows the chosen input: it is the
+  /// coin's value minus the fee surplus, so the coin is eligible by
+  /// construction. Null when the coin is too small to leave a positive
+  /// denomination.
+  static int? deriveDenominationSat({
+    required int coinValueSat,
+    required int feeRateSatPerVb,
+  }) {
+    final denom = coinValueSat - surplusForFeeRate(feeRateSatPerVb);
+    return denom > 0 ? denom : null;
+  }
 
   /// Index of the cheapest coin that can fund a [denominationSat] pool, or
   /// null when no coin falls inside the window.
