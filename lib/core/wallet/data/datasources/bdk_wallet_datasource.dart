@@ -198,12 +198,19 @@ class BdkWalletDatasource {
             ),
           )
           .toList();
-      txBuilder.addUtxos(outpoints: selectableOutPoints);
+      // bdk_dart's TxBuilder is immutable — every method returns a NEW
+      // builder instance rather than mutating in place. Discarding the
+      // return value (as this call did before) silently drops the manual
+      // UTXO selection and leaves BDK to pick inputs automatically.
+      txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
-    if (!replaceByFee) txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    // Same immutable-builder pitfall as addUtxos above — must reassign.
+    if (!replaceByFee) {
+      txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
 
     switch (networkFee) {
       case AbsoluteFee(:final sats):
