@@ -199,14 +199,23 @@ void main() {
       final datasource = BdkWalletDatasource();
 
       // The LARGE utxo (200k) is marked unspendable — i.e. excluded from
-      // BDK's own automatic coin-selection pool, exactly like a
-      // user-frozen coin (see the D7 guarantee in
-      // PrepareBitcoinSendUsecase). It is ALSO the one manually `selected`
-      // here, which per BDK's coin-control semantics is supposed to force
-      // it into the transaction as a mandatory input regardless of the
-      // unspendable flag (mirroring real coin control: a coin the user
-      // explicitly picks must be spendable even if it's otherwise
-      // frozen-by-default for automatic selection).
+      // BDK's own automatic coin-selection pool. It is ALSO the one
+      // manually `selected` here, which per BDK's documented semantics
+      // forces it into the transaction as a mandatory input REGARDLESS of
+      // the unspendable flag.
+      //
+      // NOTE: this selected-overrides-unspendable behavior is raw BDK
+      // semantics that this datasource deliberately preserves as a thin
+      // wrapper — it is the INVERSE of the app-level D7 invariant ("a
+      // frozen coin must never be spendable"). D7 is enforced one layer
+      // up: BitcoinWalletRepository.buildPsbt strips selected ∩
+      // unspendable before calling down (see
+      // bitcoin_wallet_repository_test.dart), and
+      // PrepareBitcoinSendUsecase additionally strips frozen coins from
+      // the selection. The combination is exploited here ONLY because it
+      // is a deterministic discriminator for the addUtxos-reassignment
+      // regression, with no dependency on BDK's coin-selection
+      // heuristics.
       //
       // The only utxo left in the automatic pool is the SMALL one (30k),
       // which alone cannot cover the 150k send. This makes the two code
