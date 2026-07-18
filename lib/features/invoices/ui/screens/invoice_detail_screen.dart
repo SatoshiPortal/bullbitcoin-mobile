@@ -75,6 +75,7 @@ class InvoiceDetailScreen extends StatelessWidget {
     final cubit = context.read<InvoiceDetailCubit>();
     final snapshot = state.snapshot!;
     final status = state.effectiveStatus ?? snapshot.status;
+    final unsupported = status.isUnsupported;
     return RefreshIndicator(
       onRefresh: cubit.refresh,
       child: ListView(
@@ -94,19 +95,20 @@ class InvoiceDetailScreen extends StatelessWidget {
           const Divider(),
           _expiry(context, snapshot),
           const Divider(),
-          if (snapshot.lightningPr != null)
+          if (unsupported) _unsupportedStatus(context),
+          if (!unsupported && snapshot.lightningPr != null)
             _copyBlock(
               context,
               context.loc.invoicePaymentLightningLabel,
               snapshot.lightningPr!,
             ),
-          if (snapshot.liquidAddress != null)
+          if (!unsupported && snapshot.liquidAddress != null)
             _copyBlock(
               context,
               context.loc.invoicePaymentLiquidLabel,
               snapshot.liquidAddress!,
             ),
-          if (snapshot.bitcoinAddress != null)
+          if (!unsupported && snapshot.bitcoinAddress != null)
             _copyBlock(
               context,
               context.loc.invoicePaymentBitcoinLabel,
@@ -122,6 +124,18 @@ class InvoiceDetailScreen extends StatelessWidget {
               textColor: context.appColors.onSecondary,
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _unsupportedStatus(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Text(
+        context.loc.invoiceUnsupportedStatusMessage,
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.textMuted,
+        ),
       ),
     );
   }

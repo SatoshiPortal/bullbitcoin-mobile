@@ -1,6 +1,7 @@
 /// The invoice lifecycle status. Wire values mirror the server enum EXACTLY
 /// (`src/invoice.rs` list/status: `unpaid`, `in_progress`, `partially_paid`,
-/// `paid`, `underpaid`, `overpaid`, `expired`, `cancelled`).
+/// `paid`, `underpaid`, `overpaid`, `expired`, `cancelled`). [unsupported] is
+/// the fail-closed compatibility state for newer server statuses.
 enum InvoiceStatus {
   unpaid,
   inProgress,
@@ -9,7 +10,8 @@ enum InvoiceStatus {
   underpaid,
   overpaid,
   expired,
-  cancelled;
+  cancelled,
+  unsupported;
 
   String get wire => switch (this) {
     InvoiceStatus.unpaid => 'unpaid',
@@ -20,12 +22,11 @@ enum InvoiceStatus {
     InvoiceStatus.overpaid => 'overpaid',
     InvoiceStatus.expired => 'expired',
     InvoiceStatus.cancelled => 'cancelled',
+    InvoiceStatus.unsupported => 'unsupported',
   };
 
-  /// Tolerant reader: an unknown/absent wire value maps to [unpaid] rather than
-  /// throwing, so a future server status cannot crash an older binary. (The
-  /// terminal-status checks below simply treat an unknown status as non-terminal
-  /// and keep polling.)
+  /// Tolerant reader: unknown wire values fail closed as [unsupported]. The
+  /// datasource logs the raw wire value for diagnostics before mapping.
   static InvoiceStatus fromWire(String wire) {
     return switch (wire) {
       'unpaid' => InvoiceStatus.unpaid,
@@ -36,7 +37,7 @@ enum InvoiceStatus {
       'overpaid' => InvoiceStatus.overpaid,
       'expired' => InvoiceStatus.expired,
       'cancelled' => InvoiceStatus.cancelled,
-      _ => InvoiceStatus.unpaid,
+      _ => InvoiceStatus.unsupported,
     };
   }
 
@@ -49,6 +50,9 @@ enum InvoiceStatus {
     InvoiceStatus.cancelled => true,
     InvoiceStatus.unpaid ||
     InvoiceStatus.inProgress ||
-    InvoiceStatus.partiallyPaid => false,
+    InvoiceStatus.partiallyPaid ||
+    InvoiceStatus.unsupported => false,
   };
+
+  bool get isUnsupported => this == InvoiceStatus.unsupported;
 }

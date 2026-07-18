@@ -76,10 +76,11 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
         nym: command.nymOwner,
         invoiceId: command.invoiceId.value,
       );
+      final parsedStatus = _invoiceStatus(response.status, operation: 'cancel');
       return Ok(
         CancelInvoiceResult(
           invoiceId: _invoiceId(response.invoiceId),
-          finalStatus: InvoiceStatus.fromWire(response.status),
+          finalStatus: parsedStatus,
         ),
       );
     } on BullnymException catch (e) {
@@ -128,9 +129,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       final status = await _bullnym.getInvoiceStatus(
         invoiceId: invoiceId.value,
       );
+      final parsedStatus = _invoiceStatus(status.status, operation: 'status');
       return Ok(
         InvoiceStatusSnapshot(
-          status: InvoiceStatus.fromWire(status.status),
+          status: parsedStatus,
           pricingMode: status.pricingMode,
           settlementStatus: status.settlementStatus,
           amountSat: status.amountSat,
@@ -169,7 +171,7 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     return Invoice(
       id: _invoiceId(item.id),
       nymOwner: item.nymOwner,
-      status: InvoiceStatus.fromWire(item.status),
+      status: _invoiceStatus(item.status, operation: 'list'),
       amountSat: item.amountSat,
       remainingAmountSat: item.remainingAmountSat,
       fiatAmountMinor: item.fiatAmountMinor,
@@ -199,6 +201,17 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
   InvoiceId _invoiceId(String raw) => InvoiceId(raw);
 
   InvoiceUrl _invoiceUrl(String raw) => InvoiceUrl(raw);
+
+  InvoiceStatus _invoiceStatus(String raw, {required String operation}) {
+    final status = InvoiceStatus.fromWire(raw);
+    if (status == InvoiceStatus.unsupported) {
+      log.warning(
+        'Invoice $operation response contained unsupported status',
+        error: raw,
+      );
+    }
+    return status;
+  }
 
   Result<T, InvoicesFailure> _unexpectedFailure<T>(
     String operation,

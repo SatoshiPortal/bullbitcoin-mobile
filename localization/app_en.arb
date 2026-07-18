@@ -1117,6 +1117,14 @@
   "@invoiceStatusCancelled": {
     "description": "Invoice status label: cancelled"
   },
+  "invoiceStatusUnsupported": "Update required",
+  "@invoiceStatusUnsupported": {
+    "description": "Generic invoice status label shown when the server returns a status this app version does not understand"
+  },
+  "invoiceUnsupportedStatusMessage": "Update the app, then refresh this invoice. Payment reconciliation may still be in progress.",
+  "@invoiceUnsupportedStatusMessage": {
+    "description": "Detail-screen guidance shown when an invoice has a server status this app version does not understand"
+  },
   "bitcoinSettingsPaymentPageTitle": "Donation Page",
   "@bitcoinSettingsPaymentPageTitle": {
     "description": "Bitcoin settings tile opening the Donation Page editor"

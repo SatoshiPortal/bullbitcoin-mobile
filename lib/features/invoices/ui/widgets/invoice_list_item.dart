@@ -15,6 +15,7 @@ String invoiceStatusText(BuildContext context, InvoiceStatus status) {
     InvoiceStatus.overpaid => context.loc.invoiceStatusOverpaid,
     InvoiceStatus.expired => context.loc.invoiceStatusExpired,
     InvoiceStatus.cancelled => context.loc.invoiceStatusCancelled,
+    InvoiceStatus.unsupported => context.loc.invoiceStatusUnsupported,
   };
 }
 

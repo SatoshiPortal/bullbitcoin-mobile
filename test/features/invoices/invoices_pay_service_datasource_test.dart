@@ -323,6 +323,37 @@ void main() {
       );
       expect(failure.kind, InvoicesFailureKind.notFound);
     });
+
+    test(
+      'maps an unknown wire status to unsupported fail-closed state',
+      () async {
+        when(
+          () => bullnym.getInvoiceStatus(invoiceId: any(named: 'invoiceId')),
+        ).thenAnswer(
+          (_) async => const BullnymInvoiceStatus(
+            status: 'needs_manual_reconciliation',
+            pricingMode: 'sat',
+            settlementStatus: 'pending',
+            amountSat: 1000,
+            remainingAmountSat: 1000,
+            paymentToleranceSat: 5,
+            rateLocksUntilUnix: 1893456000,
+            expiresAtUnix: 1893456000,
+            acceptBtc: true,
+            acceptLn: true,
+            acceptLiquid: true,
+          ),
+        );
+
+        final snapshot = _unwrap(
+          await datasource.getInvoiceStatus(InvoiceId('inv-1')),
+        );
+
+        expect(snapshot.status, InvoiceStatus.unsupported);
+        expect(snapshot.status.isTerminal, isFalse);
+        expect(snapshot.isCancellable, isFalse);
+      },
+    );
   });
 
   group('listInvoices', () {
@@ -371,5 +402,52 @@ void main() {
       expect(result.invoices.single.nymOwner, isNull);
       expect(result.hasMore, isFalse);
     });
+
+    test(
+      'maps unknown list item status to unsupported fail-closed state',
+      () async {
+        when(
+          () => bullnym.listInvoices(
+            signer: any(named: 'signer'),
+            page: any(named: 'page'),
+            pageSize: any(named: 'pageSize'),
+            status: any(named: 'status'),
+          ),
+        ).thenAnswer(
+          (_) async => const BullnymListInvoicesResponse(
+            invoices: [
+              BullnymInvoiceListItem(
+                id: 'inv-1',
+                origin: 'wallet',
+                status: 'requires_operator_review',
+                pricingMode: 'sat',
+                settlementStatus: 'pending',
+                amountSat: 1000,
+                remainingAmountSat: 1000,
+                acceptBtc: true,
+                acceptLn: true,
+                acceptLiquid: true,
+                createdAtUnix: 1893450000,
+                expiresAtUnix: 1893456000,
+              ),
+            ],
+            page: 1,
+            pageSize: 100,
+            hasMore: false,
+          ),
+        );
+
+        final result = _unwrap(
+          await datasource.listInvoices(
+            signer: signer,
+            command: const ListInvoicesCommand(),
+          ),
+        );
+
+        final status = result.invoices.single.status;
+        expect(status, InvoiceStatus.unsupported);
+        expect(result.invoices.single.isCancellable, isFalse);
+      },
+    );
   });
 }
