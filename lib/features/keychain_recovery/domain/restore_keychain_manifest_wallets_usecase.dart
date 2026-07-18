@@ -172,10 +172,8 @@ class RestoreKeychainManifestWalletsUsecase {
               .toList(growable: false),
         ),
       );
-      // Re-apply the locked Get Paid posture (decision [1]/[C]/KC-6): every
-      // restored wallet-seed wallet must come back hidden + autosweep-enabled,
-      // matching pairing/activation, so recovered funds don't silently surface
-      // as spendable and are swept as configured. Post-commitment per AD-3: the
+      // Re-apply the locked Get Paid posture (decision [1]/[C]/KC-6) using the
+      // materialized wallet's verified network. Post-commitment per AD-3: the
       // manifest record above is the commitment point, so a defaults failure is
       // logged and never fails the restore.
       await _applyGetPaidPostureBestEffort(wallets);
@@ -206,8 +204,8 @@ class RestoreKeychainManifestWalletsUsecase {
       try {
         await _applyWalletBehaviorDefaults.execute(
           walletId: wallet.intent.walletId,
-          hideOnHome: true,
-          autoSweepEnabled: true,
+          hideOnHome: wallet.network.isLiquid,
+          autoSweepEnabled: wallet.network.isLiquid,
         );
       } catch (e, stack) {
         // Log the fingerprint/id, never the material; the restore still

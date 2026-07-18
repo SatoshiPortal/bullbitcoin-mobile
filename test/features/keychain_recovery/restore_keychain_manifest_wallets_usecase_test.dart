@@ -31,6 +31,7 @@ void main() {
       materializedWallets: [
         KeychainRecoveryMaterializedWallet(
           intent: intent,
+          network: intent.network,
           childSeedFingerprint: intent.childSeedFingerprint,
           created: true,
         ),
@@ -85,11 +86,13 @@ void main() {
       materializedWallets: [
         KeychainRecoveryMaterializedWallet(
           intent: intent,
+          network: intent.network,
           childSeedFingerprint: intent.childSeedFingerprint,
           created: true,
         ),
         KeychainRecoveryMaterializedWallet(
           intent: liquidIntent,
+          network: liquidIntent.network,
           childSeedFingerprint: liquidIntent.childSeedFingerprint,
           created: true,
         ),
@@ -115,6 +118,7 @@ void main() {
         materializedWallets: [
           KeychainRecoveryMaterializedWallet(
             intent: intent,
+            network: intent.network,
             childSeedFingerprint: intent.childSeedFingerprint,
             created: false,
           ),
@@ -162,29 +166,42 @@ void main() {
     expect(keychainManifest.recordRequests, isEmpty);
   });
 
-  test(
-    're-applies the hidden + autosweep Get Paid posture to each wallet',
-    () async {
-      final intent = _intent();
-      materializer.result = KeychainRecoveryWalletMaterializationResult(
-        materializedWallets: [
-          KeychainRecoveryMaterializedWallet(
-            intent: intent,
-            childSeedFingerprint: intent.childSeedFingerprint,
-            created: true,
-          ),
-        ],
-        failedOutcomes: const [],
-        derivationPath: "39'/0'/12'/100'",
-      );
+  test('re-applies network-specific Get Paid posture to each wallet', () async {
+    final intent = _intent();
+    final liquidIntent = _intent(
+      walletId: 'lbtc-wallet',
+      network: Network.liquidMainnet,
+    );
+    materializer.result = KeychainRecoveryWalletMaterializationResult(
+      materializedWallets: [
+        KeychainRecoveryMaterializedWallet(
+          intent: intent,
+          network: intent.network,
+          childSeedFingerprint: intent.childSeedFingerprint,
+          created: true,
+        ),
+        KeychainRecoveryMaterializedWallet(
+          intent: liquidIntent,
+          network: liquidIntent.network,
+          childSeedFingerprint: liquidIntent.childSeedFingerprint,
+          created: true,
+        ),
+      ],
+      failedOutcomes: const [],
+      derivationPath: "39'/0'/12'/100'",
+    );
 
-      await usecase.execute(_plan(intent));
+    await usecase.execute(_plan(intent, liquidIntent));
 
-      expect(applyDefaults.calls.single.walletId, intent.walletId);
-      expect(applyDefaults.calls.single.hideOnHome, true);
-      expect(applyDefaults.calls.single.autoSweepEnabled, true);
-    },
-  );
+    expect(applyDefaults.calls, [
+      (walletId: intent.walletId, hideOnHome: false, autoSweepEnabled: false),
+      (
+        walletId: liquidIntent.walletId,
+        hideOnHome: true,
+        autoSweepEnabled: true,
+      ),
+    ]);
+  });
 
   test('a posture-defaults failure does not fail the restore', () async {
     final intent = _intent();
@@ -193,6 +210,7 @@ void main() {
       materializedWallets: [
         KeychainRecoveryMaterializedWallet(
           intent: intent,
+          network: intent.network,
           childSeedFingerprint: intent.childSeedFingerprint,
           created: true,
         ),

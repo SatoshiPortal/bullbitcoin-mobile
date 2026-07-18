@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
 
@@ -17,11 +18,13 @@ class KeychainRecoveryWalletMaterializationBatch {
 
 class KeychainRecoveryMaterializedWallet {
   final KeychainManifestWalletMaterializationIntent intent;
+  final Network network;
   final String childSeedFingerprint;
   final bool created;
 
   const KeychainRecoveryMaterializedWallet({
     required this.intent,
+    required this.network,
     required this.childSeedFingerprint,
     required this.created,
   });

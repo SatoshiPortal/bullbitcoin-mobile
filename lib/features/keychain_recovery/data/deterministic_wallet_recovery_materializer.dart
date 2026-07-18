@@ -114,6 +114,7 @@ class DeterministicWalletRecoveryMaterializer
       materialized.add(
         KeychainRecoveryMaterializedWallet(
           intent: intent,
+          network: preparedWallet.network,
           childSeedFingerprint: prepared.childSeedFingerprint,
           created: preparedWallet.created,
         ),
