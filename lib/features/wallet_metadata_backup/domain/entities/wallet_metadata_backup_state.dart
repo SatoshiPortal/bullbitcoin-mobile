@@ -235,6 +235,15 @@ final class WalletMetadataBackupState {
     return _copy(dirty: true, recoveryBlock: block);
   }
 
+  WalletMetadataBackupState repairInvalidRecoveryState() {
+    if (dirty ||
+        recoveryBlock?.reason !=
+            WalletMetadataRecoveryBlockReason.applyInProgress) {
+      return this;
+    }
+    return _copy(clearRecoveryBlock: true);
+  }
+
   WalletMetadataBackupState recordRecoveryAppliedClean({
     required WalletMetadataBackupVerifiedHead head,
     required int expectedDirtyRevision,

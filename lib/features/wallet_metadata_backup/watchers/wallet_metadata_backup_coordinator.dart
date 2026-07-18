@@ -141,7 +141,7 @@ final class WalletMetadataBackupCoordinator {
     }
   }
 
-  Future<WalletMetadataPublicationSuppression> beginRecoverySession() async {
+  Future<WalletMetadataRecoveryAcquisition> beginRecoverySession() async {
     final suppression = _guard.beginPublicationSuppression(
       onReleased: _handleRecoverySessionReleased,
     );
@@ -161,19 +161,34 @@ final class WalletMetadataBackupCoordinator {
           );
         }
       }
+      final dirtyFailure = await _awaitDirtyBarrierStable();
+      if (dirtyFailure != null) {
+        acquired = true;
+        return WalletMetadataRecoveryAcquisition(
+          suppression: suppression,
+          failure: dirtyFailure,
+        );
+      }
       acquired = true;
-      return suppression;
+      return WalletMetadataRecoveryAcquisition(suppression: suppression);
     } finally {
       if (!acquired) suppression.close();
     }
   }
 
-  Future<T> suppressPublicationWhile<T>(Future<T> Function() action) async {
-    final suppression = await beginRecoverySession();
+  Future<Result<T, WalletMetadataBackupFailure>> suppressPublicationWhile<T>(
+    Future<Result<T, WalletMetadataBackupFailure>> Function() action,
+  ) async {
+    final acquisition = await beginRecoverySession();
+    final failure = acquisition.failure;
+    if (failure != null) {
+      acquisition.close();
+      return Err(failure);
+    }
     try {
       return await action();
     } finally {
-      suppression.close();
+      acquisition.close();
     }
   }
 
@@ -233,6 +248,14 @@ final class WalletMetadataBackupCoordinator {
     }
   }
 
+  Future<WalletMetadataBackupFailure?> _awaitDirtyBarrierStable() async {
+    while (true) {
+      final barrier = _dirtyBarrier;
+      final failure = await barrier;
+      if (identical(barrier, _dirtyBarrier)) return failure;
+    }
+  }
+
   void _logSourceError(Object _, StackTrace stack) {
     log.warning(
       'Wallet metadata change source failed',
@@ -247,5 +270,16 @@ final class WalletMetadataBackupCoordinator {
       error: StateError('Wallet metadata sync trigger unavailable'),
       trace: stack,
     );
+  }
+}
+
+final class WalletMetadataRecoveryAcquisition {
+  final WalletMetadataPublicationSuppression suppression;
+  final WalletMetadataBackupFailure? failure;
+
+  WalletMetadataRecoveryAcquisition({required this.suppression, this.failure});
+
+  void close() {
+    suppression.close();
   }
 }

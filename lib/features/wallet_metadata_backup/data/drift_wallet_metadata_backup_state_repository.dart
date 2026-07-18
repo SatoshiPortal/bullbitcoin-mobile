@@ -11,18 +11,15 @@ final class DriftWalletMetadataBackupStateRepository
   static const int _rowId = 1;
 
   final SqliteDatabase _database;
+  Future<void> _operationQueue = Future<void>.value();
 
-  const DriftWalletMetadataBackupStateRepository(this._database);
+  DriftWalletMetadataBackupStateRepository(this._database);
 
   @override
   @useResult
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>>
   fetch() async {
-    try {
-      return Ok(_toEntity(await _readRow()));
-    } on Exception catch (error, trace) {
-      return _storageFailure('load', error, trace);
-    }
+    return _enqueue(_fetchNow);
   }
 
   @override
@@ -30,10 +27,28 @@ final class DriftWalletMetadataBackupStateRepository
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>> update(
     WalletMetadataBackupStateUpdate update,
   ) async {
+    return _enqueue(() => _updateNow(update));
+  }
+
+  Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>>
+  _fetchNow() async {
+    try {
+      final current = _toEntity(await _readRow());
+      final repaired = current.repairInvalidRecoveryState();
+      if (!identical(current, repaired)) await _writeRow(repaired);
+      return Ok(repaired);
+    } on Exception catch (error, trace) {
+      return _storageFailure('load', error, trace);
+    }
+  }
+
+  Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>>
+  _updateNow(WalletMetadataBackupStateUpdate update) async {
     try {
       final state = await _database.transaction(() async {
         final current = _toEntity(await _readRow());
-        final next = update(current);
+        final repaired = current.repairInvalidRecoveryState();
+        final next = update(repaired);
         if (!identical(current, next)) await _writeRow(next);
         return next;
       });
@@ -41,6 +56,19 @@ final class DriftWalletMetadataBackupStateRepository
     } on Exception catch (error, trace) {
       return _storageFailure('update', error, trace);
     }
+  }
+
+  Future<T> _enqueue<T>(Future<T> Function() operation) {
+    final previous = _operationQueue;
+    final queued = () async {
+      await previous;
+      return operation();
+    }();
+    _operationQueue = queued.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return queued;
   }
 
   Future<WalletMetadataBackupStateRow?> _readRow() {

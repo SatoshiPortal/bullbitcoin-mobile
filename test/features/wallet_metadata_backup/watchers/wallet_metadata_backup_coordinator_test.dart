@@ -2,12 +2,23 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/entities/wallet_metadata_backup_state.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/entities/wallet_metadata_key_material.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/entities/wallet_metadata_publish_outcome.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/entities/wallet_metadata_recovery_plan.dart'
+    as internal;
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/entities/wallet_metadata_remote_head.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/repositories/wallet_metadata_backup_state_repository.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/repositories/wallet_metadata_remote_repository.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/delete_wallet_metadata_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/get_wallet_metadata_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/mark_wallet_metadata_backup_dirty_usecase.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/usecases/set_wallet_metadata_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/wallet_metadata_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/wallet_metadata_contributor.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/domain/wallet_metadata_key_material_port.dart';
 import 'package:bb_mobile/features/wallet_metadata_backup/domain/wallet_metadata_publication_guard.dart';
+import 'package:bb_mobile/features/wallet_metadata_backup/public/wallet_metadata_backup_facade.dart'
+    show WalletMetadataBackupFacade;
 import 'package:bb_mobile/features/wallet_metadata_backup/watchers/wallet_metadata_backup_coordinator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -160,7 +171,8 @@ void main() {
     expect(suppressionAcquired, isFalse);
     publication.complete();
     await storing;
-    final suppression = await acquired;
+    final acquisition = await acquired;
+    final suppression = acquisition.suppression;
     expect(
       (await coordinator.publishNow() as Ok).value.status,
       WalletMetadataPublishStatus.notReady,
@@ -169,9 +181,118 @@ void main() {
     suppression.close();
   });
 
+  test('recovery session waits for queued dirty writes', () async {
+    final dirtyWrite = Completer<void>();
+    states.nextUpdateBlocker = dirtyWrite.future;
+    await coordinator.start();
+
+    changes.add(null);
+    await Future<void>.delayed(Duration.zero);
+    final acquired = coordinator.beginRecoverySession();
+    var suppressionAcquired = false;
+    acquired.then((_) => suppressionAcquired = true);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(suppressionAcquired, isFalse);
+    expect(states.state.dirty, isFalse);
+
+    dirtyWrite.complete();
+    final acquisition = await acquired;
+    final suppression = acquisition.suppression;
+
+    expect(states.state.dirty, isTrue);
+    expect(suppressionAcquired, isTrue);
+    suppression.close();
+  });
+
+  test('recovery session fails closed when queued dirty write fails', () async {
+    states.updateFailuresRemaining = 1;
+    await coordinator.start();
+
+    changes.add(null);
+    await Future<void>.delayed(Duration.zero);
+    final acquisition = await coordinator.beginRecoverySession();
+
+    expect(acquisition.failure, isA<WalletMetadataBackupStorageFailure>());
+    expect(guard.isPublicationSuppressed, isTrue);
+    expect(states.state.dirty, isFalse);
+    expect(publishes, 0);
+
+    acquisition.close();
+
+    expect(guard.isPublicationSuppressed, isFalse);
+  });
+
+  test(
+    'failed facade recovery session owns suppression until closed',
+    () async {
+      states.updateFailuresRemaining = 1;
+      var metadataApplyStarted = false;
+      final facade = WalletMetadataBackupFacade(
+        GetWalletMetadataBackupStateUsecase(states),
+        SetWalletMetadataBackupEnabledUsecase(states),
+        MarkWalletMetadataBackupDirtyUsecase(states),
+        DeleteWalletMetadataBackupUsecase(
+          stateRepository: states,
+          remoteRepository: const _UnusedRemoteRepository(),
+          keyMaterialPort: const _UnusedKeyMaterialPort(),
+        ),
+        coordinator,
+        () async {
+          metadataApplyStarted = true;
+          return const Ok(
+            internal.WalletMetadataRecoveryResult.noSnapshotFound(),
+          );
+        },
+        ({required createdWalletRefs, required plan}) async {
+          metadataApplyStarted = true;
+          return const Err(WalletMetadataBackupStorageFailure());
+        },
+      );
+      await coordinator.start();
+
+      changes.add(null);
+      await Future<void>.delayed(Duration.zero);
+      final session = await facade.beginRecoverySession();
+
+      expect(guard.isPublicationSuppressed, isTrue);
+
+      final recovered = await session.recover(createdWalletRefs: const {});
+
+      expect(recovered, isA<Err>());
+      expect(
+        (recovered as Err).failure,
+        isA<WalletMetadataBackupStorageFailure>(),
+      );
+      expect(metadataApplyStarted, isFalse);
+      expect(guard.isPublicationSuppressed, isTrue);
+
+      session.close();
+
+      expect(guard.isPublicationSuppressed, isFalse);
+    },
+  );
+
+  test('suppressed action is skipped when queued dirty write fails', () async {
+    states.updateFailuresRemaining = 1;
+    var actionRan = false;
+    await coordinator.start();
+
+    changes.add(null);
+    await Future<void>.delayed(Duration.zero);
+    final result = await coordinator.suppressPublicationWhile(() async {
+      actionRan = true;
+      return const Ok(null);
+    });
+
+    expect(result, isA<Err>());
+    expect(actionRan, isFalse);
+    expect(guard.isPublicationSuppressed, isFalse);
+  });
+
   test('marks dirty after a source changes during recovery apply', () async {
     await coordinator.start();
-    final suppression = await coordinator.beginRecoverySession();
+    final suppression = (await coordinator.beginRecoverySession()).suppression;
 
     await guard.suppressApplyChangesWhile(() async {
       changes.add(null);
@@ -196,18 +317,64 @@ final class _ChangeSource implements WalletMetadataChangeSource {
 final class _StateRepository implements WalletMetadataBackupStateRepository {
   WalletMetadataBackupState state = WalletMetadataBackupState.initial;
   int updateFailuresRemaining = 0;
+  Future<void>? nextUpdateBlocker;
+
   @override
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>>
   fetch() async => Ok(state);
+
   @override
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>> update(
     WalletMetadataBackupStateUpdate update,
   ) async {
+    final blocker = nextUpdateBlocker;
+    if (blocker != null) {
+      nextUpdateBlocker = null;
+      await blocker;
+    }
     if (updateFailuresRemaining > 0) {
       updateFailuresRemaining--;
       return const Err(WalletMetadataBackupStorageFailure());
     }
     state = update(state);
     return Ok(state);
+  }
+}
+
+final class _UnusedRemoteRepository implements WalletMetadataRemoteRepository {
+  const _UnusedRemoteRepository();
+
+  @override
+  Future<Result<WalletMetadataRemoteFetchResult, WalletMetadataBackupFailure>>
+  fetch({required WalletMetadataKeyMaterial keyMaterial}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<WalletMetadataRemoteStoreReceipt, WalletMetadataBackupFailure>>
+  store({
+    required WalletMetadataKeyMaterial keyMaterial,
+    required dynamic snapshot,
+    required int generation,
+    required String? expectedEtag,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<void, WalletMetadataBackupFailure>> delete({
+    required WalletMetadataKeyMaterial keyMaterial,
+  }) {
+    throw UnimplementedError();
+  }
+}
+
+final class _UnusedKeyMaterialPort implements WalletMetadataKeyMaterialPort {
+  const _UnusedKeyMaterialPort();
+
+  @override
+  Future<Result<WalletMetadataKeyMaterial, WalletMetadataBackupFailure>>
+  deriveLocal() {
+    throw UnimplementedError();
   }
 }

@@ -63,6 +63,106 @@ void main() {
     expect(state.state.verifiedHead?.remoteEtag, head.etag);
   });
 
+  test(
+    'returns failure when recovery apply state cannot be persisted',
+    () async {
+      final state = _StateRepository()..failNextUpdate = true;
+      final head = _head();
+      final contributor = _Contributor();
+      final fetched = await FetchWalletMetadataRecoveryPlanUsecase(
+        stateRepository: state,
+        remoteRepository: _RemoteRepository(
+          Ok(WalletMetadataRemotePresent(head)),
+        ),
+        contributors: [contributor],
+        clock: const _Clock(),
+      ).execute(keyMaterial: _keyMaterial);
+
+      final applied = await ApplyWalletMetadataRecoveryPlanUsecase(
+        const _RootPort(),
+        stateRepository: state,
+        remoteRepository: _RemoteRepository(
+          Ok(WalletMetadataRemotePresent(head)),
+        ),
+        contributors: [contributor],
+        clock: const _Clock(),
+      ).execute(plan: _ok(fetched).plan!, createdWalletRefs: {'wallet-1'});
+
+      expect(applied, isA<Err>());
+      expect(
+        (applied as Err).failure,
+        isA<WalletMetadataBackupStorageFailure>(),
+      );
+      expect(contributor.applied, isEmpty);
+      expect(state.state.recoveryBlock, isNull);
+    },
+  );
+
+  test('incomplete recovery apply stays dirty and blocked', () async {
+    final state = _StateRepository();
+    final head = _head();
+    final contributor = _Contributor(localProjectionMatchesSnapshot: false);
+    final fetched = await FetchWalletMetadataRecoveryPlanUsecase(
+      stateRepository: state,
+      remoteRepository: _RemoteRepository(
+        Ok(WalletMetadataRemotePresent(head)),
+      ),
+      contributors: [contributor],
+      clock: const _Clock(),
+    ).execute(keyMaterial: _keyMaterial);
+
+    final applied = await ApplyWalletMetadataRecoveryPlanUsecase(
+      const _RootPort(),
+      stateRepository: state,
+      remoteRepository: _RemoteRepository(
+        Ok(WalletMetadataRemotePresent(head)),
+      ),
+      contributors: [contributor],
+      clock: const _Clock(),
+    ).execute(plan: _ok(fetched).plan!, createdWalletRefs: {'wallet-1'});
+
+    expect(_ok(applied).status, WalletMetadataRecoveryApplyStatus.incomplete);
+    expect(state.state.dirty, isTrue);
+    expect(
+      state.state.recoveryBlock?.reason,
+      WalletMetadataRecoveryBlockReason.incompleteApply,
+    );
+  });
+
+  test('preserves dirty mutation observed while recovery completes', () async {
+    final state = _StateRepository();
+    final head = _head();
+    late _Contributor contributor;
+    contributor = _Contributor(
+      onApply: () async {
+        await state.update((value) => value.markDirty());
+      },
+    );
+    final fetched = await FetchWalletMetadataRecoveryPlanUsecase(
+      stateRepository: state,
+      remoteRepository: _RemoteRepository(
+        Ok(WalletMetadataRemotePresent(head)),
+      ),
+      contributors: [contributor],
+      clock: const _Clock(),
+    ).execute(keyMaterial: _keyMaterial);
+
+    final applied = await ApplyWalletMetadataRecoveryPlanUsecase(
+      const _RootPort(),
+      stateRepository: state,
+      remoteRepository: _RemoteRepository(
+        Ok(WalletMetadataRemotePresent(head)),
+      ),
+      contributors: [contributor],
+      clock: const _Clock(),
+    ).execute(plan: _ok(fetched).plan!, createdWalletRefs: {'wallet-1'});
+
+    expect(_ok(applied).status, WalletMetadataRecoveryApplyStatus.complete);
+    expect(state.state.recoveryBlock, isNull);
+    expect(state.state.dirty, isTrue);
+    expect(state.state.dirtyRevision, 2);
+  });
+
   test('rejects a recovery plan when Bullnym changed before apply', () async {
     final state = _StateRepository();
     final selected = _head();
@@ -128,13 +228,20 @@ final class _RemoteRepository implements WalletMetadataRemoteRepository {
 
 final class _StateRepository implements WalletMetadataBackupStateRepository {
   WalletMetadataBackupState state = WalletMetadataBackupState.initial;
+  bool failNextUpdate = false;
+
   @override
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>>
   fetch() async => Ok(state);
+
   @override
   Future<Result<WalletMetadataBackupState, WalletMetadataBackupFailure>> update(
     WalletMetadataBackupStateUpdate update,
   ) async {
+    if (failNextUpdate) {
+      failNextUpdate = false;
+      return const Err(WalletMetadataBackupStorageFailure());
+    }
     state = update(state);
     return Ok(state);
   }
@@ -142,13 +249,21 @@ final class _StateRepository implements WalletMetadataBackupStateRepository {
 
 final class _Contributor implements WalletMetadataRestoringContributor {
   final List<WalletMetadataImportIntent> applied = [];
+  final bool localProjectionMatchesSnapshot;
+  final Future<void> Function()? onApply;
+
+  _Contributor({this.localProjectionMatchesSnapshot = true, this.onApply});
+
   @override
   String get recordType => 'owned';
+
   @override
   Set<int> get supportedVersions => const {1};
+
   @override
   Future<Result<List<WalletMetadataRecord>, WalletMetadataBackupFailure>>
   exportRecords() async => Ok([_record]);
+
   @override
   WalletMetadataRecordValidation validateRecord(WalletMetadataRecord record) {
     if (record.type != recordType || record.version != 1) {
@@ -169,6 +284,7 @@ final class _Contributor implements WalletMetadataRestoringContributor {
     required List<WalletMetadataImportIntent> intents,
     required WalletMetadataApplyContext context,
   }) async {
+    await onApply?.call();
     applied.addAll(intents);
     return Ok(
       WalletMetadataContributorApplySummary(
@@ -178,7 +294,7 @@ final class _Contributor implements WalletMetadataRestoringContributor {
         alreadyPresentCount: 0,
         preservedLocalConflictCount: 0,
         deferredMissingWalletCount: 0,
-        localProjectionMatchesSnapshot: true,
+        localProjectionMatchesSnapshot: localProjectionMatchesSnapshot,
       ),
     );
   }

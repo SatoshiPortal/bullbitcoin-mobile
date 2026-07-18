@@ -87,11 +87,16 @@ final class _WalletMetadataRecoverySession
     implements WalletMetadataRecoverySession {
   WalletMetadataPublicationSuppression? _suppression;
   final _RecoverMetadata _recover;
+  final WalletMetadataBackupFailure? _preflightFailure;
   Future<Result<WalletMetadataRecoveryResult, WalletMetadataBackupFailure>>?
   _inFlight;
   bool _closeRequested = false;
 
-  _WalletMetadataRecoverySession(this._suppression, this._recover);
+  _WalletMetadataRecoverySession(
+    this._suppression,
+    this._recover, {
+    this._preflightFailure,
+  });
 
   @override
   bool get isClosed => _closeRequested || _suppression == null;
@@ -102,6 +107,10 @@ final class _WalletMetadataRecoverySession
   recover({required Set<String> createdWalletRefs}) async {
     if (isClosed || _inFlight != null) {
       return Future.value(const Err(WalletMetadataBackupEncodingFailure()));
+    }
+    final preflightFailure = _preflightFailure;
+    if (preflightFailure != null) {
+      return Err(preflightFailure);
     }
     final recovery = _recover(Set.unmodifiable(createdWalletRefs));
     _inFlight = recovery;
@@ -178,8 +187,12 @@ class WalletMetadataBackupFacade {
   Future<void> retryPendingBackup() => _coordinator.retryBestEffort();
 
   Future<WalletMetadataRecoverySession> beginRecoverySession() async {
-    final suppression = await _coordinator.beginRecoverySession();
-    return _WalletMetadataRecoverySession(suppression, _recoverMetadata);
+    final acquisition = await _coordinator.beginRecoverySession();
+    return _WalletMetadataRecoverySession(
+      acquisition.suppression,
+      _recoverMetadata,
+      preflightFailure: acquisition.failure,
+    );
   }
 
   Future<Result<WalletMetadataRecoveryResult, WalletMetadataBackupFailure>>
