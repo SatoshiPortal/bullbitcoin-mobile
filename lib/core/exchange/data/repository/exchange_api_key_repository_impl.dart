@@ -3,6 +3,11 @@ import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
+  static const _credentialImportError =
+      'Unable to import Bull Bitcoin credentials';
+  static const _credentialDeletionError =
+      'Unable to delete Bull Bitcoin credentials';
+
   final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
 
   ExchangeApiKeyRepositoryImpl({required this._bullbitcoinApiKeyDatasource});
@@ -12,41 +17,56 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     Map<String, dynamic> apiKeyResponseData, {
     required bool isTestnet,
   }) async {
-    Map<String, dynamic> apiKeyData;
-
-    // Check various formats the API might return
-    if (apiKeyResponseData.containsKey('apiKey')) {
-      // Format: { "apiKey": { ... } }
-      apiKeyData = apiKeyResponseData['apiKey'] as Map<String, dynamic>;
-    } else if (apiKeyResponseData.containsKey('result') &&
-        apiKeyResponseData['result'] is Map &&
-        (apiKeyResponseData['result'] as Map).containsKey('apiKey')) {
-      // Format: { "result": { "apiKey": { ... } } }
-      apiKeyData =
-          apiKeyResponseData['result']['apiKey'] as Map<String, dynamic>;
-    } else if (apiKeyResponseData.containsKey('data') &&
-        apiKeyResponseData['data'] is Map &&
-        (apiKeyResponseData['data'] as Map).containsKey('apiKey')) {
-      // Format: { "data": { "apiKey": { ... } } }
-      apiKeyData = apiKeyResponseData['data']['apiKey'] as Map<String, dynamic>;
-    } else {
-      apiKeyData = apiKeyResponseData;
+    final broadApiKeyData = apiKeyResponseData['apiKey'];
+    final scopedApiKey = apiKeyResponseData['sellToFiatBalanceApiKey'];
+    if (broadApiKeyData is! Map ||
+        scopedApiKey is! String ||
+        scopedApiKey.trim().isEmpty) {
+      throw Exception(_credentialImportError);
     }
 
-    final apiKeyModel = ExchangeApiKeyModel.fromJson(apiKeyData);
+    late final ExchangeApiKeyModel apiKeyModel;
+    try {
+      apiKeyModel = ExchangeApiKeyModel.fromJson(
+        Map<String, dynamic>.from(broadApiKeyData),
+      );
+    } catch (_) {
+      throw Exception(_credentialImportError);
+    }
 
     try {
+      await _bullbitcoinApiKeyDatasource.storeSellToFiatBalanceApiKey(
+        scopedApiKey,
+        isTestnet: isTestnet,
+      );
       await _bullbitcoinApiKeyDatasource.store(
         apiKeyModel,
         isTestnet: isTestnet,
       );
-    } catch (e) {
-      throw Exception('Failed to save API key: $e');
+    } catch (_) {
+      throw Exception(_credentialImportError);
     }
   }
 
   @override
   Future<void> deleteApiKey({required bool isTestnet}) async {
-    await _bullbitcoinApiKeyDatasource.delete(isTestnet: isTestnet);
+    var failed = false;
+    try {
+      await _bullbitcoinApiKeyDatasource.delete(isTestnet: isTestnet);
+    } catch (_) {
+      failed = true;
+    }
+
+    try {
+      await _bullbitcoinApiKeyDatasource.deleteSellToFiatBalanceApiKey(
+        isTestnet: isTestnet,
+      );
+    } catch (_) {
+      failed = true;
+    }
+
+    if (failed) {
+      throw Exception(_credentialDeletionError);
+    }
   }
 }

@@ -17,9 +17,11 @@ class DeleteExchangeApiKeyUsecase {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
       await _exchangeApiKeyRepository.deleteApiKey(isTestnet: isTestnet);
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw DeleteExchangeApiKeyException('$e');
+    } catch (_) {
+      log.warning('Unable to delete Bull Bitcoin credentials');
+      throw DeleteExchangeApiKeyException(
+        'Unable to delete Bull Bitcoin credentials',
+      );
     }
   }
 }

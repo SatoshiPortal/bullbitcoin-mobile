@@ -63,7 +63,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
-  Future<void> fetchUserSummary({bool force = false}) async {
+  Future<bool> fetchUserSummary({bool force = false}) async {
     try {
       emit(state.copyWith(getUserSummaryException: null));
 
@@ -82,25 +82,40 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       }
 
       loadAnnouncements();
-    } on GetExchangeUserSummaryException catch (e) {
-      emit(state.copyWith(getUserSummaryException: e));
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      return true;
+    } catch (_) {
+      log.warning('Unable to refresh Bull Bitcoin account');
+      emit(
+        state.copyWith(
+          getUserSummaryException: GetExchangeUserSummaryException(
+            'Unable to refresh Bull Bitcoin account',
+          ),
+        ),
+      );
+      return false;
     }
   }
 
-  Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
+  Future<void> storeApiKey(
+    Map<String, dynamic> apiKeyData, {
+    required bool isTestnet,
+  }) async {
     try {
       emit(state.copyWith(saveApiKeyException: null));
 
-      await _saveExchangeApiKeyUsecase.execute(apiKeyResponseData: apiKeyData);
-
-      await fetchUserSummary();
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      if (e is SaveExchangeApiKeyException) {
-        emit(state.copyWith(saveApiKeyException: e));
-      }
+      await _saveExchangeApiKeyUsecase.execute(
+        apiKeyResponseData: apiKeyData,
+        isTestnet: isTestnet,
+      );
+    } catch (_) {
+      log.warning('Unable to import Bull Bitcoin credentials');
+      emit(
+        state.copyWith(
+          saveApiKeyException: SaveExchangeApiKeyException(
+            'Unable to import Bull Bitcoin credentials',
+          ),
+        ),
+      );
     }
   }
 
@@ -157,29 +172,35 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> logout() async {
+    disconnectWebSocket();
+    emit(state.copyWith(deleteApiKeyException: null));
+
+    DeleteExchangeApiKeyException? deletionException;
     try {
-      disconnectWebSocket();
-
-      emit(state.copyWith(deleteApiKeyException: null));
       await _deleteExchangeApiKeyUsecase.execute();
+    } catch (_) {
+      log.warning('Unable to delete Bull Bitcoin credentials');
+      deletionException = DeleteExchangeApiKeyException(
+        'Unable to delete Bull Bitcoin credentials',
+      );
+    }
 
+    try {
       final cookieManager = WebviewCookieManager();
       await cookieManager.clearCookies();
-
-      emit(
-        state.copyWith(
-          userSummary: null,
-          selectedLanguage: null,
-          selectedCurrency: null,
-          selectedEmailNotifications: null,
-        ),
-      );
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      if (e is DeleteExchangeApiKeyException) {
-        emit(state.copyWith(deleteApiKeyException: e));
-      }
+    } catch (_) {
+      log.warning('Unable to clear Bull Bitcoin session cookies');
     }
+
+    emit(
+      state.copyWith(
+        userSummary: null,
+        selectedLanguage: null,
+        selectedCurrency: null,
+        selectedEmailNotifications: null,
+        deleteApiKeyException: deletionException,
+      ),
+    );
   }
 
   Future<void> deleteAccount() async {

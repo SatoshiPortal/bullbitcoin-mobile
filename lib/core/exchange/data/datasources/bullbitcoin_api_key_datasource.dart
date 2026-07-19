@@ -7,6 +7,10 @@ import 'package:bb_mobile/core/utils/logger.dart' show log;
 class BullbitcoinApiKeyDatasource {
   static const String _apiKeyStorageKey = 'exchange_api_key';
   static const String _apiKeyTestnetStorageKey = 'exchange_api_key_testnet';
+  static const String _sellToFiatBalanceApiKeyStorageKey =
+      'sell_to_fiat_balance_api_key';
+  static const String _sellToFiatBalanceApiKeyTestnetStorageKey =
+      'sell_to_fiat_balance_api_key_testnet';
 
   final KeyValueStorageDatasource<String> _secureStorage;
 
@@ -21,12 +25,24 @@ class BullbitcoinApiKeyDatasource {
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
       await _secureStorage.saveValue(key: key, value: jsonString);
       log.fine('Exchange API key stored successfully');
-    } catch (e) {
-      log.severe(
-        message: 'Error storing API key',
-        error: e,
-        trace: StackTrace.current,
-      );
+    } catch (_) {
+      log.warning('Unable to store Bull Bitcoin API key');
+      rethrow;
+    }
+  }
+
+  Future<void> storeSellToFiatBalanceApiKey(
+    String apiKey, {
+    required bool isTestnet,
+  }) async {
+    try {
+      final key = isTestnet
+          ? _sellToFiatBalanceApiKeyTestnetStorageKey
+          : _sellToFiatBalanceApiKeyStorageKey;
+      await _secureStorage.saveValue(key: key, value: apiKey);
+      log.fine('Scoped API key stored successfully');
+    } catch (_) {
+      log.warning('Unable to store scoped Bull Bitcoin API key');
       rethrow;
     }
   }
@@ -43,12 +59,8 @@ class BullbitcoinApiKeyDatasource {
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       return ExchangeApiKeyModel.fromJson(json);
-    } catch (e) {
-      log.severe(
-        message: 'Error retrieving API key',
-        error: e,
-        trace: StackTrace.current,
-      );
+    } catch (_) {
+      log.warning('Unable to retrieve Bull Bitcoin API key');
       return null;
     }
   }
@@ -58,12 +70,21 @@ class BullbitcoinApiKeyDatasource {
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
       await _secureStorage.deleteValue(key);
       log.fine('API key deleted successfully');
-    } catch (e) {
-      log.severe(
-        message: 'Error deleting API key',
-        error: e,
-        trace: StackTrace.current,
-      );
+    } catch (_) {
+      log.warning('Unable to delete Bull Bitcoin API key');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSellToFiatBalanceApiKey({required bool isTestnet}) async {
+    try {
+      final key = isTestnet
+          ? _sellToFiatBalanceApiKeyTestnetStorageKey
+          : _sellToFiatBalanceApiKeyStorageKey;
+      await _secureStorage.deleteValue(key);
+      log.fine('Scoped API key deleted successfully');
+    } catch (_) {
+      log.warning('Unable to delete scoped Bull Bitcoin API key');
       rethrow;
     }
   }

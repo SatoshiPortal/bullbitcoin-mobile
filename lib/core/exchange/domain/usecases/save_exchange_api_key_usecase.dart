@@ -1,31 +1,30 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class SaveExchangeApiKeyUsecase {
   final ExchangeApiKeyRepository _exchangeApiKeyRepository;
-  final SettingsRepository _settingsRepository;
 
   SaveExchangeApiKeyUsecase({
-    required this._exchangeApiKeyRepository,
-    required this._settingsRepository,
-  });
+    required ExchangeApiKeyRepository exchangeApiKeyRepository,
+  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
 
   Future<void> execute({
     required Map<String, dynamic> apiKeyResponseData,
+    required bool isTestnet,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-
       await _exchangeApiKeyRepository.saveApiKey(
         apiKeyResponseData,
         isTestnet: isTestnet,
       );
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw SaveExchangeApiKeyException('$e');
+
+      log.fine('API key saved successfully');
+    } catch (_) {
+      log.warning('Unable to import Bull Bitcoin credentials');
+      throw SaveExchangeApiKeyException(
+        'Unable to import Bull Bitcoin credentials',
+      );
     }
   }
 }

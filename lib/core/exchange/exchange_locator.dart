@@ -325,7 +325,6 @@ class ExchangeLocator {
     locator.registerFactory<SaveExchangeApiKeyUsecase>(
       () => SaveExchangeApiKeyUsecase(
         exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
