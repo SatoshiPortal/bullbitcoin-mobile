@@ -405,7 +405,7 @@ class _CapabilityUnavailableView extends StatelessWidget {
         ),
         const Gap(24),
         BBButton.big(
-          label: context.loc.lightningAddressCheckStatusButton,
+          label: context.loc.lightningAddressRetryAddressButton,
           iconData: Icons.refresh,
           iconFirst: true,
           onPressed: onCheckStatus,

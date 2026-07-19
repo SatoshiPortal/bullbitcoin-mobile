@@ -78,6 +78,33 @@ void main() {
     expect(find.text('Claim this permanent name?'), findsNothing);
   });
 
+  testWidgets(
+    'connection failure uses Lightning Address language and retries',
+    (tester) async {
+      final cubit = await _pump(
+        tester,
+        const LightningAddressActivationState(
+          status: LightningAddressActivationStatus.failure,
+          failure: LightningAddressActivationFailure.capabilityUnavailable,
+        ),
+      );
+
+      expect(find.text('Lightning Address unavailable'), findsOneWidget);
+      expect(
+        find.text(
+          'Your Lightning Address could not be loaded. '
+          'Check your connection and try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('permanent-name support'), findsNothing);
+
+      await tester.tap(find.text('Try again'));
+      await tester.pump();
+      expect(cubit.loadCalls, 2);
+    },
+  );
+
   testWidgets('active nym shows its address and hides secondary metadata', (
     tester,
   ) async {

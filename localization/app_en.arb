@@ -15423,11 +15423,11 @@
   "@lightningAddressPermanentNamesUnavailableBody": {
     "description": "Fail-closed legacy-server explanation."
   },
-  "lightningAddressCapabilityUnavailableTitle": "Cannot verify permanent-name support",
+  "lightningAddressCapabilityUnavailableTitle": "Lightning Address unavailable",
   "@lightningAddressCapabilityUnavailableTitle": {
     "description": "Title when the Bullnym version capability check fails or conflicts with status."
   },
-  "lightningAddressCapabilityUnavailableBody": "Permanent-name support could not be verified. Check status before claiming or changing Lightning Address availability.",
+  "lightningAddressCapabilityUnavailableBody": "Your Lightning Address could not be loaded. Check your connection and try again.",
   "@lightningAddressCapabilityUnavailableBody": {
     "description": "Fail-closed capability error body."
   },
