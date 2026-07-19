@@ -25,6 +25,17 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
   JoinstrException? _seenError;
 
   @override
+  void initState() {
+    super.initState();
+    // The cubit is a singleton that outlives the screen: seed from its
+    // current state so re-entering does not misread existing rounds as new
+    // (spurious created-snackbar and tab jump) or an old error as fresh.
+    final state = context.read<JoinstrCubit>().state;
+    _seenRounds = state.rounds.length;
+    _seenError = state.error;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
