@@ -455,14 +455,6 @@
   "@joinstrTitle": {
     "description": "Title for the joinstr coinjoin screen and the home-screen entry"
   },
-  "joinstrWaitingForPeers": "Waiting for peers",
-  "@joinstrWaitingForPeers": {
-    "description": "Status on a pool this device created, waiting for other peers to join"
-  },
-  "joinstrWaitingForCredentials": "Waiting for pool credentials",
-  "@joinstrWaitingForCredentials": {
-    "description": "Status on a pool this device is joining, waiting for the initiator's credentials"
-  },
   "joinstrPoolCreatedSnack": "New pool created!",
   "@joinstrPoolCreatedSnack": {
     "description": "Snackbar shown right after a pool is announced"
@@ -751,10 +743,6 @@
   "joinstrErrorTor": "Tor is not available. Joinstr routes all traffic over Tor and cannot run without it.",
   "@joinstrErrorTor": {
     "description": "Error when the local Tor proxy could not be started for joinstr"
-  },
-  "joinstrErrorPoolNotFound": "That pool is no longer advertised on the relay.",
-  "@joinstrErrorPoolNotFound": {
-    "description": "Error when the selected joinstr pool has disappeared"
   },
   "joinstrErrorFailed": "The coinjoin did not complete: {detail}",
   "@joinstrErrorFailed": {

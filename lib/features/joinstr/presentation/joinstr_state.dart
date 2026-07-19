@@ -31,7 +31,6 @@ abstract class JoinstrState with _$JoinstrState {
     @Default([]) List<JoinstrHistoryEntry> history,
     @Default('') String relay,
     JoinstrException? error,
-    @Default('0.001') String denominationBtc,
     @Default('2') String peers,
     @Default('1') String feeRate,
   }) = _JoinstrState;

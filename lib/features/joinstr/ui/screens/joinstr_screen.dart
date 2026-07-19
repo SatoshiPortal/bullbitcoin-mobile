@@ -872,7 +872,6 @@ String joinstrErrorMessage(BuildContext context, JoinstrException error) {
     JoinstrIssue.invalidPoolConfig => context.loc.joinstrErrorPoolConfig,
     JoinstrIssue.invalidRelayUrl => context.loc.joinstrErrorRelay,
     JoinstrIssue.torUnavailable => context.loc.joinstrErrorTor,
-    JoinstrIssue.poolNotFound => context.loc.joinstrErrorPoolNotFound,
     JoinstrIssue.coinjoinFailed => context.loc.joinstrErrorFailed(
       error.detail ?? '',
     ),

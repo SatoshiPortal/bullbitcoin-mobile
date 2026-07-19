@@ -128,14 +128,6 @@ class JoinstrCubit extends Cubit<JoinstrState> {
     }
   }
 
-  void denominationChanged(String value) {
-    if (value.isEmpty || Joinstr.denominationBtcPattern.hasMatch(value)) {
-      // The eligible-coin set depends on the denomination, so a coin picked for
-      // a different denomination may no longer qualify: drop it.
-      _emit(state.copyWith(denominationBtc: value, selectedCoin: null));
-    }
-  }
-
   void peersChanged(String value) =>
       _emit(state.copyWith(peers: _digitsOnly(value)));
 

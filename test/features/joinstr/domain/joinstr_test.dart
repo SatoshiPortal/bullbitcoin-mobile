@@ -74,38 +74,6 @@ void main() {
     });
   });
 
-  group('coin selection', () {
-    test('picks the cheapest eligible coin, not the first', () {
-      final index = Joinstr.selectEligibleCoin(
-        coinValuesSat: [104000, 100600, 103000],
-        denominationSat: 100000,
-      );
-      expect(index, 1);
-    });
-
-    test('skips ineligible coins on either side of the window', () {
-      final index = Joinstr.selectEligibleCoin(
-        coinValuesSat: [100000, 500000, 102000, 100100],
-        denominationSat: 100000,
-      );
-      expect(index, 2);
-    });
-
-    test('returns null when nothing falls inside the window', () {
-      expect(
-        Joinstr.selectEligibleCoin(
-          coinValuesSat: [1000, 100000, 5000000],
-          denominationSat: 100000,
-        ),
-        isNull,
-      );
-      expect(
-        Joinstr.selectEligibleCoin(coinValuesSat: [], denominationSat: 100000),
-        isNull,
-      );
-    });
-  });
-
   group('electrum url parsing', () {
     test('preserves the ssl:// prefix so TLS is actually negotiated', () {
       final endpoint = Joinstr.parseElectrumUrl(
@@ -187,46 +155,12 @@ void main() {
     });
   });
 
-  group('denomination input parsing', () {
-    test('parses BTC text to satoshis without float rounding', () {
-      expect(Joinstr.parseDenominationBtcToSat('0.001'), 100000);
-      expect(Joinstr.parseDenominationBtcToSat('1'), 100000000);
-      expect(Joinstr.parseDenominationBtcToSat('0.00000001'), 1);
-      expect(Joinstr.parseDenominationBtcToSat('.5'), 50000000);
-      // 0.1 has no exact double representation; string math must still land
-      // on exactly ten million sats.
-      expect(Joinstr.parseDenominationBtcToSat('0.1'), 10000000);
-      expect(Joinstr.parseDenominationBtcToSat('21000000'), 2100000000000000);
-    });
-
-    test('rejects zero, empty and malformed input', () {
-      for (final text in ['', '0', '0.0', 'abc', '1.2.3', '0,001', '-1']) {
-        expect(Joinstr.parseDenominationBtcToSat(text), isNull, reason: text);
-      }
-    });
-
-    test('rejects more than 8 decimal places or 8 integer digits', () {
-      expect(Joinstr.parseDenominationBtcToSat('0.000000001'), isNull);
-      expect(Joinstr.parseDenominationBtcToSat('100000000'), isNull);
-    });
-  });
-
   group('btc formatting', () {
     test('trims trailing zeros and drops the point on whole coins', () {
       expect(Joinstr.formatBtc(100000), '0.001');
       expect(Joinstr.formatBtc(100000000), '1');
       expect(Joinstr.formatBtc(1), '0.00000001');
       expect(Joinstr.formatBtc(150000000), '1.5');
-    });
-
-    test('round-trips with the input parser', () {
-      for (final sat in [1, 100000, 100000000, 2100000000000000]) {
-        expect(
-          Joinstr.parseDenominationBtcToSat(Joinstr.formatBtc(sat)),
-          sat,
-          reason: '$sat',
-        );
-      }
     });
   });
 

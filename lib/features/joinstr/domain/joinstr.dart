@@ -12,7 +12,6 @@ enum JoinstrIssue {
   invalidPoolConfig,
   invalidRelayUrl,
   torUnavailable,
-  poolNotFound,
   coinjoinFailed,
 }
 
@@ -100,23 +99,6 @@ abstract final class Joinstr {
     return denom > 0 ? denom : null;
   }
 
-  /// Index of the cheapest coin that can fund a [denominationSat] pool, or
-  /// null when no coin falls inside the window.
-  static int? selectEligibleCoin({
-    required List<int> coinValuesSat,
-    required int denominationSat,
-  }) {
-    int? best;
-    for (var i = 0; i < coinValuesSat.length; i++) {
-      final value = coinValuesSat[i];
-      if (!isEligibleCoin(valueSat: value, denominationSat: denominationSat)) {
-        continue;
-      }
-      if (best == null || value < coinValuesSat[best]) best = i;
-    }
-    return best;
-  }
-
   /// Splits a stored electrum url into the address and port the bindings take.
   ///
   /// The `ssl://` prefix is deliberately preserved: joinstr only negotiates TLS
@@ -148,27 +130,6 @@ abstract final class Joinstr {
 
   /// The bindings take the pool denomination as BTC in a `f64`.
   static double denominationBtc(int denominationSat) => denominationSat / 1e8;
-
-  /// Matches the denomination input rule used by joinstr-kmp and
-  /// floresta_wallet: up to 8 integer digits and up to 8 decimal places.
-  static final RegExp denominationBtcPattern = RegExp(r'^\d{0,8}(\.\d{0,8})?$');
-
-  /// Parses a BTC amount typed by the user into satoshis without a float
-  /// round trip. Returns null when the text is not a positive amount matching
-  /// [denominationBtcPattern].
-  static int? parseDenominationBtcToSat(String text) {
-    final trimmed = text.trim();
-    if (trimmed.isEmpty || !denominationBtcPattern.hasMatch(trimmed)) {
-      return null;
-    }
-    final parts = trimmed.split('.');
-    final intPart = parts[0].isEmpty ? '0' : parts[0];
-    final fracPart = parts.length > 1 ? parts[1].padRight(8, '0') : '';
-    final sats =
-        int.parse(intPart) * 100000000 +
-        (fracPart.isEmpty ? 0 : int.parse(fracPart));
-    return sats > 0 ? sats : null;
-  }
 
   /// Renders satoshis as a BTC string with trailing zeros trimmed, e.g.
   /// 100000 -> "0.001".
