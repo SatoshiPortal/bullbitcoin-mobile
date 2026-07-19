@@ -44,47 +44,55 @@ class JoinstrCubit extends Cubit<JoinstrState> {
   final InitiateJoinstrPoolUsecase _initiatePool;
 
   int _nextRoundId = 0;
+  bool _loading = false;
 
   Future<void> load() async {
-    if (state.wallet != null) return; // already resolved for this session
-
-    final List<Wallet> candidates;
+    // The route builder can run more than once per navigation; the wallet
+    // guard only flips after several awaits, so an in-flight flag is needed
+    // to stop concurrent loads doubling the Tor work.
+    if (_loading || state.wallet != null) return;
+    _loading = true;
     try {
-      final settings = await _getSettings.execute();
-      _emit(state.copyWith(relay: settings.relay, history: settings.history));
-      final wallets = await _getWallets.execute(onlyBitcoin: true);
-      candidates = wallets.where((w) => w.signsLocally).toList();
-    } catch (e) {
-      _fail(_asJoinstrException(e));
-      return;
-    }
-    if (candidates.isEmpty) {
-      _fail(JoinstrException(JoinstrIssue.watchOnlyWallet));
-      return;
-    }
-
-    // Take the first wallet joinstr can actually use rather than the first
-    // hot wallet: someone holding both a mainnet and a testnet wallet should
-    // land on the testnet one, not on "mainnet not supported".
-    Wallet? supported;
-    JoinstrException? rejection;
-    for (final wallet in candidates) {
+      final List<Wallet> candidates;
       try {
-        Joinstr.assertWalletSupported(wallet);
-        supported = wallet;
-        break;
-      } on JoinstrException catch (e) {
-        rejection ??= e;
+        final settings = await _getSettings.execute();
+        _emit(state.copyWith(relay: settings.relay, history: settings.history));
+        final wallets = await _getWallets.execute(onlyBitcoin: true);
+        candidates = wallets.where((w) => w.signsLocally).toList();
+      } catch (e) {
+        _fail(_asJoinstrException(e));
+        return;
       }
-    }
-    if (supported == null) {
-      _fail(rejection!);
-      return;
-    }
+      if (candidates.isEmpty) {
+        _fail(JoinstrException(JoinstrIssue.watchOnlyWallet));
+        return;
+      }
 
-    _emit(state.copyWith(wallet: supported));
-    // Coins and pools both need Tor; kick them off together.
-    await Future.wait([loadCoins(), refreshPools()]);
+      // Take the first wallet joinstr can actually use rather than the first
+      // hot wallet: someone holding both a mainnet and a testnet wallet
+      // should land on the testnet one, not on "mainnet not supported".
+      Wallet? supported;
+      JoinstrException? rejection;
+      for (final wallet in candidates) {
+        try {
+          Joinstr.assertWalletSupported(wallet);
+          supported = wallet;
+          break;
+        } on JoinstrException catch (e) {
+          rejection ??= e;
+        }
+      }
+      if (supported == null) {
+        _fail(rejection!);
+        return;
+      }
+
+      _emit(state.copyWith(wallet: supported));
+      // Coins and pools both need Tor; kick them off together.
+      await Future.wait([loadCoins(), refreshPools()]);
+    } finally {
+      _loading = false;
+    }
   }
 
   Future<void> loadCoins() async {
