@@ -224,14 +224,21 @@ class JoinstrCubit extends Cubit<JoinstrState> {
     JoinstrRound round,
     Stream<JoinstrProgress> progress,
   ) async {
+    // Updates build on the latest round, not the snapshot taken at stream
+    // start, so a terminal update keeps the step the round had reached.
+    var current = round;
+    void update(JoinstrRound next) {
+      current = next;
+      _updateRound(next.id, next);
+    }
+
     try {
       await for (final p in progress) {
         if (p.step == JoinstrRoundStep.done) {
-          _updateRound(round.id, round.completed(p.txId ?? ''));
+          update(current.completed(p.txId ?? ''));
         } else if (p.step == JoinstrRoundStep.failed) {
-          _updateRound(
-            round.id,
-            round.failed(
+          update(
+            current.failed(
               JoinstrException(
                 JoinstrIssue.coinjoinFailed,
                 detail: p.errorMessage,
@@ -239,11 +246,11 @@ class JoinstrCubit extends Cubit<JoinstrState> {
             ),
           );
         } else if (p.step != JoinstrRoundStep.other) {
-          _updateRound(round.id, round.advancedTo(p.step));
+          update(current.advancedTo(p.step));
         }
       }
     } catch (e) {
-      _updateRound(round.id, round.failed(_asJoinstrException(e)));
+      update(current.failed(_asJoinstrException(e)));
     }
 
     await loadCoins();
