@@ -129,6 +129,21 @@ void main() {
       expect(cubit.state.error?.issue, JoinstrIssue.watchOnlyWallet);
     });
 
+    test(
+      'runs once when called concurrently, e.g. from route rebuilds',
+      () async {
+        when(
+          () => getWallets.execute(onlyBitcoin: any(named: 'onlyBitcoin')),
+        ).thenAnswer((_) async => [_wallet()]);
+
+        final cubit = build();
+        await Future.wait([cubit.load(), cubit.load()]);
+
+        verify(() => getSettings.execute()).called(1);
+        verify(() => listPools.execute()).called(1);
+      },
+    );
+
     test('selects a supported testnet wallet and loads coins', () async {
       when(
         () => getWallets.execute(onlyBitcoin: any(named: 'onlyBitcoin')),
@@ -247,6 +262,67 @@ void main() {
       await cubit.joinPool(_pool(99500), _coin);
 
       final round = cubit.state.rounds.single;
+      expect(round.isFailed, isTrue);
+    });
+  });
+
+  group('round lifecycle', () {
+    Future<JoinstrCubit> joinWith(List<JoinstrProgress> updates) async {
+      final cubit = await loadedCubit();
+      when(
+        () => joinPool.execute(
+          wallet: any(named: 'wallet'),
+          pool: any(named: 'pool'),
+          inputOutpoint: any(named: 'inputOutpoint'),
+        ),
+      ).thenAnswer((_) => Stream.fromIterable(updates));
+      await cubit.joinPool(_pool(99500), _coin);
+      return cubit;
+    }
+
+    test('a late failure keeps the step the round had reached', () async {
+      final cubit = await joinWith(const [
+        JoinstrProgress(step: JoinstrRoundStep.posting),
+        JoinstrProgress(step: JoinstrRoundStep.inputRegistration),
+        JoinstrProgress(step: JoinstrRoundStep.failed, errorMessage: 'boom'),
+      ]);
+
+      final round = cubit.state.rounds.single;
+      expect(round.isFailed, isTrue);
+      expect(round.step, JoinstrRoundStep.inputRegistration);
+    });
+
+    test('completion keeps the step the round had reached', () async {
+      final cubit = await joinWith(const [
+        JoinstrProgress(step: JoinstrRoundStep.mined),
+        JoinstrProgress(step: JoinstrRoundStep.done, txId: 'txid-abc'),
+      ]);
+
+      final round = cubit.state.rounds.single;
+      expect(round.isBroadcast, isTrue);
+      expect(round.step, JoinstrRoundStep.mined);
+    });
+
+    test('a stream that ends without a result fails the round instead of '
+        'leaving it waiting and its coin reserved forever', () async {
+      final cubit = await joinWith(const [
+        JoinstrProgress(step: JoinstrRoundStep.outputRegistration),
+      ]);
+
+      final round = cubit.state.rounds.single;
+      expect(round.isWaiting, isFalse);
+      expect(round.isFailed, isTrue);
+      expect(round.step, JoinstrRoundStep.outputRegistration);
+      expect(cubit.state.busyOutpoints, isEmpty);
+    });
+
+    test('done without a txid is a failure, not an empty broadcast', () async {
+      final cubit = await joinWith(const [
+        JoinstrProgress(step: JoinstrRoundStep.done),
+      ]);
+
+      final round = cubit.state.rounds.single;
+      expect(round.isBroadcast, isFalse);
       expect(round.isFailed, isTrue);
     });
   });

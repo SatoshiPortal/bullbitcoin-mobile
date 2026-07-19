@@ -93,5 +93,16 @@ void main() {
       await store.appendHistory(_entry('tx-1'));
       expect((await store.getHistory()).single.txId, 'tx-1');
     });
+
+    test('concurrent appends from parallel rounds keep every entry', () async {
+      await Future.wait([
+        store.appendHistory(_entry('tx-1')),
+        store.appendHistory(_entry('tx-2')),
+        store.appendHistory(_entry('tx-3')),
+      ]);
+
+      final history = await store.getHistory();
+      expect(history.map((e) => e.txId).toSet(), {'tx-1', 'tx-2', 'tx-3'});
+    });
   });
 }
