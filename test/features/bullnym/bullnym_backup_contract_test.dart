@@ -278,6 +278,18 @@ final class _RecordingClient implements BullnymClientPort {
   getSupportedCurrencies() => throw UnimplementedError();
 
   @override
+  Future<Result<BullnymRecoveryAddressLookupResult, BullnymFailure>>
+  lookupRecoveryAddress({required BullnymAuthSigner signer}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymRecoveryAddressRegistrationResult, BullnymFailure>>
+  registerRecoveryAddress({
+    required BullnymAuthSigner signer,
+    required String btcAddress,
+  }) => throw UnimplementedError();
+
+  @override
   Future<Result<BullnymCreateInvoiceResponse, BullnymFailure>> createInvoice({
     required BullnymAuthSigner signer,
     String? nym,
