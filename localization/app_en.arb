@@ -481,7 +481,11 @@
   },
   "joinstrNoEligibleCoins": "No coin matches this denomination.",
   "@joinstrNoEligibleCoins": {
-    "description": "Shown when no wallet coin fits the denomination window"
+    "description": "Shown when no wallet coin fits the denomination window (join flow, where the pool fixes the denomination)"
+  },
+  "joinstrNoSpendableCoins": "No spendable coins found in this wallet.",
+  "@joinstrNoSpendableCoins": {
+    "description": "Shown on the create form when the wallet scan returned no usable coins"
   },
   "joinstrLoadingCoins": "Loading coins…",
   "@joinstrLoadingCoins": {

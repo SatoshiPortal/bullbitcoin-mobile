@@ -252,7 +252,7 @@ class _CreateInputPicker extends StatelessWidget {
     if (coins.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(context.loc.joinstrNoEligibleCoins),
+        child: Text(context.loc.joinstrNoSpendableCoins),
       );
     }
     return Column(
