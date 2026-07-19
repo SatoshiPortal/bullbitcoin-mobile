@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_quote.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 
@@ -33,6 +34,7 @@ class InvoiceStatusSnapshot {
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
+  final InvoiceQuoteRailAvailability? quoteRailAvailability;
   final List<InvoicePaymentEvent> paymentEvents;
   final bool presentationMarksLatePayment;
 
@@ -63,12 +65,15 @@ class InvoiceStatusSnapshot {
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
+    this.quoteRailAvailability,
     this.paymentEvents = const [],
     this.presentationMarksLatePayment = false,
   });
 
   /// True only when lifecycle and settlement supervision are both complete.
   bool get isTerminal => isMonitoringComplete;
+
+  bool get isFiatFixed => pricingMode == 'fiat_fixed';
 
   /// The invoice's durable merchant face value, distinct from payer gross-up.
   int get merchantFaceAmountSat => amountSat;

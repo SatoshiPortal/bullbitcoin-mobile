@@ -86,7 +86,7 @@ Map<String, dynamic> _statusView({String status = 'unpaid'}) {
   return {
     'status': status,
     'presentation_status': 'payment_detected',
-    'pricing_mode': 'sat',
+    'pricing_mode': 'sat_fixed',
     'settlement_status': 'none',
     'amount_sat': 25000,
     'fiat_amount_minor': null,
@@ -190,6 +190,45 @@ Map<String, dynamic> _fallbackView({
     ],
     'count': 1,
     'has_more': false,
+  };
+}
+
+Map<String, dynamic> _payerQuoteView({
+  String rail = 'lightning',
+  String kind = 'lightning_boltz_reverse',
+  int payerAmountSat = 105000,
+  int versionNumber = 1,
+}) {
+  return {
+    'pricing_mode': 'fiat_fixed',
+    'invoice_id': 'inv-1',
+    'selected_rail': rail,
+    'quote': {
+      'quote_version_id': 'quote-$versionNumber',
+      'version_number': versionNumber,
+      'fiat_face_amount_minor': 5000,
+      'fiat_target_amount_minor': 5000,
+      'fiat_currency': 'CAD',
+      'rate_minor_per_btc': 5000000,
+      'rate_source': 'test-rate',
+      'rate_observed_at_unix': 1760000000,
+      'rate_fetched_at_unix': 1760000001,
+      'rate_fresh_until_unix': 1760000600,
+      'merchant_amount_sat': 100000,
+      'created_at_unix': 1760000100,
+      'expires_at_unix': 1760000400,
+    },
+    'instruction': {
+      'kind': kind,
+      'payer_amount_sat': payerAmountSat,
+      if (kind == 'lightning_boltz_reverse' || kind == 'bitcoin_boltz_chain')
+        'quote_offer_id': 'offer-$versionNumber',
+      if (kind == 'lightning_boltz_reverse') 'pr': 'lnbc1050n1test',
+      if (kind == 'liquid_direct' || kind.startsWith('bitcoin_'))
+        'address': kind == 'liquid_direct' ? 'lq1qquote' : 'bc1qquote',
+      if (kind.startsWith('bitcoin_'))
+        'bip21': 'bitcoin:bc1qquote?amount=0.00105000',
+    },
   };
 }
 
@@ -449,6 +488,40 @@ void main() {
         expect(observation.lastSeenAtUnix, 1710000200);
       },
     );
+
+    test('fiat status requires and parses pure rail availability', () async {
+      final response = _statusView()
+        ..['pricing_mode'] = 'fiat_fixed'
+        ..['lightning_pr'] = null
+        ..['lightning_amount_sat'] = null
+        ..['liquid_address'] = null
+        ..['liquid_amount_sat'] = null
+        ..['bitcoin_chain_address'] = null
+        ..['bitcoin_chain_bip21'] = null
+        ..['bitcoin_chain_amount_sat'] = null
+        ..['quote_rail_availability'] = {
+          'lightning': true,
+          'liquid': false,
+          'bitcoin': true,
+        };
+      final status = _unwrap(
+        await BullnymHttpClient.withDio(
+          _stubDio([response]).dio,
+        ).getInvoiceStatus(invoiceId: 'inv-1'),
+      );
+
+      expect(status.quoteRailAvailability?.lightning, isTrue);
+      expect(status.quoteRailAvailability?.liquid, isFalse);
+      expect(status.quoteRailAvailability?.bitcoin, isTrue);
+
+      response.remove('quote_rail_availability');
+      final failure = _unwrapFailure(
+        await BullnymHttpClient.withDio(
+          _stubDio([response]).dio,
+        ).getInvoiceStatus(invoiceId: 'inv-1'),
+      );
+      expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+    });
 
     test('status fails closed when the observations list is absent', () async {
       final response = _statusView()..remove('bitcoin_direct_observations');
@@ -754,6 +827,94 @@ void main() {
       expect(request.path, '/api/v1/invoices/inv-1/status');
       expect(request.queryParameters.containsKey('signature'), isFalse);
       expect(request.queryParameters.containsKey('npub'), isFalse);
+    });
+  });
+
+  group('T-INV-CLIENT fiat quote', () {
+    test('POSTs one selected rail and parses its complete version', () async {
+      final stub = _stubDio([_payerQuoteView()]);
+      final client = BullnymHttpClient.withDio(stub.dio);
+
+      final response = _unwrap(
+        await client.getInvoiceQuote(
+          invoiceId: 'inv-1',
+          rail: BullnymPayerQuoteRail.lightning,
+        ),
+      );
+
+      expect(response.invoiceId, 'inv-1');
+      expect(response.selectedRail, BullnymPayerQuoteRail.lightning);
+      expect(response.quote.versionNumber, 1);
+      expect(response.quote.expiresAtUnix - response.quote.createdAtUnix, 300);
+      expect(
+        response.instruction,
+        isA<BullnymLightningQuoteInstruction>()
+            .having((value) => value.pr, 'pr', 'lnbc1050n1test')
+            .having((value) => value.payerAmountSat, 'amount', 105000),
+      );
+      expect(stub.captured.requests.single.method, 'POST');
+      expect(
+        stub.captured.requests.single.path,
+        '/api/v1/invoices/inv-1/quote',
+      );
+      expect(stub.captured.requests.single.data, {'rail': 'lightning'});
+    });
+
+    test('parses direct and provider-backed rail variants', () async {
+      final cases = [
+        (
+          rail: BullnymPayerQuoteRail.liquid,
+          view: _payerQuoteView(
+            rail: 'liquid',
+            kind: 'liquid_direct',
+            payerAmountSat: 100000,
+          ),
+          type: BullnymLiquidQuoteInstruction,
+        ),
+        (
+          rail: BullnymPayerQuoteRail.bitcoin,
+          view: _payerQuoteView(
+            rail: 'bitcoin',
+            kind: 'bitcoin_direct',
+            payerAmountSat: 100000,
+          ),
+          type: BullnymBitcoinDirectQuoteInstruction,
+        ),
+        (
+          rail: BullnymPayerQuoteRail.bitcoin,
+          view: _payerQuoteView(rail: 'bitcoin', kind: 'bitcoin_boltz_chain'),
+          type: BullnymBitcoinBoltzQuoteInstruction,
+        ),
+      ];
+
+      for (final entry in cases) {
+        final client = BullnymHttpClient.withDio(_stubDio([entry.view]).dio);
+        final response = _unwrap(
+          await client.getInvoiceQuote(invoiceId: 'inv-1', rail: entry.rail),
+        );
+        expect(response.instruction.runtimeType, entry.type);
+      }
+    });
+
+    test('fails closed on mixed-version or wrong-rail evidence', () async {
+      final shortLifetime = _payerQuoteView();
+      (shortLifetime['quote'] as Map<String, dynamic>)['expires_at_unix'] =
+          1760000399;
+      final wrongRail = _payerQuoteView()..['selected_rail'] = 'bitcoin';
+      final underfunded = _payerQuoteView();
+      (underfunded['instruction'] as Map<String, dynamic>)['payer_amount_sat'] =
+          99999;
+
+      for (final view in [shortLifetime, wrongRail, underfunded]) {
+        final client = BullnymHttpClient.withDio(_stubDio([view]).dio);
+        final failure = _unwrapFailure(
+          await client.getInvoiceQuote(
+            invoiceId: 'inv-1',
+            rail: BullnymPayerQuoteRail.lightning,
+          ),
+        );
+        expect(failure.kind, BullnymFailureKind.invalidServerResponse);
+      }
     });
   });
 }

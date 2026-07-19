@@ -16485,5 +16485,37 @@
         "type": "int"
       }
     }
+  },
+  "invoiceQuoteTitle": "Payer quote",
+  "@invoiceQuoteTitle": {
+    "description": "Heading for the current fiat payer quote."
+  },
+  "invoiceQuoteRefreshing": "Refreshing payer quote…",
+  "@invoiceQuoteRefreshing": {
+    "description": "Calm status while a fiat payer quote refresh is in flight."
+  },
+  "invoiceQuoteUnavailable": "Payer quote is temporarily unavailable",
+  "@invoiceQuoteUnavailable": {
+    "description": "Status shown when a fiat payer quote could not be refreshed."
+  },
+  "invoiceQuoteRefreshesIn": "Quote refreshes in",
+  "@invoiceQuoteRefreshesIn": {
+    "description": "Label before the five-minute payer quote countdown."
+  },
+  "invoiceQuoteMerchantAmountLabel": "Merchant amount",
+  "@invoiceQuoteMerchantAmountLabel": {
+    "description": "Label for the merchant target amount in a payer quote."
+  },
+  "invoiceQuotePayerAmountLabel": "Payer sends",
+  "@invoiceQuotePayerAmountLabel": {
+    "description": "Label for the exact payer principal in a payer quote."
+  },
+  "invoiceQuoteCheckoutCostLabel": "Checkout costs",
+  "@invoiceQuoteCheckoutCostLabel": {
+    "description": "Label for payer-funded checkout costs above the merchant target."
+  },
+  "invoiceQuoteRetry": "Refresh quote",
+  "@invoiceQuoteRetry": {
+    "description": "Button label to explicitly retry a fiat payer quote."
   }
 }

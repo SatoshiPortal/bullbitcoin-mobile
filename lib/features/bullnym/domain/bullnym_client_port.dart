@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
@@ -123,6 +124,15 @@ abstract interface class BullnymClientPort {
   @useResult
   Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
     required String invoiceId,
+  });
+
+  /// Explicit public payer demand for one selected fiat quote rail. Status
+  /// GETs remain pure and never create a provider obligation.
+  @useResult
+  Future<Result<BullnymPayerDemandQuoteResponse, BullnymFailure>>
+  getInvoiceQuote({
+    required String invoiceId,
+    required BullnymPayerQuoteRail rail,
   });
 }
 

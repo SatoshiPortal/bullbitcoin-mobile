@@ -20,6 +20,15 @@ class _StubDetailCubit extends Cubit<InvoiceDetailState>
 
   @override
   Future<void> cancel() async {}
+
+  @override
+  Future<void> selectQuoteRail(PaymentMethod rail) async {}
+
+  @override
+  Future<void> refreshQuote(PaymentMethod rail) async {}
+
+  @override
+  void quoteExpired() {}
 }
 
 InvoicePaymentEvent _bitcoinPayment({
@@ -49,11 +58,13 @@ InvoiceStatusSnapshot _historySnapshot({
   required InvoicePaymentEvent payment,
   int paidAmountSat = 1000,
   int remainingAmountSat = 0,
+  String pricingMode = 'sat_fixed',
+  InvoiceQuoteRailAvailability? quoteRailAvailability,
 }) {
   return InvoiceStatusSnapshot(
     status: status,
     settlementState: settlementState,
-    pricingMode: 'sat',
+    pricingMode: pricingMode,
     settlementStatus: 'ignored-after-domain-mapping',
     amountSat: 1000,
     remainingAmountSat: remainingAmountSat,
@@ -66,6 +77,7 @@ InvoiceStatusSnapshot _historySnapshot({
     acceptBtc: true,
     acceptLn: false,
     acceptLiquid: false,
+    quoteRailAvailability: quoteRailAvailability,
     paymentEvents: [payment],
   );
 }
@@ -86,6 +98,35 @@ InvoiceStatusSnapshot _privateLinkSnapshot(InvoiceStatus status) {
     acceptBtc: true,
     acceptLn: true,
     acceptLiquid: true,
+  );
+}
+
+InvoiceQuote _activeQuote() {
+  final createdAt = DateTime.now().toUtc();
+  return InvoiceQuote(
+    invoiceId: InvoiceId('inv-1'),
+    versionId: 'quote-1',
+    versionNumber: 1,
+    fiatFaceAmountMinor: 5000,
+    fiatTargetAmountMinor: 5000,
+    fiatCurrency: 'CAD',
+    rateMinorPerBtc: 5000000,
+    rateSource: 'test-rate',
+    rateObservedAt: createdAt.subtract(const Duration(seconds: 2)),
+    rateFetchedAt: createdAt.subtract(const Duration(seconds: 1)),
+    rateFreshUntil: createdAt.add(const Duration(minutes: 1)),
+    createdAt: createdAt,
+    expiresAt: createdAt.add(InvoiceQuote.lifetime),
+    instruction: InvoiceBitcoinQuoteInstruction(
+      quoteOfferId: 'offer-1',
+      address: 'bc1qquote',
+      bip21: 'bitcoin:bc1qquote?amount=0.00105000',
+      amount: InvoicePayerAmount(
+        rail: PaymentMethod.btc,
+        merchantTargetAmountSat: 100000,
+        payerAmountSat: 105000,
+      ),
+    ),
   );
 }
 
@@ -298,6 +339,75 @@ void main() {
     expect(find.text('Lightning invoice'), findsNothing);
     expect(find.text('Liquid address'), findsNothing);
     expect(find.text('Bitcoin address'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shows one atomic fiat quote without a sharing payload', (
+    tester,
+  ) async {
+    final quote = _activeQuote();
+    await _pump(
+      tester,
+      InvoiceDetailState(
+        status: InvoiceDetailStatus.loaded,
+        snapshot: _historySnapshot(
+          status: InvoiceStatus.unpaid,
+          settlementState: InvoiceSettlementState.none,
+          payment: _bitcoinPayment(
+            state: InvoicePaymentEventState.pending,
+            isLate: false,
+          ),
+          pricingMode: 'fiat_fixed',
+          quoteRailAvailability: const InvoiceQuoteRailAvailability(
+            lightning: true,
+            liquid: true,
+            bitcoin: true,
+          ),
+        ),
+        selectedQuoteRail: PaymentMethod.btc,
+        quote: quote,
+      ),
+    );
+
+    expect(find.text('Payer quote'), findsOneWidget);
+    expect(find.text('Quote refreshes in'), findsOneWidget);
+    expect(find.text('Merchant amount'), findsOneWidget);
+    expect(find.text('Payer sends'), findsOneWidget);
+    expect(find.text('Checkout costs'), findsOneWidget);
+    expect(find.text(quote.instruction.copyPayload), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('refresh state never exposes the retired copy payload', (
+    tester,
+  ) async {
+    final quote = _activeQuote();
+    await _pump(
+      tester,
+      InvoiceDetailState(
+        status: InvoiceDetailStatus.loaded,
+        snapshot: _historySnapshot(
+          status: InvoiceStatus.unpaid,
+          settlementState: InvoiceSettlementState.none,
+          payment: _bitcoinPayment(
+            state: InvoicePaymentEventState.pending,
+            isLate: false,
+          ),
+          pricingMode: 'fiat_fixed',
+          quoteRailAvailability: const InvoiceQuoteRailAvailability(
+            lightning: false,
+            liquid: false,
+            bitcoin: true,
+          ),
+        ),
+        selectedQuoteRail: PaymentMethod.btc,
+        quote: quote,
+        quoteRefreshing: true,
+      ),
+    );
+
+    expect(find.text('Refreshing payer quote…'), findsOneWidget);
+    expect(find.text(quote.instruction.copyPayload), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

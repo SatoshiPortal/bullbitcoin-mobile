@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
@@ -497,6 +498,25 @@ class BullnymHttpClient implements BullnymClientPort {
         '/api/v1/invoices/${Uri.encodeComponent(invoiceId)}/status',
       );
       return _parseInvoiceStatusResponse(response);
+    });
+  }
+
+  @override
+  Future<Result<BullnymPayerDemandQuoteResponse, BullnymFailure>>
+  getInvoiceQuote({
+    required String invoiceId,
+    required BullnymPayerQuoteRail rail,
+  }) {
+    return _guard(() async {
+      final response = await _postMap(
+        '/api/v1/invoices/${Uri.encodeComponent(invoiceId)}/quote',
+        data: {'rail': rail.wire},
+      );
+      return _parsePayerDemandQuoteResponse(
+        response,
+        expectedInvoiceId: invoiceId,
+        expectedRail: rail,
+      );
     });
   }
 
@@ -991,6 +1011,16 @@ class BullnymHttpClient implements BullnymClientPort {
     );
   }
 
+  String _requiredNonEmptyString(Map<String, dynamic> json, String key) {
+    final value = _requiredString(json, key);
+    if (value.trim().isNotEmpty) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is empty',
+      ),
+    );
+  }
+
   bool _requiredBool(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is bool) return value;
@@ -1104,6 +1134,26 @@ class BullnymHttpClient implements BullnymClientPort {
     throw _BullnymClientException(
       BullnymFailure.invalidServerResponse(
         logMessage: 'Server response field $key is negative',
+      ),
+    );
+  }
+
+  int _requiredPositiveInt(Map<String, dynamic> json, String key) {
+    final value = _requiredInt(json, key);
+    if (value > 0) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response field $key is not positive',
+      ),
+    );
+  }
+
+  Map<String, dynamic> _requiredMap(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is Map<String, dynamic>) return value;
+    throw _BullnymClientException(
+      BullnymFailure.invalidServerResponse(
+        logMessage: 'Server response is missing object field $key',
       ),
     );
   }
@@ -1394,6 +1444,18 @@ class BullnymHttpClient implements BullnymClientPort {
       json,
       'bitcoin_chain_amount_sat',
     );
+    final pricingMode = _requiredString(json, 'pricing_mode');
+    if (pricingMode != 'sat_fixed' && pricingMode != 'fiat_fixed') {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Invoice status has an unexpected pricing mode',
+        ),
+      );
+    }
+    final quoteRailAvailability = _parseQuoteRailAvailability(
+      json['quote_rail_availability'],
+      requiredForFiat: pricingMode == 'fiat_fixed',
+    );
     _validatePayerInstructionPair(
       name: 'Lightning',
       payload: lightningPr,
@@ -1427,7 +1489,7 @@ class BullnymHttpClient implements BullnymClientPort {
     return BullnymInvoiceStatus(
       status: _requiredString(json, 'status'),
       presentationStatus: _optionalString(json, 'presentation_status'),
-      pricingMode: _requiredString(json, 'pricing_mode'),
+      pricingMode: pricingMode,
       settlementStatus: _requiredString(json, 'settlement_status'),
       amountSat: _requiredInt(json, 'amount_sat'),
       fiatAmountMinor: _optionalInt(json, 'fiat_amount_minor'),
@@ -1452,7 +1514,179 @@ class BullnymHttpClient implements BullnymClientPort {
       acceptLn: _requiredBool(json, 'accept_ln'),
       acceptLiquid: _requiredBool(json, 'accept_liquid'),
       bitcoinDirectObservations: _parseBitcoinDirectObservations(json),
+      quoteRailAvailability: quoteRailAvailability,
     );
+  }
+
+  BullnymPayerQuoteRailAvailability? _parseQuoteRailAvailability(
+    Object? raw, {
+    required bool requiredForFiat,
+  }) {
+    if (raw == null) {
+      if (!requiredForFiat) return null;
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Fiat invoice status is missing quote rail availability',
+        ),
+      );
+    }
+    if (!requiredForFiat) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Sat invoice status unexpectedly contains quote rails',
+        ),
+      );
+    }
+    if (raw is! Map<String, dynamic>) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Quote rail availability has an unexpected shape',
+        ),
+      );
+    }
+    return BullnymPayerQuoteRailAvailability(
+      lightning: _requiredBool(raw, 'lightning'),
+      liquid: _requiredBool(raw, 'liquid'),
+      bitcoin: _requiredBool(raw, 'bitcoin'),
+    );
+  }
+
+  BullnymPayerDemandQuoteResponse _parsePayerDemandQuoteResponse(
+    Map<String, dynamic> json, {
+    required String expectedInvoiceId,
+    required BullnymPayerQuoteRail expectedRail,
+  }) {
+    if (_requiredString(json, 'pricing_mode') != 'fiat_fixed') {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Payer quote has an unexpected pricing mode',
+        ),
+      );
+    }
+    final invoiceId = _requiredNonEmptyString(json, 'invoice_id');
+    final selectedRail = BullnymPayerQuoteRail.fromWire(
+      _requiredString(json, 'selected_rail'),
+    );
+    if (invoiceId != expectedInvoiceId || selectedRail != expectedRail) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Payer quote identity does not match the request',
+        ),
+      );
+    }
+    final rawQuote = _requiredMap(json, 'quote');
+    final createdAtUnix = _requiredNonNegativeInt(rawQuote, 'created_at_unix');
+    final expiresAtUnix = _requiredNonNegativeInt(rawQuote, 'expires_at_unix');
+    final rateObservedAtUnix = _requiredNonNegativeInt(
+      rawQuote,
+      'rate_observed_at_unix',
+    );
+    final rateFetchedAtUnix = _requiredNonNegativeInt(
+      rawQuote,
+      'rate_fetched_at_unix',
+    );
+    final rateFreshUntilUnix = _requiredNonNegativeInt(
+      rawQuote,
+      'rate_fresh_until_unix',
+    );
+    final fiatFaceAmountMinor = _requiredPositiveInt(
+      rawQuote,
+      'fiat_face_amount_minor',
+    );
+    final fiatTargetAmountMinor = _requiredPositiveInt(
+      rawQuote,
+      'fiat_target_amount_minor',
+    );
+    if (fiatTargetAmountMinor > fiatFaceAmountMinor ||
+        expiresAtUnix - createdAtUnix != 300 ||
+        rateObservedAtUnix >= rateFreshUntilUnix ||
+        rateFetchedAtUnix >= rateFreshUntilUnix) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Payer quote contains inconsistent version evidence',
+        ),
+      );
+    }
+    final quote = BullnymFiatQuote(
+      quoteVersionId: _requiredNonEmptyString(rawQuote, 'quote_version_id'),
+      versionNumber: _requiredPositiveInt(rawQuote, 'version_number'),
+      fiatFaceAmountMinor: fiatFaceAmountMinor,
+      fiatTargetAmountMinor: fiatTargetAmountMinor,
+      fiatCurrency: _requiredNonEmptyString(rawQuote, 'fiat_currency'),
+      rateMinorPerBtc: _requiredPositiveInt(rawQuote, 'rate_minor_per_btc'),
+      rateSource: _requiredNonEmptyString(rawQuote, 'rate_source'),
+      rateObservedAtUnix: rateObservedAtUnix,
+      rateFetchedAtUnix: rateFetchedAtUnix,
+      rateFreshUntilUnix: rateFreshUntilUnix,
+      merchantAmountSat: _requiredPositiveInt(rawQuote, 'merchant_amount_sat'),
+      createdAtUnix: createdAtUnix,
+      expiresAtUnix: expiresAtUnix,
+    );
+    final instruction = _parseVersionedPayerInstruction(
+      _requiredMap(json, 'instruction'),
+      selectedRail: selectedRail!,
+      merchantAmountSat: quote.merchantAmountSat,
+    );
+    return BullnymPayerDemandQuoteResponse(
+      invoiceId: invoiceId,
+      selectedRail: selectedRail,
+      quote: quote,
+      instruction: instruction,
+    );
+  }
+
+  BullnymVersionedPayerInstruction _parseVersionedPayerInstruction(
+    Map<String, dynamic> json, {
+    required BullnymPayerQuoteRail selectedRail,
+    required int merchantAmountSat,
+  }) {
+    final kind = _requiredString(json, 'kind');
+    final payerAmountSat = _requiredPositiveInt(json, 'payer_amount_sat');
+    final BullnymVersionedPayerInstruction instruction = switch (kind) {
+      'lightning_boltz_reverse'
+          when selectedRail == BullnymPayerQuoteRail.lightning =>
+        BullnymLightningQuoteInstruction(
+          quoteOfferId: _requiredNonEmptyString(json, 'quote_offer_id'),
+          pr: _requiredNonEmptyString(json, 'pr'),
+          payerAmountSat: payerAmountSat,
+        ),
+      'liquid_direct' when selectedRail == BullnymPayerQuoteRail.liquid =>
+        BullnymLiquidQuoteInstruction(
+          address: _requiredNonEmptyString(json, 'address'),
+          payerAmountSat: payerAmountSat,
+        ),
+      'bitcoin_direct' when selectedRail == BullnymPayerQuoteRail.bitcoin =>
+        BullnymBitcoinDirectQuoteInstruction(
+          address: _requiredNonEmptyString(json, 'address'),
+          bip21: _requiredNonEmptyString(json, 'bip21'),
+          payerAmountSat: payerAmountSat,
+        ),
+      'bitcoin_boltz_chain'
+          when selectedRail == BullnymPayerQuoteRail.bitcoin =>
+        BullnymBitcoinBoltzQuoteInstruction(
+          quoteOfferId: _requiredNonEmptyString(json, 'quote_offer_id'),
+          address: _requiredNonEmptyString(json, 'address'),
+          bip21: _requiredNonEmptyString(json, 'bip21'),
+          payerAmountSat: payerAmountSat,
+        ),
+      _ => throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Payer instruction does not match the selected rail',
+        ),
+      ),
+    };
+    final direct =
+        instruction is BullnymLiquidQuoteInstruction ||
+        instruction is BullnymBitcoinDirectQuoteInstruction;
+    if ((direct && payerAmountSat != merchantAmountSat) ||
+        (!direct && payerAmountSat <= merchantAmountSat)) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Payer amount does not match the selected rail policy',
+        ),
+      );
+    }
+    return instruction;
   }
 
   List<BullnymBitcoinDirectObservation> _parseBitcoinDirectObservations(

@@ -8,10 +8,12 @@ import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_
 import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoice_fallback_supervision_usecase.dart';
-import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
-import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_quote.dart';
+import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
+import 'package:bb_mobile/features/invoices/domain/bullnym_failure_mapping.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
@@ -26,6 +28,7 @@ export 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_sup
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
 export 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
+export 'package:bb_mobile/features/invoices/domain/entities/invoice_quote.dart';
 export 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
@@ -83,6 +86,12 @@ class InvoicesFacade {
 
   Future<PrivateInvoiceLink?> privateLink(InvoiceId invoiceId) =>
       _getPrivateLink.execute(invoiceId);
+
+  @useResult
+  Future<Result<InvoiceQuote, InvoicesFailure>> quote({
+    required InvoiceId invoiceId,
+    required PaymentMethod rail,
+  }) => _getStatus.quote(invoiceId: invoiceId, rail: rail);
 
   @useResult
   Future<Result<BullnymSupportedCurrencies, InvoicesFailure>>

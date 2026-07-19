@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_detail_state.dart';
@@ -10,19 +12,52 @@ class _MockFacade extends Mock implements InvoicesFacade {}
 InvoiceStatusSnapshot _snapshot(
   InvoiceStatus status, {
   InvoiceSettlementState settlementState = InvoiceSettlementState.none,
+  String pricingMode = 'sat_fixed',
+  InvoiceQuoteRailAvailability? quoteRailAvailability,
+  DateTime? expiresAt,
 }) => InvoiceStatusSnapshot(
   status: status,
   settlementState: settlementState,
-  pricingMode: 'sat',
+  pricingMode: pricingMode,
   settlementStatus: 'pending',
   amountSat: 1000,
   remainingAmountSat: 1000,
   paymentToleranceSat: 0,
   rateLocksUntil: DateTime.utc(2030),
-  expiresAt: DateTime.utc(2030),
+  expiresAt: expiresAt ?? DateTime.utc(2030),
   acceptBtc: false,
   acceptLn: false,
   acceptLiquid: true,
+  quoteRailAvailability: quoteRailAvailability,
+);
+
+InvoiceQuote _quote(
+  DateTime createdAt, {
+  int version = 1,
+  String pr = 'lnbc1050n1test',
+}) => InvoiceQuote(
+  invoiceId: InvoiceId('inv-1'),
+  versionId: 'quote-$version',
+  versionNumber: version,
+  fiatFaceAmountMinor: 5000,
+  fiatTargetAmountMinor: 5000,
+  fiatCurrency: 'CAD',
+  rateMinorPerBtc: 5000000,
+  rateSource: 'test-rate',
+  rateObservedAt: createdAt.subtract(const Duration(seconds: 2)),
+  rateFetchedAt: createdAt.subtract(const Duration(seconds: 1)),
+  rateFreshUntil: createdAt.add(const Duration(minutes: 1)),
+  createdAt: createdAt,
+  expiresAt: createdAt.add(InvoiceQuote.lifetime),
+  instruction: InvoiceLightningQuoteInstruction(
+    quoteOfferId: 'offer-$version',
+    pr: pr,
+    amount: InvoicePayerAmount(
+      rail: PaymentMethod.lightning,
+      merchantTargetAmountSat: 100000,
+      payerAmountSat: 105000,
+    ),
+  ),
 );
 
 InvoiceFallbackSupervision _fallback(InvoiceFallbackState state) =>
@@ -42,6 +77,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(InvoiceId('x'));
     registerFallbackValue(CancelInvoiceCommand(invoiceId: InvoiceId('x')));
+    registerFallbackValue(PaymentMethod.lightning);
   });
 
   late _MockFacade facade;
@@ -232,6 +268,153 @@ void main() {
       await cubit.close();
     },
   );
+
+  test('fiat detail explicitly loads the first available quote rail', () async {
+    final now = DateTime.utc(2026, 1, 1, 12);
+    when(() => facade.status(any())).thenAnswer(
+      (_) async => Ok(
+        _snapshot(
+          InvoiceStatus.unpaid,
+          pricingMode: 'fiat_fixed',
+          expiresAt: now.add(const Duration(days: 30)),
+          quoteRailAvailability: const InvoiceQuoteRailAvailability(
+            lightning: true,
+            liquid: true,
+            bitcoin: true,
+          ),
+        ),
+      ),
+    );
+    when(
+      () => facade.quote(
+        invoiceId: any(named: 'invoiceId'),
+        rail: any(named: 'rail'),
+      ),
+    ).thenAnswer((_) async => Ok(_quote(now)));
+
+    final cubit = InvoiceDetailCubit(
+      facade: facade,
+      invoiceId: InvoiceId('inv-1'),
+      pollInitialDelay: const Duration(seconds: 30),
+      now: () => now,
+    );
+    await cubit.load();
+
+    expect(cubit.state.selectedQuoteRail, PaymentMethod.lightning);
+    expect(cubit.state.quote?.versionId, 'quote-1');
+    expect(cubit.state.hasUsableQuote(now), isTrue);
+    verify(
+      () => facade.quote(
+        invoiceId: InvoiceId('inv-1'),
+        rail: PaymentMethod.lightning,
+      ),
+    ).called(1);
+    await cubit.close();
+  });
+
+  test('expiry clears every old payload before replacement resolves', () async {
+    var now = DateTime.utc(2026, 1, 1, 12);
+    final first = _quote(now);
+    final replacement = Completer<Result<InvoiceQuote, InvoicesFailure>>();
+    var quoteCalls = 0;
+    when(() => facade.status(any())).thenAnswer(
+      (_) async => Ok(
+        _snapshot(
+          InvoiceStatus.unpaid,
+          pricingMode: 'fiat_fixed',
+          expiresAt: now.add(const Duration(days: 30)),
+          quoteRailAvailability: const InvoiceQuoteRailAvailability(
+            lightning: true,
+            liquid: false,
+            bitcoin: false,
+          ),
+        ),
+      ),
+    );
+    when(
+      () => facade.quote(
+        invoiceId: any(named: 'invoiceId'),
+        rail: any(named: 'rail'),
+      ),
+    ).thenAnswer((_) {
+      quoteCalls++;
+      return quoteCalls == 1 ? Future.value(Ok(first)) : replacement.future;
+    });
+
+    final cubit = InvoiceDetailCubit(
+      facade: facade,
+      invoiceId: InvoiceId('inv-1'),
+      pollInitialDelay: const Duration(seconds: 30),
+      now: () => now,
+    );
+    await cubit.load();
+    expect(cubit.state.quote?.instruction.copyPayload, 'lnbc1050n1test');
+
+    now = first.expiresAt;
+    cubit.quoteExpired();
+
+    expect(cubit.state.quote, isNull);
+    expect(cubit.state.quoteRefreshing, isTrue);
+    expect(cubit.state.hasUsableQuote(now), isFalse);
+
+    replacement.complete(Ok(_quote(now, version: 2)));
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.quoteRefreshing, isFalse);
+    expect(cubit.state.quote?.versionId, 'quote-2');
+    expect(cubit.state.hasUsableQuote(now), isTrue);
+    await cubit.close();
+  });
+
+  test('same quote version cannot change its instruction in place', () async {
+    final now = DateTime.utc(2026, 1, 1, 12);
+    var quoteCalls = 0;
+    when(() => facade.status(any())).thenAnswer(
+      (_) async => Ok(
+        _snapshot(
+          InvoiceStatus.unpaid,
+          pricingMode: 'fiat_fixed',
+          expiresAt: now.add(const Duration(days: 30)),
+          quoteRailAvailability: const InvoiceQuoteRailAvailability(
+            lightning: true,
+            liquid: false,
+            bitcoin: false,
+          ),
+        ),
+      ),
+    );
+    when(
+      () => facade.quote(
+        invoiceId: any(named: 'invoiceId'),
+        rail: any(named: 'rail'),
+      ),
+    ).thenAnswer((_) async {
+      quoteCalls++;
+      return Ok(
+        _quote(
+          now,
+          pr: quoteCalls == 1 ? 'lnbc1050n1test' : 'lnbcchanged1test',
+        ),
+      );
+    });
+
+    final cubit = InvoiceDetailCubit(
+      facade: facade,
+      invoiceId: InvoiceId('inv-1'),
+      pollInitialDelay: const Duration(seconds: 30),
+      now: () => now,
+    );
+    await cubit.load();
+    await cubit.refreshQuote(PaymentMethod.lightning);
+
+    expect(cubit.state.quote, isNull);
+    expect(
+      cubit.state.quoteFailure?.kind,
+      InvoicesFailureKind.invalidServerResponse,
+    );
+    await cubit.close();
+  });
 
   test('cancel is inert once a final status exists', () async {
     when(

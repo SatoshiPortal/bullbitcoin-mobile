@@ -45,6 +45,7 @@ void main() {
         acceptLiquid: true,
       ),
     );
+    registerFallbackValue(BullnymPayerQuoteRail.lightning);
   });
 
   late _MockBullnym bullnym;
@@ -894,6 +895,110 @@ void main() {
       );
 
       expect(overview.items, isEmpty);
+    });
+  });
+
+  group('getInvoiceQuote (explicit payer demand)', () {
+    test('maps immutable quote evidence and exact Lightning costs', () async {
+      when(
+        () => bullnym.getInvoiceQuote(
+          invoiceId: any(named: 'invoiceId'),
+          rail: any(named: 'rail'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok(
+          BullnymPayerDemandQuoteResponse(
+            invoiceId: 'inv-1',
+            selectedRail: BullnymPayerQuoteRail.lightning,
+            quote: BullnymFiatQuote(
+              quoteVersionId: 'quote-1',
+              versionNumber: 1,
+              fiatFaceAmountMinor: 5000,
+              fiatTargetAmountMinor: 2500,
+              fiatCurrency: 'CAD',
+              rateMinorPerBtc: 5000000,
+              rateSource: 'test-rate',
+              rateObservedAtUnix: 1760000000,
+              rateFetchedAtUnix: 1760000001,
+              rateFreshUntilUnix: 1760000600,
+              merchantAmountSat: 100000,
+              createdAtUnix: 1760000100,
+              expiresAtUnix: 1760000400,
+            ),
+            instruction: BullnymLightningQuoteInstruction(
+              quoteOfferId: 'offer-1',
+              pr: 'lnbc1050n1test',
+              payerAmountSat: 105000,
+            ),
+          ),
+        ),
+      );
+
+      final quote = _unwrap(
+        await datasource.getInvoiceQuote(
+          invoiceId: InvoiceId('inv-1'),
+          rail: PaymentMethod.lightning,
+        ),
+      );
+
+      expect(quote.versionId, 'quote-1');
+      expect(quote.fiatFaceAmountMinor, 5000);
+      expect(quote.fiatTargetAmountMinor, 2500);
+      expect(quote.selectedRail, PaymentMethod.lightning);
+      expect(quote.instruction.amount.merchantTargetAmountSat, 100000);
+      expect(quote.instruction.amount.payerAmountSat, 105000);
+      expect(quote.instruction.amount.checkoutCostSat, 5000);
+      expect(quote.instruction.copyPayload, 'lnbc1050n1test');
+      verify(
+        () => bullnym.getInvoiceQuote(
+          invoiceId: 'inv-1',
+          rail: BullnymPayerQuoteRail.lightning,
+        ),
+      ).called(1);
+    });
+
+    test('rejects quote evidence outside the five-minute contract', () async {
+      when(
+        () => bullnym.getInvoiceQuote(
+          invoiceId: any(named: 'invoiceId'),
+          rail: any(named: 'rail'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok(
+          BullnymPayerDemandQuoteResponse(
+            invoiceId: 'inv-1',
+            selectedRail: BullnymPayerQuoteRail.liquid,
+            quote: BullnymFiatQuote(
+              quoteVersionId: 'quote-1',
+              versionNumber: 1,
+              fiatFaceAmountMinor: 5000,
+              fiatTargetAmountMinor: 5000,
+              fiatCurrency: 'CAD',
+              rateMinorPerBtc: 5000000,
+              rateSource: 'test-rate',
+              rateObservedAtUnix: 1760000000,
+              rateFetchedAtUnix: 1760000001,
+              rateFreshUntilUnix: 1760000600,
+              merchantAmountSat: 100000,
+              createdAtUnix: 1760000100,
+              expiresAtUnix: 1760000399,
+            ),
+            instruction: BullnymLiquidQuoteInstruction(
+              address: 'lq1qquote',
+              payerAmountSat: 100000,
+            ),
+          ),
+        ),
+      );
+
+      final failure = _unwrapFailure(
+        await datasource.getInvoiceQuote(
+          invoiceId: InvoiceId('inv-1'),
+          rail: PaymentMethod.liquid,
+        ),
+      );
+
+      expect(failure.kind, InvoicesFailureKind.invalidServerResponse);
     });
   });
 }

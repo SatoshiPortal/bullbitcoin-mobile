@@ -120,6 +120,29 @@ merchant face value and orders typed payer amounts Lightning, Liquid, then
 Bitcoin. The authenticated mobile invoice screen does not create a payer QR;
 the public Payment Page owns that surface.
 
+## Long-lived invoices and versioned fiat quotes
+
+Merchant invoice creation defaults to 30 days and permits shorter deliberate
+deadlines up to that server limit. A fiat invoice keeps its face value in fiat;
+the mobile client never treats one creation-time sat conversion as durable.
+
+The unsigned status GET parses only `quote_rail_availability`; it does not
+create a quote or provider obligation. Visible fiat detail explicitly requests
+one selected rail through `POST /api/v1/invoices/:id/quote`, defaulting in
+Lightning, Liquid, Bitcoin order. The response is accepted only when its
+invoice/rail identity, five-minute window, rate evidence, exact payer amount,
+and tagged instruction agree. Direct instructions equal the merchant target;
+provider-backed instructions include a positive payer-funded cost delta.
+
+`InvoiceDetailCubit` owns one immutable active quote. Rail changes and expired
+versions clear the previous instruction before awaiting the replacement; late
+responses are operation-guarded and older or identity-changing versions are
+rejected. A timer retires the entire quote at its exclusive expiry boundary,
+then explicitly refreshes the selected rail. The screen replaces countdown,
+amounts, cost, and copy payload together, and never renders an expired payload
+while refresh is pending. Mobile renders no payer QR; the public Payment Page
+remains the QR owner.
+
 ## Local-only private memo (§3.14)
 
 `privateMemo` is stored as local address labels

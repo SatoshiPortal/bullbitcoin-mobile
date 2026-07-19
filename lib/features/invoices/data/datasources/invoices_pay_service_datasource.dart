@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_fallback_supervision.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payment_event.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_payer_amount.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/invoice_quote.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
@@ -277,6 +278,9 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           acceptBtc: status.acceptBtc,
           acceptLn: status.acceptLn,
           acceptLiquid: status.acceptLiquid,
+          quoteRailAvailability: _toQuoteRailAvailability(
+            status.quoteRailAvailability,
+          ),
           paymentEvents: paymentEvents,
           presentationMarksLatePayment: invoicePresentationMarksLate(
             status.presentationStatus,
@@ -325,6 +329,125 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       paidVia: PaymentMethod.fromWire(item.paidVia),
       paidAt: item.paidAtUnix == null ? null : _fromUnix(item.paidAtUnix!),
       paidAmountSat: item.paidAmountSat,
+    );
+  }
+
+  @override
+  Future<Result<InvoiceQuote, InvoicesFailure>> getInvoiceQuote({
+    required InvoiceId invoiceId,
+    required PaymentMethod rail,
+  }) async {
+    try {
+      final responseResult = await _bullnym.getInvoiceQuote(
+        invoiceId: invoiceId.value,
+        rail: _toBullnymQuoteRail(rail),
+      );
+      switch (responseResult) {
+        case Ok(:final value):
+          return Ok(
+            _toInvoiceQuote(
+              value,
+              expectedInvoiceId: invoiceId,
+              expectedRail: rail,
+            ),
+          );
+        case Err(:final failure):
+          return Err(mapBullnymFailureToInvoices(failure));
+      }
+    } on ArgumentError {
+      return const Err(InvoicesFailure.invalidServerResponse());
+    } on Exception catch (error, stack) {
+      return _unexpectedFailure('quote', error, stack);
+    }
+  }
+
+  InvoiceQuoteRailAvailability? _toQuoteRailAvailability(
+    BullnymPayerQuoteRailAvailability? availability,
+  ) {
+    if (availability == null) return null;
+    return InvoiceQuoteRailAvailability(
+      lightning: availability.lightning,
+      liquid: availability.liquid,
+      bitcoin: availability.bitcoin,
+    );
+  }
+
+  BullnymPayerQuoteRail _toBullnymQuoteRail(PaymentMethod rail) =>
+      switch (rail) {
+        PaymentMethod.lightning => BullnymPayerQuoteRail.lightning,
+        PaymentMethod.liquid => BullnymPayerQuoteRail.liquid,
+        PaymentMethod.btc => BullnymPayerQuoteRail.bitcoin,
+      };
+
+  InvoiceQuote _toInvoiceQuote(
+    BullnymPayerDemandQuoteResponse response, {
+    required InvoiceId expectedInvoiceId,
+    required PaymentMethod expectedRail,
+  }) {
+    final quote = response.quote;
+    final rail = switch (response.selectedRail) {
+      BullnymPayerQuoteRail.lightning => PaymentMethod.lightning,
+      BullnymPayerQuoteRail.liquid => PaymentMethod.liquid,
+      BullnymPayerQuoteRail.bitcoin => PaymentMethod.btc,
+    };
+    if (response.invoiceId != expectedInvoiceId.value || rail != expectedRail) {
+      throw ArgumentError('Invoice quote identity does not match the request');
+    }
+    final direct =
+        response.instruction is BullnymLiquidQuoteInstruction ||
+        response.instruction is BullnymBitcoinDirectQuoteInstruction;
+    final payerAmountSat = response.instruction.payerAmountSat;
+    if ((direct && payerAmountSat != quote.merchantAmountSat) ||
+        (!direct && payerAmountSat <= quote.merchantAmountSat)) {
+      throw ArgumentError('Invoice quote amount does not match its rail');
+    }
+    final payerAmount = InvoicePayerAmount(
+      rail: rail,
+      merchantTargetAmountSat: quote.merchantAmountSat,
+      payerAmountSat: payerAmountSat,
+    );
+    final instruction = switch (response.instruction) {
+      BullnymLightningQuoteInstruction(:final quoteOfferId, :final pr) =>
+        InvoiceLightningQuoteInstruction(
+          quoteOfferId: quoteOfferId,
+          pr: pr,
+          amount: payerAmount,
+        ),
+      BullnymLiquidQuoteInstruction(:final address) =>
+        InvoiceLiquidQuoteInstruction(address: address, amount: payerAmount),
+      BullnymBitcoinDirectQuoteInstruction(:final address, :final bip21) =>
+        InvoiceBitcoinQuoteInstruction(
+          address: address,
+          bip21: bip21,
+          amount: payerAmount,
+        ),
+      BullnymBitcoinBoltzQuoteInstruction(
+        :final quoteOfferId,
+        :final address,
+        :final bip21,
+      ) =>
+        InvoiceBitcoinQuoteInstruction(
+          quoteOfferId: quoteOfferId,
+          address: address,
+          bip21: bip21,
+          amount: payerAmount,
+        ),
+    };
+    return InvoiceQuote(
+      invoiceId: _invoiceId(response.invoiceId),
+      versionId: quote.quoteVersionId,
+      versionNumber: quote.versionNumber,
+      fiatFaceAmountMinor: quote.fiatFaceAmountMinor,
+      fiatTargetAmountMinor: quote.fiatTargetAmountMinor,
+      fiatCurrency: quote.fiatCurrency,
+      rateMinorPerBtc: quote.rateMinorPerBtc,
+      rateSource: quote.rateSource,
+      rateObservedAt: _fromUnix(quote.rateObservedAtUnix),
+      rateFetchedAt: _fromUnix(quote.rateFetchedAtUnix),
+      rateFreshUntil: _fromUnix(quote.rateFreshUntilUnix),
+      createdAt: _fromUnix(quote.createdAtUnix),
+      expiresAt: _fromUnix(quote.expiresAtUnix),
+      instruction: instruction,
     );
   }
 

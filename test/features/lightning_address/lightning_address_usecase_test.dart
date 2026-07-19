@@ -371,6 +371,13 @@ class _FakeBullnymFacade implements BullnymFacade {
   Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
     required String invoiceId,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymPayerDemandQuoteResponse, BullnymFailure>>
+  getInvoiceQuote({
+    required String invoiceId,
+    required BullnymPayerQuoteRail rail,
+  }) => throw UnimplementedError();
 }
 
 String _zeroMnemonicXprv() {

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
@@ -33,6 +34,7 @@ export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_recovery_address.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
@@ -253,6 +255,15 @@ class BullnymFacade {
     required String invoiceId,
   }) {
     return _client.getInvoiceStatus(invoiceId: invoiceId);
+  }
+
+  @useResult
+  Future<Result<BullnymPayerDemandQuoteResponse, BullnymFailure>>
+  getInvoiceQuote({
+    required String invoiceId,
+    required BullnymPayerQuoteRail rail,
+  }) {
+    return _client.getInvoiceQuote(invoiceId: invoiceId, rail: rail);
   }
 
   @override

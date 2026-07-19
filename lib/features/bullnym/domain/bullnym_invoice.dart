@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
+
 // Wire DTOs for the signed recipient-invoice endpoints (server
 // `src/invoice.rs`). JSON keys mirror the server EXACTLY (snake_case, incl.
 // the `pageSize` query/response rename the server pins in `ListSignedQuery` /
@@ -193,6 +195,7 @@ class BullnymInvoiceStatus {
   final bool acceptLn;
   final bool acceptLiquid;
   final List<BullnymBitcoinDirectObservation> bitcoinDirectObservations;
+  final BullnymPayerQuoteRailAvailability? quoteRailAvailability;
 
   const BullnymInvoiceStatus({
     required this.status,
@@ -222,5 +225,6 @@ class BullnymInvoiceStatus {
     required this.acceptLn,
     required this.acceptLiquid,
     required this.bitcoinDirectObservations,
+    this.quoteRailAvailability,
   });
 }
