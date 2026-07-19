@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_url.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
@@ -99,33 +100,21 @@ abstract final class Joinstr {
     return denom > 0 ? denom : null;
   }
 
-  /// Splits a stored electrum url into the address and port the bindings take.
+  /// Splits a stored electrum url into the address and port the bindings
+  /// take, via the electrum module's canonical [ElectrumUrl] parse.
   ///
   /// The `ssl://` prefix is deliberately preserved: joinstr only negotiates TLS
   /// when the address starts with it, so stripping the scheme would silently
   /// downgrade an SSL-only server such as `:50002` to plaintext.
   static ({String address, int port}) parseElectrumUrl(String url) {
-    final trimmed = url.trim();
-    final schemeEnd = trimmed.indexOf('://');
-    final scheme = schemeEnd == -1
-        ? ''
-        : trimmed.substring(0, schemeEnd).toLowerCase();
-    final hostPort = schemeEnd == -1
-        ? trimmed
-        : trimmed.substring(schemeEnd + 3);
-
-    final colon = hostPort.lastIndexOf(':');
-    if (colon <= 0 || colon == hostPort.length - 1) {
+    final parsed = ElectrumUrl.tryParse(url);
+    if (parsed == null) {
       throw JoinstrException(JoinstrIssue.invalidElectrumUrl, detail: url);
     }
-
-    final host = hostPort.substring(0, colon);
-    final port = int.tryParse(hostPort.substring(colon + 1));
-    if (port == null || port < 1 || port > 65535) {
-      throw JoinstrException(JoinstrIssue.invalidElectrumUrl, detail: url);
-    }
-
-    return (address: scheme == 'ssl' ? 'ssl://$host' : host, port: port);
+    return (
+      address: parsed.useSsl ? 'ssl://${parsed.host}' : parsed.host,
+      port: parsed.port,
+    );
   }
 
   /// Formats a remaining duration for pool tiles, e.g. "1h 5m", "12m 30s",
