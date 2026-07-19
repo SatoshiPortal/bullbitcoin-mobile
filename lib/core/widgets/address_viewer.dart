@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart'
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -28,6 +29,8 @@ class AddressViewer extends StatelessWidget {
     this.style,
     this.color,
     this.clipboardText,
+    this.qrData,
+    this.showExplorerActions = true,
     this.textAlign,
   });
 
@@ -37,6 +40,12 @@ class AddressViewer extends StatelessWidget {
 
   /// Text copied to clipboard on long press. Defaults to [data].
   final String? clipboardText;
+
+  /// Optional payload to render as a QR code in the detail view.
+  final String? qrData;
+
+  /// Whether the detail view should offer blockchain explorer actions.
+  final bool showExplorerActions;
 
   /// Alignment of the (possibly truncated) address text within its box.
   final TextAlign? textAlign;
@@ -53,8 +62,13 @@ class AddressViewer extends StatelessWidget {
     );
 
     return GestureDetector(
-      onTap: () =>
-          showDetail(context, data: data, clipboardText: clipboardText),
+      onTap: () => showDetail(
+        context,
+        data: data,
+        clipboardText: clipboardText,
+        qrData: qrData,
+        showExplorerActions: showExplorerActions,
+      ),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
         SnackBarUtils.showCopiedSnackBar(context);
@@ -136,12 +150,16 @@ class AddressViewer extends StatelessWidget {
     BuildContext context, {
     required String data,
     String? clipboardText,
+    String? qrData,
+    bool showExplorerActions = true,
   }) {
     return BlurredDialog.show<void>(
       context: context,
       builder: (dialogContext) => _AddressDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
+        qrData: qrData,
+        showExplorerActions: showExplorerActions,
         dialogContext: dialogContext,
         getExplorerUrl: () => _getExplorerUrlFor(data),
       ),
@@ -153,12 +171,16 @@ class _AddressDetailSheet extends StatefulWidget {
   const _AddressDetailSheet({
     required this.data,
     required this.clipboardText,
+    this.qrData,
+    required this.showExplorerActions,
     required this.dialogContext,
     required this.getExplorerUrl,
   });
 
   final String data;
   final String clipboardText;
+  final String? qrData;
+  final bool showExplorerActions;
   final BuildContext dialogContext;
   final Future<String?> Function() getExplorerUrl;
 
@@ -222,7 +244,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           _buildBody(context),
           const Gap(24),
           _buildCopyAction(context),
-          if (!_showUri) ...[
+          if (!_showUri && widget.showExplorerActions) ...[
             const Gap(16),
             _buildCopyLinkAction(context),
             const Gap(16),
@@ -268,7 +290,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
     }
 
     final groups = _groupsOf(_activeText);
-    return Wrap(
+    final addressText = Wrap(
       spacing: 8,
       runSpacing: 6,
       alignment: WrapAlignment.center,
@@ -285,6 +307,15 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
               letterSpacing: 1.2,
             ),
           ),
+      ],
+    );
+    if (widget.qrData == null) return addressText;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        QrDisplayWidget(data: widget.qrData!, size: 240),
+        const Gap(16),
+        addressText,
       ],
     );
   }

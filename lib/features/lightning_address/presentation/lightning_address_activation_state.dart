@@ -8,8 +8,8 @@ enum LightningAddressActivationStatus {
   active,
   activeLocalSetupFailed,
   inactive,
+  addressUnavailable,
   submitting,
-  registered,
   failure,
 }
 
@@ -73,16 +73,14 @@ class LightningAddressActivationState {
       status == LightningAddressActivationStatus.unsupported;
   bool get isSubmitting =>
       status == LightningAddressActivationStatus.submitting;
-  bool get isRegistered =>
-      status == LightningAddressActivationStatus.registered;
   bool get isActive => status == LightningAddressActivationStatus.active;
   bool get isActiveLocalSetupFailed =>
       status == LightningAddressActivationStatus.activeLocalSetupFailed;
   bool get isInactive => status == LightningAddressActivationStatus.inactive;
+  bool get isAddressUnavailable =>
+      status == LightningAddressActivationStatus.addressUnavailable;
   bool get isBusy => isSubmitting || onlineSaving;
-  bool get receiveReady =>
-      status == LightningAddressActivationStatus.active ||
-      status == LightningAddressActivationStatus.registered;
+  bool get receiveReady => status == LightningAddressActivationStatus.active;
 
   LightningAddressActivationState copyWith({
     LightningAddressActivationStatus? status,

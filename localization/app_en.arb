@@ -5624,7 +5624,7 @@
   "@getPaidDashboardLightningAddressTitle": {
     "description": "Lightning Address slot card title on the Get Paid hub"
   },
-  "getPaidDashboardLightningAddressSubtitle": "Receive payments to a Lightning address",
+  "getPaidDashboardLightningAddressSubtitle": "Reusable payment alias compatible with all major Lightning wallets",
   "@getPaidDashboardLightningAddressSubtitle": {
     "description": "Lightning Address slot card call-to-action subtitle when unset"
   },
@@ -15399,11 +15399,11 @@
   "@lightningAddressLoadingStatus": {
     "description": "Accessibility announcement while Lightning Address capability and status load."
   },
-  "lightningAddressPermanentFirstClaimTitle": "Claim your permanent name",
+  "lightningAddressPermanentFirstClaimTitle": "Claim your nym",
   "@lightningAddressPermanentFirstClaimTitle": {
     "description": "Title shown before the wallet owner has claimed a permanent Bullnym nym."
   },
-  "lightningAddressPermanentFirstClaimBody": "Choose your one lifetime name. Spaces are trimmed and uppercase letters become lowercase. After you confirm, this name cannot be renamed, cleared, or replaced.",
+  "lightningAddressPermanentFirstClaimBody": "A pseudonym tied to your BULL wallet. It allows anyone to send you Bitcoin payments anonymously just by typing your nym in their wallet, and you will receive it in your instant payments wallet. Choose wisely: you can't change it without creating an entirely new Bitcoin wallet.",
   "@lightningAddressPermanentFirstClaimBody": {
     "description": "Permanent-name disclosure shown above the first-claim field."
   },
@@ -15411,29 +15411,9 @@
   "@lightningAddressPermanentNymHelper": {
     "description": "Exact local syntax guidance for a permanent Bullnym nym."
   },
-  "lightningAddressClaimButton": "Claim permanent name",
+  "lightningAddressClaimButton": "Claim your nym",
   "@lightningAddressClaimButton": {
     "description": "Button that starts the permanent nym claim confirmation."
-  },
-  "lightningAddressPermanentConfirmTitle": "Claim this permanent name?",
-  "@lightningAddressPermanentConfirmTitle": {
-    "description": "Title of the one-time permanent nym confirmation dialog."
-  },
-  "lightningAddressPermanentConfirmBody": "This is your only Lightning Address name and it cannot be renamed, cleared, or replaced. Bull Wallet will also create or reuse its dedicated Liquid receive wallet.",
-  "@lightningAddressPermanentConfirmBody": {
-    "description": "Explicit permanence disclosure in the first-claim confirmation dialog."
-  },
-  "lightningAddressPermanentNymReadOnly": "This lifetime name is permanent and read-only.",
-  "@lightningAddressPermanentNymReadOnly": {
-    "description": "Copy below an already-owned permanent nym."
-  },
-  "lightningAddressPermanentQuota": "{used} of {cap} lifetime name slots used",
-  "@lightningAddressPermanentQuota": {
-    "description": "Authoritative permanent-name quota returned by Bullnym.",
-    "placeholders": {
-      "used": {"type": "int"},
-      "cap": {"type": "int"}
-    }
   },
   "lightningAddressPermanentNamesUnavailableTitle": "Permanent names unavailable",
   "@lightningAddressPermanentNamesUnavailableTitle": {
@@ -15471,108 +15451,61 @@
   "@lightningAddressReservedNym": {
     "description": "Safe message for local or server NymReserved validation."
   },
-  "lightningAddressOnlineToggleLabel": "Lightning Address online",
-  "@lightningAddressOnlineToggleLabel": {
-    "description": "Label for the same-nym Lightning Address availability switch."
+  "lightningAddressOnlineToggleActive": "Active",
+  "@lightningAddressOnlineToggleActive": {
+    "description": "Label for the active Lightning Address availability switch."
   },
-  "lightningAddressOnlineToggleBody": "This switch affects only Lightning Address payments. Your Payment Page and Point of Sale stay online and payable.",
-  "@lightningAddressOnlineToggleBody": {
-    "description": "Scope disclosure beside the Lightning Address availability switch."
+  "lightningAddressOnlineToggleActiveBody": "Switch Lightning address off, and people won't be able to send funds to it anymore",
+  "@lightningAddressOnlineToggleActiveBody": {
+    "description": "Explains what deactivating the Lightning Address does."
+  },
+  "lightningAddressOnlineToggleInactive": "Deactivated",
+  "@lightningAddressOnlineToggleInactive": {
+    "description": "Label for the inactive Lightning Address availability switch."
+  },
+  "lightningAddressOnlineToggleInactiveBody": "Switch Lightning address on to start receiving payments again",
+  "@lightningAddressOnlineToggleInactiveBody": {
+    "description": "Explains what reactivating the Lightning Address does."
   },
   "lightningAddressOnlineToggleSaving": "Refreshing Lightning Address availability",
   "@lightningAddressOnlineToggleSaving": {
     "description": "Accessibility announcement while an online/offline mutation is reconciled."
   },
-  "lightningAddressTurnOffConfirmTitle": "Turn off Lightning Address?",
-  "@lightningAddressTurnOffConfirmTitle": {
-    "description": "Title of the Lightning Address deactivation confirmation."
-  },
-  "lightningAddressTurnOffConfirmBody": "Lightning payments to {nym} will stop until you turn the same name on again. Your Payment Page and Point of Sale stay online and payable.",
-  "@lightningAddressTurnOffConfirmBody": {
-    "description": "Scoped deactivation confirmation that explicitly preserves Page and POS.",
-    "placeholders": {
-      "nym": {"type": "String"}
-    }
-  },
-  "lightningAddressTurnOffConfirmSubmit": "Turn off",
-  "@lightningAddressTurnOffConfirmSubmit": {
-    "description": "Destructive confirmation button for Lightning Address deactivation."
-  },
   "lightningAddressToggleUncertain": "The availability change may have reached the server. Refresh status before trying again.",
   "@lightningAddressToggleUncertain": {
     "description": "Message for a network or timeout failure after an online/offline submission."
-  },
-  "lightningAddressInactiveTitle": "Register a Lightning Address",
-  "@lightningAddressInactiveTitle": {
-    "description": "Heading shown when no active wallet-owned Lightning Address is found."
-  },
-  "lightningAddressInactiveBody": "Choose a name for receiving Lightning payments through your wallet-owned Liquid address.",
-  "@lightningAddressInactiveBody": {
-    "description": "Body shown before registering a Lightning Address."
   },
   "lightningAddressInactiveKnownTitle": "Lightning Address is inactive",
   "@lightningAddressInactiveKnownTitle": {
     "description": "Heading shown when Bullnym reports a known but inactive Lightning Address nym."
   },
-  "lightningAddressInactiveKnownBody": "Status lookup found this name, but it is not active.",
-  "@lightningAddressInactiveKnownBody": {
-    "description": "Body shown when Bullnym reports a known but inactive Lightning Address nym."
-  },
   "lightningAddressNymLabel": "Name",
   "@lightningAddressNymLabel": {
     "description": "Label for the Lightning Address nym field."
-  },
-  "lightningAddressNymHelper": "Use only the name part before @.",
-  "@lightningAddressNymHelper": {
-    "description": "Helper text for the Lightning Address nym field."
-  },
-  "lightningAddressRegisterButton": "Register",
-  "@lightningAddressRegisterButton": {
-    "description": "Button label to register a Lightning Address."
   },
   "lightningAddressSubmitting": "Registering...",
   "@lightningAddressSubmitting": {
     "description": "Button label while Lightning Address registration is submitting."
   },
-  "lightningAddressConfirmTitle": "Register Lightning Address?",
-  "@lightningAddressConfirmTitle": {
-    "description": "Confirmation dialog title before Lightning Address registration."
-  },
-  "lightningAddressConfirmBody": "Bull Wallet will create or reuse a dedicated Lightning Address Liquid wallet, hide it from Home, enable autosweep, and submit your selected name plus a confidential descriptor to the configured Bullnym server.",
-  "@lightningAddressConfirmBody": {
-    "description": "Confirmation dialog body before Lightning Address registration."
-  },
-  "lightningAddressConfirmCancel": "Cancel",
-  "@lightningAddressConfirmCancel": {
-    "description": "Cancel button in the Lightning Address confirmation dialog."
-  },
-  "lightningAddressConfirmSubmit": "Register",
-  "@lightningAddressConfirmSubmit": {
-    "description": "Confirm button in the Lightning Address confirmation dialog."
-  },
   "lightningAddressOperationInProgress": "Lightning Address registration is still in progress.",
   "@lightningAddressOperationInProgress": {
     "description": "Snackbar shown when the user tries to leave during registration."
   },
-  "lightningAddressActiveTitle": "Lightning Address is active",
+  "lightningAddressActiveTitle": "Lightning address is active",
   "@lightningAddressActiveTitle": {
     "description": "Heading shown for an active wallet-owned Lightning Address found by lookup."
   },
-  "lightningAddressSuccessTitle": "Lightning Address registered",
-  "@lightningAddressSuccessTitle": {
-    "description": "Heading shown after successful Lightning Address registration."
+  "lightningAddressAdvancedSettings": "Advanced settings",
+  "@lightningAddressAdvancedSettings": {
+    "description": "Link that opens Lightning Address management settings."
   },
-  "lightningAddressSuccessBody": "This address was returned by the server after registration.",
-  "@lightningAddressSuccessBody": {
-    "description": "Body shown after successful Lightning Address registration."
+  "lightningAddressAddressUnavailableBody": "The server did not return your Lightning Address. Try again.",
+  "@lightningAddressAddressUnavailableBody": {
+    "description": "Recoverable state shown when an older or malformed lookup response omits the server-owned Lightning Address."
   },
-  "lightningAddressNoCopyableAddressAfterLookup": "Status lookup confirms the name is active. The server did not return the full address for copying.",
-  "@lightningAddressNoCopyableAddressAfterLookup": {
-    "description": "Body shown for active lookup when the full Lightning Address is not available from the status API."
-  },
-  "lightningAddressCopyableAddressAfterLookup": "Status lookup confirms the name is active. This address was returned by the server for copying.",
-  "@lightningAddressCopyableAddressAfterLookup": {
-    "description": "Body shown for active lookup when the full Lightning Address is available from the status API."
+  "lightningAddressRetryAddressButton": "Try again",
+  "@lightningAddressRetryAddressButton": {
+    "description": "Button that reloads a permanent nym whose lookup response omitted its Lightning Address."
   },
   "lightningAddressLocalSetupFailedTitle": "Lightning Address is active",
   "@lightningAddressLocalSetupFailedTitle": {
@@ -15589,22 +15522,6 @@
   "lightningAddressRetrySetupButton": "Retry Setup",
   "@lightningAddressRetrySetupButton": {
     "description": "Button label to retry local Lightning Address receive wallet setup."
-  },
-  "lightningAddressReceiveReadinessLabel": "Receive wallet",
-  "@lightningAddressReceiveReadinessLabel": {
-    "description": "Label for the local Lightning Address receive wallet readiness row."
-  },
-  "lightningAddressReceiveReady": "Ready to receive; autosweep enabled",
-  "@lightningAddressReceiveReady": {
-    "description": "Value shown when the Lightning Address receive wallet exists and its autosweep behavior is confirmed enabled."
-  },
-  "lightningAddressReceiveReadyNoAutosweep": "Ready to receive",
-  "@lightningAddressReceiveReadyNoAutosweep": {
-    "description": "Value shown when the Lightning Address receive wallet exists but autosweep is not confirmed enabled, so the copy does not claim autosweep."
-  },
-  "lightningAddressReceiveNotReady": "Needs local wallet setup",
-  "@lightningAddressReceiveNotReady": {
-    "description": "Value shown when the Lightning Address server registration is active but the local receive wallet is not ready."
   },
   "lightningAddressCheckStatusButton": "Check Status",
   "@lightningAddressCheckStatusButton": {

@@ -12,7 +12,7 @@ This PR owns:
 - keychain manifest metadata recording through the Keychain Manifest facade;
 - Lightning Address receive-wallet behavior defaults so the Liquid receive wallet is hidden on Home and eligible for generic autosweep;
 - mapping Bullnym failures into Lightning Address domain errors;
-- routed activation/status UI under Bitcoin settings, including local receive-readiness status;
+- routed activation/status UI under Bitcoin settings;
 - localized Lightning Address domain and activation copy, documentation, and feature graph edges;
 - headless Bullnym, Nostr Identity, and Lightning Address dependency-injection locators so the facade and activation UI are production-composable.
 
@@ -43,7 +43,7 @@ Actual drain execution remains in `features/autosweep` and is triggered by the w
 Applying `autoSweepEnabled` here opts the Lightning Address receive wallet into the single, locked autosweep policy owned by `features/autosweep`: a 100-sat dust floor, a 3% maximum fee-to-balance ceiling, and a 0.1 sat/vB relative fee rate.
 This extends the sweep policy that originally shipped for the BTCPay receive wallet to a second Get Paid product without changing any of its values.
 That extension is a deliberate product decision (Get Paid decision [1]), generalized to the whole Get Paid family rather than tuned per product, and is recorded here (and in issue #3) so it is explicit rather than an implicit side effect of enabling autosweep.
-Because the policy is shared and unversioned per product, the readiness UI must not assert the drain outcome; it reads back the wallet's actual autosweep metadata before claiming autosweep is enabled.
+Because the policy is shared and unversioned per product, the UI keeps these controls in Advanced settings and does not assert a drain outcome on the primary status screen.
 This follows the canonical rollback-timing rule in `ARCHITECTURE.md` (Error handling): the durable manifest record is the commitment point.
 If local wallet creation fails before manifest recording, the use case rolls back newly created deterministic wallets best-effort and returns a local preparation error.
 Once manifest recording succeeds, defaults failures return a local preparation error without rolling back the wallet, so durable recovery metadata never points at a removed wallet.
@@ -62,14 +62,14 @@ Lightning Address keeps the prepared deterministic wallet and local manifest ent
 
 The routed activation/status UI lives under Bitcoin settings.
 Its Cubit reads `GET /version` capability before registration state. Claim and availability controls exist only when the exact `permanent_names_v1` policy is advertised; an old, unavailable, or inconsistent server fails closed without blocking the rest of the app.
-The first lifetime claim is normalized, explicitly confirmed as permanent, and refreshed from the server after submission. Once lookup returns an owned nym, presentation renders it read-only and can only turn the Lightning Address product online with the same nym or offline through delete.
+The first lifetime claim is normalized, explained as permanent in the form, submitted without a second confirmation dialog, and refreshed from the server after submission. Once lookup returns an owned nym, presentation can only turn the Lightning Address product online with the same nym or offline through delete.
 The activation use case maps wallet-owned registration failures to an activation-safe Lightning Address exception that keeps wallet-id metadata out of the presentation contract while preserving local-preparation versus uncertain post-submission failure semantics.
 The readiness use case combines the wallet-owned Bullnym status lookup with local receive-wallet preparation only when the server registration is active, so an active server registration can repair local receive readiness without exposing wallet metadata to the UI.
 Local setup failures during active-status readiness are represented as `activeLocalSetupFailed` so the user can retry local setup without being told the server registration is inactive.
-The UI can submit a first nym after explicit consent, show the permanent server-owned nym, show whether Lightning Address payments are online, show whether the local receive wallet is ready for receive/autosweep, show a copyable Lightning Address when Bullnym returns a canonical address, and surface lookup failures separately from an intentional offline status. Turning Lightning Address off explicitly states that Payment Page and Point of Sale stay online and payable.
+The primary UI shows availability and the canonical server-owned Lightning Address without exposing the internal nym, quota, lookup, or wallet-readiness fields. Tapping the address opens its QR and copy view, long-press copies it, and Advanced settings contains the online switch and local wallet behavior controls. Active and inactive states retain the same address identity. If an older or malformed lookup omits the address, the UI shows an explicit retryable incomplete state instead of synthesizing a domain or claiming that the address is fully available.
 It does not pass xprv material, descriptors, wallet ids, Nostr handles, Bullnym internals, autosweep internals, or raw protocol use cases through presentation or route state.
 
-Lookup reflects the Bullnym public lookup contract: with the exact permanent-name policy it reports the permanent nym, Lightning Address online status, quota, and optionally the canonical Lightning Address. Lookup policy is a post-registration consistency check; pre-registration capability comes only from `/version`.
+Lookup reflects the Bullnym public lookup contract: with the exact permanent-name policy it reports the permanent nym, Lightning Address online status, quota, and the canonical Lightning Address for both online and offline permanent nyms. The mobile parser keeps the address optional for compatibility with older responses, while presentation treats its absence as incomplete and recoverable. Lookup policy is a post-registration consistency check; pre-registration capability comes only from `/version`.
 Lightning Address does not synthesize a copyable address from a hardcoded domain.
 
 The local nym validator trims surrounding whitespace, lowercases before confirmation/signing, enforces the shared 1–32 ASCII lowercase-letter/digit/internal-hyphen grammar, and applies Bullnym's reserved-nym prefilter. The server remains authoritative for races and stable conflict codes; presentation never displays its diagnostic reason strings.

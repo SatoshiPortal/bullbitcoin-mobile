@@ -56,7 +56,7 @@ Map<String, dynamic> _capableLookup({
   return {
     'nym': 'alice',
     'active': active,
-    'lightning_address': active ? 'alice@pay2.bull-wallet.com' : null,
+    'lightning_address': 'alice@pay2.bull-wallet.com',
     'lightning_address_online': lightningAddressOnline,
     'alias': alias,
     'public_name_policy': bullnymPermanentNamesV1Policy,
@@ -200,6 +200,7 @@ void main() {
 
       expect(lookup.publicNameStatus!.alias, isNull);
       expect(lookup.publicNameStatus!.lightningAddressOnline, isFalse);
+      expect(lookup.lightningAddress, 'alice@pay2.bull-wallet.com');
     });
 
     test('permanent-name lookup without legacy active derives liveness from '

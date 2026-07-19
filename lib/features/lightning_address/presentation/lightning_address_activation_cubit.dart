@@ -352,6 +352,7 @@ class LightningAddressActivationCubit
     }
     final previousStatus = state.status;
     final operationId = ++_operationId;
+    var mutationSucceeded = false;
     emit(state.copyWith(onlineSaving: true, clearFailure: true));
 
     try {
@@ -360,6 +361,7 @@ class LightningAddressActivationCubit
       } else {
         await _deactivate.execute(nym: state.nym);
       }
+      mutationSucceeded = true;
       if (_isStale(operationId)) return;
       final walletBehavior = await _resolveWalletBehavior();
       if (_isStale(operationId)) return;
@@ -378,6 +380,18 @@ class LightningAddressActivationCubit
       if (_isStale(operationId)) return;
       if (_lightningAddressCause(error)?.code == 'NymAlreadyAssigned') {
         await _reconcileAlreadyAssigned(operationId, error);
+        return;
+      }
+      if (mutationSucceeded) {
+        emit(
+          state.copyWith(
+            status: LightningAddressActivationStatus.failure,
+            failure: LightningAddressActivationFailure.toggleUncertain,
+            hasPermanentNym: true,
+            onlineSaving: false,
+            clearRegisteredAddress: true,
+          ),
+        );
         return;
       }
       emit(
@@ -445,16 +459,19 @@ class LightningAddressActivationCubit
       _emitCapabilityInconsistency(walletBehavior);
       return;
     }
+    final lightningAddress = registration.lightningAddress;
     emit(
       state.copyWith(
-        status: readiness.localSetupFailed
+        status: lightningAddress == null
+            ? LightningAddressActivationStatus.addressUnavailable
+            : readiness.localSetupFailed
             ? LightningAddressActivationStatus.activeLocalSetupFailed
             : permanentName.lightningAddressOnline
             ? LightningAddressActivationStatus.active
             : LightningAddressActivationStatus.inactive,
         failure: failure,
         nym: permanentName.nym,
-        registeredAddress: registration.lightningAddress,
+        registeredAddress: lightningAddress,
         permanentNamesSupported: true,
         hasPermanentNym: true,
         permanentNameQuota: permanentName.quota,
@@ -462,7 +479,7 @@ class LightningAddressActivationCubit
         autoSweepConfirmed: readiness.autoSweepEnabled,
         onlineSaving: false,
         clearFailure: failure == null,
-        clearRegisteredAddress: registration.lightningAddress == null,
+        clearRegisteredAddress: lightningAddress == null,
         walletBehavior: walletBehavior,
         clearWalletBehavior: walletBehavior == null,
       ),

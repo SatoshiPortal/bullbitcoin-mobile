@@ -138,7 +138,11 @@ void main() {
     });
 
     test('owned nym is reconstructed read-only from server status', () async {
-      lookup.result = _permanentReadiness(nym: 'alice', online: false);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: false,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
 
       await cubit.load();
       cubit.nymChanged('bob');
@@ -148,8 +152,27 @@ void main() {
       expect(cubit.state.status, LightningAddressActivationStatus.inactive);
       expect(cubit.state.nym, 'alice');
       expect(cubit.state.hasPermanentNym, isTrue);
+      expect(cubit.state.registeredAddress, 'alice@pay2.bull-wallet.com');
       expect(cubit.state.permanentNameQuota?.used, 1);
       expect(activate.nyms, isEmpty);
+    });
+
+    test('missing server-owned address is incomplete, not active', () async {
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: true,
+        lightningAddress: null,
+      );
+
+      await cubit.load();
+
+      expect(
+        cubit.state.status,
+        LightningAddressActivationStatus.addressUnavailable,
+      );
+      expect(cubit.state.registeredAddress, isNull);
+      expect(cubit.state.receiveReady, isFalse);
+      expect(cubit.state.hasPermanentNym, isTrue);
     });
 
     test('first claim normalizes and refreshes authoritative status', () async {
@@ -216,7 +239,11 @@ void main() {
           ownedNym: 'alice',
         ),
       );
-      lookup.result = _permanentReadiness(nym: 'alice', online: true);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: true,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
 
       await cubit.submit();
 
@@ -231,9 +258,17 @@ void main() {
     });
 
     test('turning off deletes the same nym then refreshes offline', () async {
-      lookup.result = _permanentReadiness(nym: 'alice', online: true);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: true,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
       await cubit.load();
-      lookup.result = _permanentReadiness(nym: 'alice', online: false);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: false,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
 
       await cubit.deactivate();
 
@@ -242,12 +277,21 @@ void main() {
       expect(cubit.state.status, LightningAddressActivationStatus.inactive);
       expect(cubit.state.nym, 'alice');
       expect(cubit.state.hasPermanentNym, isTrue);
+      expect(cubit.state.registeredAddress, 'alice@pay2.bull-wallet.com');
     });
 
     test('turning on posts the same nym then refreshes online', () async {
-      lookup.result = _permanentReadiness(nym: 'alice', online: false);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: false,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
       await cubit.load();
-      lookup.result = _permanentReadiness(nym: 'alice', online: true);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: true,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
 
       await cubit.activateExisting();
 
@@ -258,7 +302,11 @@ void main() {
     });
 
     test('uncertain toggle keeps prior state until a refresh', () async {
-      lookup.result = _permanentReadiness(nym: 'alice', online: true);
+      lookup.result = _permanentReadiness(
+        nym: 'alice',
+        online: true,
+        lightningAddress: 'alice@pay2.bull-wallet.com',
+      );
       await cubit.load();
       deactivate.error = const LightningAddressNetworkException(
         code: 'Network',
@@ -304,6 +352,7 @@ void main() {
         lookup.result = _permanentReadiness(
           nym: 'alice',
           online: true,
+          lightningAddress: 'alice@pay2.bull-wallet.com',
           localSetupFailed: true,
           localSetupRetryable: true,
         );

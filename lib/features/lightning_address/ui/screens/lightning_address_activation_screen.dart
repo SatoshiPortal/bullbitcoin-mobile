@@ -1,15 +1,17 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
-import 'package:bb_mobile/features/lightning_address/domain/lightning_address_registration.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_cubit.dart';
 import 'package:bb_mobile/features/lightning_address/presentation/lightning_address_activation_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -88,41 +90,30 @@ class _LightningAddressActivationScreenState
                     )
                   : state.isUnsupported
                   ? _UnsupportedView(walletBehavior: state.walletBehavior)
-                  : state.isRegistered
-                  ? _RegisteredView(
-                      nym: state.nym,
-                      lightningAddress: state.registeredAddress!,
-                      receiveReady: state.receiveReady,
-                      autoSweepConfirmed: state.autoSweepConfirmed,
+                  : state.isAddressUnavailable
+                  ? _AddressUnavailableView(
+                      onReload: context
+                          .read<LightningAddressActivationCubit>()
+                          .load,
                       walletBehavior: state.walletBehavior,
                       walletBehaviorSaving: state.walletBehaviorSaving,
-                      canManage:
-                          state.permanentNamesSupported &&
-                          state.hasPermanentNym,
-                      quota: state.permanentNameQuota,
-                      onlineSaving: state.onlineSaving,
-                      onOnlineChanged: (online) =>
-                          _setOnline(online: online, nym: state.nym),
                     )
                   : state.isActive
                   ? _ActiveView(
-                      nym: state.nym,
                       lightningAddress: state.registeredAddress,
-                      receiveReady: state.receiveReady,
-                      autoSweepConfirmed: state.autoSweepConfirmed,
                       walletBehavior: state.walletBehavior,
                       walletBehaviorSaving: state.walletBehaviorSaving,
                       canManage:
                           state.permanentNamesSupported &&
                           state.hasPermanentNym,
-                      quota: state.permanentNameQuota,
                       onlineSaving: state.onlineSaving,
-                      onOnlineChanged: (online) =>
-                          _setOnline(online: online, nym: state.nym),
+                      onOnlineChanged: (online) => _setOnline(online: online),
+                      onReload: context
+                          .read<LightningAddressActivationCubit>()
+                          .load,
                     )
                   : state.isActiveLocalSetupFailed
                   ? _ActiveLocalSetupFailedView(
-                      nym: state.nym,
                       lightningAddress: state.registeredAddress,
                       localSetupRetryable: state.localSetupRetryable,
                       onCheckStatus: context
@@ -130,21 +121,19 @@ class _LightningAddressActivationScreenState
                           .load,
                       walletBehavior: state.walletBehavior,
                       walletBehaviorSaving: state.walletBehaviorSaving,
-                      canManage:
-                          state.permanentNamesSupported &&
-                          state.hasPermanentNym,
-                      quota: state.permanentNameQuota,
                       onlineSaving: state.onlineSaving,
-                      onOnlineChanged: (online) =>
-                          _setOnline(online: online, nym: state.nym),
+                      onOnlineChanged: (online) => _setOnline(online: online),
                     )
                   : state.isInactive
                   ? _InactiveKnownView(
-                      nym: state.nym,
-                      quota: state.permanentNameQuota,
+                      lightningAddress: state.registeredAddress,
+                      walletBehavior: state.walletBehavior,
+                      walletBehaviorSaving: state.walletBehaviorSaving,
                       onlineSaving: state.onlineSaving,
-                      onOnlineChanged: (online) =>
-                          _setOnline(online: online, nym: state.nym),
+                      onOnlineChanged: (online) => _setOnline(online: online),
+                      onReload: context
+                          .read<LightningAddressActivationCubit>()
+                          .load,
                     )
                   : state.failure ==
                         LightningAddressActivationFailure.capabilityUnavailable
@@ -179,6 +168,17 @@ class _LightningAddressActivationScreenState
                       onCheckStatus: context
                           .read<LightningAddressActivationCubit>()
                           .load,
+                      body: context.loc.lightningAddressUncertainBody,
+                      walletBehavior: state.walletBehavior,
+                      walletBehaviorSaving: state.walletBehaviorSaving,
+                    )
+                  : state.failure ==
+                        LightningAddressActivationFailure.toggleUncertain
+                  ? _UncertainSubmissionView(
+                      onCheckStatus: context
+                          .read<LightningAddressActivationCubit>()
+                          .load,
+                      body: context.loc.lightningAddressToggleUncertain,
                       walletBehavior: state.walletBehavior,
                       walletBehaviorSaving: state.walletBehaviorSaving,
                     )
@@ -200,56 +200,16 @@ class _LightningAddressActivationScreenState
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(dialogContext.loc.lightningAddressPermanentConfirmTitle),
-          content: Text(dialogContext.loc.lightningAddressPermanentConfirmBody),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(dialogContext.loc.lightningAddressConfirmCancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(dialogContext.loc.lightningAddressClaimButton),
-            ),
-          ],
-        );
-      },
-    );
-    if (!mounted || confirmed != true) return;
     await context.read<LightningAddressActivationCubit>().submit();
   }
 
-  Future<void> _setOnline({required bool online, required String nym}) async {
+  Future<void> _setOnline({required bool online}) async {
     final cubit = context.read<LightningAddressActivationCubit>();
     if (online) {
       await cubit.activateExisting();
-      return;
+    } else {
+      await cubit.deactivate();
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.loc.lightningAddressTurnOffConfirmTitle),
-        content: Text(
-          dialogContext.loc.lightningAddressTurnOffConfirmBody(nym),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(dialogContext.loc.lightningAddressConfirmCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(dialogContext.loc.lightningAddressTurnOffConfirmSubmit),
-          ),
-        ],
-      ),
-    );
-    if (!mounted || confirmed != true) return;
-    await cubit.deactivate();
   }
 
   String _failureMessage(
@@ -538,13 +498,55 @@ class _LookupFailureView extends StatelessWidget {
   }
 }
 
+class _AddressUnavailableView extends StatelessWidget {
+  final VoidCallback onReload;
+  final GetPaidWalletBehavior? walletBehavior;
+  final bool walletBehaviorSaving;
+
+  const _AddressUnavailableView({
+    required this.onReload,
+    required this.walletBehavior,
+    required this.walletBehaviorSaving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _StatusNotice(
+          icon: Icons.error_outline,
+          title: context.loc.lightningAddressTitle,
+          body: context.loc.lightningAddressAddressUnavailableBody,
+        ),
+        const Gap(24),
+        BBButton.big(
+          label: context.loc.lightningAddressRetryAddressButton,
+          iconData: Icons.refresh,
+          iconFirst: true,
+          onPressed: onReload,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+        if (walletBehavior != null)
+          _WalletBehaviorControls(
+            behavior: walletBehavior!,
+            saving: walletBehaviorSaving,
+          ),
+      ],
+    );
+  }
+}
+
 class _UncertainSubmissionView extends StatelessWidget {
   final VoidCallback onCheckStatus;
+  final String body;
   final GetPaidWalletBehavior? walletBehavior;
   final bool walletBehaviorSaving;
 
   const _UncertainSubmissionView({
     required this.onCheckStatus,
+    required this.body,
     required this.walletBehavior,
     required this.walletBehaviorSaving,
   });
@@ -557,7 +559,7 @@ class _UncertainSubmissionView extends StatelessWidget {
         _StatusNotice(
           icon: Icons.help_outline,
           title: context.loc.lightningAddressUncertainTitle,
-          body: context.loc.lightningAddressUncertainBody,
+          body: body,
         ),
         const Gap(24),
         BBButton.big(
@@ -579,16 +581,20 @@ class _UncertainSubmissionView extends StatelessWidget {
 }
 
 class _InactiveKnownView extends StatelessWidget {
-  final String nym;
-  final LightningAddressPermanentNameQuota? quota;
+  final String? lightningAddress;
+  final GetPaidWalletBehavior? walletBehavior;
+  final bool walletBehaviorSaving;
   final bool onlineSaving;
   final ValueChanged<bool> onOnlineChanged;
+  final VoidCallback onReload;
 
   const _InactiveKnownView({
-    required this.nym,
-    required this.quota,
+    required this.lightningAddress,
+    required this.walletBehavior,
+    required this.walletBehaviorSaving,
     required this.onlineSaving,
     required this.onOnlineChanged,
+    required this.onReload,
   });
 
   @override
@@ -599,14 +605,22 @@ class _InactiveKnownView extends StatelessWidget {
         _StatusNotice(
           icon: Icons.info_outline,
           title: context.loc.lightningAddressInactiveKnownTitle,
-          body: context.loc.lightningAddressInactiveKnownBody,
+          body: context.loc.lightningAddressOnlineToggleInactiveBody,
         ),
+        if (lightningAddress case final address?) ...[
+          const Gap(24),
+          _LightningAddressTile(address: address),
+        ] else ...[
+          const Gap(24),
+          _MissingAddressView(onReload: onReload),
+        ],
         const Gap(24),
-        _PermanentNameSummary(nym: nym, quota: quota),
-        _OnlineControl(
+        _AdvancedSettingsButton(
           online: false,
-          saving: onlineSaving,
-          onChanged: onOnlineChanged,
+          onlineSaving: onlineSaving,
+          onOnlineChanged: onOnlineChanged,
+          walletBehavior: walletBehavior,
+          walletBehaviorSaving: walletBehaviorSaving,
         ),
       ],
     );
@@ -614,28 +628,22 @@ class _InactiveKnownView extends StatelessWidget {
 }
 
 class _ActiveView extends StatelessWidget {
-  final String nym;
   final String? lightningAddress;
-  final bool receiveReady;
-  final bool autoSweepConfirmed;
   final GetPaidWalletBehavior? walletBehavior;
   final bool walletBehaviorSaving;
   final bool canManage;
-  final LightningAddressPermanentNameQuota? quota;
   final bool onlineSaving;
   final ValueChanged<bool> onOnlineChanged;
+  final VoidCallback onReload;
 
   const _ActiveView({
-    required this.nym,
     required this.lightningAddress,
-    required this.receiveReady,
-    required this.autoSweepConfirmed,
     required this.walletBehavior,
     required this.walletBehaviorSaving,
     required this.canManage,
-    required this.quota,
     required this.onlineSaving,
     required this.onOnlineChanged,
+    required this.onReload,
   });
 
   @override
@@ -643,72 +651,169 @@ class _ActiveView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _StatusNotice(
-          icon: Icons.check_circle,
-          title: context.loc.lightningAddressActiveTitle,
-          body: lightningAddress == null
-              ? context.loc.lightningAddressNoCopyableAddressAfterLookup
-              : context.loc.lightningAddressCopyableAddressAfterLookup,
+        Semantics(
+          container: true,
+          liveRegion: true,
+          child: Column(
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: context.appColors.success,
+                size: 72,
+              ),
+              const Gap(16),
+              Text(
+                context.loc.lightningAddressActiveTitle,
+                style: context.font.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-        const Gap(24),
-        if (canManage)
-          _PermanentNameSummary(nym: nym, quota: quota)
-        else
-          _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
         if (lightningAddress != null) ...[
-          const Gap(16),
-          CopyInput(
-            text: lightningAddress!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          const Gap(32),
+          _LightningAddressTile(address: lightningAddress!),
+        ],
+        if (lightningAddress == null) ...[
+          const Gap(32),
+          _MissingAddressView(onReload: onReload),
+        ],
+        if (canManage) ...[
+          const Gap(32),
+          _AdvancedSettingsButton(
+            online: true,
+            onlineSaving: onlineSaving,
+            onOnlineChanged: onOnlineChanged,
+            walletBehavior: walletBehavior,
+            walletBehaviorSaving: walletBehaviorSaving,
           ),
         ],
-        const Gap(16),
-        _InfoRow(
-          label: context.loc.lightningAddressReceiveReadinessLabel,
-          value: _receiveReadinessCopy(
-            context,
-            receiveReady: receiveReady,
-            autoSweepConfirmed: autoSweepConfirmed,
-          ),
-        ),
-        if (canManage)
-          _OnlineControl(
-            online: true,
-            saving: onlineSaving,
-            onChanged: onOnlineChanged,
-          ),
-        if (walletBehavior != null)
-          _WalletBehaviorControls(
-            behavior: walletBehavior!,
-            saving: walletBehaviorSaving,
-          ),
       ],
     );
   }
 }
 
+class _LightningAddressTile extends StatelessWidget {
+  final String address;
+
+  const _LightningAddressTile({required this.address});
+
+  @override
+  Widget build(BuildContext context) {
+    final qrData = 'lightning:$address';
+    return BorderedTappableTile(
+      key: const Key('lightning_address_tile'),
+      backgroundColor: context.appColors.surfaceContainerHighest,
+      onTap: () => AddressViewer.showDetail(
+        context,
+        data: address,
+        clipboardText: address,
+        qrData: qrData,
+        showExplorerActions: false,
+      ),
+      onLongPress: () {
+        Clipboard.setData(ClipboardData(text: address));
+        SnackBarUtils.showCopiedSnackBar(context);
+      },
+      child: IgnorePointer(
+        child: AddressViewer(
+          address,
+          style: context.font.bodyLarge,
+          color: context.appColors.secondary,
+          clipboardText: address,
+          qrData: qrData,
+          showExplorerActions: false,
+        ),
+      ),
+    );
+  }
+}
+
+class _MissingAddressView extends StatelessWidget {
+  final VoidCallback onReload;
+
+  const _MissingAddressView({required this.onReload});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          context.loc.lightningAddressAddressUnavailableBody,
+          textAlign: TextAlign.center,
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+        const Gap(16),
+        BBButton.big(
+          label: context.loc.lightningAddressRetryAddressButton,
+          iconData: Icons.refresh,
+          iconFirst: true,
+          onPressed: onReload,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+      ],
+    );
+  }
+}
+
+class _AdvancedSettingsButton extends StatelessWidget {
+  final bool online;
+  final bool onlineSaving;
+  final ValueChanged<bool> onOnlineChanged;
+  final GetPaidWalletBehavior? walletBehavior;
+  final bool walletBehaviorSaving;
+
+  const _AdvancedSettingsButton({
+    required this.online,
+    required this.onlineSaving,
+    required this.onOnlineChanged,
+    required this.walletBehavior,
+    required this.walletBehaviorSaving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: TextButton(
+        onPressed: () => BlurredBottomSheet.show(
+          context: context,
+          child: _LightningAddressAdvancedSettingsSheet(
+            online: online,
+            onlineSaving: onlineSaving,
+            onOnlineChanged: onOnlineChanged,
+            walletBehavior: walletBehavior,
+            walletBehaviorSaving: walletBehaviorSaving,
+          ),
+        ),
+        child: Text(
+          context.loc.lightningAddressAdvancedSettings,
+          style: TextStyle(color: context.appColors.error),
+        ),
+      ),
+    );
+  }
+}
+
 class _ActiveLocalSetupFailedView extends StatelessWidget {
-  final String nym;
   final String? lightningAddress;
   final bool localSetupRetryable;
   final VoidCallback onCheckStatus;
   final GetPaidWalletBehavior? walletBehavior;
   final bool walletBehaviorSaving;
-  final bool canManage;
-  final LightningAddressPermanentNameQuota? quota;
   final bool onlineSaving;
   final ValueChanged<bool> onOnlineChanged;
 
   const _ActiveLocalSetupFailedView({
-    required this.nym,
     required this.lightningAddress,
     required this.localSetupRetryable,
     required this.onCheckStatus,
     required this.walletBehavior,
     required this.walletBehaviorSaving,
-    required this.canManage,
-    required this.quota,
     required this.onlineSaving,
     required this.onOnlineChanged,
   });
@@ -725,18 +830,12 @@ class _ActiveLocalSetupFailedView extends StatelessWidget {
               ? context.loc.lightningAddressLocalSetupFailedBody
               : context.loc.lightningAddressLocalSetupNotRetryableBody,
         ),
-        const Gap(24),
-        if (canManage)
-          _PermanentNameSummary(nym: nym, quota: quota)
-        else
-          _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
         if (lightningAddress != null) ...[
-          const Gap(16),
-          CopyInput(
-            text: lightningAddress!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          const Gap(24),
+          _LightningAddressTile(address: lightningAddress!),
+        ] else ...[
+          const Gap(24),
+          _MissingAddressView(onReload: onCheckStatus),
         ],
         if (localSetupRetryable) ...[
           const Gap(24),
@@ -749,107 +848,17 @@ class _ActiveLocalSetupFailedView extends StatelessWidget {
             textColor: context.appColors.onSecondary,
           ),
         ],
-        if (canManage)
-          _OnlineControl(
-            online: true,
-            saving: onlineSaving,
-            onChanged: onOnlineChanged,
-          ),
-        if (walletBehavior != null)
-          _WalletBehaviorControls(
-            behavior: walletBehavior!,
-            saving: walletBehaviorSaving,
-          ),
-      ],
-    );
-  }
-}
-
-class _RegisteredView extends StatelessWidget {
-  final String nym;
-  final String lightningAddress;
-  final bool receiveReady;
-  final bool autoSweepConfirmed;
-  final GetPaidWalletBehavior? walletBehavior;
-  final bool walletBehaviorSaving;
-  final bool canManage;
-  final LightningAddressPermanentNameQuota? quota;
-  final bool onlineSaving;
-  final ValueChanged<bool> onOnlineChanged;
-
-  const _RegisteredView({
-    required this.nym,
-    required this.lightningAddress,
-    required this.receiveReady,
-    required this.autoSweepConfirmed,
-    required this.walletBehavior,
-    required this.walletBehaviorSaving,
-    required this.canManage,
-    required this.quota,
-    required this.onlineSaving,
-    required this.onOnlineChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _StatusNotice(
-          icon: Icons.check_circle,
-          title: context.loc.lightningAddressSuccessTitle,
-          body: context.loc.lightningAddressSuccessBody,
-        ),
         const Gap(24),
-        if (canManage)
-          _PermanentNameSummary(nym: nym, quota: quota)
-        else
-          _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
-        const Gap(16),
-        CopyInput(
-          text: lightningAddress,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        _AdvancedSettingsButton(
+          online: true,
+          onlineSaving: onlineSaving,
+          onOnlineChanged: onOnlineChanged,
+          walletBehavior: walletBehavior,
+          walletBehaviorSaving: walletBehaviorSaving,
         ),
-        const Gap(16),
-        _InfoRow(
-          label: context.loc.lightningAddressReceiveReadinessLabel,
-          value: _receiveReadinessCopy(
-            context,
-            receiveReady: receiveReady,
-            autoSweepConfirmed: autoSweepConfirmed,
-          ),
-        ),
-        if (canManage)
-          _OnlineControl(
-            online: true,
-            saving: onlineSaving,
-            onChanged: onOnlineChanged,
-          ),
-        if (walletBehavior != null)
-          _WalletBehaviorControls(
-            behavior: walletBehavior!,
-            saving: walletBehaviorSaving,
-          ),
       ],
     );
   }
-}
-
-// R2-D1b: only claim autosweep is enabled when the wallet's actual behavior
-// metadata has confirmed it; otherwise soften to a plain ready state so the UI
-// never over-reassures a user whose funds could stay put.
-String _receiveReadinessCopy(
-  BuildContext context, {
-  required bool receiveReady,
-  required bool autoSweepConfirmed,
-}) {
-  if (!receiveReady) {
-    return context.loc.lightningAddressReceiveNotReady;
-  }
-  return autoSweepConfirmed
-      ? context.loc.lightningAddressReceiveReady
-      : context.loc.lightningAddressReceiveReadyNoAutosweep;
 }
 
 String? _nameClaimFailureMessage(
@@ -865,42 +874,6 @@ String? _nameClaimFailureMessage(
       context.loc.lightningAddressNameTaken,
     _ => null,
   };
-}
-
-class _PermanentNameSummary extends StatelessWidget {
-  final String nym;
-  final LightningAddressPermanentNameQuota? quota;
-
-  const _PermanentNameSummary({required this.nym, required this.quota});
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      container: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _InfoRow(label: context.loc.lightningAddressNymLabel, value: nym),
-          const Gap(8),
-          Text(
-            context.loc.lightningAddressPermanentNymReadOnly,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.textMuted,
-            ),
-          ),
-          if (quota case final value?) ...[
-            const Gap(8),
-            Text(
-              context.loc.lightningAddressPermanentQuota(value.used, value.cap),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.textMuted,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 }
 
 class _OnlineControl extends StatelessWidget {
@@ -924,8 +897,16 @@ class _OnlineControl extends StatelessWidget {
             key: const Key('lightning_address_online_switch'),
             value: online,
             onChanged: saving ? null : onChanged,
-            title: Text(context.loc.lightningAddressOnlineToggleLabel),
-            subtitle: Text(context.loc.lightningAddressOnlineToggleBody),
+            title: Text(
+              online
+                  ? context.loc.lightningAddressOnlineToggleActive
+                  : context.loc.lightningAddressOnlineToggleInactive,
+            ),
+            subtitle: Text(
+              online
+                  ? context.loc.lightningAddressOnlineToggleActiveBody
+                  : context.loc.lightningAddressOnlineToggleInactiveBody,
+            ),
           ),
           if (saving)
             Semantics(
@@ -934,6 +915,50 @@ class _OnlineControl extends StatelessWidget {
               child: const LinearProgressIndicator(),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _LightningAddressAdvancedSettingsSheet extends StatelessWidget {
+  final bool online;
+  final bool onlineSaving;
+  final ValueChanged<bool> onOnlineChanged;
+  final GetPaidWalletBehavior? walletBehavior;
+  final bool walletBehaviorSaving;
+
+  const _LightningAddressAdvancedSettingsSheet({
+    required this.online,
+    required this.onlineSaving,
+    required this.onOnlineChanged,
+    required this.walletBehavior,
+    required this.walletBehaviorSaving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.loc.lightningAddressAdvancedSettings,
+              style: context.font.titleLarge,
+            ),
+            _OnlineControl(
+              online: online,
+              saving: onlineSaving,
+              onChanged: onOnlineChanged,
+            ),
+            if (walletBehavior != null)
+              _WalletBehaviorControls(
+                behavior: walletBehavior!,
+                saving: walletBehaviorSaving,
+              ),
+          ],
+        ),
       ),
     );
   }
