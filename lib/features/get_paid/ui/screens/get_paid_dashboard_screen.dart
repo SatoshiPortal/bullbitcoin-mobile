@@ -78,7 +78,6 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
                   );
                 },
                 builder: (context, state) {
-                  if (state.isFirstLoad) return const _LoadingList();
                   return BullPullableBody(
                     onRefresh: context.read<GetPaidDashboardCubit>().refresh,
                     slivers: [
@@ -114,6 +113,7 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         subtitle: state.hasLightningAddress
             ? state.lightningAddress!
             : loc.getPaidDashboardLightningAddressSubtitle,
+        isLoading: state.lightningStatus == GetPaidDashboardCardStatus.loading,
         // Active green when the registration itself is ACTIVE.
         statusLabel: state.lightningActive ? loc.getPaidDashboardActive : null,
         statusActive: state.lightningActive,
@@ -124,6 +124,8 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.storefront,
         title: loc.getPaidDashboardDonationPageTitle,
         subtitle: page?.publicUrl ?? loc.getPaidDashboardDonationPageSubtitle,
+        isLoading:
+            state.paymentPageStatus == GetPaidDashboardCardStatus.loading,
         // Active green when a (non-archived) payment page exists.
         statusLabel: state.hasPaymentPage ? loc.getPaidDashboardActive : null,
         statusActive: state.hasPaymentPage,
@@ -134,6 +136,7 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.point_of_sale,
         title: loc.getPaidDashboardPosTitle,
         subtitle: pos?.terminalUrl ?? loc.getPaidDashboardPosSubtitle,
+        isLoading: state.posStatus == GetPaidDashboardCardStatus.loading,
         // Active green when a (non-archived) POS terminal exists.
         statusLabel: state.hasPos ? loc.getPaidDashboardActive : null,
         statusActive: state.hasPos,
@@ -144,13 +147,14 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         icon: Icons.receipt_long,
         title: loc.getPaidDashboardInvoicesTitle,
         subtitle: loc.getPaidDashboardInvoicesSubtitle,
+        isLoading: state.invoicesStatus == GetPaidDashboardCardStatus.loading,
         // Active green once the user's default wallet is created (invoices pay
         // out from the default wallet).
         statusLabel: state.invoicesWalletReady
             ? loc.getPaidDashboardActive
             : null,
         statusActive: state.invoicesWalletReady,
-        onTap: () => _open(InvoicesRoute.list.name),
+        onTap: () => _open(InvoicesRoute.create.name),
       ),
       const Gap(12),
       GetPaidSlotCard(
@@ -161,6 +165,7 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         subtitle:
             state.btcpayConnection?.serverUrl ??
             loc.getPaidDashboardBtcpaySubtitle,
+        isLoading: state.btcpayStatus == GetPaidDashboardCardStatus.loading,
         // Active green when a BTCPay connection exists.
         statusLabel: state.hasBtcpayConnection
             ? loc.getPaidDashboardActive
@@ -177,29 +182,5 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
     await context.pushNamed(routeName);
     if (!mounted) return;
     await context.read<GetPaidDashboardCubit>().refresh();
-  }
-}
-
-/// First-load shimmer: five placeholder tiles standing in for the slot cards.
-class _LoadingList extends StatelessWidget {
-  const _LoadingList();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      physics: const NeverScrollableScrollPhysics(),
-      children: const [
-        BullShimmerBox(height: 88, padding: EdgeInsets.zero),
-        Gap(12),
-        BullShimmerBox(height: 88, padding: EdgeInsets.zero),
-        Gap(12),
-        BullShimmerBox(height: 88, padding: EdgeInsets.zero),
-        Gap(12),
-        BullShimmerBox(height: 88, padding: EdgeInsets.zero),
-        Gap(12),
-        BullShimmerBox(height: 88, padding: EdgeInsets.zero),
-      ],
-    );
   }
 }

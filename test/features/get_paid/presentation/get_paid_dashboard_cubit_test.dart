@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
+import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
@@ -155,6 +158,59 @@ void main() {
     expect(cubit.state.error, isNull);
     await cubit.close();
   });
+
+  test(
+    'independent cards resolve without waiting for Lightning lookup',
+    () async {
+      final registration = Completer<LightningAddressStatus>();
+      final cubit = _cubit(
+        lookup: () => registration.future,
+        connection: () async =>
+            Ok<BtcpayConnection?, BtcpayFailure>(_connection()),
+        hasDefaultWallet: true,
+      );
+
+      final refresh = cubit.refresh();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.state.lightningStatus, GetPaidDashboardCardStatus.loading);
+      expect(cubit.state.invoicesStatus, GetPaidDashboardCardStatus.loaded);
+      expect(cubit.state.btcpayStatus, GetPaidDashboardCardStatus.loaded);
+      expect(cubit.state.invoicesWalletReady, isTrue);
+      expect(cubit.state.hasBtcpayConnection, isTrue);
+
+      registration.complete(_status(nym: ''));
+      await refresh;
+      await cubit.close();
+    },
+  );
+
+  test(
+    'Point of Sale can resolve while Donation Page is still loading',
+    () async {
+      final page = Completer<PaymentPage?>();
+      final posResolved = Completer<void>();
+      final cubit = _cubit(
+        pageFind: ({required String nym}) => page.future,
+        posFind: ({required String nym}) async {
+          posResolved.complete();
+          return _pos();
+        },
+      );
+
+      final refresh = cubit.refresh();
+      await posResolved.future;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.state.posStatus, GetPaidDashboardCardStatus.loaded);
+      expect(cubit.state.hasPos, isTrue);
+      expect(cubit.state.paymentPageStatus, GetPaidDashboardCardStatus.loading);
+
+      page.complete(null);
+      await refresh;
+      await cubit.close();
+    },
+  );
 
   test('active Lightning Address populates address + nym', () async {
     final cubit = _cubit(

@@ -2,11 +2,12 @@ import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 
+enum GetPaidDashboardCardStatus { loading, loaded }
+
 /// Read-only snapshot of every Get Paid product's status, assembled from the
 /// public facades. Holds no money logic, no balances and no protocol internals
 /// — only what the hub renders (a status chip + a contextual subtitle per
-/// product). Invoices carry no per-product "current" status, so they have no
-/// field here (the tile is a static entry).
+/// product).
 class GetPaidDashboardState {
   final bool isLoading;
   final String? lightningAddress;
@@ -24,6 +25,11 @@ class GetPaidDashboardState {
   /// issues payouts from the default wallet, so this gates its "Active" status.
   final bool invoicesWalletReady;
   final String? error;
+  final GetPaidDashboardCardStatus lightningStatus;
+  final GetPaidDashboardCardStatus paymentPageStatus;
+  final GetPaidDashboardCardStatus posStatus;
+  final GetPaidDashboardCardStatus invoicesStatus;
+  final GetPaidDashboardCardStatus btcpayStatus;
 
   const GetPaidDashboardState({
     this.isLoading = false,
@@ -35,6 +41,11 @@ class GetPaidDashboardState {
     this.btcpayConnection,
     this.invoicesWalletReady = false,
     this.error,
+    this.lightningStatus = GetPaidDashboardCardStatus.loading,
+    this.paymentPageStatus = GetPaidDashboardCardStatus.loading,
+    this.posStatus = GetPaidDashboardCardStatus.loading,
+    this.invoicesStatus = GetPaidDashboardCardStatus.loading,
+    this.btcpayStatus = GetPaidDashboardCardStatus.loading,
   });
 
   bool get hasLightningAddress =>
@@ -42,15 +53,6 @@ class GetPaidDashboardState {
   bool get hasPaymentPage => paymentPage != null && !paymentPage!.isArchived;
   bool get hasPos => posTerminal != null && !posTerminal!.isArchived;
   bool get hasBtcpayConnection => btcpayConnection != null;
-
-  /// True before the first successful load has populated any product — the cue
-  /// to show the shimmer placeholder rather than the (empty) card list.
-  bool get isFirstLoad =>
-      isLoading &&
-      lightningAddress == null &&
-      paymentPage == null &&
-      posTerminal == null &&
-      btcpayConnection == null;
 
   GetPaidDashboardState copyWith({
     bool? isLoading,
@@ -68,6 +70,11 @@ class GetPaidDashboardState {
     bool? invoicesWalletReady,
     String? error,
     bool clearError = false,
+    GetPaidDashboardCardStatus? lightningStatus,
+    GetPaidDashboardCardStatus? paymentPageStatus,
+    GetPaidDashboardCardStatus? posStatus,
+    GetPaidDashboardCardStatus? invoicesStatus,
+    GetPaidDashboardCardStatus? btcpayStatus,
   }) {
     return GetPaidDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -83,6 +90,11 @@ class GetPaidDashboardState {
           : btcpayConnection ?? this.btcpayConnection,
       invoicesWalletReady: invoicesWalletReady ?? this.invoicesWalletReady,
       error: clearError ? null : error ?? this.error,
+      lightningStatus: lightningStatus ?? this.lightningStatus,
+      paymentPageStatus: paymentPageStatus ?? this.paymentPageStatus,
+      posStatus: posStatus ?? this.posStatus,
+      invoicesStatus: invoicesStatus ?? this.invoicesStatus,
+      btcpayStatus: btcpayStatus ?? this.btcpayStatus,
     );
   }
 }

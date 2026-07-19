@@ -1,6 +1,12 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart'
-    show BoxDecoration, BoxShape, Container, Icons;
+    show
+        BoxDecoration,
+        BoxShape,
+        CircularProgressIndicator,
+        Container,
+        Icons,
+        SizedBox;
 
 /// A single Get Paid product row. Domain-agnostic feature composite (the
 /// `UtxoTile` precedent): it lives in the feature but is built entirely out of
@@ -17,6 +23,7 @@ class GetPaidSlotCard extends StatelessWidget {
 
   /// Success tint when true (Active), muted tint otherwise (Not published).
   final bool statusActive;
+  final bool isLoading;
   final VoidCallback onTap;
 
   const GetPaidSlotCard({
@@ -26,6 +33,7 @@ class GetPaidSlotCard extends StatelessWidget {
     required this.subtitle,
     this.statusLabel,
     this.statusActive = false,
+    this.isLoading = false,
     required this.onTap,
   });
 
@@ -87,7 +95,17 @@ class GetPaidSlotCard extends StatelessWidget {
             ),
           ),
           const Gap(12),
-          BullIcon(Icons.chevron_right, size: 24, color: colors.textMuted),
+          if (isLoading)
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colors.textMuted,
+              ),
+            )
+          else
+            BullIcon(Icons.chevron_right, size: 24, color: colors.textMuted),
         ],
       ),
     );

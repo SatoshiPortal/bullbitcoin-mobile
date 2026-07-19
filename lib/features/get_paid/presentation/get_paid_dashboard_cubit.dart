@@ -15,8 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// The Donation Page and Point of Sale rows are keyed by the wallet nym, which
 /// is resolved from the Lightning Address registration — so those two are only
 /// probed once a nym exists (mirroring how the product screens resolve their
-/// own identity). Invoices carry no "current" status and are a static tile, so
-/// they are not read here.
+/// own identity). Invoices only need the local default-wallet readiness check.
 class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
   final LightningAddressFacade _lightningAddress;
   final PaymentPageFacade _paymentPage;
@@ -35,81 +34,183 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
 
   Future<void> refresh() async {
     final generation = ++_refreshGeneration;
-    emit(state.copyWith(isLoading: true, clearError: true));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        clearError: true,
+        lightningStatus: GetPaidDashboardCardStatus.loading,
+        paymentPageStatus: GetPaidDashboardCardStatus.loading,
+        posStatus: GetPaidDashboardCardStatus.loading,
+        invoicesStatus: GetPaidDashboardCardStatus.loading,
+        btcpayStatus: GetPaidDashboardCardStatus.loading,
+      ),
+    );
 
-    String? lightningAddress;
-    bool lightningActive = false;
-    String? nym;
-    PaymentPage? paymentPage;
-    PosTerminal? posTerminal;
-    BtcpayConnection? btcpayConnection;
-    String? refreshError;
-    final invoicesWalletReady = await _hasDefaultWallet();
+    var failed = false;
+    void recordFailure(String message, {Object? error, StackTrace? trace}) {
+      failed = true;
+      log.warning(message, error: error, trace: trace);
+    }
 
-    try {
-      final btcpayResult = await _btcpay.connection();
-      switch (btcpayResult) {
-        case Ok(:final value):
-          btcpayConnection = value;
-        case Err(:final failure):
-          log.warning(
-            'Get Paid dashboard could not load the BTCPay connection',
-            error: failure.runtimeType,
-          );
-          refreshError = 'Something went wrong. Please try again.';
+    final invoicesFuture = () async {
+      final ready = await _hasDefaultWallet();
+      if (_isStale(generation)) return;
+      emit(
+        state.copyWith(
+          invoicesWalletReady: ready,
+          invoicesStatus: GetPaidDashboardCardStatus.loaded,
+        ),
+      );
+    }();
+
+    final btcpayFuture = () async {
+      try {
+        final result = await _btcpay.connection();
+        if (_isStale(generation)) return;
+        switch (result) {
+          case Ok(:final value):
+            emit(
+              state.copyWith(
+                btcpayConnection: value,
+                clearBtcpayConnection: value == null,
+                btcpayStatus: GetPaidDashboardCardStatus.loaded,
+              ),
+            );
+          case Err(:final failure):
+            recordFailure(
+              'Get Paid dashboard could not load the BTCPay connection',
+              error: failure.runtimeType,
+            );
+            emit(
+              state.copyWith(btcpayStatus: GetPaidDashboardCardStatus.loaded),
+            );
+        }
+      } on Exception catch (error, trace) {
+        if (_isStale(generation)) return;
+        recordFailure(
+          'Get Paid dashboard BTCPay lookup failed',
+          error: error,
+          trace: trace,
+        );
+        emit(state.copyWith(btcpayStatus: GetPaidDashboardCardStatus.loaded));
       }
+    }();
 
-      final registration = await _lightningAddress
-          .lookupWalletOwnedRegistration();
-      nym = registration.nym.isEmpty ? null : registration.nym;
-      lightningActive = registration.active;
-      // Decoupled from active: keep the address whenever the registration
-      // carries one, so the subtitle can show it even while inactive.
-      lightningAddress = (registration.lightningAddress?.isEmpty ?? true)
+    final lightningAndSurfacesFuture = () async {
+      LightningAddressStatus registration;
+      try {
+        registration = await _lightningAddress.lookupWalletOwnedRegistration();
+      } on Exception catch (error, trace) {
+        if (_isStale(generation)) return;
+        recordFailure(
+          'Get Paid dashboard Lightning Address lookup failed',
+          error: error,
+          trace: trace,
+        );
+        emit(
+          state.copyWith(
+            lightningStatus: GetPaidDashboardCardStatus.loaded,
+            paymentPageStatus: GetPaidDashboardCardStatus.loaded,
+            posStatus: GetPaidDashboardCardStatus.loaded,
+          ),
+        );
+        return;
+      }
+      if (_isStale(generation)) return;
+
+      final nym = registration.nym.isEmpty ? null : registration.nym;
+      final address = (registration.lightningAddress?.isEmpty ?? true)
           ? null
           : registration.lightningAddress;
+      emit(
+        state.copyWith(
+          lightningAddress: address,
+          clearLightningAddress: address == null,
+          lightningActive: registration.active,
+          nym: nym,
+          clearNym: nym == null,
+          lightningStatus: GetPaidDashboardCardStatus.loaded,
+        ),
+      );
 
-      if (nym != null) {
-        if (_isStale(generation)) return;
-        final page = await _paymentPage.find(nym: nym);
-        paymentPage = page?.isArchived == true ? null : page;
-
-        if (_isStale(generation)) return;
-        final terminal = await _pos.find(nym: nym);
-        posTerminal = terminal?.isArchived == true ? null : terminal;
+      if (nym == null) {
+        emit(
+          state.copyWith(
+            clearPaymentPage: true,
+            clearPos: true,
+            paymentPageStatus: GetPaidDashboardCardStatus.loaded,
+            posStatus: GetPaidDashboardCardStatus.loaded,
+          ),
+        );
+        return;
       }
 
-      if (_isStale(generation)) return;
-      emit(
-        _snapshot(
-          lightningAddress: lightningAddress,
-          lightningActive: lightningActive,
-          nym: nym,
-          paymentPage: paymentPage,
-          posTerminal: posTerminal,
-          btcpayConnection: btcpayConnection,
-          invoicesWalletReady: invoicesWalletReady,
-          error: refreshError,
-        ),
-      );
-    } on Exception catch (e, stack) {
-      if (_isStale(generation)) return;
-      log.warning('Get Paid dashboard refresh failed', error: e, trace: stack);
-      // Keep whatever partial reads succeeded before the failure; surface the
-      // error so the screen can toast it.
-      emit(
-        _snapshot(
-          lightningAddress: lightningAddress,
-          lightningActive: lightningActive,
-          nym: nym,
-          paymentPage: paymentPage,
-          posTerminal: posTerminal,
-          btcpayConnection: btcpayConnection,
-          invoicesWalletReady: invoicesWalletReady,
-          error: 'Something went wrong. Please try again.',
-        ),
-      );
-    }
+      final pageFuture = () async {
+        try {
+          final page = await _paymentPage.find(nym: nym);
+          if (_isStale(generation)) return;
+          final visiblePage = page?.isArchived == true ? null : page;
+          emit(
+            state.copyWith(
+              paymentPage: visiblePage,
+              clearPaymentPage: visiblePage == null,
+              paymentPageStatus: GetPaidDashboardCardStatus.loaded,
+            ),
+          );
+        } on Exception catch (error, trace) {
+          if (_isStale(generation)) return;
+          recordFailure(
+            'Get Paid dashboard Donation Page lookup failed',
+            error: error,
+            trace: trace,
+          );
+          emit(
+            state.copyWith(
+              paymentPageStatus: GetPaidDashboardCardStatus.loaded,
+            ),
+          );
+        }
+      }();
+      final posFuture = () async {
+        try {
+          final terminal = await _pos.find(nym: nym);
+          if (_isStale(generation)) return;
+          final visibleTerminal = terminal?.isArchived == true
+              ? null
+              : terminal;
+          emit(
+            state.copyWith(
+              posTerminal: visibleTerminal,
+              clearPos: visibleTerminal == null,
+              posStatus: GetPaidDashboardCardStatus.loaded,
+            ),
+          );
+        } on Exception catch (error, trace) {
+          if (_isStale(generation)) return;
+          recordFailure(
+            'Get Paid dashboard Point of Sale lookup failed',
+            error: error,
+            trace: trace,
+          );
+          emit(state.copyWith(posStatus: GetPaidDashboardCardStatus.loaded));
+        }
+      }();
+      await Future.wait([pageFuture, posFuture]);
+    }();
+
+    await Future.wait([
+      invoicesFuture,
+      btcpayFuture,
+      lightningAndSurfacesFuture,
+    ]);
+    if (_isStale(generation)) return;
+    emit(
+      state.copyWith(
+        isLoading: false,
+        error: failed ? 'Something went wrong. Please try again.' : null,
+        clearError: !failed,
+      ),
+    );
   }
 
   /// Whether the user has at least one default wallet — the Invoices product
@@ -123,35 +224,6 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     } catch (_) {
       return false;
     }
-  }
-
-  GetPaidDashboardState _snapshot({
-    required String? lightningAddress,
-    required bool lightningActive,
-    required String? nym,
-    required PaymentPage? paymentPage,
-    required PosTerminal? posTerminal,
-    required BtcpayConnection? btcpayConnection,
-    required bool invoicesWalletReady,
-    String? error,
-  }) {
-    return state.copyWith(
-      isLoading: false,
-      lightningAddress: lightningAddress,
-      clearLightningAddress: lightningAddress == null,
-      lightningActive: lightningActive,
-      nym: nym,
-      clearNym: nym == null,
-      paymentPage: paymentPage,
-      clearPaymentPage: paymentPage == null,
-      posTerminal: posTerminal,
-      clearPos: posTerminal == null,
-      btcpayConnection: btcpayConnection,
-      clearBtcpayConnection: btcpayConnection == null,
-      invoicesWalletReady: invoicesWalletReady,
-      error: error,
-      clearError: error == null,
-    );
   }
 
   bool _isStale(int generation) {
