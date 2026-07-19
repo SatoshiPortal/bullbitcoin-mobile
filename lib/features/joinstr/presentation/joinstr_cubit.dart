@@ -253,6 +253,20 @@ class JoinstrCubit extends Cubit<JoinstrState> {
       update(current.failed(_asJoinstrException(e)));
     }
 
+    // The bindings send the terminal update with its result ignored, so a
+    // closed channel can end the stream without one. A round left waiting
+    // here would spin forever and keep its coin excluded from the pickers.
+    if (current.isWaiting) {
+      update(
+        current.failed(
+          JoinstrException(
+            JoinstrIssue.coinjoinFailed,
+            detail: 'the coinjoin ended without a result',
+          ),
+        ),
+      );
+    }
+
     await loadCoins();
     try {
       final settings = await _getSettings.execute();
