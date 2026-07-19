@@ -12,7 +12,11 @@ class JoinstrStore {
 
   final KeyValueStorageDatasource<String> _storage;
 
-  const JoinstrStore(this._storage);
+  /// Chains history writes: append is a read-modify-write, and several rounds
+  /// can complete at once, so unserialized appends could drop an entry.
+  Future<void> _historyWrites = Future.value();
+
+  JoinstrStore(this._storage);
 
   Future<String?> getRelay() => _storage.getValue(relayKey);
 
@@ -35,12 +39,17 @@ class JoinstrStore {
     }
   }
 
-  Future<void> appendHistory(JoinstrHistoryEntry entry) async {
-    final history = await getHistory();
-    final updated = [entry, ...history];
-    await _storage.saveValue(
-      key: historyKey,
-      value: jsonEncode(updated.map((e) => e.toJson()).toList()),
-    );
+  Future<void> appendHistory(JoinstrHistoryEntry entry) {
+    final write = _historyWrites.then((_) async {
+      final history = await getHistory();
+      final updated = [entry, ...history];
+      await _storage.saveValue(
+        key: historyKey,
+        value: jsonEncode(updated.map((e) => e.toJson()).toList()),
+      );
+    });
+    // A failed write must not poison later appends on the chain.
+    _historyWrites = write.then((_) {}, onError: (_) {});
+    return write;
   }
 }
