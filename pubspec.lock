@@ -1228,6 +1228,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.14.2"
+  joinstr_flutter:
+    dependency: "direct main"
+    description:
+      path: dart
+      ref: d1bb9f8
+      resolved-ref: d1bb9f867aa40af7d4480e5d09e2196e5e9b0203
+      url: "https://github.com/rust-joinstr/joinstr"
+    source: git
+    version: "0.1.0"
   js:
     dependency: transitive
     description:

@@ -451,6 +451,251 @@
   "@settingsBtcMapTitle": {
     "description": "Title for the Map screen in the settings menu"
   },
+  "joinstrTitle": "Joinstr",
+  "@joinstrTitle": {
+    "description": "Title for the joinstr coinjoin screen"
+  },
+  "joinstrPoolRequest": "Pool Request",
+  "@joinstrPoolRequest": {
+    "description": "Title of the dialog shown while a coinjoin round is in flight"
+  },
+  "joinstrWaitingForCredentials": "Waiting for pool credentials…",
+  "@joinstrWaitingForCredentials": {
+    "description": "Body of the waiting dialog shown while a coinjoin round runs"
+  },
+  "joinstrRunInBackground": "Run in background",
+  "@joinstrRunInBackground": {
+    "description": "Button that dismisses the waiting dialog while the round keeps running"
+  },
+  "joinstrCoinjoinBroadcast": "Coinjoin broadcast: {txid}",
+  "@joinstrCoinjoinBroadcast": {
+    "description": "Snackbar shown when a coinjoin transaction is broadcast",
+    "placeholders": {
+      "txid": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrTabCreate": "Create New Pool",
+  "@joinstrTabCreate": {
+    "description": "Tab that announces a new joinstr pool"
+  },
+  "joinstrTabMyPools": "My Pools",
+  "@joinstrTabMyPools": {
+    "description": "Tab listing coinjoin rounds this device initiated or joined"
+  },
+  "joinstrTabOtherPools": "View Other Pools",
+  "@joinstrTabOtherPools": {
+    "description": "Tab listing joinstr pools advertised on the relay"
+  },
+  "joinstrTabHistory": "History",
+  "@joinstrTabHistory": {
+    "description": "Tab listing completed coinjoins"
+  },
+  "joinstrPoolDetails": "Pool Details",
+  "@joinstrPoolDetails": {
+    "description": "Heading above the create-pool form"
+  },
+  "joinstrNoActivePools": "No pools found",
+  "@joinstrNoActivePools": {
+    "description": "Empty state for the pool lists"
+  },
+  "joinstrNoHistory": "No history found",
+  "@joinstrNoHistory": {
+    "description": "Empty state for the coinjoin history tab"
+  },
+  "joinstrRefresh": "Refresh",
+  "@joinstrRefresh": {
+    "description": "Button that reloads the pool list from the relay"
+  },
+  "joinstrDenominationLine": "Denomination: {btc} BTC",
+  "@joinstrDenominationLine": {
+    "description": "Pool card line showing the pool denomination",
+    "placeholders": {
+      "btc": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrPeersLine": "Peers: {peers}",
+  "@joinstrPeersLine": {
+    "description": "Pool card line showing the required peer count",
+    "placeholders": {
+      "peers": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrFeeRateLine": "Fee rate: {feeRate} sat/vB",
+  "@joinstrFeeRateLine": {
+    "description": "Pool card line showing the pool fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrRelayLine": "Relay: {relay}",
+  "@joinstrRelayLine": {
+    "description": "Pool card line showing the nostr relay the pool lives on",
+    "placeholders": {
+      "relay": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrPublicKeyLine": "Public Key: {key}",
+  "@joinstrPublicKeyLine": {
+    "description": "Initiator's nostr public key, shown on pool cards and in the join confirmation",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrTimeRemaining": "Time remaining: {time}",
+  "@joinstrTimeRemaining": {
+    "description": "Countdown until the pool expires",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrExpired": "Expired",
+  "@joinstrExpired": {
+    "description": "Shown when a pool's countdown reaches zero"
+  },
+  "joinstrAmountLine": "Amount: {btc} BTC",
+  "@joinstrAmountLine": {
+    "description": "History card line showing the mixed amount",
+    "placeholders": {
+      "btc": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrTxLine": "Tx: {tx}",
+  "@joinstrTxLine": {
+    "description": "History card line showing the coinjoin transaction id",
+    "placeholders": {
+      "tx": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrJoin": "Join",
+  "@joinstrJoin": {
+    "description": "Button that joins the selected joinstr pool"
+  },
+  "joinstrContinue": "Continue",
+  "@joinstrContinue": {
+    "description": "Confirms joining the pool shown in the dialog"
+  },
+  "joinstrCancel": "Cancel",
+  "@joinstrCancel": {
+    "description": "Dismisses the joinstr dialogs"
+  },
+  "joinstrSave": "Save",
+  "@joinstrSave": {
+    "description": "Saves the nostr relay setting"
+  },
+  "joinstrNostrRelay": "Nostr Relay",
+  "@joinstrNostrRelay": {
+    "description": "Title of the relay settings dialog"
+  },
+  "joinstrCreatePool": "Create a pool",
+  "@joinstrCreatePool": {
+    "description": "Heading and button for announcing a new joinstr pool"
+  },
+  "joinstrCreate": "Create",
+  "@joinstrCreate": {
+    "description": "Button that announces the configured pool"
+  },
+  "joinstrDenomination": "Denomination (BTC)",
+  "@joinstrDenomination": {
+    "description": "Label for the joinstr pool denomination input"
+  },
+  "joinstrDenominationSupport": "Enter denomination from available inputs",
+  "@joinstrDenominationSupport": {
+    "description": "Helper text under the denomination input"
+  },
+  "joinstrPeers": "Number of peers",
+  "@joinstrPeers": {
+    "description": "Label for the joinstr pool peer count input"
+  },
+  "joinstrFeeRate": "Fee rate (sat/vB)",
+  "@joinstrFeeRate": {
+    "description": "Label for the joinstr pool fee rate input"
+  },
+  "joinstrRunning": "Waiting for peers. This holds until the coinjoin broadcasts or the pool times out, and cannot be cancelled.",
+  "@joinstrRunning": {
+    "description": "Shown while a joinstr coinjoin round is in flight"
+  },
+  "joinstrBroadcast": "Coinjoin broadcast",
+  "@joinstrBroadcast": {
+    "description": "Shown with the txid once the coinjoin transaction is broadcast"
+  },
+  "joinstrErrorBitcoinOnly": "Joinstr is only available for Bitcoin wallets.",
+  "@joinstrErrorBitcoinOnly": {
+    "description": "Error when joinstr is attempted with a Liquid wallet"
+  },
+  "joinstrErrorMainnet": "Joinstr is limited to testnet until its traffic can be routed over Tor.",
+  "@joinstrErrorMainnet": {
+    "description": "Error when joinstr is attempted on a mainnet wallet"
+  },
+  "joinstrErrorWatchOnly": "Joinstr needs a wallet that signs on this device. Watch-only and hardware wallets cannot take part.",
+  "@joinstrErrorWatchOnly": {
+    "description": "Error when the wallet has no local mnemonic for joinstr to sign with"
+  },
+  "joinstrErrorScriptType": "Joinstr only supports native segwit (BIP84) wallets.",
+  "@joinstrErrorScriptType": {
+    "description": "Error when the wallet is not BIP84, which joinstr's wpkh signer requires"
+  },
+  "joinstrErrorNoEligibleCoin": "No coin between {min} and {max} sats in the first {scanned} addresses. A joinstr transaction has no change output, so the coin must nearly match the denomination.",
+  "@joinstrErrorNoEligibleCoin": {
+    "description": "Error when no wallet coin falls inside the pool's required input value window",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "scanned": {
+        "type": "int"
+      }
+    }
+  },
+  "joinstrErrorElectrum": "No usable Electrum server for this network.",
+  "@joinstrErrorElectrum": {
+    "description": "Error when no Electrum server could be resolved for joinstr"
+  },
+  "joinstrErrorPoolConfig": "Enter a denomination above zero, at least 2 peers, and a fee rate of at least 1 sat/vB.",
+  "@joinstrErrorPoolConfig": {
+    "description": "Error when the create-pool form values are out of range"
+  },
+  "joinstrErrorRelay": "Enter a websocket relay url (wss://).",
+  "@joinstrErrorRelay": {
+    "description": "Error when the relay setting is not a valid websocket url"
+  },
+  "joinstrErrorTor": "Tor is not available. Joinstr routes all traffic over Tor and cannot run without it.",
+  "@joinstrErrorTor": {
+    "description": "Error when the local Tor proxy could not be started for joinstr"
+  },
+  "joinstrErrorPoolNotFound": "That pool is no longer advertised on the relay.",
+  "@joinstrErrorPoolNotFound": {
+    "description": "Error when the selected joinstr pool has disappeared"
+  },
+  "joinstrErrorFailed": "The coinjoin did not complete: {detail}",
+  "@joinstrErrorFailed": {
+    "description": "Error when a joinstr round fails or the pool times out before filling",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
   "settingsTermsOfServiceTitle": "Terms of Service",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"

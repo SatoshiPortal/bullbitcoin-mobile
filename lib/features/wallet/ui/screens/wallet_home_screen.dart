@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_joinstr_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -147,6 +148,9 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                     },
                   ),
                 ),
+                const SliverToBoxAdapter(child: WalletJoinstrTile()),
+                // Clears the bottom action bar so the last card is not hidden.
+                const SliverToBoxAdapter(child: SizedBox(height: 96)),
               ],
             ),
             Positioned(

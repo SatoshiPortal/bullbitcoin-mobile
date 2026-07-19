@@ -40,6 +40,11 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/payjoin-dart
       ref: b3bbf76fe266c145d48e1ea2b58460aae8cacb66
+  joinstr_flutter:
+    git:
+      url: https://github.com/rust-joinstr/joinstr
+      ref: d1bb9f8
+      path: dart
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1

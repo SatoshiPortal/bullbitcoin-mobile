@@ -86,6 +86,9 @@ class PayjoinConstants {
 }
 
 class ApiServiceConstants {
+  // Nostr relay used to advertise and discover joinstr coinjoin pools.
+  static const String defaultNostrRelayUrl = 'wss://nos.lol';
+
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
   static const publicMempoolUrlPath = 'mempool.space'; // note: not used
