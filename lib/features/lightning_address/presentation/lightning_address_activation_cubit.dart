@@ -150,11 +150,6 @@ class LightningAddressActivationCubit
       if (_isStale(operationId)) return;
       _emitPermanentNameReadiness(readiness, walletBehavior: walletBehavior);
     } catch (error, stack) {
-      log.warning(
-        'Failed to load Lightning Address permanent-name status',
-        error: error,
-        trace: stack,
-      );
       if (_isStale(operationId)) return;
       final cause = _lightningAddressCause(error);
       if (cause?.code == 'NymNotFound' && !hadPermanentNym) {
@@ -176,6 +171,11 @@ class LightningAddressActivationCubit
         );
         return;
       }
+      log.warning(
+        'Failed to load Lightning Address permanent-name status',
+        error: error,
+        trace: stack,
+      );
       final failure = preserveSubmissionUncertain
           ? LightningAddressActivationFailure.submissionUncertain
           : switch (cause) {

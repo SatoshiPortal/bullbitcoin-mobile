@@ -159,6 +159,39 @@ void main() {
     await cubit.close();
   });
 
+  test('unclaimed nym is an empty dashboard state, not an error', () async {
+    var pageProbed = false;
+    var posProbed = false;
+    final cubit = _cubit(
+      lookup: () async =>
+          throw const LightningAddressServerRejectedRequestException(
+            code: 'NymNotFound',
+            retryable: false,
+          ),
+      pageFind: ({required String nym}) async {
+        pageProbed = true;
+        return null;
+      },
+      posFind: ({required String nym}) async {
+        posProbed = true;
+        return null;
+      },
+    );
+
+    await cubit.refresh();
+
+    expect(cubit.state.isLoading, isFalse);
+    expect(cubit.state.error, isNull);
+    expect(cubit.state.nym, isNull);
+    expect(cubit.state.hasLightningAddress, isFalse);
+    expect(cubit.state.lightningStatus, GetPaidDashboardCardStatus.loaded);
+    expect(cubit.state.paymentPageStatus, GetPaidDashboardCardStatus.loaded);
+    expect(cubit.state.posStatus, GetPaidDashboardCardStatus.loaded);
+    expect(pageProbed, isFalse);
+    expect(posProbed, isFalse);
+    await cubit.close();
+  });
+
   test(
     'independent cards resolve without waiting for Lightning lookup',
     () async {

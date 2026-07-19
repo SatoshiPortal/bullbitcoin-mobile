@@ -17,6 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// probed once a nym exists (mirroring how the product screens resolve their
 /// own identity). Invoices only need the local default-wallet readiness check.
 class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
+  static const _nymNotFoundCode = 'NymNotFound';
+
   final LightningAddressFacade _lightningAddress;
   final PaymentPageFacade _paymentPage;
   final PosFacade _pos;
@@ -100,6 +102,25 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       LightningAddressStatus registration;
       try {
         registration = await _lightningAddress.lookupWalletOwnedRegistration();
+      } on LightningAddressException catch (error, trace) {
+        if (error.code == _nymNotFoundCode) {
+          registration = const LightningAddressStatus(nym: '', active: false);
+        } else {
+          if (_isStale(generation)) return;
+          recordFailure(
+            'Get Paid dashboard Lightning Address lookup failed',
+            error: error,
+            trace: trace,
+          );
+          emit(
+            state.copyWith(
+              lightningStatus: GetPaidDashboardCardStatus.loaded,
+              paymentPageStatus: GetPaidDashboardCardStatus.loaded,
+              posStatus: GetPaidDashboardCardStatus.loaded,
+            ),
+          );
+          return;
+        }
       } on Exception catch (error, trace) {
         if (_isStale(generation)) return;
         recordFailure(
