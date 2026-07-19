@@ -136,7 +136,7 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
           ),
         ],
       ),
-    );
+    ).whenComplete(controller.dispose);
   }
 }
 
