@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
@@ -22,7 +25,38 @@ class JoinstrDatasource {
       return await ffi();
     } on jns.JoinstrError catch (e) {
       throw JoinstrException(JoinstrIssue.coinjoinFailed, detail: e.message);
+    } on AllElectrumServersFailedException catch (e) {
+      throw JoinstrException(JoinstrIssue.coinjoinFailed, detail: e.message);
     }
+  }
+
+  /// Runs the FFI coin scan against the active servers in priority order,
+  /// falling back to the next server when one fails, and returns the winning
+  /// endpoint alongside the coins so a round talks to the server that worked.
+  Future<(({String address, int port}), List<jns.FfiCoin>)> _scanCoins({
+    required String mnemonic,
+    required List<ElectrumServer> electrumServers,
+    required jns.BitcoinNetwork network,
+    String? proxy,
+  }) {
+    return runElectrumFallback(
+      servers: electrumServers,
+      urlOf: (s) => s.url,
+      isCustomOf: (s) => s.isCustom,
+      operation: (server) async {
+        final endpoint = Joinstr.parseElectrumUrl(server.url);
+        final coins = await jns.listCoins(
+          mnemonic: mnemonic,
+          electrumAddress: endpoint.address,
+          electrumPort: endpoint.port,
+          rangeStart: 0,
+          rangeEnd: Joinstr.scanDepth,
+          network: network,
+          proxy: proxy,
+        );
+        return (endpoint, coins);
+      },
+    );
   }
 
   Future<List<JoinstrPool>> listPools({
@@ -64,17 +98,13 @@ class JoinstrDatasource {
   Future<List<JoinstrCoin>> listCoins({
     required Wallet wallet,
     required String mnemonic,
-    required String electrumUrl,
+    required List<ElectrumServer> electrumServers,
     String? proxy,
   }) async {
-    final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
-    final coins = await _call(
-      () => jns.listCoins(
+    final (_, coins) = await _call(
+      () => _scanCoins(
         mnemonic: mnemonic,
-        electrumAddress: endpoint.address,
-        electrumPort: endpoint.port,
-        rangeStart: 0,
-        rangeEnd: Joinstr.scanDepth,
+        electrumServers: electrumServers,
         network: _network(wallet.network),
         proxy: proxy,
       ),
@@ -96,7 +126,7 @@ class JoinstrDatasource {
     required Wallet wallet,
     required String mnemonic,
     required String outputAddress,
-    required String electrumUrl,
+    required List<ElectrumServer> electrumServers,
     required String inputOutpoint,
     String? proxy,
   }) async* {
@@ -104,7 +134,7 @@ class JoinstrDatasource {
       wallet: wallet,
       mnemonic: mnemonic,
       outputAddress: outputAddress,
-      electrumUrl: electrumUrl,
+      electrumServers: electrumServers,
       relay: pool.relay,
       denominationSat: pool.denominationSat,
       inputOutpoint: inputOutpoint,
@@ -117,7 +147,7 @@ class JoinstrDatasource {
     required Wallet wallet,
     required String mnemonic,
     required String outputAddress,
-    required String electrumUrl,
+    required List<ElectrumServer> electrumServers,
     required String relay,
     required int denominationSat,
     required int feeRateSatPerVb,
@@ -130,7 +160,7 @@ class JoinstrDatasource {
       wallet: wallet,
       mnemonic: mnemonic,
       outputAddress: outputAddress,
-      electrumUrl: electrumUrl,
+      electrumServers: electrumServers,
       relay: relay,
       denominationSat: denominationSat,
       inputOutpoint: inputOutpoint,
@@ -183,24 +213,21 @@ class JoinstrDatasource {
     required Wallet wallet,
     required String mnemonic,
     required String outputAddress,
-    required String electrumUrl,
+    required List<ElectrumServer> electrumServers,
     required String relay,
     required int denominationSat,
     required String inputOutpoint,
     String? proxy,
   }) async {
-    await jns.JoinstrFlutter.init();
-    final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
     final network = _network(wallet.network);
 
-    final coins = await jns.listCoins(
-      mnemonic: mnemonic,
-      electrumAddress: endpoint.address,
-      electrumPort: endpoint.port,
-      rangeStart: 0,
-      rangeEnd: Joinstr.scanDepth,
-      network: network,
-      proxy: proxy,
+    final (endpoint, coins) = await _call(
+      () => _scanCoins(
+        mnemonic: mnemonic,
+        electrumServers: electrumServers,
+        network: network,
+        proxy: proxy,
+      ),
     );
 
     // Use the coin the user picked. Re-listing here keeps it fresh: a coin that

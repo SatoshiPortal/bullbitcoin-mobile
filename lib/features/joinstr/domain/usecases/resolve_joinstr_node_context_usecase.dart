@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -7,17 +8,18 @@ import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_proxy_usecase.dart';
 
 /// Everything a joinstr call needs from the wallet except the output address:
-/// the mnemonic joinstr's hot signer derives from, an electrum server to scan
-/// coins and verify peers against, and the Tor proxy to route through. Shared
-/// by coin listing and by creating/joining a pool.
+/// the mnemonic joinstr's hot signer derives from, the active electrum
+/// servers in priority order to scan coins and verify peers against, and the
+/// Tor proxy to route through. Shared by coin listing and by creating/joining
+/// a pool.
 class JoinstrNodeContext {
   final String mnemonic;
-  final String electrumUrl;
+  final List<ElectrumServer> electrumServers;
   final String proxy;
 
   const JoinstrNodeContext({
     required this.mnemonic,
-    required this.electrumUrl,
+    required this.electrumServers,
     required this.proxy,
   });
 }
@@ -51,10 +53,12 @@ class ResolveJoinstrNodeContextUsecase {
         isLiquid: false,
       ),
     );
-    final electrumUrl = servers.fold(
+    // The full active set, priority-ordered, so the datasource can fall back
+    // to the next server instead of hard-failing on the first.
+    final electrumServers = servers.fold(
       (value) => value.isEmpty
           ? throw JoinstrException(JoinstrIssue.invalidElectrumUrl)
-          : value.first.url,
+          : value,
       (failure) => throw JoinstrException(
         JoinstrIssue.invalidElectrumUrl,
         detail: failure.logMessage,
@@ -63,7 +67,7 @@ class ResolveJoinstrNodeContextUsecase {
 
     return JoinstrNodeContext(
       mnemonic: seed.mnemonicWords.join(' '),
-      electrumUrl: electrumUrl,
+      electrumServers: electrumServers,
       proxy: proxy,
     );
   }

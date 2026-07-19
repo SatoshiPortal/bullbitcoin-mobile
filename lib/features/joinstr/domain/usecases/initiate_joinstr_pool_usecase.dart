@@ -57,7 +57,7 @@ class InitiateJoinstrPoolUsecase {
       wallet: wallet,
       mnemonic: context.mnemonic,
       outputAddress: address.address,
-      electrumUrl: context.electrumUrl,
+      electrumServers: context.electrumServers,
       relay: poolRelay,
       denominationSat: denominationSat,
       feeRateSatPerVb: feeRateSatPerVb,

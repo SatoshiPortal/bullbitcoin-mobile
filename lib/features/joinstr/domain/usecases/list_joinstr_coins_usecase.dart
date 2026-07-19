@@ -21,7 +21,7 @@ class ListJoinstrCoinsUsecase {
     final coins = await _datasource.listCoins(
       wallet: wallet,
       mnemonic: context.mnemonic,
-      electrumUrl: context.electrumUrl,
+      electrumServers: context.electrumServers,
       proxy: context.proxy,
     );
     // Largest first, on a copy so the datasource's list is never mutated.

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -72,6 +74,7 @@ void main() {
       _pool(denominationSat: 100000, expiresAtUnixSec: 1793500000),
     );
     registerFallbackValue(const Duration(seconds: 1));
+    registerFallbackValue(<ElectrumServer>[]);
     registerFallbackValue(
       const JoinstrHistoryEntry(
         amountSat: 0,
@@ -95,9 +98,16 @@ void main() {
       () => resolveProxy.execute(),
     ).thenAnswer((_) async => '127.0.0.1:9050');
     when(() => resolveNode.execute(wallet: any(named: 'wallet'))).thenAnswer(
-      (_) async => const JoinstrNodeContext(
+      (_) async => JoinstrNodeContext(
         mnemonic: 'mnemonic',
-        electrumUrl: 'ssl://electrum.example:50002',
+        electrumServers: [
+          ElectrumServer.existing(
+            url: 'ssl://electrum.example:50002',
+            network: ElectrumServerNetwork.bitcoinTestnet,
+            isCustom: false,
+            priority: 0,
+          ),
+        ],
         proxy: '127.0.0.1:9050',
       ),
     );
@@ -171,7 +181,7 @@ void main() {
         () => datasource.listCoins(
           wallet: any(named: 'wallet'),
           mnemonic: any(named: 'mnemonic'),
-          electrumUrl: any(named: 'electrumUrl'),
+          electrumServers: any(named: 'electrumServers'),
           proxy: any(named: 'proxy'),
         ),
       ).thenAnswer(
@@ -187,7 +197,7 @@ void main() {
         () => datasource.listCoins(
           wallet: any(named: 'wallet'),
           mnemonic: 'mnemonic',
-          electrumUrl: 'ssl://electrum.example:50002',
+          electrumServers: any(named: 'electrumServers'),
           proxy: '127.0.0.1:9050',
         ),
       ).called(1);
@@ -232,7 +242,7 @@ void main() {
           wallet: any(named: 'wallet'),
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
+          electrumServers: any(named: 'electrumServers'),
           relay: any(named: 'relay'),
           denominationSat: any(named: 'denominationSat'),
           feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
@@ -273,7 +283,7 @@ void main() {
           wallet: any(named: 'wallet'),
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
+          electrumServers: any(named: 'electrumServers'),
           relay: any(named: 'relay'),
           denominationSat: any(named: 'denominationSat'),
           feeRateSatPerVb: any(named: 'feeRateSatPerVb'),
@@ -317,7 +327,7 @@ void main() {
           wallet: any(named: 'wallet'),
           mnemonic: any(named: 'mnemonic'),
           outputAddress: any(named: 'outputAddress'),
-          electrumUrl: any(named: 'electrumUrl'),
+          electrumServers: any(named: 'electrumServers'),
           inputOutpoint: any(named: 'inputOutpoint'),
           proxy: any(named: 'proxy'),
         ),

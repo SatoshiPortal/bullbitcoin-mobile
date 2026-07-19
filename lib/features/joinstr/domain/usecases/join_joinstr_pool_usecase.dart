@@ -47,7 +47,7 @@ class JoinJoinstrPoolUsecase {
       wallet: wallet,
       mnemonic: context.mnemonic,
       outputAddress: address.address,
-      electrumUrl: context.electrumUrl,
+      electrumServers: context.electrumServers,
       inputOutpoint: inputOutpoint,
       proxy: context.proxy,
     )) {
