@@ -235,7 +235,19 @@ class JoinstrCubit extends Cubit<JoinstrState> {
     try {
       await for (final p in progress) {
         if (p.step == JoinstrRoundStep.done) {
-          update(current.completed(p.txId ?? ''));
+          final txId = p.txId;
+          // A done update without a txid must not render as a broadcast
+          // round with an empty transaction id.
+          update(
+            txId == null || txId.isEmpty
+                ? current.failed(
+                    JoinstrException(
+                      JoinstrIssue.coinjoinFailed,
+                      detail: 'the coinjoin finished without a txid',
+                    ),
+                  )
+                : current.completed(txId),
+          );
         } else if (p.step == JoinstrRoundStep.failed) {
           update(
             current.failed(
