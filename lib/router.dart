@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/get_paid/public/get_paid_routes.dart';
 import 'package:bb_mobile/features/get_paid/ui/get_paid_router.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';

@@ -5822,6 +5822,14 @@
   "@getPaidDashboardInvoicesSubtitle": {
     "description": "Invoices slot card subtitle on the Get Paid hub"
   },
+  "getPaidDashboardTransactionsTitle": "Transactions",
+  "@getPaidDashboardTransactionsTitle": {
+    "description": "Title for the Get Paid transaction history card"
+  },
+  "getPaidDashboardTransactionsSubtitle": "Payments received through Get Paid",
+  "@getPaidDashboardTransactionsSubtitle": {
+    "description": "Subtitle for the Get Paid transaction history card"
+  },
   "getPaidDashboardBtcpayTitle": "BTCPay Server",
   "@getPaidDashboardBtcpayTitle": {
     "description": "BTCPay/SamRock slot card title on the Get Paid hub"
@@ -5829,6 +5837,115 @@
   "getPaidDashboardBtcpaySubtitle": "Connect your BTCPay Server via SamRock",
   "@getPaidDashboardBtcpaySubtitle": {
     "description": "BTCPay/SamRock slot card call-to-action subtitle when unset"
+  },
+  "getPaidTransactionsTitle": "Transactions",
+  "@getPaidTransactionsTitle": {
+    "description": "Title of the Get Paid transaction history screen"
+  },
+  "getPaidTransactionDetailTitle": "Payment details",
+  "@getPaidTransactionDetailTitle": {
+    "description": "Title of a Get Paid transaction detail screen"
+  },
+  "getPaidTransactionsUnavailable": "Get Paid transactions are temporarily unavailable.",
+  "@getPaidTransactionsUnavailable": {
+    "description": "Error shown when private Get Paid transaction history cannot load"
+  },
+  "getPaidTransactionsRetry": "Retry",
+  "@getPaidTransactionsRetry": {
+    "description": "Retry loading Get Paid transaction history"
+  },
+  "getPaidTransactionsLoadMore": "Load more",
+  "@getPaidTransactionsLoadMore": {
+    "description": "Load the next page of Get Paid transactions"
+  },
+  "getPaidTransactionsEmptyTitle": "No payments yet",
+  "@getPaidTransactionsEmptyTitle": {
+    "description": "Empty-state title for Get Paid transaction history"
+  },
+  "getPaidTransactionsEmptyBody": "Payments received through your Get Paid tools will appear here.",
+  "@getPaidTransactionsEmptyBody": {
+    "description": "Empty-state body for Get Paid transaction history"
+  },
+  "getPaidTransactionsAmountSats": "{amount} sats",
+  "@getPaidTransactionsAmountSats": {
+    "description": "A Get Paid transaction amount in satoshis",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidTransactionsSourceLightningAddress": "Lightning Address",
+  "@getPaidTransactionsSourceLightningAddress": {
+    "description": "Get Paid transaction source label for a Lightning Address"
+  },
+  "getPaidTransactionsSourceInvoice": "Invoice",
+  "@getPaidTransactionsSourceInvoice": {
+    "description": "Get Paid transaction source label for a wallet invoice"
+  },
+  "getPaidTransactionsSourcePaymentPage": "Donation Page",
+  "@getPaidTransactionsSourcePaymentPage": {
+    "description": "Get Paid transaction source label for a Donation Page"
+  },
+  "getPaidTransactionsSourcePointOfSale": "Point of Sale",
+  "@getPaidTransactionsSourcePointOfSale": {
+    "description": "Get Paid transaction source label for Point of Sale"
+  },
+  "getPaidTransactionsRailLightning": "Lightning",
+  "@getPaidTransactionsRailLightning": {
+    "description": "Lightning settlement rail label"
+  },
+  "getPaidTransactionsRailLiquid": "Liquid",
+  "@getPaidTransactionsRailLiquid": {
+    "description": "Liquid settlement rail label"
+  },
+  "getPaidTransactionsRailBitcoin": "Bitcoin",
+  "@getPaidTransactionsRailBitcoin": {
+    "description": "Bitcoin settlement rail label"
+  },
+  "getPaidTransactionsStatePending": "Pending",
+  "@getPaidTransactionsStatePending": {
+    "description": "Pending Get Paid settlement state"
+  },
+  "getPaidTransactionsStateSettled": "Settled",
+  "@getPaidTransactionsStateSettled": {
+    "description": "Settled Get Paid settlement state"
+  },
+  "getPaidTransactionsStateProblem": "Needs attention",
+  "@getPaidTransactionsStateProblem": {
+    "description": "Problem Get Paid settlement state"
+  },
+  "getPaidTransactionsSourceLabel": "Source",
+  "@getPaidTransactionsSourceLabel": {
+    "description": "Label for the Get Paid product that received a payment"
+  },
+  "getPaidTransactionsReceivedLabel": "Received",
+  "@getPaidTransactionsReceivedLabel": {
+    "description": "Label for when a Get Paid payment was received"
+  },
+  "getPaidTransactionsRailLabel": "Network",
+  "@getPaidTransactionsRailLabel": {
+    "description": "Label for a Get Paid payment settlement network"
+  },
+  "getPaidTransactionsStatusLabel": "Status",
+  "@getPaidTransactionsStatusLabel": {
+    "description": "Label for a Get Paid payment settlement state"
+  },
+  "getPaidTransactionsTimingLabel": "Timing",
+  "@getPaidTransactionsTimingLabel": {
+    "description": "Label for late Get Paid payment timing"
+  },
+  "getPaidTransactionsLate": "Received late",
+  "@getPaidTransactionsLate": {
+    "description": "Value shown for a late Get Paid payment"
+  },
+  "getPaidTransactionsCommentLabel": "Comment",
+  "@getPaidTransactionsCommentLabel": {
+    "description": "Label for an optional private payer comment"
+  },
+  "getPaidTransactionsViewInvoice": "View invoice",
+  "@getPaidTransactionsViewInvoice": {
+    "description": "Open the invoice associated with a Get Paid transaction"
   },
   "navigationTabGetPaid": "Get Paid",
   "@navigationTabGetPaid": {

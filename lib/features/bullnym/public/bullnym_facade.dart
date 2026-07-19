@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
@@ -33,6 +34,7 @@ export 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
@@ -248,6 +250,20 @@ class BullnymFacade {
   Future<Result<BullnymFallbackSupervisionResponse, BullnymFailure>>
   listFallbackSupervision({required BullnymAuthSigner signer}) {
     return _client.listFallbackSupervision(signer: signer);
+  }
+
+  @useResult
+  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
+  listGetPaidTransactions({
+    required BullnymAuthSigner signer,
+    required String cursor,
+    required int limit,
+  }) {
+    return _client.listGetPaidTransactions(
+      signer: signer,
+      cursor: cursor,
+      limit: limit,
+    );
   }
 
   @useResult

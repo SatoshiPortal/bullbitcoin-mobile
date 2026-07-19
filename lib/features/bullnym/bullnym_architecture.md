@@ -1,8 +1,8 @@
 # Bullnym
 
 Bullnym owns the shared Bullnym HTTP protocol foundation for authenticated
-registration, recovery-address, donation-page, currency, and recipient-invoice
-calls.
+registration, recovery-address, donation-page, currency, recipient-invoice,
+and Get Paid transaction-history calls.
 
 ## Scope
 
@@ -17,6 +17,8 @@ This feature owns:
 - a small Dio HTTP client in the data layer that implements the port;
 - a sealed `BullnymFailure` family returned through typed `Result` values;
 - raw recipient-invoice wire DTOs used by the owning `invoices` feature;
+- validated Get Paid transaction-history values used by the owning `get_paid`
+  feature;
 - a public facade for feature callers.
 
 It does not own Lightning Address UI, wallet materialization, wallet manifest
@@ -146,6 +148,22 @@ nullable `block_height`, `state`, `first_seen_at_unix`, and
 `last_seen_at_unix`. The authenticated list contract additionally carries
 nullable `presentation_status` and optional `memo`. Unknown fields are ignored;
 known fields fail closed when their wire types are invalid.
+
+## Get Paid Transaction History
+
+`GET /api/v1/get-paid/transactions` is an authenticated, identity-wide,
+read-only payment-evidence projection. It signs the `get-paid-transaction-list`
+action with an empty nym slot and `[cursor_or_empty, limit]`. The response is
+strictly parsed into four known sources, three rails, and three settlement
+states. Canonical non-nil UUIDs, positive amounts/timestamps, source/invoice
+relationships, bounded optional comments, page size, duplicate identities, and
+cursor progression are validated before values cross the Bullnym facade.
+
+The cursor is opaque to Mobile and is never decoded or constructed. Unknown
+future enum values fail closed because displaying them could misrepresent a
+payment. Unknown response object keys remain tolerated. The owning Get Paid
+feature decides how these values are presented and keeps comments out of list
+rows and logs.
 
 ## Boundaries
 

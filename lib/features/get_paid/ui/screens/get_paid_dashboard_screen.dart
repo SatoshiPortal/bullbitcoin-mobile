@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_routes.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
+import 'package:bb_mobile/features/get_paid/public/get_paid_routes.dart';
 import 'package:bb_mobile/features/get_paid/ui/widgets/get_paid_slot_card.dart';
 import 'package:bb_mobile/features/get_paid_settings/public/get_paid_settings_routes.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
@@ -22,7 +23,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// The Get Paid hub — the third bottom-nav tab. Draws its own [BullTopBar]
-/// (the shell app bar is null for this tab) and lists the five Get Paid
+/// (the shell app bar is null for this tab) and lists Get Paid history plus the
 /// products as tappable slot cards. Auto-refreshes on init, on app-resume and
 /// on pull; reads public facades only.
 class GetPaidDashboardScreen extends StatefulWidget {
@@ -105,6 +106,13 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
     final page = state.paymentPage;
     final pos = state.posTerminal;
     return [
+      GetPaidSlotCard(
+        icon: Icons.payments_outlined,
+        title: loc.getPaidDashboardTransactionsTitle,
+        subtitle: loc.getPaidDashboardTransactionsSubtitle,
+        onTap: () => _open(GetPaidDashboardRoute.getPaidTransactions.name),
+      ),
+      const Gap(12),
       GetPaidSlotCard(
         icon: Icons.alternate_email,
         title: loc.getPaidDashboardLightningAddressTitle,

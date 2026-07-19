@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
+import 'package:bb_mobile/features/get_paid/public/get_paid_routes.dart';
 import 'package:bb_mobile/features/get_paid/ui/screens/get_paid_dashboard_screen.dart';
 import 'package:bb_mobile/features/get_paid/ui/widgets/get_paid_slot_card.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
@@ -38,13 +39,14 @@ Future<void> _pump(WidgetTester tester, GetPaidDashboardState state) async {
 }
 
 void main() {
-  testWidgets('the hub renders its top bar and five slot cards', (
+  testWidgets('the hub renders Transactions plus five product cards', (
     tester,
   ) async {
     await _pump(tester, const GetPaidDashboardState());
 
     expect(find.byType(BullTopBar), findsOneWidget);
-    expect(find.byType(GetPaidSlotCard), findsNWidgets(5));
+    expect(find.byType(GetPaidSlotCard), findsNWidgets(6));
+    expect(find.text('Transactions'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -53,7 +55,7 @@ void main() {
   ) async {
     await _pump(tester, const GetPaidDashboardState(isLoading: true));
 
-    expect(find.byType(GetPaidSlotCard), findsNWidgets(5));
+    expect(find.byType(GetPaidSlotCard), findsNWidgets(6));
     expect(find.byType(CircularProgressIndicator), findsNWidgets(5));
     expect(tester.takeException(), isNull);
   });
@@ -127,5 +129,47 @@ void main() {
 
     expect(find.text('2 SETTLEMENTS PENDING'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Transactions card opens received Get Paid history', (
+    tester,
+  ) async {
+    final cubit = _StubCubit(const GetPaidDashboardState());
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              BlocProvider<GetPaidDashboardCubit>.value(
+                value: cubit,
+                child: const GetPaidDashboardScreen(),
+              ),
+        ),
+        GoRoute(
+          name: GetPaidDashboardRoute.getPaidTransactions.name,
+          path: '/transactions',
+          builder: (context, state) =>
+              const Scaffold(body: Text('transactions-destination')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    addTearDown(cubit.close);
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('Transactions'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('transactions-destination'), findsOneWidget);
   });
 }

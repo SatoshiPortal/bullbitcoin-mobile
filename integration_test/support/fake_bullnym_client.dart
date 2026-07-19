@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
@@ -692,6 +693,16 @@ class FakeBullnymClient implements BullnymClientPort {
       BullnymFallbackSupervisionResponse(items: [], count: 0, hasMore: false),
     );
   }
+
+  @override
+  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
+  listGetPaidTransactions({
+    required BullnymAuthSigner signer,
+    required String cursor,
+    required int limit,
+  }) async => Ok(
+    BullnymGetPaidTransactionPage(transactions: const [], nextCursor: null),
+  );
 
   @override
   Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({

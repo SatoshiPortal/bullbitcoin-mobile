@@ -317,6 +317,14 @@ final class _RecordingClient implements BullnymClientPort {
       throw UnimplementedError();
 
   @override
+  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
+  listGetPaidTransactions({
+    required BullnymAuthSigner signer,
+    required String cursor,
+    required int limit,
+  }) => throw UnimplementedError();
+
+  @override
   Future<Result<BullnymInvoiceStatus, BullnymFailure>> getInvoiceStatus({
     required String invoiceId,
   }) => throw UnimplementedError();

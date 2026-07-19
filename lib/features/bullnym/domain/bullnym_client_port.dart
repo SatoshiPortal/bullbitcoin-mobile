@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_public_names.dart';
@@ -118,6 +119,16 @@ abstract interface class BullnymClientPort {
   @useResult
   Future<Result<BullnymFallbackSupervisionResponse, BullnymFailure>>
   listFallbackSupervision({required BullnymAuthSigner signer});
+
+  /// Authenticated identity-wide payment-evidence history. The cursor remains
+  /// opaque and the signed nym slot is always empty.
+  @useResult
+  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
+  listGetPaidTransactions({
+    required BullnymAuthSigner signer,
+    required String cursor,
+    required int limit,
+  });
 
   /// Public, UNSIGNED status/detail poll by id
   /// (`GET /api/v1/invoices/:id/status`). Anyone holding the id can poll it.

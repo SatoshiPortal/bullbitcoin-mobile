@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullnym/data/bullnym_get_paid_transaction_mapper.dart';
+import 'package:bb_mobile/features/bullnym/data/bullnym_get_paid_transaction_model.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
@@ -11,6 +13,8 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_quote.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
@@ -485,6 +489,52 @@ class BullnymHttpClient implements BullnymClientPort {
         },
       );
       return _parseFallbackSupervisionResponse(response);
+    });
+  }
+
+  @override
+  Future<Result<BullnymGetPaidTransactionPage, BullnymFailure>>
+  listGetPaidTransactions({
+    required BullnymAuthSigner signer,
+    required String cursor,
+    required int limit,
+  }) {
+    return _guard(() async {
+      if (limit < 1 ||
+          limit > bullnymGetPaidTransactionMaxPageSize ||
+          cursor.contains('\u0000') ||
+          utf8.encode(cursor).length >
+              bullnymGetPaidTransactionMaxCursorBytes) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidInput('Invalid Get Paid history pagination'),
+        );
+      }
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionGetPaidTransactionList,
+        nymOrEmpty: '',
+        payloadFields: buildGetPaidTransactionListPayloadFields(
+          cursor: cursor,
+          limit: limit,
+        ),
+        timestampSecs: timestamp,
+      );
+      final response = await _getMap(
+        '/api/v1/get-paid/transactions',
+        queryParameters: {
+          'npub': signer.npubHex,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+          'cursor': cursor,
+          'limit': limit,
+        },
+      );
+      return _parseGetPaidTransactionPage(
+        response,
+        requestedCursor: cursor,
+        requestedLimit: limit,
+      );
     });
   }
 
@@ -1687,6 +1737,37 @@ class BullnymHttpClient implements BullnymClientPort {
       );
     }
     return instruction;
+  }
+
+  BullnymGetPaidTransactionPage _parseGetPaidTransactionPage(
+    Map<String, dynamic> json, {
+    required String requestedCursor,
+    required int requestedLimit,
+  }) {
+    try {
+      final model = BullnymGetPaidTransactionPageModel.fromJson(json);
+      if (model.transactions.length > requestedLimit ||
+          (model.transactions.isEmpty && model.nextCursor != null) ||
+          (model.nextCursor != null && model.nextCursor == requestedCursor)) {
+        throw const FormatException('Invalid Get Paid history page');
+      }
+      return BullnymGetPaidTransactionPage(
+        transactions: List.unmodifiable(
+          model.transactions.map((item) => item.toDomain()),
+        ),
+        nextCursor: model.nextCursor,
+      );
+    } on FormatException catch (error) {
+      throw _BullnymClientException(
+        BullnymFailure.invalidServerResponse(logMessage: error.message),
+      );
+    } on ArgumentError {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Invalid Get Paid history response',
+        ),
+      );
+    }
   }
 
   List<BullnymBitcoinDirectObservation> _parseBitcoinDirectObservations(
