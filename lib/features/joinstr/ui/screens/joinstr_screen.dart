@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
@@ -90,7 +91,7 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
   void _onStateChange(BuildContext context, JoinstrState state) {
     if (state.rounds.length > _seenRounds && state.rounds.isNotEmpty) {
       final top = state.rounds.first;
-      _snack(
+      SnackBarUtils.showSnackBar(
         context,
         top.initiated
             ? context.loc.joinstrPoolCreatedSnack
@@ -100,16 +101,13 @@ class _JoinstrScreenState extends State<JoinstrScreen> {
     } else if (state.wallet != null &&
         state.error != null &&
         state.error != _seenError) {
-      _snack(context, joinstrErrorMessage(context, state.error!));
+      SnackBarUtils.showSnackBar(
+        context,
+        joinstrErrorMessage(context, state.error!),
+      );
     }
     _seenRounds = state.rounds.length;
     _seenError = state.error;
-  }
-
-  void _snack(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showRelaySettings(BuildContext context) {
