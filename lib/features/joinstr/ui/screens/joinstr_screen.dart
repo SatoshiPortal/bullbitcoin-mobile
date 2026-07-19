@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_coin.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
@@ -188,17 +189,15 @@ class _CreatePoolTab extends StatelessWidget {
           onSelect: cubit.selectCoin,
         ),
         const Gap(16),
-        _FilteredTextField(
+        _NumberField(
           value: state.peers,
           label: context.loc.joinstrPeers,
-          keyboardType: TextInputType.number,
           onChanged: cubit.peersChanged,
         ),
         const Gap(12),
-        _FilteredTextField(
+        _NumberField(
           value: state.feeRate,
           label: context.loc.joinstrFeeRate,
-          keyboardType: TextInputType.number,
           onChanged: cubit.feeRateChanged,
         ),
         if (denomination != null) ...[
@@ -304,56 +303,27 @@ class _CoinTile extends StatelessWidget {
   }
 }
 
-class _FilteredTextField extends StatefulWidget {
-  const _FilteredTextField({
+/// Labelled numeric input on top of the app-wide [BBInputText].
+class _NumberField extends StatelessWidget {
+  const _NumberField({
     required this.value,
     required this.label,
-    required this.keyboardType,
     required this.onChanged,
   });
 
   final String value;
   final String label;
-  final TextInputType keyboardType;
   final ValueChanged<String> onChanged;
 
   @override
-  State<_FilteredTextField> createState() => _FilteredTextFieldState();
-}
-
-class _FilteredTextFieldState extends State<_FilteredTextField> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.value);
-  }
-
-  @override
-  void didUpdateWidget(_FilteredTextField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.value != _controller.text) {
-      _controller.value = TextEditingValue(
-        text: widget.value,
-        selection: TextSelection.collapsed(offset: widget.value.length),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      keyboardType: widget.keyboardType,
-      decoration: InputDecoration(labelText: widget.label),
-      onChanged: widget.onChanged,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+        const Gap(4),
+        BBInputText(value: value, onChanged: onChanged, onlyNumbers: true),
+      ],
     );
   }
 }
