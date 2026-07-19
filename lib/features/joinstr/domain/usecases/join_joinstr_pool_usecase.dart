@@ -4,9 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
-import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
-import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/joinstr_round_history.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 
 /// Joins an advertised pool with a user-chosen input coin, streaming coinjoin
@@ -42,26 +41,19 @@ class JoinJoinstrPoolUsecase {
       '${pool.denominationSat} sat, ${pool.peers} peers, input $inputOutpoint',
     );
 
-    await for (final progress in _datasource.joinPool(
-      pool: pool,
-      wallet: wallet,
-      mnemonic: context.mnemonic,
-      outputAddress: address.address,
-      electrumServers: context.electrumServers,
-      inputOutpoint: inputOutpoint,
-      proxy: context.proxy,
-    )) {
-      if (progress.step == JoinstrRoundStep.done && progress.txId != null) {
-        await _store.appendHistory(
-          JoinstrHistoryEntry(
-            amountSat: pool.denominationSat,
-            txId: progress.txId!,
-            relay: pool.relay,
-            completedAtUnixSec: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          ),
-        );
-      }
-      yield progress;
-    }
+    yield* recordHistoryOnDone(
+      store: _store,
+      amountSat: pool.denominationSat,
+      relay: pool.relay,
+      progress: _datasource.joinPool(
+        pool: pool,
+        wallet: wallet,
+        mnemonic: context.mnemonic,
+        outputAddress: address.address,
+        electrumServers: context.electrumServers,
+        inputOutpoint: inputOutpoint,
+        proxy: context.proxy,
+      ),
+    );
   }
 }

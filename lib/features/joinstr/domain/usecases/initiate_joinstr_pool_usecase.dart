@@ -4,9 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
-import 'package:bb_mobile/features/joinstr/domain/joinstr_history_entry.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
-import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
+import 'package:bb_mobile/features/joinstr/domain/usecases/joinstr_round_history.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 
 /// Announces a pool and takes part in it with a user-chosen input coin. Blocks
@@ -53,30 +52,23 @@ class InitiateJoinstrPoolUsecase {
       '${feeRateSatPerVb}s/vB, input $inputOutpoint',
     );
 
-    await for (final progress in _datasource.initiatePool(
-      wallet: wallet,
-      mnemonic: context.mnemonic,
-      outputAddress: address.address,
-      electrumServers: context.electrumServers,
+    yield* recordHistoryOnDone(
+      store: _store,
+      amountSat: denominationSat,
       relay: poolRelay,
-      denominationSat: denominationSat,
-      feeRateSatPerVb: feeRateSatPerVb,
-      peers: peers,
-      maxDuration: maxDuration,
-      inputOutpoint: inputOutpoint,
-      proxy: context.proxy,
-    )) {
-      if (progress.step == JoinstrRoundStep.done && progress.txId != null) {
-        await _store.appendHistory(
-          JoinstrHistoryEntry(
-            amountSat: denominationSat,
-            txId: progress.txId!,
-            relay: poolRelay,
-            completedAtUnixSec: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          ),
-        );
-      }
-      yield progress;
-    }
+      progress: _datasource.initiatePool(
+        wallet: wallet,
+        mnemonic: context.mnemonic,
+        outputAddress: address.address,
+        electrumServers: context.electrumServers,
+        relay: poolRelay,
+        denominationSat: denominationSat,
+        feeRateSatPerVb: feeRateSatPerVb,
+        peers: peers,
+        maxDuration: maxDuration,
+        inputOutpoint: inputOutpoint,
+        proxy: context.proxy,
+      ),
+    );
   }
 }
