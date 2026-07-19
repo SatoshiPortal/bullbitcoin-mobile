@@ -92,4 +92,53 @@ void main() {
       expect(find.text('Bitcoin address'), findsNothing);
     },
   );
+
+  testWidgets('retained private link is the only invoice sharing surface', (
+    tester,
+  ) async {
+    final invoiceId = InvoiceId('inv-1');
+    final link = PrivateInvoiceLink.fromServer(
+      invoiceUrl: 'https://pay2.bull-wallet.com/invoice/inv-1',
+      expectedInvoiceId: invoiceId,
+      viewingKey: 'A' * 43,
+      expectedOrigin: Uri.parse('https://pay2.bull-wallet.com'),
+    );
+    when(
+      () => facade.status(any()),
+    ).thenAnswer((_) async => Ok(_snapshot(InvoiceStatus.paid)));
+    when(() => facade.privateLink(any())).thenAnswer((_) async => link);
+
+    await cubit.load();
+    await _pump(tester, cubit: cubit);
+    await tester.pump();
+
+    expect(find.text('Private payment link'), findsOneWidget);
+    expect(find.text('Copy private link'), findsOneWidget);
+    expect(find.text('Share private link'), findsOneWidget);
+    expect(find.text('Open link'), findsOneWidget);
+    expect(find.text('Lightning invoice'), findsNothing);
+    expect(find.text('Liquid address'), findsNothing);
+    expect(find.text('Bitcoin address'), findsNothing);
+  });
+
+  testWidgets('missing retained link has no fragmentless fallback', (
+    tester,
+  ) async {
+    when(
+      () => facade.status(any()),
+    ).thenAnswer((_) async => Ok(_snapshot(InvoiceStatus.paid)));
+    when(() => facade.privateLink(any())).thenAnswer((_) async => null);
+
+    await cubit.load();
+    await _pump(tester, cubit: cubit);
+    await tester.pump();
+
+    expect(
+      find.text('Private link unavailable on this device'),
+      findsOneWidget,
+    );
+    expect(find.text('Copy private link'), findsNothing);
+    expect(find.text('Share private link'), findsNothing);
+    expect(find.text('Open link'), findsNothing);
+  });
 }

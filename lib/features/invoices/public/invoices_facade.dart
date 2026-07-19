@@ -7,9 +7,11 @@ import 'package:bb_mobile/features/invoices/application/usecases/cancel_invoice_
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/get_invoice_usecase.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/list_invoices_usecase.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
+import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
 import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
@@ -22,7 +24,7 @@ export 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 export 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 export 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
-export 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dart';
+export 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
 
 /// The public entry to the invoices feature. Thin delegations to the usecases;
 /// `supportedCurrencies` reuses the shared bullnym currency plumbing.
@@ -31,6 +33,7 @@ class InvoicesFacade {
   final CancelInvoiceUsecase _cancel;
   final ListInvoicesUsecase _list;
   final GetInvoiceUsecase _getStatus;
+  final GetPrivateInvoiceLinkUsecase _getPrivateLink;
   final BullnymFacade _bullnym;
 
   const InvoicesFacade({
@@ -38,6 +41,7 @@ class InvoicesFacade {
     required this._cancel,
     required this._list,
     required this._getStatus,
+    required this._getPrivateLink,
     required this._bullnym,
   });
 
@@ -45,6 +49,10 @@ class InvoicesFacade {
   Future<Result<CreateInvoiceResult, InvoicesFailure>> create(
     CreateInvoiceCommand command,
   ) => _create.execute(command);
+
+  @useResult
+  Future<Result<CreateInvoiceResult?, InvoicesFailure>> resumeCreate() =>
+      _create.resumePending();
 
   @useResult
   Future<Result<CancelInvoiceResult, InvoicesFailure>> cancel(
@@ -60,6 +68,9 @@ class InvoicesFacade {
   Future<Result<InvoiceStatusSnapshot, InvoicesFailure>> status(
     InvoiceId invoiceId,
   ) => _getStatus.execute(invoiceId);
+
+  Future<PrivateInvoiceLink?> privateLink(InvoiceId invoiceId) =>
+      _getPrivateLink.execute(invoiceId);
 
   Future<BullnymSupportedCurrencies> supportedCurrencies() =>
       _bullnym.getSupportedCurrencies();

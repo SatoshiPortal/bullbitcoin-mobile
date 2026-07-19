@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -11,13 +10,13 @@ import 'package:bb_mobile/features/invoices/presentation/invoice_detail_state.da
 import 'package:bb_mobile/features/invoices/presentation/invoices_failure_l10n.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/invoices/ui/widgets/invoice_list_item.dart';
+import 'package:bb_mobile/features/invoices/ui/widgets/private_invoice_link_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 /// The invoice detail (ISS-C-05 legacy `core/widgets`). It renders the polled
-/// status snapshot (status, amount, expiry countdown, payment rails), offers an
-/// unpaid-only cancel behind a confirm dialog, and supports pull-to-refresh.
+/// status snapshot, the locally retained private link, and unpaid-only cancel.
 class InvoiceDetailScreen extends StatelessWidget {
   const InvoiceDetailScreen({super.key});
 
@@ -96,24 +95,25 @@ class InvoiceDetailScreen extends StatelessWidget {
           _expiry(context, snapshot),
           const Divider(),
           if (unsupported) _unsupportedStatus(context),
-          if (!unsupported && snapshot.lightningPr != null)
-            _copyBlock(
-              context,
-              context.loc.invoicePaymentLightningLabel,
-              snapshot.lightningPr!,
+          if (!unsupported) ...[
+            const Gap(20),
+            Text(
+              context.loc.invoicePrivateLinkSection,
+              style: context.font.titleMedium,
             ),
-          if (!unsupported && snapshot.liquidAddress != null)
-            _copyBlock(
-              context,
-              context.loc.invoicePaymentLiquidLabel,
-              snapshot.liquidAddress!,
-            ),
-          if (!unsupported && snapshot.bitcoinAddress != null)
-            _copyBlock(
-              context,
-              context.loc.invoicePaymentBitcoinLabel,
-              snapshot.bitcoinAddress!,
-            ),
+            const Gap(8),
+            if (!state.privateLinkLookupComplete)
+              const Center(child: CircularProgressIndicator())
+            else if (state.privateLink case final link?)
+              PrivateInvoiceLinkActions(link: link.value)
+            else
+              Text(
+                context.loc.invoicePrivateLinkUnavailable,
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.appColors.textMuted,
+                ),
+              ),
+          ],
           const Gap(24),
           if (state.canCancel)
             BBButton.big(
@@ -178,23 +178,6 @@ class InvoiceDetailScreen extends StatelessWidget {
           Text(value, style: context.font.bodyLarge),
         ],
       ),
-    );
-  }
-
-  Widget _copyBlock(BuildContext context, String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Gap(12),
-        Text(
-          label,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.textMuted,
-          ),
-        ),
-        const Gap(4),
-        CopyInput(text: value, maxLines: 2, overflow: TextOverflow.ellipsis),
-      ],
     );
   }
 

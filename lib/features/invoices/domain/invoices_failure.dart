@@ -12,6 +12,10 @@ enum InvoicesFailureKind {
   network,
   timeout,
   invalidServerResponse,
+  privateStorage,
+  encryption,
+  outcomeUnknown,
+  createConflict,
   signingFailed,
   server,
   unexpected,
@@ -58,6 +62,17 @@ sealed class InvoicesFailure extends Failure {
 
   const factory InvoicesFailure.invalidServerResponse() =
       InvoicesInvalidServerResponseFailure;
+
+  const factory InvoicesFailure.privateStorage() =
+      InvoicesPrivateStorageFailure;
+
+  const factory InvoicesFailure.encryption() = InvoicesEncryptionFailure;
+
+  const factory InvoicesFailure.outcomeUnknown() =
+      InvoicesOutcomeUnknownFailure;
+
+  const factory InvoicesFailure.createConflict() =
+      InvoicesCreateConflictFailure;
 
   const factory InvoicesFailure.signingFailed() = InvoicesSigningFailedFailure;
 
@@ -163,6 +178,42 @@ final class InvoicesInvalidServerResponseFailure extends InvoicesFailure {
         kind: InvoicesFailureKind.invalidServerResponse,
         code: 'InvalidServerResponse',
         retryable: true,
+      );
+}
+
+final class InvoicesPrivateStorageFailure extends InvoicesFailure {
+  const InvoicesPrivateStorageFailure()
+    : super._(
+        kind: InvoicesFailureKind.privateStorage,
+        code: 'PrivateInvoiceStorageUnavailable',
+        retryable: true,
+      );
+}
+
+final class InvoicesEncryptionFailure extends InvoicesFailure {
+  const InvoicesEncryptionFailure()
+    : super._(
+        kind: InvoicesFailureKind.encryption,
+        code: 'PrivateInvoiceEncryptionUnavailable',
+        retryable: true,
+      );
+}
+
+final class InvoicesOutcomeUnknownFailure extends InvoicesFailure {
+  const InvoicesOutcomeUnknownFailure()
+    : super._(
+        kind: InvoicesFailureKind.outcomeUnknown,
+        code: 'InvoiceCreateOutcomeUnknown',
+        retryable: true,
+      );
+}
+
+final class InvoicesCreateConflictFailure extends InvoicesFailure {
+  const InvoicesCreateConflictFailure()
+    : super._(
+        kind: InvoicesFailureKind.createConflict,
+        code: 'InvoiceCreateConflict',
+        retryable: false,
       );
 }
 

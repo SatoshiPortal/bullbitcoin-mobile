@@ -1,15 +1,17 @@
 import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
-import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dart';
+import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
 
-/// The result of creating an invoice: the id and the validated (HTTPS) public
-/// share URL.
+/// The result of creating an invoice and retaining its complete private link.
 class CreateInvoiceResult {
   final InvoiceId invoiceId;
-  final InvoiceUrl shareUrl;
+  final PrivateInvoiceLink privateLink;
 
-  const CreateInvoiceResult({required this.invoiceId, required this.shareUrl});
+  const CreateInvoiceResult({
+    required this.invoiceId,
+    required this.privateLink,
+  });
 }
 
 /// The result of cancelling an invoice: the id and the final status the server

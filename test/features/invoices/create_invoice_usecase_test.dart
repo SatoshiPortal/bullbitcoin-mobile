@@ -13,9 +13,14 @@ import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/create_invoice_usecase.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/encrypted_private_invoice.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
+import 'package:bb_mobile/features/invoices/domain/private_invoice_cipher.dart';
+import 'package:bb_mobile/features/invoices/domain/repositories/private_invoice_link_repository.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
-import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dart';
+import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -36,36 +41,27 @@ class _MockWallet extends Mock implements Wallet {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
-T _unwrap<T>(Result<T, InvoicesFailure> result) => result.fold(
-  (value) => value,
-  (failure) => throw TestFailure('expected Ok, got $failure'),
-);
-
-InvoicesFailure _unwrapFailure<T>(Result<T, InvoicesFailure> result) =>
-    result.fold(
-      (_) => throw TestFailure('expected Err, got Ok'),
-      (failure) => failure,
-    );
-
 void main() {
   final signer = BullnymAuthSigner(
     npubHex: 'aa' * 32,
     signHashHex: (_) => 'bb' * 64,
   );
+  final invoiceId = InvoiceId('inv-1');
+  final result = CreateInvoiceResult(
+    invoiceId: invoiceId,
+    privateLink: PrivateInvoiceLink.fromServer(
+      invoiceUrl: 'https://pay2.bull-wallet.com/invoice/inv-1',
+      expectedInvoiceId: invoiceId,
+      viewingKey: 'A' * 43,
+      expectedOrigin: Uri.parse('https://pay2.bull-wallet.com'),
+    ),
+  );
 
   setUpAll(() {
     registerFallbackValue(
-      CreateInvoiceCommand(
-        amountSat: 1000,
-        acceptBtc: false,
-        acceptLn: false,
-        acceptLiquid: true,
-        expiresAt: DateTime.utc(2030),
-      ),
-    );
-    registerFallbackValue(
       BullnymAuthSigner(npubHex: '00' * 32, signHashHex: (_) => ''),
     );
+    registerFallbackValue(_prepared());
     registerFallbackValue(NewLabel.addr(address: 'x', label: 'y'));
   });
 
@@ -75,44 +71,12 @@ void main() {
   late _MockAddrRepo addrRepo;
   late _MockLabels labels;
   late _MockGetSettings getSettings;
+  late _FakeCipher cipher;
+  late _FakeLinks links;
   late CreateInvoiceUsecase usecase;
+  late List<String> sequence;
+  late int liquidAddressIndex;
   late int nextLabelId;
-
-  final btcWallet = _MockWallet();
-  final liquidWallet = _MockWallet();
-  final btcWalletAddress = WalletAddress(
-    walletId: 'btc-default',
-    index: 0,
-    address: 'bc1qfresh',
-    createdAt: DateTime.utc(2026),
-    updatedAt: DateTime.utc(2026),
-  );
-
-  final result = CreateInvoiceResult(
-    invoiceId: InvoiceId('inv-1'),
-    shareUrl: InvoiceUrl('https://bullpay.ca/invoice/inv-1'),
-  );
-
-  CreateInvoiceCommand command({
-    int? amountSat = 1000,
-    int? fiatAmountMinor,
-    String? fiatCurrency,
-    bool acceptBtc = false,
-    bool acceptLn = false,
-    bool acceptLiquid = true,
-    String? privateMemo,
-  }) {
-    return CreateInvoiceCommand(
-      amountSat: amountSat,
-      fiatAmountMinor: fiatAmountMinor,
-      fiatCurrency: fiatCurrency,
-      acceptBtc: acceptBtc,
-      acceptLn: acceptLn,
-      acceptLiquid: acceptLiquid,
-      expiresAt: DateTime.utc(2030),
-      privateMemo: privateMemo,
-    );
-  }
 
   setUp(() {
     identity = _MockIdentity();
@@ -121,9 +85,16 @@ void main() {
     addrRepo = _MockAddrRepo();
     labels = _MockLabels();
     getSettings = _MockGetSettings();
+    cipher = _FakeCipher();
+    links = _FakeLinks();
+    sequence = [];
+    liquidAddressIndex = 0;
+    nextLabelId = 1;
     usecase = CreateInvoiceUsecase(
       identity: identity,
       payService: payService,
+      cipher: cipher,
+      links: links,
       walletRepository: walletRepo,
       walletAddressRepository: addrRepo,
       labels: labels,
@@ -135,10 +106,10 @@ void main() {
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
     when(() => identity.getSigningHandle()).thenAnswer((_) async => Ok(signer));
 
+    final btcWallet = _MockWallet();
+    final liquidWallet = _MockWallet();
     when(() => btcWallet.id).thenReturn('btc-default');
     when(() => liquidWallet.id).thenReturn('liquid-default');
-
-    // The DEFAULT wallet lookups: bitcoin vs liquid disambiguated by the flag.
     when(
       () => walletRepo.getWallets(
         environment: any(named: 'environment'),
@@ -147,462 +118,324 @@ void main() {
         onlyLiquid: any(named: 'onlyLiquid'),
       ),
     ).thenAnswer((invocation) async {
-      final onlyLiquid = invocation.namedArguments[#onlyLiquid] as bool?;
-      return onlyLiquid == true ? [liquidWallet] : [btcWallet];
+      final liquid = invocation.namedArguments[#onlyLiquid] as bool?;
+      return liquid == true ? [liquidWallet] : [btcWallet];
     });
-
     when(
       () =>
           addrRepo.generateNewReceiveAddress(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => btcWalletAddress);
+    ).thenAnswer(
+      (_) async => WalletAddress(
+        walletId: 'btc-default',
+        index: 0,
+        address: 'bc1qfresh',
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+    );
     when(
       () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
         walletId: any(named: 'walletId'),
       ),
-    ).thenAnswer(
-      (_) async => const LiquidReceiveAddressWithBlindingSecret(
-        address: 'lq1qfresh',
-        blindingSecretHex:
-            '1111111111111111111111111111111111111111111111111111111111111111',
-      ),
-    );
-
-    when(
-      () => payService.createInvoice(
-        signer: any(named: 'signer'),
-        command: any(named: 'command'),
-        bitcoinAddress: any(named: 'bitcoinAddress'),
-        liquidAddress: any(named: 'liquidAddress'),
-        liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-      ),
-    ).thenAnswer((_) async => Ok(result));
-
-    // Labels store/trash default to success: the address reservation (system
-    // label) written at generation persists, and any release is a no-op.
-    nextLabelId = 1;
+    ).thenAnswer((_) async {
+      liquidAddressIndex++;
+      return LiquidReceiveAddressWithBlindingSecret(
+        address: 'lq1qfresh$liquidAddressIndex',
+        blindingSecretHex: '11' * 32,
+      );
+    });
     when(() => labels.store(any())).thenAnswer((invocation) async {
-      final newLabel = invocation.positionalArguments.first as NewLabel;
+      final label = invocation.positionalArguments.first as NewLabel;
       return Ok<Label, LabelFailure>(
         Label.addr(
           id: nextLabelId++,
-          address: newLabel.reference,
-          label: newLabel.label,
-          origin: newLabel.origin,
+          address: label.reference,
+          label: label.label,
+          origin: label.origin,
         ),
       );
     });
     when(
       () => labels.trash(any()),
     ).thenAnswer((_) async => const Ok<Null, LabelFailure>(null));
+    when(
+      () => payService.createInvoice(
+        signer: any(named: 'signer'),
+        operation: any(named: 'operation'),
+      ),
+    ).thenAnswer((_) async {
+      sequence.add('send');
+      return Ok(result);
+    });
+    links.onSavePending = (_) => sequence.add('save-pending');
+    links.onRetainLink = (_) => sequence.add('retain-link');
+    links.onDeletePending = (_) => sequence.add('delete-pending');
   });
 
-  // A NewLabel matcher for the correctness-critical Liquid address reservation
-  // (the system label), as opposed to the best-effort private-memo label.
-  Matcher isReservationLabel() =>
-      predicate<NewLabel>((l) => l.label == LabelSystem.invoice.label);
-  Matcher isMemoLabel() =>
-      predicate<NewLabel>((l) => l.label != LabelSystem.invoice.label);
+  test(
+    'persists the complete operation before sending and commits link first',
+    () async {
+      final value = _unwrap(await usecase.execute(_command()));
 
-  group('payout discipline (DG-I2 / §8.1/§8.2)', () {
-    test('sources addresses ONLY from onlyDefaults wallets', () async {
-      _unwrap(await usecase.execute(command(acceptLiquid: true)));
+      expect(value.privateLink, result.privateLink);
+      expect(sequence, [
+        'save-pending',
+        'send',
+        'retain-link',
+        'delete-pending',
+      ]);
+      expect(links.pending, isNull);
+      expect(links.retained[invoiceId.value]?.value, result.privateLink.value);
+      expect(cipher.encryptCalls, 1);
+      final sent =
+          verify(
+                () => payService.createInvoice(
+                  signer: signer,
+                  operation: captureAny(named: 'operation'),
+                ),
+              ).captured.single
+              as PreparedPrivateInvoiceCreate;
+      expect(sent.liquidAddress, 'lq1qfresh1');
+      expect(sent.liquidBlindingKeyHex, '11' * 32);
+      expect(sent.encrypted.presentationEnvelope, 'E' * 5500);
+    },
+  );
 
-      final calls = verify(
-        () => walletRepo.getWallets(
-          environment: any(named: 'environment'),
-          onlyDefaults: captureAny(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          onlyLiquid: any(named: 'onlyLiquid'),
-        ),
-      ).captured;
-      // Every wallet lookup pins onlyDefaults:true — never a reserved descriptor.
-      expect(calls, everyElement(isTrue));
-    });
-
-    test(
-      'Liquid rail: fresh confidential address + blinding secret supplied',
-      () async {
-        _unwrap(await usecase.execute(command(acceptLiquid: true)));
-
-        final captured = verify(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: any(named: 'command'),
-            bitcoinAddress: captureAny(named: 'bitcoinAddress'),
-            liquidAddress: captureAny(named: 'liquidAddress'),
-            liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
-          ),
-        ).captured;
-        expect(captured[0], isNull); // no BTC address for a Liquid-only invoice
-        expect(captured[1], 'lq1qfresh');
-        expect(
-          captured[2],
-          '1111111111111111111111111111111111111111111111111111111111111111',
-        );
-        verify(
-          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
-            walletId: 'liquid-default',
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'LN-only invoice supplies the Liquid address without the secret',
-      () async {
-        _unwrap(
-          await usecase.execute(command(acceptLn: true, acceptLiquid: false)),
-        );
-
-        final captured = verify(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: any(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: captureAny(named: 'liquidAddress'),
-            liquidBlindingKeyHex: captureAny(named: 'liquidBlindingKeyHex'),
-          ),
-        ).captured;
-        expect(captured[0], 'lq1qfresh');
-        expect(
-          captured[1],
-          isNull,
-        ); // §3.5/§3.19: key sent only when acceptLiquid
-      },
-    );
-
-    test('BTC rail: fresh address from the DEFAULT bitcoin wallet', () async {
-      _unwrap(
-        await usecase.execute(command(acceptBtc: true, acceptLiquid: false)),
-      );
-
-      verify(
-        () => addrRepo.generateNewReceiveAddress(walletId: 'btc-default'),
-      ).called(1);
-      final captured = verify(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: captureAny(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-        ),
-      ).captured;
-      expect(captured.single, 'bc1qfresh');
-    });
-  });
-
-  group('orchestration order + linked-vs-unlinked', () {
-    test(
-      'validates → signer → addresses → wire (signer resolved once)',
-      () async {
-        _unwrap(await usecase.execute(command(acceptLiquid: true)));
-        verify(() => identity.getSigningHandle()).called(1);
-        verify(
-          () => payService.createInvoice(
-            signer: signer,
-            command: any(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: any(named: 'liquidAddress'),
-            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'v1 is unlinked: the command carries no nym (linkToPageNym null)',
-      () async {
-        _unwrap(await usecase.execute(command(acceptLiquid: true)));
-        final captured = verify(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: captureAny(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: any(named: 'liquidAddress'),
-            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-          ),
-        ).captured;
-        final sent = captured.single as CreateInvoiceCommand;
-        expect(sent.linkToPageNym, isNull);
-      },
-    );
-
-    test(
-      'identity failure short-circuits before settings and wire work',
-      () async {
-        when(
-          () => identity.getSigningHandle(),
-        ).thenAnswer((_) async => const Err(InvoicesFailure.signingFailed()));
-
-        final failure = _unwrapFailure(
-          await usecase.execute(command(acceptLiquid: true)),
-        );
-
-        expect(failure.kind, InvoicesFailureKind.signingFailed);
-        verifyNever(() => getSettings.execute());
-        verifyNever(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: any(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: any(named: 'liquidAddress'),
-            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-          ),
-        );
-      },
-    );
-  });
-
-  group('local pre-validation (§3.6/§3.8)', () {
-    test('no rail selected → invalidInput, zero wire calls', () async {
-      final failure = _unwrapFailure(
-        await usecase.execute(
-          command(acceptBtc: false, acceptLn: false, acceptLiquid: false),
-        ),
-      );
-      expect(failure.kind, InvoicesFailureKind.invalidInput);
-      verifyNever(() => identity.getSigningHandle());
-      verifyNever(
-        () => payService.createInvoice(
-          signer: any(named: 'signer'),
-          command: any(named: 'command'),
-        ),
-      );
-    });
-
-    test('both amount forms → invalidInput', () async {
-      final failure = _unwrapFailure(
-        await usecase.execute(
-          command(amountSat: 1000, fiatAmountMinor: 500, fiatCurrency: 'CAD'),
-        ),
-      );
-      expect(failure.kind, InvoicesFailureKind.invalidInput);
-    });
-
-    test('neither amount form → invalidInput', () async {
-      final failure = _unwrapFailure(
-        await usecase.execute(command(amountSat: null)),
-      );
-      expect(failure.kind, InvoicesFailureKind.invalidInput);
-    });
-  });
-
-  group('missing default wallets', () {
-    test('BTC rail with no default bitcoin wallet → typed error', () async {
-      when(
-        () => walletRepo.getWallets(
-          environment: any(named: 'environment'),
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          onlyLiquid: any(named: 'onlyLiquid'),
-        ),
-      ).thenAnswer((_) async => []);
-
-      final failure = _unwrapFailure(
-        await usecase.execute(command(acceptBtc: true, acceptLiquid: false)),
-      );
-      expect(failure.kind, InvoicesFailureKind.noDefaultBitcoinWallet);
-    });
-
-    test('Liquid rail with no default liquid wallet → typed error', () async {
-      when(
-        () => walletRepo.getWallets(
-          environment: any(named: 'environment'),
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          onlyLiquid: any(named: 'onlyLiquid'),
-        ),
-      ).thenAnswer((_) async => []);
-
-      final failure = _unwrapFailure(
-        await usecase.execute(command(acceptLiquid: true)),
-      );
-      expect(failure.kind, InvoicesFailureKind.noDefaultLiquidWallet);
-    });
-  });
-
-  group('used-address single retry (§7.2)', () {
-    test('reused Liquid address regenerates ONCE and retries', () async {
-      var call = 0;
+  test(
+    'response loss retains the exact operation and address reservation',
+    () async {
       when(
         () => payService.createInvoice(
           signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+          operation: any(named: 'operation'),
         ),
-      ).thenAnswer((_) async {
-        call++;
-        if (call == 1) {
-          return const Err(InvoicesFailure.reusedLiquidAddress());
-        }
-        return Ok(result);
-      });
+      ).thenAnswer((_) async => const Err(InvoicesFailure.network()));
 
-      final r = _unwrap(await usecase.execute(command(acceptLiquid: true)));
+      final failure = _unwrapFailure(await usecase.execute(_command()));
 
-      expect(r.invoiceId.value, 'inv-1');
-      // one initial + one regenerate = two address derivations.
+      expect(failure.kind, InvoicesFailureKind.outcomeUnknown);
+      expect(links.pending, isNotNull);
+      expect(links.pending!.encrypted.presentationEnvelope, 'E' * 5500);
+      expect(links.pending!.reservationLabelIds, [1]);
+      verifyNever(() => labels.trash(any()));
+
+      when(
+        () => payService.createInvoice(
+          signer: any(named: 'signer'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenAnswer((_) async => Ok(result));
+      final resumed = _unwrap(await usecase.resumePending());
+      expect(resumed, result);
+      expect(cipher.encryptCalls, 1);
       verify(
         () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
-          walletId: 'liquid-default',
+          walletId: any(named: 'walletId'),
         ),
-      ).called(2);
-    });
+      ).called(1);
+    },
+  );
 
-    test(
-      'a SECOND reuse propagates the typed error (no infinite loop)',
-      () async {
-        when(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: any(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: any(named: 'liquidAddress'),
-            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-          ),
-        ).thenAnswer(
-          (_) async => const Err(InvoicesFailure.reusedLiquidAddress()),
-        );
-
-        final failure = _unwrapFailure(
-          await usecase.execute(command(acceptLiquid: true)),
-        );
-        expect(failure.kind, InvoicesFailureKind.reusedLiquidAddress);
-        verify(
-          () => addrRepo.generateNewLiquidReceiveAddressWithBlindingSecret(
-            walletId: 'liquid-default',
-          ),
-        ).called(2);
-      },
-    );
-  });
-
-  group('private memo (§3.14)', () {
-    test('stored as a local memo label AFTER a successful create', () async {
-      final r = _unwrap(
-        await usecase.execute(command(acceptLiquid: true, privateMemo: 'rent')),
-      );
-
-      expect(r.invoiceId.value, 'inv-1');
-      // The memo label (distinct from the reservation) is stored exactly once,
-      // keyed on the created invoice's Liquid address.
-      final memoStores = verify(
-        () => labels.store(captureAny()),
-      ).captured.cast<NewLabel>().where((l) => l.label == 'rent').toList();
-      expect(memoStores, hasLength(1));
-      expect(memoStores.single.reference, 'lq1qfresh');
-    });
-
-    test(
-      'a memo label store failure never fails the create (§3.14 / AD-3)',
-      () async {
-        // ONLY the best-effort memo store throws; the reservation still succeeds.
-        when(
-          () => labels.store(any(that: isMemoLabel())),
-        ).thenThrow(const FormatException('labels down'));
-
-        final r = _unwrap(
-          await usecase.execute(
-            command(acceptLiquid: true, privateMemo: 'rent'),
-          ),
-        );
-
-        expect(r.invoiceId.value, 'inv-1');
-      },
-    );
-
-    test(
-      'no memo → only the reservation label is stored (no memo label)',
-      () async {
-        _unwrap(await usecase.execute(command(acceptLiquid: true)));
-        final stored = verify(
-          () => labels.store(captureAny()),
-        ).captured.cast<NewLabel>();
-        // Exactly the reservation, never a memo label.
-        expect(stored, hasLength(1));
-        expect(stored.single.label, LabelSystem.invoice.label);
-      },
-    );
-  });
-
-  group('Liquid address reservation (back-to-back collision fix)', () {
-    test(
-      'reserves the issued Liquid address with a system label at generation',
-      () async {
-        _unwrap(await usecase.execute(command(acceptLiquid: true)));
-
-        final reservation = verify(() => labels.store(captureAny())).captured
-            .cast<NewLabel>()
-            .firstWhere((l) => l.label == LabelSystem.invoice.label);
-        expect(reservation.reference, 'lq1qfresh');
-        expect(reservation.type, LabelType.address);
-        expect(reservation.origin, 'invoice');
-      },
-    );
-
-    test(
-      'an LN-only invoice (acceptLiquid false) still reserves its address',
-      () async {
-        _unwrap(
-          await usecase.execute(command(acceptLn: true, acceptLiquid: false)),
-        );
-
-        final reservations = verify(() => labels.store(captureAny())).captured
-            .cast<NewLabel>()
-            .where((l) => l.label == LabelSystem.invoice.label)
-            .toList();
-        expect(reservations, hasLength(1));
-        expect(reservations.single.reference, 'lq1qfresh');
-      },
-    );
-
-    test(
-      'a reservation store FAILURE fails the create loudly (never silent)',
-      () async {
-        when(() => labels.store(any(that: isReservationLabel()))).thenAnswer(
-          (_) async =>
-              const Err<Label, LabelFailure>(LabelUnexpectedFailure('down')),
-        );
-
-        final failure = _unwrapFailure(
-          await usecase.execute(command(acceptLiquid: true)),
-        );
-        expect(failure.kind, InvoicesFailureKind.unexpected);
-        // The reservation is correctness-critical: the wire create is never made.
-        verifyNever(
-          () => payService.createInvoice(
-            signer: any(named: 'signer'),
-            command: any(named: 'command'),
-            bitcoinAddress: any(named: 'bitcoinAddress'),
-            liquidAddress: any(named: 'liquidAddress'),
-            liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
-          ),
-        );
-      },
-    );
-
-    test('releases the reservation when the create ultimately fails', () async {
+  test(
+    'definite pre-insert rejection deletes pending and releases reservation',
+    () async {
       when(
         () => payService.createInvoice(
           signer: any(named: 'signer'),
-          command: any(named: 'command'),
-          bitcoinAddress: any(named: 'bitcoinAddress'),
-          liquidAddress: any(named: 'liquidAddress'),
-          liquidBlindingKeyHex: any(named: 'liquidBlindingKeyHex'),
+          operation: any(named: 'operation'),
         ),
       ).thenAnswer(
-        (_) async => const Err(InvoicesFailure.server(retryable: true)),
+        (_) async =>
+            const Err(InvoicesFailure.invalidInput(code: 'InvalidAmount')),
       );
 
-      final failure = _unwrapFailure(
-        await usecase.execute(command(acceptLiquid: true)),
+      final failure = _unwrapFailure(await usecase.execute(_command()));
+
+      expect(failure.kind, InvoicesFailureKind.invalidInput);
+      expect(links.pending, isNull);
+      verify(() => labels.trash(1)).called(1);
+    },
+  );
+
+  test(
+    'used Liquid address replaces only payout data and request id',
+    () async {
+      var calls = 0;
+      final sent = <PreparedPrivateInvoiceCreate>[];
+      when(
+        () => payService.createInvoice(
+          signer: any(named: 'signer'),
+          operation: any(named: 'operation'),
+        ),
+      ).thenAnswer((invocation) async {
+        sent.add(
+          invocation.namedArguments[#operation] as PreparedPrivateInvoiceCreate,
+        );
+        calls++;
+        return calls == 1
+            ? const Err(InvoicesFailure.reusedLiquidAddress())
+            : Ok(result);
+      });
+
+      _unwrap(await usecase.execute(_command()));
+
+      expect(sent, hasLength(2));
+      expect(
+        sent[1].encrypted.clientRequestId,
+        isNot(sent[0].encrypted.clientRequestId),
       );
-      expect(failure.kind, InvoicesFailureKind.server);
-      // The index burned during this failed create is handed back.
-      verify(() => labels.trash(any())).called(1);
-    });
+      expect(
+        sent[1].encrypted.presentationEnvelope,
+        sent[0].encrypted.presentationEnvelope,
+      );
+      expect(sent[1].encrypted.viewingKey, sent[0].encrypted.viewingKey);
+      expect(sent[1].liquidAddress, 'lq1qfresh2');
+      verify(() => labels.trash(1)).called(1);
+    },
+  );
+
+  test('retained-link failure leaves pending operation recoverable', () async {
+    links.retainFailure = true;
+
+    final failure = _unwrapFailure(await usecase.execute(_command()));
+
+    expect(failure.kind, InvoicesFailureKind.privateStorage);
+    expect(links.pending, isNotNull);
+    expect(links.deleteCalls, 0);
+    verifyNever(() => labels.trash(any()));
   });
+
+  test('all wallet lookups are constrained to defaults', () async {
+    _unwrap(
+      await usecase.execute(
+        _command(acceptBtc: true, acceptLn: true, acceptLiquid: true),
+      ),
+    );
+
+    final captured = verify(
+      () => walletRepo.getWallets(
+        environment: any(named: 'environment'),
+        onlyDefaults: captureAny(named: 'onlyDefaults'),
+        onlyBitcoin: any(named: 'onlyBitcoin'),
+        onlyLiquid: any(named: 'onlyLiquid'),
+      ),
+    ).captured;
+    expect(captured, everyElement(isTrue));
+  });
+
+  test(
+    'invalid command fails before identity, encryption, and storage',
+    () async {
+      final failure = _unwrapFailure(
+        await usecase.execute(_command(acceptLn: false, acceptLiquid: false)),
+      );
+
+      expect(failure.kind, InvoicesFailureKind.invalidInput);
+      verifyNever(() => identity.getSigningHandle());
+      expect(cipher.encryptCalls, 0);
+      expect(links.saveCalls, 0);
+    },
+  );
+}
+
+CreateInvoiceCommand _command({
+  bool acceptBtc = false,
+  bool acceptLn = true,
+  bool acceptLiquid = true,
+}) => CreateInvoiceCommand(
+  amountSat: 1000,
+  presentation: PrivateInvoicePresentation(
+    invoice: PrivateInvoiceDetails(description: 'Consulting'),
+  ),
+  acceptBtc: acceptBtc,
+  acceptLn: acceptLn,
+  acceptLiquid: acceptLiquid,
+);
+
+PreparedPrivateInvoiceCreate _prepared() => PreparedPrivateInvoiceCreate(
+  encrypted: EncryptedPrivateInvoice(
+    clientRequestId: '00000000-0000-4000-8000-000000000001',
+    presentationEnvelope: 'E' * 5500,
+    viewingKey: 'A' * 43,
+  ),
+  amountSat: 1000,
+  acceptBtc: false,
+  acceptLn: true,
+  acceptLiquid: true,
+  liquidAddress: 'lq1qfresh',
+  liquidBlindingKeyHex: '11' * 32,
+);
+
+T _unwrap<T>(Result<T, InvoicesFailure> result) => result.fold(
+  (value) => value,
+  (failure) => throw TestFailure('expected Ok, got $failure'),
+);
+
+InvoicesFailure _unwrapFailure<T>(Result<T, InvoicesFailure> result) =>
+    result.fold(
+      (_) => throw TestFailure('expected Err, got Ok'),
+      (failure) => failure,
+    );
+
+class _FakeCipher implements PrivateInvoiceCipher {
+  int encryptCalls = 0;
+  int _requestSequence = 0;
+
+  @override
+  Future<EncryptedPrivateInvoice> encrypt(
+    PrivateInvoicePresentation presentation,
+  ) async {
+    encryptCalls++;
+    return EncryptedPrivateInvoice(
+      clientRequestId: newClientRequestId(),
+      presentationEnvelope: 'E' * 5500,
+      viewingKey: 'A' * 43,
+    );
+  }
+
+  @override
+  String newClientRequestId() {
+    _requestSequence++;
+    return '00000000-0000-4000-8000-'
+        '${_requestSequence.toString().padLeft(12, '0')}';
+  }
+}
+
+class _FakeLinks implements PrivateInvoiceLinkRepository {
+  PreparedPrivateInvoiceCreate? pending;
+  final Map<String, PrivateInvoiceLink> retained = {};
+  int saveCalls = 0;
+  int deleteCalls = 0;
+  bool retainFailure = false;
+  void Function(PreparedPrivateInvoiceCreate)? onSavePending;
+  void Function(String)? onDeletePending;
+  void Function(PrivateInvoiceLink)? onRetainLink;
+
+  @override
+  Future<void> deletePending(String clientRequestId) async {
+    deleteCalls++;
+    onDeletePending?.call(clientRequestId);
+    if (pending?.encrypted.clientRequestId == clientRequestId) pending = null;
+  }
+
+  @override
+  Future<PreparedPrivateInvoiceCreate?> getPending() async => pending;
+
+  @override
+  Future<PrivateInvoiceLink?> getRetainedLink(InvoiceId invoiceId) async =>
+      retained[invoiceId.value];
+
+  @override
+  Future<void> retainLink(PrivateInvoiceLink link) async {
+    onRetainLink?.call(link);
+    if (retainFailure) throw const FormatException('storage unavailable');
+    retained[link.invoiceId.value] = link;
+  }
+
+  @override
+  Future<void> savePending(PreparedPrivateInvoiceCreate operation) async {
+    saveCalls++;
+    onSavePending?.call(operation);
+    pending = operation;
+  }
 }

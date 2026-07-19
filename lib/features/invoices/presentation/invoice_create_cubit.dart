@@ -1,24 +1,67 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Drives the create-invoice form. It holds only form state; on [submit] it
-/// builds a [CreateInvoiceCommand] and delegates to the facade — the payout
-/// wallet lookup, address generation, signing and label storage all live in the
-/// usecase. An [_operationId] guard makes double-taps and stale completions
-/// inert (§CR-01).
 class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
   final InvoicesFacade _facade;
   int _operationId = 0;
 
-  InvoiceCreateCubit({required this._facade})
-    : super(const InvoiceCreateState());
+  InvoiceCreateCubit({required InvoicesFacade facade}) : this._(facade);
 
-  /// Loads the live fiat currency list; degrades gracefully on failure so the
-  /// sats path still works (§7.4).
-  Future<void> loadCurrencies() async {
+  InvoiceCreateCubit._(this._facade) : super(const InvoiceCreateState());
+
+  Future<void> initialize() async {
+    final result = await _facade.resumeCreate();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        if (value != null) {
+          emit(state.copyWith(initializing: false, result: value));
+          return;
+        }
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            initializing: false,
+            pendingRetry: true,
+            failure: failure,
+          ),
+        );
+        return;
+    }
+    emit(state.copyWith(initializing: false));
+    await _loadCurrencies();
+  }
+
+  Future<void> retryPending() async {
+    if (state.submitting || !state.pendingRetry) return;
+    final op = ++_operationId;
+    emit(state.copyWith(submitting: true, clearFailure: true));
+    final result = await _facade.resumeCreate();
+    if (isClosed || op != _operationId) return;
+    switch (result) {
+      case Ok(:final value):
+        if (value == null) {
+          emit(
+            state.copyWith(
+              submitting: false,
+              pendingRetry: false,
+              clearFailure: true,
+            ),
+          );
+          await _loadCurrencies();
+        } else {
+          emit(state.copyWith(submitting: false, result: value));
+        }
+      case Err(:final failure):
+        emit(state.copyWith(submitting: false, failure: failure));
+    }
+  }
+
+  Future<void> _loadCurrencies() async {
     try {
       final supported = await _facade.supportedCurrencies();
       if (isClosed) return;
@@ -32,67 +75,78 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
               : state.fiatCurrency,
         ),
       );
-    } catch (e, stack) {
-      log.warning('Invoice currency fetch failed', error: e, trace: stack);
-      if (isClosed) return;
-      emit(state.copyWith(currenciesUnavailable: true));
+    } catch (error, stack) {
+      log.warning('Invoice currency fetch failed', error: error, trace: stack);
+      if (!isClosed) emit(state.copyWith(currenciesUnavailable: true));
     }
   }
 
-  void amountModeChanged(InvoiceAmountMode mode) => emit(
+  void amountModeChanged(InvoiceAmountMode value) => _emit(
     state.copyWith(
-      amountMode: mode,
-      clearFailure: true,
-      clearInvalidField: true,
-    ),
-  );
-
-  void amountChanged(String value) => emit(
-    state.copyWith(
-      amountInput: value,
-      clearFailure: true,
+      amountMode: value,
       clearInvalidField: state.invalidField == InvoiceCreateField.amount,
     ),
   );
-
-  void fiatCurrencyChanged(String code) => emit(
+  void amountChanged(String value) => _emit(
     state.copyWith(
-      fiatCurrency: code,
-      clearFailure: true,
+      amountInput: value,
+      clearInvalidField: state.invalidField == InvoiceCreateField.amount,
+    ),
+  );
+  void fiatCurrencyChanged(String value) => _emit(
+    state.copyWith(
+      fiatCurrency: value,
       clearInvalidField: state.invalidField == InvoiceCreateField.currency,
     ),
   );
-
-  void publicDescriptionChanged(String value) =>
-      emit(state.copyWith(publicDescription: value, clearFailure: true));
-
-  void recipientNameChanged(String value) =>
-      emit(state.copyWith(recipientName: value, clearFailure: true));
-
-  void invoiceNumberChanged(String value) =>
-      emit(state.copyWith(invoiceNumber: value, clearFailure: true));
-
-  void acceptBtcChanged(bool value) =>
-      emit(state.copyWith(acceptBtc: value, clearFailure: true));
-
-  void acceptLnChanged(bool value) =>
-      emit(state.copyWith(acceptLn: value, clearFailure: true));
-
+  void acceptBtcChanged(bool value) => _emit(state.copyWith(acceptBtc: value));
+  void acceptLnChanged(bool value) => _emit(state.copyWith(acceptLn: value));
   void acceptLiquidChanged(bool value) =>
-      emit(state.copyWith(acceptLiquid: value, clearFailure: true));
+      _emit(state.copyWith(acceptLiquid: value));
 
-  void expiryDaysChanged(int days) =>
-      emit(state.copyWith(expiryDays: days.clamp(1, 7), clearFailure: true));
-
-  void privateMemoChanged(String value) =>
-      emit(state.copyWith(privateMemo: value, clearFailure: true));
+  void detailChanged(InvoiceCreateField field, String value) {
+    final next = switch (field) {
+      InvoiceCreateField.payerName => state.copyWith(payerName: value),
+      InvoiceCreateField.payerCorporateName => state.copyWith(
+        payerCorporateName: value,
+      ),
+      InvoiceCreateField.payerAddress => state.copyWith(payerAddress: value),
+      InvoiceCreateField.payerEmail => state.copyWith(payerEmail: value),
+      InvoiceCreateField.payerPhone => state.copyWith(payerPhone: value),
+      InvoiceCreateField.description => state.copyWith(description: value),
+      InvoiceCreateField.invoiceNumber => state.copyWith(invoiceNumber: value),
+      InvoiceCreateField.purchaseOrderReference => state.copyWith(
+        purchaseOrderReference: value,
+      ),
+      InvoiceCreateField.invoiceDate => state.copyWith(invoiceDate: value),
+      InvoiceCreateField.paymentDeadline => state.copyWith(
+        paymentDeadline: value,
+      ),
+      InvoiceCreateField.payeeName => state.copyWith(payeeName: value),
+      InvoiceCreateField.payeeCorporateName => state.copyWith(
+        payeeCorporateName: value,
+      ),
+      InvoiceCreateField.payeeAddress => state.copyWith(payeeAddress: value),
+      InvoiceCreateField.payeeEmail => state.copyWith(payeeEmail: value),
+      InvoiceCreateField.payeePhone => state.copyWith(payeePhone: value),
+      _ => state,
+    };
+    _emit(
+      next.copyWith(
+        clearInvalidField:
+            state.invalidField == field ||
+            state.invalidField == InvoiceCreateField.details,
+      ),
+    );
+  }
 
   Future<void> submit() async {
-    if (state.submitting || state.isSubmitted) return;
-
-    // Light local pre-checks (the usecase + server remain the authority): a
-    // rail must be chosen and the amount must parse. Deeper coherence is typed
-    // back from the usecase.
+    if (state.initializing ||
+        state.submitting ||
+        state.isSubmitted ||
+        state.pendingRetry) {
+      return;
+    }
     if (!state.hasAnyRail) {
       emit(
         state.copyWith(
@@ -101,36 +155,40 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
       );
       return;
     }
-    final int? amountSat;
-    final int? fiatAmountMinor;
-    final String? fiatCurrency;
-    if (state.amountMode == InvoiceAmountMode.sats) {
-      amountSat = int.tryParse(state.amountInput.trim());
-      fiatAmountMinor = null;
-      fiatCurrency = null;
-      if (amountSat == null || amountSat <= 0) {
-        _emitInvalidAmount();
-        return;
-      }
-    } else {
-      amountSat = null;
-      fiatCurrency = state.fiatCurrency;
-      if (fiatCurrency.isEmpty) {
-        emit(
-          state.copyWith(
-            failure: const InvoicesFailure.invalidInput(
-              code: 'CurrencyRequired',
-            ),
-            invalidField: InvoiceCreateField.currency,
+    final amount = _parseAmount();
+    if (amount == null) return;
+
+    final PrivateInvoicePresentation presentation;
+    try {
+      presentation = PrivateInvoicePresentation(
+        payer: _contact(
+          section: 'payer',
+          name: state.payerName,
+          corporateName: state.payerCorporateName,
+          address: state.payerAddress,
+          email: state.payerEmail,
+          phone: state.payerPhone,
+        ),
+        invoice: _invoiceDetails(),
+        payee: _contact(
+          section: 'payee',
+          name: state.payeeName,
+          corporateName: state.payeeCorporateName,
+          address: state.payeeAddress,
+          email: state.payeeEmail,
+          phone: state.payeePhone,
+        ),
+      );
+    } on PrivateInvoicePresentationException catch (error) {
+      emit(
+        state.copyWith(
+          failure: InvoicesFailure.invalidInput(
+            code: '${error.field}:${error.code}',
           ),
-        );
-        return;
-      }
-      fiatAmountMinor = _parseFiatMinor(state.amountInput, fiatCurrency);
-      if (fiatAmountMinor == null || fiatAmountMinor <= 0) {
-        _emitInvalidAmount();
-        return;
-      }
+          invalidField: _fieldFor(error.field),
+        ),
+      );
+      return;
     }
 
     final op = ++_operationId;
@@ -141,54 +199,132 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
         clearInvalidField: true,
       ),
     );
-
-    final command = CreateInvoiceCommand(
-      amountSat: amountSat,
-      fiatAmountMinor: fiatAmountMinor,
-      fiatCurrency: fiatCurrency,
-      publicDescription: _nullIfBlank(state.publicDescription),
-      recipientName: _nullIfBlank(state.recipientName),
-      invoiceNumber: _nullIfBlank(state.invoiceNumber),
-      acceptBtc: state.acceptBtc,
-      acceptLn: state.acceptLn,
-      acceptLiquid: state.acceptLiquid,
-      expiresAt: DateTime.now().toUtc().add(Duration(days: state.expiryDays)),
-      privateMemo: _nullIfBlank(state.privateMemo),
+    final result = await _facade.create(
+      CreateInvoiceCommand(
+        amountSat: amount.$1,
+        fiatAmountMinor: amount.$2,
+        fiatCurrency: amount.$3,
+        presentation: presentation,
+        acceptBtc: state.acceptBtc,
+        acceptLn: state.acceptLn,
+        acceptLiquid: state.acceptLiquid,
+      ),
     );
-
-    final result = await _facade.create(command);
     if (isClosed || op != _operationId) return;
     switch (result) {
       case Ok(:final value):
         emit(state.copyWith(submitting: false, result: value));
       case Err(:final failure):
-        emit(state.copyWith(submitting: false, failure: failure));
+        emit(
+          state.copyWith(
+            submitting: false,
+            pendingRetry:
+                failure.kind == InvoicesFailureKind.outcomeUnknown ||
+                failure.kind == InvoicesFailureKind.privateStorage ||
+                failure.kind == InvoicesFailureKind.createConflict,
+            failure: failure,
+          ),
+        );
     }
   }
 
-  void _emitInvalidAmount() => emit(
-    state.copyWith(
-      failure: const InvoicesFailure.invalidInput(code: 'AmountInvalid'),
-      invalidField: InvoiceCreateField.amount,
-    ),
-  );
+  (int?, int?, String?)? _parseAmount() {
+    if (state.amountMode == InvoiceAmountMode.sats) {
+      final value = int.tryParse(state.amountInput.trim());
+      if (value == null || value <= 0) {
+        _emitInvalid(InvoiceCreateField.amount, 'AmountInvalid');
+        return null;
+      }
+      return (value, null, null);
+    }
+    if (state.fiatCurrency.isEmpty) {
+      _emitInvalid(InvoiceCreateField.currency, 'CurrencyRequired');
+      return null;
+    }
+    final value = double.tryParse(state.amountInput.trim());
+    if (value == null || value <= 0) {
+      _emitInvalid(InvoiceCreateField.amount, 'AmountInvalid');
+      return null;
+    }
+    final factor = _pow10(_precisionFor(state.fiatCurrency));
+    return (null, (value * factor).round(), state.fiatCurrency);
+  }
+
+  PrivateInvoiceContact _contact({
+    required String section,
+    required String name,
+    required String corporateName,
+    required String address,
+    required String email,
+    required String phone,
+  }) {
+    try {
+      return PrivateInvoiceContact(
+        name: name,
+        corporateName: corporateName,
+        address: address,
+        email: email,
+        phone: phone,
+      );
+    } on PrivateInvoicePresentationException catch (error) {
+      throw PrivateInvoicePresentationException(
+        field: '$section.${error.field}',
+        code: error.code,
+      );
+    }
+  }
+
+  PrivateInvoiceDetails _invoiceDetails() {
+    try {
+      return PrivateInvoiceDetails(
+        description: state.description,
+        number: state.invoiceNumber,
+        purchaseOrderReference: state.purchaseOrderReference,
+        invoiceDate: state.invoiceDate,
+        paymentDeadline: state.paymentDeadline,
+      );
+    } on PrivateInvoicePresentationException catch (error) {
+      throw PrivateInvoicePresentationException(
+        field: 'invoice.${error.field}',
+        code: error.code,
+      );
+    }
+  }
+
+  InvoiceCreateField _fieldFor(String field) => switch (field) {
+    'payer.name' => InvoiceCreateField.payerName,
+    'payer.corporate_name' => InvoiceCreateField.payerCorporateName,
+    'payer.address' => InvoiceCreateField.payerAddress,
+    'payer.email' => InvoiceCreateField.payerEmail,
+    'payer.phone' => InvoiceCreateField.payerPhone,
+    'invoice.description' => InvoiceCreateField.description,
+    'invoice.number' => InvoiceCreateField.invoiceNumber,
+    'invoice.purchase_order_reference' =>
+      InvoiceCreateField.purchaseOrderReference,
+    'invoice.invoice_date' => InvoiceCreateField.invoiceDate,
+    'invoice.payment_deadline' => InvoiceCreateField.paymentDeadline,
+    'payee.name' => InvoiceCreateField.payeeName,
+    'payee.corporate_name' => InvoiceCreateField.payeeCorporateName,
+    'payee.address' => InvoiceCreateField.payeeAddress,
+    'payee.email' => InvoiceCreateField.payeeEmail,
+    'payee.phone' => InvoiceCreateField.payeePhone,
+    _ => InvoiceCreateField.details,
+  };
+
+  void _emitInvalid(InvoiceCreateField field, String code) {
+    emit(
+      state.copyWith(
+        failure: InvoicesFailure.invalidInput(code: code),
+        invalidField: field,
+      ),
+    );
+  }
 
   int _precisionFor(String currency) {
-    for (final c in state.currencies) {
-      if (c.code == currency) return c.precision;
+    for (final item in state.currencies) {
+      if (item.code == currency) return item.precision;
     }
     return 2;
-  }
-
-  /// Converts a decimal amount string to minor units for the currency's
-  /// precision (e.g. "12.34"/CAD → 1234; "5000"/COP(0) → 5000).
-  int? _parseFiatMinor(String input, String currency) {
-    final trimmed = input.trim();
-    if (trimmed.isEmpty) return null;
-    final value = double.tryParse(trimmed);
-    if (value == null) return null;
-    final factor = _pow10(_precisionFor(currency));
-    return (value * factor).round();
   }
 
   int _pow10(int exponent) {
@@ -199,8 +335,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
     return result;
   }
 
-  String? _nullIfBlank(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
+  void _emit(InvoiceCreateState next) {
+    emit(next.copyWith(clearFailure: true));
   }
 }

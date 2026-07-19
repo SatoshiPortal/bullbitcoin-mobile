@@ -250,9 +250,8 @@ class BullnymHttpClient implements BullnymClientPort {
         'amount_sat': fields.amountSat,
         'fiat_amount_minor': fields.fiatAmountMinor,
         'fiat_currency': fields.fiatCurrency,
-        'public_description': fields.publicDescription,
-        'recipient_name': fields.recipientName,
-        'invoice_number': fields.invoiceNumber,
+        'client_request_id': fields.clientRequestId,
+        'presentation_envelope': fields.presentationEnvelope,
         'accept_btc': fields.acceptBtc,
         'accept_ln': fields.acceptLn,
         'accept_liquid': fields.acceptLiquid,
@@ -266,7 +265,7 @@ class BullnymHttpClient implements BullnymClientPort {
     );
     return BullnymCreateInvoiceResponse(
       invoiceId: _requiredString(response, 'invoice_id'),
-      shareUrl: _requiredString(response, 'share_url'),
+      invoiceUrl: _requiredString(response, 'invoice_url'),
     );
   }
 
@@ -724,15 +723,14 @@ class BullnymHttpClient implements BullnymClientPort {
       nymOwner: _optionalString(json, 'nym_owner'),
       origin: _requiredString(json, 'origin'),
       status: _requiredString(json, 'status'),
+      presentationStatus: _optionalString(json, 'presentation_status'),
       pricingMode: _requiredString(json, 'pricing_mode'),
       settlementStatus: _requiredString(json, 'settlement_status'),
       amountSat: _requiredInt(json, 'amount_sat'),
       remainingAmountSat: _requiredInt(json, 'remaining_amount_sat'),
       fiatAmountMinor: _optionalInt(json, 'fiat_amount_minor'),
       fiatCurrency: _optionalString(json, 'fiat_currency'),
-      publicDescription: _optionalString(json, 'public_description'),
-      recipientName: _optionalString(json, 'recipient_name'),
-      invoiceNumber: _optionalString(json, 'invoice_number'),
+      memo: _optionalString(json, 'memo'),
       acceptBtc: _requiredBool(json, 'accept_btc'),
       acceptLn: _requiredBool(json, 'accept_ln'),
       acceptLiquid: _requiredBool(json, 'accept_liquid'),

@@ -19,6 +19,10 @@ extension InvoicesFailureL10n on InvoicesFailure {
     InvoicesRateLimitedFailure() => context.loc.invoiceErrorRateLimited,
     InvoicesNetworkFailure() ||
     InvoicesTimeoutFailure() => context.loc.invoiceErrorConnection,
+    InvoicesPrivateStorageFailure() => context.loc.invoiceErrorPrivateStorage,
+    InvoicesEncryptionFailure() => context.loc.invoiceErrorEncryption,
+    InvoicesOutcomeUnknownFailure() => context.loc.invoiceErrorOutcomeUnknown,
+    InvoicesCreateConflictFailure() => context.loc.invoiceErrorCreateConflict,
     InvoicesServerFailure() => context.loc.invoiceErrorServer,
     InvoicesInvalidServerResponseFailure() ||
     InvoicesSigningFailedFailure() ||

@@ -19,8 +19,7 @@ String invoiceStatusText(BuildContext context, InvoiceStatus status) {
   };
 }
 
-/// A single row in the invoices list: status chip + a title (invoice number or
-/// description) + the sat amount.
+/// A single row in the invoices list: status, optional checkout memo, and amount.
 class InvoiceListItem extends StatelessWidget {
   final Invoice invoice;
   final VoidCallback onTap;
@@ -33,10 +32,8 @@ class InvoiceListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = invoice.invoiceNumber?.trim().isNotEmpty ?? false
-        ? invoice.invoiceNumber!
-        : (invoice.publicDescription?.trim().isNotEmpty ?? false)
-        ? invoice.publicDescription!
+    final title = invoice.memo?.trim().isNotEmpty ?? false
+        ? invoice.memo!
         : invoice.id.value;
     return ListTile(
       onTap: onTap,

@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_pay_service_datasource.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/encrypted_private_invoice.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
@@ -34,6 +36,8 @@ void main() {
     );
     registerFallbackValue(
       const BullnymCreateInvoiceFields(
+        clientRequestId: '00000000-0000-4000-8000-000000000001',
+        presentationEnvelope: 'envelope',
         acceptBtc: false,
         acceptLn: false,
         acceptLiquid: true,
@@ -46,16 +50,26 @@ void main() {
 
   setUp(() {
     bullnym = _MockBullnym();
-    datasource = InvoicesPayServiceDatasource(bullnym: bullnym);
+    datasource = InvoicesPayServiceDatasource(
+      bullnym: bullnym,
+      expectedOrigin: Uri.parse('https://bullpay.ca'),
+    );
   });
 
-  CreateInvoiceCommand createCommand({String? linkToPageNym}) =>
-      CreateInvoiceCommand(
+  PreparedPrivateInvoiceCreate createOperation({String? linkToPageNym}) =>
+      PreparedPrivateInvoiceCreate(
+        encrypted: EncryptedPrivateInvoice(
+          clientRequestId: '00000000-0000-4000-8000-000000000001',
+          presentationEnvelope: 'E' * 5500,
+          viewingKey: 'A' * 43,
+        ),
         amountSat: 2500,
         acceptBtc: false,
         acceptLn: false,
         acceptLiquid: true,
-        expiresAt: DateTime.utc(2030, 1, 1),
+        liquidAddress: 'lq1qfresh',
+        liquidBlindingKeyHex: 'de' * 32,
+        expiresAtUnix: DateTime.utc(2030, 1, 1).millisecondsSinceEpoch ~/ 1000,
         linkToPageNym: linkToPageNym,
       );
 
@@ -72,15 +86,13 @@ void main() {
       return _unwrapFailure(
         await datasource.createInvoice(
           signer: signer,
-          command: createCommand(),
-          liquidAddress: 'lq1qfresh',
-          liquidBlindingKeyHex: 'deadbeef',
+          operation: createOperation(),
         ),
       );
     }
 
     test(
-      'maps the command → wire fields (unix expiry) and passes nym through',
+      'maps the prepared operation to opaque wire fields and private link',
       () async {
         when(
           () => bullnym.createInvoice(
@@ -91,21 +103,22 @@ void main() {
         ).thenAnswer(
           (_) async => const BullnymCreateInvoiceResponse(
             invoiceId: 'inv-1',
-            shareUrl: 'https://bullpay.ca/invoice/inv-1',
+            invoiceUrl: 'https://bullpay.ca/invoice/inv-1',
           ),
         );
 
         final result = _unwrap(
           await datasource.createInvoice(
             signer: signer,
-            command: createCommand(),
-            liquidAddress: 'lq1qfresh',
-            liquidBlindingKeyHex: 'deadbeef',
+            operation: createOperation(),
           ),
         );
 
         expect(result.invoiceId.value, 'inv-1');
-        expect(result.shareUrl.value, 'https://bullpay.ca/invoice/inv-1');
+        expect(
+          result.privateLink.value,
+          'https://bullpay.ca/invoice/inv-1#v1.${'A' * 43}',
+        );
 
         // Unlinked v1: nym is null (matched literally), and we capture the fields.
         final fields =
@@ -118,8 +131,16 @@ void main() {
                 ).captured.single
                 as BullnymCreateInvoiceFields;
         expect(fields.amountSat, 2500);
+        expect(
+          fields.clientRequestId,
+          createOperation().encrypted.clientRequestId,
+        );
+        expect(
+          fields.presentationEnvelope,
+          createOperation().encrypted.presentationEnvelope,
+        );
         expect(fields.liquidAddress, 'lq1qfresh');
-        expect(fields.liquidBlindingKeyHex, 'deadbeef');
+        expect(fields.liquidBlindingKeyHex, 'de' * 32);
         expect(
           fields.expiresAtUnix,
           DateTime.utc(2030, 1, 1).millisecondsSinceEpoch ~/ 1000,
@@ -128,7 +149,7 @@ void main() {
     );
 
     test(
-      'a non-HTTPS share_url is rejected as invalidServerResponse (§8.8)',
+      'a non-HTTPS invoice_url is rejected as invalidServerResponse',
       () async {
         when(
           () => bullnym.createInvoice(
@@ -139,16 +160,14 @@ void main() {
         ).thenAnswer(
           (_) async => const BullnymCreateInvoiceResponse(
             invoiceId: 'inv-1',
-            shareUrl: 'http://evil.example/invoice/inv-1',
+            invoiceUrl: 'http://evil.example/invoice/inv-1',
           ),
         );
 
         final failure = _unwrapFailure(
           await datasource.createInvoice(
             signer: signer,
-            command: createCommand(),
-            liquidAddress: 'lq1qfresh',
-            liquidBlindingKeyHex: 'deadbeef',
+            operation: createOperation(),
           ),
         );
         expect(failure.kind, InvoicesFailureKind.invalidServerResponse);
@@ -181,6 +200,10 @@ void main() {
       expect(
         (await fromCode('LiquidAddressAlreadyUsed')).kind,
         InvoicesFailureKind.reusedLiquidAddress,
+      );
+      expect(
+        (await fromCode('InvoiceCreateConflict')).kind,
+        InvoicesFailureKind.createConflict,
       );
       for (final code in const [
         'RateLimitedSender',
@@ -257,9 +280,7 @@ void main() {
         final failure = _unwrapFailure(
           await datasource.createInvoice(
             signer: signer,
-            command: createCommand(),
-            liquidAddress: 'lq1qfresh',
-            liquidBlindingKeyHex: 'deadbeef',
+            operation: createOperation(),
           ),
         );
 

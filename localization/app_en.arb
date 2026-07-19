@@ -15948,5 +15948,110 @@
   "getPaidDeleteBackupBody": "This removes the encrypted recovery metadata stored by Bull Bitcoin. It does not delete local wallets or funds.",
   "@getPaidDeleteBackupBody": {
     "description": "Confirmation body before deleting encrypted keychain metadata from Bullnym"
+  },
+  "invoiceErrorPrivateStorage": "Private invoice storage is unavailable. Please try again.",
+  "@invoiceErrorPrivateStorage": {
+    "description": "Shown when the device cannot safely persist a private invoice operation or link."
+  },
+  "invoiceErrorEncryption": "Could not protect the private invoice details. Please try again.",
+  "@invoiceErrorEncryption": {
+    "description": "Shown when local private invoice encryption fails."
+  },
+  "invoiceErrorOutcomeUnknown": "The server may have created this invoice. Retry to recover the original link.",
+  "@invoiceErrorOutcomeUnknown": {
+    "description": "Shown when invoice creation may have succeeded but its response was not received."
+  },
+  "invoiceErrorCreateConflict": "This pending invoice cannot be safely changed. Retry the original request.",
+  "@invoiceErrorCreateConflict": {
+    "description": "Shown when an idempotent invoice create conflicts with a different payload."
+  },
+  "invoiceCopyPrivateLink": "Copy private link",
+  "@invoiceCopyPrivateLink": {
+    "description": "Button that copies the complete private invoice link."
+  },
+  "invoiceSharePrivateLink": "Share private link",
+  "@invoiceSharePrivateLink": {
+    "description": "Button that shares the complete private invoice link."
+  },
+  "invoicePendingCreateMessage": "This invoice may already exist. Retry to recover its original private link before creating another invoice.",
+  "@invoicePendingCreateMessage": {
+    "description": "Explains why an uncertain invoice create must be retried."
+  },
+  "invoiceRetryPendingCreate": "Retry invoice creation",
+  "@invoiceRetryPendingCreate": {
+    "description": "Button that retries the exact pending invoice create operation."
+  },
+  "invoiceAddDetails": "Add invoice details (optional)",
+  "@invoiceAddDetails": {
+    "description": "Collapsed control that reveals optional private invoice fields."
+  },
+  "invoicePayerSection": "Payer",
+  "@invoicePayerSection": {
+    "description": "Heading for private payer details."
+  },
+  "invoiceDetailsSection": "Invoice",
+  "@invoiceDetailsSection": {
+    "description": "Heading for private invoice references."
+  },
+  "invoicePayeeSection": "Payee",
+  "@invoicePayeeSection": {
+    "description": "Heading for private payee details."
+  },
+  "invoiceContactNameLabel": "Name",
+  "@invoiceContactNameLabel": {
+    "description": "Label for a payer or payee name."
+  },
+  "invoiceCorporateNameLabel": "Corporate name",
+  "@invoiceCorporateNameLabel": {
+    "description": "Label for a payer or payee corporate name."
+  },
+  "invoiceContactAddressLabel": "Address",
+  "@invoiceContactAddressLabel": {
+    "description": "Label for a payer or payee postal address."
+  },
+  "invoiceContactEmailLabel": "Email",
+  "@invoiceContactEmailLabel": {
+    "description": "Label for a payer or payee email address."
+  },
+  "invoiceContactPhoneLabel": "Phone",
+  "@invoiceContactPhoneLabel": {
+    "description": "Label for a payer or payee phone number."
+  },
+  "invoicePrivateDescriptionLabel": "Description",
+  "@invoicePrivateDescriptionLabel": {
+    "description": "Label for the encrypted invoice description."
+  },
+  "invoicePurchaseOrderLabel": "Purchase order reference",
+  "@invoicePurchaseOrderLabel": {
+    "description": "Label for the encrypted purchase order reference."
+  },
+  "invoiceDateLabel": "Invoice date",
+  "@invoiceDateLabel": {
+    "description": "Label for the encrypted invoice date."
+  },
+  "invoicePaymentDeadlineLabel": "Payment deadline",
+  "@invoicePaymentDeadlineLabel": {
+    "description": "Label for the encrypted informational payment deadline."
+  },
+  "invoiceDetailsFieldError": "Check this field",
+  "@invoiceDetailsFieldError": {
+    "description": "Field validation message for optional private invoice details."
+  },
+  "invoicePrivateLinkSection": "Private payment link",
+  "@invoicePrivateLinkSection": {
+    "description": "Heading for locally retained private invoice link actions."
+  },
+  "invoicePrivateLinkUnavailable": "Private link unavailable on this device",
+  "@invoicePrivateLinkUnavailable": {
+    "description": "Shown when the complete private invoice link is not retained on the current device."
+  },
+  "invoiceDetailsFieldCount": "Invoice details · {count} fields added",
+  "@invoiceDetailsFieldCount": {
+    "description": "Collapsed optional-details label with the number of populated private fields.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

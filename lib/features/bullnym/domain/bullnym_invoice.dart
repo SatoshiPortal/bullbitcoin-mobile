@@ -12,9 +12,8 @@ class BullnymCreateInvoiceFields {
   final int? amountSat;
   final int? fiatAmountMinor;
   final String? fiatCurrency;
-  final String? publicDescription;
-  final String? recipientName;
-  final String? invoiceNumber;
+  final String clientRequestId;
+  final String presentationEnvelope;
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
@@ -27,9 +26,8 @@ class BullnymCreateInvoiceFields {
     this.amountSat,
     this.fiatAmountMinor,
     this.fiatCurrency,
-    this.publicDescription,
-    this.recipientName,
-    this.invoiceNumber,
+    required this.clientRequestId,
+    required this.presentationEnvelope,
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
@@ -44,11 +42,11 @@ class BullnymCreateInvoiceFields {
 /// public share URL. Pricing/status live on the separate status shape.
 class BullnymCreateInvoiceResponse {
   final String invoiceId;
-  final String shareUrl;
+  final String invoiceUrl;
 
   const BullnymCreateInvoiceResponse({
     required this.invoiceId,
-    required this.shareUrl,
+    required this.invoiceUrl,
   });
 }
 
@@ -71,15 +69,14 @@ class BullnymInvoiceListItem {
   final String? nymOwner;
   final String origin;
   final String status;
+  final String? presentationStatus;
   final String pricingMode;
   final String settlementStatus;
   final int amountSat;
   final int remainingAmountSat;
   final int? fiatAmountMinor;
   final String? fiatCurrency;
-  final String? publicDescription;
-  final String? recipientName;
-  final String? invoiceNumber;
+  final String? memo;
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
@@ -96,15 +93,14 @@ class BullnymInvoiceListItem {
     this.nymOwner,
     required this.origin,
     required this.status,
+    this.presentationStatus,
     required this.pricingMode,
     required this.settlementStatus,
     required this.amountSat,
     required this.remainingAmountSat,
     this.fiatAmountMinor,
     this.fiatCurrency,
-    this.publicDescription,
-    this.recipientName,
-    this.invoiceNumber,
+    this.memo,
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,

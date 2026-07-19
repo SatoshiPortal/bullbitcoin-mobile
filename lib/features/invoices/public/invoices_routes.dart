@@ -34,7 +34,7 @@ class InvoicesRoutes {
         name: InvoicesRoute.create.name,
         path: InvoicesRoute.create.path,
         builder: (context, state) => BlocProvider(
-          create: (_) => locator<InvoiceCreateCubit>()..loadCurrencies(),
+          create: (_) => locator<InvoiceCreateCubit>()..initialize(),
           child: const InvoiceCreateScreen(),
         ),
       ),

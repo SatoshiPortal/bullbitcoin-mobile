@@ -117,15 +117,14 @@ Map<String, dynamic> _listItemView({String? nymOwner, bool paid = false}) {
     'nym_owner': nymOwner,
     'origin': 'wallet',
     'status': paid ? 'paid' : 'unpaid',
+    'presentation_status': 'available',
     'pricing_mode': 'sat',
     'settlement_status': 'none',
     'amount_sat': 25000,
     'remaining_amount_sat': paid ? 0 : 25000,
     'fiat_amount_minor': null,
     'fiat_currency': null,
-    'public_description': 'Consulting',
-    'recipient_name': 'Acme',
-    'invoice_number': 'INV-042',
+    'memo': null,
     'accept_btc': false,
     'accept_ln': true,
     'accept_liquid': true,
@@ -141,8 +140,10 @@ Map<String, dynamic> _listItemView({String? nymOwner, bool paid = false}) {
 }
 
 BullnymCreateInvoiceFields _lnLiquidFields() {
-  return const BullnymCreateInvoiceFields(
+  return BullnymCreateInvoiceFields(
     amountSat: 25000,
+    clientRequestId: '00000000-0000-4000-8000-000000000001',
+    presentationEnvelope: 'A' * 5500,
     acceptBtc: false,
     acceptLn: true,
     acceptLiquid: true,
@@ -172,17 +173,16 @@ void main() {
     });
 
     test(
-      'pins the unlinked 13-field layout: all fields present, empties as "", '
+      'pins the unlinked 12-field layout: all fields present, empties as "", '
       'booleans true/false, nym slot empty',
       () {
         // Fiat-denominated, LN+Liquid, no BTC — so amount_sat is empty, fiat
         // fields present, bitcoin_address empty. Hand-derived oracle.
-        final fields = const BullnymCreateInvoiceFields(
+        final fields = BullnymCreateInvoiceFields(
           fiatAmountMinor: 1050,
           fiatCurrency: 'CAD',
-          publicDescription: 'Consulting',
-          recipientName: 'Acme',
-          invoiceNumber: 'INV-042',
+          clientRequestId: '00000000-0000-4000-8000-000000000001',
+          presentationEnvelope: 'A' * 5500,
           acceptBtc: false,
           acceptLn: true,
           acceptLiquid: true,
@@ -194,13 +194,12 @@ void main() {
           action: 'invoice-create',
           npubHex: 'npub',
           nymOrEmpty: '',
-          payloadFields: const [
+          payloadFields: [
             '', // amount_sat empty (fiat-denominated)
             '1050', // fiat_amount_minor
             'CAD', // fiat_currency
-            'Consulting', // public_description
-            'Acme', // recipient_name
-            'INV-042', // invoice_number
+            '00000000-0000-4000-8000-000000000001',
+            'A' * 5500,
             'false', // accept_btc
             'true', // accept_ln
             'true', // accept_liquid
@@ -222,26 +221,27 @@ void main() {
           ),
           oracle,
         );
-        expect(buildInvoiceCreatePayloadFields(fields).length, 13);
+        expect(buildInvoiceCreatePayloadFields(fields).length, 12);
       },
     );
 
-    test('sat-denominated omitted-optionals still emit all 13 fields', () {
-      final fields = const BullnymCreateInvoiceFields(
+    test('sat-denominated omitted-optionals still emit all 12 fields', () {
+      final fields = BullnymCreateInvoiceFields(
         amountSat: 25000,
+        clientRequestId: '00000000-0000-4000-8000-000000000001',
+        presentationEnvelope: 'A' * 5500,
         acceptBtc: true,
         acceptLn: false,
         acceptLiquid: false,
         bitcoinAddress: 'bc1qtest',
         expiresAtUnix: 1710086400,
       );
-      expect(buildInvoiceCreatePayloadFields(fields), const [
+      expect(buildInvoiceCreatePayloadFields(fields), [
         '25000',
         '', // fiat_amount_minor
         '', // fiat_currency
-        '', // public_description
-        '', // recipient_name
-        '', // invoice_number
+        '00000000-0000-4000-8000-000000000001',
+        'A' * 5500,
         'true', // accept_btc
         'false', // accept_ln
         'false', // accept_liquid
@@ -372,12 +372,12 @@ void main() {
 
   group('T-INV-CLIENT create', () {
     test(
-      'POSTs the unlinked body and signs the exact 13-field layout',
+      'POSTs the unlinked body and signs the exact 12-field layout',
       () async {
         final stub = _stubDio([
           {
             'invoice_id': 'inv-1',
-            'share_url': 'https://bullpay.ca/invoice/inv-1',
+            'invoice_url': 'https://bullpay.ca/invoice/inv-1',
           },
         ]);
         final client = BullnymHttpClient.withDio(
@@ -391,18 +391,27 @@ void main() {
         );
 
         expect(response.invoiceId, 'inv-1');
-        expect(response.shareUrl, 'https://bullpay.ca/invoice/inv-1');
+        expect(response.invoiceUrl, 'https://bullpay.ca/invoice/inv-1');
 
         final request = stub.captured.requests.single;
         expect(request.method, 'POST');
         expect(request.path, '/api/v1/invoices');
         final body = request.data as Map<String, dynamic>;
         expect(body['npub'], handle.publicKeyHex);
+        expect(body['client_request_id'], _lnLiquidFields().clientRequestId);
+        expect(
+          body['presentation_envelope'],
+          _lnLiquidFields().presentationEnvelope,
+        );
         expect(body['accept_ln'], true);
         expect(body['accept_liquid'], true);
         expect(body['accept_btc'], false);
         expect(body['liquid_address'], 'lq1qtest');
         expect(body['liquid_blinding_key_hex'], 'ab12cd');
+        expect(body.containsKey('public_description'), isFalse);
+        expect(body.containsKey('recipient_name'), isFalse);
+        expect(body.containsKey('invoice_number'), isFalse);
+        expect(body.containsKey('viewing_key'), isFalse);
 
         _expectSignatureValid(
           handle: handle,

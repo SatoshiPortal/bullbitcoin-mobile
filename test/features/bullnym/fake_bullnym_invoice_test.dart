@@ -6,15 +6,19 @@ import '../../../integration_test/support/fake_bullnym_client.dart';
 BullnymAuthSigner _signer(String npubHex) =>
     BullnymAuthSigner(npubHex: npubHex, signHashHex: (_) => 'sig');
 
-BullnymCreateInvoiceFields _lnLiquid() => const BullnymCreateInvoiceFields(
-  amountSat: 25000,
-  acceptBtc: false,
-  acceptLn: true,
-  acceptLiquid: true,
-  liquidAddress: 'lq1qtest',
-  liquidBlindingKeyHex: 'ab12cd',
-  expiresAtUnix: 1710086400,
-);
+BullnymCreateInvoiceFields _lnLiquid([int sequence = 1]) =>
+    BullnymCreateInvoiceFields(
+      amountSat: 25000,
+      clientRequestId:
+          '00000000-0000-4000-8000-${sequence.toString().padLeft(12, '0')}',
+      presentationEnvelope: 'A' * 5500,
+      acceptBtc: false,
+      acceptLn: true,
+      acceptLiquid: true,
+      liquidAddress: 'lq1qtest',
+      liquidBlindingKeyHex: 'ab12cd',
+      expiresAtUnix: 1710086400,
+    );
 
 void main() {
   late FakeBullnymClient client;
@@ -28,7 +32,7 @@ void main() {
       signer: alice,
       fields: _lnLiquid(),
     );
-    expect(created.shareUrl, contains('/invoice/'));
+    expect(created.invoiceUrl, contains('/invoice/'));
 
     final list = await client.listInvoices(
       signer: alice,
@@ -88,8 +92,10 @@ void main() {
       expect(
         () => client.createInvoice(
           signer: alice,
-          fields: const BullnymCreateInvoiceFields(
+          fields: BullnymCreateInvoiceFields(
             amountSat: 1,
+            clientRequestId: '00000000-0000-4000-8000-000000000001',
+            presentationEnvelope: 'A' * 5500,
             acceptBtc: false,
             acceptLn: false,
             acceptLiquid: false,
@@ -107,8 +113,10 @@ void main() {
       expect(
         () => client.createInvoice(
           signer: alice,
-          fields: const BullnymCreateInvoiceFields(
+          fields: BullnymCreateInvoiceFields(
             amountSat: 1,
+            clientRequestId: '00000000-0000-4000-8000-000000000001',
+            presentationEnvelope: 'A' * 5500,
             acceptBtc: true,
             acceptLn: false,
             acceptLiquid: false,
@@ -162,7 +170,7 @@ void main() {
 
   test('list applies status filter and paging has_more', () async {
     for (var i = 0; i < 3; i++) {
-      await client.createInvoice(signer: alice, fields: _lnLiquid());
+      await client.createInvoice(signer: alice, fields: _lnLiquid(i + 1));
     }
     final firstPage = await client.listInvoices(
       signer: alice,
@@ -178,5 +186,42 @@ void main() {
       status: 'paid',
     );
     expect(unpaid.invoices, isEmpty);
+  });
+
+  test('same request id is idempotent and changed payload conflicts', () async {
+    final first = await client.createInvoice(
+      signer: alice,
+      fields: _lnLiquid(),
+    );
+    final retry = await client.createInvoice(
+      signer: alice,
+      fields: _lnLiquid(),
+    );
+    expect(retry.invoiceId, first.invoiceId);
+
+    final changed = _lnLiquid();
+    expect(
+      () => client.createInvoice(
+        signer: alice,
+        fields: BullnymCreateInvoiceFields(
+          amountSat: 25001,
+          clientRequestId: changed.clientRequestId,
+          presentationEnvelope: changed.presentationEnvelope,
+          acceptBtc: changed.acceptBtc,
+          acceptLn: changed.acceptLn,
+          acceptLiquid: changed.acceptLiquid,
+          liquidAddress: changed.liquidAddress,
+          liquidBlindingKeyHex: changed.liquidBlindingKeyHex,
+          expiresAtUnix: changed.expiresAtUnix,
+        ),
+      ),
+      throwsA(
+        isA<BullnymException>().having(
+          (error) => error.code,
+          'code',
+          'InvoiceCreateConflict',
+        ),
+      ),
+    );
   });
 }

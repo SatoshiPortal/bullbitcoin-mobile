@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart'
     show BullnymAuthSigner;
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
@@ -18,10 +19,7 @@ abstract interface class InvoicesPayServicePort {
   @useResult
   Future<Result<CreateInvoiceResult, InvoicesFailure>> createInvoice({
     required BullnymAuthSigner signer,
-    required CreateInvoiceCommand command,
-    String? bitcoinAddress,
-    String? liquidAddress,
-    String? liquidBlindingKeyHex,
+    required PreparedPrivateInvoiceCreate operation,
   });
 
   @useResult

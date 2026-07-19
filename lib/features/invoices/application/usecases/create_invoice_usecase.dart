@@ -10,38 +10,63 @@ import 'package:bb_mobile/features/invoices/application/commands/invoice_command
 import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_port.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/encrypted_private_invoice.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
-import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
+import 'package:bb_mobile/features/invoices/domain/private_invoice_cipher.dart';
+import 'package:bb_mobile/features/invoices/domain/repositories/private_invoice_link_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:meta/meta.dart';
 
-/// Orchestrates a wallet-origin invoice create (§3.5). The PAYOUT addresses come
-/// ONLY from the user's DEFAULT wallets (never a reserved Get Paid descriptor
-/// 101/102/103, so no LUD-22 cursor is ever touched — DG-I2). A server
-/// used-address rejection triggers a SINGLE regenerate-and-retry for that rail;
-/// the private memo is stored as local labels best-effort AFTER success.
+/// Creates one wallet-origin invoice through a durable idempotent operation.
+/// Once the request may have reached Bullnym, the exact operation and payout
+/// reservations remain until a retry obtains and stores the original result.
 class CreateInvoiceUsecase {
   final InvoicesIdentityPort _identity;
   final InvoicesPayServicePort _payService;
+  final PrivateInvoiceCipher _cipher;
+  final PrivateInvoiceLinkRepository _links;
   final WalletRepository _walletRepository;
   final WalletAddressRepository _walletAddressRepository;
   final LabelsFacade _labels;
   final GetSettingsUsecase _getSettings;
 
   const CreateInvoiceUsecase({
-    required this._identity,
-    required this._payService,
-    required this._walletRepository,
-    required this._walletAddressRepository,
-    required this._labels,
-    required this._getSettings,
-  });
+    required InvoicesIdentityPort identity,
+    required InvoicesPayServicePort payService,
+    required PrivateInvoiceCipher cipher,
+    required PrivateInvoiceLinkRepository links,
+    required WalletRepository walletRepository,
+    required WalletAddressRepository walletAddressRepository,
+    required LabelsFacade labels,
+    required GetSettingsUsecase getSettings,
+  }) : this._(
+         identity,
+         payService,
+         cipher,
+         links,
+         walletRepository,
+         walletAddressRepository,
+         labels,
+         getSettings,
+       );
+
+  const CreateInvoiceUsecase._(
+    this._identity,
+    this._payService,
+    this._cipher,
+    this._links,
+    this._walletRepository,
+    this._walletAddressRepository,
+    this._labels,
+    this._getSettings,
+  );
 
   @useResult
   Future<Result<CreateInvoiceResult, InvoicesFailure>> execute(
     CreateInvoiceCommand command,
   ) async {
-    // Local pre-validation (server echo, §3.6/§3.8): fail before any wire call.
     if (!command.hasAnyRail) {
       return const Err(InvoicesFailure.invalidInput(code: 'NoRailSelected'));
     }
@@ -49,7 +74,6 @@ class CreateInvoiceUsecase {
       return const Err(InvoicesFailure.invalidInput(code: 'AmountNotOneOf'));
     }
 
-    // Identity signer from the default-wallet xprv, resolved at point of use.
     final signerResult = await _identity.getSigningHandle();
     final BullnymAuthSigner signer;
     switch (signerResult) {
@@ -59,130 +83,258 @@ class CreateInvoiceUsecase {
         return Err(failure);
     }
 
+    final PreparedPrivateInvoiceCreate? pending;
+    try {
+      pending = await _links.getPending();
+    } on Exception {
+      _logStorageFailure('read pending operation');
+      return const Err(InvoicesFailure.privateStorage());
+    }
+    if (pending != null) {
+      return _send(signer, pending, allowAddressReplacement: true);
+    }
+
     final Environment environment;
     try {
       environment = (await _getSettings.execute()).environment;
-    } on Exception catch (error, stack) {
-      log.warning('Invoice settings lookup failed', error: error, trace: stack);
+    } on Exception {
+      log.warning('Invoice settings lookup failed');
       return const Err(InvoicesFailure.unexpected());
     }
+    return _prepareAndSend(command, signer, environment);
+  }
 
-    // System labels written to RESERVE the Liquid payout address(es) issued
-    // during THIS create (see [_freshLiquidAddress]). On total failure they are
-    // released so a repeated failed create does not burn consecutive unfunded
-    // Liquid indices.
-    final reservedLabelIds = <int>[];
+  @useResult
+  Future<Result<CreateInvoiceResult?, InvoicesFailure>> resumePending() async {
+    final PreparedPrivateInvoiceCreate? pending;
     try {
-      // Resolve fresh payout addresses from the DEFAULT wallets only.
-      String? bitcoinWalletId;
+      pending = await _links.getPending();
+    } on Exception {
+      _logStorageFailure('read pending operation');
+      return const Err(InvoicesFailure.privateStorage());
+    }
+    if (pending == null) return const Ok(null);
+
+    final signerResult = await _identity.getSigningHandle();
+    switch (signerResult) {
+      case Ok(:final value):
+        final result = await _send(
+          value,
+          pending,
+          allowAddressReplacement: true,
+        );
+        return result.map<CreateInvoiceResult?>((value) => value);
+      case Err(:final failure):
+        return Err(failure);
+    }
+  }
+
+  Future<Result<CreateInvoiceResult, InvoicesFailure>> _prepareAndSend(
+    CreateInvoiceCommand command,
+    BullnymAuthSigner signer,
+    Environment environment,
+  ) async {
+    final reservationIds = <int>[];
+    try {
       String? bitcoinAddress;
       if (command.acceptBtc) {
-        switch (await _defaultBitcoinWalletId(environment)) {
+        final wallet = await _defaultBitcoinWalletId(environment);
+        switch (wallet) {
           case Ok(:final value):
-            bitcoinWalletId = value;
+            bitcoinAddress = await _freshBitcoinAddress(value);
           case Err(:final failure):
             return Err(failure);
         }
-        bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
       }
 
-      String? liquidWalletId;
       String? liquidAddress;
       String? liquidBlindingKeyHex;
       if (command.needsLiquidAddress) {
-        switch (await _defaultLiquidWalletId(environment)) {
+        final wallet = await _defaultLiquidWalletId(environment);
+        switch (wallet) {
           case Ok(:final value):
-            liquidWalletId = value;
-          case Err(:final failure):
-            return Err(failure);
-        }
-        final generatedResult = await _freshLiquidAddress(
-          liquidWalletId,
-          reservedLabelIds,
-        );
-        switch (generatedResult) {
-          case Ok(:final value):
-            liquidAddress = value.$1;
-            // The blinding secret is sent ONLY when the Liquid rail itself is
-            // accepted; an LN-only invoice supplies the address without the
-            // secret (§3.5/§3.19).
-            liquidBlindingKeyHex = command.acceptLiquid ? value.$2 : null;
-          case Err(:final failure):
-            await _releaseReservations(reservedLabelIds);
-            return Err(failure);
-        }
-      }
-
-      final firstCreate = await _payService.createInvoice(
-        signer: signer,
-        command: command,
-        bitcoinAddress: bitcoinAddress,
-        liquidAddress: liquidAddress,
-        liquidBlindingKeyHex: liquidBlindingKeyHex,
-      );
-      final CreateInvoiceResult result;
-      switch (firstCreate) {
-        case Ok(:final value):
-          result = value;
-        case Err(:final failure):
-          // Single regenerate-and-retry on a used-address rejection (§7.2). A
-          // second reuse on the retry propagates as the typed reused* error.
-          if (failure.kind == InvoicesFailureKind.reusedBitcoinAddress &&
-              bitcoinWalletId != null) {
-            bitcoinAddress = await _freshBitcoinAddress(bitcoinWalletId);
-          } else if (failure.kind == InvoicesFailureKind.reusedLiquidAddress &&
-              liquidWalletId != null) {
-            final regenerated = await _freshLiquidAddress(
-              liquidWalletId,
-              reservedLabelIds,
-            );
-            switch (regenerated) {
+            final generated = await _freshLiquidAddress(value, reservationIds);
+            switch (generated) {
               case Ok(:final value):
                 liquidAddress = value.$1;
                 liquidBlindingKeyHex = command.acceptLiquid ? value.$2 : null;
               case Err(:final failure):
-                await _releaseReservations(reservedLabelIds);
+                await _releaseReservations(reservationIds);
                 return Err(failure);
             }
-          } else {
-            await _releaseReservations(reservedLabelIds);
+          case Err(:final failure):
             return Err(failure);
-          }
-          switch (await _payService.createInvoice(
-            signer: signer,
-            command: command,
-            bitcoinAddress: bitcoinAddress,
-            liquidAddress: liquidAddress,
-            liquidBlindingKeyHex: liquidBlindingKeyHex,
-          )) {
-            case Ok(:final value):
-              result = value;
-            case Err(:final failure):
-              await _releaseReservations(reservedLabelIds);
-              return Err(failure);
-          }
+        }
       }
 
-      await _storePrivateMemo(
-        command: command,
-        invoiceId: result.invoiceId,
+      final EncryptedPrivateInvoice encrypted;
+      try {
+        encrypted = await _cipher.encrypt(command.presentation);
+      } on PrivateInvoicePresentationException catch (error) {
+        await _releaseReservations(reservationIds);
+        return Err(
+          InvoicesFailure.invalidInput(code: '${error.field}:${error.code}'),
+        );
+      } on Object {
+        await _releaseReservations(reservationIds);
+        log.warning('Private invoice encryption failed');
+        return const Err(InvoicesFailure.encryption());
+      }
+
+      final operation = PreparedPrivateInvoiceCreate(
+        encrypted: encrypted,
+        amountSat: command.amountSat,
+        fiatAmountMinor: command.fiatAmountMinor,
+        fiatCurrency: command.fiatCurrency,
+        acceptBtc: command.acceptBtc,
+        acceptLn: command.acceptLn,
+        acceptLiquid: command.acceptLiquid,
         bitcoinAddress: bitcoinAddress,
         liquidAddress: liquidAddress,
+        liquidBlindingKeyHex: liquidBlindingKeyHex,
+        linkToPageNym: command.linkToPageNym,
+        reservationLabelIds: List.unmodifiable(reservationIds),
       );
-
-      return Ok(result);
-    } on Exception catch (error, stack) {
-      // The create failed for good (all attempts): release the reservations so
-      // the next attempt reuses the same unfunded indices instead of walking
-      // the gap forward on every failure. Best-effort — never mask the error.
-      await _releaseReservations(reservedLabelIds);
-      log.warning(
-        'Invoice create preparation failed',
-        error: error,
-        trace: stack,
-      );
+      try {
+        await _links.savePending(operation);
+      } on Exception {
+        await _releaseReservations(reservationIds);
+        _logStorageFailure('save pending operation');
+        return const Err(InvoicesFailure.privateStorage());
+      }
+      return _send(signer, operation, allowAddressReplacement: true);
+    } on Exception {
+      await _releaseReservations(reservationIds);
+      log.warning('Invoice create preparation failed');
       return const Err(InvoicesFailure.unexpected());
     }
+  }
+
+  Future<Result<CreateInvoiceResult, InvoicesFailure>> _send(
+    BullnymAuthSigner signer,
+    PreparedPrivateInvoiceCreate operation, {
+    required bool allowAddressReplacement,
+  }) async {
+    final response = await _payService.createInvoice(
+      signer: signer,
+      operation: operation,
+    );
+    switch (response) {
+      case Ok(:final value):
+        try {
+          await _links.retainLink(value.privateLink);
+          await _links.deletePending(operation.encrypted.clientRequestId);
+        } on Exception {
+          _logStorageFailure('commit retained link');
+          return const Err(InvoicesFailure.privateStorage());
+        }
+        return Ok(value);
+      case Err(:final failure):
+        if (allowAddressReplacement &&
+            (failure.kind == InvoicesFailureKind.reusedBitcoinAddress ||
+                failure.kind == InvoicesFailureKind.reusedLiquidAddress)) {
+          return _replaceRejectedAddress(signer, operation, failure.kind);
+        }
+        if (_isAmbiguous(failure)) {
+          return const Err(InvoicesFailure.outcomeUnknown());
+        }
+        if (failure.kind == InvoicesFailureKind.createConflict) {
+          return Err(failure);
+        }
+        await _abandon(operation);
+        return Err(failure);
+    }
+  }
+
+  Future<Result<CreateInvoiceResult, InvoicesFailure>> _replaceRejectedAddress(
+    BullnymAuthSigner signer,
+    PreparedPrivateInvoiceCreate rejected,
+    InvoicesFailureKind kind,
+  ) async {
+    var bitcoinAddress = rejected.bitcoinAddress;
+    var liquidAddress = rejected.liquidAddress;
+    var liquidBlindingKeyHex = rejected.liquidBlindingKeyHex;
+    var reservationIds = List<int>.of(rejected.reservationLabelIds);
+    final replacementReservationIds = <int>[];
+    try {
+      final environment = (await _getSettings.execute()).environment;
+      if (kind == InvoicesFailureKind.reusedBitcoinAddress) {
+        final wallet = await _defaultBitcoinWalletId(environment);
+        switch (wallet) {
+          case Ok(:final value):
+            bitcoinAddress = await _freshBitcoinAddress(value);
+          case Err(:final failure):
+            return Err(failure);
+        }
+      } else {
+        final wallet = await _defaultLiquidWalletId(environment);
+        switch (wallet) {
+          case Ok(:final value):
+            final generated = await _freshLiquidAddress(
+              value,
+              replacementReservationIds,
+            );
+            switch (generated) {
+              case Ok(:final value):
+                liquidAddress = value.$1;
+                liquidBlindingKeyHex = rejected.acceptLiquid ? value.$2 : null;
+              case Err(:final failure):
+                return Err(failure);
+            }
+          case Err(:final failure):
+            return Err(failure);
+        }
+        reservationIds = replacementReservationIds;
+      }
+
+      final replacement = PreparedPrivateInvoiceCreate(
+        encrypted: EncryptedPrivateInvoice(
+          clientRequestId: _cipher.newClientRequestId(),
+          presentationEnvelope: rejected.encrypted.presentationEnvelope,
+          viewingKey: rejected.encrypted.viewingKey,
+        ),
+        amountSat: rejected.amountSat,
+        fiatAmountMinor: rejected.fiatAmountMinor,
+        fiatCurrency: rejected.fiatCurrency,
+        acceptBtc: rejected.acceptBtc,
+        acceptLn: rejected.acceptLn,
+        acceptLiquid: rejected.acceptLiquid,
+        bitcoinAddress: bitcoinAddress,
+        liquidAddress: liquidAddress,
+        liquidBlindingKeyHex: liquidBlindingKeyHex,
+        expiresAtUnix: rejected.expiresAtUnix,
+        linkToPageNym: rejected.linkToPageNym,
+        reservationLabelIds: List.unmodifiable(reservationIds),
+      );
+      await _links.savePending(replacement);
+      if (kind == InvoicesFailureKind.reusedLiquidAddress) {
+        await _releaseReservations(rejected.reservationLabelIds);
+      }
+      return _send(signer, replacement, allowAddressReplacement: false);
+    } on Exception {
+      await _releaseReservations(replacementReservationIds);
+      log.warning('Invoice address replacement failed');
+      return const Err(InvoicesFailure.unexpected());
+    }
+  }
+
+  bool _isAmbiguous(InvoicesFailure failure) => switch (failure.kind) {
+    InvoicesFailureKind.network ||
+    InvoicesFailureKind.timeout ||
+    InvoicesFailureKind.invalidServerResponse ||
+    InvoicesFailureKind.server ||
+    InvoicesFailureKind.unexpected => true,
+    _ => false,
+  };
+
+  Future<void> _abandon(PreparedPrivateInvoiceCreate operation) async {
+    try {
+      await _links.deletePending(operation.encrypted.clientRequestId);
+    } on Exception {
+      _logStorageFailure('delete rejected operation');
+      return;
+    }
+    await _releaseReservations(operation.reservationLabelIds);
   }
 
   Future<Result<String, InvoicesFailure>> _defaultBitcoinWalletId(
@@ -220,19 +372,9 @@ class CreateInvoiceUsecase {
     return address.address;
   }
 
-  // (address, blindingSecretHex)
-  //
-  // RESERVE the issued Liquid address the same way swaps/payjoin/exchange do —
-  // by storing a system label on it. The address repository's generate loop
-  // skips any index carrying a system label, so this makes a back-to-back
-  // invoice (created before the first is funded) derive a DIFFERENT address +
-  // blinding secret instead of colliding on the same unfunded index. Unlike the
-  // best-effort private memo, this reservation is correctness-critical, so a
-  // persistence failure MUST fail the create (it is caught by [execute] and the
-  // label released). The stored label id is appended to [reservedLabelIds].
   Future<Result<(String, String), InvoicesFailure>> _freshLiquidAddress(
     String walletId,
-    List<int> reservedLabelIds,
+    List<int> reservationLabelIds,
   ) async {
     final generated = await _walletAddressRepository
         .generateNewLiquidReceiveAddressWithBlindingSecret(walletId: walletId);
@@ -245,46 +387,26 @@ class CreateInvoiceUsecase {
     );
     switch (reservation) {
       case Ok(:final value):
-        reservedLabelIds.add(value.id);
+        reservationLabelIds.add(value.id);
         return Ok((generated.address, generated.blindingSecretHex));
       case Err():
         return const Err(InvoicesFailure.unexpected());
     }
   }
 
-  // Best-effort release of the address reservations written during a create
-  // that ultimately failed. A failed trash just leaves the index reserved,
-  // which is safe (a reserved index is never reused), so it never throws.
-  Future<void> _releaseReservations(List<int> labelIds) async {
+  Future<void> _releaseReservations(Iterable<int> labelIds) async {
     for (final id in labelIds) {
       try {
         await _labels.trash(id);
       } on Exception {
-        // Best-effort cleanup only.
+        // A leaked reservation burns one address but never permits address reuse.
       }
     }
   }
 
-  // Best-effort: the private memo is stored as a local address label after the
-  // invoice exists. It NEVER reaches the server and NEVER fails the create.
-  Future<void> _storePrivateMemo({
-    required CreateInvoiceCommand command,
-    required InvoiceId invoiceId,
-    required String? bitcoinAddress,
-    required String? liquidAddress,
-  }) async {
-    final memo = command.privateMemo?.trim();
-    if (memo == null || memo.isEmpty) return;
-    final origin = 'invoice:${invoiceId.value}';
-    for (final address in [bitcoinAddress, liquidAddress]) {
-      if (address == null) continue;
-      try {
-        await _labels.store(
-          NewLabel.addr(address: address, label: memo, origin: origin),
-        );
-      } on Exception {
-        // Best-effort only (§3.14 / AD-3 post-commitment).
-      }
-    }
+  void _logStorageFailure(String operation) {
+    log.warning(
+      'Private invoice storage failed while attempting to $operation',
+    );
   }
 }

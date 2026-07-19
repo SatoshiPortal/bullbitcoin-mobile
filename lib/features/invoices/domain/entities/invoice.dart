@@ -13,13 +13,12 @@ class Invoice {
   /// The public URL scheme is chosen from this field.
   final String? nymOwner;
   final InvoiceStatus status;
+  final String? presentationStatus;
   final int amountSat;
   final int remainingAmountSat;
   final int? fiatAmountMinor;
   final String? fiatCurrency;
-  final String? publicDescription;
-  final String? recipientName;
-  final String? invoiceNumber;
+  final String? memo;
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
@@ -35,13 +34,12 @@ class Invoice {
     required this.id,
     this.nymOwner,
     required this.status,
+    this.presentationStatus,
     required this.amountSat,
     required this.remainingAmountSat,
     this.fiatAmountMinor,
     this.fiatCurrency,
-    this.publicDescription,
-    this.recipientName,
-    this.invoiceNumber,
+    this.memo,
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
@@ -71,16 +69,5 @@ class Invoice {
   Duration timeUntilExpiry(DateTime now) {
     final remaining = expiresAt.difference(now);
     return remaining.isNegative ? Duration.zero : remaining;
-  }
-
-  /// The public payment URL: `/<nym>/i/<id>` when linked, `/invoice/<id>` when
-  /// unlinked (v1). [domain] is the base URL with no trailing slash.
-  String publicUrlFor({required String domain}) {
-    final base = domain.endsWith('/')
-        ? domain.substring(0, domain.length - 1)
-        : domain;
-    return nymOwner != null
-        ? '$base/$nymOwner/i/${id.value}'
-        : '$base/invoice/${id.value}';
   }
 }

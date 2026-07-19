@@ -1,40 +1,31 @@
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
 
 /// The intent to create a wallet-origin invoice. Amount is one-of: EITHER
 /// [amountSat] XOR ([fiatAmountMinor] + [fiatCurrency]).
 ///
 /// [linkToPageNym] stays null in v1 (DG-I1 unlinked-only); it is carried so the
-/// create path is linked-capable when the decision later flips. [privateMemo]
-/// is stored LOCALLY as address labels after success and NEVER sent to the
-/// server (§3.14).
+/// create path is linked-capable when the decision later flips.
 class CreateInvoiceCommand {
   final int? amountSat;
   final int? fiatAmountMinor;
   final String? fiatCurrency;
-  final String? publicDescription;
-  final String? recipientName;
-  final String? invoiceNumber;
+  final PrivateInvoicePresentation presentation;
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
-  final DateTime expiresAt;
   final String? linkToPageNym;
-  final String? privateMemo;
 
   const CreateInvoiceCommand({
     this.amountSat,
     this.fiatAmountMinor,
     this.fiatCurrency,
-    this.publicDescription,
-    this.recipientName,
-    this.invoiceNumber,
+    required this.presentation,
     required this.acceptBtc,
     required this.acceptLn,
     required this.acceptLiquid,
-    required this.expiresAt,
     this.linkToPageNym,
-    this.privateMemo,
   });
 
   bool get hasSatAmount => amountSat != null;

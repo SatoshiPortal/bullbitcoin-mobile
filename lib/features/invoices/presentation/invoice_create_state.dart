@@ -2,62 +2,85 @@ import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 
 enum InvoiceAmountMode { sats, fiat }
 
-/// The create-invoice fields that submit-time validation can flag, for
-/// per-field highlighting (`errorText`).
-enum InvoiceCreateField { amount, currency }
+enum InvoiceCreateField {
+  amount,
+  currency,
+  payerName,
+  payerCorporateName,
+  payerAddress,
+  payerEmail,
+  payerPhone,
+  description,
+  invoiceNumber,
+  purchaseOrderReference,
+  invoiceDate,
+  paymentDeadline,
+  payeeName,
+  payeeCorporateName,
+  payeeAddress,
+  payeeEmail,
+  payeePhone,
+  details,
+}
 
-/// The create-invoice form + submission state. All form fields are local; the
-/// wallet lookup, address generation, signing and labels live in the usecase,
-/// never here. On success [result] carries the share URL.
 class InvoiceCreateState {
+  final bool initializing;
   final bool submitting;
+  final bool pendingRetry;
   final CreateInvoiceResult? result;
   final InvoicesFailure? failure;
-
-  // Amount (one-of).
   final InvoiceAmountMode amountMode;
   final String amountInput;
   final String fiatCurrency;
-
-  // Details.
-  final String publicDescription;
-  final String recipientName;
-  final String invoiceNumber;
-
-  // Rails.
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
-
-  // Expiry: a 1–7 day picker (§3.7).
-  final int expiryDays;
-
-  final String privateMemo;
-
-  // Supported fiat currencies (live), with a graceful-degrade flag.
+  final String payerName;
+  final String payerCorporateName;
+  final String payerAddress;
+  final String payerEmail;
+  final String payerPhone;
+  final String description;
+  final String invoiceNumber;
+  final String purchaseOrderReference;
+  final String invoiceDate;
+  final String paymentDeadline;
+  final String payeeName;
+  final String payeeCorporateName;
+  final String payeeAddress;
+  final String payeeEmail;
+  final String payeePhone;
   final List<BullnymSupportedCurrency> currencies;
   final bool currenciesUnavailable;
-
-  /// The field flagged by the last submit-time validation, for per-field
-  /// highlighting (`errorText`). Cleared when that field is edited or on a new
-  /// submit.
   final InvoiceCreateField? invalidField;
 
   const InvoiceCreateState({
+    this.initializing = true,
     this.submitting = false,
+    this.pendingRetry = false,
     this.result,
     this.failure,
     this.amountMode = InvoiceAmountMode.sats,
     this.amountInput = '',
     this.fiatCurrency = '',
-    this.publicDescription = '',
-    this.recipientName = '',
-    this.invoiceNumber = '',
     this.acceptBtc = false,
     this.acceptLn = true,
     this.acceptLiquid = true,
-    this.expiryDays = 1,
-    this.privateMemo = '',
+    this.payerName = '',
+    this.payerCorporateName = '',
+    this.payerAddress = '',
+    this.payerEmail = '',
+    this.payerPhone = '',
+    this.description = '',
+    this.invoiceNumber = '',
+    this.purchaseOrderReference = '',
+    this.invoiceDate = '',
+    this.paymentDeadline = '',
+    this.payeeName = '',
+    this.payeeCorporateName = '',
+    this.payeeAddress = '',
+    this.payeeEmail = '',
+    this.payeePhone = '',
     this.currencies = const [],
     this.currenciesUnavailable = false,
     this.invalidField,
@@ -66,21 +89,51 @@ class InvoiceCreateState {
   bool get isSubmitted => result != null;
   bool get hasAnyRail => acceptBtc || acceptLn || acceptLiquid;
 
+  int get populatedFieldCount => [
+    payerName,
+    payerCorporateName,
+    payerAddress,
+    payerEmail,
+    payerPhone,
+    description,
+    invoiceNumber,
+    purchaseOrderReference,
+    invoiceDate,
+    paymentDeadline,
+    payeeName,
+    payeeCorporateName,
+    payeeAddress,
+    payeeEmail,
+    payeePhone,
+  ].where((value) => value.trim().isNotEmpty).length;
+
   InvoiceCreateState copyWith({
+    bool? initializing,
     bool? submitting,
+    bool? pendingRetry,
     CreateInvoiceResult? result,
     InvoicesFailure? failure,
     InvoiceAmountMode? amountMode,
     String? amountInput,
     String? fiatCurrency,
-    String? publicDescription,
-    String? recipientName,
-    String? invoiceNumber,
     bool? acceptBtc,
     bool? acceptLn,
     bool? acceptLiquid,
-    int? expiryDays,
-    String? privateMemo,
+    String? payerName,
+    String? payerCorporateName,
+    String? payerAddress,
+    String? payerEmail,
+    String? payerPhone,
+    String? description,
+    String? invoiceNumber,
+    String? purchaseOrderReference,
+    String? invoiceDate,
+    String? paymentDeadline,
+    String? payeeName,
+    String? payeeCorporateName,
+    String? payeeAddress,
+    String? payeeEmail,
+    String? payeePhone,
     List<BullnymSupportedCurrency>? currencies,
     bool? currenciesUnavailable,
     InvoiceCreateField? invalidField,
@@ -88,20 +141,33 @@ class InvoiceCreateState {
     bool clearInvalidField = false,
   }) {
     return InvoiceCreateState(
+      initializing: initializing ?? this.initializing,
       submitting: submitting ?? this.submitting,
+      pendingRetry: pendingRetry ?? this.pendingRetry,
       result: result ?? this.result,
       failure: clearFailure ? null : failure ?? this.failure,
       amountMode: amountMode ?? this.amountMode,
       amountInput: amountInput ?? this.amountInput,
       fiatCurrency: fiatCurrency ?? this.fiatCurrency,
-      publicDescription: publicDescription ?? this.publicDescription,
-      recipientName: recipientName ?? this.recipientName,
-      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       acceptBtc: acceptBtc ?? this.acceptBtc,
       acceptLn: acceptLn ?? this.acceptLn,
       acceptLiquid: acceptLiquid ?? this.acceptLiquid,
-      expiryDays: expiryDays ?? this.expiryDays,
-      privateMemo: privateMemo ?? this.privateMemo,
+      payerName: payerName ?? this.payerName,
+      payerCorporateName: payerCorporateName ?? this.payerCorporateName,
+      payerAddress: payerAddress ?? this.payerAddress,
+      payerEmail: payerEmail ?? this.payerEmail,
+      payerPhone: payerPhone ?? this.payerPhone,
+      description: description ?? this.description,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      purchaseOrderReference:
+          purchaseOrderReference ?? this.purchaseOrderReference,
+      invoiceDate: invoiceDate ?? this.invoiceDate,
+      paymentDeadline: paymentDeadline ?? this.paymentDeadline,
+      payeeName: payeeName ?? this.payeeName,
+      payeeCorporateName: payeeCorporateName ?? this.payeeCorporateName,
+      payeeAddress: payeeAddress ?? this.payeeAddress,
+      payeeEmail: payeeEmail ?? this.payeeEmail,
+      payeePhone: payeePhone ?? this.payeePhone,
       currencies: currencies ?? this.currencies,
       currenciesUnavailable:
           currenciesUnavailable ?? this.currenciesUnavailable,

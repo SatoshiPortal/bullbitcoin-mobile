@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
@@ -40,11 +41,12 @@ Future<void> main({bool isInitialized = false}) async {
 
   CreateInvoiceCommand liquidInvoice() => CreateInvoiceCommand(
     amountSat: 25000,
+    presentation: PrivateInvoicePresentation(
+      invoice: PrivateInvoiceDetails(description: 'Coffee'),
+    ),
     acceptBtc: false,
     acceptLn: true,
     acceptLiquid: true,
-    expiresAt: DateTime.now().toUtc().add(const Duration(days: 1)),
-    publicDescription: 'Coffee',
   );
 
   test('create (unlinked, default-wallet address + blinding key) -> list -> '
@@ -55,8 +57,8 @@ Future<void> main({bool isInitialized = false}) async {
     final created = _unwrap(
       await locator<InvoicesFacade>().create(liquidInvoice()),
     );
-    // Unlinked v1: the public render is /invoice/:id.
-    expect(created.shareUrl.value, contains('/invoice/'));
+    expect(created.privateLink.value, contains('/invoice/'));
+    expect(created.privateLink.value, contains('#v1.'));
 
     // Payout discipline: the signed create carried an EMPTY nym slot and a
     // fresh Liquid address WITH its per-address blinding key (from the default
@@ -104,7 +106,7 @@ Future<void> main({bool isInitialized = false}) async {
       final created = _unwrap(
         await locator<InvoicesFacade>().create(liquidInvoice()),
       );
-      expect(created.shareUrl.value, contains('/invoice/'));
+      expect(created.privateLink.value, contains('/invoice/'));
       // Two create attempts were signed (the reuse, then the retry).
       expect(bullnym.createInvoiceCalls, hasLength(2));
       // The retry supplied a DIFFERENT fresh Liquid address.

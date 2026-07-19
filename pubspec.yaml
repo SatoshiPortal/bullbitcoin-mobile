@@ -69,6 +69,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7
+  cryptography: ^2.9.0
   synchronized: ^3.4.0
   decimal: ^3.2.4
   hive: ^2.2.3

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
@@ -5,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_registration.dart';
 
 enum FakeBullnymMode {
@@ -81,6 +84,7 @@ class _FakeInvoice {
   final String? nymOwner;
   final BullnymCreateInvoiceFields fields;
   final int createdAtUnix;
+  final int expiresAtUnix;
   String status = 'unpaid';
 
   _FakeInvoice({
@@ -89,7 +93,15 @@ class _FakeInvoice {
     required this.nymOwner,
     required this.fields,
     required this.createdAtUnix,
+    required this.expiresAtUnix,
   });
+}
+
+class _FakeInvoiceCreateRecord {
+  final String invoiceId;
+  final String fingerprint;
+
+  const _FakeInvoiceCreateRecord(this.invoiceId, this.fingerprint);
 }
 
 /// In-memory [BullnymClientPort] for L1 tests (HARNESS §2.2). It survives
@@ -113,6 +125,7 @@ class FakeBullnymClient implements BullnymClientPort {
   // create inputs (npub, nym slot, supplied addresses/blinding key) for the
   // payout-discipline and unlinked-nym assertions.
   final Map<String, _FakeInvoice> _invoices = {};
+  final Map<String, _FakeInvoiceCreateRecord> _invoiceCreates = {};
   final List<({String npub, String? nym, BullnymCreateInvoiceFields fields})>
   createInvoiceCalls = [];
   int _nextInvoiceSeq = 1;
@@ -362,6 +375,28 @@ class FakeBullnymClient implements BullnymClientPort {
     if (hasSat == hasFiat) {
       throw _invalidAmount('amount must be exactly one of sat or fiat');
     }
+    if (fields.clientRequestId.isEmpty ||
+        fields.presentationEnvelope.length != 5500) {
+      throw _invalidAmount('private presentation is invalid');
+    }
+
+    final createKey = '${signer.npubHex}:${fields.clientRequestId}';
+    final fingerprint = jsonEncode(buildInvoiceCreatePayloadFields(fields));
+    final existing = _invoiceCreates[createKey];
+    if (existing != null) {
+      if (existing.fingerprint != fingerprint) {
+        throw const BullnymException.serverRejectedRequest(
+          code: 'InvoiceCreateConflict',
+          diagnosticReason: 'request id already used for another payload',
+          statusCode: 409,
+          retryable: false,
+        );
+      }
+      return BullnymCreateInvoiceResponse(
+        invoiceId: existing.invoiceId,
+        invoiceUrl: _invoiceUrl(existing.invoiceId, nym),
+      );
+    }
 
     if (invoiceMode == FakeInvoiceMode.reusedBitcoinAddressOnce &&
         fields.acceptBtc) {
@@ -375,19 +410,22 @@ class FakeBullnymClient implements BullnymClientPort {
     }
 
     final id = 'inv-${_nextInvoiceSeq++}';
+    final createdAtUnix = fields.expiresAtUnix != null
+        ? fields.expiresAtUnix! - 86400
+        : 1710000000;
     _invoices[id] = _FakeInvoice(
       id: id,
       ownerNpub: signer.npubHex,
       nymOwner: nym,
       fields: fields,
-      createdAtUnix: fields.expiresAtUnix != null
-          ? fields.expiresAtUnix! - 86400
-          : 0,
+      createdAtUnix: createdAtUnix,
+      expiresAtUnix: fields.expiresAtUnix ?? createdAtUnix + 86400,
     );
-    final shareUrl = nym == null
-        ? 'https://example.invalid/invoice/$id'
-        : 'https://example.invalid/$nym/i/$id';
-    return BullnymCreateInvoiceResponse(invoiceId: id, shareUrl: shareUrl);
+    _invoiceCreates[createKey] = _FakeInvoiceCreateRecord(id, fingerprint);
+    return BullnymCreateInvoiceResponse(
+      invoiceId: id,
+      invoiceUrl: _invoiceUrl(id, nym),
+    );
   }
 
   @override
@@ -478,7 +516,7 @@ class FakeBullnymClient implements BullnymClientPort {
       paymentToleranceSat: 0,
       rateMinorPerBtc: null,
       rateLocksUntilUnix: invoice.createdAtUnix,
-      expiresAtUnix: f.expiresAtUnix ?? 0,
+      expiresAtUnix: invoice.expiresAtUnix,
       acceptBtc: f.acceptBtc,
       acceptLn: f.acceptLn,
       acceptLiquid: f.acceptLiquid,
@@ -494,24 +532,27 @@ class FakeBullnymClient implements BullnymClientPort {
       nymOwner: i.nymOwner,
       origin: 'wallet',
       status: i.status,
+      presentationStatus: 'available',
       pricingMode: f.amountSat != null ? 'sat' : 'fiat',
       settlementStatus: 'none',
       amountSat: f.amountSat ?? 0,
       remainingAmountSat: f.amountSat ?? 0,
       fiatAmountMinor: f.fiatAmountMinor,
       fiatCurrency: f.fiatCurrency,
-      publicDescription: f.publicDescription,
-      recipientName: f.recipientName,
-      invoiceNumber: f.invoiceNumber,
+      memo: null,
       acceptBtc: f.acceptBtc,
       acceptLn: f.acceptLn,
       acceptLiquid: f.acceptLiquid,
       bitcoinAddress: f.bitcoinAddress,
       liquidAddress: f.liquidAddress,
       createdAtUnix: i.createdAtUnix,
-      expiresAtUnix: f.expiresAtUnix ?? 0,
+      expiresAtUnix: i.expiresAtUnix,
     );
   }
+
+  String _invoiceUrl(String invoiceId, String? nym) => nym == null
+      ? 'https://example.invalid/invoice/$invoiceId'
+      : 'https://example.invalid/$nym/i/$invoiceId';
 
   BullnymException _invoiceNotFound() =>
       const BullnymException.serverRejectedRequest(

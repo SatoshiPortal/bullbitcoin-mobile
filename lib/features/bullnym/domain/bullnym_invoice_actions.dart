@@ -9,7 +9,7 @@ const String bullpayActionInvoiceCancel = 'invoice-cancel';
 const String bullpayActionInvoiceList = 'invoice-list';
 
 /// The signed `invoice-create` payload fields, in the server's FIXED order
-/// (`create_payload_fields` in `src/invoice.rs`). All 13 fields are ALWAYS
+/// (`create_payload_fields` in `src/invoice.rs`). All 12 fields are ALWAYS
 /// emitted: absent optionals become the empty string (never skipped), so the
 /// NUL-separator count is invariant; booleans serialize as `"true"`/`"false"`
 /// (Rust `bool::to_string`), never `1`/`0`; numeric fields are decimal
@@ -21,9 +21,8 @@ List<String> buildInvoiceCreatePayloadFields(BullnymCreateInvoiceFields f) {
     f.amountSat?.toString() ?? '',
     f.fiatAmountMinor?.toString() ?? '',
     f.fiatCurrency ?? '',
-    f.publicDescription ?? '',
-    f.recipientName ?? '',
-    f.invoiceNumber ?? '',
+    f.clientRequestId,
+    f.presentationEnvelope,
     f.acceptBtc.toString(),
     f.acceptLn.toString(),
     f.acceptLiquid.toString(),

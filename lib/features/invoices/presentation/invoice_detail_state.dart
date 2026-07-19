@@ -12,6 +12,8 @@ class InvoiceDetailState {
   final Invoice? invoice;
   final InvoiceStatusSnapshot? snapshot;
   final InvoicesFailure? failure;
+  final PrivateInvoiceLink? privateLink;
+  final bool privateLinkLookupComplete;
 
   final bool cancelling;
   final InvoiceStatus? cancelFinalStatus;
@@ -22,6 +24,8 @@ class InvoiceDetailState {
     this.invoice,
     this.snapshot,
     this.failure,
+    this.privateLink,
+    this.privateLinkLookupComplete = false,
     this.cancelling = false,
     this.cancelFinalStatus,
     this.cancelFailure,
@@ -44,6 +48,8 @@ class InvoiceDetailState {
     Invoice? invoice,
     InvoiceStatusSnapshot? snapshot,
     InvoicesFailure? failure,
+    PrivateInvoiceLink? privateLink,
+    bool? privateLinkLookupComplete,
     bool? cancelling,
     InvoiceStatus? cancelFinalStatus,
     InvoicesFailure? cancelFailure,
@@ -55,6 +61,9 @@ class InvoiceDetailState {
       invoice: invoice ?? this.invoice,
       snapshot: snapshot ?? this.snapshot,
       failure: clearFailure ? null : failure ?? this.failure,
+      privateLink: privateLink ?? this.privateLink,
+      privateLinkLookupComplete:
+          privateLinkLookupComplete ?? this.privateLinkLookupComplete,
       cancelling: cancelling ?? this.cancelling,
       cancelFinalStatus: cancelFinalStatus ?? this.cancelFinalStatus,
       cancelFailure: clearCancelFailure

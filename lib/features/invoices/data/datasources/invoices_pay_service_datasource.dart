@@ -1,16 +1,18 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
+import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
 import 'package:bb_mobile/features/invoices/application/commands/invoice_commands.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/results/invoice_results.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/invoice_status_snapshot.dart';
+import 'package:bb_mobile/features/invoices/domain/entities/prepared_private_invoice_create.dart';
 import 'package:bb_mobile/features/invoices/domain/invoices_failure.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/invoice_status.dart';
 import 'package:bb_mobile/features/invoices/domain/primitives/payment_method.dart';
 import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_id.dart';
-import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dart';
+import 'package:bb_mobile/features/invoices/domain/value_objects/private_invoice_link.dart';
 
 /// Implements [InvoicesPayServicePort] over the shared `bullnym` client.
 /// It maps commands → wire DTOs and DTOs → domain entities, and translates
@@ -18,50 +20,58 @@ import 'package:bb_mobile/features/invoices/domain/value_objects/invoice_url.dar
 /// server diagnostic escapes upward.
 class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
   final BullnymFacade _bullnym;
+  final Uri _expectedOrigin;
 
-  const InvoicesPayServiceDatasource({required this._bullnym});
+  InvoicesPayServiceDatasource({
+    required BullnymFacade bullnym,
+    Uri? expectedOrigin,
+  }) : this._(bullnym, expectedOrigin ?? Uri.parse(bullnymDefaultBaseUrl));
+
+  InvoicesPayServiceDatasource._(this._bullnym, this._expectedOrigin);
 
   @override
   Future<Result<CreateInvoiceResult, InvoicesFailure>> createInvoice({
     required BullnymAuthSigner signer,
-    required CreateInvoiceCommand command,
-    String? bitcoinAddress,
-    String? liquidAddress,
-    String? liquidBlindingKeyHex,
+    required PreparedPrivateInvoiceCreate operation,
   }) async {
     try {
       final fields = BullnymCreateInvoiceFields(
-        amountSat: command.amountSat,
-        fiatAmountMinor: command.fiatAmountMinor,
-        fiatCurrency: command.fiatCurrency,
-        publicDescription: command.publicDescription,
-        recipientName: command.recipientName,
-        invoiceNumber: command.invoiceNumber,
-        acceptBtc: command.acceptBtc,
-        acceptLn: command.acceptLn,
-        acceptLiquid: command.acceptLiquid,
-        bitcoinAddress: bitcoinAddress,
-        liquidAddress: liquidAddress,
-        liquidBlindingKeyHex: liquidBlindingKeyHex,
-        expiresAtUnix: _toUnix(command.expiresAt),
+        amountSat: operation.amountSat,
+        fiatAmountMinor: operation.fiatAmountMinor,
+        fiatCurrency: operation.fiatCurrency,
+        clientRequestId: operation.encrypted.clientRequestId,
+        presentationEnvelope: operation.encrypted.presentationEnvelope,
+        acceptBtc: operation.acceptBtc,
+        acceptLn: operation.acceptLn,
+        acceptLiquid: operation.acceptLiquid,
+        bitcoinAddress: operation.bitcoinAddress,
+        liquidAddress: operation.liquidAddress,
+        liquidBlindingKeyHex: operation.liquidBlindingKeyHex,
+        expiresAtUnix: operation.expiresAtUnix,
       );
       final response = await _bullnym.createInvoice(
         signer: signer,
-        nym: command.linkToPageNym,
+        nym: operation.linkToPageNym,
         fields: fields,
       );
+      final invoiceId = _invoiceId(response.invoiceId);
       return Ok(
         CreateInvoiceResult(
-          invoiceId: _invoiceId(response.invoiceId),
-          shareUrl: _invoiceUrl(response.shareUrl),
+          invoiceId: invoiceId,
+          privateLink: PrivateInvoiceLink.fromServer(
+            invoiceUrl: response.invoiceUrl,
+            expectedInvoiceId: invoiceId,
+            viewingKey: operation.encrypted.viewingKey,
+            expectedOrigin: _expectedOrigin,
+          ),
         ),
       );
     } on BullnymException catch (e) {
       return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception catch (error, stack) {
-      return _unexpectedFailure('create', error, stack);
+    } on Exception {
+      return _unexpectedFailure('create');
     }
   }
 
@@ -87,8 +97,8 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception catch (error, stack) {
-      return _unexpectedFailure('cancel', error, stack);
+    } on Exception {
+      return _unexpectedFailure('cancel');
     }
   }
 
@@ -116,8 +126,8 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception catch (error, stack) {
-      return _unexpectedFailure('list', error, stack);
+    } on Exception {
+      return _unexpectedFailure('list');
     }
   }
 
@@ -162,8 +172,8 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       return Err(_mapBullnymFailure(e));
     } on ArgumentError {
       return const Err(InvoicesFailure.invalidServerResponse());
-    } on Exception catch (error, stack) {
-      return _unexpectedFailure('status', error, stack);
+    } on Exception {
+      return _unexpectedFailure('status');
     }
   }
 
@@ -172,13 +182,12 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
       id: _invoiceId(item.id),
       nymOwner: item.nymOwner,
       status: _invoiceStatus(item.status, operation: 'list'),
+      presentationStatus: item.presentationStatus,
       amountSat: item.amountSat,
       remainingAmountSat: item.remainingAmountSat,
       fiatAmountMinor: item.fiatAmountMinor,
       fiatCurrency: item.fiatCurrency,
-      publicDescription: item.publicDescription,
-      recipientName: item.recipientName,
-      invoiceNumber: item.invoiceNumber,
+      memo: item.memo,
       acceptBtc: item.acceptBtc,
       acceptLn: item.acceptLn,
       acceptLiquid: item.acceptLiquid,
@@ -192,15 +201,10 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     );
   }
 
-  int _toUnix(DateTime dateTime) =>
-      dateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
-
   DateTime _fromUnix(int unix) =>
       DateTime.fromMillisecondsSinceEpoch(unix * 1000, isUtc: true);
 
   InvoiceId _invoiceId(String raw) => InvoiceId(raw);
-
-  InvoiceUrl _invoiceUrl(String raw) => InvoiceUrl(raw);
 
   InvoiceStatus _invoiceStatus(String raw, {required String operation}) {
     final status = InvoiceStatus.fromWire(raw);
@@ -213,16 +217,8 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
     return status;
   }
 
-  Result<T, InvoicesFailure> _unexpectedFailure<T>(
-    String operation,
-    Exception error,
-    StackTrace stack,
-  ) {
-    log.warning(
-      'Invoice $operation request failed unexpectedly',
-      error: error,
-      trace: stack,
-    );
+  Result<T, InvoicesFailure> _unexpectedFailure<T>(String operation) {
+    log.warning('Invoice $operation request failed unexpectedly');
     return const Err(InvoicesFailure.unexpected());
   }
 
@@ -241,6 +237,7 @@ class InvoicesPayServiceDatasource implements InvoicesPayServicePort {
           const InvoicesFailure.reusedBitcoinAddress(),
         'LiquidAddressAlreadyUsed' =>
           const InvoicesFailure.reusedLiquidAddress(),
+        'InvoiceCreateConflict' => const InvoicesFailure.createConflict(),
         'RateLimitedSender' ||
         'RateLimitedRecipient' ||
         'RateLimitedNetwork' => const InvoicesFailure.rateLimited(),

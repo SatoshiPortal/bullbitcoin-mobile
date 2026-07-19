@@ -28,6 +28,7 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
 
   /// First load then, unless already terminal, start the polling loop.
   Future<void> load() async {
+    unawaited(_loadPrivateLink());
     await _fetch();
     if (isClosed) return;
     if (!state.isTerminal && state.status == InvoiceDetailStatus.loaded) {
@@ -37,6 +38,21 @@ class InvoiceDetailCubit extends Cubit<InvoiceDetailState> {
 
   /// Explicit pull-to-refresh (§3.18): a single fetch, no new poll loop.
   Future<void> refresh() => _fetch();
+
+  Future<void> _loadPrivateLink() async {
+    try {
+      final link = await _facade.privateLink(_invoiceId);
+      if (!isClosed) {
+        emit(
+          state.copyWith(privateLink: link, privateLinkLookupComplete: true),
+        );
+      }
+    } on Object {
+      if (!isClosed) {
+        emit(state.copyWith(privateLinkLookupComplete: true));
+      }
+    }
+  }
 
   Future<void> cancel() async {
     if (state.cancelling || !state.canCancel) return;
