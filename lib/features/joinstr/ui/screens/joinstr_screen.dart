@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
@@ -203,9 +205,7 @@ class _CreatePoolTab extends StatelessWidget {
         if (denomination != null) ...[
           const Gap(12),
           Text(
-            context.loc.joinstrDenominationLine(
-              Joinstr.formatBtc(denomination),
-            ),
+            context.loc.joinstrDenominationLine(_btc(denomination)),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
@@ -291,7 +291,7 @@ class _CoinTile extends StatelessWidget {
           selected ? Icons.radio_button_checked : Icons.radio_button_off,
         ),
         title: Text(
-          '${Joinstr.formatBtc(coin.valueSat)} BTC',
+          _btc(coin.valueSat),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
@@ -377,7 +377,7 @@ class _RoundCard extends StatelessWidget {
     return Card(
       child: ListTile(
         title: Text(
-          loc.joinstrDenominationLine(Joinstr.formatBtc(round.denominationSat)),
+          loc.joinstrDenominationLine(_btc(round.denominationSat)),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
@@ -443,7 +443,7 @@ class _RoundDetail extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          loc.joinstrDenominationLine(Joinstr.formatBtc(round.denominationSat)),
+          loc.joinstrDenominationLine(_btc(round.denominationSat)),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         const Gap(4),
@@ -642,9 +642,7 @@ class _PoolCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              loc.joinstrDenominationLine(
-                Joinstr.formatBtc(pool.denominationSat),
-              ),
+              loc.joinstrDenominationLine(_btc(pool.denominationSat)),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const Gap(4),
@@ -783,9 +781,7 @@ class _HistoryTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  context.loc.joinstrAmountLine(
-                    Joinstr.formatBtc(entry.amountSat),
-                  ),
+                  context.loc.joinstrAmountLine(_btc(entry.amountSat)),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const Gap(4),
@@ -825,6 +821,8 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
+
+String _btc(int sat) => FormatAmount.btc(ConvertAmount.satsToBtc(sat));
 
 String joinstrErrorMessage(BuildContext context, JoinstrException error) {
   return switch (error.issue) {

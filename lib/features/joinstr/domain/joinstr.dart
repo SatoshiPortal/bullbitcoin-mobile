@@ -128,18 +128,6 @@ abstract final class Joinstr {
     return (address: scheme == 'ssl' ? 'ssl://$host' : host, port: port);
   }
 
-  /// The bindings take the pool denomination as BTC in a `f64`.
-  static double denominationBtc(int denominationSat) => denominationSat / 1e8;
-
-  /// Renders satoshis as a BTC string with trailing zeros trimmed, e.g.
-  /// 100000 -> "0.001".
-  static String formatBtc(int sat) {
-    final whole = sat ~/ 100000000;
-    final frac = (sat % 100000000).toString().padLeft(8, '0');
-    final trimmedFrac = frac.replaceFirst(RegExp(r'0+$'), '');
-    return trimmedFrac.isEmpty ? '$whole' : '$whole.$trimmedFrac';
-  }
-
   /// Formats a remaining duration for pool tiles, e.g. "1h 5m", "12m 30s",
   /// "45s".
   static String formatRemaining(int seconds) {

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -169,7 +170,7 @@ class JoinstrDatasource {
     yield* _run(
       jns.initiateCoinjoin(
         config: jns.FfiPoolConfig(
-          denominationBtc: Joinstr.denominationBtc(denominationSat),
+          denominationBtc: ConvertAmount.satsToBtc(denominationSat),
           fee: feeRateSatPerVb,
           maxDuration: BigInt.from(maxDuration.inSeconds),
           peers: peers,

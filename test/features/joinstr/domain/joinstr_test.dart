@@ -148,22 +148,6 @@ void main() {
     });
   });
 
-  group('denomination conversion', () {
-    test('converts satoshis to BTC for the pool config', () {
-      expect(Joinstr.denominationBtc(100000), 0.001);
-      expect(Joinstr.denominationBtc(100000000), 1.0);
-    });
-  });
-
-  group('btc formatting', () {
-    test('trims trailing zeros and drops the point on whole coins', () {
-      expect(Joinstr.formatBtc(100000), '0.001');
-      expect(Joinstr.formatBtc(100000000), '1');
-      expect(Joinstr.formatBtc(1), '0.00000001');
-      expect(Joinstr.formatBtc(150000000), '1.5');
-    });
-  });
-
   group('remaining time formatting', () {
     test('renders hours, minutes and seconds at the right granularity', () {
       expect(Joinstr.formatRemaining(45), '45s');

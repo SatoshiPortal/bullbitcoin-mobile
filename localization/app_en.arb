@@ -565,7 +565,7 @@
   "@joinstrRefresh": {
     "description": "Button that reloads the pool list from the relay"
   },
-  "joinstrDenominationLine": "Denomination: {btc} BTC",
+  "joinstrDenominationLine": "Denomination: {btc}",
   "@joinstrDenominationLine": {
     "description": "Pool card line showing the pool denomination",
     "placeholders": {
@@ -623,7 +623,7 @@
   "@joinstrExpired": {
     "description": "Shown when a pool's countdown reaches zero"
   },
-  "joinstrAmountLine": "Amount: {btc} BTC",
+  "joinstrAmountLine": "Amount: {btc}",
   "@joinstrAmountLine": {
     "description": "History card line showing the mixed amount",
     "placeholders": {
