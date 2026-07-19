@@ -20,9 +20,11 @@ void main() {
     when(() => facade.resumeCreate()).thenAnswer(
       (_) async => const Ok<CreateInvoiceResult?, InvoicesFailure>(null),
     );
-    when(
-      () => facade.supportedCurrencies(),
-    ).thenAnswer((_) async => const BullnymSupportedCurrencies(currencies: []));
+    when(() => facade.supportedCurrencies()).thenAnswer(
+      (_) async => const Ok<BullnymSupportedCurrencies, InvoicesFailure>(
+        BullnymSupportedCurrencies(currencies: []),
+      ),
+    );
     cubit = InvoiceCreateCubit(facade: facade);
     await cubit.initialize();
   });
