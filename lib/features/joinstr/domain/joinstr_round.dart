@@ -1,4 +1,7 @@
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'joinstr_round.freezed.dart';
 
 /// The steps a coinjoin walks through, mirrored from the bindings so the UI can
 /// render a progress timeline like joinstr-kmp and floresta_wallet. `done` and
@@ -28,76 +31,43 @@ enum JoinstrRoundStep {
 }
 
 /// A coinjoin round this device initiated or joined. Several can be in flight
-/// at once, each on its own input coin. Its [step] drives the timeline.
-class JoinstrRound {
-  /// Session-unique id so a specific round can be updated while others run.
-  final int id;
-  final bool initiated;
-  final int denominationSat;
-  final int peers;
-  final String relay;
-  final int feeRateSatPerVb;
+/// at once, each on its own input coin. Its [step] drives the timeline:
+/// terminal state is carried by [txId] (broadcast) and [error] (failed), so
+/// the timeline keeps showing the step the round reached even after it ends.
+@freezed
+abstract class JoinstrRound with _$JoinstrRound {
+  const factory JoinstrRound({
+    /// Session-unique id so a specific round can be updated while others run.
+    required int id,
+    required bool initiated,
+    required int denominationSat,
+    required int peers,
+    required String relay,
+    required int feeRateSatPerVb,
 
-  /// The wallet coin (`txid:vout`) this round spends.
-  final String inputOutpoint;
+    /// The wallet coin (`txid:vout`) this round spends.
+    required String inputOutpoint,
+    required int expiresAtUnixSec,
 
-  /// Initiator's nostr public key; null for a round this device initiated.
-  final String? publicKey;
-  final int expiresAtUnixSec;
+    /// Initiator's nostr public key; null for a round this device initiated.
+    String? publicKey,
+    @Default(JoinstrRoundStep.connecting) JoinstrRoundStep step,
+    String? txId,
+    JoinstrException? error,
+  }) = _JoinstrRound;
 
-  /// The latest progress step (one of [JoinstrRoundStep.timeline]). Terminal
-  /// state is carried by [txId] (broadcast) and [error] (failed), so the
-  /// timeline keeps showing the step the round reached even after it ends.
-  final JoinstrRoundStep step;
-  final String? txId;
-  final JoinstrException? error;
-
-  const JoinstrRound({
-    required this.id,
-    required this.initiated,
-    required this.denominationSat,
-    required this.peers,
-    required this.relay,
-    required this.feeRateSatPerVb,
-    required this.inputOutpoint,
-    required this.expiresAtUnixSec,
-    this.publicKey,
-    this.step = JoinstrRoundStep.connecting,
-    this.txId,
-    this.error,
-  });
+  const JoinstrRound._();
 
   bool get isWaiting => txId == null && error == null;
   bool get isBroadcast => txId != null;
   bool get isFailed => error != null;
 
-  int secondsUntilExpiry(DateTime now) {
-    final remaining = expiresAtUnixSec - now.millisecondsSinceEpoch ~/ 1000;
-    return remaining > 0 ? remaining : 0;
-  }
+  int secondsUntilExpiry(DateTime now) =>
+      Joinstr.secondsUntilExpiry(expiresAtUnixSec, now);
 
-  JoinstrRound advancedTo(JoinstrRoundStep step) => _copyWith(step: step);
+  JoinstrRound advancedTo(JoinstrRoundStep step) => copyWith(step: step);
 
-  JoinstrRound completed(String txId) => _copyWith(txId: txId);
+  JoinstrRound completed(String txId) => copyWith(txId: txId);
 
-  JoinstrRound failed(JoinstrException error) => _copyWith(error: error);
-
-  JoinstrRound _copyWith({
-    JoinstrRoundStep? step,
-    String? txId,
-    JoinstrException? error,
-  }) => JoinstrRound(
-    id: id,
-    initiated: initiated,
-    denominationSat: denominationSat,
-    peers: peers,
-    relay: relay,
-    feeRateSatPerVb: feeRateSatPerVb,
-    inputOutpoint: inputOutpoint,
-    publicKey: publicKey,
-    expiresAtUnixSec: expiresAtUnixSec,
-    step: step ?? this.step,
-    txId: txId ?? this.txId,
-    error: error ?? this.error,
-  );
+  JoinstrRound failed(JoinstrException error) => copyWith(error: error);
 }

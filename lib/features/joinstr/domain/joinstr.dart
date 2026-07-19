@@ -53,10 +53,8 @@ class JoinstrPool {
   });
 
   /// Seconds until the pool expires relative to [now], clamped at zero.
-  int secondsUntilExpiry(DateTime now) {
-    final remaining = expiresAtUnixSec - now.millisecondsSinceEpoch ~/ 1000;
-    return remaining > 0 ? remaining : 0;
-  }
+  int secondsUntilExpiry(DateTime now) =>
+      Joinstr.secondsUntilExpiry(expiresAtUnixSec, now);
 }
 
 abstract final class Joinstr {
@@ -115,6 +113,13 @@ abstract final class Joinstr {
       address: parsed.useSsl ? 'ssl://${parsed.host}' : parsed.host,
       port: parsed.port,
     );
+  }
+
+  /// Seconds until [expiresAtUnixSec] relative to [now], clamped at zero.
+  /// Shared by pools and rounds.
+  static int secondsUntilExpiry(int expiresAtUnixSec, DateTime now) {
+    final remaining = expiresAtUnixSec - now.millisecondsSinceEpoch ~/ 1000;
+    return remaining > 0 ? remaining : 0;
   }
 
   /// Formats a remaining duration for pool tiles, e.g. "1h 5m", "12m 30s",
