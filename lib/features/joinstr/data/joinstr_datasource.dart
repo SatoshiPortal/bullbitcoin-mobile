@@ -15,6 +15,9 @@ class JoinstrDatasource {
   /// [JoinstrException] that carries its real message. Without this the error
   /// surfaces as `JoinstrError.toString()`, i.e. "Instance of 'JoinstrError'".
   Future<T> _call<T>(Future<T> Function() ffi) async {
+    // Loads the native library on first use; memoized and retry-safe in the
+    // bindings, so app startup does not pay for it.
+    await jns.JoinstrFlutter.init();
     try {
       return await ffi();
     } on jns.JoinstrError catch (e) {
@@ -186,6 +189,7 @@ class JoinstrDatasource {
     required String inputOutpoint,
     String? proxy,
   }) async {
+    await jns.JoinstrFlutter.init();
     final endpoint = Joinstr.parseElectrumUrl(electrumUrl);
     final network = _network(wallet.network);
 
