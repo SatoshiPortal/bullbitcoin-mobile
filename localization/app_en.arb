@@ -14887,5 +14887,9 @@
   "receivePayjoinActivated": "Payjoin activated",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
+  },
+  "statusCheckDisabled": "Disabled",
+  "@statusCheckDisabled": {
+    "description": "Status label on the service status page for a service the user has intentionally turned off (e.g. payjoin disabled in settings)."
   }
 }
