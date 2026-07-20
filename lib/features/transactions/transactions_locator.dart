@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -109,6 +110,7 @@ class TransactionsLocator {
       () => TransactionDetailsCubit(
         getWalletUsecase: locator<GetWalletUsecase>(),
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
+        getWalletTransactionUsecase: locator<GetWalletTransactionUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),
         getSwapUsecase: locator<GetSwapUsecase>(),
