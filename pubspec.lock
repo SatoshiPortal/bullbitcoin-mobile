@@ -1232,8 +1232,8 @@ packages:
     dependency: "direct main"
     description:
       path: dart
-      ref: "449f126"
-      resolved-ref: "449f126d0fc26c0855f3207093eda96703fdc844"
+      ref: "a4efdd4"
+      resolved-ref: "a4efdd4fac22d8c7663a0b356db7564e083cbad4"
       url: "https://github.com/rust-joinstr/joinstr"
     source: git
     version: "0.1.0"
