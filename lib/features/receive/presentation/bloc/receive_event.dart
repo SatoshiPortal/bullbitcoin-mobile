@@ -25,4 +25,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveTransactionReceived;
   const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
       ReceiveLightningSwapUpdated;
+  const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
+      ReceivePayjoinSettingChanged;
+  const factory ReceiveEvent.receivePayjoinToggled(bool enabled) =
+      ReceivePayjoinToggled;
 }

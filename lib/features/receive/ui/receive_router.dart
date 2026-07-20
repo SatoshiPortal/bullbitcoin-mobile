@@ -41,12 +41,15 @@ class ReceiveRouter {
       //  of the incoming route
       final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
 
-      // Make sure the ReceiveScaffold with the network selection is not rebuild
-      //  when switching networks, so keep it outside of the BlocProvider.
-      return ReceiveScaffold(
-        wallet: wallet,
-        child: BlocProvider<ReceiveBloc>(
-          create: (_) => locator<ReceiveBloc>(param1: wallet),
+      // The BlocProvider wraps the whole ReceiveScaffold (not just its child)
+      //  so the scaffold's TopBar can host a bloc-aware payjoin toggle. The
+      //  scaffold itself doesn't listen — it only rebuilds via the narrowly
+      //  scoped selectors inside its TopBar action — so switching networks
+      //  still doesn't rebuild it.
+      return BlocProvider<ReceiveBloc>(
+        create: (_) => locator<ReceiveBloc>(param1: wallet),
+        child: ReceiveScaffold(
+          wallet: wallet,
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(
