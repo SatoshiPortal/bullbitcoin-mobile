@@ -1004,14 +1004,23 @@ class TransactionDetailsTable extends StatelessWidget {
         if (payjoin != null) ...[
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinStatus,
-            displayValue:
-                payjoin.isCompleted ||
-                    (payjoin.status == PayjoinStatus.proposed &&
-                        walletTransaction != null)
-                ? context.loc.transactionDetailLabelPayjoinCompleted
-                : payjoin.isExpired
-                ? context.loc.transactionDetailLabelPayjoinExpired
-                : payjoin.status.name,
+            // Display status, derived from the broadcast transaction when it
+            // is visible (see Transaction.displayPayjoinStatus): a stale
+            // session row can't surface a raw "requested"/"proposed" for a
+            // payment already on-chain. The exhaustive switch makes a new
+            // PayjoinStatus a compile error rather than a leaked enum name.
+            displayValue: switch (transaction!.displayPayjoinStatus!) {
+              PayjoinStatus.completed =>
+                context.loc.transactionDetailLabelPayjoinCompleted,
+              PayjoinStatus.aborted =>
+                context.loc.transactionDetailLabelPayjoinAborted,
+              PayjoinStatus.expired =>
+                context.loc.transactionDetailLabelPayjoinExpired,
+              PayjoinStatus.started ||
+              PayjoinStatus.requested ||
+              PayjoinStatus.proposed =>
+                context.loc.transactionDetailLabelPayjoinInProgress,
+            },
           ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,
@@ -1019,6 +1028,26 @@ class TransactionDetailsTable extends StatelessWidget {
               'MMM d, y, h:mm a',
             ).format(payjoin.createdAt),
           ),
+          if (transaction.payjoinFeeContributionSat != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelPayjoinFeeContribution,
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(
+                      transaction.payjoinFeeContributionSat!,
+                    ).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(
+                        transaction.payjoinFeeContributionSat!,
+                      ),
+                    ).toUpperCase(),
+              expandableChild: BBText(
+                context.loc.transactionPayjoinFeeContributionExplanation,
+                style: context.font.bodySmall?.copyWith(
+                  color: context.appColors.secondary,
+                ),
+                maxLines: 5,
+              ),
+            ),
         ],
       ],
     );
