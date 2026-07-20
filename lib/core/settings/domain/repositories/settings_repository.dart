@@ -6,6 +6,11 @@ import 'package:bb_mobile/core/utils/constants.dart';
 abstract class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
+  /// Emits the new value every time [setPayjoinEnabled] persists a change,
+  /// so a live listener (the receive flow) can react to the setting being
+  /// flipped elsewhere in the app without needing to re-enter its screen.
+  Stream<bool> get payjoinEnabledChangeStream;
+
   Future<void> close();
 
   Future<void> store({

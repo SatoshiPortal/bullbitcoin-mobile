@@ -11,16 +11,23 @@ import 'package:bb_mobile/core/utils/report.dart';
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
+  final StreamController<bool> _payjoinEnabledChangeController;
 
   SettingsRepository({required this._settingsDatasource})
-    : _currencyChangeController = StreamController<String>.broadcast();
+    : _currencyChangeController = StreamController<String>.broadcast(),
+      _payjoinEnabledChangeController = StreamController<bool>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
+  Stream<bool> get payjoinEnabledChangeStream =>
+      _payjoinEnabledChangeController.stream;
+
+  @override
   Future<void> close() async {
     await _currencyChangeController.close();
+    await _payjoinEnabledChangeController.close();
   }
 
   @override
@@ -144,6 +151,7 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setPayjoinEnabled(bool enabled) async {
     await _settingsDatasource.setPayjoinEnabled(enabled);
+    _payjoinEnabledChangeController.add(enabled);
   }
 
   @override
