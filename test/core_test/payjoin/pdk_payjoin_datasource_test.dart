@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:dio/dio.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:payjoin/payjoin.dart';
@@ -371,6 +374,91 @@ void main() {
       );
 
       expect(result, Uint8List.fromList([4, 5, 6]));
+    });
+  });
+
+  group('PdkPayjoinDatasource.stopPolling', () {
+    // A session whose expiry time is long passed (createdAt: 0): the first
+    // poll tick emits an expired event without any network access, which
+    // makes the poll's liveness observable offline.
+    PayjoinSenderModel expiredSenderModel() =>
+        PayjoinModel.sender(
+              uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+              isTestnet: true,
+              sender: '[]',
+              walletId: 'w1',
+              originalPsbt: 'cHNidP8=',
+              originalTxId: 'orig-txid',
+              amountSat: 50000,
+              createdAt: 0,
+              expireAfterSec: 300,
+            )
+            as PayjoinSenderModel;
+
+    test('control: without stopPolling the poll raises the expiry', () {
+      fakeAsync((async) {
+        final datasource = PdkPayjoinDatasource(dio: Dio());
+        final events = <PayjoinModel>[];
+        final sub = datasource.expiredPayjoins.listen(events.add);
+
+        datasource.startListeningForProposal(expiredSenderModel());
+        async.elapse(
+          const Duration(
+            seconds: PayjoinConstants.directoryPollingInterval + 1,
+          ),
+        );
+
+        expect(events, hasLength(1));
+        sub.cancel();
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('cancels the session poll so no further event ever fires — the '
+        'repository calls this when a session resolves through a path the '
+        'poll cannot see (fallback landed on-chain)', () {
+      fakeAsync((async) {
+        final datasource = PdkPayjoinDatasource(dio: Dio());
+        final events = <PayjoinModel>[];
+        final sub = datasource.expiredPayjoins.listen(events.add);
+
+        final model = expiredSenderModel();
+        datasource.startListeningForProposal(model);
+        datasource.stopPolling(model.id);
+        async.elapse(
+          const Duration(
+            seconds: PayjoinConstants.directoryPollingInterval * 3,
+          ),
+        );
+
+        expect(events, isEmpty);
+        sub.cancel();
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+  });
+
+  group('PdkPayjoinDatasource.dispose', () {
+    test('closes the event streams', () async {
+      final datasource = PdkPayjoinDatasource(dio: Dio());
+
+      await datasource.dispose();
+
+      // A closed broadcast stream completes immediately with no events.
+      await expectLater(datasource.requestsForReceivers, emitsDone);
+      await expectLater(datasource.proposalsForSenders, emitsDone);
+      await expectLater(datasource.expiredPayjoins, emitsDone);
+    });
+
+    test('is idempotent (a second dispose is a no-op)', () async {
+      final datasource = PdkPayjoinDatasource(dio: Dio());
+
+      await datasource.dispose();
+      // Without the _disposed guard this would throw on re-closing a closed
+      // controller.
+      await expectLater(datasource.dispose(), completes);
     });
   });
 }
