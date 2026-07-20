@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -91,6 +92,12 @@ class ReceiveQRDetails extends StatelessWidget {
     );
     final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
     final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
+    final isPayjoinAwaitingFunds = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinAwaitingFunds,
+    );
+    final isPayjoinSuppressedByAmount = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinSuppressedByAmount,
+    );
 
     final gap = Device.screen.height * 0.02;
     return Padding(
@@ -140,6 +147,22 @@ class ReceiveQRDetails extends StatelessWidget {
           Gap(gap),
           Center(child: QrDisplayWidget(data: qrData)),
           Gap(gap),
+          if (isBitcoin && isPayjoinAwaitingFunds) ...[
+            InfoCard(
+              description: context.loc.receivePayjoinAwaitingFunds,
+              tagColor: context.appColors.secondary,
+              bgColor: context.appColors.onSecondary,
+            ),
+            Gap(gap),
+          ],
+          if (isBitcoin && isPayjoinSuppressedByAmount) ...[
+            InfoCard(
+              description: context.loc.receivePayjoinBelowMinimumAmount,
+              tagColor: context.appColors.secondary,
+              bgColor: context.appColors.onSecondary,
+            ),
+            Gap(gap),
+          ],
           BorderedTappableTile(
             backgroundColor: context.appColors.surfaceContainerHighest,
             onTap: () => isLightning

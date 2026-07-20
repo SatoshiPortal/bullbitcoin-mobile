@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
@@ -9,6 +10,8 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usec
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -59,7 +62,17 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockGetSwapLimitsUsecase extends Mock implements GetSwapLimitsUsecase {}
 
-Wallet _testWallet({String origin = 'w1'}) => Wallet(
+class _MockWatchPayjoinEnabledChangesUsecase extends Mock
+    implements WatchPayjoinEnabledChangesUsecase {}
+
+class _MockSetPayjoinEnabledUsecase extends Mock
+    implements SetPayjoinEnabledUsecase {}
+
+// Defaults to a confirmed balance: most tests in this file are about the
+//  isPayjoinEnabled/proposal-state gating, not the balance one — a zero
+//  default would make every payjoin-creating test fail for a reason unrelated
+//  to what it names. The balance-eligibility tests override it explicitly.
+Wallet _testWallet({String origin = 'w1', BigInt? balanceSat}) => Wallet(
   origin: origin,
   network: Network.bitcoinMainnet,
   xpubFingerprint: '00000000',
@@ -69,7 +82,7 @@ Wallet _testWallet({String origin = 'w1'}) => Wallet(
   internalPublicDescriptor: '',
   signer: SignerEntity.local,
   signerDevice: null,
-  balanceSat: BigInt.zero,
+  balanceSat: balanceSat ?? BigInt.from(50000),
 );
 
 WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(
@@ -110,12 +123,15 @@ void main() {
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByAddressUsecase watchWalletTransaction;
   late _MockLabelsFacade labels;
+  late _MockWatchPayjoinEnabledChangesUsecase watchPayjoinEnabledChanges;
+  late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
+  late StreamController<bool> payjoinEnabledChangeController;
 
   setUpAll(() {
     registerFallbackValue(_receiver());
   });
 
-  ReceiveBloc buildBloc() => ReceiveBloc(
+  ReceiveBloc buildBloc({Wallet? wallet}) => ReceiveBloc(
     getWalletsUsecase: _MockGetWalletsUsecase(),
     getAvailableCurrenciesUsecase: getAvailableCurrencies,
     getSettingsUsecase: getSettings,
@@ -130,7 +146,9 @@ void main() {
     watchSwapUsecase: _MockWatchSwapUsecase(),
     labelsFacade: labels,
     getSwapLimitsUsecase: _MockGetSwapLimitsUsecase(),
-    wallet: _testWallet(),
+    watchPayjoinEnabledChangesUsecase: watchPayjoinEnabledChanges,
+    setPayjoinEnabledUsecase: setPayjoinEnabled,
+    wallet: wallet ?? _testWallet(),
   );
 
   setUp(() {
@@ -143,6 +161,16 @@ void main() {
     watchPayjoin = _MockWatchPayjoinUsecase();
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     labels = _MockLabelsFacade();
+    watchPayjoinEnabledChanges = _MockWatchPayjoinEnabledChangesUsecase();
+    payjoinEnabledChangeController = StreamController<bool>.broadcast();
+    when(
+      () => watchPayjoinEnabledChanges.execute(),
+    ).thenAnswer((_) => payjoinEnabledChangeController.stream);
+    setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
+    // Toggling persists to settings, which in the real app feeds back via the
+    //  change stream; the tests emit on payjoinEnabledChangeController to
+    //  simulate that round-trip explicitly.
+    when(() => setPayjoinEnabled.execute(any())).thenAnswer((_) async {});
 
     // Payjoin is enabled by default here so the guard group can create a
     // session; the gated group overrides this stub to disable it.
@@ -175,6 +203,10 @@ void main() {
         toAddress: any(named: 'toAddress'),
       ),
     ).thenAnswer((_) => const Stream.empty());
+  });
+
+  tearDown(() async {
+    await payjoinEnabledChangeController.close();
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
@@ -292,6 +324,146 @@ void main() {
 
       expect(bloc.state.payjoin, createdPayjoin);
       expect(bloc.state.payjoinGloballyEnabled, isTrue);
+    });
+
+    test('does NOT create a payjoin receiver session for a wallet with no '
+        'confirmed balance, even though payjoin is enabled globally — a '
+        'payjoin proposal needs at least one UTXO to contribute', () async {
+      final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoin, isNull);
+      expect(bloc.state.payjoinGloballyEnabled, isTrue);
+      expect(bloc.state.isPayjoinAwaitingFunds, isTrue);
+      verifyNever(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      );
+    });
+  });
+
+  group('payjoin reacts live to the global setting changing', () {
+    test('creates a payjoin receiver session as soon as the setting is '
+        'flipped on, without needing to leave and re-enter the receive '
+        'screen', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          isPayjoinEnabled: false,
+        ),
+      );
+      final createdPayjoin = _receiver();
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => createdPayjoin);
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.payjoin, isNull);
+
+      payjoinEnabledChangeController.add(true);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoinGloballyEnabled, isTrue);
+      expect(bloc.state.payjoin, createdPayjoin);
+    });
+
+    test('clears an existing payjoin receiver session as soon as the '
+        'setting is flipped off', () async {
+      final createdPayjoin = _receiver();
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => createdPayjoin);
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.payjoin, createdPayjoin);
+
+      payjoinEnabledChangeController.add(false);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoinGloballyEnabled, isFalse);
+      expect(bloc.state.payjoin, isNull);
+    });
+
+    test('does NOT create a session on enable if the wallet still has no '
+        'confirmed balance', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          isPayjoinEnabled: false,
+        ),
+      );
+
+      final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      payjoinEnabledChangeController.add(true);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoinGloballyEnabled, isTrue);
+      expect(bloc.state.payjoin, isNull);
+      expect(bloc.state.isPayjoinAwaitingFunds, isTrue);
+      verifyNever(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      );
+    });
+  });
+
+  group('payjoin badge toggle (ReceivePayjoinToggled)', () {
+    test('persists the new value to the global setting', () async {
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const ReceivePayjoinToggled(false));
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => setPayjoinEnabled.execute(false)).called(1);
+    });
+
+    test('isPayjoinToggleable is true for a funded, locally-signing bitcoin '
+        'wallet and false for an empty one', () async {
+      final funded = buildBloc();
+      addTearDown(funded.close);
+      funded.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+      expect(funded.state.isPayjoinToggleable, isTrue);
+
+      final empty = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
+      addTearDown(empty.close);
+      empty.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+      expect(empty.state.isPayjoinToggleable, isFalse);
     });
   });
 }

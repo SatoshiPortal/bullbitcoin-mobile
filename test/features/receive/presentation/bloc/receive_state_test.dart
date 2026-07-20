@@ -13,7 +13,11 @@ import 'package:flutter_test/flutter_test.dart';
 /// disabled by default, so that would be every fresh install's receive
 /// screen.
 void main() {
-  Wallet localWallet() => Wallet(
+  // Defaults to a confirmed balance: most tests in this file are about the
+  //  payjoinGloballyEnabled semantics, not the balance one — a zero default
+  //  would make isPayjoinLoading false for a reason unrelated to what each
+  //  test names. Tests about isPayjoinAwaitingFunds override it explicitly.
+  Wallet localWallet({BigInt? balanceSat}) => Wallet(
     origin: 'test-origin',
     network: Network.bitcoinMainnet,
     xpubFingerprint: '00000000',
@@ -23,7 +27,7 @@ void main() {
     internalPublicDescriptor: '',
     signer: SignerEntity.local,
     signerDevice: null,
-    balanceSat: BigInt.zero,
+    balanceSat: balanceSat ?? BigInt.from(50000),
   );
 
   WalletAddress address() => WalletAddress(
@@ -34,13 +38,17 @@ void main() {
     updatedAt: DateTime(2026),
   );
 
-  ReceiveState buildState({required bool? payjoinGloballyEnabled}) =>
-      ReceiveState(
-        type: ReceiveType.bitcoin,
-        wallet: localWallet(),
-        bitcoinAddress: address(),
-        payjoinGloballyEnabled: payjoinGloballyEnabled,
-      );
+  ReceiveState buildState({
+    required bool? payjoinGloballyEnabled,
+    BigInt? balanceSat,
+    PayjoinReceiver? payjoin,
+  }) => ReceiveState(
+    type: ReceiveType.bitcoin,
+    wallet: localWallet(balanceSat: balanceSat),
+    bitcoinAddress: address(),
+    payjoinGloballyEnabled: payjoinGloballyEnabled,
+    payjoin: payjoin,
+  );
 
   group('ReceiveState.isPayjoinLoading payjoin-disabled gate', () {
     test('not loading when payjoin is globally disabled — no session will ever '
@@ -61,6 +69,17 @@ void main() {
       final state = buildState(payjoinGloballyEnabled: true);
 
       expect(state.isPayjoinLoading, isTrue);
+    });
+
+    test('not loading when enabled but the wallet has no confirmed balance '
+        'to contribute — no session will ever be created for it either, so '
+        'nothing must wait for one', () {
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        balanceSat: BigInt.zero,
+      );
+
+      expect(state.isPayjoinLoading, isFalse);
     });
   });
 
@@ -147,6 +166,53 @@ void main() {
     });
   });
 
+  group('ReceiveState.isPayjoinAwaitingFunds', () {
+    test('true when payjoin is enabled globally but this wallet has no '
+        'confirmed balance yet', () {
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        balanceSat: BigInt.zero,
+      );
+
+      expect(state.isPayjoinAwaitingFunds, isTrue);
+    });
+
+    test('false when the wallet already has a confirmed balance (the '
+        'normal loading/available case)', () {
+      final state = buildState(payjoinGloballyEnabled: true);
+
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
+    test('false when payjoin is disabled globally, regardless of balance', () {
+      final state = buildState(
+        payjoinGloballyEnabled: false,
+        balanceSat: BigInt.zero,
+      );
+
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
+    test('false for a non-bitcoin receive type', () {
+      const state = ReceiveState(
+        type: ReceiveType.liquid,
+        payjoinGloballyEnabled: true,
+      );
+
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
+    test('false once a payjoin session already exists', () {
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        balanceSat: BigInt.zero,
+        payjoin: payjoinWith(status: PayjoinStatus.requested),
+      );
+
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+  });
+
   group('ReceiveState.isPayjoinBelowMinimum', () {
     test('true when the session aborted below the configured minimum', () {
       final state = ReceiveState(
@@ -186,6 +252,67 @@ void main() {
       );
 
       expect(state.isPayjoinBelowMinimum, isFalse);
+    });
+  });
+
+  group('ReceiveState requested-amount payjoin suppression', () {
+    ReceiveState payjoinState({int? confirmedAmountSat}) => ReceiveState(
+      type: ReceiveType.bitcoin,
+      wallet: localWallet(),
+      bitcoinAddress: address(),
+      payjoinGloballyEnabled: true,
+      payjoinMinAmountSat: 10000,
+      payjoin: payjoinWith(status: PayjoinStatus.requested),
+      confirmedAmountSat: confirmedAmountSat,
+    );
+
+    test('canPayjoin stays true with no amount entered', () {
+      expect(payjoinState().canPayjoin, isTrue);
+      expect(payjoinState().isRequestedAmountBelowPayjoinMinimum, isFalse);
+      expect(payjoinState().isPayjoinSuppressedByAmount, isFalse);
+    });
+
+    test(
+      'canPayjoin stays true when the amount is at or above the minimum',
+      () {
+        expect(payjoinState(confirmedAmountSat: 10000).canPayjoin, isTrue);
+        expect(payjoinState(confirmedAmountSat: 20000).canPayjoin, isTrue);
+      },
+    );
+
+    test('canPayjoin drops to false when the requested amount is below the '
+        'minimum, and the QR no longer advertises pj=', () {
+      final state = payjoinState(confirmedAmountSat: 5000);
+
+      expect(state.isRequestedAmountBelowPayjoinMinimum, isTrue);
+      expect(state.canPayjoin, isFalse);
+      expect(state.isPayjoinSuppressedByAmount, isTrue);
+      expect(state.paymentRequest.contains('pj='), isFalse);
+      // The amount is still in the URI — only payjoin is suppressed.
+      expect(state.paymentRequest.contains('amount='), isTrue);
+    });
+
+    test('suppression lifts as soon as the amount is raised back to the '
+        'minimum (no session teardown needed)', () {
+      expect(payjoinState(confirmedAmountSat: 5000).canPayjoin, isFalse);
+      expect(payjoinState(confirmedAmountSat: 10000).canPayjoin, isTrue);
+      expect(
+        payjoinState(confirmedAmountSat: 10000).paymentRequest,
+        contains('pj='),
+      );
+    });
+
+    test('isPayjoinSuppressedByAmount is false when no payjoin session '
+        'exists', () {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        wallet: localWallet(),
+        bitcoinAddress: address(),
+        payjoinMinAmountSat: 10000,
+        confirmedAmountSat: 5000,
+      );
+
+      expect(state.isPayjoinSuppressedByAmount, isFalse);
     });
   });
 }

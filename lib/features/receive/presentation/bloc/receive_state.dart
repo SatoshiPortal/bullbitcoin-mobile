@@ -283,13 +283,34 @@ abstract class ReceiveState with _$ReceiveState {
       // of every fresh install. `null` (settings not read yet) still
       // counts as loading: the fetch resolves within the same handler that
       // would create the session.
+      //
+      // Also gated on [hasUtxos]: ReceiveBloc only creates a session for a
+      // wallet with a confirmed balance to contribute (see
+      // ReceiveBloc._isPayjoinEligible — a payjoin proposal needs at least
+      // one UTXO), so an empty wallet would otherwise hit the exact same
+      // "stuck loading forever" bug as the disabled case.
       return wallet != null &&
           wallet!.signsLocally &&
           (payjoinGloballyEnabled ?? true) &&
+          hasUtxos &&
           payjoin == null &&
           receivePayjoinException == null;
     }
     return false;
+  }
+
+  /// True when payjoin is enabled globally and this wallet can sign
+  /// locally, but it has no confirmed balance yet — so ReceiveBloc did not
+  /// create a payjoin receiver session (see ReceiveBloc._isPayjoinEligible).
+  /// Lets the receive screen explain why payjoin isn't active despite being
+  /// turned on, instead of silently doing nothing.
+  bool get isPayjoinAwaitingFunds {
+    if (type != ReceiveType.bitcoin) return false;
+    return wallet != null &&
+        wallet!.signsLocally &&
+        payjoinGloballyEnabled == true &&
+        !hasUtxos &&
+        payjoin == null;
   }
 
   bool get isPayjoinAvailable {
@@ -301,12 +322,51 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
 
+  /// Whether a payjoin on/off toggle should be offered on the receive screen
+  /// for this wallet: it must be a bitcoin receive with a locally-signing,
+  /// funded wallet (the only case where flipping the setting actually changes
+  /// anything — a watch-only or empty wallet can never payjoin regardless).
+  /// The toggle reflects/controls the GLOBAL [payjoinGloballyEnabled] setting.
+  bool get isPayjoinToggleable =>
+      type == ReceiveType.bitcoin &&
+      wallet != null &&
+      wallet!.signsLocally &&
+      hasUtxos;
+
+  /// True when the user has entered a requested amount that is below the
+  /// configured anti-probing minimum. The receiver would decline a payjoin
+  /// for such an amount anyway (see PayjoinRepositoryImpl's below-minimum
+  /// decline), so advertising a pj= endpoint for it is pointless — this lets
+  /// [canPayjoin] drop the endpoint from the QR for this request without
+  /// tearing down the underlying session (a larger amount, or clearing the
+  /// amount, re-enables it immediately). Only gates once an amount is
+  /// actually entered (> 0); a plain address / no-amount request is
+  /// unaffected.
+  bool get isRequestedAmountBelowPayjoinMinimum {
+    final amountSat = confirmedAmountSat;
+    final minAmountSat = payjoinMinAmountSat;
+    return amountSat != null &&
+        amountSat > 0 &&
+        minAmountSat != null &&
+        amountSat < minAmountSat;
+  }
+
   // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
   // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
   // The per-address opt-out toggle was removed: the global payjoin setting
   // (ReceiveBloc only creates [payjoin] at all when it's enabled, see
-  // _onBitcoinStarted) is now the only control.
-  bool get canPayjoin => payjoin != null && hasUtxos;
+  // _onBitcoinStarted) is now the only control. Also suppressed when the
+  // requested amount is below the anti-probing minimum: the sender's payjoin
+  // would be declined for it anyway, so the QR shouldn't advertise pj=.
+  bool get canPayjoin =>
+      payjoin != null && hasUtxos && !isRequestedAmountBelowPayjoinMinimum;
+
+  /// A payjoin session exists (feature on, funded wallet) but the pj=
+  /// endpoint is currently dropped from the QR solely because the requested
+  /// amount is below the anti-probing minimum. Lets the receive screen
+  /// explain the transient suppression rather than silently omitting pj=.
+  bool get isPayjoinSuppressedByAmount =>
+      payjoin != null && hasUtxos && isRequestedAmountBelowPayjoinMinimum;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
