@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart' show Payjoin;
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' as logger;
@@ -43,6 +44,8 @@ class PdkPayjoinDatasource {
   final Set<String> _receiverPollsInFlight = {};
   final Set<String> _senderPollsInFlight = {};
 
+  bool _disposed = false;
+
   PdkPayjoinDatasource({
     this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required this._dio,
@@ -59,6 +62,46 @@ class PdkPayjoinDatasource {
       _proposalSentController.stream;
 
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
+
+  /// Stops the directory polling of one session — both the receiver
+  /// request poll and the sender proposal poll, whichever exists for
+  /// [payjoinId]. Called by the repository the moment a session resolves
+  /// through a path the poll itself can't see (the plain-broadcast fallback
+  /// landing on-chain): the poll only self-cancels on request/proposal
+  /// found or expiry, so without this it kept firing until expiry and then
+  /// raised a stale expired event for an already-completed session
+  /// (observed live: a redundant second broadcast of the original
+  /// transaction a minute after the session had already resolved).
+  void stopPolling(String payjoinId) {
+    _receiverTimers.remove(payjoinId)?.cancel();
+    _senderTimers.remove(payjoinId)?.cancel();
+  }
+
+  /// Cancels every polling timer and closes the event streams. Individual
+  /// poll timers self-cancel on success/expiry, but a session that never
+  /// resolves (a relay permanently down) would otherwise leave a
+  /// [Timer.periodic] firing forever plus three unclosed broadcast
+  /// controllers. The production singleton lives for the whole app session,
+  /// but tests (and any future teardown) need a clean exit; the repository's
+  /// own dispose delegates here. Idempotent: a second call is a no-op (closing
+  /// an already-closed controller would otherwise throw).
+  Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    for (final timer in _receiverTimers.values) {
+      timer.cancel();
+    }
+    _receiverTimers.clear();
+    for (final timer in _senderTimers.values) {
+      timer.cancel();
+    }
+    _senderTimers.clear();
+    _receiverPollsInFlight.clear();
+    _senderPollsInFlight.clear();
+    await _payjoinRequestedController.close();
+    await _proposalSentController.close();
+    await _expiredController.close();
+  }
 
   Future<(OhttpKeys?, String?)> fetchOhttpKeyAndRelay({
     required String payjoinDirectory,
@@ -272,6 +315,57 @@ class PdkPayjoinDatasource {
     );
 
     return updatedModel;
+  }
+
+  /// Formally cancels a receiver session that was declined below the
+  /// configured minimum-receive-amount threshold (see
+  /// PayjoinRepositoryImpl._processPayjoinRequest), and closes the
+  /// underlying PDK session so it persists a terminal event.
+  ///
+  /// This replaces silently abandoning the session after broadcasting the
+  /// original transaction out of band: without this, the PDK's own
+  /// typestate machine never learns the session ended, so only our local
+  /// DB flag (isAborted) stood between it and being replayed/resumed as if
+  /// still pending. `cancel()` is available on every receive typestate that
+  /// carries a fallback transaction (verified against the installed
+  /// `payjoin` package's Dart bindings — `MaybeInputsOwned.cancel()` is one
+  /// of them); calling it here transitions to `ReceiverPendingFallback`,
+  /// whose `close()` persists the closing `SessionEvent` via the
+  /// persister. The original transaction itself is still broadcast by the
+  /// caller from the already-captured, already-validated
+  /// [PayjoinReceiverModel.originalTxBytes] — this method only concludes
+  /// the PDK-side state machine to match that outcome.
+  ///
+  /// Always called right after `_pollReceiverOnce` has persisted a session
+  /// at exactly the `MaybeInputsOwned` typestate (where
+  /// `originalTxBytes`/`amountSat` first become available) — any other
+  /// state means the session already progressed past the point a
+  /// below-minimum decline is possible, or is already resolved.
+  String declineReceiverSession(PayjoinReceiverModel receiverModel) {
+    final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+      receiverModel.receiver,
+    );
+    final state = replayReceiverEventLog(persister: persister).state();
+    if (state is! MaybeInputsOwnedReceiveSession) {
+      throw StateError(
+        'Cannot decline payjoin receiver ${receiverModel.id}: expected a '
+        'MaybeInputsOwned session, got $state',
+      );
+    }
+
+    final pendingFallback = state.inner.cancel().save(persister: persister);
+    if (pendingFallback == null) {
+      // The session was already terminal (e.g. a race with another decline
+      // path) — nothing further to persist, but not an error either.
+      logger.log.info(
+        'Payjoin receiver ${receiverModel.id} was already resolved when '
+        'declining below minimum',
+      );
+      return persister.toJson();
+    }
+
+    pendingFallback.close().save(persister: persister);
+    return persister.toJson();
   }
 
   Future<({Monitor monitor, String psbt})> processReceiveSession({
@@ -688,14 +782,18 @@ class PdkPayjoinDatasource {
     PayjoinSenderModel senderModel,
     Timer timer,
   ) async {
+    // logRef, never the raw id in log lines/exception messages: a sender id
+    //  is the full BIP21 URI (address+amount+endpoint). The raw id is still
+    //  used as the internal map key below, which never reaches a log.
+    final senderLogRef = Payjoin.logRefForId(senderModel.id);
     if (!_senderPollsInFlight.add(senderModel.id)) return;
-    log('[sender poll] checking for proposal for ${senderModel.id}');
+    log('[sender poll] checking for proposal for $senderLogRef');
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
       if (senderModel.isExpiryTimePassed) {
         throw PayjoinExpiredException(
-          'Payjoin sender ${senderModel.id} expiry time passed',
+          'Payjoin sender $senderLogRef expiry time passed',
         );
       }
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
@@ -715,7 +813,7 @@ class PdkPayjoinDatasource {
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
       if (proposalPsbt == null) return;
 
-      log('[sender poll] proposal found for ${senderModel.id}');
+      log('[sender poll] proposal found for $senderLogRef');
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
@@ -730,13 +828,13 @@ class PdkPayjoinDatasource {
       _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException catch (e) {
-      logger.log.info('[sender poll] expired for ${senderModel.id}: $e');
+      logger.log.info('[sender poll] expired for $senderLogRef: $e');
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
     } catch (e) {
-      logger.log.info('[sender poll] ${senderModel.id}: $e');
+      logger.log.info('[sender poll] $senderLogRef: $e');
     } finally {
       _senderPollsInFlight.remove(senderModel.id);
     }
