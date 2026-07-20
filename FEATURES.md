@@ -83,6 +83,7 @@ graph TB
     SEND --> NETWORK
     SEND --> PAYJOIN
     SEND --> SWAPS
+    SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
     SEND --> WALLETS
     SETTINGS --> CORE
