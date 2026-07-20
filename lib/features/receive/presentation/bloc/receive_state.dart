@@ -21,9 +21,19 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    // The global payjoin setting as last read by the bloc. Tri-state on
+    // purpose: null = settings not fetched yet (treat as "may become
+    // enabled", keep waiting), false = disabled (never wait for a payjoin),
+    // true = enabled (wait until a session or an exception exists). See
+    // [isPayjoinLoading] for why this must be part of the state.
+    bool? payjoinGloballyEnabled,
+    // The receiver's anti-probing minimum (sats) as last read from settings.
+    // Null until the first settings fetch resolves. Used only to explain a
+    // below-minimum decline on the payjoin-in-progress screen — the decline
+    // itself happens in PayjoinRepositoryImpl before any negotiation.
+    int? payjoinMinAmountSat,
     @Default(false) bool isBroadcastingOriginalTransaction,
     ReceivePayjoinException? receivePayjoinException,
-    @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
     AmountException? amountException,
@@ -231,34 +241,132 @@ abstract class ReceiveState with _$ReceiveState {
     }
   }
 
+  /// Whether the payjoin flow owns navigation for this receive, so the
+  /// shell's generic "payment received → transaction details" listener must
+  /// defer: the payjoin-in-progress screen lives on the root navigator and
+  /// stays mounted over the receive shell, so without this the generic
+  /// listener would whisk the user off the payjoin screen the instant the
+  /// address watcher sees the (possibly fallback) transaction — before they
+  /// can read why a payjoin did or didn't happen. `started` is deliberately
+  /// excluded: a fresh receiver session with no request yet means a plain
+  /// send to this address, unrelated to payjoin, which must still navigate
+  /// via the generic listener.
+  bool get isPayjoinFlowOwningNavigation =>
+      type == ReceiveType.bitcoin &&
+      payjoin != null &&
+      payjoin!.status != PayjoinStatus.started;
+
+  /// True when the payjoin session resolved via the plain-broadcast fallback
+  /// specifically because the sender's amount fell below the configured
+  /// anti-probing minimum. Exact, not a heuristic: the repository declines
+  /// below-minimum requests before any negotiation is attempted, so no other
+  /// abort path is reachable for such an amount.
+  bool get isPayjoinBelowMinimum {
+    final amountSat = payjoin?.amountSat;
+    final minAmountSat = payjoinMinAmountSat;
+    return payjoin?.isAborted == true &&
+        amountSat != null &&
+        minAmountSat != null &&
+        amountSat < minAmountSat;
+  }
+
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
+      // Gated on [payjoinGloballyEnabled]: when payjoin is disabled in
+      // settings, ReceiveBloc never creates a session and never sets an
+      // exception (see _onBitcoinStarted), so [payjoin] stays null forever
+      // and this getter must not keep reporting "still loading"
+      // indefinitely — otherwise [paymentRequest] (which waits on this so
+      // the QR doesn't flip from address-only to a pj= BIP21 mid-display)
+      // never resolves and the receive QR never renders at all. Payjoin is
+      // disabled by default, so without this gate that would be the state
+      // of every fresh install. `null` (settings not read yet) still
+      // counts as loading: the fetch resolves within the same handler that
+      // would create the session.
+      //
+      // Also gated on [hasUtxos]: ReceiveBloc only creates a session for a
+      // wallet with a confirmed balance to contribute (see
+      // ReceiveBloc._isPayjoinEligible — a payjoin proposal needs at least
+      // one UTXO), so an empty wallet would otherwise hit the exact same
+      // "stuck loading forever" bug as the disabled case.
       return wallet != null &&
           wallet!.signsLocally &&
-          !isAddressOnly &&
+          (payjoinGloballyEnabled ?? true) &&
+          hasUtxos &&
           payjoin == null &&
           receivePayjoinException == null;
     }
     return false;
   }
 
+  /// True when payjoin is enabled globally and this wallet can sign
+  /// locally, but it has no confirmed balance yet — so ReceiveBloc did not
+  /// create a payjoin receiver session (see ReceiveBloc._isPayjoinEligible).
+  /// Lets the receive screen explain why payjoin isn't active despite being
+  /// turned on, instead of silently doing nothing.
+  bool get isPayjoinAwaitingFunds {
+    if (type != ReceiveType.bitcoin) return false;
+    return wallet != null &&
+        wallet!.signsLocally &&
+        payjoinGloballyEnabled == true &&
+        !hasUtxos &&
+        payjoin == null;
+  }
+
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
-      return wallet != null &&
-          wallet!.signsLocally &&
-          !isAddressOnly &&
-          payjoin != null;
+      return wallet != null && wallet!.signsLocally && payjoin != null;
     }
     return false;
   }
 
   bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
 
+  /// Whether a payjoin on/off toggle should be offered on the receive screen
+  /// for this wallet: it must be a bitcoin receive with a locally-signing,
+  /// funded wallet (the only case where flipping the setting actually changes
+  /// anything — a watch-only or empty wallet can never payjoin regardless).
+  /// The toggle reflects/controls the GLOBAL [payjoinGloballyEnabled] setting.
+  bool get isPayjoinToggleable =>
+      type == ReceiveType.bitcoin &&
+      wallet != null &&
+      wallet!.signsLocally &&
+      hasUtxos;
+
+  /// True when the user has entered a requested amount that is below the
+  /// configured anti-probing minimum. The receiver would decline a payjoin
+  /// for such an amount anyway (see PayjoinRepositoryImpl's below-minimum
+  /// decline), so advertising a pj= endpoint for it is pointless — this lets
+  /// [canPayjoin] drop the endpoint from the QR for this request without
+  /// tearing down the underlying session (a larger amount, or clearing the
+  /// amount, re-enables it immediately). Only gates once an amount is
+  /// actually entered (> 0); a plain address / no-amount request is
+  /// unaffected.
+  bool get isRequestedAmountBelowPayjoinMinimum {
+    final amountSat = confirmedAmountSat;
+    final minAmountSat = payjoinMinAmountSat;
+    return amountSat != null &&
+        amountSat > 0 &&
+        minAmountSat != null &&
+        amountSat < minAmountSat;
+  }
+
   // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
   // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
-  // Also gated on [isAddressOnly] so toggling payjoin OFF removes only the
-  // pj= param from the URI, leaving amount/message intact.
-  bool get canPayjoin => payjoin != null && hasUtxos && !isAddressOnly;
+  // The per-address opt-out toggle was removed: the global payjoin setting
+  // (ReceiveBloc only creates [payjoin] at all when it's enabled, see
+  // _onBitcoinStarted) is now the only control. Also suppressed when the
+  // requested amount is below the anti-probing minimum: the sender's payjoin
+  // would be declined for it anyway, so the QR shouldn't advertise pj=.
+  bool get canPayjoin =>
+      payjoin != null && hasUtxos && !isRequestedAmountBelowPayjoinMinimum;
+
+  /// A payjoin session exists (feature on, funded wallet) but the pj=
+  /// endpoint is currently dropped from the QR solely because the requested
+  /// amount is below the anti-probing minimum. Lets the receive screen
+  /// explain the transient suppression rather than silently omitting pj=.
+  bool get isPayjoinSuppressedByAmount =>
+      payjoin != null && hasUtxos && isRequestedAmountBelowPayjoinMinimum;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;

@@ -75,7 +75,9 @@ graph TB
     PAYJOIN --> LABELS
     PIN_CODE --> CORE
     RECEIVE --> PAYJOIN
+    RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
+    RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
     SECRETS --> CORE
     SELL --> EXCHANGE
@@ -83,6 +85,7 @@ graph TB
     SEND --> NETWORK
     SEND --> PAYJOIN
     SEND --> SWAPS
+    SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
     SEND --> WALLETS
     SETTINGS --> CORE
