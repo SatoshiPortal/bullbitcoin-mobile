@@ -218,6 +218,9 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         PayjoinStatus.requested ||
         PayjoinStatus.proposed => 'pending',
         PayjoinStatus.completed => 'completed',
+        // The payment still landed, just as a plain broadcast rather than a
+        // real payjoin — distinct from 'expired' (nothing broadcast by us).
+        PayjoinStatus.aborted => 'aborted',
         PayjoinStatus.expired => 'expired',
       };
     }

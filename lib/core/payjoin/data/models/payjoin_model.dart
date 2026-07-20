@@ -27,6 +27,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     String? txId,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
+    @Default(false) bool isAborted,
   }) = PayjoinReceiverModel;
   const factory PayjoinModel.sender({
     required String uri,
@@ -42,12 +43,19 @@ sealed class PayjoinModel with _$PayjoinModel {
     String? txId,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
+    @Default(false) bool isAborted,
   }) = PayjoinSenderModel;
   const PayjoinModel._();
 
   factory PayjoinModel.fromJson(Map<String, dynamic> json) =>
       _$PayjoinModelFromJson(json);
 
+  // NOTE (fixed pre-existing bug): earlier versions of these factories never
+  // mapped isExpired/isCompleted back from the row, so every re-fetch of a
+  // session (app restart, transaction-details re-open, getPayjoins) silently
+  // reset its displayed status to "never resolved" no matter what was
+  // actually persisted. isAborted must be included here too, or the same
+  // bug reappears for the new field the moment it's added.
   factory PayjoinModel.fromReceiverTable(PayjoinReceiverRow table) =>
       PayjoinReceiverModel(
         id: table.id,
@@ -64,6 +72,9 @@ sealed class PayjoinModel with _$PayjoinModel {
         amountSat: table.amountSat,
         proposalPsbt: table.proposalPsbt,
         txId: table.txId,
+        isExpired: table.isExpired,
+        isCompleted: table.isCompleted,
+        isAborted: table.isAborted,
       );
 
   factory PayjoinModel.fromSenderTable(PayjoinSenderRow table) =>
@@ -79,6 +90,9 @@ sealed class PayjoinModel with _$PayjoinModel {
         expireAfterSec: table.expireAfterSec,
         proposalPsbt: table.proposalPsbt,
         txId: table.txId,
+        isExpired: table.isExpired,
+        isCompleted: table.isCompleted,
+        isAborted: table.isAborted,
       );
 
   int get expiresAt => createdAt + expireAfterSec;
@@ -91,10 +105,24 @@ sealed class PayjoinModel with _$PayjoinModel {
     PayjoinSenderModel(:final uri) => uri,
   };
 
+  // isCompleted (real payjoin broadcast) and isAborted (we broadcast the
+  // original instead) are normally set on mutually exclusive paths, but
+  // isCompleted is checked first regardless: the one path that can set both
+  // is a genuine on-chain race where our payjoin transaction confirms after
+  // the fallback watcher already marked the session aborted — see
+  // PayjoinRepositoryImpl._broadcastPsbt, which logs that case. The real
+  // payjoin is then the true outcome, so completed wins here.
+  //
+  // Note the txId is cleared when isAborted is set (see
+  // _broadcastOriginalTransaction / _onOriginalTransactionSeen): that is
+  // display hygiene (a stale, never-broadcast payjoin txid must not surface),
+  // NOT how the status is derived — the status comes purely from these flags.
   PayjoinStatus get status => switch (this) {
     PayjoinReceiverModel(:final originalTxBytes) =>
       isCompleted
           ? PayjoinStatus.completed
+          : isAborted
+          ? PayjoinStatus.aborted
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null
@@ -105,15 +133,14 @@ sealed class PayjoinModel with _$PayjoinModel {
     PayjoinSenderModel() =>
       isCompleted
           ? PayjoinStatus.completed
+          : isAborted
+          ? PayjoinStatus.aborted
           : isExpired
           ? PayjoinStatus.expired
           : proposalPsbt != null
           ? PayjoinStatus.proposed
           : PayjoinStatus.requested,
   };
-
-  bool get isOngoing =>
-      status == PayjoinStatus.requested || status == PayjoinStatus.proposed;
 
   Payjoin toEntity() {
     switch (this) {
@@ -168,6 +195,7 @@ extension PayjoinReceiverSqlite on PayjoinReceiverModel {
     txId: txId,
     isExpired: isExpired,
     isCompleted: isCompleted,
+    isAborted: isAborted,
   );
 }
 
@@ -186,5 +214,6 @@ extension PayjoinSenderSqlite on PayjoinSenderModel {
     txId: txId,
     isExpired: isExpired,
     isCompleted: isCompleted,
+    isAborted: isAborted,
   );
 }
