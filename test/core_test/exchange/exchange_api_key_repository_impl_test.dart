@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/scoped_api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,12 +10,19 @@ class _MockBullbitcoinApiKeyDatasource extends Mock
 
 class _FakeExchangeApiKeyModel extends Fake implements ExchangeApiKeyModel {}
 
+class _FakeScopedApiKeyModel extends Fake implements ScopedApiKeyModel {}
+
+// A well-formed scoped credential value: `bbak-` + 64 lowercase hex chars.
+const _scopedKey =
+    'bbak-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
 void main() {
   late _MockBullbitcoinApiKeyDatasource datasource;
   late ExchangeApiKeyRepositoryImpl repository;
 
   setUpAll(() {
     registerFallbackValue(_FakeExchangeApiKeyModel());
+    registerFallbackValue(_FakeScopedApiKeyModel());
   });
 
   setUp(() {
@@ -23,6 +31,11 @@ void main() {
       bullbitcoinApiKeyDatasource: datasource,
     );
 
+    when(
+      () => datasource.getSellToFiatBalanceApiKey(
+        isTestnet: any(named: 'isTestnet'),
+      ),
+    ).thenAnswer((_) async => null);
     when(
       () => datasource.storeSellToFiatBalanceApiKey(
         any(),
@@ -42,109 +55,183 @@ void main() {
     ).thenAnswer((_) async {});
   });
 
-  for (final isTestnet in [false, true]) {
-    test(
-      'stores scoped then broad credential for ${isTestnet ? 'testnet' : 'production'}',
-      () async {
-        await repository.saveApiKey(_validResponse(), isTestnet: isTestnet);
+  group('saveApiKey', () {
+    for (final isTestnet in [false, true]) {
+      test(
+        'stores the ordinary key then the valid same-user scoped key '
+        '(${isTestnet ? 'testnet' : 'production'})',
+        () async {
+          await repository.saveApiKey(_validResponse(), isTestnet: isTestnet);
 
-        verifyInOrder([
-          () => datasource.storeSellToFiatBalanceApiKey(
-            'scoped-secret',
-            isTestnet: isTestnet,
-          ),
-          () => datasource.store(
-            any(
-              that: isA<ExchangeApiKeyModel>()
-                  .having((model) => model.key, 'key', 'broad-secret')
-                  .having((model) => model.id, 'id', 'api-key-id'),
+          verifyInOrder([
+            () => datasource.store(
+              any(
+                that: isA<ExchangeApiKeyModel>()
+                    .having((m) => m.key, 'key', 'broad-secret')
+                    .having((m) => m.userId, 'userId', 'user-id'),
+              ),
+              isTestnet: isTestnet,
             ),
-            isTestnet: isTestnet,
-          ),
-        ]);
-      },
-    );
-  }
+            () => datasource.storeSellToFiatBalanceApiKey(
+              any(
+                that: isA<ScopedApiKeyModel>()
+                    .having((m) => m.userId, 'userId', 'user-id')
+                    .having((m) => m.key, 'key', _scopedKey),
+              ),
+              isTestnet: isTestnet,
+            ),
+          ]);
+        },
+      );
+    }
 
-  final invalidResponses = <String, Map<String, dynamic>>{
-    'missing scoped credential': {'apiKey': _validBroadApiKey()},
-    'empty scoped credential': {
-      'apiKey': _validBroadApiKey(),
-      'sellToFiatBalanceApiKey': '   ',
-    },
-    'missing broad credential': {'sellToFiatBalanceApiKey': 'scoped-secret'},
-    'malformed broad credential': {
-      'apiKey': {..._validBroadApiKey(), 'isActive': 'yes'},
-      'sellToFiatBalanceApiKey': 'scoped-secret',
-    },
-  };
-
-  for (final entry in invalidResponses.entries) {
-    test('${entry.key} performs no storage writes', () async {
-      await expectLater(
-        repository.saveApiKey(entry.value, isTestnet: false),
-        throwsA(_fixedImportError),
+    test('replaces an existing same-user scoped key', () async {
+      when(
+        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+      ).thenAnswer(
+        (_) async => const ScopedApiKeyModel(userId: 'user-id', key: 'old'),
       );
 
+      await repository.saveApiKey(_validResponse(), isTestnet: false);
+
+      verify(() => datasource.store(any(), isTestnet: false)).called(1);
+      verify(
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      ).called(1);
+      // Same user: no removal of the previous scoped key.
       verifyNever(
-        () => datasource.storeSellToFiatBalanceApiKey(
-          any(),
-          isTestnet: any(named: 'isTestnet'),
-        ),
-      );
-      verifyNever(
-        () => datasource.store(any(), isTestnet: any(named: 'isTestnet')),
+        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
       );
     });
-  }
 
-  test('scoped storage failure prevents the broad credential write', () async {
-    when(
-      () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-    ).thenThrow(Exception('storage details scoped-secret'));
+    test('preserves an existing same-user scoped key when field absent', () async {
+      when(
+        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+      ).thenAnswer(
+        (_) async =>
+            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+      );
 
-    await expectLater(
-      repository.saveApiKey(_validResponse(), isTestnet: false),
-      throwsA(_fixedImportError),
-    );
+      await repository.saveApiKey(
+        {'apiKey': _validBroadApiKey()},
+        isTestnet: false,
+      );
 
-    verifyNever(
-      () => datasource.store(any(), isTestnet: any(named: 'isTestnet')),
-    );
+      verify(() => datasource.store(any(), isTestnet: false)).called(1);
+      verifyNever(
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      );
+      verifyNever(
+        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+      );
+    });
+
+    test('preserves an existing same-user scoped key when field null', () async {
+      when(
+        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+      ).thenAnswer(
+        (_) async =>
+            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+      );
+
+      await repository.saveApiKey(
+        {'apiKey': _validBroadApiKey(), 'sellToFiatBalanceApiKey': null},
+        isTestnet: false,
+      );
+
+      verify(() => datasource.store(any(), isTestnet: false)).called(1);
+      verifyNever(
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      );
+    });
+
+    test('does not store a malformed scoped value and preserves existing', () async {
+      when(
+        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+      ).thenAnswer(
+        (_) async =>
+            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+      );
+
+      await repository.saveApiKey(
+        {'apiKey': _validBroadApiKey(), 'sellToFiatBalanceApiKey': 'not-a-key'},
+        isTestnet: false,
+      );
+
+      verify(() => datasource.store(any(), isTestnet: false)).called(1);
+      verifyNever(
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      );
+      verifyNever(
+        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+      );
+    });
+
+    test('removes a different-user scoped key before completing the switch', () async {
+      when(
+        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+      ).thenAnswer(
+        (_) async =>
+            const ScopedApiKeyModel(userId: 'other-user', key: _scopedKey),
+      );
+
+      await repository.saveApiKey(_validResponse(), isTestnet: false);
+
+      verifyInOrder([
+        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+        () => datasource.store(any(), isTestnet: false),
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      ]);
+    });
+
+    test('ordinary login succeeds even when scoped storage fails', () async {
+      when(
+        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+      ).thenThrow(Exception('scoped storage failure'));
+
+      await repository.saveApiKey(_validResponse(), isTestnet: false);
+
+      verify(() => datasource.store(any(), isTestnet: false)).called(1);
+    });
+
+    final invalidResponses = <String, Map<String, dynamic>>{
+      'missing broad credential': {'sellToFiatBalanceApiKey': _scopedKey},
+      'malformed broad credential': {
+        'apiKey': {..._validBroadApiKey(), 'isActive': 'yes'},
+        'sellToFiatBalanceApiKey': _scopedKey,
+      },
+    };
+
+    for (final entry in invalidResponses.entries) {
+      test('${entry.key} throws a fixed import error and stores nothing', () async {
+        await expectLater(
+          repository.saveApiKey(entry.value, isTestnet: false),
+          throwsA(_fixedImportError),
+        );
+
+        verifyNever(() => datasource.store(any(), isTestnet: false));
+        verifyNever(
+          () =>
+              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+        );
+      });
+    }
   });
 
-  test(
-    'broad storage failure leaves the prior scoped write untouched',
-    () async {
-      when(
-        () => datasource.store(any(), isTestnet: false),
-      ).thenThrow(Exception('storage details broad-secret'));
+  group('deleteApiKey', () {
+    test('deletes both credentials on logout', () async {
+      await repository.deleteApiKey(isTestnet: true);
 
-      await expectLater(
-        repository.saveApiKey(_validResponse(), isTestnet: false),
-        throwsA(_fixedImportError),
-      );
-
+      verify(() => datasource.delete(isTestnet: true)).called(1);
       verify(
-        () => datasource.storeSellToFiatBalanceApiKey(
-          'scoped-secret',
-          isTestnet: false,
-        ),
+        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: true),
       ).called(1);
-      verifyNever(
-        () => datasource.deleteSellToFiatBalanceApiKey(
-          isTestnet: any(named: 'isTestnet'),
-        ),
-      );
-    },
-  );
+    });
 
-  test(
-    'deletion attempts both credentials when broad deletion fails',
-    () async {
+    test('attempts both credentials when broad deletion fails', () async {
       when(
         () => datasource.delete(isTestnet: true),
-      ).thenThrow(Exception('storage details broad-secret'));
+      ).thenThrow(Exception('broad deletion failure'));
 
       await expectLater(
         repository.deleteApiKey(isTestnet: true),
@@ -155,15 +242,12 @@ void main() {
       verify(
         () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: true),
       ).called(1);
-    },
-  );
+    });
 
-  test(
-    'deletion attempts both credentials when scoped deletion fails',
-    () async {
+    test('attempts both credentials when scoped deletion fails', () async {
       when(
         () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
-      ).thenThrow(Exception('storage details scoped-secret'));
+      ).thenThrow(Exception('scoped deletion failure'));
 
       await expectLater(
         repository.deleteApiKey(isTestnet: false),
@@ -174,13 +258,13 @@ void main() {
       verify(
         () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
       ).called(1);
-    },
-  );
+    });
+  });
 }
 
 Map<String, dynamic> _validResponse() => {
   'apiKey': _validBroadApiKey(),
-  'sellToFiatBalanceApiKey': 'scoped-secret',
+  'sellToFiatBalanceApiKey': _scopedKey,
 };
 
 Map<String, dynamic> _validBroadApiKey() => {
@@ -193,18 +277,14 @@ Map<String, dynamic> _validBroadApiKey() => {
   'updatedAt': 2,
 };
 
-final _fixedImportError = isA<Exception>()
-    .having(
-      (error) => error.toString(),
-      'message',
-      contains('Unable to import Bull Bitcoin credentials'),
-    )
-    .having((error) => error.toString(), 'secret', isNot(contains('secret')));
+final _fixedImportError = isA<Exception>().having(
+  (error) => error.toString(),
+  'message',
+  contains('Unable to import Bull Bitcoin credentials'),
+);
 
-final _fixedDeletionError = isA<Exception>()
-    .having(
-      (error) => error.toString(),
-      'message',
-      contains('Unable to delete Bull Bitcoin credentials'),
-    )
-    .having((error) => error.toString(), 'secret', isNot(contains('secret')));
+final _fixedDeletionError = isA<Exception>().having(
+  (error) => error.toString(),
+  'message',
+  contains('Unable to delete Bull Bitcoin credentials'),
+);

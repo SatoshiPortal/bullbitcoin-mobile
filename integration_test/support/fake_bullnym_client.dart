@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
@@ -48,6 +49,32 @@ enum FakePosMode {
 
   /// Every kind=pos call fails with a retryable server error.
   serverUnreachable,
+}
+
+/// Fiat-settlement fault modes (BullishNode/bullnym#196 contract). Independent
+/// of the other modes so a live page/POS can coexist with any fiat behavior.
+enum FakeFiatSettlementMode {
+  /// Server holds an active scoped credential: PUTs succeed without api_key.
+  normal,
+
+  /// Server has NO stored credential: a PUT without api_key answers
+  /// FIAT_CREDENTIAL_REQUIRED; a retry carrying a key succeeds and activates
+  /// the credential (the optimistic-save / key-on-demand path).
+  credentialRequired,
+
+  /// Any delivered key is rejected as FIAT_CREDENTIAL_INVALID; a PUT without
+  /// a key still answers FIAT_CREDENTIAL_REQUIRED.
+  credentialInvalid,
+
+  /// Fiat conversion needs more KYC: FIAT_CONVERSION_KYC_REQUIRED.
+  kycRequired,
+
+  /// Upstream Bull Bitcoin dependency down: 503 on writes.
+  dependencyUnavailable,
+
+  /// Old server without the fiat endpoints. GET mirrors the client's 404
+  /// degradation (empty configuration, unknown credential); PUT answers 404.
+  unsupported,
 }
 
 /// Invoice fault modes for the §9/F11 matrix. Independent of the page/pos
@@ -119,6 +146,7 @@ class FakeBullnymClient implements BullnymClientPort {
   FakeDonationPageMode donationPageMode = FakeDonationPageMode.normal;
   FakePosMode posMode = FakePosMode.normal;
   FakeInvoiceMode invoiceMode = FakeInvoiceMode.normal;
+  FakeFiatSettlementMode fiatSettlementMode = FakeFiatSettlementMode.normal;
   String nym = 'alice';
   String? permanentAlias;
   bool permanentNamesCapable = true;
@@ -142,6 +170,25 @@ class FakeBullnymClient implements BullnymClientPort {
   // Server-side donation-page state keyed `(nym, kind)`; survives local
   // app-state resets.
   final Map<String, BullnymDonationPage> _pages = {};
+
+  // Server-side fiat-settlement state (issue #196). Settings keyed by product;
+  // pct-0 removes the row (Bitcoin-only products are never explicit settings).
+  // `setFiatSettlementCalls` records every PUT including the api_key slot so
+  // specs can prove the optimistic-save order: first attempt keyless, at most
+  // one retry carrying the scoped key.
+  final Map<BullnymFiatSettlementProduct, BullnymFiatSettlementSetting>
+  _fiatSettings = {};
+  BullnymCredentialStatus fiatCredentialStatus = BullnymCredentialStatus.absent;
+  final List<
+    ({
+      BullnymFiatSettlementProduct product,
+      int fiatPercentage,
+      String? fiatCurrency,
+      String? apiKey,
+    })
+  >
+  setFiatSettlementCalls = [];
+  int getFiatSettlementConfigurationCalls = 0;
 
   List<BullnymSupportedCurrency> supportedCurrencies = const [
     BullnymSupportedCurrency(code: 'CAD', precision: 2),
@@ -764,6 +811,118 @@ class FakeBullnymClient implements BullnymClientPort {
     required String invoiceId,
     required BullnymPayerQuoteRail rail,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer}) async {
+    getFiatSettlementConfigurationCalls++;
+    if (mode == FakeBullnymMode.serverUnreachable) {
+      return Err(_unavailable());
+    }
+    if (fiatSettlementMode == FakeFiatSettlementMode.unsupported) {
+      // Mirrors the real client's 404 degradation: an old server yields an
+      // empty configuration with an unknown credential status.
+      return const Ok(
+        BullnymFiatSettlementConfiguration(
+          settings: [],
+          credentialStatus: BullnymCredentialStatus.unknown,
+        ),
+      );
+    }
+    return Ok(_fiatConfiguration());
+  }
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
+  }) async {
+    setFiatSettlementCalls.add((
+      product: product,
+      fiatPercentage: fiatPercentage,
+      fiatCurrency: fiatCurrency,
+      apiKey: apiKey,
+    ));
+    if (mode == FakeBullnymMode.serverUnreachable) {
+      return Err(_unavailable());
+    }
+    switch (fiatSettlementMode) {
+      case FakeFiatSettlementMode.unsupported:
+        return const Err(BullnymFailure.unexpectedHttpStatus(statusCode: 404));
+      case FakeFiatSettlementMode.dependencyUnavailable:
+        return const Err(BullnymFailure.unexpectedHttpStatus(statusCode: 503));
+      case FakeFiatSettlementMode.kycRequired:
+        return const Err(
+          BullnymFailure.serverRejectedRequest(
+            // Stable wire code per BullishNode/bullnym#196.
+            code: 'FIAT_CONVERSION_KYC_REQUIRED',
+            logMessage: 'fake: KYC required for fiat conversion',
+            statusCode: 403,
+            retryable: false,
+          ),
+        );
+      case FakeFiatSettlementMode.credentialInvalid:
+        return Err(
+          BullnymFailure.serverRejectedRequest(
+            code: apiKey == null
+                ? 'FIAT_CREDENTIAL_REQUIRED'
+                : 'FIAT_CREDENTIAL_INVALID',
+            logMessage: 'fake: scoped credential rejected',
+            statusCode: 403,
+            retryable: false,
+          ),
+        );
+      case FakeFiatSettlementMode.credentialRequired:
+        if (apiKey == null && fiatPercentage > 0) {
+          return const Err(
+            BullnymFailure.serverRejectedRequest(
+              code: 'FIAT_CREDENTIAL_REQUIRED',
+              logMessage: 'fake: no stored scoped credential',
+              statusCode: 403,
+              retryable: false,
+            ),
+          );
+        }
+        if (apiKey != null) {
+          fiatCredentialStatus = BullnymCredentialStatus.active;
+        }
+        return Ok(_applyFiatSet(product, fiatPercentage, fiatCurrency));
+      case FakeFiatSettlementMode.normal:
+        if (apiKey != null) {
+          fiatCredentialStatus = BullnymCredentialStatus.active;
+        }
+        return Ok(_applyFiatSet(product, fiatPercentage, fiatCurrency));
+    }
+  }
+
+  BullnymFiatSettlementConfiguration _applyFiatSet(
+    BullnymFiatSettlementProduct product,
+    int fiatPercentage,
+    String? fiatCurrency,
+  ) {
+    if (fiatPercentage == 0) {
+      // Disable: the product drops out of the explicit settings; the stored
+      // credential is retained (contract: kept when all products go Bitcoin).
+      _fiatSettings.remove(product);
+    } else {
+      _fiatSettings[product] = BullnymFiatSettlementSetting(
+        product: product,
+        fiatPercentage: fiatPercentage,
+        fiatCurrency: fiatCurrency,
+      );
+    }
+    return _fiatConfiguration();
+  }
+
+  BullnymFiatSettlementConfiguration _fiatConfiguration() =>
+      BullnymFiatSettlementConfiguration(
+        settings: _fiatSettings.values.toList(),
+        credentialStatus: fiatCredentialStatus,
+      );
 
   BullnymInvoiceListItem _toListItem(_FakeInvoice i) {
     final f = i.fields;

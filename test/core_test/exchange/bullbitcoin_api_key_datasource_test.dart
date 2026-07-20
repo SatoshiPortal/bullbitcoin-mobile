@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/models/scoped_api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSecureStorage extends Mock
     implements KeyValueStorageDatasource<String> {}
+
+// A well-formed scoped credential value: `bbak-` + 64 lowercase hex chars.
+const _scopedKey =
+    'bbak-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
 void main() {
   late _MockSecureStorage storage;
@@ -23,42 +30,61 @@ void main() {
     when(() => storage.deleteValue(any())).thenAnswer((_) async {});
   });
 
-  test(
-    'stores and deletes the production scoped credential separately',
-    () async {
-      await datasource.storeSellToFiatBalanceApiKey(
-        'scoped-production-secret',
-        isTestnet: false,
-      );
-      await datasource.deleteSellToFiatBalanceApiKey(isTestnet: false);
+  for (final entry in {
+    false: 'sell_to_fiat_balance_api_key',
+    true: 'sell_to_fiat_balance_api_key_testnet',
+  }.entries) {
+    final environment = entry.key ? 'testnet' : 'production';
 
-      verify(
-        () => storage.saveValue(
-          key: 'sell_to_fiat_balance_api_key',
-          value: 'scoped-production-secret',
-        ),
-      ).called(1);
-      verify(
-        () => storage.deleteValue('sell_to_fiat_balance_api_key'),
-      ).called(1);
-    },
-  );
+    test(
+      'stores the $environment scoped credential bound to its userId',
+      () async {
+        await datasource.storeSellToFiatBalanceApiKey(
+          const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+          isTestnet: entry.key,
+        );
 
-  test('stores and deletes the testnet scoped credential separately', () async {
-    await datasource.storeSellToFiatBalanceApiKey(
-      'scoped-testnet-secret',
-      isTestnet: true,
+        verify(
+          () => storage.saveValue(
+            key: entry.value,
+            value: jsonEncode({'userId': 'user-id', 'key': _scopedKey}),
+          ),
+        ).called(1);
+      },
     );
-    await datasource.deleteSellToFiatBalanceApiKey(isTestnet: true);
 
-    verify(
-      () => storage.saveValue(
-        key: 'sell_to_fiat_balance_api_key_testnet',
-        value: 'scoped-testnet-secret',
-      ),
-    ).called(1);
-    verify(
-      () => storage.deleteValue('sell_to_fiat_balance_api_key_testnet'),
-    ).called(1);
+    test(
+      'reads the $environment scoped credential with its userId binding',
+      () async {
+        when(() => storage.getValue(entry.value)).thenAnswer(
+          (_) async => jsonEncode({'userId': 'user-id', 'key': _scopedKey}),
+        );
+
+        final stored = await datasource.getSellToFiatBalanceApiKey(
+          isTestnet: entry.key,
+        );
+
+        expect(stored?.userId, 'user-id');
+        expect(stored?.key, _scopedKey);
+      },
+    );
+
+    test('deletes the $environment scoped credential separately', () async {
+      await datasource.deleteSellToFiatBalanceApiKey(isTestnet: entry.key);
+
+      verify(() => storage.deleteValue(entry.value)).called(1);
+    });
+  }
+
+  test('returns null when no scoped credential is stored', () async {
+    when(
+      () => storage.getValue('sell_to_fiat_balance_api_key'),
+    ).thenAnswer((_) async => null);
+
+    final stored = await datasource.getSellToFiatBalanceApiKey(
+      isTestnet: false,
+    );
+
+    expect(stored, isNull);
   });
 }

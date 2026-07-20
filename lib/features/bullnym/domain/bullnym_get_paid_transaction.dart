@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+
 const int bullnymGetPaidTransactionMaxPageSize = 100;
 const int bullnymGetPaidTransactionMaxCursorBytes = 256;
 const int bullnymGetPaidTransactionMaxCommentBytes = 512;
@@ -55,6 +57,7 @@ class BullnymGetPaidTransaction {
   final BullnymGetPaidSettlementState settlementState;
   final bool late;
   final String? comment;
+  final BullnymGetPaidSettlement? settlement;
 
   const BullnymGetPaidTransaction._({
     required this.transactionId,
@@ -66,6 +69,7 @@ class BullnymGetPaidTransaction {
     required this.settlementState,
     required this.late,
     required this.comment,
+    required this.settlement,
   });
 
   factory BullnymGetPaidTransaction({
@@ -78,6 +82,7 @@ class BullnymGetPaidTransaction {
     required BullnymGetPaidSettlementState settlementState,
     required bool late,
     required String? comment,
+    BullnymGetPaidSettlement? settlement,
   }) {
     if (!_isCanonicalUuid(transactionId) ||
         amountSat <= 0 ||
@@ -111,6 +116,7 @@ class BullnymGetPaidTransaction {
       settlementState: settlementState,
       late: late,
       comment: comment,
+      settlement: settlement,
     );
   }
 

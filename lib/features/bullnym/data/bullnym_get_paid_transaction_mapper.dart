@@ -14,6 +14,7 @@ extension BullnymGetPaidTransactionModelMapper
       settlementState: _settlementState(settlementState),
       late: late,
       comment: comment,
+      settlement: settlement,
     );
   }
 }

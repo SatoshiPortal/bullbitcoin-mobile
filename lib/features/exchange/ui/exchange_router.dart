@@ -97,12 +97,22 @@ class ExchangeRouter {
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
         final fromSupport = state.uri.queryParameters['from'] == 'support';
+        final returnToCaller =
+            state.uri.queryParameters['returnToCaller'] == 'true';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen: (previous, current) =>
                 previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, exchangeState) {
+              if (returnToCaller) {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.goNamed(WalletRoute.walletHome.name);
+                }
+                return;
+              }
               if (fromSupport) {
                 final isIOSNonSuperuser =
                     Platform.isIOS &&
@@ -123,7 +133,7 @@ class ExchangeRouter {
               }
               context.goNamed(ExchangeRoute.exchangeHome.name);
             },
-            child: const ExchangeAuthScreen(),
+            child: ExchangeAuthScreen(returnToCaller: returnToCaller),
           ),
         );
       },

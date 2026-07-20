@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
@@ -149,6 +150,28 @@ abstract interface class BullnymClientPort {
   getInvoiceQuote({
     required String invoiceId,
     required BullnymPayerQuoteRail rail,
+  });
+
+  /// Private, merchant-authenticated read of the current per-product
+  /// fiat-settlement configuration (signed `fiat-settlement-get`, empty nym).
+  @useResult
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer});
+
+  /// Set (or, with [fiatPercentage] == 0, disable) one product's fiat
+  /// settlement (signed `fiat-settlement-set`, empty nym). The scoped
+  /// `SELL_TO_FIAT_BALANCE` [apiKey] is supplied ONLY when the server has no
+  /// active stored credential; it is injected into the request at this final
+  /// transport boundary and never held elsewhere. When [fiatPercentage] is 0
+  /// the [fiatCurrency] and [apiKey] must be null (Bitcoin-only / disable).
+  @useResult
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
   });
 }
 

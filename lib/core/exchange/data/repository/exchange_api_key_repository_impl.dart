@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/scoped_api_key_model.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   static const _credentialImportError =
@@ -17,11 +19,11 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     Map<String, dynamic> apiKeyResponseData, {
     required bool isTestnet,
   }) async {
+    // The ordinary Bull Bitcoin key is required for login. The scoped
+    // SELL_TO_FIAT_BALANCE key is optional: ordinary login must never depend on
+    // scoped issuance, so its absence, nullness, or malformation is tolerated.
     final broadApiKeyData = apiKeyResponseData['apiKey'];
-    final scopedApiKey = apiKeyResponseData['sellToFiatBalanceApiKey'];
-    if (broadApiKeyData is! Map ||
-        scopedApiKey is! String ||
-        scopedApiKey.trim().isEmpty) {
+    if (broadApiKeyData is! Map) {
       throw Exception(_credentialImportError);
     }
 
@@ -34,17 +36,62 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
       throw Exception(_credentialImportError);
     }
 
-    try {
-      await _bullbitcoinApiKeyDatasource.storeSellToFiatBalanceApiKey(
-        scopedApiKey,
+    // Resolve any previously stored scoped credential and, if it belongs to a
+    // different Bull Bitcoin user, remove it before completing the switch so a
+    // foreign scoped key can never survive an account change.
+    final existingScoped = await _bullbitcoinApiKeyDatasource
+        .getSellToFiatBalanceApiKey(isTestnet: isTestnet);
+    final isAccountSwitch =
+        existingScoped != null && existingScoped.userId != apiKeyModel.userId;
+    if (isAccountSwitch) {
+      await _bullbitcoinApiKeyDatasource.deleteSellToFiatBalanceApiKey(
         isTestnet: isTestnet,
       );
+    }
+
+    // Persist the ordinary key (this is the login / account switch itself).
+    try {
       await _bullbitcoinApiKeyDatasource.store(
         apiKeyModel,
         isTestnet: isTestnet,
       );
     } catch (_) {
       throw Exception(_credentialImportError);
+    }
+
+    // Handle the optional scoped key on a best-effort basis: a failure here must
+    // not fail the login.
+    await _importScopedApiKey(
+      apiKeyResponseData['sellToFiatBalanceApiKey'],
+      userId: apiKeyModel.userId,
+      isTestnet: isTestnet,
+    );
+  }
+
+  Future<void> _importScopedApiKey(
+    Object? scopedValue, {
+    required String userId,
+    required bool isTestnet,
+  }) async {
+    // Field absent or null: preserve any existing same-user scoped key.
+    if (scopedValue == null) return;
+    // Anything non-string is treated as malformed: preserve, never store.
+    if (scopedValue is! String) return;
+
+    final candidate = ScopedApiKeyModel(userId: userId, key: scopedValue.trim());
+    // Malformed value: do not store it; preserve a same-user existing key and
+    // never log the supplied value.
+    if (!candidate.isWellFormed) return;
+
+    try {
+      await _bullbitcoinApiKeyDatasource.storeSellToFiatBalanceApiKey(
+        candidate,
+        isTestnet: isTestnet,
+      );
+    } catch (_) {
+      // Scoped storage is best-effort; fiat conversion is simply unavailable
+      // until the next successful import. Never surface or log the value.
+      log.warning('Unable to store scoped Bull Bitcoin credential');
     }
   }
 

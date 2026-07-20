@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
@@ -207,6 +208,21 @@ class RecordingBullnymClient implements BullnymClientPort {
   getInvoiceQuote({
     required String invoiceId,
     required BullnymPayerQuoteRail rail,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
   }) => throw UnimplementedError();
 
   BullnymDonationPage _viewFromSave(BullnymSaveDonationPageRequest request) {

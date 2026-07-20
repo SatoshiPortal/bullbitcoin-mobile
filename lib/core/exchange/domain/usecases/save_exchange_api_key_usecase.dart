@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class SaveExchangeApiKeyUsecase {
   final ExchangeApiKeyRepository _exchangeApiKeyRepository;
 
-  SaveExchangeApiKeyUsecase({
-    required ExchangeApiKeyRepository exchangeApiKeyRepository,
-  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
+  SaveExchangeApiKeyUsecase({required this._exchangeApiKeyRepository});
 
   Future<void> execute({
     required Map<String, dynamic> apiKeyResponseData,

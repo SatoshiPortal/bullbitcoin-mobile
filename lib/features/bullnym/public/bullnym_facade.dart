@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
@@ -32,6 +33,7 @@ export 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart'
 export 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+export 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_invoice.dart';
@@ -255,6 +257,27 @@ class BullnymFacade {
   }) {
     return _client.getInvoiceQuote(invoiceId: invoiceId, rail: rail);
   }
+
+  @useResult
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer}) =>
+      _client.getFiatSettlementConfiguration(signer: signer);
+
+  @useResult
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
+  }) => _client.setFiatSettlement(
+    signer: signer,
+    product: product,
+    fiatPercentage: fiatPercentage,
+    fiatCurrency: fiatCurrency,
+    apiKey: apiKey,
+  );
 
   @useResult
   Future<Result<BullnymBackupHead, BullnymFailure>> fetchBackup({

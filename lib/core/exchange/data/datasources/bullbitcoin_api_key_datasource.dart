@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/scoped_api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 
@@ -32,18 +33,43 @@ class BullbitcoinApiKeyDatasource {
   }
 
   Future<void> storeSellToFiatBalanceApiKey(
-    String apiKey, {
+    ScopedApiKeyModel scopedApiKey, {
     required bool isTestnet,
   }) async {
     try {
       final key = isTestnet
           ? _sellToFiatBalanceApiKeyTestnetStorageKey
           : _sellToFiatBalanceApiKeyStorageKey;
-      await _secureStorage.saveValue(key: key, value: apiKey);
+      // Persist the userId binding alongside the plaintext so the credential
+      // lifecycle can distinguish same-user re-login from an account switch.
+      final jsonString = jsonEncode(scopedApiKey.toJson());
+      await _secureStorage.saveValue(key: key, value: jsonString);
       log.fine('Scoped API key stored successfully');
     } catch (_) {
+      // Never include the scoped value in a log line.
       log.warning('Unable to store scoped Bull Bitcoin API key');
       rethrow;
+    }
+  }
+
+  Future<ScopedApiKeyModel?> getSellToFiatBalanceApiKey({
+    required bool isTestnet,
+  }) async {
+    try {
+      final key = isTestnet
+          ? _sellToFiatBalanceApiKeyTestnetStorageKey
+          : _sellToFiatBalanceApiKeyStorageKey;
+      final jsonString = await _secureStorage.getValue(key);
+
+      if (jsonString == null || jsonString.isEmpty) {
+        return null;
+      }
+
+      final json = jsonDecode(jsonString) as Map<String, dynamic>;
+      return ScopedApiKeyModel.fromJson(json);
+    } catch (_) {
+      log.warning('Unable to retrieve scoped Bull Bitcoin API key');
+      return null;
     }
   }
 

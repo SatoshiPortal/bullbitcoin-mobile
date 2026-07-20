@@ -18,7 +18,13 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class ExchangeAuthScreen extends StatefulWidget {
-  const ExchangeAuthScreen({super.key});
+  const ExchangeAuthScreen({super.key, this.returnToCaller = false});
+
+  /// When true, completing (or dismissing) the login pops back to the screen
+  /// that pushed it instead of navigating to the wallet home. Used by the fiat
+  /// settlement reconnect flow so the merchant returns to their in-progress
+  /// activation with selections preserved.
+  final bool returnToCaller;
 
   @override
   State<ExchangeAuthScreen> createState() => _ExchangeAuthScreenState();
@@ -58,7 +64,11 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             if (!_isClosing && mounted) {
               _isClosing = true;
               // Navigate immediately
-              context.goNamed(WalletRoute.walletHome.name);
+              if (widget.returnToCaller && context.canPop()) {
+                context.pop();
+              } else {
+                context.goNamed(WalletRoute.walletHome.name);
+              }
             }
           }
         },
@@ -273,7 +283,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.withCredentials = true;
           try {
-            xhr.send(JSON.stringify({ apiKeyName: 'test-key-' + new Date().getTime() }));
+            xhr.send(JSON.stringify({ apiKeyName: 'test-key-' + new Date().getTime(), includeSellToFiatBalanceApiKey: true }));
             if (xhr.status >= 200 && xhr.status < 300) {
               try { return xhr.responseText; } catch (e) { return JSON.stringify({error: 'Credential response unavailable'}); }
             } else {

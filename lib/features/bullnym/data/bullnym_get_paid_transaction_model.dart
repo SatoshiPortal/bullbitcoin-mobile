@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+
 final class BullnymGetPaidTransactionModel {
   final String transactionId;
   final String source;
@@ -9,6 +11,10 @@ final class BullnymGetPaidTransactionModel {
   final bool late;
   final String? comment;
 
+  /// Optional private settlement projection; parsed tolerantly so unknown
+  /// shapes never fail the whole page (they surface as "unavailable").
+  final BullnymGetPaidSettlement? settlement;
+
   const BullnymGetPaidTransactionModel({
     required this.transactionId,
     required this.source,
@@ -19,6 +25,7 @@ final class BullnymGetPaidTransactionModel {
     required this.settlementState,
     required this.late,
     required this.comment,
+    this.settlement,
   });
 
   factory BullnymGetPaidTransactionModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +39,7 @@ final class BullnymGetPaidTransactionModel {
       settlementState: _requiredString(json, 'settlement_state'),
       late: _requiredBool(json, 'late'),
       comment: _optionalString(json, 'comment'),
+      settlement: BullnymGetPaidSettlement.tryParse(json),
     );
   }
 }

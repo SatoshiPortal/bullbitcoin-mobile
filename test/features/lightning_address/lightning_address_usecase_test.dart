@@ -220,6 +220,21 @@ void main() {
 }
 
 class _FakeBullnymFacade implements BullnymFacade {
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
+  }) => throw UnimplementedError();
+
   String? registerNym;
   String? registerCtDescriptor;
   String? registerVerificationNpubHex;

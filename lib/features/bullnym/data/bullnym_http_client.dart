@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_failure.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_fallback_supervision.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_get_paid_transaction_actions.dart';
@@ -560,6 +562,157 @@ class BullnymHttpClient implements BullnymClientPort {
         expectedRail: rail,
       );
     });
+  }
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  getFiatSettlementConfiguration({required BullnymAuthSigner signer}) {
+    return _guard(() async {
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionFiatSettlementGet,
+        nymOrEmpty: '',
+        payloadFields: buildFiatSettlementGetPayloadFields(),
+        timestampSecs: timestamp,
+      );
+      final response = await _requestResponse(
+        () => _dio.get<dynamic>(
+          '/api/v1/fiat-settlement',
+          queryParameters: {
+            'npub': signer.npubHex,
+            'timestamp': timestamp,
+            'signature': signatureHex,
+          },
+        ),
+      );
+      // An old server without the fiat-settlement endpoint answers 404. Degrade
+      // to an empty (Bitcoin-only) configuration so the editor still renders;
+      // the failure then surfaces at Save rather than as a dead-end load error.
+      if (response.statusCode == 404) {
+        return const BullnymFiatSettlementConfiguration(
+          settings: [],
+          credentialStatus: BullnymCredentialStatus.unknown,
+        );
+      }
+      return _parseFiatSettlementConfiguration(_decodeMap(response));
+    });
+  }
+
+  @override
+  Future<Result<BullnymFiatSettlementConfiguration, BullnymFailure>>
+  setFiatSettlement({
+    required BullnymAuthSigner signer,
+    required BullnymFiatSettlementProduct product,
+    required int fiatPercentage,
+    String? fiatCurrency,
+    String? apiKey,
+  }) {
+    return _guard(() async {
+      if (fiatPercentage < 0 || fiatPercentage > 100) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidInput(
+            'Fiat percentage must be between 0 and 100',
+          ),
+        );
+      }
+      final isDisable = fiatPercentage == 0;
+      if (isDisable && (fiatCurrency != null || apiKey != null)) {
+        // Bitcoin-only / disable must omit currency and api_key entirely.
+        throw const _BullnymClientException(
+          BullnymFailure.invalidInput(
+            'Disabling fiat settlement must not include a currency or key',
+          ),
+        );
+      }
+      if (!isDisable && fiatCurrency == null) {
+        throw const _BullnymClientException(
+          BullnymFailure.invalidInput(
+            'Enabling fiat settlement requires a currency',
+          ),
+        );
+      }
+
+      final timestamp = _nowSecs();
+      final signatureHex = await _signAction(
+        signer: signer,
+        action: bullpayActionFiatSettlementSet,
+        nymOrEmpty: '',
+        payloadFields: buildFiatSettlementSetPayloadFields(
+          product: product.wire,
+          fiatPercentage: fiatPercentage,
+          currencyOrEmpty: fiatCurrency ?? '',
+          apiKeyOrEmpty: apiKey ?? '',
+        ),
+        timestampSecs: timestamp,
+      );
+      final response = await _putMap(
+        '/api/v1/fiat-settlement/${Uri.encodeComponent(product.wire)}',
+        data: {
+          'version': bullnymFiatSettlementContractVersion,
+          'npub': signer.npubHex,
+          'fiat_percentage': fiatPercentage,
+          // Omit currency and api_key keys entirely when disabling
+          // (server `deny_unknown_fields` + must-omit rule for percentage 0).
+          'fiat_currency': ?fiatCurrency,
+          'api_key': ?apiKey,
+          'timestamp': timestamp,
+          'signature': signatureHex,
+        },
+      );
+      return _parseFiatSettlementConfiguration(response);
+    });
+  }
+
+  BullnymFiatSettlementConfiguration _parseFiatSettlementConfiguration(
+    Map<String, dynamic> json,
+  ) {
+    if (_requiredInt(json, 'version') != bullnymFiatSettlementContractVersion) {
+      throw const _BullnymClientException(
+        BullnymFailure.invalidServerResponse(
+          logMessage: 'Unsupported fiat settlement response version',
+        ),
+      );
+    }
+    final rawSettings = json['settings'];
+    final settings = <BullnymFiatSettlementSetting>[];
+    if (rawSettings is List) {
+      for (final entry in rawSettings) {
+        if (entry is! Map<String, dynamic>) {
+          throw const _BullnymClientException(
+            BullnymFailure.invalidServerResponse(
+              logMessage: 'Fiat settlement entry has an unexpected shape',
+            ),
+          );
+        }
+        final product = _fiatSettlementProductFromWire(
+          _requiredString(entry, 'product'),
+        );
+        // A product this client version does not recognize is skipped rather
+        // than failing the whole configuration read.
+        if (product == null) continue;
+        settings.add(
+          BullnymFiatSettlementSetting(
+            product: product,
+            fiatPercentage: _requiredInt(entry, 'fiat_percentage'),
+            fiatCurrency: _optionalString(entry, 'fiat_currency'),
+          ),
+        );
+      }
+    }
+    return BullnymFiatSettlementConfiguration(
+      settings: settings,
+      credentialStatus: BullnymCredentialStatus.fromWire(
+        _optionalString(json, 'credential_status'),
+      ),
+    );
+  }
+
+  BullnymFiatSettlementProduct? _fiatSettlementProductFromWire(String wire) {
+    for (final product in BullnymFiatSettlementProduct.values) {
+      if (product.wire == wire) return product;
+    }
+    return null;
   }
 
   // `nym == null` → the unlinked collection; a nym → the linked collection.
