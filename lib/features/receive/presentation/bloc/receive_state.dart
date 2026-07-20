@@ -21,9 +21,19 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    // The global payjoin setting as last read by the bloc. Tri-state on
+    // purpose: null = settings not fetched yet (treat as "may become
+    // enabled", keep waiting), false = disabled (never wait for a payjoin),
+    // true = enabled (wait until a session or an exception exists). See
+    // [isPayjoinLoading] for why this must be part of the state.
+    bool? payjoinGloballyEnabled,
+    // The receiver's anti-probing minimum (sats) as last read from settings.
+    // Null until the first settings fetch resolves. Used only to explain a
+    // below-minimum decline on the payjoin-in-progress screen — the decline
+    // itself happens in PayjoinRepositoryImpl before any negotiation.
+    int? payjoinMinAmountSat,
     @Default(false) bool isBroadcastingOriginalTransaction,
     ReceivePayjoinException? receivePayjoinException,
-    @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
     AmountException? amountException,
@@ -231,11 +241,51 @@ abstract class ReceiveState with _$ReceiveState {
     }
   }
 
+  /// Whether the payjoin flow owns navigation for this receive, so the
+  /// shell's generic "payment received → transaction details" listener must
+  /// defer: the payjoin-in-progress screen lives on the root navigator and
+  /// stays mounted over the receive shell, so without this the generic
+  /// listener would whisk the user off the payjoin screen the instant the
+  /// address watcher sees the (possibly fallback) transaction — before they
+  /// can read why a payjoin did or didn't happen. `started` is deliberately
+  /// excluded: a fresh receiver session with no request yet means a plain
+  /// send to this address, unrelated to payjoin, which must still navigate
+  /// via the generic listener.
+  bool get isPayjoinFlowOwningNavigation =>
+      type == ReceiveType.bitcoin &&
+      payjoin != null &&
+      payjoin!.status != PayjoinStatus.started;
+
+  /// True when the payjoin session resolved via the plain-broadcast fallback
+  /// specifically because the sender's amount fell below the configured
+  /// anti-probing minimum. Exact, not a heuristic: the repository declines
+  /// below-minimum requests before any negotiation is attempted, so no other
+  /// abort path is reachable for such an amount.
+  bool get isPayjoinBelowMinimum {
+    final amountSat = payjoin?.amountSat;
+    final minAmountSat = payjoinMinAmountSat;
+    return payjoin?.isAborted == true &&
+        amountSat != null &&
+        minAmountSat != null &&
+        amountSat < minAmountSat;
+  }
+
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
+      // Gated on [payjoinGloballyEnabled]: when payjoin is disabled in
+      // settings, ReceiveBloc never creates a session and never sets an
+      // exception (see _onBitcoinStarted), so [payjoin] stays null forever
+      // and this getter must not keep reporting "still loading"
+      // indefinitely — otherwise [paymentRequest] (which waits on this so
+      // the QR doesn't flip from address-only to a pj= BIP21 mid-display)
+      // never resolves and the receive QR never renders at all. Payjoin is
+      // disabled by default, so without this gate that would be the state
+      // of every fresh install. `null` (settings not read yet) still
+      // counts as loading: the fetch resolves within the same handler that
+      // would create the session.
       return wallet != null &&
           wallet!.signsLocally &&
-          !isAddressOnly &&
+          (payjoinGloballyEnabled ?? true) &&
           payjoin == null &&
           receivePayjoinException == null;
     }
@@ -244,10 +294,7 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
-      return wallet != null &&
-          wallet!.signsLocally &&
-          !isAddressOnly &&
-          payjoin != null;
+      return wallet != null && wallet!.signsLocally && payjoin != null;
     }
     return false;
   }
@@ -256,9 +303,10 @@ abstract class ReceiveState with _$ReceiveState {
 
   // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
   // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
-  // Also gated on [isAddressOnly] so toggling payjoin OFF removes only the
-  // pj= param from the URI, leaving amount/message intact.
-  bool get canPayjoin => payjoin != null && hasUtxos && !isAddressOnly;
+  // The per-address opt-out toggle was removed: the global payjoin setting
+  // (ReceiveBloc only creates [payjoin] at all when it's enabled, see
+  // _onBitcoinStarted) is now the only control.
+  bool get canPayjoin => payjoin != null && hasUtxos;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
