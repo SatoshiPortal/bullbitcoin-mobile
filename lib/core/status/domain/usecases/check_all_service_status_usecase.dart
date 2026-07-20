@@ -146,6 +146,19 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkPayjoinService() async {
     try {
+      // Payjoin is opt-in: when it's disabled in settings the OHTTP relay is
+      //  not in use, so report `disabled` (not `offline`/red) — probing a
+      //  relay the user isn't relying on and painting the whole status page
+      //  red for it is misleading.
+      final settings = await _settingsRepository.fetch();
+      if (!settings.isPayjoinEnabled) {
+        return ServiceStatusInfo(
+          status: ServiceStatus.disabled,
+          name: 'Payjoin',
+          lastChecked: DateTime.now(),
+        );
+      }
+
       final isHealthy = await _payjoinRepository.checkOhttpRelayHealth();
 
       return ServiceStatusInfo(
