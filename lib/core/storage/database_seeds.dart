@@ -23,6 +23,9 @@ class DatabaseSeeds {
             torProxyPort: 9050,
             themeMode: 'system',
             isErrorReportingEnabled: false,
+            payjoinEnabled: false,
+            payjoinMinAmountSat: PayjoinConstants.defaultMinAmountSat,
+            payjoinExpireAfterSec: PayjoinConstants.defaultExpireAfterSec,
           ),
         );
   }
