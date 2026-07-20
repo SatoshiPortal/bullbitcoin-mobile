@@ -4014,7 +4014,6 @@
   "broadcastSignedTxErrorInvalidTransaction": "这看起来不是有效的已签名交易。请确认您粘贴了完整的 PSBT 或交易。",
   "broadcastSignedTxErrorInvalidPushTx": "无法从此标签读取交易。请重新扫描。",
   "recoverbullSelectRecoverWallet": "恢复钱包",
-  "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",
   "psbtFlowMoveLaser": "over  red  las",
   "chooseVaultLocationTitle": "颜色",
@@ -4976,5 +4975,9 @@
   "logsShareOptionShare": "分享",
   "logsShareOptionExport": "导出",
   "logsExportedMessage": "日志导出成功",
-  "logsExportFailedMessage": "日志导出失败"
+  "logsExportFailedMessage": "日志导出失败",
+  "transactionStatusPayjoinAborted": "Payjoin 已中止",
+  "transactionDetailLabelPayjoinAborted": "已中止",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
 }

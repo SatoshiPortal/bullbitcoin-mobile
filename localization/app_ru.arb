@@ -4013,7 +4013,6 @@
   "broadcastSignedTxErrorInvalidTransaction": "Это не похоже на действительную подписанную транзакцию. Убедитесь, что вы вставили полный PSBT или транзакцию.",
   "broadcastSignedTxErrorInvalidPushTx": "Не удалось прочитать транзакцию из этой метки. Пожалуйста, попробуйте отсканировать снова.",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
-  "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",
   "psbtFlowMoveLaser": "Переместить красный лазер вверх и вниз по QR-коду",
   "chooseVaultLocationTitle": "Выберите местоположение хранилища",
@@ -5103,5 +5102,9 @@
   "logsShareOptionShare": "Поделиться",
   "logsShareOptionExport": "Экспорт",
   "logsExportedMessage": "Журналы успешно экспортированы",
-  "logsExportFailedMessage": "Не удалось экспортировать журналы"
+  "logsExportFailedMessage": "Не удалось экспортировать журналы",
+  "transactionStatusPayjoinAborted": "Payjoin отменён",
+  "transactionDetailLabelPayjoinAborted": "Отменено",
+  "transactionDetailLabelPayjoinFeeContribution": "Комиссия за участие в Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78)."
 }
