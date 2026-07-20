@@ -72,6 +72,7 @@ graph TB
     LABELS --> CORE
     PAY --> RECIPIENTS
     PAYJOIN --> UTXO_MGMT
+    PAYJOIN --> LABELS
     PIN_CODE --> CORE
     RECEIVE --> PAYJOIN
     RECEIVE --> SWAPS
