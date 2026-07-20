@@ -43,7 +43,7 @@ dependencies:
   joinstr_flutter:
     git:
       url: https://github.com/rust-joinstr/joinstr
-      ref: 4f21626
+      ref: 449f126
       path: dart
   qr_flutter: ^4.1.0
   dio: ^5.9.0
