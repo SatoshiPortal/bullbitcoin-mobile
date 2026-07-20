@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 
@@ -35,6 +36,11 @@ class GetPaidDashboardState {
   final GetPaidDashboardCardStatus invoicesStatus;
   final GetPaidDashboardCardStatus btcpayStatus;
 
+  /// Saved fiat-settlement configuration per product, for the slot summaries.
+  /// Null when unavailable (testnet, or a tolerant read that did not succeed)
+  /// — in which case no settlement summary is shown.
+  final Map<FiatSettlementProduct, FiatSettlementProductConfig>? fiatSettlement;
+
   const GetPaidDashboardState({
     this.isLoading = false,
     this.lightningAddress,
@@ -51,6 +57,7 @@ class GetPaidDashboardState {
     this.posStatus = GetPaidDashboardCardStatus.loading,
     this.invoicesStatus = GetPaidDashboardCardStatus.loading,
     this.btcpayStatus = GetPaidDashboardCardStatus.loading,
+    this.fiatSettlement,
   });
 
   bool get hasLightningAddress =>
@@ -83,6 +90,7 @@ class GetPaidDashboardState {
     GetPaidDashboardCardStatus? posStatus,
     GetPaidDashboardCardStatus? invoicesStatus,
     GetPaidDashboardCardStatus? btcpayStatus,
+    Map<FiatSettlementProduct, FiatSettlementProductConfig>? fiatSettlement,
   }) {
     return GetPaidDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -106,6 +114,7 @@ class GetPaidDashboardState {
       posStatus: posStatus ?? this.posStatus,
       invoicesStatus: invoicesStatus ?? this.invoicesStatus,
       btcpayStatus: btcpayStatus ?? this.btcpayStatus,
+      fiatSettlement: fiatSettlement ?? this.fiatSettlement,
     );
   }
 }

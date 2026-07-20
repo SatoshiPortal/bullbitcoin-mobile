@@ -5,6 +5,9 @@ import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_activation_offer.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_entry_tile.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 import 'package:bb_mobile/features/get_paid_settings/domain/usecases/get_get_paid_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/payment_page/domain/payment_page_validation.dart';
 import 'package:bb_mobile/features/payment_page/presentation/payment_page_cubit.dart';
@@ -60,31 +63,43 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PaymentPageCubit, PaymentPageState>(
+    return BlocListener<PaymentPageCubit, PaymentPageState>(
+      // Offer the fiat chooser exactly once, on the creation transition from the
+      // create form to a live (edit) page — never on later edits of an existing
+      // page, and never on a reload (which passes through `loading` first).
       listenWhen: (previous, current) =>
-          previous.failure != current.failure && current.failure != null,
-      listener: (context, state) {
-        final failure = state.failure;
-        if (failure == null) return;
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
-      },
-      builder: (context, state) {
-        _syncControllers(state);
-        return PopScope(
-          canPop: !state.submitting,
-          onPopInvokedWithResult: (didPop, _) {
-            if (didPop || !state.submitting) return;
-            SnackBarUtils.showSnackBar(
-              context,
-              context.loc.paymentPageOperationInProgress,
-            );
-          },
-          child: Scaffold(
-            appBar: AppBar(title: Text(context.loc.paymentPageScreenTitle)),
-            body: SafeArea(child: _body(context, state)),
-          ),
-        );
-      },
+          previous.status == PaymentPageStatus.create &&
+          current.status == PaymentPageStatus.edit,
+      listener: (context, _) => offerFiatSettlementAfterActivation(
+        context,
+        FiatSettlementProduct.paymentPage,
+      ),
+      child: BlocConsumer<PaymentPageCubit, PaymentPageState>(
+        listenWhen: (previous, current) =>
+            previous.failure != current.failure && current.failure != null,
+        listener: (context, state) {
+          final failure = state.failure;
+          if (failure == null) return;
+          SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        },
+        builder: (context, state) {
+          _syncControllers(state);
+          return PopScope(
+            canPop: !state.submitting,
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop || !state.submitting) return;
+              SnackBarUtils.showSnackBar(
+                context,
+                context.loc.paymentPageOperationInProgress,
+              );
+            },
+            child: Scaffold(
+              appBar: AppBar(title: Text(context.loc.paymentPageScreenTitle)),
+              body: SafeArea(child: _body(context, state)),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -323,6 +338,10 @@ class _PaymentPageEditorScreenState extends State<PaymentPageEditorScreen> {
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
         ),
+        if (!isCreate)
+          const FiatSettlementEntryTile(
+            product: FiatSettlementProduct.paymentPage,
+          ),
         if (state.walletBehavior != null)
           _WalletBehaviorControls(
             behavior: state.walletBehavior!,

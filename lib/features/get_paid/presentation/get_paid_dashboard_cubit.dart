@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_facade.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 import 'package:bb_mobile/features/get_paid/domain/ensure_get_paid_automatic_fallback_usecase.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_fallback_attention_usecase.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
@@ -30,6 +33,12 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
   final GetWalletsUsecase _getWallets;
   final EnsureGetPaidAutomaticFallbackUsecase _ensureAutomaticFallback;
   final GetPaidFallbackAttentionUsecase _fallbackAttention;
+
+  /// Optional, mainnet-only fiat-settlement summaries for the slots. Both are
+  /// null in isolated tests / environments where fiat settlement is not wired,
+  /// in which case no settlement summary is shown.
+  final FiatSettlementFacade? _fiatSettlement;
+  final GetSettingsUsecase? _getSettings;
   int _refreshGeneration = 0;
 
   GetPaidDashboardCubit({
@@ -40,6 +49,8 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
     required this._getWallets,
     required this._ensureAutomaticFallback,
     required this._fallbackAttention,
+    this._fiatSettlement,
+    this._getSettings,
   }) : super(const GetPaidDashboardState());
 
   Future<void> refresh() async {
@@ -258,10 +269,42 @@ class GetPaidDashboardCubit extends Cubit<GetPaidDashboardState> {
       await Future.wait([fallbackFuture, pageFuture, posFuture]);
     }();
 
+    // Fiat-settlement summaries: mainnet-only, tolerant (any failure leaves the
+    // map untouched so slots simply show no summary). Never marks the refresh
+    // as failed.
+    final fiatSettlementFuture = () async {
+      final facade = _fiatSettlement;
+      final getSettings = _getSettings;
+      if (facade == null || getSettings == null) return;
+      try {
+        final settings = await getSettings.execute();
+        if (settings.environment != Environment.mainnet) return;
+        final result = await facade.configuration();
+        if (_isStale(generation)) return;
+        if (result case Ok(:final value)) {
+          emit(
+            state.copyWith(
+              fiatSettlement: {
+                for (final product in FiatSettlementProduct.values)
+                  product: value.configFor(product),
+              },
+            ),
+          );
+        }
+      } on Exception catch (error, trace) {
+        log.warning(
+          'Get Paid dashboard fiat-settlement summary lookup failed',
+          error: error,
+          trace: trace,
+        );
+      }
+    }();
+
     await Future.wait([
       invoicesFuture,
       btcpayFuture,
       lightningAndSurfacesFuture,
+      fiatSettlementFuture,
     ]);
     if (_isStale(generation)) return;
     emit(

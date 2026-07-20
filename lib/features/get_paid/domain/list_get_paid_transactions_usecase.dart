@@ -108,6 +108,7 @@ class ListGetPaidTransactionsUsecase {
       },
       late: item.late,
       comment: item.comment,
+      settlement: item.settlement,
     );
   }
 }

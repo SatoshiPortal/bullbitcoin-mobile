@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/btcpay/public/btcpay_routes.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
+import 'package:bb_mobile/features/fiat_settlement/ui/fiat_settlement_copy.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_dashboard_state.dart';
 import 'package:bb_mobile/features/get_paid/public/get_paid_routes.dart';
@@ -118,9 +120,15 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         title: loc.getPaidDashboardLightningAddressTitle,
         // Show the address as the subtitle whenever one is present, regardless
         // of the active status (the status dot reflects `active` separately).
-        subtitle: state.hasLightningAddress
-            ? state.lightningAddress!
-            : loc.getPaidDashboardLightningAddressSubtitle,
+        subtitle: _withSettlementSummary(
+          context,
+          state,
+          FiatSettlementProduct.lightningAddress,
+          active: state.lightningActive,
+          base: state.hasLightningAddress
+              ? state.lightningAddress!
+              : loc.getPaidDashboardLightningAddressSubtitle,
+        ),
         isLoading: state.lightningStatus == GetPaidDashboardCardStatus.loading,
         // Active green when the registration itself is ACTIVE.
         statusLabel: state.lightningActive ? loc.getPaidDashboardActive : null,
@@ -131,7 +139,13 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
       GetPaidSlotCard(
         icon: Icons.storefront,
         title: loc.getPaidDashboardDonationPageTitle,
-        subtitle: page?.publicUrl ?? loc.getPaidDashboardDonationPageSubtitle,
+        subtitle: _withSettlementSummary(
+          context,
+          state,
+          FiatSettlementProduct.paymentPage,
+          active: state.hasPaymentPage,
+          base: page?.publicUrl ?? loc.getPaidDashboardDonationPageSubtitle,
+        ),
         isLoading:
             state.paymentPageStatus == GetPaidDashboardCardStatus.loading,
         // Active green when a (non-archived) payment page exists.
@@ -143,7 +157,13 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
       GetPaidSlotCard(
         icon: Icons.point_of_sale,
         title: loc.getPaidDashboardPosTitle,
-        subtitle: pos?.terminalUrl ?? loc.getPaidDashboardPosSubtitle,
+        subtitle: _withSettlementSummary(
+          context,
+          state,
+          FiatSettlementProduct.pos,
+          active: state.hasPos,
+          base: pos?.terminalUrl ?? loc.getPaidDashboardPosSubtitle,
+        ),
         isLoading: state.posStatus == GetPaidDashboardCardStatus.loading,
         // Active green when a (non-archived) POS terminal exists.
         statusLabel: state.hasPos ? loc.getPaidDashboardActive : null,
@@ -154,7 +174,13 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
       GetPaidSlotCard(
         icon: Icons.receipt_long,
         title: loc.getPaidDashboardInvoicesTitle,
-        subtitle: loc.getPaidDashboardInvoicesSubtitle,
+        subtitle: _withSettlementSummary(
+          context,
+          state,
+          FiatSettlementProduct.invoice,
+          active: state.invoicesWalletReady,
+          base: loc.getPaidDashboardInvoicesSubtitle,
+        ),
         isLoading: state.invoicesStatus == GetPaidDashboardCardStatus.loading,
         // Active green once the user's default wallet is created (invoices pay
         // out from the default wallet).
@@ -184,6 +210,22 @@ class _GetPaidDashboardScreenState extends State<GetPaidDashboardScreen>
         onTap: () => _open(BtcpayRoute.btcpaySettings.name),
       ),
     ];
+  }
+
+  /// Appends the saved settlement summary to an ACTIVE product slot's subtitle.
+  /// Inactive slots, and any environment where the map is unavailable (testnet
+  /// / tolerant read miss), are left unchanged.
+  String _withSettlementSummary(
+    BuildContext context,
+    GetPaidDashboardState state,
+    FiatSettlementProduct product, {
+    required bool active,
+    required String base,
+  }) {
+    if (!active) return base;
+    final config = state.fiatSettlement?[product];
+    if (config == null) return base;
+    return '$base\n${context.fiatSettlementSummary(config)}';
   }
 
   Future<void> _open(String routeName) async {

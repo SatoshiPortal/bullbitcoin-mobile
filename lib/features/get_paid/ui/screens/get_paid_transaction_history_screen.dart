@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_transaction.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_transaction_history_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_transaction_history_state.dart';
@@ -137,6 +138,15 @@ class _TransactionRow extends StatelessWidget {
               '${getPaidTransactionRailText(context, transaction.rail)} · '
               '${getPaidSettlementStateText(context, transaction.settlementState)}',
             ),
+            if (transaction.settlement != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                getPaidSettlementKindLabel(
+                  context,
+                  transaction.settlementKind,
+                ),
+              ),
+            ],
             const SizedBox(height: 2),
             Text(
               getPaidTransactionDateText(context, transaction.receivedAt),
@@ -331,6 +341,22 @@ String getPaidTransactionRailText(
     GetPaidTransactionRail.liquid => context.loc.getPaidTransactionsRailLiquid,
     GetPaidTransactionRail.bitcoin =>
       context.loc.getPaidTransactionsRailBitcoin,
+  };
+}
+
+/// Coarse settlement classification label for the history list. `unavailable`
+/// (unknown/uninterpretable) shows the explicit unavailable string — never
+/// silently a Bitcoin label.
+String getPaidSettlementKindLabel(
+  BuildContext context,
+  BullnymSettlementKind kind,
+) {
+  return switch (kind) {
+    BullnymSettlementKind.bitcoin => context.loc.getPaidSettlementLabelBitcoin,
+    BullnymSettlementKind.fiat => context.loc.getPaidSettlementLabelFiat,
+    BullnymSettlementKind.mixed => context.loc.getPaidSettlementLabelMixed,
+    BullnymSettlementKind.unavailable =>
+      context.loc.getPaidSettlementDetailsUnavailable,
   };
 }
 

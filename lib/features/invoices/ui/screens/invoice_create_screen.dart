@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/invoices/presentation/invoices_failure_l10n.d
 import 'package:bb_mobile/features/invoices/ui/widgets/private_invoice_link_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_entry_tile.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -215,6 +217,9 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
         ),
+        const Gap(16),
+        // Account-scoped: applies to invoices created afterward.
+        const FiatSettlementEntryTile(product: FiatSettlementProduct.invoice),
       ],
     );
   }

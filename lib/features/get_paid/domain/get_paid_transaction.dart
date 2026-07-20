@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+
 enum GetPaidTransactionSource {
   lightningAddress,
   invoice,
@@ -28,6 +30,10 @@ class GetPaidTransaction {
   final bool late;
   final String? comment;
 
+  /// Private, tolerant settlement projection (reuses the Bullnym settlement
+  /// model; null for plain Bitcoin payments with no fiat configuration).
+  final BullnymGetPaidSettlement? settlement;
+
   const GetPaidTransaction._({
     required this.transactionId,
     required this.source,
@@ -38,6 +44,7 @@ class GetPaidTransaction {
     required this.settlementState,
     required this.late,
     required this.comment,
+    required this.settlement,
   });
 
   factory GetPaidTransaction({
@@ -50,6 +57,7 @@ class GetPaidTransaction {
     required GetPaidSettlementState settlementState,
     required bool late,
     required String? comment,
+    BullnymGetPaidSettlement? settlement,
   }) {
     if (!_isCanonicalUuid(transactionId) ||
         amountSat <= 0 ||
@@ -80,8 +88,13 @@ class GetPaidTransaction {
       settlementState: settlementState,
       late: late,
       comment: comment,
+      settlement: settlement,
     );
   }
+
+  /// Coarse label for the history list; null settlement = plain Bitcoin.
+  BullnymSettlementKind get settlementKind =>
+      settlement?.kind ?? BullnymSettlementKind.bitcoin;
 
   String get stableKey => '${source.name}:$transactionId';
 

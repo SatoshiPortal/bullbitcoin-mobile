@@ -16743,5 +16743,263 @@
         "type": "String"
       }
     }
+  },
+  "getPaidFiatSettlementChooserTitle": "How do you want to receive the funds?",
+  "@getPaidFiatSettlementChooserTitle": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementChooserBitcoin": "Bitcoin in your wallet",
+  "@getPaidFiatSettlementChooserBitcoin": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementChooserFiat": "Fiat in your Bull Bitcoin account",
+  "@getPaidFiatSettlementChooserFiat": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementChooserMix": "A mix of Bitcoin and fiat",
+  "@getPaidFiatSettlementChooserMix": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementSliderBitcoin": "{percent}% Bitcoin",
+  "@getPaidFiatSettlementSliderBitcoin": {
+    "description": "Fiat settlement UI",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "getPaidFiatSettlementSliderFiat": "{percent}% fiat",
+  "@getPaidFiatSettlementSliderFiat": {
+    "description": "Fiat settlement UI",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "getPaidFiatSettlementCurrencyTitle": "Choose your fiat currency",
+  "@getPaidFiatSettlementCurrencyTitle": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementCurrencyLabel": "Fiat currency",
+  "@getPaidFiatSettlementCurrencyLabel": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementUnderstandCheckbox": "I understand",
+  "@getPaidFiatSettlementUnderstandCheckbox": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementSave": "Save",
+  "@getPaidFiatSettlementSave": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementFallbackDisclosure": "If a full or partial fiat conversion is below Bull Bitcoin's minimum amount, fiat conversion will be overridden and the entire payment will be sent to your Bitcoin wallet.",
+  "@getPaidFiatSettlementFallbackDisclosure": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureCad": "When converting funds to CAD, you will be able to withdraw your CAD balance to your own bank account via Interac e-Transfer, EFT, or Domestic Wire Transfer.",
+  "@getPaidFiatSettlementDisclosureCad": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureEur": "When converting funds to EUR, you will be able to withdraw your EUR balance to your own bank account via SEPA.",
+  "@getPaidFiatSettlementDisclosureEur": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureMxn": "When converting funds to MXN, you will be able to withdraw your MXN balance to your own Mexican bank account via SPEI.",
+  "@getPaidFiatSettlementDisclosureMxn": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureCrc": "When converting funds to CRC, you will be able to withdraw your CRC balance to your own Costa Rican bank account via SINPE bank transfer or SINPE Móvil.",
+  "@getPaidFiatSettlementDisclosureCrc": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureCop": "When converting funds to COP, you will be able to withdraw your COP balance to your own Colombian bank account or Nequi account.",
+  "@getPaidFiatSettlementDisclosureCop": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureArs": "When converting funds to ARS, you will be able to withdraw your ARS balance to your own Argentine bank account via CBU/CVU bank transfer.",
+  "@getPaidFiatSettlementDisclosureArs": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisclosureUsd": "You can only withdraw USD to a Costa Rican bank account via SINPE or to a Canadian bank account via Domestic Wire Transfer. Do not select USD if you do not agree to these withdrawal options. If you select USD and cannot use these withdrawal options, you can still convert your USD balance to Bitcoin.",
+  "@getPaidFiatSettlementDisclosureUsd": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementKycRequired": "To activate fiat conversion, your account needs the right KYC permissions. Please complete your KYC to enable unlimited trading. You can continue with Bitcoin only and enable fiat conversion later.",
+  "@getPaidFiatSettlementKycRequired": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementCompleteKyc": "Complete KYC",
+  "@getPaidFiatSettlementCompleteKyc": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementContactSupport": "Contact support",
+  "@getPaidFiatSettlementContactSupport": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementContinueBitcoinOnly": "Continue with Bitcoin only",
+  "@getPaidFiatSettlementContinueBitcoinOnly": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementReconnect": "Reconnect Bull Bitcoin",
+  "@getPaidFiatSettlementReconnect": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementCredentialProblem": "We couldn't use your Bull Bitcoin credentials. Reconnect your Bull Bitcoin account and try again.",
+  "@getPaidFiatSettlementCredentialProblem": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDependencyUnavailable": "Bull Bitcoin is temporarily unavailable. Please try again in a moment.",
+  "@getPaidFiatSettlementDependencyUnavailable": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementRetry": "Retry",
+  "@getPaidFiatSettlementRetry": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementUnreachable": "Couldn't reach Bull Bitcoin. Check your connection and try again.",
+  "@getPaidFiatSettlementUnreachable": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementGenericError": "Something went wrong. Your previous settings were kept.",
+  "@getPaidFiatSettlementGenericError": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementConnectPrompt": "Log in to your Bull Bitcoin account to receive fiat.",
+  "@getPaidFiatSettlementConnectPrompt": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementLogin": "Log in to Bull Bitcoin",
+  "@getPaidFiatSettlementLogin": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementSummaryBitcoinOnly": "Bitcoin only",
+  "@getPaidFiatSettlementSummaryBitcoinOnly": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementSummaryFiatOnly": "100% fiat · {currency}",
+  "@getPaidFiatSettlementSummaryFiatOnly": {
+    "description": "Fiat settlement UI",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidFiatSettlementSummaryMixed": "{bitcoinPercent}% Bitcoin · {fiatPercent}% fiat · {currency}",
+  "@getPaidFiatSettlementSummaryMixed": {
+    "description": "Fiat settlement UI",
+    "placeholders": {
+      "bitcoinPercent": {
+        "type": "int"
+      },
+      "fiatPercent": {
+        "type": "int"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidFiatSettlementSectionTitle": "Fiat conversion",
+  "@getPaidFiatSettlementSectionTitle": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementTurnOff": "Turn off fiat conversion",
+  "@getPaidFiatSettlementTurnOff": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementLabelBitcoin": "Bitcoin",
+  "@getPaidSettlementLabelBitcoin": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementLabelFiat": "Fiat",
+  "@getPaidSettlementLabelFiat": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementLabelMixed": "Mixed",
+  "@getPaidSettlementLabelMixed": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementFiatAmount": "{amount} {currency}",
+  "@getPaidSettlementFiatAmount": {
+    "description": "Fiat settlement UI",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidSettlementFiatPending": "Fiat conversion pending",
+  "@getPaidSettlementFiatPending": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementOrderId": "Bull Bitcoin order ID",
+  "@getPaidSettlementOrderId": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementStatus": "Status",
+  "@getPaidSettlementStatus": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementOverridden": "This payment was kept entirely in Bitcoin because fiat conversion could not be applied.",
+  "@getPaidSettlementOverridden": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementBitcoinPortion": "Bitcoin",
+  "@getPaidSettlementBitcoinPortion": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementDetailsUnavailable": "Settlement details unavailable",
+  "@getPaidSettlementDetailsUnavailable": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementSaving": "Saving…",
+  "@getPaidFiatSettlementSaving": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisableConfirmTitle": "Switch to Bitcoin only?",
+  "@getPaidFiatSettlementDisableConfirmTitle": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisableConfirmBody": "New payments will stay entirely in Bitcoin. Conversions already in progress are not affected.",
+  "@getPaidFiatSettlementDisableConfirmBody": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisableConfirmCancel": "Keep fiat conversion",
+  "@getPaidFiatSettlementDisableConfirmCancel": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementDisableConfirmSubmit": "Switch to Bitcoin only",
+  "@getPaidFiatSettlementDisableConfirmSubmit": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementStatusPending": "Pending",
+  "@getPaidSettlementStatusPending": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidSettlementStatusSettled": "Settled",
+  "@getPaidSettlementStatusSettled": {
+    "description": "Fiat settlement UI"
+  },
+  "getPaidFiatSettlementActivatedTitleLightningAddress": "Your Lightning Address has been activated",
+  "@getPaidFiatSettlementActivatedTitleLightningAddress": {
+    "description": "Fiat settlement activation success header (Lightning Address)"
+  },
+  "getPaidFiatSettlementActivatedTitlePaymentPage": "Your Payment Page has been activated",
+  "@getPaidFiatSettlementActivatedTitlePaymentPage": {
+    "description": "Fiat settlement activation success header (Payment Page)"
+  },
+  "getPaidFiatSettlementActivatedTitlePos": "Your Point of Sale has been activated",
+  "@getPaidFiatSettlementActivatedTitlePos": {
+    "description": "Fiat settlement activation success header (Point of Sale)"
+  },
+  "getPaidFiatSettlementCurrentlyActive": "Currently active",
+  "@getPaidFiatSettlementCurrentlyActive": {
+    "description": "Label marking the currently-active settlement option in the fiat chooser"
   }
 }
