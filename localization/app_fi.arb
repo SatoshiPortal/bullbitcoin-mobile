@@ -277,7 +277,6 @@
   "receiveAddLabel": "Lisää kuvaus",
   "receiveNote": "Kuvaus",
   "receiveSave": "Tallenna",
-  "receivePayjoinActivated": "Payjoin aktivoitu",
   "receiveLightningInvoice": "Lightning-lasku",
   "receiveAddress": "Vastaanottajan osoite",
   "receiveAmount": "Määrä (ei välttämätön)",
@@ -5086,5 +5085,9 @@
   "logsShareOptionShare": "Jaa",
   "logsShareOptionExport": "Vie",
   "logsExportedMessage": "Lokit viety onnistuneesti",
-  "logsExportFailedMessage": "Lokien vienti epäonnistui"
+  "logsExportFailedMessage": "Lokien vienti epäonnistui",
+  "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
+  "transactionDetailLabelPayjoinAborted": "Keskeytetty",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78)."
 }

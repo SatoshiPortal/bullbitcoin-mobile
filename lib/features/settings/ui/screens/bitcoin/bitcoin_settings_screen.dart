@@ -75,6 +75,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   ),
                 ),
                 SettingsEntryItem(
+                  icon: Icons.compare_arrows,
+                  title: context.loc.bitcoinSettingsPayjoinTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.payjoinSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.hub,
                   title: context.loc.bitcoinSettingsElectrumServerTitle,
                   onTap: () {

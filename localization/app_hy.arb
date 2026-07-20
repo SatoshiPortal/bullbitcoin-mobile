@@ -582,5 +582,9 @@
   "logsShareOptionShare": "Կիսվել",
   "logsShareOptionExport": "Արտահանել",
   "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
-  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց"
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց",
+  "transactionStatusPayjoinAborted": "Payjoin-ը չեղարկվել է",
+  "transactionDetailLabelPayjoinAborted": "Չեղարկված",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-ի միջնորդավճարի ներդրում",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։"
 }

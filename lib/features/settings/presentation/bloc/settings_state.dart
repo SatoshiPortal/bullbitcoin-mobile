@@ -22,4 +22,11 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>
       storedSettings?.exchangeTestnetBasicAuthPassword;
+  bool get isPayjoinEnabled => storedSettings?.isPayjoinEnabled ?? false;
+  int get payjoinMinAmountSat =>
+      storedSettings?.payjoinMinAmountSat ??
+      PayjoinConstants.defaultMinAmountSat;
+  int get payjoinExpireAfterSec =>
+      storedSettings?.payjoinExpireAfterSec ??
+      PayjoinConstants.defaultExpireAfterSec;
 }

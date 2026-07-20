@@ -582,5 +582,9 @@
   "logsShareOptionShare": "Chia sẻ",
   "logsShareOptionExport": "Xuất",
   "logsExportedMessage": "Nhật ký đã được xuất thành công",
-  "logsExportFailedMessage": "Xuất nhật ký thất bại"
+  "logsExportFailedMessage": "Xuất nhật ký thất bại",
+  "transactionStatusPayjoinAborted": "Payjoin đã bị hủy",
+  "transactionDetailLabelPayjoinAborted": "Đã hủy",
+  "transactionDetailLabelPayjoinFeeContribution": "Khoản phí đóng góp Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78)."
 }

@@ -10144,10 +10144,6 @@
   "@fundExchangeBankTransferWireTimeframe": {
     "description": "Timeframe for bank transfer wire funds to be credited"
   },
-  "receivePayjoinActivated": "Payjoin ativado",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "googleAppleCloudRecommendation": "Google ou Nuvem da Apple: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
@@ -13048,5 +13044,9 @@
   "logsShareOptionShare": "Compartilhar",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados com sucesso",
-  "logsExportFailedMessage": "Falha ao exportar os registros"
+  "logsExportFailedMessage": "Falha ao exportar os registros",
+  "transactionStatusPayjoinAborted": "Payjoin cancelado",
+  "transactionDetailLabelPayjoinAborted": "Cancelado",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
 }

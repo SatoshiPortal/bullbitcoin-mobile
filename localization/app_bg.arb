@@ -9137,10 +9137,6 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "Payjoin активиран",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "importMnemonicContinue": "Продължи",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -10084,5 +10080,9 @@
   "logsShareOptionShare": "Споделяне",
   "logsShareOptionExport": "Експортиране",
   "logsExportedMessage": "Журналите са експортирани успешно",
-  "logsExportFailedMessage": "Неуспешно експортиране на журналите"
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите",
+  "transactionStatusPayjoinAborted": "Payjoin отменен",
+  "transactionDetailLabelPayjoinAborted": "Отменен",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
 }

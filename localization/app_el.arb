@@ -9914,10 +9914,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "receivePayjoinActivated": "Payjoin ενεργοποιηθεί",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "importMnemonicContinue": "Συνεχίστε να συνεχίζετε",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -13052,5 +13048,9 @@
   "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
-  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής"
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
+  "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
+  "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
 }

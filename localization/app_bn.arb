@@ -11689,10 +11689,6 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "Payjoin সক্রিয় হয়েছে",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "importMnemonicContinue": "চালিয়ে যান",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -13222,5 +13218,9 @@
   "logsShareOptionShare": "শেয়ার করুন",
   "logsShareOptionExport": "এক্সপোর্ট করুন",
   "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
-  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে"
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।"
 }
