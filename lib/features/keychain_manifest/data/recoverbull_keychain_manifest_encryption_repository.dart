@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/backup/authenticated_backup_cipher.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/models/keychain_manifest_backup_snapshot_model.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_snapshot.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_encryption.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_encryption_repository.dart';
+import 'package:crypto/crypto.dart';
 
 final class RecoverBullKeychainManifestEncryptionRepository
     implements KeychainManifestEncryptionRepository {
@@ -14,6 +17,10 @@ final class RecoverBullKeychainManifestEncryptionRepository
     this.snapshotCodec = const KeychainManifestBackupSnapshotCodec(),
     this.cipher = const RecoverBullAuthenticatedBackupCipher(),
   });
+
+  @override
+  String contentHash(KeychainManifestBackupSnapshot snapshot) =>
+      sha256.convert(utf8.encode(snapshotCodec.encode(snapshot))).toString();
 
   @override
   AuthenticatedBackupCiphertext encryptSnapshot({

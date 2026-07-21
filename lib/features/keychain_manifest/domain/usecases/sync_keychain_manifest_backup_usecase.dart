@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/derive_keyc
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 
-final class SyncKeychainManifestBackupUsecase {
+class SyncKeychainManifestBackupUsecase {
   final BuildKeychainManifestFileUsecase buildManifestFile;
   final DeriveKeychainManifestEncryptionKeyUsecase deriveEncryptionKey;
   final KeychainManifestEncryptionRepository encryption;
@@ -27,7 +27,7 @@ final class SyncKeychainManifestBackupUsecase {
         const DeriveKeychainManifestEncryptionKeyUsecase(),
   });
 
-  Future<KeychainManifestRemoteCheckpoint> execute({
+  Future<KeychainManifestBackupSyncResult> execute({
     required String parentFingerprint,
     required String xprvBase58,
     DateTime? now,
@@ -61,9 +61,12 @@ final class SyncKeychainManifestBackupUsecase {
       final contentHash = encryption.contentHash(snapshot);
       if (remoteSnapshot != null &&
           contentHash == encryption.contentHash(remoteSnapshot)) {
-        return KeychainManifestRemoteCheckpoint(
-          generation: current.generation,
-          etag: current.etag!,
+        return KeychainManifestBackupSyncResult(
+          checkpoint: KeychainManifestRemoteCheckpoint(
+            generation: current.generation,
+            etag: current.etag!,
+          ),
+          contentHash: contentHash,
         );
       }
       final ciphertext = encryption.encryptSnapshot(
@@ -71,10 +74,14 @@ final class SyncKeychainManifestBackupUsecase {
         key: key,
       );
       try {
-        return await remote.store(
+        final checkpoint = await remote.store(
           signer: signer,
           current: current,
           ciphertext: ciphertext,
+        );
+        return KeychainManifestBackupSyncResult(
+          checkpoint: checkpoint,
+          contentHash: contentHash,
         );
       } on KeychainManifestRemoteException catch (error) {
         if (error.reason != KeychainManifestRemoteFailureReason.headConflict ||

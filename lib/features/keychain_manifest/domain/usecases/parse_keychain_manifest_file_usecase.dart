@@ -21,6 +21,18 @@ class ParseKeychainManifestFileUsecase {
     bool allowEmpty = false,
   }) {
     final manifestFile = _codec.decode(payload);
+    return executeFile(
+      manifestFile,
+      expectedParentFingerprint: expectedParentFingerprint,
+      allowEmpty: allowEmpty,
+    );
+  }
+
+  KeychainManifestImportPlan executeFile(
+    KeychainManifestFile manifestFile, {
+    required String expectedParentFingerprint,
+    bool allowEmpty = false,
+  }) {
     // The fingerprint gate runs before any registry validation: a manifest
     // for another parent seed must be refused regardless of its contents.
     final normalizedExpectedParentFingerprint =

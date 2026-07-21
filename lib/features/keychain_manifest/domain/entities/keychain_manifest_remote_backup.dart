@@ -37,3 +37,13 @@ final class KeychainManifestRemoteCheckpoint {
     required this.etag,
   });
 }
+
+final class KeychainManifestBackupSyncResult {
+  final KeychainManifestRemoteCheckpoint checkpoint;
+  final String contentHash;
+
+  const KeychainManifestBackupSyncResult({
+    required this.checkpoint,
+    required this.contentHash,
+  });
+}
