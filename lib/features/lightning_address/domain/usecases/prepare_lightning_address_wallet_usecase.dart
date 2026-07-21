@@ -191,7 +191,7 @@ class PrepareLightningAddressWalletUsecase {
       KeychainManifestExceptionType.unsupportedFileVersion ||
       KeychainManifestExceptionType.conflict ||
       KeychainManifestExceptionType.duplicate ||
-      KeychainManifestExceptionType.nostrEvent => false,
+      KeychainManifestExceptionType.backupSnapshot => false,
     };
   }
 }
