@@ -26,7 +26,17 @@ enum BullnymFiatSettlementProduct {
 /// NEVER be silently shown as Bitcoin-only.
 enum BullnymSettlementKind { bitcoin, fiat, mixed, unavailable }
 
-enum BullnymSettlementLegStatus { pending, settled, unavailable, unknown }
+/// Per-leg lifecycle. Fiat legs are `pending`, `settled`, or `unavailable`;
+/// Bitcoin legs are `pending`, `settled`, or `problem`. `unknown` is retained
+/// for exhaustive switches but the strict parser never produces it — an
+/// unrecognized leg status invalidates the whole projection instead.
+enum BullnymSettlementLegStatus {
+  pending,
+  settled,
+  problem,
+  unavailable,
+  unknown,
+}
 
 /// Why a configured fiat conversion was overridden to all-Bitcoin.
 enum BullnymFiatConversionOverrideReason {
@@ -65,10 +75,14 @@ class BullnymBitcoinSettlementLeg {
   });
 }
 
-/// Private, structured settlement details for one Get Paid payment. Parsed
-/// tolerantly: any shape this client cannot interpret yields
-/// [BullnymSettlementKind.unavailable] with empty legs and no override, so the
-/// UI shows "Settlement details unavailable" rather than a wrong breakdown.
+/// Private, structured settlement projection for one Get Paid payment.
+///
+/// Parsing is tolerant-outer / strict-inner: any JSON-type surprise or any
+/// value this client version cannot confidently interpret fails closed to
+/// [BullnymSettlementKind.unavailable] (empty legs, no override) rather than
+/// throwing or fabricating a breakdown. Classification is read from the
+/// authoritative top-level `settlement_kind`; it is NEVER derived from field
+/// presence or from `settlement_details.kind` alone.
 class BullnymGetPaidSettlement {
   final BullnymSettlementKind kind;
   final List<BullnymFiatSettlementLeg> fiat;
@@ -86,85 +100,211 @@ class BullnymGetPaidSettlement {
     kind: BullnymSettlementKind.unavailable,
   );
 
-  /// Tolerant parse of the optional `settlement_details` + `fiat_conversion`
-  /// fields on a signed Get Paid transaction. Returns null when neither is
-  /// present (plain Bitcoin payment, no fiat config — the caller treats null as
-  /// Bitcoin). Returns [unavailable] when present-but-uninterpretable.
+  static const _bitcoin = BullnymGetPaidSettlement(
+    kind: BullnymSettlementKind.bitcoin,
+  );
+
+  static final RegExp _canonicalUuid = RegExp(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+  );
+  static const String _nilUuid = '00000000-0000-0000-0000-000000000000';
+
+  /// The seven approved settlement currencies, pinned uppercase. Any other
+  /// currency string invalidates the leg (and therefore the projection).
+  static const Set<String> _supportedCurrencies = {
+    'ARS',
+    'CAD',
+    'COP',
+    'CRC',
+    'EUR',
+    'MXN',
+    'USD',
+  };
+
+  /// Strict parse of the merchant settlement projection carried on a signed Get
+  /// Paid transaction. Returns:
+  ///
+  /// - `null` when the top-level `settlement_kind` field is ABSENT (an old
+  ///   server row with no projection). The caller maps null to its own no-data
+  ///   state — this is NEVER interpreted as Bitcoin.
+  /// - a settlement with the read [kind] when the payload is internally
+  ///   consistent with the contract.
+  /// - [unavailable] for any present-but-uninterpretable or inconsistent
+  ///   payload (unknown enum, tagged-kind mismatch, invalid/empty legs, an
+  ///   override or details attached to the wrong kind, a JSON type error).
   static BullnymGetPaidSettlement? tryParse(Map<String, dynamic> json) {
-    final override = json['fiat_conversion'];
-    final details = json['settlement_details'];
-    if (override == null && details == null) return null;
+    // Absent classification is the no-data path (old server). Presence is what
+    // distinguishes it from a server-sent `unavailable`.
+    if (!json.containsKey('settlement_kind')) return null;
 
     try {
-      // An override means the whole payment was kept in Bitcoin.
-      if (override is Map<String, dynamic> &&
-          override['status'] == 'overridden') {
-        return BullnymGetPaidSettlement(
-          kind: BullnymSettlementKind.bitcoin,
-          overrideReason: _reason(override['reason']),
-        );
+      final details = json['settlement_details'];
+      final override = json['fiat_conversion'];
+      switch (json['settlement_kind']) {
+        case 'bitcoin':
+          return _parseBitcoin(details: details, override: override);
+        case 'fiat':
+          return _parseFiat(details: details, override: override);
+        case 'mixed':
+          return _parseMixed(details: details, override: override);
+        case 'unavailable':
+          // A trustworthy `unavailable` carries neither field; any attached
+          // detail is itself inconsistent, so fail closed either way.
+          return unavailable;
+        default:
+          // Unknown or non-string classification → fail closed.
+          return unavailable;
       }
-      if (details is! Map<String, dynamic>) return unavailable;
-      final kind = switch (details['kind']) {
-        'fiat' => BullnymSettlementKind.fiat,
-        'mixed' => BullnymSettlementKind.mixed,
-        _ => BullnymSettlementKind.unavailable,
-      };
-      if (kind == BullnymSettlementKind.unavailable) return unavailable;
-      return BullnymGetPaidSettlement(
-        kind: kind,
-        fiat: _fiatLegs(details['fiat']),
-        bitcoin: _bitcoinLegs(details['bitcoin']),
-      );
     } catch (_) {
       return unavailable;
     }
   }
 
-  static BullnymFiatConversionOverrideReason _reason(Object? v) =>
-      switch (v) {
-        'below_minimum' => BullnymFiatConversionOverrideReason.belowMinimum,
-        'invalid_split' => BullnymFiatConversionOverrideReason.invalidSplit,
-        'conversion_unavailable' =>
-          BullnymFiatConversionOverrideReason.conversionUnavailable,
-        _ => BullnymFiatConversionOverrideReason.unknown,
-      };
+  static BullnymGetPaidSettlement _parseBitcoin({
+    required Object? details,
+    required Object? override,
+  }) {
+    // Ordinary Bitcoin settlement carries no structured details.
+    if (details != null) return unavailable;
+    if (override == null) return _bitcoin;
+    // The only Bitcoin-kind detail is a pre-funding conversion override. An
+    // unknown reason is tolerated (it renders as a generic override note); a
+    // malformed override envelope fails closed.
+    if (override is! Map<String, dynamic> ||
+        override['status'] != 'overridden') {
+      return unavailable;
+    }
+    return BullnymGetPaidSettlement(
+      kind: BullnymSettlementKind.bitcoin,
+      overrideReason: _reason(override['reason']),
+    );
+  }
 
-  static BullnymSettlementLegStatus _legStatus(Object? v) => switch (v) {
+  static BullnymGetPaidSettlement _parseFiat({
+    required Object? details,
+    required Object? override,
+  }) {
+    // A fiat projection never carries a Bitcoin-only conversion override.
+    if (override != null) return unavailable;
+    if (details is! Map<String, dynamic>) return unavailable;
+    // The tagged detail kind must equal the top-level classification.
+    if (details['kind'] != 'fiat') return unavailable;
+    // A fiat projection has no bitcoin array.
+    if (details.containsKey('bitcoin')) return unavailable;
+    final fiat = _fiatLegs(details['fiat']);
+    if (fiat == null || fiat.isEmpty) return unavailable;
+    return BullnymGetPaidSettlement(
+      kind: BullnymSettlementKind.fiat,
+      fiat: fiat,
+    );
+  }
+
+  static BullnymGetPaidSettlement _parseMixed({
+    required Object? details,
+    required Object? override,
+  }) {
+    if (override != null) return unavailable;
+    if (details is! Map<String, dynamic>) return unavailable;
+    if (details['kind'] != 'mixed') return unavailable;
+    final fiat = _fiatLegs(details['fiat']);
+    final bitcoin = _bitcoinLegs(details['bitcoin']);
+    // A mixed projection requires non-empty valid legs on BOTH sides.
+    if (fiat == null || fiat.isEmpty) return unavailable;
+    if (bitcoin == null || bitcoin.isEmpty) return unavailable;
+    return BullnymGetPaidSettlement(
+      kind: BullnymSettlementKind.mixed,
+      fiat: fiat,
+      bitcoin: bitcoin,
+    );
+  }
+
+  static BullnymFiatConversionOverrideReason _reason(Object? v) => switch (v) {
+    'below_minimum' => BullnymFiatConversionOverrideReason.belowMinimum,
+    'invalid_split' => BullnymFiatConversionOverrideReason.invalidSplit,
+    'conversion_unavailable' =>
+      BullnymFiatConversionOverrideReason.conversionUnavailable,
+    _ => BullnymFiatConversionOverrideReason.unknown,
+  };
+
+  /// Validates every fiat leg. Returns null if ANY leg is invalid so the whole
+  /// projection fails closed to `unavailable` without partial details.
+  static List<BullnymFiatSettlementLeg>? _fiatLegs(Object? raw) {
+    if (raw is! List) return null;
+    final legs = <BullnymFiatSettlementLeg>[];
+    for (final e in raw) {
+      if (e is! Map<String, dynamic>) return null;
+      final currency = e['currency'];
+      if (currency is! String || !_supportedCurrencies.contains(currency)) {
+        return null;
+      }
+      final orderId = e['order_id'];
+      if (orderId is! String || !_isCanonicalUuid(orderId)) return null;
+      final status = _fiatLegStatus(e['status']);
+      if (status == null) return null;
+      final amountMinor = e['amount_minor'];
+      final int? amount;
+      if (status == BullnymSettlementLegStatus.settled) {
+        // amount_minor is a strictly positive int only for settled.
+        if (amountMinor is! int || amountMinor <= 0) return null;
+        amount = amountMinor;
+      } else {
+        // pending / unavailable: amount_minor must be JSON null (zero is never
+        // a pending sentinel).
+        if (amountMinor != null) return null;
+        amount = null;
+      }
+      legs.add(
+        BullnymFiatSettlementLeg(
+          amountMinor: amount,
+          currency: currency,
+          orderId: orderId,
+          status: status,
+        ),
+      );
+    }
+    return legs;
+  }
+
+  /// Validates every Bitcoin leg. Returns null if ANY leg is invalid.
+  static List<BullnymBitcoinSettlementLeg>? _bitcoinLegs(Object? raw) {
+    if (raw is! List) return null;
+    final legs = <BullnymBitcoinSettlementLeg>[];
+    for (final e in raw) {
+      if (e is! Map<String, dynamic>) return null;
+      final amountSat = e['amount_sat'];
+      if (amountSat is! int || amountSat <= 0) return null;
+      // Version one settles Bitcoin legs on Liquid only.
+      if (e['network'] != 'liquid') return null;
+      final status = _bitcoinLegStatus(e['status']);
+      if (status == null) return null;
+      legs.add(
+        BullnymBitcoinSettlementLeg(
+          amountSat: amountSat,
+          network: 'liquid',
+          status: status,
+        ),
+      );
+    }
+    return legs;
+  }
+
+  static BullnymSettlementLegStatus? _fiatLegStatus(Object? v) => switch (v) {
     'pending' => BullnymSettlementLegStatus.pending,
     'settled' => BullnymSettlementLegStatus.settled,
     'unavailable' => BullnymSettlementLegStatus.unavailable,
-    _ => BullnymSettlementLegStatus.unknown,
+    _ => null,
   };
 
-  static List<BullnymFiatSettlementLeg> _fiatLegs(Object? raw) {
-    if (raw is! List) return const [];
-    return [
-      for (final e in raw)
-        if (e is Map<String, dynamic>)
-          BullnymFiatSettlementLeg(
-            amountMinor: e['amount_minor'] is int
-                ? e['amount_minor'] as int
-                : null,
-            currency: e['currency'] is String ? e['currency'] as String : '',
-            orderId: e['order_id'] is String ? e['order_id'] as String : '',
-            status: _legStatus(e['status']),
-          ),
-    ];
-  }
+  static BullnymSettlementLegStatus? _bitcoinLegStatus(Object? v) =>
+      switch (v) {
+        'pending' => BullnymSettlementLegStatus.pending,
+        'settled' => BullnymSettlementLegStatus.settled,
+        'problem' => BullnymSettlementLegStatus.problem,
+        _ => null,
+      };
 
-  static List<BullnymBitcoinSettlementLeg> _bitcoinLegs(Object? raw) {
-    if (raw is! List) return const [];
-    return [
-      for (final e in raw)
-        if (e is Map<String, dynamic>)
-          BullnymBitcoinSettlementLeg(
-            amountSat: e['amount_sat'] is int ? e['amount_sat'] as int : 0,
-            network: e['network'] is String ? e['network'] as String : '',
-            status: _legStatus(e['status']),
-          ),
-    ];
-  }
+  static bool _isCanonicalUuid(String value) =>
+      value != _nilUuid && _canonicalUuid.hasMatch(value);
 }
 
 /// Lifecycle status of the server-held encrypted Bull Bitcoin credential.

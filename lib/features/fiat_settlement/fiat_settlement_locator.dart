@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -54,7 +55,7 @@ class FiatSettlementLocator {
     );
     locator.registerFactory<HasBullBitcoinAccountUsecase>(
       () => HasBullBitcoinAccountUsecase(
-        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyRepository: locator<ExchangeApiKeyRepository>(),
         getSettings: locator<GetSettingsUsecase>(),
       ),
     );

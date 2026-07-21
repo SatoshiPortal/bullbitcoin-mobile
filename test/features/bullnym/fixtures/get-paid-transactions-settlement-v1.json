@@ -1,0 +1,115 @@
+{
+  "transactions": [
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000001",
+      "source": "lightning_address",
+      "invoice_id": null,
+      "amount_sat": 2100,
+      "received_at_unix": 1760000006,
+      "rail": "lightning",
+      "settlement_state": "settled",
+      "settlement_kind": "bitcoin",
+      "late": false
+    },
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000002",
+      "source": "invoice",
+      "invoice_id": "20000000-0000-4000-8000-000000000002",
+      "amount_sat": 2200,
+      "received_at_unix": 1760000005,
+      "rail": "liquid",
+      "settlement_state": "settled",
+      "settlement_kind": "bitcoin",
+      "late": false,
+      "fiat_conversion": {
+        "status": "overridden",
+        "reason": "below_minimum"
+      }
+    },
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000003",
+      "source": "payment_page",
+      "invoice_id": "20000000-0000-4000-8000-000000000003",
+      "amount_sat": 2300,
+      "received_at_unix": 1760000004,
+      "rail": "lightning",
+      "settlement_state": "pending",
+      "settlement_kind": "fiat",
+      "late": false,
+      "settlement_details": {
+        "kind": "fiat",
+        "fiat": [
+          {
+            "amount_minor": null,
+            "currency": "EUR",
+            "order_id": "40000000-0000-4000-8000-000000000003",
+            "status": "pending"
+          }
+        ]
+      }
+    },
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000004",
+      "source": "point_of_sale",
+      "invoice_id": "20000000-0000-4000-8000-000000000004",
+      "amount_sat": 2400,
+      "received_at_unix": 1760000003,
+      "rail": "bitcoin",
+      "settlement_state": "settled",
+      "settlement_kind": "fiat",
+      "late": false,
+      "settlement_details": {
+        "kind": "fiat",
+        "fiat": [
+          {
+            "amount_minor": 12345,
+            "currency": "CAD",
+            "order_id": "40000000-0000-4000-8000-000000000004",
+            "status": "settled"
+          }
+        ]
+      }
+    },
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000005",
+      "source": "invoice",
+      "invoice_id": "20000000-0000-4000-8000-000000000005",
+      "amount_sat": 100000,
+      "received_at_unix": 1760000002,
+      "rail": "lightning",
+      "settlement_state": "settled",
+      "settlement_kind": "mixed",
+      "late": false,
+      "settlement_details": {
+        "kind": "mixed",
+        "bitcoin": [
+          {
+            "amount_sat": 60000,
+            "network": "liquid",
+            "status": "settled"
+          }
+        ],
+        "fiat": [
+          {
+            "amount_minor": 12345,
+            "currency": "CAD",
+            "order_id": "40000000-0000-4000-8000-000000000005",
+            "status": "settled"
+          }
+        ]
+      }
+    },
+    {
+      "transaction_id": "10000000-0000-4000-8000-000000000006",
+      "source": "payment_page",
+      "invoice_id": "20000000-0000-4000-8000-000000000006",
+      "amount_sat": 2600,
+      "received_at_unix": 1760000001,
+      "rail": "liquid",
+      "settlement_state": "problem",
+      "settlement_kind": "unavailable",
+      "late": true
+    }
+  ],
+  "next_cursor": null
+}

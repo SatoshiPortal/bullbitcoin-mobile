@@ -57,32 +57,29 @@ void main() {
 
   group('saveApiKey', () {
     for (final isTestnet in [false, true]) {
-      test(
-        'stores the ordinary key then the valid same-user scoped key '
-        '(${isTestnet ? 'testnet' : 'production'})',
-        () async {
-          await repository.saveApiKey(_validResponse(), isTestnet: isTestnet);
+      test('stores the ordinary key then the valid same-user scoped key '
+          '(${isTestnet ? 'testnet' : 'production'})', () async {
+        await repository.saveApiKey(_validResponse(), isTestnet: isTestnet);
 
-          verifyInOrder([
-            () => datasource.store(
-              any(
-                that: isA<ExchangeApiKeyModel>()
-                    .having((m) => m.key, 'key', 'broad-secret')
-                    .having((m) => m.userId, 'userId', 'user-id'),
-              ),
-              isTestnet: isTestnet,
+        verifyInOrder([
+          () => datasource.store(
+            any(
+              that: isA<ExchangeApiKeyModel>()
+                  .having((m) => m.key, 'key', 'broad-secret')
+                  .having((m) => m.userId, 'userId', 'user-id'),
             ),
-            () => datasource.storeSellToFiatBalanceApiKey(
-              any(
-                that: isA<ScopedApiKeyModel>()
-                    .having((m) => m.userId, 'userId', 'user-id')
-                    .having((m) => m.key, 'key', _scopedKey),
-              ),
-              isTestnet: isTestnet,
+            isTestnet: isTestnet,
+          ),
+          () => datasource.storeSellToFiatBalanceApiKey(
+            any(
+              that: isA<ScopedApiKeyModel>()
+                  .having((m) => m.userId, 'userId', 'user-id')
+                  .having((m) => m.key, 'key', _scopedKey),
             ),
-          ]);
-        },
-      );
+            isTestnet: isTestnet,
+          ),
+        ]);
+      });
     }
 
     test('replaces an existing same-user scoped key', () async {
@@ -104,85 +101,100 @@ void main() {
       );
     });
 
-    test('preserves an existing same-user scoped key when field absent', () async {
-      when(
-        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
-      ).thenAnswer(
-        (_) async =>
-            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
-      );
+    test(
+      'preserves an existing same-user scoped key when field absent',
+      () async {
+        when(
+          () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+        ).thenAnswer(
+          (_) async =>
+              const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+        );
 
-      await repository.saveApiKey(
-        {'apiKey': _validBroadApiKey()},
-        isTestnet: false,
-      );
+        await repository.saveApiKey({
+          'apiKey': _validBroadApiKey(),
+        }, isTestnet: false);
 
-      verify(() => datasource.store(any(), isTestnet: false)).called(1);
-      verifyNever(
-        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-      );
-      verifyNever(
-        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
-      );
-    });
+        verify(() => datasource.store(any(), isTestnet: false)).called(1);
+        verifyNever(
+          () =>
+              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+        );
+        verifyNever(
+          () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+        );
+      },
+    );
 
-    test('preserves an existing same-user scoped key when field null', () async {
-      when(
-        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
-      ).thenAnswer(
-        (_) async =>
-            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
-      );
+    test(
+      'preserves an existing same-user scoped key when field null',
+      () async {
+        when(
+          () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+        ).thenAnswer(
+          (_) async =>
+              const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+        );
 
-      await repository.saveApiKey(
-        {'apiKey': _validBroadApiKey(), 'sellToFiatBalanceApiKey': null},
-        isTestnet: false,
-      );
+        await repository.saveApiKey({
+          'apiKey': _validBroadApiKey(),
+          'sellToFiatBalanceApiKey': null,
+        }, isTestnet: false);
 
-      verify(() => datasource.store(any(), isTestnet: false)).called(1);
-      verifyNever(
-        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-      );
-    });
+        verify(() => datasource.store(any(), isTestnet: false)).called(1);
+        verifyNever(
+          () =>
+              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+        );
+      },
+    );
 
-    test('does not store a malformed scoped value and preserves existing', () async {
-      when(
-        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
-      ).thenAnswer(
-        (_) async =>
-            const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
-      );
+    test(
+      'does not store a malformed scoped value and preserves existing',
+      () async {
+        when(
+          () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+        ).thenAnswer(
+          (_) async =>
+              const ScopedApiKeyModel(userId: 'user-id', key: _scopedKey),
+        );
 
-      await repository.saveApiKey(
-        {'apiKey': _validBroadApiKey(), 'sellToFiatBalanceApiKey': 'not-a-key'},
-        isTestnet: false,
-      );
+        await repository.saveApiKey({
+          'apiKey': _validBroadApiKey(),
+          'sellToFiatBalanceApiKey': 'not-a-key',
+        }, isTestnet: false);
 
-      verify(() => datasource.store(any(), isTestnet: false)).called(1);
-      verifyNever(
-        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-      );
-      verifyNever(
-        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
-      );
-    });
+        verify(() => datasource.store(any(), isTestnet: false)).called(1);
+        verifyNever(
+          () =>
+              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+        );
+        verifyNever(
+          () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+        );
+      },
+    );
 
-    test('removes a different-user scoped key before completing the switch', () async {
-      when(
-        () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
-      ).thenAnswer(
-        (_) async =>
-            const ScopedApiKeyModel(userId: 'other-user', key: _scopedKey),
-      );
+    test(
+      'removes a different-user scoped key before completing the switch',
+      () async {
+        when(
+          () => datasource.getSellToFiatBalanceApiKey(isTestnet: false),
+        ).thenAnswer(
+          (_) async =>
+              const ScopedApiKeyModel(userId: 'other-user', key: _scopedKey),
+        );
 
-      await repository.saveApiKey(_validResponse(), isTestnet: false);
+        await repository.saveApiKey(_validResponse(), isTestnet: false);
 
-      verifyInOrder([
-        () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
-        () => datasource.store(any(), isTestnet: false),
-        () => datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-      ]);
-    });
+        verifyInOrder([
+          () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
+          () => datasource.store(any(), isTestnet: false),
+          () =>
+              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
+        ]);
+      },
+    );
 
     test('ordinary login succeeds even when scoped storage fails', () async {
       when(
@@ -203,18 +215,23 @@ void main() {
     };
 
     for (final entry in invalidResponses.entries) {
-      test('${entry.key} throws a fixed import error and stores nothing', () async {
-        await expectLater(
-          repository.saveApiKey(entry.value, isTestnet: false),
-          throwsA(_fixedImportError),
-        );
+      test(
+        '${entry.key} throws a fixed import error and stores nothing',
+        () async {
+          await expectLater(
+            repository.saveApiKey(entry.value, isTestnet: false),
+            throwsA(_fixedImportError),
+          );
 
-        verifyNever(() => datasource.store(any(), isTestnet: false));
-        verifyNever(
-          () =>
-              datasource.storeSellToFiatBalanceApiKey(any(), isTestnet: false),
-        );
-      });
+          verifyNever(() => datasource.store(any(), isTestnet: false));
+          verifyNever(
+            () => datasource.storeSellToFiatBalanceApiKey(
+              any(),
+              isTestnet: false,
+            ),
+          );
+        },
+      );
     }
   });
 
@@ -258,6 +275,24 @@ void main() {
       verify(
         () => datasource.deleteSellToFiatBalanceApiKey(isTestnet: false),
       ).called(1);
+    });
+  });
+
+  group('hasApiKey', () {
+    test('reports true when a key is stored for the environment', () async {
+      when(
+        () => datasource.get(isTestnet: false),
+      ).thenAnswer((_) async => _FakeExchangeApiKeyModel());
+
+      expect(await repository.hasApiKey(isTestnet: false), isTrue);
+      verify(() => datasource.get(isTestnet: false)).called(1);
+    });
+
+    test('reports false when no key is stored', () async {
+      when(() => datasource.get(isTestnet: true)).thenAnswer((_) async => null);
+
+      expect(await repository.hasApiKey(isTestnet: true), isFalse);
+      verify(() => datasource.get(isTestnet: true)).called(1);
     });
   });
 }

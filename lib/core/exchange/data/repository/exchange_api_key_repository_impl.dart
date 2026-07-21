@@ -78,7 +78,10 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     // Anything non-string is treated as malformed: preserve, never store.
     if (scopedValue is! String) return;
 
-    final candidate = ScopedApiKeyModel(userId: userId, key: scopedValue.trim());
+    final candidate = ScopedApiKeyModel(
+      userId: userId,
+      key: scopedValue.trim(),
+    );
     // Malformed value: do not store it; preserve a same-user existing key and
     // never log the supplied value.
     if (!candidate.isWellFormed) return;
@@ -93,6 +96,12 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
       // until the next successful import. Never surface or log the value.
       log.warning('Unable to store scoped Bull Bitcoin credential');
     }
+  }
+
+  @override
+  Future<bool> hasApiKey({required bool isTestnet}) async {
+    final key = await _bullbitcoinApiKeyDatasource.get(isTestnet: isTestnet);
+    return key != null;
   }
 
   @override
