@@ -94,31 +94,28 @@ void main() {
     });
   }
 
-  test(
-    'normal edit succeeds without any key read or transmission',
-    () async {
-      stubSet(withoutKey: const Ok(_okConfig));
+  test('normal edit succeeds without any key read or transmission', () async {
+    stubSet(withoutKey: const Ok(_okConfig));
 
-      final result = await usecase.execute(
-        product: FiatSettlementProduct.paymentPage,
+    final result = await usecase.execute(
+      product: FiatSettlementProduct.paymentPage,
+      fiatPercentage: 50,
+      currency: FiatCurrency.cad,
+    );
+
+    expect(result, isA<Ok>());
+    verifyNever(() => scopedKey.readPlaintext());
+    final captured = verify(
+      () => bullnym.setFiatSettlement(
+        signer: any(named: 'signer'),
+        product: BullnymFiatSettlementProduct.paymentPage,
         fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-
-      expect(result, isA<Ok>());
-      verifyNever(() => scopedKey.readPlaintext());
-      final captured = verify(
-        () => bullnym.setFiatSettlement(
-          signer: any(named: 'signer'),
-          product: BullnymFiatSettlementProduct.paymentPage,
-          fiatPercentage: 50,
-          fiatCurrency: 'CAD',
-          apiKey: captureAny(named: 'apiKey'),
-        ),
-      ).captured;
-      expect(captured.single, isNull);
-    },
-  );
+        fiatCurrency: 'CAD',
+        apiKey: captureAny(named: 'apiKey'),
+      ),
+    ).captured;
+    expect(captured.single, isNull);
+  });
 
   test(
     'BULL_BITCOIN_CREDENTIAL_REQUIRED triggers exactly one retry with the local key',

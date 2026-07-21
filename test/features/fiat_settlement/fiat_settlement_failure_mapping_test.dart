@@ -85,7 +85,10 @@ void main() {
 
   group('entities', () {
     test('mode derives from percentage at the boundaries', () {
-      expect(fiatSettlementModeForPercentage(0), FiatSettlementMode.bitcoinOnly);
+      expect(
+        fiatSettlementModeForPercentage(0),
+        FiatSettlementMode.bitcoinOnly,
+      );
       expect(fiatSettlementModeForPercentage(1), FiatSettlementMode.mixed);
       expect(fiatSettlementModeForPercentage(99), FiatSettlementMode.mixed);
       expect(fiatSettlementModeForPercentage(100), FiatSettlementMode.fiatOnly);
@@ -98,10 +101,15 @@ void main() {
     });
 
     test('currency codes cover exactly the seven approved currencies', () {
-      expect(
-        FiatCurrency.values.map((c) => c.code).toList(),
-        ['CAD', 'EUR', 'MXN', 'CRC', 'COP', 'ARS', 'USD'],
-      );
+      expect(FiatCurrency.values.map((c) => c.code).toList(), [
+        'CAD',
+        'EUR',
+        'MXN',
+        'CRC',
+        'COP',
+        'ARS',
+        'USD',
+      ]);
       expect(FiatCurrency.fromCode('EUR'), FiatCurrency.eur);
       expect(FiatCurrency.fromCode('ZZZ'), isNull);
     });

@@ -16,7 +16,9 @@ class _Captured {
   final List<RequestOptions> requests = [];
 }
 
-({Dio dio, _Captured captured}) _stubDio(List<({Object? body, int status})> responses) {
+({Dio dio, _Captured captured}) _stubDio(
+  List<({Object? body, int status})> responses,
+) {
   final captured = _Captured();
   final adapter = _MockHttpAdapter();
   final dio = Dio(
@@ -240,38 +242,52 @@ void main() {
       expect(data['fiat_percentage'], 0);
     });
 
-    test('rejects a 0% request that carries a currency before any I/O', () async {
-      final stub = _stubDio(const []);
-      final client = BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp);
+    test(
+      'rejects a 0% request that carries a currency before any I/O',
+      () async {
+        final stub = _stubDio(const []);
+        final client = BullnymHttpClient.withDio(
+          stub.dio,
+          nowSecs: () => timestamp,
+        );
 
-      final result = await client.setFiatSettlement(
-        signer: signer,
-        product: BullnymFiatSettlementProduct.pos,
-        fiatPercentage: 0,
-        fiatCurrency: 'CAD',
-      );
-      final failure = (result
-              as Err<BullnymFiatSettlementConfiguration, BullnymFailure>)
-          .failure;
-      expect(failure.kind, BullnymFailureKind.invalidInput);
-      expect(signedHashes, isEmpty);
-      expect(stub.captured.requests, isEmpty);
-    });
+        final result = await client.setFiatSettlement(
+          signer: signer,
+          product: BullnymFiatSettlementProduct.pos,
+          fiatPercentage: 0,
+          fiatCurrency: 'CAD',
+        );
+        final failure =
+            (result as Err<BullnymFiatSettlementConfiguration, BullnymFailure>)
+                .failure;
+        expect(failure.kind, BullnymFailureKind.invalidInput);
+        expect(signedHashes, isEmpty);
+        expect(stub.captured.requests, isEmpty);
+      },
+    );
 
-    test('rejects a nonzero request without a currency before any I/O', () async {
-      final stub = _stubDio(const []);
-      final client = BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp);
+    test(
+      'rejects a nonzero request without a currency before any I/O',
+      () async {
+        final stub = _stubDio(const []);
+        final client = BullnymHttpClient.withDio(
+          stub.dio,
+          nowSecs: () => timestamp,
+        );
 
-      final result = await client.setFiatSettlement(
-        signer: signer,
-        product: BullnymFiatSettlementProduct.pos,
-        fiatPercentage: 50,
-      );
-      expect(((result as Err).failure as BullnymFailure).kind,
-          BullnymFailureKind.invalidInput);
-      expect(signedHashes, isEmpty);
-      expect(stub.captured.requests, isEmpty);
-    });
+        final result = await client.setFiatSettlement(
+          signer: signer,
+          product: BullnymFiatSettlementProduct.pos,
+          fiatPercentage: 50,
+        );
+        expect(
+          ((result as Err).failure as BullnymFailure).kind,
+          BullnymFailureKind.invalidInput,
+        );
+        expect(signedHashes, isEmpty);
+        expect(stub.captured.requests, isEmpty);
+      },
+    );
 
     for (final code in const [
       'FIAT_CONVERSION_KYC_REQUIRED',
@@ -285,8 +301,10 @@ void main() {
             status: 200,
           ),
         ]);
-        final client =
-            BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp);
+        final client = BullnymHttpClient.withDio(
+          stub.dio,
+          nowSecs: () => timestamp,
+        );
 
         final result = await client.setFiatSettlement(
           signer: signer,
@@ -312,8 +330,10 @@ void main() {
           status: 503,
         ),
       ]);
-      final client =
-          BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp);
+      final client = BullnymHttpClient.withDio(
+        stub.dio,
+        nowSecs: () => timestamp,
+      );
 
       final result = await client.setFiatSettlement(
         signer: signer,
@@ -360,7 +380,8 @@ void main() {
       );
       expect(config.settings, hasLength(1));
       expect(
-        config.settingFor(BullnymFiatSettlementProduct.lightningAddress)!
+        config
+            .settingFor(BullnymFiatSettlementProduct.lightningAddress)!
             .fiatPercentage,
         25,
       );
@@ -370,9 +391,7 @@ void main() {
     });
 
     test('degrades a 404 (old server) to an empty configuration', () async {
-      final stub = _stubDio([
-        (body: <String, dynamic>{}, status: 404),
-      ]);
+      final stub = _stubDio([(body: <String, dynamic>{}, status: 404)]);
       final facade = BullnymFacade(
         client: BullnymHttpClient.withDio(stub.dio, nowSecs: () => timestamp),
       );

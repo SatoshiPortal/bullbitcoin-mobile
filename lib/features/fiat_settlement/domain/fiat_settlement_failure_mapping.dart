@@ -6,8 +6,10 @@ import 'package:bb_mobile/features/fiat_settlement/domain/fiat_settlement_failur
 /// credential codes are the `BULL_BITCOIN_*` names the server emits; KYC is
 /// `FIAT_CONVERSION_KYC_REQUIRED`.
 const String fiatSettlementKycRequiredCode = 'FIAT_CONVERSION_KYC_REQUIRED';
-const String fiatSettlementCredentialRequiredCode = 'BULL_BITCOIN_CREDENTIAL_REQUIRED';
-const String fiatSettlementCredentialInvalidCode = 'BULL_BITCOIN_CREDENTIAL_INVALID';
+const String fiatSettlementCredentialRequiredCode =
+    'BULL_BITCOIN_CREDENTIAL_REQUIRED';
+const String fiatSettlementCredentialInvalidCode =
+    'BULL_BITCOIN_CREDENTIAL_INVALID';
 
 /// Maps a transport-level [BullnymFailure] to the closed feature failure set,
 /// preserving exactly the distinctions the validated error outcomes require:

@@ -125,74 +125,83 @@ Future<void> main({bool isInitialized = false}) async {
     expect(bullnym.fiatCredentialStatus, BullnymCredentialStatus.active);
   });
 
-  test('key-on-demand: BULL_BITCOIN_CREDENTIAL_REQUIRED triggers exactly one retry '
-      'carrying the locally stored scoped key', () async {
-    bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
-    bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
-    await storeScopedKey();
+  test(
+    'key-on-demand: BULL_BITCOIN_CREDENTIAL_REQUIRED triggers exactly one retry '
+    'carrying the locally stored scoped key',
+    () async {
+      bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
+      bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
+      await storeScopedKey();
 
-    final result = await locator<FiatSettlementFacade>().set(
-      product: FiatSettlementProduct.pos,
-      fiatPercentage: 100,
-      currency: FiatCurrency.usd,
-    );
-    final view = switch (result) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail('set failed: $failure'),
-    };
-    expect(
-      view.configFor(FiatSettlementProduct.pos).mode,
-      FiatSettlementMode.fiatOnly,
-    );
+      final result = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.pos,
+        fiatPercentage: 100,
+        currency: FiatCurrency.usd,
+      );
+      final view = switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('set failed: $failure'),
+      };
+      expect(
+        view.configFor(FiatSettlementProduct.pos).mode,
+        FiatSettlementMode.fiatOnly,
+      );
 
-    // The wire order IS the contract: keyless first, keyed retry second,
-    // nothing after.
-    expect(bullnym.setFiatSettlementCalls, hasLength(2));
-    expect(bullnym.setFiatSettlementCalls[0].apiKey, isNull);
-    expect(bullnym.setFiatSettlementCalls[1].apiKey, _scopedKeyPlaintext);
-    expect(bullnym.fiatCredentialStatus, BullnymCredentialStatus.active);
+      // The wire order IS the contract: keyless first, keyed retry second,
+      // nothing after.
+      expect(bullnym.setFiatSettlementCalls, hasLength(2));
+      expect(bullnym.setFiatSettlementCalls[0].apiKey, isNull);
+      expect(bullnym.setFiatSettlementCalls[1].apiKey, _scopedKeyPlaintext);
+      expect(bullnym.fiatCredentialStatus, BullnymCredentialStatus.active);
 
-    await clearScopedKey();
-  });
+      await clearScopedKey();
+    },
+  );
 
-  test('no local key on BULL_BITCOIN_CREDENTIAL_REQUIRED -> credentialProblem with '
-      'no blind keyless retry', () async {
-    bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
-    bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
-    await clearScopedKey();
+  test(
+    'no local key on BULL_BITCOIN_CREDENTIAL_REQUIRED -> credentialProblem with '
+    'no blind keyless retry',
+    () async {
+      bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
+      bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
+      await clearScopedKey();
 
-    final result = await locator<FiatSettlementFacade>().set(
-      product: FiatSettlementProduct.lightningAddress,
-      fiatPercentage: 25,
-      currency: FiatCurrency.crc,
-    );
-    expect(result, isA<Err<dynamic, dynamic>>());
-    expect(
-      (result as Err).failure,
-      const FiatSettlementFailure.credentialProblem(),
-    );
-    expect(bullnym.setFiatSettlementCalls, hasLength(1));
-  });
+      final result = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.lightningAddress,
+        fiatPercentage: 25,
+        currency: FiatCurrency.crc,
+      );
+      expect(result, isA<Err<dynamic, dynamic>>());
+      expect(
+        (result as Err).failure,
+        const FiatSettlementFailure.credentialProblem(),
+      );
+      expect(bullnym.setFiatSettlementCalls, hasLength(1));
+    },
+  );
 
-  test('rejected key (BULL_BITCOIN_CREDENTIAL_INVALID) -> credentialProblem after '
-      'exactly one keyed retry', () async {
-    bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialInvalid;
-    await storeScopedKey();
+  test(
+    'rejected key (BULL_BITCOIN_CREDENTIAL_INVALID) -> credentialProblem after '
+    'exactly one keyed retry',
+    () async {
+      bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialInvalid;
+      await storeScopedKey();
 
-    final result = await locator<FiatSettlementFacade>().set(
-      product: FiatSettlementProduct.invoice,
-      fiatPercentage: 10,
-      currency: FiatCurrency.eur,
-    );
-    expect(
-      (result as Err).failure,
-      const FiatSettlementFailure.credentialProblem(),
-    );
-    expect(bullnym.setFiatSettlementCalls, hasLength(2));
-    expect(bullnym.setFiatSettlementCalls[1].apiKey, _scopedKeyPlaintext);
+      final result = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.invoice,
+        fiatPercentage: 10,
+        currency: FiatCurrency.eur,
+      );
+      expect(
+        (result as Err).failure,
+        const FiatSettlementFailure.credentialProblem(),
+      );
+      expect(bullnym.setFiatSettlementCalls, hasLength(2));
+      expect(bullnym.setFiatSettlementCalls[1].apiKey, _scopedKeyPlaintext);
 
-    await clearScopedKey();
-  });
+      await clearScopedKey();
+    },
+  );
 
   test('stable code mapping: KYC and dependency-503 map to their exact '
       'failures (distinct action sets)', () async {
