@@ -713,7 +713,25 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  stale txid on a terminal session pollutes fetchByTxId / the details
       //  screen (same display-hygiene reason _broadcastOriginalTransaction
       //  clears it on the abort path).
-      final failedModel = payjoinModel.copyWith(isExpired: true, txId: null);
+      //
+      // Re-fetch and bail on terminal first: the sign/broadcast attempt
+      //  above took a real network round-trip, during which the fallback
+      //  watcher could have marked this same session aborted (the original
+      //  landing on-chain is exactly what makes the payjoin broadcast fail
+      //  on already-spent inputs, and the original re-broadcast fail as
+      //  already-known). Persisting from the stale `payjoinModel` here would
+      //  overwrite that correct `aborted` outcome with `expired`.
+      final freshModel = await _localPayjoinDatasource.fetchSender(
+        payjoinModel.id,
+      );
+      if (freshModel != null &&
+          (freshModel.isCompleted || freshModel.isAborted)) {
+        return;
+      }
+      final failedModel = (freshModel ?? payjoinModel).copyWith(
+        isExpired: true,
+        txId: null,
+      );
       await _localPayjoinDatasource.update(failedModel);
       _payjoinStreamController.add(failedModel.toEntity());
     }
@@ -825,6 +843,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           walletId: expiredModel.walletId,
           txId: expiredModel.txId!,
         );
+        // Same reasoning as _resumeOne's equivalent receiver branch: the
+        //  sender could independently fall back to the original transaction
+        //  instead of finalizing the real payjoin, and this receiver would
+        //  otherwise have no way to find out — it only watches the payjoin
+        //  txid above. Without this, a receiver resumed here stays marked
+        //  expired forever despite having actually been paid via the
+        //  sender's fallback.
+        if (expiredModel.originalTxId != null) {
+          _watchForFallback(
+            payjoinId: expiredModel.id,
+            walletId: expiredModel.walletId,
+            originalTxId: expiredModel.originalTxId!,
+          );
+        }
       }
 
       // Nothing left for us to retry from this side, so persist the expired
@@ -836,6 +868,25 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<void> resumePayjoinsOnStartup() async {
+    // The whole body is inside this try/catch: this method is invoked as
+    //  `unawaited(...)` from AppLocator.setup, so anything that throws here
+    //  (e.g. the DB not yet ready, a fetch failing) would otherwise surface
+    //  as an unhandled zone error during app startup instead of a logged,
+    //  contained failure. Per-session failures inside the resume loop below
+    //  are already isolated by their own try/catch; this outer one covers
+    //  the sweep queries and loops themselves.
+    try {
+      await _resumePayjoinsOnStartupUnguarded();
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to resume payjoin sessions on startup',
+        error: e,
+        trace: st,
+      );
+    }
+  }
+
+  Future<void> _resumePayjoinsOnStartupUnguarded() async {
     // Sweep receivers whose expiry-time fallback broadcast FAILED on a
     // previous run and were persisted as expired (e.g. by pre-port code that
     // persisted isExpired before broadcasting): the onlyUnfinished resume
@@ -855,6 +906,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           receiver.originalTxBytes != null &&
           receiver.proposalPsbt == null) {
         await _broadcastOriginalTransaction(receiver.toEntity());
+        // Arm the fallback watch regardless of the attempt's outcome above:
+        //  _broadcastOriginalTransaction only arms it on SUCCESS. If it
+        //  failed because the tx is already on-chain (the other side beat
+        //  us to broadcasting it) rather than a transient error, this row
+        //  would otherwise never be marked aborted and this sweep would
+        //  retry — and log SEVERE — on every subsequent app start
+        //  indefinitely. Idempotent: a no-op if already armed by a
+        //  successful attempt above.
+        if (receiver.originalTxId != null) {
+          _watchForFallback(
+            payjoinId: receiver.id,
+            walletId: receiver.walletId,
+            originalTxId: receiver.originalTxId!,
+          );
+        }
       }
     }
 
@@ -869,6 +935,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           !sender.isCompleted &&
           sender.proposalPsbt == null) {
         await _broadcastOriginalTransaction(sender.toEntity());
+        // Same reasoning as the receiver sweep above: converge a failed
+        //  attempt (e.g. already on-chain via the other side) via the
+        //  fallback watch instead of retrying forever. A sender's
+        //  originalTxId is always present (set at session creation).
+        _watchForFallback(
+          payjoinId: sender.id,
+          walletId: sender.walletId,
+          originalTxId: sender.originalTxId,
+        );
       }
     }
 
@@ -993,6 +1068,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         payjoin.id,
       );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
+      // Re-check terminal state under the lock: a manual "receive payment
+      //  normally" tap (allowed by canManuallyBroadcastOriginal while
+      //  proposalPsbt == null) or the fallback watcher could have resolved
+      //  this session while we were awaiting getUtxosFrozenByOngoingPayjoins
+      //  above. Without this, an already-aborted/completed/expired row would
+      //  be resurrected to `proposed` by the update below.
+      if (freshModel.isCompleted ||
+          freshModel.isAborted ||
+          freshModel.isExpired) {
+        log.warning(
+          'Skipping payjoin proposal for ${freshModel.toEntity().logRef}: '
+          'session already resolved (${freshModel.status})',
+        );
+        return null;
+      }
 
       final isMineSync = await _bdkWallet.createIsMineChecker(wallet: wallet);
       final signPsbtSync = await _bdkWallet.createPsbtSigner(wallet: wallet);
