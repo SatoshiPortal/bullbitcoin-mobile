@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -352,17 +351,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
       if (model.isExpiryTimePassed) {
-        // If the payjoin is expired, we should update the model and
-        //  store it as expired so it won't be processed again unnecessarily.
-        final updatedModel = model.copyWith(isExpired: true);
-        await _localPayjoinDatasource.update(updatedModel);
-        // Notify the repository layers that the payjoin has expired
-        _payjoinStreamController.add(model.toEntity());
+        // A session whose expiry elapsed while the app was closed. Route it
+        //  through the same handler as a live expiry so the receiver's
+        //  original-transaction fallback still fires — otherwise an
+        //  expired-while-closed receiver that already had the sender's
+        //  original tx would silently drop it, leaving the sender's payment
+        //  in limbo (neither payjoin nor fallback ever hits the chain).
+        await _processExpiredPayjoin(model.copyWith(isExpired: true));
       } else if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender.
-          await _pdkPayjoinDatasource.startListeningForRequest(model);
+          _pdkPayjoinDatasource.startListeningForRequest(model);
         } else if (model.proposalPsbt == null) {
           // If the original tx bytes are present but the proposal psbt is not,
           //  it means the receiver has already received a payjoin request and
@@ -375,7 +375,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.proposalPsbt == null) {
           // If the proposal psbt is not present, it means the sender needs to
           //  listen for a payjoin proposal from the receiver.
-          await _pdkPayjoinDatasource.startListeningForProposal(model);
+          _pdkPayjoinDatasource.startListeningForProposal(model);
         } else {
           // If the proposal psbt is present, it means a payjoin proposal was
           //  already received  and it should be processed.
@@ -423,16 +423,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
 
-      final bdkWallet = await BdkFacade.createWallet(wallet);
-
+      final isMineSync = await _bdkWallet.createIsMineChecker(wallet: wallet);
+      final signPsbtSync = await _bdkWallet.createPsbtSigner(wallet: wallet);
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        hasOwnedInputs: (script) =>
-            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
-        hasReceiverOutput: (script) =>
-            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
+        hasOwnedInputs: isMineSync,
+        hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
-        processPsbt: (psbt) => _bdkWallet.signPsbt(psbt, wallet: wallet),
+        processPsbt: signPsbtSync,
       );
 
       await _localPayjoinDatasource.update(updatedModel);

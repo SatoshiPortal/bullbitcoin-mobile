@@ -17,7 +17,6 @@ abstract class PayjoinInputPairModel with _$PayjoinInputPairModel {
     required Uint8List scriptPubkey,
     @Default([]) List<int> redeemScriptRawOutputScript,
     @Default([]) List<int> witnessScriptRawOutputScript,
-    required,
   }) = _PayjoinInputPairModel;
   const PayjoinInputPairModel._();
 
