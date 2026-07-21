@@ -269,7 +269,13 @@ void main() {
           .map((p) => p.step)
           .toList();
 
-      expect(steps, [JoinstrRoundStep.connecting, JoinstrRoundStep.done]);
+      // The usecase yields an initial connecting update carrying the output
+      // address before forwarding the datasource stream.
+      expect(steps, [
+        JoinstrRoundStep.connecting,
+        JoinstrRoundStep.connecting,
+        JoinstrRoundStep.done,
+      ]);
       final entry =
           verify(() => store.appendHistory(captureAny())).captured.single
               as JoinstrHistoryEntry;

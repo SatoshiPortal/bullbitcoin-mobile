@@ -190,6 +190,9 @@ class JoinstrDatasource {
           step: _step(u.step),
           txId: u.txid,
           errorMessage: u.error,
+          outputEventId: u.outputEventId,
+          inputEventId: u.inputEventId,
+          psbt: u.psbt,
         );
       }
     } on jns.JoinstrError catch (e) {

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/joinstr_round_history.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 
@@ -50,6 +51,13 @@ class InitiateJoinstrPoolUsecase {
     log.info(
       'Joinstr initiating pool: $denominationSat sat, $peers peers, '
       '${feeRateSatPerVb}s/vB, input $inputOutpoint',
+    );
+
+    // Surface the output address up front so the timeline can show it from the
+    // start; the datasource stream then carries the event ids, psbt and txid.
+    yield JoinstrProgress(
+      step: JoinstrRoundStep.connecting,
+      outputAddress: address.address,
     );
 
     yield* recordHistoryOnDone(

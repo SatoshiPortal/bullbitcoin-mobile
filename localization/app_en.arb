@@ -562,6 +562,24 @@
       }
     }
   },
+  "joinstrEventIdLine": "Event id: {id}",
+  "@joinstrEventIdLine": {
+    "description": "Timeline line showing a nostr event id acknowledging a registration",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrPsbtLine": "PSBT: {psbt}",
+  "@joinstrPsbtLine": {
+    "description": "Timeline line showing the finalized coinjoin psbt",
+    "placeholders": {
+      "psbt": {
+        "type": "String"
+      }
+    }
+  },
   "joinstrStepMined": "Broadcast Tx",
   "@joinstrStepMined": {
     "description": "Coinjoin timeline step"

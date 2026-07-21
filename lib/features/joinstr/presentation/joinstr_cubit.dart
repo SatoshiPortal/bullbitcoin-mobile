@@ -234,6 +234,14 @@ class JoinstrCubit extends Cubit<JoinstrState> {
 
     try {
       await for (final p in progress) {
+        // Accumulate the timeline detail (never clearing a value already seen)
+        // so every later update carries the output address, event ids and psbt.
+        current = current.copyWith(
+          outputAddress: p.outputAddress ?? current.outputAddress,
+          outputEventId: p.outputEventId ?? current.outputEventId,
+          inputEventId: p.inputEventId ?? current.inputEventId,
+          psbt: p.psbt ?? current.psbt,
+        );
         if (p.step == JoinstrRoundStep.done) {
           final txId = p.txId;
           // A done update without a txid must not render as a broadcast

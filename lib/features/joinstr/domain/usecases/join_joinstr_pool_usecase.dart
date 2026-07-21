@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/joinstr/data/joinstr_datasource.dart';
 import 'package:bb_mobile/features/joinstr/data/joinstr_store.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr.dart';
 import 'package:bb_mobile/features/joinstr/domain/joinstr_progress.dart';
+import 'package:bb_mobile/features/joinstr/domain/joinstr_round.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/joinstr_round_history.dart';
 import 'package:bb_mobile/features/joinstr/domain/usecases/resolve_joinstr_node_context_usecase.dart';
 
@@ -39,6 +40,12 @@ class JoinJoinstrPoolUsecase {
     log.info(
       'Joinstr joining pool ${pool.id}: '
       '${pool.denominationSat} sat, ${pool.peers} peers, input $inputOutpoint',
+    );
+
+    // Surface the output address up front for the timeline.
+    yield JoinstrProgress(
+      step: JoinstrRoundStep.connecting,
+      outputAddress: address.address,
     );
 
     yield* recordHistoryOnDone(

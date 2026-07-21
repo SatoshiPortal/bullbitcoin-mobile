@@ -636,23 +636,40 @@ String _stepDescription(
   BuildContext context,
   JoinstrRoundStep step,
   JoinstrRound round,
-) => switch (step) {
-  JoinstrRoundStep.posting => round.initiated
-      ? context.loc.joinstrStepPostingDesc
-      : context.loc.joinstrStepJoinPoolDesc,
-  JoinstrRoundStep.outputRegistration =>
-    context.loc.joinstrStepOutputRegistrationDesc,
-  JoinstrRoundStep.inputRegistration => context.loc
-      .joinstrStepInputRegistrationDesc(round.inputOutpoint),
-  JoinstrRoundStep.broadcast => context.loc.joinstrStepBroadcastDesc,
-  JoinstrRoundStep.mined => round.txId != null
-      ? context.loc.joinstrStepMinedDesc(round.txId!)
-      : '',
-  JoinstrRoundStep.connecting ||
-  JoinstrRoundStep.done ||
-  JoinstrRoundStep.failed ||
-  JoinstrRoundStep.other => '',
-};
+) {
+  final loc = context.loc;
+  switch (step) {
+    case JoinstrRoundStep.posting:
+      return round.initiated
+          ? loc.joinstrStepPostingDesc
+          : loc.joinstrStepJoinPoolDesc;
+    case JoinstrRoundStep.outputRegistration:
+      final lines = [
+        round.outputAddress ?? loc.joinstrStepOutputRegistrationDesc,
+        if (round.outputEventId != null)
+          loc.joinstrEventIdLine(round.outputEventId!),
+      ];
+      return lines.join('\n');
+    case JoinstrRoundStep.inputRegistration:
+      final lines = [
+        loc.joinstrStepInputRegistrationDesc(round.inputOutpoint),
+        if (round.inputEventId != null)
+          loc.joinstrEventIdLine(round.inputEventId!),
+      ];
+      return lines.join('\n');
+    case JoinstrRoundStep.broadcast:
+      return round.psbt != null
+          ? loc.joinstrPsbtLine(round.psbt!)
+          : loc.joinstrStepBroadcastDesc;
+    case JoinstrRoundStep.mined:
+      return round.txId != null ? loc.joinstrStepMinedDesc(round.txId!) : '';
+    case JoinstrRoundStep.connecting:
+    case JoinstrRoundStep.done:
+    case JoinstrRoundStep.failed:
+    case JoinstrRoundStep.other:
+      return '';
+  }
+}
 
 class _OtherPoolsTab extends StatelessWidget {
   const _OtherPoolsTab({required this.state});

@@ -55,6 +55,14 @@ abstract class JoinstrRound with _$JoinstrRound {
     @Default(JoinstrRoundStep.connecting) JoinstrRoundStep step,
     String? txId,
     JoinstrException? error,
+
+    /// Timeline detail, filled in as the round advances: the output address this
+    /// round registered, the relay event ids acknowledging the output and input
+    /// registrations, and the finalized psbt.
+    String? outputAddress,
+    String? outputEventId,
+    String? inputEventId,
+    String? psbt,
   }) = _JoinstrRound;
 
   const JoinstrRound._();
