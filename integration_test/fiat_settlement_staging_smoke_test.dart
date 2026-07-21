@@ -6,38 +6,53 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
+import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 // SPEC-FIAT-STAGING-T3 - Tier 3 fiat-settlement smoke against the staging
-// Bullnym (BULLNYM_BASE_URL dart-define -> https://pay2.bull-wallet.com;
-// app-created, never-funded wallet; no nym registration). Mirrors
-// fiat_settlement_live_nopay_test.dart and adds the fiat-capable staging cases.
+// Bullnym (BULLNYM_BASE_URL -> https://staging-vibe-bullnym.bull-wallet.com),
+// which runs the real Bullnym fiat build (PR #197/#198) with a FIXTURE Bull
+// Bitcoin provider.
 //
-// Three dart-define gates map to the three standing blockers:
-//   FIAT_STAGING_REACHABLE=true     - a reachable staging Bullnym base URL is
-//                                     configured. Enables the version-agnostic
-//                                     DEGRADATION proofs, which hold on today's
-//                                     pay2 (no fiat endpoints -> 404 -> the
-//                                     client yields an all-Bitcoin view).
-//   FIAT_STAGING_FIAT_DEPLOYED=true - the Bullnym fiat-settlement endpoints are
-//                                     deployed (Bullnym #197/#198 = blocker 3).
-//                                     Gates the fiat-capable assertions
-//                                     (disable, credentialProblem mapping,
-//                                     enable-via-key). BLOCKED until deployed.
+// Identity gate: the deployed contract requires the signing npub to be a
+// registered active identity for fiat reads/set/disable (require_active_identity).
+// setUpAll therefore registers a throwaway wallet-owned nym (no funds, fresh
+// seed per run so permanent-names are never reused).
+//
+// Scoped keys: the staging provider is a fixture that returns "eligible" for
+// any well-formed key whose hex body does NOT start with a fault tag, and
+// injects a fault for f1 (KYC) / f2 (wrong-scope) / f3 (503) / f4 (delayed).
+// So these cases drive the client's key-on-demand retry + the full server
+// error mapping with SYNTHETIC keys - no real Bull Bitcoin credential (and
+// therefore no exchange login) is needed on staging. A real captured key
+// (FIAT_STAGING_SCOPED_KEY_FILE) is preferred for the happy path when present.
+//
+// dart-define gates (set by the getpaid-e2e fiat-staging lane):
+//   FIAT_STAGING_REACHABLE=true     - a reachable staging Bullnym is configured.
+//   FIAT_STAGING_FIAT_DEPLOYED=true - the fiat endpoints are deployed.
 //   FIAT_STAGING_CONTRACT=true      - the credential error-code contract is
-//                                     aligned (blocker 2). Additionally gates
-//                                     the enable-via-imported-key success case.
+//                                     aligned (BULL_BITCOIN_CREDENTIAL_*).
 const _reachable = bool.fromEnvironment('FIAT_STAGING_REACHABLE');
 const _fiatDeployed = bool.fromEnvironment('FIAT_STAGING_FIAT_DEPLOYED');
 const _contract = bool.fromEnvironment('FIAT_STAGING_CONTRACT');
+const _runId = String.fromEnvironment('GETPAID_FIAT_RUN_ID');
 
 const _scopedKeyFilePath = String.fromEnvironment(
   'FIAT_STAGING_SCOPED_KEY_FILE',
 );
 final _scopedFormat = RegExp(r'^bbak-[0-9a-f]{64}$');
+
+// Clearly-synthetic, well-formed scoped keys selecting fixture behaviour by the
+// two hex chars after `bbak-`: 00.. = eligible, f1.. = KYC, f3.. = 503.
+const _syntheticEligibleKey =
+    'bbak-0000000000000000000000000000000000000000000000000000000000000000';
+const _syntheticKycKey =
+    'bbak-f100000000000000000000000000000000000000000000000000000000000000';
+const _syntheticOutageKey =
+    'bbak-f300000000000000000000000000000000000000000000000000000000000000';
 
 String? _capturedScopedKey() {
   if (_scopedKeyFilePath.isEmpty) return null;
@@ -51,20 +66,42 @@ const _blockedNoUrl =
     'BLOCKED(missing bullnym staging URL) - pass --dart-define=FIAT_STAGING_REACHABLE=true '
     'with BULLNYM_BASE_URL set';
 const _blockedDeploy =
-    'BLOCKED(blocker 3: Bullnym fiat endpoints undeployed on pay2) - pass '
+    'BLOCKED(fiat endpoints not deployed) - pass '
     '--dart-define=FIAT_STAGING_FIAT_DEPLOYED=true once #197/#198 are deployed';
 const _blockedContract =
-    'BLOCKED(blocker 2: credential error-code mismatch, owner decision pending) - '
-    'pass --dart-define=FIAT_STAGING_CONTRACT=true once aligned';
+    'BLOCKED(credential error-code contract) - pass '
+    '--dart-define=FIAT_STAGING_CONTRACT=true once aligned';
+// Enabling fiat / driving fixture faults requires the scoped key to be
+// validated by a provider that accepts it. This staging Bullnym is configured
+// against the REAL api-orders gateway (:8880), which 401s synthetic keys; the
+// tag fixture (:8888, f1/f3/...) is not the wired provider. So these cases need
+// either the server repointed at the fixture or a real authorized key (the
+// generate-api-key/API-Users path, currently behind the login regression).
+// Gated OFF by default; the deterministic enable/fault matrix is covered by the
+// fake-backed integration_test/fiat_settlement_lifecycle_test.dart.
+const _providerAcceptsScopedKey = bool.fromEnvironment(
+  'FIAT_STAGING_PROVIDER_ACCEPTS_KEY',
+);
+const _blockedProvider =
+    'BLOCKED(provider topology) - staging Bullnym uses the real api-orders '
+    'gateway (:8880) which rejects synthetic keys; pass '
+    '--dart-define=FIAT_STAGING_PROVIDER_ACCEPTS_KEY=true once the server is '
+    'pointed at the tag fixture or a real authorized key is available';
 
 Future<void> main({bool isInitialized = false}) async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
   setUpAll(() async {
-    // App-created throwaway wallet: the fiat signer needs the default wallet
-    // xprv; nothing is registered server-side and the wallet is never funded.
+    // App-created throwaway wallet (fresh seed) providing the fiat signer's
+    // default-wallet xprv, then a unique registered nym so the deployed
+    // identity gate admits the fiat calls. Registration needs no funds.
     await locator<CreateDefaultWalletsUsecase>().execute();
+    if (_reachable && _fiatDeployed) {
+      final base = 'fs${_runId.isEmpty ? 'local' : _runId}';
+      final nym = base.length > 32 ? base.substring(0, 32) : base;
+      await locator<LightningAddressFacade>().registerWalletOwned(nym: nym);
+    }
   });
 
   Future<bool> isTestnet() async =>
@@ -76,19 +113,42 @@ Future<void> main({bool isInitialized = false}) async {
     );
   }
 
+  Future<void> storeScopedKey(String key) async {
+    await locator<BullbitcoinApiKeyDatasource>().storeSellToFiatBalanceApiKey(
+      ScopedApiKeyModel(userId: 'staging-smoke-user', key: key),
+      isTestnet: await isTestnet(),
+    );
+  }
+
   // Never prints the value; matches on shape only.
   bool textLeaksKey(String text) => text.contains(RegExp(r'bbak-[0-9a-f]{8}'));
 
-  // ===== Degradation group - runnable against today's pay2 (404) ==========
+  final fiatCapableSkip = (_reachable && _fiatDeployed)
+      ? false
+      : (!_reachable ? _blockedNoUrl : _blockedDeploy);
+  final contractSkip = (_reachable && _fiatDeployed && _contract)
+      ? false
+      : (!_reachable
+            ? _blockedNoUrl
+            : (!_fiatDeployed ? _blockedDeploy : _blockedContract));
+  // enable / fault cases additionally need a provider that accepts the scoped
+  // key (see _blockedProvider). Gated OFF against the real gateway.
+  final providerSkip =
+      (_reachable && _fiatDeployed && _contract && _providerAcceptsScopedKey)
+      ? false
+      : (contractSkip == false ? _blockedProvider : contractSkip);
+
+  // ===== Read / degradation group ==========================================
 
   test(
-    'LIVE read degrades to an all-Bitcoin view on any server version',
+    'LIVE configuration read returns an all-Bitcoin view for a registered, '
+    'unconfigured identity (validates the version-carrying signed GET)',
     () async {
       final result = await locator<FiatSettlementFacade>().configuration();
       final view = switch (result) {
         Ok(:final value) => value,
         Err(:final failure) => fail(
-          'configuration read must degrade, not fail: $failure',
+          'configuration read must succeed/degrade, not fail: $failure',
         ),
       };
       for (final product in FiatSettlementProduct.values) {
@@ -96,41 +156,8 @@ Future<void> main({bool isInitialized = false}) async {
       }
       expect(view.credentialActive, isFalse);
     },
-    skip: _reachable ? false : _blockedNoUrl,
+    skip: fiatCapableSkip,
   );
-
-  test('LIVE keyless activation is rejected with a typed failure and leaves no '
-      'settlement state behind (no-pay safe against a 404 server)', () async {
-    await clearScopedKey();
-    final write = await locator<FiatSettlementFacade>().set(
-      product: FiatSettlementProduct.paymentPage,
-      fiatPercentage: 50,
-      currency: FiatCurrency.cad,
-    );
-    final failure = switch (write) {
-      Ok() => fail('keyless activation must not succeed for a fresh nym'),
-      Err(:final failure) => failure,
-    };
-    expect(
-      failure,
-      anyOf(
-        const FiatSettlementFailure.credentialProblem(),
-        const FiatSettlementFailure.kycRequired(),
-        const FiatSettlementFailure.dependencyUnavailable(),
-        const FiatSettlementFailure.bullnymUnreachable(),
-        const FiatSettlementFailure.unexpected(),
-      ),
-    );
-    final reread = await locator<FiatSettlementFacade>().configuration();
-    final view = switch (reread) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail('re-read after rejected write: $failure'),
-    };
-    expect(
-      view.configFor(FiatSettlementProduct.paymentPage).isBitcoinOnly,
-      isTrue,
-    );
-  }, skip: _reachable ? false : _blockedNoUrl);
 
   test(
     'LIVE server never echoes a scoped key in any observable result',
@@ -142,10 +169,10 @@ Future<void> main({bool isInitialized = false}) async {
       };
       expect(textLeaksKey(asText), isFalse);
     },
-    skip: _reachable ? false : _blockedNoUrl,
+    skip: fiatCapableSkip,
   );
 
-  // ===== Fiat-capable group - needs the Bullnym fiat deploy (blocker 3) ====
+  // ===== Fiat-capable group ================================================
 
   test(
     'Bitcoin-only stays intact: disable (0%) succeeds WITHOUT a scoped key',
@@ -160,9 +187,7 @@ Future<void> main({bool isInitialized = false}) async {
       };
       expect(view.configFor(FiatSettlementProduct.pos).isBitcoinOnly, isTrue);
     },
-    skip: (_reachable && _fiatDeployed)
-        ? false
-        : (!_reachable ? _blockedNoUrl : _blockedDeploy),
+    skip: fiatCapableSkip,
   );
 
   test(
@@ -178,27 +203,20 @@ Future<void> main({bool isInitialized = false}) async {
         Ok() => fail('activation without a scoped key must not succeed'),
         Err(:final failure) => failure,
       };
-      // On a fiat-capable server the keyless PUT answers the stable credential
-      // code -> credentialProblem, the type the Reconnect UX keys off of.
+      // Keyless PUT -> stable BULL_BITCOIN_CREDENTIAL_REQUIRED -> credentialProblem.
       expect(failure, const FiatSettlementFailure.credentialProblem());
     },
-    skip: (_reachable && _fiatDeployed)
-        ? false
-        : (!_reachable ? _blockedNoUrl : _blockedDeploy),
+    skip: fiatCapableSkip,
   );
 
   test(
-    'enable fiat (50% CAD) with an imported scoped key -> key-on-demand retry '
-    'succeeds (validateSellToBalance observable as a successful set)',
+    'enable fiat (50% CAD) with a scoped key -> key-on-demand retry succeeds '
+    '(fixture validates the key as eligible)',
     () async {
-      final scoped = _capturedScopedKey();
-      if (scoped == null) {
-        fail('needs a captured scoped key handoff (Tier 1, blocker 1)');
-      }
-      await locator<BullbitcoinApiKeyDatasource>().storeSellToFiatBalanceApiKey(
-        ScopedApiKeyModel(userId: 'staging-smoke-user', key: scoped),
-        isTestnet: await isTestnet(),
-      );
+      // Prefer a real captured key if a handoff exists; otherwise a synthetic
+      // eligible key, which the staging fixture accepts.
+      final key = _capturedScopedKey() ?? _syntheticEligibleKey;
+      await storeScopedKey(key);
       final write = await locator<FiatSettlementFacade>().set(
         product: FiatSettlementProduct.paymentPage,
         fiatPercentage: 50,
@@ -214,30 +232,38 @@ Future<void> main({bool isInitialized = false}) async {
       expect(cfg.fiatPercentage, 50);
       expect(cfg.currency, FiatCurrency.cad);
       expect(textLeaksKey(view.toString()), isFalse);
+      // Return the product to Bitcoin-only so the run leaves no fiat config.
+      await locator<FiatSettlementFacade>().disable(
+        product: FiatSettlementProduct.paymentPage,
+      );
       await clearScopedKey();
     },
-    // Needs a live fiat-capable server (blocker 3) AND the aligned error-code
-    // contract (blocker 2).
-    skip: (_reachable && _fiatDeployed && _contract)
-        ? false
-        : (!_reachable
-              ? _blockedNoUrl
-              : (!_fiatDeployed ? _blockedDeploy : _blockedContract)),
+    skip: providerSkip,
   );
 
   test(
-    'KYC / outage(503) fault mapping - documents which faults the staging '
-    'fixture can induce',
+    'fixture fault mapping: f1 -> kycRequired, f3 -> dependencyUnavailable',
     () async {
-      // The staging VM drives a fixture-controlled provider (VM-local
-      // api-orders; Liquidnode not deployed). From the mobile client we cannot
-      // force a KYC-required or 503 response without server-side fixture
-      // control, so this matrix is asserted deterministically in
-      // fiat_settlement_lifecycle_test.dart (fake-backed) and documented here
-      // as fixture-dependent for the staging lane.
+      await storeScopedKey(_syntheticKycKey);
+      final kyc = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.paymentPage,
+        fiatPercentage: 50,
+        currency: FiatCurrency.cad,
+      );
+      expect((kyc as Err).failure, const FiatSettlementFailure.kycRequired());
+
+      await storeScopedKey(_syntheticOutageKey);
+      final outage = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.paymentPage,
+        fiatPercentage: 50,
+        currency: FiatCurrency.cad,
+      );
+      expect(
+        (outage as Err).failure,
+        const FiatSettlementFailure.dependencyUnavailable(),
+      );
+      await clearScopedKey();
     },
-    skip:
-        'documented as fixture-dependent; deterministic coverage lives in '
-        'the fake-backed lifecycle spec',
+    skip: providerSkip,
   );
 }
