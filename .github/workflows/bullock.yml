@@ -319,7 +319,10 @@ jobs:
 
           if [ "$sufficient" != "true" ]; then
             body="🐂 Bullock needs more info before implementing:"
-            body="${body}"$'\n\n'"> ${question:-Please clarify what you'd like changed.}"
+            # NB: no apostrophes inside ${var:-word} — bash treats a single
+            # quote there as a quoting char even inside double quotes, which
+            # made this whole script unparseable (exit 2 at EOF).
+            body="${body}"$'\n\n'"> ${question:-Please clarify what you would like changed.}"
             comment "$body"
             echo "Insufficient info — asked for clarification, no PR opened."
             exit 0
