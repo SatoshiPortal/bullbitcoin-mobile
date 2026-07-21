@@ -29,6 +29,10 @@ class FiatSettlementEntryTile extends StatefulWidget {
 
 class _FiatSettlementEntryTileState extends State<FiatSettlementEntryTile> {
   FiatSettlementProductConfig? _config;
+  // The configuration read failed. We show an honest unavailable variant that
+  // still opens the editor (whose own load-error/retry path takes over) rather
+  // than fabricating a Bitcoin-only summary that was never confirmed.
+  bool _unavailable = false;
   bool _visible = false;
 
   @override
@@ -52,24 +56,34 @@ class _FiatSettlementEntryTileState extends State<FiatSettlementEntryTile> {
   Future<void> _load() async {
     final result = await locator<FiatSettlementFacade>().configuration();
     if (!mounted) return;
-    _config = switch (result) {
-      Ok(:final value) => value.configFor(widget.product),
-      Err() => FiatSettlementProductConfig(
-        product: widget.product,
-        fiatPercentage: 0,
-        currency: null,
-      ),
-    };
+    switch (result) {
+      case Ok(:final value):
+        _config = value.configFor(widget.product);
+        _unavailable = false;
+      case Err():
+        _config = null;
+        _unavailable = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_visible || _config == null) return const SizedBox.shrink();
+    if (!_visible) return const SizedBox.shrink();
+    final config = _config;
+    if (!_unavailable && config == null) return const SizedBox.shrink();
 
     final colors = context.bull;
-    final config = _config!;
+    // Honest summary: the confirmed configuration, or an explicit
+    // status-unavailable line when the read failed. Never a fabricated
+    // Bitcoin-only summary.
+    final summary = _unavailable || config == null
+        ? context.loc.getPaidFiatSettlementStatusUnavailable
+        : context.fiatSettlementSummary(config);
     return BullBorderedTile(
+      key: const ValueKey('fiat-settlement-entry-tile'),
       onTap: () async {
+        // Tapping always opens the editor; its own load-error/retry path
+        // handles a still-unavailable configuration.
         await context.pushNamed(
           FiatSettlementRoute.fiatSettlementEditor.name,
           pathParameters: {'product': widget.product.pathId},
@@ -92,7 +106,7 @@ class _FiatSettlementEntryTileState extends State<FiatSettlementEntryTile> {
                 ),
                 const Gap(2),
                 Text(
-                  context.fiatSettlementSummary(config),
+                  summary,
                   style: context.bullText.labelMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),

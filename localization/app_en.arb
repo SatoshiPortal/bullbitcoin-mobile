@@ -17001,5 +17001,21 @@
   "getPaidFiatSettlementCurrentlyActive": "Currently active",
   "@getPaidFiatSettlementCurrentlyActive": {
     "description": "Label marking the currently-active settlement option in the fiat chooser"
+  },
+  "getPaidSettlementOverriddenBelowMinimum": "This payment was kept entirely in Bitcoin because the fiat conversion was below Bull Bitcoin's minimum amount.",
+  "@getPaidSettlementOverriddenBelowMinimum": {
+    "description": "Detail screen: fiat conversion overridden to Bitcoin because the amount was below the minimum."
+  },
+  "getPaidSettlementOverriddenInvalidSplit": "This payment was kept entirely in Bitcoin because the fiat split could not be applied.",
+  "@getPaidSettlementOverriddenInvalidSplit": {
+    "description": "Detail screen: fiat conversion overridden to Bitcoin because the configured split was invalid."
+  },
+  "getPaidSettlementOverriddenConversionUnavailable": "This payment was kept entirely in Bitcoin because fiat conversion was unavailable.",
+  "@getPaidSettlementOverriddenConversionUnavailable": {
+    "description": "Detail screen: fiat conversion overridden to Bitcoin because conversion was unavailable."
+  },
+  "getPaidFiatSettlementStatusUnavailable": "Fiat settlement — status unavailable",
+  "@getPaidFiatSettlementStatusUnavailable": {
+    "description": "Get Paid entry tile: shown when the fiat settlement configuration could not be loaded; tapping still opens the editor."
   }
 }

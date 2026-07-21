@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+import 'package:bb_mobile/features/get_paid/domain/get_paid_settlement.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_transaction.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_transaction_history_cubit.dart';
 import 'package:bb_mobile/features/get_paid/presentation/get_paid_transaction_history_state.dart';
@@ -138,14 +138,12 @@ class _TransactionRow extends StatelessWidget {
               '${getPaidTransactionRailText(context, transaction.rail)} · '
               '${getPaidSettlementStateText(context, transaction.settlementState)}',
             ),
-            if (transaction.settlement != null) ...[
+            // Render the classification label ONLY from an explicit
+            // server-provided settlement kind. A no-data row (null) omits the
+            // label — it is never printed as Bitcoin without evidence.
+            if (transaction.settlement case final settlement?) ...[
               const SizedBox(height: 2),
-              Text(
-                getPaidSettlementKindLabel(
-                  context,
-                  transaction.settlementKind,
-                ),
-              ),
+              Text(getPaidSettlementKindLabel(context, settlement.kind)),
             ],
             const SizedBox(height: 2),
             Text(
@@ -345,17 +343,17 @@ String getPaidTransactionRailText(
 }
 
 /// Coarse settlement classification label for the history list. `unavailable`
-/// (unknown/uninterpretable) shows the explicit unavailable string — never
-/// silently a Bitcoin label.
+/// (uninterpretable) shows the explicit unavailable string — never silently a
+/// Bitcoin label. The no-data case is handled by the caller omitting the label.
 String getPaidSettlementKindLabel(
   BuildContext context,
-  BullnymSettlementKind kind,
+  GetPaidSettlementKind kind,
 ) {
   return switch (kind) {
-    BullnymSettlementKind.bitcoin => context.loc.getPaidSettlementLabelBitcoin,
-    BullnymSettlementKind.fiat => context.loc.getPaidSettlementLabelFiat,
-    BullnymSettlementKind.mixed => context.loc.getPaidSettlementLabelMixed,
-    BullnymSettlementKind.unavailable =>
+    GetPaidSettlementKind.bitcoin => context.loc.getPaidSettlementLabelBitcoin,
+    GetPaidSettlementKind.fiat => context.loc.getPaidSettlementLabelFiat,
+    GetPaidSettlementKind.mixed => context.loc.getPaidSettlementLabelMixed,
+    GetPaidSettlementKind.unavailable =>
       context.loc.getPaidSettlementDetailsUnavailable,
   };
 }

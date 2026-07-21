@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_default_wallet_xprv_port.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_failure.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_failure_mapping.dart';
+import 'package:bb_mobile/features/get_paid/domain/get_paid_settlement_mapper.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_transaction.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:meta/meta.dart';
@@ -108,7 +109,7 @@ class ListGetPaidTransactionsUsecase {
       },
       late: item.late,
       comment: item.comment,
-      settlement: item.settlement,
+      settlement: mapBullnymSettlementToGetPaid(item.settlement),
     );
   }
 }

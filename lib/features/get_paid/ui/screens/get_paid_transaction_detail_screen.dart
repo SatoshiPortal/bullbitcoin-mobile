@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+import 'package:bb_mobile/features/get_paid/domain/get_paid_settlement.dart';
 import 'package:bb_mobile/features/get_paid/domain/get_paid_transaction.dart';
 import 'package:bb_mobile/features/get_paid/ui/screens/get_paid_transaction_history_screen.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_routes.dart';
@@ -122,37 +122,37 @@ class GetPaidTransactionDetailScreen extends StatelessWidget {
 /// and "Settlement details unavailable" for anything uninterpretable — never a
 /// misleading Bitcoin-only view.
 class _SettlementSection extends StatelessWidget {
-  final BullnymGetPaidSettlement? settlement;
+  final GetPaidSettlement? settlement;
 
   const _SettlementSection({required this.settlement});
 
   @override
   Widget build(BuildContext context) {
     final s = settlement;
+    // No section for a no-data row, or an ordinary Bitcoin settlement with no
+    // override to explain.
     if (s == null ||
-        (s.kind == BullnymSettlementKind.bitcoin && s.overrideReason == null)) {
+        (s.kind == GetPaidSettlementKind.bitcoin && s.overrideReason == null)) {
       return const SizedBox.shrink();
     }
     final colors = context.bull;
     final rows = <Widget>[];
     switch (s.kind) {
-      case BullnymSettlementKind.unavailable:
+      case GetPaidSettlementKind.unavailable:
         rows.add(
           _DetailRow(
             label: context.loc.getPaidFiatSettlementSectionTitle,
             value: context.loc.getPaidSettlementDetailsUnavailable,
           ),
         );
-      case BullnymSettlementKind.bitcoin:
+      case GetPaidSettlementKind.bitcoin:
         rows.add(
           Text(
-            context.loc.getPaidSettlementOverridden,
-            style: context.bullText.bodyMedium?.copyWith(
-              color: colors.warning,
-            ),
+            _overrideText(context, s.overrideReason),
+            style: context.bullText.bodyMedium?.copyWith(color: colors.warning),
           ),
         );
-      case BullnymSettlementKind.mixed:
+      case GetPaidSettlementKind.mixed:
         for (final btc in s.bitcoin) {
           rows.add(
             _DetailRow(
@@ -162,7 +162,7 @@ class _SettlementSection extends StatelessWidget {
           );
         }
         rows.addAll(_fiatLegRows(context, s.fiat));
-      case BullnymSettlementKind.fiat:
+      case GetPaidSettlementKind.fiat:
         rows.addAll(_fiatLegRows(context, s.fiat));
     }
 
@@ -182,15 +182,34 @@ class _SettlementSection extends StatelessWidget {
     );
   }
 
+  /// Concise, per-reason explanation for a Bitcoin-only override. An
+  /// unrecognized reason falls back to the generic override copy.
+  String _overrideText(
+    BuildContext context,
+    GetPaidFiatOverrideReason? reason,
+  ) {
+    switch (reason) {
+      case GetPaidFiatOverrideReason.belowMinimum:
+        return context.loc.getPaidSettlementOverriddenBelowMinimum;
+      case GetPaidFiatOverrideReason.invalidSplit:
+        return context.loc.getPaidSettlementOverriddenInvalidSplit;
+      case GetPaidFiatOverrideReason.conversionUnavailable:
+        return context.loc.getPaidSettlementOverriddenConversionUnavailable;
+      case GetPaidFiatOverrideReason.unknown:
+      case null:
+        return context.loc.getPaidSettlementOverridden;
+    }
+  }
+
   List<Widget> _fiatLegRows(
     BuildContext context,
-    List<BullnymFiatSettlementLeg> legs,
+    List<GetPaidFiatSettlementLeg> legs,
   ) {
     final colors = context.bull;
     final rows = <Widget>[];
     for (final leg in legs) {
       final settled =
-          leg.status == BullnymSettlementLegStatus.settled &&
+          leg.status == GetPaidSettlementLegStatus.settled &&
           leg.amountMinor != null;
       // Currency is always shown; once settled the value carries the final
       // fiat amount alongside the currency code.
@@ -237,15 +256,15 @@ class _SettlementSection extends StatelessWidget {
 
   String _legStatusText(
     BuildContext context,
-    BullnymSettlementLegStatus status,
+    GetPaidSettlementLegStatus status,
   ) {
     switch (status) {
-      case BullnymSettlementLegStatus.pending:
+      case GetPaidSettlementLegStatus.pending:
         return context.loc.getPaidSettlementStatusPending;
-      case BullnymSettlementLegStatus.settled:
+      case GetPaidSettlementLegStatus.settled:
         return context.loc.getPaidSettlementStatusSettled;
-      case BullnymSettlementLegStatus.unavailable:
-      case BullnymSettlementLegStatus.unknown:
+      case GetPaidSettlementLegStatus.problem:
+      case GetPaidSettlementLegStatus.unavailable:
         return context.loc.getPaidSettlementDetailsUnavailable;
     }
   }

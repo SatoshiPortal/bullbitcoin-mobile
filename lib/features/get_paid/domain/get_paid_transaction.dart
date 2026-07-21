@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/bullnym/domain/bullnym_fiat_settlement.dart';
+import 'package:bb_mobile/features/get_paid/domain/get_paid_settlement.dart';
 
 enum GetPaidTransactionSource {
   lightningAddress,
@@ -30,9 +30,10 @@ class GetPaidTransaction {
   final bool late;
   final String? comment;
 
-  /// Private, tolerant settlement projection (reuses the Bullnym settlement
-  /// model; null for plain Bitcoin payments with no fiat configuration).
-  final BullnymGetPaidSettlement? settlement;
+  /// Private Get Paid-owned settlement projection. Null when the server
+  /// provided no settlement classification (a no-data row) — this is NOT
+  /// Bitcoin, and the history list omits the label for it.
+  final GetPaidSettlement? settlement;
 
   const GetPaidTransaction._({
     required this.transactionId,
@@ -57,7 +58,7 @@ class GetPaidTransaction {
     required GetPaidSettlementState settlementState,
     required bool late,
     required String? comment,
-    BullnymGetPaidSettlement? settlement,
+    GetPaidSettlement? settlement,
   }) {
     if (!_isCanonicalUuid(transactionId) ||
         amountSat <= 0 ||
@@ -92,9 +93,9 @@ class GetPaidTransaction {
     );
   }
 
-  /// Coarse label for the history list; null settlement = plain Bitcoin.
-  BullnymSettlementKind get settlementKind =>
-      settlement?.kind ?? BullnymSettlementKind.bitcoin;
+  /// Coarse classification for the history label, or null when the server
+  /// provided no settlement classification (label omitted — never Bitcoin).
+  GetPaidSettlementKind? get settlementKind => settlement?.kind;
 
   String get stableKey => '${source.name}:$transactionId';
 
