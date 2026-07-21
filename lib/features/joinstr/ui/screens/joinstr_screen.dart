@@ -611,10 +611,11 @@ String _stepLabel(
   JoinstrRoundStep step, {
   bool initiated = true,
 }) => switch (step) {
-      JoinstrRoundStep.connecting => context.loc.joinstrStepConnecting,
-      // Posting only happens for the creator (a joiner skips to registration),
-      // so name the first row for what the joiner actually did.
-      JoinstrRoundStep.posting => initiated
+      // `connecting` is transient plumbing we never surface as a status; a fresh
+      // round shows the first real step instead of "Connecting". Posting only
+      // happens for the creator (a joiner skips to registration), so name the
+      // first row for what the joiner actually did.
+      JoinstrRoundStep.connecting || JoinstrRoundStep.posting => initiated
           ? context.loc.joinstrStepPosting
           : context.loc.joinstrStepJoinPool,
       JoinstrRoundStep.outputRegistration =>
