@@ -51,4 +51,4 @@ The npub-wide signer is derived per request from the default wallet xprv via
 the exact validated action sets: `kycRequired`, `credentialProblem`,
 `dependencyUnavailable` (503), `bullnymUnreachable` (network/timeout),
 `invalidInput`, `unexpected`. Stable server codes: `FIAT_CONVERSION_KYC_REQUIRED`,
-`FIAT_CREDENTIAL_REQUIRED`, `FIAT_CREDENTIAL_INVALID`.
+`BULL_BITCOIN_CREDENTIAL_REQUIRED`, `BULL_BITCOIN_CREDENTIAL_INVALID`.

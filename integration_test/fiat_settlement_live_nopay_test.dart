@@ -24,7 +24,7 @@ import 'package:integration_test/integration_test.dart';
 //
 // Lane 2 (dart-define GETPAID_FIAT_CONTRACT_LIVE=true): pinned #196 contract
 // proofs that only a fiat-capable server can pass - a keyless PUT must answer
-// the stable FIAT_CREDENTIAL_REQUIRED code (which also proves the signed
+// the stable BULL_BITCOIN_CREDENTIAL_REQUIRED code (which also proves the signed
 // bullpay-la-v2 request verified server-side; a broken signature would fail
 // auth, mapping to a different failure).
 const _contractLive = bool.fromEnvironment('GETPAID_FIAT_CONTRACT_LIVE');
@@ -101,7 +101,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   test(
     'LIVE #196 contract: keyless PUT answers the stable '
-    'FIAT_CREDENTIAL_REQUIRED code (signed request verified)',
+    'BULL_BITCOIN_CREDENTIAL_REQUIRED code (signed request verified)',
     () async {
       final write = await locator<FiatSettlementFacade>().set(
         product: FiatSettlementProduct.pos,
@@ -112,8 +112,8 @@ Future<void> main({bool isInitialized = false}) async {
         Ok() => fail('keyless activation must never succeed for a fresh nym'),
         Err(:final failure) => failure,
       };
-      // credentialProblem is reachable ONLY via FIAT_CREDENTIAL_REQUIRED /
-      // FIAT_CREDENTIAL_INVALID - i.e. the server understood and authenticated
+      // credentialProblem is reachable ONLY via BULL_BITCOIN_CREDENTIAL_REQUIRED /
+      // BULL_BITCOIN_CREDENTIAL_INVALID - i.e. the server understood and authenticated
       // the signed fiat-settlement request and applied the #196 contract.
       expect(failure, const FiatSettlementFailure.credentialProblem());
     },

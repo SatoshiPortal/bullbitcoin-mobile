@@ -10,7 +10,7 @@ enum FiatSettlementFailureKind {
 
   /// The scoped credential is missing (none supplied and none stored) or the
   /// server rejected it as invalid/revoked/wrong-scope. Server codes
-  /// `FIAT_CREDENTIAL_REQUIRED` / `FIAT_CREDENTIAL_INVALID`, and the local
+  /// `BULL_BITCOIN_CREDENTIAL_REQUIRED` / `BULL_BITCOIN_CREDENTIAL_INVALID`, and the local
   /// "no scoped key available to submit" case. UI offers Reconnect.
   credentialProblem,
 

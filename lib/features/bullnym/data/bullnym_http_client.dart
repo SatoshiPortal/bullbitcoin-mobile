@@ -580,6 +580,10 @@ class BullnymHttpClient implements BullnymClientPort {
         () => _dio.get<dynamic>(
           '/api/v1/fiat-settlement',
           queryParameters: {
+            // The server's ConfigurationQuery requires `version` as a query
+            // field (the set path carries it in the body); omitting it here
+            // returns 400 rather than reaching the signed read.
+            'version': bullnymFiatSettlementContractVersion,
             'npub': signer.npubHex,
             'timestamp': timestamp,
             'signature': signatureHex,

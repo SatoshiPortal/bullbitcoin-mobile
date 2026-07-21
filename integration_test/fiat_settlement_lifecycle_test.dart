@@ -24,7 +24,7 @@ import 'support/get_paid_fixtures.dart';
 // end-to-end in-process:
 //   - set/get/disable round-trip with server-confirmed configuration,
 //   - first attempt is ALWAYS keyless; the scoped key is transmitted at most
-//     once, only after FIAT_CREDENTIAL_REQUIRED, and only when present,
+//     once, only after BULL_BITCOIN_CREDENTIAL_REQUIRED, and only when present,
 //   - stable error codes map to the closed failure family (KYC / credential /
 //     dependency-503), with the exact action-set-relevant distinctions,
 //   - an old server (404 surface) degrades to an empty Bitcoin-only view on
@@ -125,7 +125,7 @@ Future<void> main({bool isInitialized = false}) async {
     expect(bullnym.fiatCredentialStatus, BullnymCredentialStatus.active);
   });
 
-  test('key-on-demand: FIAT_CREDENTIAL_REQUIRED triggers exactly one retry '
+  test('key-on-demand: BULL_BITCOIN_CREDENTIAL_REQUIRED triggers exactly one retry '
       'carrying the locally stored scoped key', () async {
     bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
     bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
@@ -155,7 +155,7 @@ Future<void> main({bool isInitialized = false}) async {
     await clearScopedKey();
   });
 
-  test('no local key on FIAT_CREDENTIAL_REQUIRED -> credentialProblem with '
+  test('no local key on BULL_BITCOIN_CREDENTIAL_REQUIRED -> credentialProblem with '
       'no blind keyless retry', () async {
     bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialRequired;
     bullnym.fiatCredentialStatus = BullnymCredentialStatus.absent;
@@ -174,7 +174,7 @@ Future<void> main({bool isInitialized = false}) async {
     expect(bullnym.setFiatSettlementCalls, hasLength(1));
   });
 
-  test('rejected key (FIAT_CREDENTIAL_INVALID) -> credentialProblem after '
+  test('rejected key (BULL_BITCOIN_CREDENTIAL_INVALID) -> credentialProblem after '
       'exactly one keyed retry', () async {
     bullnym.fiatSettlementMode = FakeFiatSettlementMode.credentialInvalid;
     await storeScopedKey();
