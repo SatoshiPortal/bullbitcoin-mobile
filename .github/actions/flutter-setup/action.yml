@@ -27,20 +27,20 @@ runs:
     # sources only (arch-independent), so they keep os-only keys and stay
     # shared across arches.
     - name: Cache Flutter SDK (FVM)
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/fvm/versions
         key: fvm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.fvmrc') }}
 
     - name: Cache pub (hosted + git deps)
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.pub-cache
         key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
     - name: Cache Cargo (FRB native crates)
       if: ${{ inputs.cargo-cache == 'true' }}
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           ~/.cargo/registry
@@ -70,7 +70,7 @@ runs:
     # The key embeds hashFiles of this action and the warmer workflow, so any edit to either file self-busts the cache instead of restoring a stale pre-edit snapshot — no manual version token to bump (this replaced the short-lived -v2- token).
     # Keep path + key in sync with the save step in cache-warmer.yml.
     - name: Restore build_runner cache
-      uses: actions/cache/restore@v6
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           .dart_tool/build
