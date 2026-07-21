@@ -209,6 +209,38 @@ Future<void> main({bool isInitialized = false}) async {
     skip: fiatCapableSkip,
   );
 
+  // Fault cases run BEFORE the enable case: they rely on the keyless ->
+  // key-on-demand-retry path (no active server credential yet), so the local
+  // f1/f3 key is what the fixture validates. Once enable establishes a stored
+  // credential, keyless writes succeed against it and the local key is unused.
+  test(
+    'fixture fault mapping: f1 -> kycRequired, f3 -> dependencyUnavailable',
+    () async {
+      await storeScopedKey(_syntheticKycKey);
+      final kyc = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.paymentPage,
+        fiatPercentage: 50,
+        currency: FiatCurrency.cad,
+      );
+      expect((kyc as Err).failure, const FiatSettlementFailure.kycRequired());
+
+      await storeScopedKey(_syntheticOutageKey);
+      final outage = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.paymentPage,
+        fiatPercentage: 50,
+        currency: FiatCurrency.cad,
+      );
+      expect(
+        (outage as Err).failure,
+        const FiatSettlementFailure.dependencyUnavailable(),
+      );
+      await clearScopedKey();
+    },
+    skip: providerSkip,
+  );
+
+  // Runs LAST: establishes an active server-side credential (retained after
+  // disable), which would mask the keyless->retry path the fault cases need.
   test(
     'enable fiat (50% CAD) with a scoped key -> key-on-demand retry succeeds '
     '(fixture validates the key as eligible)',
@@ -235,32 +267,6 @@ Future<void> main({bool isInitialized = false}) async {
       // Return the product to Bitcoin-only so the run leaves no fiat config.
       await locator<FiatSettlementFacade>().disable(
         product: FiatSettlementProduct.paymentPage,
-      );
-      await clearScopedKey();
-    },
-    skip: providerSkip,
-  );
-
-  test(
-    'fixture fault mapping: f1 -> kycRequired, f3 -> dependencyUnavailable',
-    () async {
-      await storeScopedKey(_syntheticKycKey);
-      final kyc = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
-        fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-      expect((kyc as Err).failure, const FiatSettlementFailure.kycRequired());
-
-      await storeScopedKey(_syntheticOutageKey);
-      final outage = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
-        fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-      expect(
-        (outage as Err).failure,
-        const FiatSettlementFailure.dependencyUnavailable(),
       );
       await clearScopedKey();
     },
