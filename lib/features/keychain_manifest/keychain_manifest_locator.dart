@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_backup_wallet.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/clock.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
