@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/keychain_recovery/public/keychain_recovery_facade.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
+import 'package:bb_mobile/features/pos/public/pos_facade.dart';
 import 'package:bb_mobile/features/remote_keychain_recovery/domain/recover_remote_keychain_manifest_usecase.dart';
 import 'package:bb_mobile/features/remote_keychain_recovery/domain/remote_keychain_recovery_result.dart';
 import 'package:bb_mobile/features/remote_keychain_recovery/domain/usecases/heal_recovered_products_usecase.dart';
@@ -14,6 +15,7 @@ void main() {
   late _RecoveryFacade recovery;
   late _LightningAddressFacade lightningAddress;
   late _PaymentPageFacade paymentPage;
+  late _PosFacade pos;
   late HealRecoveredProductsUsecase heal;
   late RecoverRemoteKeychainManifestUsecase usecase;
 
@@ -22,7 +24,8 @@ void main() {
     recovery = _RecoveryFacade();
     lightningAddress = _LightningAddressFacade();
     paymentPage = _PaymentPageFacade();
-    heal = HealRecoveredProductsUsecase(lightningAddress, paymentPage);
+    pos = _PosFacade();
+    heal = HealRecoveredProductsUsecase(lightningAddress, paymentPage, pos);
     usecase = RecoverRemoteKeychainManifestUsecase(
       manifest: manifest,
       recovery: recovery,
@@ -109,6 +112,8 @@ final class _ManifestFacade extends Mock implements KeychainManifestFacade {}
 final class _RecoveryFacade extends Mock implements KeychainRecoveryFacade {}
 
 final class _PaymentPageFacade extends Mock implements PaymentPageFacade {}
+
+final class _PosFacade extends Mock implements PosFacade {}
 
 final class _LightningAddressFacade implements LightningAddressFacade {
   int ensureCalls = 0;
