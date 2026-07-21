@@ -51,6 +51,8 @@ const _syntheticEligibleKey =
     'bbak-0000000000000000000000000000000000000000000000000000000000000000';
 const _syntheticKycKey =
     'bbak-f100000000000000000000000000000000000000000000000000000000000000';
+const _syntheticWrongScopeKey =
+    'bbak-f200000000000000000000000000000000000000000000000000000000000000';
 const _syntheticOutageKey =
     'bbak-f300000000000000000000000000000000000000000000000000000000000000';
 
@@ -72,13 +74,9 @@ const _blockedContract =
     'BLOCKED(credential error-code contract) - pass '
     '--dart-define=FIAT_STAGING_CONTRACT=true once aligned';
 // Enabling fiat / driving fixture faults requires the scoped key to be
-// validated by a provider that accepts it. This staging Bullnym is configured
-// against the REAL api-orders gateway (:8880), which 401s synthetic keys; the
-// tag fixture (:8888, f1/f3/...) is not the wired provider. So these cases need
-// either the server repointed at the fixture or a real authorized key (the
-// generate-api-key/API-Users path, currently behind the login regression).
-// Gated OFF by default; the deterministic enable/fault matrix is covered by the
-// fake-backed integration_test/fiat_settlement_lifecycle_test.dart.
+// validated by the deterministic provider. Keep the gate explicit so this
+// no-payment suite cannot accidentally send synthetic credentials to the real
+// API-Orders lane.
 const _providerAcceptsScopedKey = bool.fromEnvironment(
   'FIAT_STAGING_PROVIDER_ACCEPTS_KEY',
 );
@@ -211,64 +209,143 @@ Future<void> main({bool isInitialized = false}) async {
 
   // Fault cases run BEFORE the enable case: they rely on the keyless ->
   // key-on-demand-retry path (no active server credential yet), so the local
-  // f1/f3 key is what the fixture validates. Once enable establishes a stored
+  // f1/f2/f3 key is what the fixture validates. Once enable establishes a stored
   // credential, keyless writes succeed against it and the local key is unused.
-  test(
-    'fixture fault mapping: f1 -> kycRequired, f3 -> dependencyUnavailable',
-    () async {
-      await storeScopedKey(_syntheticKycKey);
-      final kyc = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
-        fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-      expect((kyc as Err).failure, const FiatSettlementFailure.kycRequired());
+  test('fixture fault mapping: f1 -> kycRequired, f2 -> credentialProblem, '
+      'f3 -> dependencyUnavailable', () async {
+    await storeScopedKey(_syntheticKycKey);
+    final kyc = await locator<FiatSettlementFacade>().set(
+      product: FiatSettlementProduct.paymentPage,
+      fiatPercentage: 50,
+      currency: FiatCurrency.cad,
+    );
+    expect((kyc as Err).failure, const FiatSettlementFailure.kycRequired());
 
-      await storeScopedKey(_syntheticOutageKey);
-      final outage = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
+    await storeScopedKey(_syntheticWrongScopeKey);
+    final wrongScope = await locator<FiatSettlementFacade>().set(
+      product: FiatSettlementProduct.paymentPage,
+      fiatPercentage: 50,
+      currency: FiatCurrency.cad,
+    );
+    expect(
+      (wrongScope as Err).failure,
+      const FiatSettlementFailure.credentialProblem(),
+    );
+
+    await storeScopedKey(_syntheticOutageKey);
+    final outage = await locator<FiatSettlementFacade>().set(
+      product: FiatSettlementProduct.paymentPage,
+      fiatPercentage: 50,
+      currency: FiatCurrency.cad,
+    );
+    expect(
+      (outage as Err).failure,
+      const FiatSettlementFailure.dependencyUnavailable(),
+    );
+    await clearScopedKey();
+  }, skip: providerSkip);
+
+  // f4 must be the FIRST successful enable: once any enable establishes a
+  // server-side credential (retained after disable), later keyless writes use
+  // it and a locally stored key never reaches the provider. f4 passes
+  // validation (eligible) — its delayed behaviour affects only order reads,
+  // which the funded pending->settled witness (W3) covers.
+  test(
+    'f4 delayed-settlement key is accepted at validation: enable succeeds',
+    () async {
+      await storeScopedKey(
+        'bbak-f400000000000000000000000000000000000000000000000000000000000000',
+      );
+      final write = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.pos,
         fiatPercentage: 50,
         currency: FiatCurrency.cad,
       );
-      expect(
-        (outage as Err).failure,
-        const FiatSettlementFailure.dependencyUnavailable(),
+      final view = switch (write) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('f4 enable failed: $failure'),
+      };
+      expect(view.configFor(FiatSettlementProduct.pos).fiatPercentage, 50);
+      await locator<FiatSettlementFacade>().disable(
+        product: FiatSettlementProduct.pos,
       );
       await clearScopedKey();
     },
     skip: providerSkip,
   );
 
-  // Runs LAST: establishes an active server-side credential (retained after
-  // disable), which would mask the keyless->retry path the fault cases need.
+  // Runs after the fault cases: establishes an active server-side credential
+  // retained after disable, which would mask their keyless retry path.
   test(
-    'enable fiat (50% CAD) with a scoped key -> key-on-demand retry succeeds '
-    '(fixture validates the key as eligible)',
+    'all supported currencies save and refresh through key-on-demand retry',
     () async {
       // Prefer a real captured key if a handoff exists; otherwise a synthetic
       // eligible key, which the staging fixture accepts.
       final key = _capturedScopedKey() ?? _syntheticEligibleKey;
       await storeScopedKey(key);
-      final write = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
-        fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-      final view = switch (write) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail(
-          'key-on-demand activation failed: $failure',
-        ),
-      };
-      final cfg = view.configFor(FiatSettlementProduct.paymentPage);
-      expect(cfg.fiatPercentage, 50);
-      expect(cfg.currency, FiatCurrency.cad);
-      expect(textLeaksKey(view.toString()), isFalse);
+      for (final currency in FiatCurrency.values) {
+        final write = await locator<FiatSettlementFacade>().set(
+          product: FiatSettlementProduct.paymentPage,
+          fiatPercentage: 50,
+          currency: currency,
+        );
+        final view = switch (write) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(
+            'key-on-demand activation failed for ${currency.code}: $failure',
+          ),
+        };
+        final cfg = view.configFor(FiatSettlementProduct.paymentPage);
+        expect(cfg.fiatPercentage, 50);
+        expect(cfg.currency, currency);
+        expect(textLeaksKey(view.toString()), isFalse);
+      }
       // Return the product to Bitcoin-only so the run leaves no fiat config.
       await locator<FiatSettlementFacade>().disable(
         product: FiatSettlementProduct.paymentPage,
       );
       await clearScopedKey();
+    },
+    skip: providerSkip,
+  );
+
+  test(
+    'concurrent edits resolve to one complete submitted setting',
+    () async {
+      final results = await Future.wait([
+        locator<FiatSettlementFacade>().set(
+          product: FiatSettlementProduct.invoice,
+          fiatPercentage: 25,
+          currency: FiatCurrency.eur,
+        ),
+        locator<FiatSettlementFacade>().set(
+          product: FiatSettlementProduct.invoice,
+          fiatPercentage: 75,
+          currency: FiatCurrency.usd,
+        ),
+      ]);
+      for (final result in results) {
+        expect(
+          result,
+          isA<Ok<FiatSettlementConfigurationView, FiatSettlementFailure>>(),
+        );
+      }
+
+      final refreshed = await locator<FiatSettlementFacade>().configuration();
+      final view = switch (refreshed) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('configuration refresh failed: $failure'),
+      };
+      final config = view.configFor(FiatSettlementProduct.invoice);
+      final isFirstWrite =
+          config.fiatPercentage == 25 && config.currency == FiatCurrency.eur;
+      final isSecondWrite =
+          config.fiatPercentage == 75 && config.currency == FiatCurrency.usd;
+      expect(isFirstWrite || isSecondWrite, isTrue);
+
+      await locator<FiatSettlementFacade>().disable(
+        product: FiatSettlementProduct.invoice,
+      );
     },
     skip: providerSkip,
   );
