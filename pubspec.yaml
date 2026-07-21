@@ -36,10 +36,7 @@ dependencies:
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
-  payjoin_flutter:
-    git:
-      url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: b3bbf76fe266c145d48e1ea2b58460aae8cacb66
+  payjoin: ^0.1.2
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1

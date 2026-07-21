@@ -190,15 +190,21 @@ RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 
+
 # Download Android cmdline-tools
-RUN sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
+# (USER root instead of sudo: setuid binaries are unreliable under rootless
+# podman user namespaces — sudo fails with "account validation failure" —
+# and are unnecessary at build time since USER switching achieves the same.)
+USER root
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
 
 # Set up Android SDK
-RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools
-RUN sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
-RUN sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
-RUN sudo rm /tmp/android-cmdline-tools.zip
-RUN sudo chown -R $USER ${ANDROID_HOME}
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
+RUN unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN rm /tmp/android-cmdline-tools.zip
+RUN chown -R $USER ${ANDROID_HOME}
+USER $USER
 
 # Install Android SDK components
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
