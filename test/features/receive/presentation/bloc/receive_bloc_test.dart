@@ -76,7 +76,14 @@ class _MockSetPayjoinEnabledUsecase extends Mock
 // the isPayjoinEnabled/eligibility gating, not the confirmed-vs-unconfirmed
 // distinction, so keeping the two in lockstep here avoids every
 // payjoin-creating test failing for a reason unrelated to what it names.
-Wallet _testWallet({String origin = 'w1', BigInt? balanceSat}) => Wallet(
+// confirmedBalanceSat is a separate optional override so a test can build a
+// wallet with unconfirmed-only funds (balanceSat > 0, confirmedBalanceSat ==
+// 0) — the specific divergence _isPayjoinEligible must reject.
+Wallet _testWallet({
+  String origin = 'w1',
+  BigInt? balanceSat,
+  BigInt? confirmedBalanceSat,
+}) => Wallet(
   origin: origin,
   network: Network.bitcoinMainnet,
   xpubFingerprint: '00000000',
@@ -87,7 +94,7 @@ Wallet _testWallet({String origin = 'w1', BigInt? balanceSat}) => Wallet(
   signer: SignerEntity.local,
   signerDevice: null,
   balanceSat: balanceSat ?? BigInt.from(50000),
-  confirmedBalanceSat: balanceSat ?? BigInt.from(50000),
+  confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );
 
 WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(
@@ -335,6 +342,34 @@ void main() {
         'confirmed balance, even though payjoin is enabled globally — a '
         'payjoin proposal needs at least one UTXO to contribute', () async {
       final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.payjoin, isNull);
+      expect(bloc.state.payjoinGloballyEnabled, isTrue);
+      expect(bloc.state.isPayjoinAwaitingFunds, isTrue);
+      verifyNever(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      );
+    });
+
+    test('does NOT create a payjoin receiver session for a wallet with '
+        'ONLY unconfirmed balance (balanceSat > 0 but confirmedBalanceSat == '
+        '0) — a payjoin proposal needs a genuinely confirmed UTXO, an '
+        'unconfirmed one is not filtered out anywhere downstream and could '
+        'be replaced/invalidated (regression pin: _isPayjoinEligible must '
+        'check confirmedBalanceSat, not balanceSat)', () async {
+      final bloc = buildBloc(
+        wallet: _testWallet(
+          balanceSat: BigInt.from(50000),
+          confirmedBalanceSat: BigInt.zero,
+        ),
+      );
       addTearDown(bloc.close);
 
       bloc.add(const ReceiveBitcoinStarted(null));

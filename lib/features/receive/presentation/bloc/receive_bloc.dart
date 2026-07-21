@@ -143,7 +143,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// requests on) a session that could never actually payjoin is pointless
   /// and needlessly exposes the anti-probing surface for no benefit.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
-      wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
+      wallet.signsLocally &&
+      payjoinEnabled &&
+      (wallet.confirmedBalanceSat ?? BigInt.zero) > BigInt.zero;
 
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,
