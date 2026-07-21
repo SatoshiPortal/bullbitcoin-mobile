@@ -467,7 +467,7 @@
   "@joinstrRoundInProgress": {
     "description": "Hint shown when the create button is disabled because a round is active"
   },
-  "joinstrConnectingTor": "Connecting to Tor and loading pools…",
+  "joinstrConnectingTor": "Loading pools…",
   "@joinstrConnectingTor": {
     "description": "Shown while the embedded Tor bootstraps and the pool list loads"
   },
@@ -523,6 +523,44 @@
   "joinstrStepBroadcast": "Finalize Coinjoin Tx",
   "@joinstrStepBroadcast": {
     "description": "Coinjoin timeline step"
+  },
+  "joinstrStepPostingDesc": "Pool announced on the relay",
+  "@joinstrStepPostingDesc": {
+    "description": "Coinjoin timeline step description"
+  },
+  "joinstrStepJoinPool": "Join Pool",
+  "@joinstrStepJoinPool": {
+    "description": "Coinjoin timeline first step title for a joiner"
+  },
+  "joinstrStepJoinPoolDesc": "Join request sent",
+  "@joinstrStepJoinPoolDesc": {
+    "description": "Coinjoin timeline first step description for a joiner"
+  },
+  "joinstrStepOutputRegistrationDesc": "Output registered for coinjoin",
+  "@joinstrStepOutputRegistrationDesc": {
+    "description": "Coinjoin timeline step description"
+  },
+  "joinstrStepInputRegistrationDesc": "Input registered: {outpoint}",
+  "@joinstrStepInputRegistrationDesc": {
+    "description": "Coinjoin timeline step description with the input outpoint",
+    "placeholders": {
+      "outpoint": {
+        "type": "String"
+      }
+    }
+  },
+  "joinstrStepBroadcastDesc": "Coinjoin transaction finalized",
+  "@joinstrStepBroadcastDesc": {
+    "description": "Coinjoin timeline step description"
+  },
+  "joinstrStepMinedDesc": "Tx: {txId}",
+  "@joinstrStepMinedDesc": {
+    "description": "Coinjoin timeline step description with the broadcast txid",
+    "placeholders": {
+      "txId": {
+        "type": "String"
+      }
+    }
   },
   "joinstrStepMined": "Broadcast Tx",
   "@joinstrStepMined": {

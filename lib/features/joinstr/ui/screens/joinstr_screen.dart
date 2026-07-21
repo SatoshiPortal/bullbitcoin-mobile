@@ -380,7 +380,7 @@ class _RoundCard extends StatelessWidget {
         ),
         subtitle: Text(
           round.isWaiting
-              ? _stepLabel(context, round.step)
+              ? _stepLabel(context, round.step, initiated: round.initiated)
               : round.isBroadcast
               ? loc.joinstrBroadcast
               : joinstrErrorMessage(context, round.error!),
@@ -499,10 +499,14 @@ class _CoinjoinTimeline extends StatelessWidget {
       children: [
         for (final (i, step) in steps.indexed)
           _TimelineRow(
-            label: _stepLabel(context, step),
+            label: _stepLabel(context, step, initiated: round.initiated),
+            description: i <= currentIndex
+                ? _stepDescription(context, step, round)
+                : null,
             done: i < currentIndex,
             current: i == currentIndex && !round.isBroadcast && !round.isFailed,
             failed: round.isFailed && i == currentIndex,
+            last: i == steps.length - 1,
           ),
       ],
     );
@@ -512,19 +516,24 @@ class _CoinjoinTimeline extends StatelessWidget {
 class _TimelineRow extends StatelessWidget {
   const _TimelineRow({
     required this.label,
+    required this.description,
     required this.done,
     required this.current,
     required this.failed,
+    required this.last,
   });
 
   final String label;
+  final String? description;
   final bool done;
   final bool current;
   final bool failed;
+  final bool last;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final reached = done || current || failed;
     final Widget marker;
     if (failed) {
       marker = Icon(Icons.error_outline, size: 18, color: scheme.error);
@@ -543,17 +552,51 @@ class _TimelineRow extends StatelessWidget {
         color: scheme.outlineVariant,
       );
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    // A marker column with the connecting line drawn between markers, so the
+    // rows read as one continuous vertical timeline like the reference wallets.
+    return IntrinsicHeight(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 18, child: Center(child: marker)),
+          Column(
+            children: [
+              SizedBox(width: 18, height: 24, child: Center(child: marker)),
+              if (!last)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: done ? scheme.primary : scheme.outlineVariant,
+                  ),
+                ),
+            ],
+          ),
           const Gap(12),
           Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: (done || current) ? null : scheme.outline,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontWeight: current ? FontWeight.bold : FontWeight.w500,
+                        color: reached ? null : scheme.outline,
+                      ),
+                    ),
+                  ),
+                  if (description != null && description!.isNotEmpty) ...[
+                    const Gap(2),
+                    Text(
+                      description!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.outline,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
@@ -563,10 +606,17 @@ class _TimelineRow extends StatelessWidget {
   }
 }
 
-String _stepLabel(BuildContext context, JoinstrRoundStep step) =>
-    switch (step) {
+String _stepLabel(
+  BuildContext context,
+  JoinstrRoundStep step, {
+  bool initiated = true,
+}) => switch (step) {
       JoinstrRoundStep.connecting => context.loc.joinstrStepConnecting,
-      JoinstrRoundStep.posting => context.loc.joinstrStepPosting,
+      // Posting only happens for the creator (a joiner skips to registration),
+      // so name the first row for what the joiner actually did.
+      JoinstrRoundStep.posting => initiated
+          ? context.loc.joinstrStepPosting
+          : context.loc.joinstrStepJoinPool,
       JoinstrRoundStep.outputRegistration =>
         context.loc.joinstrStepOutputRegistration,
       JoinstrRoundStep.inputRegistration =>
@@ -577,6 +627,31 @@ String _stepLabel(BuildContext context, JoinstrRoundStep step) =>
       JoinstrRoundStep.failed ||
       JoinstrRoundStep.other => '',
     };
+
+/// The line under each timeline step, mirroring the reference wallets: a short
+/// status, carrying the real input outpoint and broadcast txid where we have
+/// them.
+String _stepDescription(
+  BuildContext context,
+  JoinstrRoundStep step,
+  JoinstrRound round,
+) => switch (step) {
+  JoinstrRoundStep.posting => round.initiated
+      ? context.loc.joinstrStepPostingDesc
+      : context.loc.joinstrStepJoinPoolDesc,
+  JoinstrRoundStep.outputRegistration =>
+    context.loc.joinstrStepOutputRegistrationDesc,
+  JoinstrRoundStep.inputRegistration => context.loc
+      .joinstrStepInputRegistrationDesc(round.inputOutpoint),
+  JoinstrRoundStep.broadcast => context.loc.joinstrStepBroadcastDesc,
+  JoinstrRoundStep.mined => round.txId != null
+      ? context.loc.joinstrStepMinedDesc(round.txId!)
+      : '',
+  JoinstrRoundStep.connecting ||
+  JoinstrRoundStep.done ||
+  JoinstrRoundStep.failed ||
+  JoinstrRoundStep.other => '',
+};
 
 class _OtherPoolsTab extends StatelessWidget {
   const _OtherPoolsTab({required this.state});

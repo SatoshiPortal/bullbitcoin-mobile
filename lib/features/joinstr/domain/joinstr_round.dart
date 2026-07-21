@@ -19,9 +19,10 @@ enum JoinstrRoundStep {
 
   /// The ordered steps the timeline renders. We start the timeline at pool
   /// creation, so it carries more steps than the reference wallets (which only
-  /// begin at input registration); `done`/`failed`/`other` are not rows.
+  /// begin at input registration). `connecting` is intentionally not a row: it
+  /// is transient plumbing the reference wallets do not surface either.
+  /// `done`/`failed`/`other` are not rows.
   static const List<JoinstrRoundStep> timeline = [
-    connecting,
     posting,
     outputRegistration,
     inputRegistration,
