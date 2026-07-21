@@ -34,7 +34,9 @@ const _reachable = bool.fromEnvironment('FIAT_STAGING_REACHABLE');
 const _fiatDeployed = bool.fromEnvironment('FIAT_STAGING_FIAT_DEPLOYED');
 const _contract = bool.fromEnvironment('FIAT_STAGING_CONTRACT');
 
-const _scopedKeyFilePath = String.fromEnvironment('FIAT_STAGING_SCOPED_KEY_FILE');
+const _scopedKeyFilePath = String.fromEnvironment(
+  'FIAT_STAGING_SCOPED_KEY_FILE',
+);
 final _scopedFormat = RegExp(r'^bbak-[0-9a-f]{64}$');
 
 String? _capturedScopedKey() {
@@ -85,8 +87,9 @@ Future<void> main({bool isInitialized = false}) async {
       final result = await locator<FiatSettlementFacade>().configuration();
       final view = switch (result) {
         Ok(:final value) => value,
-        Err(:final failure) =>
-          fail('configuration read must degrade, not fail: $failure'),
+        Err(:final failure) => fail(
+          'configuration read must degrade, not fail: $failure',
+        ),
       };
       for (final product in FiatSettlementProduct.values) {
         expect(view.configFor(product).isBitcoinOnly, isTrue);
@@ -96,42 +99,38 @@ Future<void> main({bool isInitialized = false}) async {
     skip: _reachable ? false : _blockedNoUrl,
   );
 
-  test(
-    'LIVE keyless activation is rejected with a typed failure and leaves no '
-    'settlement state behind (no-pay safe against a 404 server)',
-    () async {
-      await clearScopedKey();
-      final write = await locator<FiatSettlementFacade>().set(
-        product: FiatSettlementProduct.paymentPage,
-        fiatPercentage: 50,
-        currency: FiatCurrency.cad,
-      );
-      final failure = switch (write) {
-        Ok() => fail('keyless activation must not succeed for a fresh nym'),
-        Err(:final failure) => failure,
-      };
-      expect(
-        failure,
-        anyOf(
-          const FiatSettlementFailure.credentialProblem(),
-          const FiatSettlementFailure.kycRequired(),
-          const FiatSettlementFailure.dependencyUnavailable(),
-          const FiatSettlementFailure.bullnymUnreachable(),
-          const FiatSettlementFailure.unexpected(),
-        ),
-      );
-      final reread = await locator<FiatSettlementFacade>().configuration();
-      final view = switch (reread) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('re-read after rejected write: $failure'),
-      };
-      expect(
-        view.configFor(FiatSettlementProduct.paymentPage).isBitcoinOnly,
-        isTrue,
-      );
-    },
-    skip: _reachable ? false : _blockedNoUrl,
-  );
+  test('LIVE keyless activation is rejected with a typed failure and leaves no '
+      'settlement state behind (no-pay safe against a 404 server)', () async {
+    await clearScopedKey();
+    final write = await locator<FiatSettlementFacade>().set(
+      product: FiatSettlementProduct.paymentPage,
+      fiatPercentage: 50,
+      currency: FiatCurrency.cad,
+    );
+    final failure = switch (write) {
+      Ok() => fail('keyless activation must not succeed for a fresh nym'),
+      Err(:final failure) => failure,
+    };
+    expect(
+      failure,
+      anyOf(
+        const FiatSettlementFailure.credentialProblem(),
+        const FiatSettlementFailure.kycRequired(),
+        const FiatSettlementFailure.dependencyUnavailable(),
+        const FiatSettlementFailure.bullnymUnreachable(),
+        const FiatSettlementFailure.unexpected(),
+      ),
+    );
+    final reread = await locator<FiatSettlementFacade>().configuration();
+    final view = switch (reread) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('re-read after rejected write: $failure'),
+    };
+    expect(
+      view.configFor(FiatSettlementProduct.paymentPage).isBitcoinOnly,
+      isTrue,
+    );
+  }, skip: _reachable ? false : _blockedNoUrl);
 
   test(
     'LIVE server never echoes a scoped key in any observable result',
@@ -207,8 +206,9 @@ Future<void> main({bool isInitialized = false}) async {
       );
       final view = switch (write) {
         Ok(:final value) => value,
-        Err(:final failure) =>
-          fail('key-on-demand activation failed: $failure'),
+        Err(:final failure) => fail(
+          'key-on-demand activation failed: $failure',
+        ),
       };
       final cfg = view.configFor(FiatSettlementProduct.paymentPage);
       expect(cfg.fiatPercentage, 50);
@@ -236,7 +236,8 @@ Future<void> main({bool isInitialized = false}) async {
       // fiat_settlement_lifecycle_test.dart (fake-backed) and documented here
       // as fixture-dependent for the staging lane.
     },
-    skip: 'documented as fixture-dependent; deterministic coverage lives in '
+    skip:
+        'documented as fixture-dependent; deterministic coverage lives in '
         'the fake-backed lifecycle spec',
   );
 }

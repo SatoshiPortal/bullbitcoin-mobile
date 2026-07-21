@@ -68,11 +68,7 @@ class FiatSettlementEditorCubit extends Cubit<FiatSettlementEditorState> {
   void selectCurrency(FiatCurrency currency) {
     // Changing currency re-arms the acceptance gate.
     emit(
-      state.copyWith(
-        currency: currency,
-        understood: false,
-        clearFailure: true,
-      ),
+      state.copyWith(currency: currency, understood: false, clearFailure: true),
     );
   }
 

@@ -27,7 +27,9 @@ import 'package:logging_colorful/logging_colorful.dart' as logpkg;
 // no file and the spec proves the lifecycle with a SYNTHETIC well-formed key.
 // The key VALUE is never printed by this spec (labels only).
 
-const _scopedKeyFilePath = String.fromEnvironment('FIAT_STAGING_SCOPED_KEY_FILE');
+const _scopedKeyFilePath = String.fromEnvironment(
+  'FIAT_STAGING_SCOPED_KEY_FILE',
+);
 
 // SYNTHETIC well-formed fallback (bbak- + 64 hex); never a real credential.
 const _syntheticScopedKey =
@@ -168,32 +170,34 @@ Future<void> main({bool isInitialized = false}) async {
     expect(rescoped!.userId, userId);
   });
 
-  test('absent sellToFiatBalanceApiKey preserves an existing same-user key',
-      () async {
-    const userId = 'staging-user-4';
-    await locator<SaveExchangeApiKeyUsecase>().execute(
-      apiKeyResponseData: {
-        'apiKey': ordinaryPayload(userId),
-        'sellToFiatBalanceApiKey': scopedKey,
-      },
-      isTestnet: isTestnet,
-    );
-    // Same user logs in again, but the response omits the scoped field
-    // (blocker-1 old server, or a login that didn't opt in).
-    await locator<SaveExchangeApiKeyUsecase>().execute(
-      apiKeyResponseData: {'apiKey': ordinaryPayload(userId)},
-      isTestnet: isTestnet,
-    );
-    final scoped = await datasource.getSellToFiatBalanceApiKey(
-      isTestnet: isTestnet,
-    );
-    expect(
-      scoped,
-      isNotNull,
-      reason: 'same-user re-login without the field must preserve the key',
-    );
-    expect(scoped!.userId, userId);
-  });
+  test(
+    'absent sellToFiatBalanceApiKey preserves an existing same-user key',
+    () async {
+      const userId = 'staging-user-4';
+      await locator<SaveExchangeApiKeyUsecase>().execute(
+        apiKeyResponseData: {
+          'apiKey': ordinaryPayload(userId),
+          'sellToFiatBalanceApiKey': scopedKey,
+        },
+        isTestnet: isTestnet,
+      );
+      // Same user logs in again, but the response omits the scoped field
+      // (blocker-1 old server, or a login that didn't opt in).
+      await locator<SaveExchangeApiKeyUsecase>().execute(
+        apiKeyResponseData: {'apiKey': ordinaryPayload(userId)},
+        isTestnet: isTestnet,
+      );
+      final scoped = await datasource.getSellToFiatBalanceApiKey(
+        isTestnet: isTestnet,
+      );
+      expect(
+        scoped,
+        isNotNull,
+        reason: 'same-user re-login without the field must preserve the key',
+      );
+      expect(scoped!.userId, userId);
+    },
+  );
 
   test('account switch (different userId, no scoped field) removes the foreign '
       'scoped key', () async {
@@ -248,13 +252,10 @@ Future<void> main({bool isInitialized = false}) async {
     final cubit = locator<ExchangeCubit>();
     try {
       // The EXACT method the WebView XHR handler calls on success.
-      await cubit.storeApiKey(
-        {
-          'apiKey': ordinaryPayload(userId),
-          'sellToFiatBalanceApiKey': scopedKey,
-        },
-        isTestnet: isTestnet,
-      );
+      await cubit.storeApiKey({
+        'apiKey': ordinaryPayload(userId),
+        'sellToFiatBalanceApiKey': scopedKey,
+      }, isTestnet: isTestnet);
     } finally {
       await sub.cancel();
     }
@@ -267,17 +268,27 @@ Future<void> main({bool isInitialized = false}) async {
 
     // 1) Logs captured during the run.
     final leakingLines = captured.where(leaks).length;
-    expect(leakingLines, 0, reason: 'no key value may appear in any log record');
+    expect(
+      leakingLines,
+      0,
+      reason: 'no key value may appear in any log record',
+    );
 
     // 2) BLoC state toString().
-    expect(leaks(cubit.state.toString()), isFalse,
-        reason: 'no key value may appear in ExchangeCubit state');
+    expect(
+      leaks(cubit.state.toString()),
+      isFalse,
+      reason: 'no key value may appear in ExchangeCubit state',
+    );
 
     // 3) On-disk TSV log file the app writes.
     final logFile = File('${Directory.current.path}/bull_logs.tsv');
     if (await logFile.exists()) {
-      expect(leaks(await logFile.readAsString()), isFalse,
-          reason: 'no key value may appear in the on-disk log');
+      expect(
+        leaks(await logFile.readAsString()),
+        isFalse,
+        reason: 'no key value may appear in the on-disk log',
+      );
     }
 
     // Route arguments and the Sentry/analytics buffer are not observable in the

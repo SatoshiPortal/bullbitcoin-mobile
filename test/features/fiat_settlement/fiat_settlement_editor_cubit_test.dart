@@ -40,9 +40,9 @@ void main() {
   setUp(() {
     facade = _MockFacade();
     hasAccount = _MockHasAccount();
-    when(() => facade.configuration()).thenAnswer(
-      (_) async => Ok(_view(product, 0)),
-    );
+    when(
+      () => facade.configuration(),
+    ).thenAnswer((_) async => Ok(_view(product, 0)));
     when(() => hasAccount.execute()).thenAnswer((_) async => true);
   });
 
@@ -72,24 +72,26 @@ void main() {
     expect(cubit.state.isFirstActivation, isFalse);
   });
 
-  test('bitcoin mode can always save; fiat needs currency + acceptance',
-      () async {
-    final cubit = build();
-    await cubit.load();
+  test(
+    'bitcoin mode can always save; fiat needs currency + acceptance',
+    () async {
+      final cubit = build();
+      await cubit.load();
 
-    // Bitcoin selected -> immediately savable.
-    expect(cubit.state.canSave, isTrue);
+      // Bitcoin selected -> immediately savable.
+      expect(cubit.state.canSave, isTrue);
 
-    cubit.selectMode(FiatSettlementReceiveMode.fiat);
-    expect(cubit.state.canSave, isFalse); // no currency yet
+      cubit.selectMode(FiatSettlementReceiveMode.fiat);
+      expect(cubit.state.canSave, isFalse); // no currency yet
 
-    cubit.selectCurrency(FiatCurrency.usd);
-    expect(cubit.state.requiresAcceptance, isTrue);
-    expect(cubit.state.canSave, isFalse); // not understood yet
+      cubit.selectCurrency(FiatCurrency.usd);
+      expect(cubit.state.requiresAcceptance, isTrue);
+      expect(cubit.state.canSave, isFalse); // not understood yet
 
-    cubit.setUnderstood(true);
-    expect(cubit.state.canSave, isTrue);
-  });
+      cubit.setUnderstood(true);
+      expect(cubit.state.canSave, isTrue);
+    },
+  );
 
   test('a successful save commits the returned config as saved', () async {
     when(
@@ -113,41 +115,41 @@ void main() {
     expect(cubit.state.saved?.fiatPercentage, 100);
   });
 
-  test('a failed save preserves the prior saved config and surfaces failure',
-      () async {
-    when(() => facade.configuration()).thenAnswer(
-      (_) async => Ok(_view(product, 50, currency: FiatCurrency.cad)),
-    );
-    when(
-      () => facade.set(
-        product: any(named: 'product'),
-        fiatPercentage: any(named: 'fiatPercentage'),
-        currency: any(named: 'currency'),
-      ),
-    ).thenAnswer(
-      (_) async => const Err(FiatSettlementFailure.kycRequired()),
-    );
-    final cubit = build();
-    await cubit.load();
-    cubit.selectCurrency(FiatCurrency.eur);
-    cubit.setUnderstood(true);
+  test(
+    'a failed save preserves the prior saved config and surfaces failure',
+    () async {
+      when(() => facade.configuration()).thenAnswer(
+        (_) async => Ok(_view(product, 50, currency: FiatCurrency.cad)),
+      );
+      when(
+        () => facade.set(
+          product: any(named: 'product'),
+          fiatPercentage: any(named: 'fiatPercentage'),
+          currency: any(named: 'currency'),
+        ),
+      ).thenAnswer((_) async => const Err(FiatSettlementFailure.kycRequired()));
+      final cubit = build();
+      await cubit.load();
+      cubit.selectCurrency(FiatCurrency.eur);
+      cubit.setUnderstood(true);
 
-    await cubit.save();
+      await cubit.save();
 
-    expect(cubit.state.status, FiatSettlementEditorStatus.ready);
-    expect(cubit.state.failure, isA<FiatSettlementKycRequiredFailure>());
-    // Prior config intact.
-    expect(cubit.state.saved?.fiatPercentage, 50);
-    expect(cubit.state.saved?.currency, FiatCurrency.cad);
-  });
+      expect(cubit.state.status, FiatSettlementEditorStatus.ready);
+      expect(cubit.state.failure, isA<FiatSettlementKycRequiredFailure>());
+      // Prior config intact.
+      expect(cubit.state.saved?.fiatPercentage, 50);
+      expect(cubit.state.saved?.currency, FiatCurrency.cad);
+    },
+  );
 
   test('selecting bitcoin then saving disables via the facade', () async {
     when(() => facade.configuration()).thenAnswer(
       (_) async => Ok(_view(product, 50, currency: FiatCurrency.cad)),
     );
-    when(() => facade.disable(product: any(named: 'product'))).thenAnswer(
-      (_) async => Ok(_view(product, 0)),
-    );
+    when(
+      () => facade.disable(product: any(named: 'product')),
+    ).thenAnswer((_) async => Ok(_view(product, 0)));
     final cubit = build();
     await cubit.load();
     cubit.selectMode(FiatSettlementReceiveMode.bitcoin);
@@ -192,9 +194,9 @@ void main() {
     when(() => facade.configuration()).thenAnswer(
       (_) async => Ok(_view(product, 50, currency: FiatCurrency.cad)),
     );
-    when(() => facade.disable(product: any(named: 'product'))).thenAnswer(
-      (_) async => Ok(_view(product, 0)),
-    );
+    when(
+      () => facade.disable(product: any(named: 'product')),
+    ).thenAnswer((_) async => Ok(_view(product, 0)));
     final cubit = build();
     await cubit.load();
     // Mixed product, slider dragged all the way to Bitcoin.

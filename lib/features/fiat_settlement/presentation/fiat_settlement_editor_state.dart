@@ -1,12 +1,6 @@
 import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 
-enum FiatSettlementEditorStatus {
-  loading,
-  ready,
-  saving,
-  success,
-  loadError,
-}
+enum FiatSettlementEditorStatus { loading, ready, saving, success, loadError }
 
 /// How the merchant wants to receive funds — the three chooser options.
 enum FiatSettlementReceiveMode { bitcoin, fiat, mix }
@@ -67,7 +61,8 @@ class FiatSettlementEditorState {
   bool get requiresAcceptance {
     if (effectiveFiatPercentage == 0) return false;
     final savedConfig = saved;
-    final isCurrencyChange = savedConfig == null ||
+    final isCurrencyChange =
+        savedConfig == null ||
         savedConfig.isBitcoinOnly ||
         savedConfig.currency != currency;
     return isCurrencyChange;
