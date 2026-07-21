@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/sync/sync_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
+import 'package:bb_mobile/features/announcements/announcements_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
@@ -87,6 +88,7 @@ class AppLocator {
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
+    AnnouncementsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);

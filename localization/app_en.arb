@@ -14891,5 +14891,37 @@
   "statusCheckDisabled": "Disabled",
   "@statusCheckDisabled": {
     "description": "Status label on the service status page for a service the user has intentionally turned off (e.g. payjoin disabled in settings)."
+  },
+  "announcementPayjoinTitle": "Increase your privacy",
+  "@announcementPayjoinTitle": {
+    "description": "Title of the home announcement inviting the user to enable payjoin for better on-chain privacy."
+  },
+  "announcementPayjoinDescription": "Turn on Payjoin to make your Bitcoin payments more private.",
+  "@announcementPayjoinDescription": {
+    "description": "Description of the home announcement inviting the user to enable payjoin."
+  },
+  "announcementAutoswapTitle": "Autoswap is active",
+  "@announcementAutoswapTitle": {
+    "description": "Title of the home announcement informing the user that autoswap is currently enabled."
+  },
+  "announcementAutoswapDescription": "Your Bitcoin is automatically swapped to Liquid.",
+  "@announcementAutoswapDescription": {
+    "description": "Description of the home announcement informing the user that autoswap is enabled."
+  },
+  "announcementDismissConfirmTitle": "Dismiss this announcement?",
+  "@announcementDismissConfirmTitle": {
+    "description": "Title of the confirmation dialog shown before dismissing a home announcement."
+  },
+  "announcementDismissConfirmBody": "Read to learn more, or dismiss to hide it. Dismissed announcements won't show again.",
+  "@announcementDismissConfirmBody": {
+    "description": "Body of the confirmation dialog shown before dismissing a home announcement."
+  },
+  "announcementDismissConfirmAction": "Dismiss",
+  "@announcementDismissConfirmAction": {
+    "description": "Confirm button label to dismiss a home announcement."
+  },
+  "announcementDismissConfirmRead": "Read",
+  "@announcementDismissConfirmRead": {
+    "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   }
 }

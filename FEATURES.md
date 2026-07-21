@@ -45,12 +45,15 @@ graph TB
     PAY[Pay]
     BUY[Buy]
     COINS[Coins / UTXOs]
+    ANNOUNCEMENTS[Announcements]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
+    ANNOUNCEMENTS --> SETTINGS
+    ANNOUNCEMENTS --> TX_HISTORY
     APP_STARTUP --> WALLETS
     AUTOSWAPS --> TRANSFER
     BIP85 --> SECRETS
@@ -72,9 +75,12 @@ graph TB
     LABELS --> CORE
     PAY --> RECIPIENTS
     PAYJOIN --> UTXO_MGMT
+    PAYJOIN --> LABELS
     PIN_CODE --> CORE
     RECEIVE --> PAYJOIN
+    RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
+    RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
     SECRETS --> CORE
     SELL --> EXCHANGE
@@ -82,6 +88,7 @@ graph TB
     SEND --> NETWORK
     SEND --> PAYJOIN
     SEND --> SWAPS
+    SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
     SEND --> WALLETS
     SETTINGS --> CORE
@@ -105,7 +112,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,PAYJOIN,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS featureStyle
+    class SETTINGS,TOR,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,PAYJOIN,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAPS,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS featureStyle
 ```
 
 ## About Package Dependency Diagrams
