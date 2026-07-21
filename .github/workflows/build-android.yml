@@ -23,7 +23,7 @@ jobs:
     steps:
       # Pinned to a commit SHA (not the mutable v7 tag): this job handles the
       # beta signing secrets below, so a retag must not run here.
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Short SHA for the artifact name so each build is traceable to a commit.
       # `github` context has no short-SHA field; compute it from the checkout.
