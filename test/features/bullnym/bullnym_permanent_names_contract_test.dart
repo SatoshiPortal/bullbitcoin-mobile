@@ -202,42 +202,37 @@ void main() {
       expect(lookup.publicNameStatus!.lightningAddressOnline, isFalse);
     });
 
-    test(
-      'permanent-name lookup without legacy active derives liveness from '
-      'lightning_address_online',
-      () async {
-        // Exact production pay2 body captured 2026-07-16 for a freshly
-        // registered permanent name: no legacy `active` field.
-        final stub = _stubDio([
-          {
-            'nym': 'bbe2enopay20260716151742',
-            'lightning_address_online': true,
-            'alias': null,
-            'public_name_policy': 'permanent_names_v1',
-            'quota': {'used': 1, 'cap': 1, 'remaining': 0},
-          },
-        ]);
-        final facade = BullnymFacade(
-          client: BullnymHttpClient.withDio(stub.dio),
-        );
+    test('permanent-name lookup without legacy active derives liveness from '
+        'lightning_address_online', () async {
+      // Exact production pay2 body captured 2026-07-16 for a freshly
+      // registered permanent name: no legacy `active` field.
+      final stub = _stubDio([
+        {
+          'nym': 'bbe2enopay20260716151742',
+          'lightning_address_online': true,
+          'alias': null,
+          'public_name_policy': 'permanent_names_v1',
+          'quota': {'used': 1, 'cap': 1, 'remaining': 0},
+        },
+      ]);
+      final facade = BullnymFacade(client: BullnymHttpClient.withDio(stub.dio));
 
-        final lookup = _unwrap(
-          await facade.lookupRegistration(npubHex: 'aa' * 32),
-        );
-        final status = lookup.publicNameStatus;
+      final lookup = _unwrap(
+        await facade.lookupRegistration(npubHex: 'aa' * 32),
+      );
+      final status = lookup.publicNameStatus;
 
-        expect(lookup.nym, 'bbe2enopay20260716151742');
-        expect(lookup.active, isTrue);
-        expect(status, isNotNull);
-        expect(status!.nym, BullnymPublicName('bbe2enopay20260716151742'));
-        expect(status.alias, isNull);
-        expect(status.lightningAddressOnline, isTrue);
-        expect(status.supportsPermanentNamesV1, isTrue);
-        expect(status.quota.used, 1);
-        expect(status.quota.cap, 1);
-        expect(status.quota.remaining, 0);
-      },
-    );
+      expect(lookup.nym, 'bbe2enopay20260716151742');
+      expect(lookup.active, isTrue);
+      expect(status, isNotNull);
+      expect(status!.nym, BullnymPublicName('bbe2enopay20260716151742'));
+      expect(status.alias, isNull);
+      expect(status.lightningAddressOnline, isTrue);
+      expect(status.supportsPermanentNamesV1, isTrue);
+      expect(status.quota.used, 1);
+      expect(status.quota.cap, 1);
+      expect(status.quota.remaining, 0);
+    });
 
     test('legacy lookup without a policy still requires active', () async {
       final stub = _stubDio([
