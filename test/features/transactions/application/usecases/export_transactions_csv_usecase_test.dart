@@ -182,6 +182,22 @@ void main() {
           confirmationTime: DateTime.utc(2026, 1, 16, 0, 1),
         ),
       ),
+      // Pins the exclusive end boundary: the last instant of Jan 15 UTC is
+      // included, while the first instant of Jan 16 UTC is excluded.
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'last_instant',
+          amountSat: 4,
+          confirmationTime: DateTime.utc(2026, 1, 15, 23, 59, 59),
+        ),
+      ),
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'boundary',
+          amountSat: 5,
+          confirmationTime: DateTime.utc(2026, 1, 16),
+        ),
+      ),
     ]);
 
     final csv = await usecase.execute(
@@ -190,8 +206,10 @@ void main() {
     );
 
     expect(csv, contains('inside'));
+    expect(csv, contains('last_instant'));
     expect(csv, isNot(contains('before')));
     expect(csv, isNot(contains('after')));
+    expect(csv, isNot(contains('boundary')));
   });
 
   test('null-timestamp tx is excluded when a date range is set', () async {
