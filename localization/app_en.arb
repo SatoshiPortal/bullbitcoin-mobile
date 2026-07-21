@@ -1547,14 +1547,6 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
-  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
-  "@receivePayjoinNoUtxos": {
-    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
-  },
-  "receivePayjoinActivated": "Payjoin activated",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "receiveLightningInvoice": "Lightning invoice",
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
@@ -14751,5 +14743,153 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "settingsPayjoinTitle": "Payjoin",
+  "@settingsPayjoinTitle": {
+    "description": "Title of the payjoin settings screen"
+  },
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to the person you are transacting with — someone you are already paying anyway.",
+  "@settingsPayjoinPrivacyGainExplanation": {
+    "description": "First disclosure paragraph on the payjoin settings screen: the privacy benefit and the UTXO-exposure risk it trades against"
+  },
+  "settingsPayjoinV1DirectoryLeakExplanation": "If the person you are paying uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
+  "@settingsPayjoinV1DirectoryLeakExplanation": {
+    "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
+  },
+  "settingsPayjoinEnabledLabel": "Payjoin enabled",
+  "@settingsPayjoinEnabledLabel": {
+    "description": "Label next to the global payjoin enable/disable switch"
+  },
+  "settingsPayjoinMinAmountTitle": "Minimum amount",
+  "@settingsPayjoinMinAmountTitle": {
+    "description": "Title of the payjoin minimum receive amount field"
+  },
+  "settingsPayjoinMinAmountDescription": "Payjoin is declined below this amount, and the payment is received normally instead.",
+  "@settingsPayjoinMinAmountDescription": {
+    "description": "Explanation under the payjoin minimum receive amount field"
+  },
+  "settingsPayjoinMinAmountRangeError": "Must be between {min} and {max} sats",
+  "@settingsPayjoinMinAmountRangeError": {
+    "description": "Validation error when the payjoin minimum amount is out of bounds",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinExpireTitle": "Session expiry",
+  "@settingsPayjoinExpireTitle": {
+    "description": "Title of the payjoin session expiry field"
+  },
+  "settingsPayjoinExpireDescription": "How long a payjoin session stays open, in seconds, before falling back to a normal payment.",
+  "@settingsPayjoinExpireDescription": {
+    "description": "Explanation under the payjoin session expiry field"
+  },
+  "settingsPayjoinExpireRangeError": "Must be between {min} and {max} seconds",
+  "@settingsPayjoinExpireRangeError": {
+    "description": "Validation error when the payjoin session expiry is out of bounds",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinServersTitle": "Servers",
+  "@settingsPayjoinServersTitle": {
+    "description": "Title of the read-only payjoin servers section"
+  },
+  "settingsPayjoinDirectoryLabel": "Payjoin directory",
+  "@settingsPayjoinDirectoryLabel": {
+    "description": "Label for the payjoin directory URL, shown read-only"
+  },
+  "settingsPayjoinRelaysLabel": "OHTTP relays",
+  "@settingsPayjoinRelaysLabel": {
+    "description": "Label for the list of OHTTP relay URLs, shown read-only"
+  },
+  "bitcoinSettingsPayjoinTitle": "Payjoin",
+  "@bitcoinSettingsPayjoinTitle": {
+    "description": "Entry to the payjoin settings screen from the bitcoin settings screen"
+  },
+  "transactionStatusPayjoinAborted": "Payjoin aborted",
+  "@transactionStatusPayjoinAborted": {
+    "description": "Shown when a payjoin was aborted and the payment landed as a plain transaction instead"
+  },
+  "transactionDetailLabelPayjoinAborted": "Aborted",
+  "@transactionDetailLabelPayjoinAborted": {
+    "description": "Payjoin aborted status (fell back to a plain transaction)"
+  },
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin fee contribution",
+  "@transactionDetailLabelPayjoinFeeContribution": {
+    "description": "Row label on transaction details (receive side of a completed payjoin) for the mining fee deducted from the received amount to pay for the input the receiver contributed."
+  },
+  "transactionPayjoinFeeContributionExplanation": "A payjoin adds one of your coins as an extra input to the payment to improve privacy. The mining fee for that added input is deducted from the amount you receive (BIP78).",
+  "@transactionPayjoinFeeContributionExplanation": {
+    "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
+  },
+  "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
+  "@sendPayjoinWillBeAttempted": {
+    "description": "Confirm-screen indicator shown when a payjoin will be attempted for the send."
+  },
+  "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
+  "@sendSentWithoutPayjoin": {
+    "description": "Success-screen notice when a payjoin send fell back to a plain broadcast."
+  },
+  "sendPayjoinFallbackCountdown": "Falling back to a normal payment in",
+  "@sendPayjoinFallbackCountdown": {
+    "description": "Sending-screen countdown label before the payjoin fallback to a normal payment."
+  },
+  "transactionDetailLabelPayjoinInProgress": "In progress",
+  "@transactionDetailLabelPayjoinInProgress": {
+    "description": "Payjoin in progress status"
+  },
+  "receivePayjoinExpired": "Payjoin timed out",
+  "@receivePayjoinExpired": {
+    "description": "Title on the receive payjoin screen when the session expired without completing."
+  },
+  "receivePayjoinExpiredSubtext": "The payjoin window closed. The payment is being received as a regular transaction instead.",
+  "@receivePayjoinExpiredSubtext": {
+    "description": "Subtext explaining the expired payjoin fallback on the receive screen."
+  },
+  "receivePayjoinBelowMinimum": "Amount Below Payjoin Minimum",
+  "@receivePayjoinBelowMinimum": {
+    "description": "Title when an incoming payment was below the payjoin minimum and received as a regular transaction."
+  },
+  "receivePayjoinBelowMinimumSubtext": "This payment was smaller than your Payjoin minimum, so it was received as a regular transaction. You can change this threshold in Bitcoin settings.",
+  "@receivePayjoinBelowMinimumSubtext": {
+    "description": "Subtext for a below-minimum payjoin decline on the receive screen."
+  },
+  "receivePayjoinFallbackCompleted": "Received Without Payjoin",
+  "@receivePayjoinFallbackCompleted": {
+    "description": "Title when a payjoin could not be completed and the payment was received as a regular transaction."
+  },
+  "receivePayjoinFallbackCompletedSubtext": "A Payjoin could not be completed this time, so the payment was received as a regular transaction.",
+  "@receivePayjoinFallbackCompletedSubtext": {
+    "description": "Subtext for a generic payjoin fallback completion on the receive screen."
+  },
+  "receiveViewDetails": "View Details",
+  "@receiveViewDetails": {
+    "description": "Button to open transaction details from the receive payjoin screen."
+  },
+  "receivePayjoinFallbackCountdown": "Falling back to a normal payment in",
+  "@receivePayjoinFallbackCountdown": {
+    "description": "Label preceding a countdown until the payjoin falls back to a normal payment."
+  },
+  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
+  "@receivePayjoinNoUtxos": {
+    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
+  },
+  "receivePayjoinActivated": "Payjoin activated",
+  "@receivePayjoinActivated": {
+    "description": "Message indicating that payjoin is activated for the receive transaction"
+  },
+  "statusCheckDisabled": "Disabled",
+  "@statusCheckDisabled": {
+    "description": "Status label on the service status page for a service the user has intentionally turned off (e.g. payjoin disabled in settings)."
   }
 }

@@ -11997,10 +11997,6 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "Payjoin 활성화",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "importMnemonicContinue": "계속하기",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -12934,5 +12930,9 @@
   "logsShareOptionShare": "공유",
   "logsShareOptionExport": "내보내기",
   "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
-  "logsExportFailedMessage": "로그 내보내기에 실패했습니다"
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
+  "transactionStatusPayjoinAborted": "Payjoin 중단됨",
+  "transactionDetailLabelPayjoinAborted": "중단됨",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78)."
 }

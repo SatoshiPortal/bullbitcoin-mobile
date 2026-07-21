@@ -602,5 +602,9 @@
   "logsShareOptionShare": "Shiriki",
   "logsShareOptionExport": "Hamisha",
   "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
-  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu"
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu",
+  "transactionStatusPayjoinAborted": "Payjoin imesitishwa",
+  "transactionDetailLabelPayjoinAborted": "Imesitishwa",
+  "transactionDetailLabelPayjoinFeeContribution": "Mchango wa ada ya Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin huongeza moja ya sarafu zako kama ingizo la ziada kwenye malipo ili kuboresha faragha. Ada ya uchimbaji kwa ingizo hilo lililoongezwa hukatwa kutoka kiasi unachopokea (BIP78)."
 }

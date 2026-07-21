@@ -3978,7 +3978,6 @@
   "broadcastSignedTxErrorInvalidTransaction": "Das sieht nicht nach einer gültigen signierten Transaktion aus. Stelle sicher, dass du das vollständige PSBT oder die vollständige Transaktion eingefügt hast.",
   "broadcastSignedTxErrorInvalidPushTx": "Wir konnten aus diesem Tag keine Transaktion lesen. Bitte scanne erneut.",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
-  "receivePayjoinActivated": "Payjoin aktiviert",
   "importMnemonicContinue": "Fortfahren",
   "psbtFlowMoveLaser": "Bewegen Sie den roten Laser über den QR-Code",
   "chooseVaultLocationTitle": "Wählen Sie den Speicherort",
@@ -4729,7 +4728,6 @@
   "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
   "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
   "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden",
-  "receivePayjoinNoUtxos": "Empfangen Sie zuerst Geld, um dies zu aktivieren.\nUTXOs sind erforderlich, um Payjoin zu nutzen.",
   "payViewReceipt": "Beleg anzeigen",
   "paySinpeReceipt": "SINPE-Beleg",
   "transactionFilterWithdraw": "Auszahlung",
@@ -5090,5 +5088,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "transactionStatusPayjoinAborted": "Payjoin abgebrochen",
+  "transactionDetailLabelPayjoinAborted": "Abgebrochen",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-Gebührenbeitrag",
+  "transactionPayjoinFeeContributionExplanation": "Ein Payjoin fügt der Zahlung eine deiner Münzen als zusätzlichen Eingang hinzu, um die Privatsphäre zu verbessern. Die Mining-Gebühr für diesen zusätzlichen Eingang wird vom empfangenen Betrag abgezogen (BIP78)."
 }

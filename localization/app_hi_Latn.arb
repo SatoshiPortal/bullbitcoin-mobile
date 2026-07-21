@@ -1428,10 +1428,6 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
-  "receivePayjoinActivated": "Payjoin chalu hai",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "receiveLightningInvoice": "Lightning invoice",
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
@@ -13389,5 +13385,9 @@
   "logsShareOptionShare": "Share karein",
   "logsShareOptionExport": "Export karein",
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
-  "logsExportFailedMessage": "Logs export karne mein vifal"
+  "logsExportFailedMessage": "Logs export karne mein vifal",
+  "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78)."
 }

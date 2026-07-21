@@ -11689,10 +11689,6 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "Aktivace Payjoin",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "psbtFlowMoveLaser": "Přesunout červený laser nahoru a dolů přes QR kód",
   "@psbtFlowMoveLaser": {
     "description": "Troubleshooting tip for devices with laser scanners"
@@ -13052,5 +13048,9 @@
   "logsShareOptionShare": "Sdílet",
   "logsShareOptionExport": "Exportovat",
   "logsExportedMessage": "Záznamy byly úspěšně exportovány",
-  "logsExportFailedMessage": "Export záznamů se nezdařil"
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "transactionStatusPayjoinAborted": "Payjoin přerušen",
+  "transactionDetailLabelPayjoinAborted": "Přerušeno",
+  "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
 }

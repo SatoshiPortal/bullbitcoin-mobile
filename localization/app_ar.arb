@@ -11252,10 +11252,6 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "تم تنشيط بيجوين",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "importMnemonicContinue": "استمر",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -12938,5 +12934,9 @@
   "logsShareOptionShare": "مشاركة",
   "logsShareOptionExport": "تصدير",
   "logsExportedMessage": "تم تصدير السجلات بنجاح",
-  "logsExportFailedMessage": "فشل تصدير السجلات"
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
+  "transactionDetailLabelPayjoinAborted": "ملغى",
+  "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
 }

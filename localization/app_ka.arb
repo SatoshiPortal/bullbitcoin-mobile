@@ -794,5 +794,9 @@
   "logsShareOptionShare": "გაზიარება",
   "logsShareOptionExport": "ექსპორტი",
   "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
-  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა"
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა",
+  "transactionStatusPayjoinAborted": "Payjoin გაუქმდა",
+  "transactionDetailLabelPayjoinAborted": "გაუქმებულია",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin საკომისიოს შენატანი",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ი კონფიდენციალურობის გასაუმჯობესებლად ამატებს თქვენს ერთ მონეტას გადახდაში, როგორც დამატებით შენატანს. ამ დამატებული შენატანის მოპოვების საკომისიო აკლდება თანხას, რომელსაც იღებთ (BIP78)."
 }
