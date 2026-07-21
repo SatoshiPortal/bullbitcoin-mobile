@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -91,6 +92,12 @@ class ReceiveQRDetails extends StatelessWidget {
     );
     final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
     final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
+    final isPayjoinAwaitingFunds = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinAwaitingFunds,
+    );
+    final isPayjoinSuppressedByAmount = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinSuppressedByAmount,
+    );
 
     final gap = Device.screen.height * 0.02;
     return Padding(
@@ -139,8 +146,23 @@ class ReceiveQRDetails extends StatelessWidget {
             ),
           Gap(gap),
           Center(child: QrDisplayWidget(data: qrData)),
-          const _PayjoinSwitch(),
           Gap(gap),
+          if (isBitcoin && isPayjoinAwaitingFunds) ...[
+            InfoCard(
+              description: context.loc.receivePayjoinAwaitingFunds,
+              tagColor: context.appColors.secondary,
+              bgColor: context.appColors.onSecondary,
+            ),
+            Gap(gap),
+          ],
+          if (isBitcoin && isPayjoinSuppressedByAmount) ...[
+            InfoCard(
+              description: context.loc.receivePayjoinBelowMinimumAmount,
+              tagColor: context.appColors.secondary,
+              bgColor: context.appColors.onSecondary,
+            ),
+            Gap(gap),
+          ],
           BorderedTappableTile(
             backgroundColor: context.appColors.surfaceContainerHighest,
             onTap: () => isLightning
@@ -614,74 +636,6 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           const Gap(16),
         ],
       ],
-    );
-  }
-}
-
-class _PayjoinSwitch extends StatelessWidget {
-  const _PayjoinSwitch();
-
-  @override
-  Widget build(BuildContext context) {
-    final canUsePayjoin = context.select<ReceiveBloc, bool>(
-      (bloc) =>
-          bloc.state.type == ReceiveType.bitcoin &&
-          (bloc.state.wallet?.signsLocally ?? false),
-    );
-    if (!canUsePayjoin) return const SizedBox.shrink();
-
-    final hasUtxos = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state.hasUtxos,
-    );
-    final isAddressOnly = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state.isAddressOnly,
-    );
-    final isOn = !isAddressOnly && hasUtxos;
-
-    void toggle() {
-      final turnOn = !isOn;
-      if (turnOn && !hasUtxos) {
-        SnackBarUtils.showSnackBar(context, context.loc.receivePayjoinNoUtxos);
-        return;
-      }
-      context.read<ReceiveBloc>().add(
-        ReceiveEvent.receiveAddressOnlyToggled(!turnOn),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: toggle,
-          borderRadius: BorderRadius.circular(8),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: context.appColors.onSecondary,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: context.appColors.secondaryFixedDim),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: BBText(
-                      context.loc.receivePayjoinActivated,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.secondary,
-                    ),
-                  ),
-                  AbsorbPointer(
-                    child: Switch(value: isOn, onChanged: (_) {}),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
