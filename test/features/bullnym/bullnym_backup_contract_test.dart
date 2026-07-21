@@ -248,4 +248,24 @@ final class _RecordingClient implements BullnymClientPort {
   @override
   Future<BullnymRegisterResult> register(BullnymRegisterRequest request) =>
       throw UnimplementedError();
+
+  @override
+  Future<BullnymDonationPage> getDonationPage({
+    required String nym,
+    required String kind,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<BullnymDonationPage> saveDonationPage(
+    BullnymSaveDonationPageRequest request,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<BullnymDonationPage> archiveDonationPage(
+    BullnymArchiveDonationPageRequest request,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<BullnymSupportedCurrencies> getSupportedCurrencies() =>
+      throw UnimplementedError();
 }
