@@ -156,6 +156,7 @@ dev_dependencies:
   # Direct dep for the webview test fake: the Platform* types and callback typedefs it extends are not re-exported by webview_flutter.
   webview_flutter_platform_interface: ^2.15.1
   flutter_launcher_icons: ^0.14.4
+  path_provider_platform_interface: ^2.1.2
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
