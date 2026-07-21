@@ -2053,7 +2053,16 @@ class SendCubit extends Cubit<SendState>
         await signTransaction();
         // if (!state.isLightning) {
         if (state.confirmTransactionException == null) {
-          emit(state.copyWith(step: SendStep.sending));
+          // _watchPayjoin (armed inside signTransaction's payjoin branch)
+          //  can resolve the flow to success before this line, if a
+          //  terminal payjoin event arrives in the gap between arming and
+          //  here. Don't clobber an already-resolved success with
+          //  "sending" — that would strand the flow on the sending screen
+          //  despite having actually completed (the exact symptom #2246
+          //  fixes, just a narrower window of it).
+          if (state.step != SendStep.success) {
+            emit(state.copyWith(step: SendStep.sending));
+          }
         } else {
           emit(state.copyWith(step: SendStep.confirm));
           return;
@@ -2167,8 +2176,13 @@ class SendCubit extends Cubit<SendState>
   ///
   /// - completed: the receiver responded and the payjoin transaction was
   ///   broadcast — move to success with the payjoin txid.
-  /// - expired/aborted: the repository fell back to broadcasting the original
-  ///   transaction — move to success with the original txid.
+  /// - aborted: the repository fell back to broadcasting the original
+  ///   transaction (below-minimum decline, failed negotiation, or the
+  ///   counterparty's own fallback observed on-chain) — move to success
+  ///   with the original txid.
+  /// - expired: terminal with nothing broadcast — the original-transaction
+  ///   fallback itself also failed — return to confirm with a
+  ///   broadcast-failure exception so the user can retry.
   void _watchPayjoin(String payjoinId) {
     _payjoinSubscription?.cancel();
     // Captured up front: the completion event fires arbitrarily later on a
