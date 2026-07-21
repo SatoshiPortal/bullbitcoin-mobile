@@ -1,8 +1,6 @@
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_auth_signer.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_actions.dart';
-import 'package:bb_mobile/features/bullnym/domain/bullnym_backup_blob.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_client_port.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_donation_page.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_error.dart';
@@ -20,74 +18,6 @@ class RecordingBullnymClient implements BullnymClientPort {
   final List<String> getKinds = [];
   final Map<String, BullnymBackupHead> _backups = {};
   int getDonationPageCalls = 0;
-
-  String _backupKey(BullnymBackupStream stream, String npubHex) =>
-      '${stream.wireName}|$npubHex';
-
-  @override
-  Future<BullnymBackupHead> fetchBackup(
-    BullnymBackupFetchRequest request,
-  ) async {
-    return _backups[_backupKey(request.stream, request.npubHex)] ??
-        BullnymBackupHead.absent(generation: 0, etag: null);
-  }
-
-  @override
-  Future<BullnymBackupStoreReceipt> storeBackup(
-    BullnymBackupStoreRequest request,
-  ) async {
-    final key = _backupKey(request.stream, request.npubHex);
-    final current = _backups[key];
-    if (request.expectedEtag != current?.etag) throw _backupConflict();
-    final etag = computeWalletBackupEtag(
-      stream: request.stream,
-      npubHex: request.npubHex,
-      generation: request.generation,
-      ciphertextSha256: request.ciphertextSha256,
-    );
-    _backups[key] = BullnymBackupHead.present(
-      generation: request.generation,
-      etag: etag,
-      ciphertext: request.ciphertext,
-      ciphertextSha256: request.ciphertextSha256,
-      updatedAtSecs: request.timestamp,
-    );
-    return BullnymBackupStoreReceipt(
-      generation: request.generation,
-      etag: etag,
-    );
-  }
-
-  @override
-  Future<BullnymBackupDeleteReceipt> deleteBackup(
-    BullnymBackupDeleteRequest request,
-  ) async {
-    final key = _backupKey(request.stream, request.npubHex);
-    final current = _backups[key];
-    if (request.expectedEtag != current?.etag) throw _backupConflict();
-    final etag = computeWalletBackupEtag(
-      stream: request.stream,
-      npubHex: request.npubHex,
-      generation: request.generation,
-      ciphertextSha256: '',
-    );
-    _backups[key] = BullnymBackupHead.absent(
-      generation: request.generation,
-      etag: etag,
-    );
-    return BullnymBackupDeleteReceipt(
-      generation: request.generation,
-      etag: etag,
-    );
-  }
-
-  BullnymException _backupConflict() =>
-      const BullnymException.serverRejectedRequest(
-        code: 'BackupConflict',
-        diagnosticReason: 'backup etag mismatch',
-        statusCode: 409,
-        retryable: false,
-      );
 
   BullnymDonationPage? storedPage;
   BullnymException? getError;
