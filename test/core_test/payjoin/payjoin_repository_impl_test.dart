@@ -227,10 +227,11 @@ void main() {
         onlyUnfinished: any(named: 'onlyUnfinished'),
       ),
     ).thenAnswer((_) async => []);
-    // The resume sweep for expired-with-failed-fallback receivers — empty by
-    // default, overridden in the sweep tests. Only runs from
+    // The resume sweep for expired-with-failed-fallback receivers/senders —
+    // empty by default, overridden in the sweep tests. Only runs from
     // resumePayjoinsOnStartup, never the constructor.
     when(() => localDatasource.fetchReceivers()).thenAnswer((_) async => []);
+    when(() => localDatasource.fetchSenders()).thenAnswer((_) async => []);
     when(() => localDatasource.update(any())).thenAnswer((_) async {});
 
     // Passive watchers must never fire spuriously: an empty sync stream and
