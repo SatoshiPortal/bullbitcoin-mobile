@@ -83,7 +83,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         mnemonicWords: event.mnemonic.words,
       );
       await _completePhysicalBackupVerificationUsecase.execute();
-      await _recoverRemoteKeychainUsecase.execute();
+      _recoverRemoteKeychainUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
       await _handleError(e, emit);
