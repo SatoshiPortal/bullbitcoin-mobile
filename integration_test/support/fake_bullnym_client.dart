@@ -13,12 +13,7 @@ enum FakeBullnymMode {
 }
 
 /// Donation-page fault modes for the payment-page/POS recovery matrix.
-enum FakeDonationPageMode {
-  normal,
-  missing,
-  archived,
-  serverUnreachable,
-}
+enum FakeDonationPageMode { normal, missing, archived, serverUnreachable }
 
 /// In-memory Bullnym boundary for Get Paid lifecycle tests.
 ///
