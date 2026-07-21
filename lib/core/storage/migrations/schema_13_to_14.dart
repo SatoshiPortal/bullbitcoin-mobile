@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 13 to 14
@@ -73,6 +74,17 @@ class Schema13To14 {
     // New dismissed_announcements table: one row per home announcement the
     // user has dismissed (announcement id + dismissal timestamp). A brand-new
     // table, so existing installs simply start with zero dismissals.
-    await m.createTable(schema14.dismissedAnnouncements);
+    try {
+      await m.createTable(schema14.dismissedAnnouncements);
+    } catch (e) {
+      // Idempotency guard: only swallow "table already exists" (a re-run over a
+      // partially-applied migration) — log it so a driver wording change
+      // surfaces instead of silently becoming a hard failure.
+      if (!e.toString().contains('already exists')) rethrow;
+      log.warning(
+        'Schema13To14: dismissed_announcements already exists — skipping create',
+        error: e,
+      );
+    }
   }
 }
