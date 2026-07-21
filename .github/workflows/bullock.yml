@@ -76,7 +76,11 @@ jobs:
     # Write-access gating happens twice: the first step fails fast for
     # non-write actors, and claude-code-action enforces it again internally —
     # this `if` just avoids spinning a runner on unrelated comments.
-    if: contains(github.event.comment.body, '@bullock')
+    # The Bot filter matters because GITHUB_TOKEN comments never retrigger
+    # workflows (GitHub anti-recursion) but GitHub-App comments DO: a claude.yml
+    # review quoting "@bullock" from the thread would otherwise spin a runner
+    # and die red at the access gate — noise on the PR, wasted runner.
+    if: contains(github.event.comment.body, '@bullock') && github.event.comment.user.type != 'Bot'
     runs-on: ubuntu-24.04
     # analyze_and_test's checks job needs ~30min for setup + `make checks` alone;
     # Bullock adds Claude's implement/verify loop on top of the same prefix.
@@ -213,6 +217,13 @@ jobs:
       # format, and Write the verdict sentinel.
       - name: Bullock (Claude Code)
         if: steps.src.outputs.cross != 'true'
+        # Step-level timeout on purpose: the job-level 60min timeout CANCELS the
+        # job, and "Act on Bullock's verdict" is guarded by !cancelled() — so a
+        # job timeout would be a silent red run with no comment. A step timeout
+        # merely FAILS this step, which degrades to the no-valid-verdict comment.
+        # Budget: ~6min gate+setup before this step + 45 here + ~2 of git/PR
+        # plumbing after stays under the job's 60.
+        timeout-minutes: 45
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -272,6 +283,7 @@ jobs:
 
             ## Step 4 — Implement (ONLY if sufficient)
             - Change ONLY what was requested. No opportunistic refactors, no unrelated cleanup.
+            - NEVER modify anything under `.github/` (workflows, actions, CI config) — the workflow refuses to commit such changes. If the request requires a CI change, treat it as insufficient and say so in "question".
             - Follow AGENTS.md strictly: use `fvm`; respect the layer/facade/failure/naming rules; NEVER log or expose secrets (mnemonic/seed/xpriv/PIN); no hardcoded user-facing strings (use `context.loc.*`); no raw colors.
             - After editing, format your new/changed Dart files so the CI format gate can't fail on untracked files:
               run `fvm dart format` on the files you touched, then `git add -A` for the changed source (do NOT add `.bullock/`).
@@ -332,22 +344,27 @@ jobs:
           git config user.name "bullock[bot]"
           git config user.email "bullock@users.noreply.github.com"
 
-          # GITHUB_TOKEN cannot push changes under .github/workflows/ — the push
-          # (below) would be rejected AFTER commit, going red with no feedback.
-          # Bail early with an explanation. This is also a deliberate backstop
-          # against Bullock modifying its own workflow. `git status --porcelain`
-          # reports both tracked edits and new untracked files, and is checked
-          # before staging so a workflow-file change never enters the commit.
-          if [ -n "$(git status --porcelain -- .github/workflows)" ]; then
-            comment "🐂 Bullock's changes touch \`.github/workflows/\`, which a bot token isn't allowed to push. Please make workflow changes manually."
-            echo "Workflow files touched — declined (GITHUB_TOKEN cannot push workflows)."
+          # ALL of .github/ is off-limits to Bullock, for two distinct reasons:
+          # - .github/workflows/: GITHUB_TOKEN cannot push these — the push
+          #   (below) would be rejected AFTER commit, going red with no feedback.
+          # - the rest (.github/actions/ composite, CI config): the token CAN
+          #   push them, but they execute in future CI runs with secrets — a
+          #   prompt-injected change here must be blocked mechanically, not just
+          #   by the prompt's SECURITY section. Bullock has no legitimate reason
+          #   to touch CI; a maintainer changes it manually.
+          # `git status --porcelain` reports both tracked edits and new
+          # untracked files, and is checked before staging so a CI-file change
+          # never enters the commit.
+          if [ -n "$(git status --porcelain -- .github)" ]; then
+            comment "🐂 Bullock's changes touch \`.github/\` (workflows or CI config), which Bullock isn't allowed to modify. Please make CI changes manually."
+            echo "CI files touched — declined (.github/ is off-limits to Bullock)."
             exit 0
           fi
 
           # Stage only source changes; never sweep the whole tree (build_runner
           # drift, make side effects, stray artifacts) into the stacked PR, and
-          # never stage workflow files (guarded above).
-          git add -A -- ':(exclude).github/workflows'
+          # never stage CI files (guarded above).
+          git add -A -- ':(exclude).github'
 
           if git diff --cached --quiet; then
             comment "🐂 Bullock judged the request actionable but produced no changes. Please re-summon with a more specific instruction."
