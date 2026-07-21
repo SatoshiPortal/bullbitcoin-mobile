@@ -42,10 +42,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        # Pinned to a commit SHA (not the mutable v7 tag): this job handles PR
-        # test secrets (funded-testnet mnemonics below), so a retag must not
-        # silently change what runs here.
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7
 
       # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
       # runner has ~21GB free, so dropping this risks turning every PR red on
@@ -107,10 +104,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout Repository
-        # Pinned to a commit SHA (not the mutable v7 tag): this job handles the
-        # integration-test secrets (funded-testnet mnemonics below), so a retag
-        # must not silently change what runs here.
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7
 
       # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
       # Linux desktop app on one runner. The arm64 partner image is leaner

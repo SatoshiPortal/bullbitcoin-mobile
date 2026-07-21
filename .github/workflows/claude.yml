@@ -36,16 +36,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      # Pinned to commit SHAs (not mutable version tags): this job holds
-      # contents:write, id-token:write, and the Anthropic API key, so a
-      # retagged/compromised release of either action must not run here.
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0 # Fetch full history for branch operations
           persist-credentials: true # Keep credentials for subsequent git commands
 
-      - uses: anthropics/claude-code-action@558b1d6cab4085c7753fe402c10bef0fbb92ac7a # v1.0.165
+      - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           # Use Claude Fable 5 — Anthropic's most capable model for review-grade
