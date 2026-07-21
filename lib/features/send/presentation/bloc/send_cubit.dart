@@ -209,8 +209,20 @@ class SendCubit extends Cubit<SendState>
     } else if (state.step == SendStep.amount) {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
+      // Leaving confirm to edit the amount/recipient invalidates whatever
+      // was built/signed for the transaction currently on screen — the
+      // next createTransaction() call (triggered by re-confirming the
+      // amount) already clears these before rebuilding, but clear them
+      // here too so a finalized hardware-wallet signature can never be
+      // shown as "ready to broadcast" while the user is mid-edit.
       emit(
-        state.copyWith(step: SendStep.amount, buildTransactionException: null),
+        state.copyWith(
+          step: SendStep.amount,
+          buildTransactionException: null,
+          signedBitcoinTx: null,
+          signedBitcoinPsbt: null,
+          signedLiquidTx: null,
+        ),
       );
     }
   }
@@ -1524,6 +1536,23 @@ class SendCubit extends Cubit<SendState>
         }
       }
       clearAllExceptions();
+      // A fresh unsigned PSBT is about to be built. Any previously
+      // finalized signature (Trezor/Ledger/BitBox `signedBitcoinTx`, or a
+      // locally-signed `signedBitcoinPsbt`/`signedLiquidTx` from an
+      // earlier call) was produced for THAT build, not this one — once
+      // rebuilt, the old signature must never be broadcastable, even if
+      // none of the visible inputs actually changed shape. Without this,
+      // `onConfirmTransactionClicked`'s `signedBitcoinTx == null` check
+      // can still see a stale signed tx from a previous edit (address,
+      // amount, back/forward through confirm) and skip straight to
+      // broadcasting it instead of the transaction currently on screen.
+      emit(
+        state.copyWith(
+          signedBitcoinTx: null,
+          signedBitcoinPsbt: null,
+          signedLiquidTx: null,
+        ),
+      );
       // Clear the previous build's absolute fee before loadUtxos so the UI
       // doesn't briefly pair a stale Bitcoin fee with newly-changed inputs
       // (rate / amount / utxo selection). The getter falls back to the
