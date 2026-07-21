@@ -858,6 +858,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
     }
 
+    // Same sweep for senders: a sender's original transaction (originalPsbt)
+    // is always available from session creation, unlike a receiver's (which
+    // only arrives with the request), so the only guard needed here is
+    // proposalPsbt == null — mirroring the receiver branch above.
+    final senders = await _localPayjoinDatasource.fetchSenders();
+    for (final sender in senders) {
+      if (sender.isExpired &&
+          !sender.isAborted &&
+          !sender.isCompleted &&
+          sender.proposalPsbt == null) {
+        await _broadcastOriginalTransaction(sender.toEntity());
+      }
+    }
+
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
       // Each session is independent: a bug or a transient failure resuming
