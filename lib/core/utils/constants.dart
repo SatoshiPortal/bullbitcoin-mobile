@@ -127,8 +127,18 @@ class ApiServiceConstants {
   // BullBitcoin API
   static const String bbApiUrl = 'https://api.bullbitcoin.com';
   static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';
-  static const String bbAuthUrl = 'https://accounts.bullbitcoin.com';
-  static const String bbAuthTestUrl = 'https://accounts05.bullbitcoin.dev';
+  // The mainnet exchange auth (BB-Accounts) origin the login WebView loads.
+  // Overridable at build time via --dart-define, following the BULLNYM_BASE_URL
+  // precedent, so a staging BB-Accounts can be pointed at without a code change.
+  // Configuration plumbing only: the default preserves production behaviour.
+  static const String bbAuthUrl = String.fromEnvironment(
+    'BB_AUTH_BASE_URL',
+    defaultValue: 'https://accounts.bullbitcoin.com',
+  );
+  static const String bbAuthTestUrl = String.fromEnvironment(
+    'BB_AUTH_TEST_BASE_URL',
+    defaultValue: 'https://accounts05.bullbitcoin.dev',
+  );
   static const String bbAppUrl = 'https://app.bullbitcoin.com';
   static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static const String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
