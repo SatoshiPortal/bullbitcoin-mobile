@@ -72,6 +72,10 @@ class _MockSetPayjoinEnabledUsecase extends Mock
 //  isPayjoinEnabled/proposal-state gating, not the balance one — a zero
 //  default would make every payjoin-creating test fail for a reason unrelated
 //  to what it names. The balance-eligibility tests override it explicitly.
+// confirmedBalanceSat mirrors balanceSat by default: these tests are about
+// the isPayjoinEnabled/eligibility gating, not the confirmed-vs-unconfirmed
+// distinction, so keeping the two in lockstep here avoids every
+// payjoin-creating test failing for a reason unrelated to what it names.
 Wallet _testWallet({String origin = 'w1', BigInt? balanceSat}) => Wallet(
   origin: origin,
   network: Network.bitcoinMainnet,
@@ -83,6 +87,7 @@ Wallet _testWallet({String origin = 'w1', BigInt? balanceSat}) => Wallet(
   signer: SignerEntity.local,
   signerDevice: null,
   balanceSat: balanceSat ?? BigInt.from(50000),
+  confirmedBalanceSat: balanceSat ?? BigInt.from(50000),
 );
 
 WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(

@@ -320,7 +320,15 @@ abstract class ReceiveState with _$ReceiveState {
     return false;
   }
 
-  bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
+  // Gated on the CONFIRMED component of the balance, not the total: a payjoin
+  // proposal needs a real, already-confirmed UTXO to contribute as an input
+  // (an unconfirmed one is not filtered out anywhere downstream and could be
+  // replaced/invalidated). Fail-closed on a wallet whose confirmedBalanceSat
+  // hasn't been populated (null) rather than falling back to balanceSat,
+  // which would silently reintroduce the total-vs-confirmed gap this exists
+  // to close.
+  bool get hasUtxos =>
+      (wallet?.confirmedBalanceSat ?? BigInt.zero) > BigInt.zero;
 
   /// Whether a payjoin on/off toggle should be offered on the receive screen
   /// for this wallet: it must be a bitcoin receive with a locally-signing,

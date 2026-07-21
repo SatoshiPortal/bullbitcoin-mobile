@@ -28,6 +28,10 @@ void main() {
     signer: SignerEntity.local,
     signerDevice: null,
     balanceSat: balanceSat ?? BigInt.from(50000),
+    // hasUtxos gates on confirmedBalanceSat, not balanceSat — mirror it here
+    // so these tests keep exercising the isPayjoinLoading/isPayjoinAwaitingFunds
+    // semantics they name, not the confirmed-vs-total distinction.
+    confirmedBalanceSat: balanceSat ?? BigInt.from(50000),
   );
 
   WalletAddress address() => WalletAddress(

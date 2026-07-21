@@ -30,6 +30,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -70,7 +71,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
-    on<ReceivePayjoinSettingChanged>(_onPayjoinSettingChanged);
+    // restartable(): a rapid on/off/on toggle must not let a stale event's
+    //  in-flight session creation land after a newer event already decided
+    //  the opposite outcome — restartable() drops a handler's own emit()
+    //  calls once a newer ReceivePayjoinSettingChanged has started (same
+    //  pattern as RecipientsBloc's search debouncing). Combined with the
+    //  explicit re-check inside the handler for defense in depth.
+    on<ReceivePayjoinSettingChanged>(
+      _onPayjoinSettingChanged,
+      transformer: restartable(),
+    );
     on<ReceivePayjoinToggled>(_onPayjoinToggled);
 
     // Live-react to the global payjoin setting changing anywhere in the app
@@ -227,8 +237,25 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       //  payjoin enabled globally, and a confirmed balance to contribute) —
       //  when disabled the QR must never advertise a pj= endpoint, or the
       //  sender's wallet would attempt a payjoin nobody here will process.
-      final settings = await _getSettingsUsecase.execute();
-      final payjoinEnabled = settings.isPayjoinEnabled;
+      //
+      // Isolated in its own try/catch: a settings-read failure here must not
+      //  leave payjoinGloballyEnabled at its default null. isPayjoinLoading's
+      //  `(payjoinGloballyEnabled ?? true)` treats null as "may still become
+      //  enabled, keep waiting" — so an uncaught failure here would leave the
+      //  QR stuck loading forever, the exact failure class this whole gate
+      //  exists to prevent, just via a different entrance. Fail closed
+      //  (disabled) on a read failure instead.
+      bool payjoinEnabled;
+      int? payjoinMinAmountSat;
+      try {
+        final settings = await _getSettingsUsecase.execute();
+        payjoinEnabled = settings.isPayjoinEnabled;
+        payjoinMinAmountSat = settings.payjoinMinAmountSat;
+      } catch (e) {
+        log.warning('Failed to read payjoin settings; treating as disabled: $e');
+        payjoinEnabled = false;
+        payjoinMinAmountSat = null;
+      }
       // The state must know the setting: ReceiveState.isPayjoinLoading (and
       // through it the QR's paymentRequest) waits for a payjoin session
       // unless it can see payjoin is disabled. payjoinMinAmountSat is carried
@@ -236,7 +263,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(
         state.copyWith(
           payjoinGloballyEnabled: payjoinEnabled,
-          payjoinMinAmountSat: settings.payjoinMinAmountSat,
+          payjoinMinAmountSat: payjoinMinAmountSat,
         ),
       );
       if (state.payjoin == null && _isPayjoinEligible(wallet, payjoinEnabled)) {
@@ -739,12 +766,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           // If a new address is generated, we need to update the payjoin
           // receiver as well, but only if the wallet is eligible (see
           // _isPayjoinEligible / _onBitcoinStarted).
-          final settings = await _getSettingsUsecase.execute();
-          final payjoinEnabled = settings.isPayjoinEnabled;
+          //
+          // Same fail-closed handling as _onBitcoinStarted: a settings-read
+          //  failure must not leave isPayjoinLoading waiting forever.
+          bool payjoinEnabled;
+          int? payjoinMinAmountSat;
+          try {
+            final settings = await _getSettingsUsecase.execute();
+            payjoinEnabled = settings.isPayjoinEnabled;
+            payjoinMinAmountSat = settings.payjoinMinAmountSat;
+          } catch (e) {
+            log.warning(
+              'Failed to read payjoin settings; treating as disabled: $e',
+            );
+            payjoinEnabled = false;
+            payjoinMinAmountSat = null;
+          }
           emit(
             state.copyWith(
               payjoinGloballyEnabled: payjoinEnabled,
-              payjoinMinAmountSat: settings.payjoinMinAmountSat,
+              payjoinMinAmountSat: payjoinMinAmountSat,
             ),
           );
           if (_isPayjoinEligible(state.wallet!, payjoinEnabled)) {
@@ -863,6 +904,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
           address: bitcoinAddress.address,
         );
+        // Belt-and-suspenders alongside restartable(): the setting could have
+        //  changed again while the creation above was in flight (restartable()
+        //  guards this handler's own emit() calls once a newer
+        //  ReceivePayjoinSettingChanged starts, but doesn't stop the code
+        //  running up to that point). Re-check against the CURRENT state
+        //  before arming the watcher / emitting the session — otherwise a
+        //  stale "enable" outcome could still surface a payjoin session (and
+        //  a live watcher for it) after the setting was flipped back off.
+        if (state.payjoinGloballyEnabled != event.enabled) {
+          return;
+        }
         _watchPayjoin(payjoin.id);
       } catch (e) {
         log.severe(
