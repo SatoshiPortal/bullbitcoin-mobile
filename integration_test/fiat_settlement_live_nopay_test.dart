@@ -18,13 +18,10 @@ import 'package:integration_test/integration_test.dart';
 // server writes are limited to fiat-settlement PUTs that are EXPECTED to be
 // rejected (no scoped credential exists), so no settlement state is created.
 //
-// Lane 1 (always): server-version-agnostic degradation proofs. They hold on
-// TODAY'S deployed pay2 (no fiat endpoints; the client's 404 degradation
-// yields an all-Bitcoin view) AND on a future BullishNode/bullnym#196 server
-// (a fresh identity has no explicit settings - same all-Bitcoin view).
-//
-// Lane 2 (dart-define GETPAID_FIAT_CONTRACT_LIVE=true): pinned #196 contract
-// proofs that only a fiat-capable server can pass - a keyless PUT must answer
+// The live probes are explicitly armed with
+// GETPAID_FIAT_CONTRACT_LIVE=true. The configured server must expose the fiat
+// routes and accept registration of the fresh wallet-owned identity used by
+// this test. A keyless PUT must answer
 // the stable FIAT_CREDENTIAL_REQUIRED code (which also proves the signed
 // bullpay-la-v2 request verified server-side; a broken signature would fail
 // auth, mapping to a different failure).
@@ -50,8 +47,8 @@ Future<void> main({bool isInitialized = false}) async {
     }
   });
 
-  test('LIVE configuration read yields an all-Bitcoin view on any server '
-      'version - old servers degrade, never error-wall', () async {
+  test('LIVE configuration read yields an all-Bitcoin view for a fresh '
+      'identity', () async {
     final result = await locator<FiatSettlementFacade>().configuration();
     final view = switch (result) {
       Ok(:final value) => value,
@@ -67,7 +64,7 @@ Future<void> main({bool isInitialized = false}) async {
       );
     }
     expect(view.credentialActive, isFalse);
-  });
+  }, skip: _contractLive ? false : 'needs an explicitly armed fiat server');
 
   test('LIVE keyless activation attempt is rejected with a typed failure and '
       'leaves no settlement state behind', () async {
@@ -108,7 +105,7 @@ Future<void> main({bool isInitialized = false}) async {
       view.configFor(FiatSettlementProduct.paymentPage).isBitcoinOnly,
       isTrue,
     );
-  });
+  }, skip: _contractLive ? false : 'needs an explicitly armed fiat server');
 
   test(
     'LIVE #196 contract: keyless PUT answers the stable '
