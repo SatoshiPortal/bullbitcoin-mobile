@@ -5165,5 +5165,19 @@
   "importColdcardMk4Step9": "Klicken Sie auf die Zahl 3, um die Coldcard-NFC zu starten",
   "importColdcardMk4Step10": "Klicken Sie auf die Schaltfläche „NFC scannen“",
   "importColdcardMk4Step11": "Halten Sie das Telefon mit NFC an die Coldcard-NFC-Antenne",
-  "importColdcardMk4Step12": "Das ist es!"
+  "importColdcardMk4Step12": "Das ist es!",
+  "consolidationDone": "Fertig",
+  "consolidationFailedBody": "Ein unerwarteter Fehler ist aufgetreten. Deine Gelder sind sicher – es wurde keine Transaktion gesendet. Bitte versuche es erneut.",
+  "consolidationFailedTitle": "Konsolidierung fehlgeschlagen",
+  "consolidationInProgress": "Wird konsolidiert…",
+  "consolidationRequiredTitle": "Wallet konsolidieren",
+  "consolidationRequiredTitleNamed": "Wallet {walletName} konsolidieren",
+  "consolidationRowAmount": "Betrag",
+  "consolidationRowNetworkFees": "Netzwerkgebühren",
+  "consolidationRowOutputs": "Ausgänge",
+  "consolidationRowTransactions": "Transaktionen",
+  "consolidationScreenDescription": "Zu viele Ausgänge können die Wallet instabil machen. Beim Konsolidieren werden sie zu weniger zusammengefasst, damit deine Wallet richtig funktioniert.",
+  "consolidationScreenTitle": "Konsolidieren",
+  "consolidationSuccessBody": "Deine Coins werden zusammengefasst. Dies wird abgeschlossen, sobald das Netzwerk es bestätigt.",
+  "consolidationSuccessTitle": "Konsolidierung gestartet"
 }

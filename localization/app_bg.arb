@@ -10948,5 +10948,19 @@
   "labelErrorNotFound": "Етикетът „{label}“ не е намерен.",
   "labelErrorUnsupportedType": "Този тип {type} не се поддържа",
   "labelErrorUnexpected": "Неочаквана грешка: {message}",
-  "labelErrorSystemCannotDelete": "Системните етикети не могат да бъдат изтрити."
+  "labelErrorSystemCannotDelete": "Системните етикети не могат да бъдат изтрити.",
+  "consolidationDone": "Готово",
+  "consolidationFailedBody": "Възникна неочаквана грешка. Средствата ви са в безопасност: не беше излъчена транзакция. Моля, опитайте отново.",
+  "consolidationFailedTitle": "Консолидацията е неуспешна",
+  "consolidationInProgress": "Консолидиране…",
+  "consolidationRequiredTitle": "Консолидиране на портфейла",
+  "consolidationRequiredTitleNamed": "Консолидиране на портфейла {walletName}",
+  "consolidationRowAmount": "Сума",
+  "consolidationRowNetworkFees": "Мрежови такси",
+  "consolidationRowOutputs": "Изходи",
+  "consolidationRowTransactions": "Транзакции",
+  "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
+  "consolidationScreenTitle": "Консолидиране",
+  "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
+  "consolidationSuccessTitle": "Консолидацията започна"
 }

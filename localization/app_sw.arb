@@ -3738,5 +3738,19 @@
   "labelErrorNotFound": "Lebo \"{label}\" haikupatikana.",
   "labelErrorUnsupportedType": "Aina hii {type} haiungwi mkono",
   "labelErrorUnexpected": "Hitilafu isiyotarajiwa: {message}",
-  "labelErrorSystemCannotDelete": "Lebo za mfumo haziwezi kufutwa."
+  "labelErrorSystemCannotDelete": "Lebo za mfumo haziwezi kufutwa.",
+  "consolidationDone": "Imekamilika",
+  "consolidationFailedBody": "Hitilafu isiyotarajiwa imetokea. Fedha zako ziko salama: hakuna muamala uliotangazwa. Tafadhali jaribu tena.",
+  "consolidationFailedTitle": "Uunganishaji umeshindwa",
+  "consolidationInProgress": "Inaunganisha…",
+  "consolidationRequiredTitle": "Unganisha pochi",
+  "consolidationRequiredTitleNamed": "Unganisha pochi ya {walletName}",
+  "consolidationRowAmount": "Kiasi",
+  "consolidationRowNetworkFees": "Ada za mtandao",
+  "consolidationRowOutputs": "Matokeo",
+  "consolidationRowTransactions": "Miamala",
+  "consolidationScreenDescription": "Matokeo mengi mno yanaweza kufanya pochi isiwe thabiti. Kuunganisha huyachanganya kuwa machache ili pochi yako ifanye kazi vizuri.",
+  "consolidationScreenTitle": "Unganisha",
+  "consolidationSuccessBody": "Sarafu zako zinaunganishwa. Itakamilika mara mtandao utakapothibitisha.",
+  "consolidationSuccessTitle": "Uunganishaji umeanza"
 }

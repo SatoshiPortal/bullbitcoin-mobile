@@ -13262,5 +13262,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "أعِد تشغيل جهاز BitBox02 Nova وحاول الاتصال مرة أخرى.",
   "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "تم",
+  "consolidationFailedBody": "حدث خطأ غير متوقع. أموالك آمنة: لم يتم بث أي معاملة. يرجى المحاولة مرة أخرى.",
+  "consolidationFailedTitle": "فشل الدمج",
+  "consolidationInProgress": "جارٍ الدمج…",
+  "consolidationRequiredTitle": "دمج المحفظة",
+  "consolidationRequiredTitleNamed": "دمج محفظة {walletName}",
+  "consolidationRowAmount": "المبلغ",
+  "consolidationRowNetworkFees": "رسوم الشبكة",
+  "consolidationRowOutputs": "المخرجات",
+  "consolidationRowTransactions": "المعاملات",
+  "consolidationScreenDescription": "قد يؤدي وجود عدد كبير من المخرجات إلى عدم استقرار المحفظة. يؤدي الدمج إلى جمعها في عدد أقل للحفاظ على عمل محفظتك بشكل صحيح.",
+  "consolidationScreenTitle": "دمج",
+  "consolidationSuccessBody": "يتم دمج عملاتك. سيكتمل بمجرد تأكيد الشبكة.",
+  "consolidationSuccessTitle": "بدأ الدمج"
 }

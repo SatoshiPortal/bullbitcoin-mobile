@@ -13256,5 +13256,19 @@
   "bitboxScreenTroubleshootingBluetoothStep2": "Certifique-se de que o Bluetooth está habilitado no seu BitBox02 Nova.",
   "bitboxScreenTroubleshootingBluetoothStep3": "Reinicie o seu BitBox02 Nova e tente conectar novamente.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Concluído",
+  "consolidationFailedBody": "Ocorreu um erro inesperado. Seus fundos estão seguros: nenhuma transação foi transmitida. Tente novamente.",
+  "consolidationFailedTitle": "Falha na consolidação",
+  "consolidationInProgress": "Consolidando…",
+  "consolidationRequiredTitle": "Consolidar a carteira",
+  "consolidationRequiredTitleNamed": "Consolidar a carteira {walletName}",
+  "consolidationRowAmount": "Valor",
+  "consolidationRowNetworkFees": "Taxas de rede",
+  "consolidationRowOutputs": "Saídas",
+  "consolidationRowTransactions": "Transações",
+  "consolidationScreenDescription": "Saídas em excesso podem deixar a carteira instável. Consolidá-las as combina em menos para manter sua carteira funcionando corretamente.",
+  "consolidationScreenTitle": "Consolidar",
+  "consolidationSuccessBody": "Suas moedas estão sendo combinadas. Será concluído assim que a rede confirmar.",
+  "consolidationSuccessTitle": "Consolidação iniciada"
 }

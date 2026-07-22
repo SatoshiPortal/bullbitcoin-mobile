@@ -13259,5 +13259,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "รีสตาร์ท BitBox02 Nova ของคุณแล้วลองเชื่อมต่อใหม่อีกครั้ง",
   "sendErrorInsufficientBalanceFrozenHint": "ยอดคงเหลือที่ใช้ได้ไม่เพียงพอ — {amount} ถูกแช่แข็งไว้ ปลดการแช่แข็งเหรียญใน \"จัดการเหรียญ\" เพื่อใช้งาน",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "เสร็จสิ้น",
+  "consolidationFailedBody": "เกิดข้อผิดพลาดที่ไม่คาดคิด เงินของคุณปลอดภัย: ไม่มีการเผยแพร่ธุรกรรมใด ๆ โปรดลองอีกครั้ง",
+  "consolidationFailedTitle": "การรวมล้มเหลว",
+  "consolidationInProgress": "กำลังรวม…",
+  "consolidationRequiredTitle": "รวมกระเป๋าเงิน",
+  "consolidationRequiredTitleNamed": "รวมกระเป๋าเงิน {walletName}",
+  "consolidationRowAmount": "จำนวน",
+  "consolidationRowNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "consolidationRowOutputs": "เอาต์พุต",
+  "consolidationRowTransactions": "ธุรกรรม",
+  "consolidationScreenDescription": "เอาต์พุตที่มากเกินไปอาจทำให้กระเป๋าเงินไม่เสถียร การรวมจะรวมเข้าด้วยกันให้น้อยลงเพื่อให้กระเป๋าเงินทำงานอย่างถูกต้อง",
+  "consolidationScreenTitle": "รวม",
+  "consolidationSuccessBody": "เหรียญของคุณกำลังถูกรวมเข้าด้วยกัน จะเสร็จสมบูรณ์เมื่อเครือข่ายยืนยัน",
+  "consolidationSuccessTitle": "เริ่มการรวมแล้ว"
 }
