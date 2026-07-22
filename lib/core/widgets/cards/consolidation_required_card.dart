@@ -3,22 +3,49 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class ConsolidationRequiredCard extends StatelessWidget {
+class ConsolidationRequiredCard extends StatefulWidget {
   const ConsolidationRequiredCard({
     super.key,
-    this.onTap,
     required this.title,
+    this.onTap,
     this.body,
   });
 
-  final VoidCallback? onTap;
+  final Future<void> Function()? onTap;
   final String title;
   final String? body;
 
   @override
+  State<ConsolidationRequiredCard> createState() =>
+      _ConsolidationRequiredCardState();
+}
+
+class _ConsolidationRequiredCardState extends State<ConsolidationRequiredCard> {
+  bool _navigating = false;
+
+  Future<void> _handleTap(Future<void> Function() onTap) async {
+    setState(() => _navigating = true);
+    try {
+      await onTap();
+    } catch (e, st) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: e,
+          stack: st,
+          library: 'ConsolidationRequiredCard',
+          context: ErrorDescription('while handling the card tap'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _navigating = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final onTap = widget.onTap;
     return InkWell(
-      onTap: onTap,
+      onTap: onTap == null || _navigating ? null : () => _handleTap(onTap),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -38,14 +65,14 @@ class ConsolidationRequiredCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
-                    title,
+                    widget.title,
                     style: context.font.bodyMedium,
                     color: context.appColors.onSurface,
                   ),
-                  if (body != null) ...[
+                  if (widget.body != null) ...[
                     const Gap(2),
                     BBText(
-                      body!,
+                      widget.body!,
                       style: context.font.bodyMedium,
                       color: context.appColors.secondary,
                       maxLines: 4,

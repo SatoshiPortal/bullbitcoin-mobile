@@ -1,74 +1,133 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// The card's tap guard must be scoped to the navigation, not one-shot:
+/// tapping pushes the consolidation route ON TOP of the current screen, so
+/// this card's State stays alive underneath and a permanent flag would leave
+/// the card dead after the user pops back (the reported bug: tap → visit
+/// consolidation → return → tapping again did nothing).
 void main() {
   Future<void> pumpCard(
     WidgetTester tester, {
-    required String title,
-    String? body,
-    VoidCallback? onTap,
+    required Future<void> Function()? onTap,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: ConsolidationRequiredCard(
-            title: title,
-            body: body,
-            onTap: onTap,
-          ),
+          body: ConsolidationRequiredCard(title: 'Consolidate', onTap: onTap),
         ),
       ),
     );
   }
 
-  testWidgets('renders the given title', (tester) async {
-    await pumpCard(tester, title: 'Consolidate the wallet');
+  testWidgets('tap fires onTap', (tester) async {
+    var taps = 0;
+    await pumpCard(tester, onTap: () async => taps++);
 
-    expect(find.text('Consolidate the wallet'), findsOneWidget);
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pumpAndSettle();
+
+    expect(taps, 1);
   });
 
-  testWidgets('renders the body when provided', (tester) async {
+  testWidgets(
+    'a second tap while the navigation is still open (Future pending) is '
+    'ignored — the double-tap guard',
+    (tester) async {
+      var taps = 0;
+      // Completer stands in for context.pushNamed's Future: it only
+      // completes when the pushed route is popped.
+      final navigation = Completer<void>();
+      await pumpCard(
+        tester,
+        onTap: () {
+          taps++;
+          return navigation.future;
+        },
+      );
+
+      await tester.tap(find.byType(ConsolidationRequiredCard));
+      await tester.pump();
+      await tester.tap(find.byType(ConsolidationRequiredCard));
+      await tester.pump();
+
+      expect(taps, 1); // second tap swallowed while navigating
+
+      navigation.complete(); // let the test end cleanly
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets('the card re-enables itself once the navigation Future completes '
+      '(user popped back) — tap, return, tap again works', (tester) async {
+    var taps = 0;
+    var navigation = Completer<void>();
     await pumpCard(
       tester,
-      title: 'Consolidate the wallet',
-      body: 'Something went wrong',
+      onTap: () {
+        taps++;
+        return navigation.future;
+      },
     );
 
-    expect(find.text('Something went wrong'), findsOneWidget);
+    // First tap: navigates.
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pump();
+    expect(taps, 1);
+
+    // User pops back: the navigation Future completes.
+    navigation.complete();
+    await tester.pumpAndSettle();
+
+    // Second tap must work again — this is the reported bug's regression
+    // test (the old one-shot flag stayed set forever).
+    navigation = Completer<void>();
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pump();
+    expect(taps, 2);
+
+    navigation.complete();
+    await tester.pumpAndSettle();
   });
 
-  testWidgets('renders no body text when body is null', (tester) async {
-    await pumpCard(tester, title: 'Consolidate the wallet');
-
-    expect(find.text('Something went wrong'), findsNothing);
-  });
-
-  testWidgets('invokes onTap when tapped', (tester) async {
-    var tapped = false;
+  testWidgets('the guard re-enables even when the navigation Future throws', (
+    tester,
+  ) async {
+    var taps = 0;
+    var shouldThrow = true;
     await pumpCard(
       tester,
-      title: 'Consolidate the wallet',
-      onTap: () => tapped = true,
+      onTap: () async {
+        taps++;
+        if (shouldThrow) throw Exception('router error');
+      },
     );
 
-    await tester.tap(find.byType(InkWell));
-    await tester.pump();
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pumpAndSettle();
+    expect(taps, 1);
+    // The error is reported through FlutterError (not silently swallowed,
+    // not an unhandled async error)...
+    expect(tester.takeException(), isA<Exception>());
 
-    expect(tapped, isTrue);
+    // ...and must not leave the guard stuck: the next tap works.
+    shouldThrow = false;
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pumpAndSettle();
+    expect(taps, 2);
   });
 
-  testWidgets('does nothing when tapped with no onTap given', (tester) async {
-    await pumpCard(tester, title: 'Consolidate the wallet');
+  testWidgets('null onTap renders an inert card', (tester) async {
+    await pumpCard(tester, onTap: null);
 
-    await tester.tap(find.byType(InkWell));
-    await tester.pump();
-    // No exception thrown, no state to assert — this just proves a null
-    // onTap doesn't crash the widget.
+    await tester.tap(find.byType(ConsolidationRequiredCard));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Consolidate'), findsOneWidget); // still renders fine
   });
 }
