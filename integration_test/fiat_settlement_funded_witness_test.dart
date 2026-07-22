@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/features/get_paid/domain/get_paid_transaction.dart';
 import 'package:bb_mobile/features/get_paid/domain/list_get_paid_transactions_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/lightning_address/public/lightning_address_facade.dart';
 import 'package:bb_mobile/features/payment_page/public/payment_page_facade.dart';
 import 'package:bb_mobile/features/pos/public/pos_facade.dart';
@@ -58,64 +60,46 @@ Future<void> main({bool isInitialized = false}) async {
     'projection, driven per FIAT_WITNESS_PRODUCT / FIAT_WITNESS_MODE',
     () async {
       final config = FiatWitnessConfig.fromEnvironment();
-      witnessCheckpoint('env_check', data: {
-        'run_id': config.runId,
-        'nym': config.nym,
-        'product': config.product.wireId,
-        'mode': config.mode.wireId,
-        'handshake_dir': config.handshakeDir.path,
-        'amount_sat': config.amountSat,
-      });
+      witnessCheckpoint(
+        'env_check',
+        data: {
+          'run_id': config.runId,
+          'nym': config.nym,
+          'product': config.product.wireId,
+          'mode': config.mode.wireId,
+          'handshake_dir': config.handshakeDir.path,
+          'amount_sat': config.amountSat,
+        },
+      );
 
       final environment =
           (await locator<GetSettingsUsecase>().execute()).environment;
-      final network =
-          environment.isMainnet ? 'liquid-mainnet' : 'liquid-testnet';
+      final network = environment.isMainnet
+          ? 'liquid-mainnet'
+          : 'liquid-testnet';
 
-      // (1) Create the witness wallet on-device (fresh seed the app owns), then
-      // CAPTURE its recovery material to a durable mode-0600 file BEFORE any
-      // funds can arrive. Only the capture PATH + fingerprint are checkpointed.
-      await locator<CreateDefaultWalletsUsecase>().execute();
-      final defaultLiquid = await _defaultLiquidWallet(environment);
-      final fingerprint = defaultLiquid.masterFingerprint;
-      if (fingerprint.isEmpty) {
-        fail('app-created wallet has no master fingerprint to capture');
-      }
-      final (mnemonicWords, passphrase) =
-          await locator<GetMnemonicFromFingerprintUsecase>().execute(
-        fingerprint,
+      // (1) Restore this run's prior wallet when its protected seed capture is
+      // present; otherwise create and capture a fresh wallet before funding.
+      // Recovery material stays local to [_prepareWitnessWallet].
+      final walletWasRestored = await _prepareWitnessWallet(
+        config: config,
+        environment: environment,
+        network: network,
       );
-      final seedPath = await config.writeSeedCapture({
-        'schema': 'fiat-witness-seed-capture/v1',
-        'run_id': config.runId,
-        'network': network,
-        'master_fingerprint': fingerprint,
-        'mnemonic_words': mnemonicWords,
-        if (passphrase != null && passphrase.isNotEmpty) 'passphrase': passphrase,
-        'captured_at': DateTime.now().toUtc().toIso8601String(),
-      });
-      witnessCheckpoint('seed_captured', data: {
-        // Path + fingerprint only. The words live solely in the 0600 file.
-        'seed_capture_file': seedPath,
-        'master_fingerprint': fingerprint,
-      });
 
-      // (2) Register a fresh wallet-owned nym so the deployed identity gate
-      // admits the fiat calls, then create the specific product and derive its
-      // pay target.
-      final registration = await locator<LightningAddressFacade>()
-          .registerWalletOwned(nym: config.nym);
-      final registeredNym = registration.registration.nym;
-      witnessCheckpoint('nym_registered', data: {'nym': registeredNym});
-
-      final payTarget = await _createProductAndResolveTarget(config);
-      witnessCheckpoint('product_created', data: {
-        'pay_target_kind': payTarget.kind,
-      });
+      // (2) Reuse an active registration belonging to the restored signer.
+      // Only a new wallet (or a capture made before registration completed)
+      // registers a nym, avoiding the network distinct-wallet cap on retries.
+      final registeredNym = await _ensureWitnessRegistration(
+        config,
+        resumed: walletWasRestored,
+      );
 
       // (3) Store the scoped key (real handoff preferred; synthetic-eligible
-      // only when the provider is the fixture) and set fiat settlement per mode.
-      final scopedKey = config.capturedScopedKey() ?? syntheticEligibleScopedKey;
+      // only when the provider is the fixture) and set fiat settlement BEFORE
+      // creating the product. Invoices snapshot their fiat policy at creation.
+      final scopedKey =
+          config.capturedScopedKey() ?? syntheticEligibleScopedKey;
       await locator<BullbitcoinApiKeyDatasource>().storeSellToFiatBalanceApiKey(
         ScopedApiKeyModel(userId: 'fiat-witness-user', key: scopedKey),
         isTestnet: environment.isTestnet,
@@ -128,20 +112,30 @@ Future<void> main({bool isInitialized = false}) async {
       );
       final configView = switch (setResult) {
         Ok(:final value) => value,
-        Err(:final failure) =>
-          fail('fiat settlement enable failed: $failure'),
+        Err(:final failure) => fail('fiat settlement enable failed: $failure'),
       };
       final saved = configView.configFor(settlementProduct);
       expect(saved.fiatPercentage, config.mode.fiatPercentage);
       expect(saved.currency, FiatCurrency.cad);
       // ALWAYS: the config view never echoes the scoped key.
       expect(textLeaksScopedKey(configView.toString()), isFalse);
-      witnessCheckpoint('fiat_configured', data: {
-        'fiat_percentage': saved.fiatPercentage,
-        'currency': FiatCurrency.cad.code,
-      });
+      witnessCheckpoint(
+        'fiat_configured',
+        data: {
+          'fiat_percentage': saved.fiatPercentage,
+          'currency': FiatCurrency.cad.code,
+        },
+      );
 
-      // (4) Publish the pay target + run params for the coordinator, then wait
+      // (4) Create the product after the policy is active, then derive the pay
+      // target. This ordering is load-bearing for invoice split settlement.
+      final payTarget = await _createProductAndResolveTarget(config);
+      witnessCheckpoint(
+        'product_created',
+        data: {'pay_target_kind': payTarget.kind},
+      );
+
+      // (5) Publish the pay target + run params for the coordinator, then wait
       // for the guarded payer to pay it.
       final readyAt = DateTime.now().toUtc();
       await config.writeJsonAtomic(config.readyFile, {
@@ -155,15 +149,16 @@ Future<void> main({bool isInitialized = false}) async {
         'pay_target': payTarget.toJson(),
         'written_at': readyAt.toIso8601String(),
       });
-      witnessCheckpoint('ready_published', data: {
-        'ready_file': config.readyFile.path,
-      });
+      witnessCheckpoint(
+        'ready_published',
+        data: {'ready_file': config.readyFile.path},
+      );
 
       // Baseline the app's Liquid wallet balances (mixed mode observes a
       // product-wallet credit landing somewhere in the app's own wallets).
       final baselineBalances = await _liquidBalances(environment);
 
-      // (5) Poll the REAL history pipeline until a matching transaction with a
+      // (6) Poll the REAL history pipeline until a matching transaction with a
       // server settlement classification appears.
       final firstTx = await _pollForSettledTransaction(
         config: config,
@@ -173,10 +168,13 @@ Future<void> main({bool isInitialized = false}) async {
       if (firstSettlement == null) {
         fail('witnessed transaction carried no settlement classification');
       }
-      witnessCheckpoint('transaction_observed', data: {
-        'transaction_id': firstTx.transactionId,
-        'settlement_kind': firstSettlement.kind.name,
-      });
+      witnessCheckpoint(
+        'transaction_observed',
+        data: {
+          'transaction_id': firstTx.transactionId,
+          'settlement_kind': firstSettlement.kind.name,
+        },
+      );
 
       // ALWAYS: an unavailable classification is never rendered as Bitcoin.
       _assertUnavailableNeverBitcoin(firstTx);
@@ -205,9 +203,11 @@ Future<void> main({bool isInitialized = false}) async {
           );
           result['override_reason'] = firstSettlement.overrideReason?.name;
           result['status'] = 'pass';
-          witnessCheckpoint('below_min_asserted', status: 'ok', data: {
-            'override_reason': firstSettlement.overrideReason?.name,
-          });
+          witnessCheckpoint(
+            'below_min_asserted',
+            status: 'ok',
+            data: {'override_reason': firstSettlement.overrideReason?.name},
+          );
 
         case FiatWitnessMode.fiat100:
           // Fiat-only: a fiat leg in CAD with a non-empty order id, pending at
@@ -258,9 +258,11 @@ Future<void> main({bool isInitialized = false}) async {
         ...result,
         'written_at': DateTime.now().toUtc().toIso8601String(),
       });
-      witnessCheckpoint('result_written', status: '${result['status']}', data: {
-        'result_file': config.resultFile.path,
-      });
+      witnessCheckpoint(
+        'result_written',
+        status: '${result['status']}',
+        data: {'result_file': config.resultFile.path},
+      );
 
       // A PENDING-ONLY fiat outcome is a reported result, not a hard failure.
       final status = result['status'];
@@ -276,6 +278,104 @@ Future<void> main({bool isInitialized = false}) async {
 }
 
 // ===== product creation + pay target =======================================
+
+Future<bool> _prepareWitnessWallet({
+  required FiatWitnessConfig config,
+  required Environment environment,
+  required String network,
+}) async {
+  final capture = await config.readSeedCapture();
+  if (capture != null && capture.network != network) {
+    fail('existing witness seed capture belongs to a different network');
+  }
+
+  await locator<CreateDefaultWalletsUsecase>().execute(
+    mnemonicWords: capture?.mnemonicWords,
+    passphrase: capture?.passphrase,
+  );
+  final defaultLiquid = await _defaultLiquidWallet(environment);
+  final fingerprint = defaultLiquid.masterFingerprint;
+  if (fingerprint.isEmpty) {
+    fail('app-created wallet has no master fingerprint to capture');
+  }
+
+  if (capture != null) {
+    if (capture.masterFingerprint != fingerprint) {
+      fail('restored witness wallet fingerprint does not match its capture');
+    }
+    await _reserveRestoredLiquidAddresses(defaultLiquid.id);
+    witnessCheckpoint(
+      'seed_restored',
+      data: {
+        'seed_capture_file': config.seedFile.path,
+        'master_fingerprint': fingerprint,
+      },
+    );
+    return true;
+  }
+
+  final (mnemonicWords, passphrase) =
+      await locator<GetMnemonicFromFingerprintUsecase>().execute(fingerprint);
+  final seedPath = await config.writeSeedCapture({
+    'schema': 'fiat-witness-seed-capture/v1',
+    'run_id': config.runId,
+    'network': network,
+    'master_fingerprint': fingerprint,
+    'mnemonic_words': mnemonicWords,
+    if (passphrase != null && passphrase.isNotEmpty) 'passphrase': passphrase,
+    'captured_at': DateTime.now().toUtc().toIso8601String(),
+  });
+  witnessCheckpoint(
+    'seed_captured',
+    data: {'seed_capture_file': seedPath, 'master_fingerprint': fingerprint},
+  );
+  return false;
+}
+
+Future<void> _reserveRestoredLiquidAddresses(String walletId) async {
+  // The Linux harness intentionally starts with a fresh local database. Keep a
+  // small derivation gap reserved so a restored witness does not offer old
+  // addresses that Bullnym correctly remembers as assigned to prior invoices.
+  const reservationCount = 8;
+  final addresses = locator<WalletAddressRepository>();
+  final labels = locator<LabelsFacade>();
+  for (var index = 0; index < reservationCount; index++) {
+    final generated = await addresses
+        .generateNewLiquidReceiveAddressWithBlindingSecret(walletId: walletId);
+    final stored = await labels.store(
+      NewLabel.addr(
+        address: generated.address,
+        label: LabelSystem.invoice.label,
+        origin: 'fiat_witness_resume',
+      ),
+    );
+    if (stored case Err()) {
+      fail('could not reserve restored witness address gap');
+    }
+  }
+}
+
+Future<String> _ensureWitnessRegistration(
+  FiatWitnessConfig config, {
+  required bool resumed,
+}) async {
+  final facade = locator<LightningAddressFacade>();
+  if (resumed) {
+    final status = await facade.lookupWalletOwnedRegistration();
+    if (status.active) {
+      if (status.nym != config.nym) {
+        fail('restored witness signer belongs to a different active nym');
+      }
+      witnessCheckpoint('nym_reused', data: {'nym': status.nym});
+      return status.nym;
+    }
+  }
+
+  final registration = await facade.registerWalletOwned(nym: config.nym);
+  final registeredNym = registration.registration.nym;
+  witnessCheckpoint('nym_registered', data: {'nym': registeredNym});
+  return registeredNym;
+}
 
 class _PayTarget {
   final String kind;
@@ -298,8 +398,8 @@ Future<_PayTarget> _createProductAndResolveTarget(
     case FiatWitnessProduct.lightningAddress:
       // The registration already provisioned the Lightning Address; re-read it
       // to publish the canonical address string.
-      final status =
-          await locator<LightningAddressFacade>().lookupWalletOwnedRegistration();
+      final status = await locator<LightningAddressFacade>()
+          .lookupWalletOwnedRegistration();
       final address = status.lightningAddress;
       if (address == null || address.isEmpty) {
         fail('Lightning Address registration returned no address');
@@ -331,25 +431,45 @@ Future<_PayTarget> _createProductAndResolveTarget(
       return _PayTarget(kind: 'pos_url', value: terminal.terminalUrl);
 
     case FiatWitnessProduct.invoice:
-      final created = await locator<InvoicesFacade>().create(
-        CreateInvoiceCommand(
-          amountSat: config.amountSat,
-          presentation: PrivateInvoicePresentation(),
-          acceptBtc: false,
-          acceptLn: true,
-          acceptLiquid: true,
-        ),
-      );
-      final invoice = switch (created) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('invoice create failed: $failure'),
-      };
+      final invoice = await _createWitnessInvoice(config);
       return _PayTarget(
         kind: 'invoice_url',
         value: invoice.privateLink.value,
         invoiceId: invoice.invoiceId.value,
       );
   }
+}
+
+Future<CreateInvoiceResult> _createWitnessInvoice(
+  FiatWitnessConfig config,
+) async {
+  const maxAttempts = 8;
+  for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+    final created = await locator<InvoicesFacade>().create(
+      CreateInvoiceCommand(
+        amountSat: config.amountSat,
+        presentation: PrivateInvoicePresentation(),
+        acceptBtc: false,
+        acceptLn: true,
+        acceptLiquid: true,
+      ),
+    );
+    switch (created) {
+      case Ok(:final value):
+        return value;
+      case Err(:final failure)
+          when failure.kind == InvoicesFailureKind.reusedLiquidAddress ||
+              failure.kind == InvoicesFailureKind.reusedBitcoinAddress:
+        witnessCheckpoint(
+          'invoice_address_already_used',
+          status: 'retrying',
+          data: {'attempt': attempt},
+        );
+      case Err(:final failure):
+        fail('invoice create failed: $failure');
+    }
+  }
+  fail('invoice create exhausted fresh-address retries');
 }
 
 FiatSettlementProduct _settlementProductFor(FiatWitnessProduct product) =>
@@ -381,21 +501,31 @@ Future<GetPaidTransaction> _pollForSettledTransaction({
   while (true) {
     attempt++;
     final tx = await _fetchTargetTransaction(expectedSource);
-    if (tx != null && tx.settlement != null) return tx;
+    final settlement = tx?.settlement;
+    if (tx != null && settlement != null) {
+      if (settlement.kind != GetPaidSettlementKind.unavailable) return tx;
+    }
     if (DateTime.now().isAfter(deadline)) {
-      witnessCheckpoint('await_transaction', status: 'timeout', data: {
-        'attempts': attempt,
-        'source': expectedSource.name,
-      });
+      witnessCheckpoint(
+        'await_transaction',
+        status: 'timeout',
+        data: {'attempts': attempt, 'source': expectedSource.name},
+      );
       throw StateError(
         'no classified $expectedSource transaction within '
         '${config.pollTimeout.inSeconds}s',
       );
     }
-    witnessCheckpoint('await_transaction', status: 'waiting', data: {
-      'attempt': attempt,
-      'found_unclassified': tx != null,
-    });
+    witnessCheckpoint(
+      'await_transaction',
+      status: 'waiting',
+      data: {
+        'attempt': attempt,
+        'found_unclassified': tx != null && settlement == null,
+        'found_unavailable':
+            settlement?.kind == GetPaidSettlementKind.unavailable,
+      },
+    );
     await Future<void>.delayed(config.pollInterval);
   }
 }
@@ -404,8 +534,10 @@ Future<GetPaidTransaction> _pollForSettledTransaction({
 Future<GetPaidTransaction?> _fetchTargetTransaction(
   GetPaidTransactionSource source,
 ) async {
-  final result =
-      await locator<ListGetPaidTransactionsUsecase>().execute(cursor: '', limit: 50);
+  final result = await locator<ListGetPaidTransactionsUsecase>().execute(
+    cursor: '',
+    limit: 50,
+  );
   final page = switch (result) {
     Ok(:final value) => value,
     Err(:final failure) => throw StateError('history read failed: $failure'),
@@ -434,7 +566,9 @@ Future<void> _settleAndRecord(
   while (true) {
     attempt++;
     final tx = await _fetchTargetTransaction(source);
-    final leg = tx?.settlement == null ? null : _firstFiatLegOrNull(tx!.settlement!);
+    final leg = tx?.settlement == null
+        ? null
+        : _firstFiatLegOrNull(tx!.settlement!);
     if (leg != null &&
         leg.status == GetPaidSettlementLegStatus.settled &&
         (leg.amountMinor ?? 0) > 0) {
@@ -442,26 +576,29 @@ Future<void> _settleAndRecord(
       result['final_leg_amount_minor'] = leg.amountMinor;
       result['settled_at'] = DateTime.now().toUtc().toIso8601String();
       result['status'] = 'pass';
-      witnessCheckpoint('fiat_settled', status: 'ok', data: {
-        'amount_minor': leg.amountMinor,
-        'attempts': attempt,
-      });
+      witnessCheckpoint(
+        'fiat_settled',
+        status: 'ok',
+        data: {'amount_minor': leg.amountMinor, 'attempts': attempt},
+      );
       return;
     }
     if (DateTime.now().isAfter(deadline)) {
       result['final_leg_status'] = leg?.status.name;
       result['final_leg_amount_minor'] = leg?.amountMinor;
       result['status'] = 'pending_only';
-      witnessCheckpoint('fiat_settled', status: 'pending_only', data: {
-        'attempts': attempt,
-        'last_leg_status': leg?.status.name,
-      });
+      witnessCheckpoint(
+        'fiat_settled',
+        status: 'pending_only',
+        data: {'attempts': attempt, 'last_leg_status': leg?.status.name},
+      );
       return;
     }
-    witnessCheckpoint('await_settled', status: 'waiting', data: {
-      'attempt': attempt,
-      'last_leg_status': leg?.status.name,
-    });
+    witnessCheckpoint(
+      'await_settled',
+      status: 'waiting',
+      data: {'attempt': attempt, 'last_leg_status': leg?.status.name},
+    );
     await Future<void>.delayed(config.pollInterval);
   }
 }

@@ -21,10 +21,10 @@ import 'dart:io';
 ///   `<handshake>/result.json`       spec -> coordinator: observed final state.
 ///
 /// The recovery capture exists because the witness wallet is created and owned
-/// by the app (a fresh on-device seed); the tiny funded amount an interrupted
-/// run could strand is recoverable only from that file. It is the ONLY place
-/// the words are written, and they are never logged, printed, or put on the
-/// coordinator-facing handshake.
+/// by the app. A rerun restores that same wallet from its run-scoped capture;
+/// the tiny funded amount an interrupted run could strand is recoverable only
+/// from that file. It is the ONLY place the words are written, and they are
+/// never logged, printed, or put on the coordinator-facing handshake.
 
 /// The Get Paid product the witness exercises. The [wireId] matches the
 /// FIAT_WITNESS_PRODUCT define and the Bullnym product path id.
@@ -82,6 +82,24 @@ enum FiatWitnessMode {
 /// Matches the scoped `SELL_TO_FIAT_BALANCE` credential value (`bbak-` + 64 hex).
 final _scopedKeyFormat = RegExp(r'^bbak-[0-9a-f]{64}$');
 
+/// Recovery material read from an existing run-scoped witness seed capture.
+///
+/// The caller must keep this value local to wallet restoration and must never
+/// log or serialize it anywhere else.
+class FiatWitnessSeedCapture {
+  final List<String> mnemonicWords;
+  final String? passphrase;
+  final String masterFingerprint;
+  final String network;
+
+  const FiatWitnessSeedCapture({
+    required this.mnemonicWords,
+    required this.passphrase,
+    required this.masterFingerprint,
+    required this.network,
+  });
+}
+
 /// A clearly-synthetic, well-formed scoped key the deterministic staging
 /// provider accepts as "eligible" (the two hex chars after `bbak-` select the
 /// fixture behaviour; `00` = eligible). Used only when no real key handoff is
@@ -95,7 +113,8 @@ bool textLeaksScopedKey(String text) =>
 
 /// Run configuration for the funded fiat witness, resolved from the process
 /// environment (operator-provided) with `--dart-define` fallbacks for device
-/// runs. NO mnemonic is injected — the app creates and owns its own seed.
+/// runs. NO mnemonic is injected — the app creates and owns its seed, or
+/// restores that same seed from this run's protected local capture.
 class FiatWitnessConfig {
   static const _productDefine = String.fromEnvironment('FIAT_WITNESS_PRODUCT');
   static const _modeDefine = String.fromEnvironment('FIAT_WITNESS_MODE');
@@ -103,7 +122,9 @@ class FiatWitnessConfig {
   static const _handshakeDefine = String.fromEnvironment(
     'FIAT_WITNESS_HANDSHAKE_DIR',
   );
-  static const _amountDefine = String.fromEnvironment('FIAT_WITNESS_AMOUNT_SAT');
+  static const _amountDefine = String.fromEnvironment(
+    'FIAT_WITNESS_AMOUNT_SAT',
+  );
   static const _scopedKeyDefine = String.fromEnvironment(
     'FIAT_STAGING_SCOPED_KEY_FILE',
   );
@@ -275,15 +296,69 @@ class FiatWitnessConfig {
     return _scopedKeyFormat.hasMatch(value) ? value : null;
   }
 
+  /// Reads this run's existing recovery capture, if present, so an interrupted
+  /// witness can restore the same wallet identity. The capture is validated
+  /// without including any recovery material in errors.
+  Future<FiatWitnessSeedCapture?> readSeedCapture() async {
+    final file = seedFile;
+    if (!file.existsSync()) return null;
+    final entityType = await FileSystemEntity.type(
+      file.path,
+      followLinks: false,
+    );
+    if (entityType != FileSystemEntityType.file) {
+      throw StateError('existing witness seed capture is not a regular file');
+    }
+
+    await _chmod('600', file.path);
+
+    Object? decoded;
+    try {
+      decoded = jsonDecode(await file.readAsString());
+    } catch (_) {
+      throw StateError('existing witness seed capture is invalid JSON');
+    }
+    if (decoded is! Map<String, dynamic> ||
+        decoded['schema'] != 'fiat-witness-seed-capture/v1' ||
+        decoded['run_id'] != runId) {
+      throw StateError('existing witness seed capture has invalid metadata');
+    }
+
+    final rawWords = decoded['mnemonic_words'];
+    final rawPassphrase = decoded['passphrase'];
+    final fingerprint = decoded['master_fingerprint'];
+    final network = decoded['network'];
+    if (rawWords is! List ||
+        rawWords.isEmpty ||
+        rawWords.any((word) => word is! String || word.isEmpty) ||
+        (rawPassphrase != null && rawPassphrase is! String) ||
+        fingerprint is! String ||
+        fingerprint.isEmpty ||
+        network is! String ||
+        network.isEmpty) {
+      throw StateError('existing witness seed capture has invalid fields');
+    }
+
+    return FiatWitnessSeedCapture(
+      mnemonicWords: List<String>.unmodifiable(rawWords.cast<String>()),
+      passphrase: rawPassphrase as String?,
+      masterFingerprint: fingerprint,
+      network: network,
+    );
+  }
+
   /// Atomic publish: write to a sibling temp file then rename over the target so
   /// the coordinator never observes a half-written document.
   Future<void> writeJsonAtomic(File file, Map<String, Object?> data) async {
     final tmp = File('${file.path}.tmp');
+    await tmp.create(recursive: true);
+    await _chmod('600', tmp.path);
     await tmp.writeAsString(
       const JsonEncoder.withIndent('  ').convert(data),
       flush: true,
     );
     await tmp.rename(file.path);
+    await _chmod('600', file.path);
   }
 
   /// Writes the recovery capture with owner-only (0600) permissions, BEFORE any

@@ -13,28 +13,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 // SPEC-FIAT-STAGING-T3 - Tier 3 fiat-settlement smoke against the staging
-// Bullnym (BULLNYM_BASE_URL -> https://staging-vibe-bullnym.bull-wallet.com),
-// which runs the real Bullnym fiat build (PR #197/#198) with a FIXTURE Bull
-// Bitcoin provider.
+// Bullnym (BULLNYM_BASE_URL -> https://pay2.bull-wallet.com), which runs the
+// real Bullnym fiat build (PR #197/#198) against the authenticated staging
+// Bull Bitcoin gateway. The trading/provider layer behind that gateway is
+// stubbed, but scoped-key authentication and API-Orders are real.
 //
 // Identity gate: the deployed contract requires the signing npub to be a
 // registered active identity for fiat reads/set/disable (require_active_identity).
 // setUpAll therefore registers a throwaway wallet-owned nym (no funds, fresh
 // seed per run so permanent-names are never reused).
 //
-// Scoped keys: the staging provider is a fixture that returns "eligible" for
-// any well-formed key whose hex body does NOT start with a fault tag, and
-// injects a fault for f1 (KYC) / f2 (wrong-scope) / f3 (503) / f4 (delayed).
-// So these cases drive the client's key-on-demand retry + the full server
-// error mapping with SYNTHETIC keys - no real Bull Bitcoin credential (and
-// therefore no exchange login) is needed on staging. A real captured key
-// (FIAT_STAGING_SCOPED_KEY_FILE) is preferred for the happy path when present.
+// Scoped keys: the shared pay2 lane uses a real captured scoped key from
+// FIAT_STAGING_SCOPED_KEY_FILE. Synthetic f1/f2/f3/f4 keys are accepted only
+// by the explicitly selected local controlled-provider fixture; they must
+// remain gated off against the authenticated staging gateway.
 //
 // dart-define gates (set by the getpaid-e2e fiat-staging lane):
 //   FIAT_STAGING_REACHABLE=true     - a reachable staging Bullnym is configured.
 //   FIAT_STAGING_FIAT_DEPLOYED=true - the fiat endpoints are deployed.
 //   FIAT_STAGING_CONTRACT=true      - the credential error-code contract is
-//                                     aligned (BULL_BITCOIN_CREDENTIAL_*).
+//                                     aligned (FIAT_CREDENTIAL_*).
 const _reachable = bool.fromEnvironment('FIAT_STAGING_REACHABLE');
 const _fiatDeployed = bool.fromEnvironment('FIAT_STAGING_FIAT_DEPLOYED');
 const _contract = bool.fromEnvironment('FIAT_STAGING_CONTRACT');
@@ -80,9 +78,10 @@ const _blockedContract =
 const _providerAcceptsScopedKey = bool.fromEnvironment(
   'FIAT_STAGING_PROVIDER_ACCEPTS_KEY',
 );
+const _realProvider = bool.fromEnvironment('FIAT_STAGING_REAL_PROVIDER');
 const _blockedProvider =
-    'BLOCKED(provider topology) - staging Bullnym uses the real api-orders '
-    'gateway (:8880) which rejects synthetic keys; pass '
+    'BLOCKED(provider topology) - shared Bullnym uses the authenticated '
+    'API-Orders gateway, which rejects synthetic keys; pass '
     '--dart-define=FIAT_STAGING_PROVIDER_ACCEPTS_KEY=true once the server is '
     'pointed at the tag fixture or a real authorized key is available';
 
@@ -135,6 +134,14 @@ Future<void> main({bool isInitialized = false}) async {
       (_reachable && _fiatDeployed && _contract && _providerAcceptsScopedKey)
       ? false
       : (contractSkip == false ? _blockedProvider : contractSkip);
+  final realProviderSkip =
+      (_reachable && _fiatDeployed && _contract && _realProvider)
+      ? false
+      : (contractSkip == false
+            ? 'BLOCKED(real-provider lane) - pass '
+                  '--dart-define=FIAT_STAGING_REAL_PROVIDER=true with a '
+                  'captured scoped-key handoff'
+            : contractSkip);
 
   // ===== Read / degradation group ==========================================
 
@@ -201,10 +208,71 @@ Future<void> main({bool isInitialized = false}) async {
         Ok() => fail('activation without a scoped key must not succeed'),
         Err(:final failure) => failure,
       };
-      // Keyless PUT -> stable BULL_BITCOIN_CREDENTIAL_REQUIRED -> credentialProblem.
+      // Keyless PUT -> stable FIAT_CREDENTIAL_REQUIRED -> credentialProblem.
       expect(failure, const FiatSettlementFailure.credentialProblem());
     },
     skip: fiatCapableSkip,
+  );
+
+  test(
+    'real provider: captured key enables, reads back, and disables one product',
+    () async {
+      // Registration, read, no-echo, disable, and missing-key checks consume
+      // the shared server's normal five-request source window. Let that window
+      // expire instead of weakening production-like rate limits for a test.
+      await Future<void>.delayed(const Duration(seconds: 61));
+
+      final key = _capturedScopedKey();
+      expect(
+        key,
+        isNotNull,
+        reason: 'real-provider lane requires a captured scoped-key handoff',
+      );
+      await storeScopedKey(key!);
+
+      final enabled = await locator<FiatSettlementFacade>().set(
+        product: FiatSettlementProduct.paymentPage,
+        fiatPercentage: 50,
+        currency: FiatCurrency.cad,
+      );
+      final enabledView = switch (enabled) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('real-provider enable failed: $failure'),
+      };
+      final enabledConfig = enabledView.configFor(
+        FiatSettlementProduct.paymentPage,
+      );
+      expect(enabledConfig.fiatPercentage, 50);
+      expect(enabledConfig.currency, FiatCurrency.cad);
+      expect(textLeaksKey(enabledView.toString()), isFalse);
+
+      final refreshed = await locator<FiatSettlementFacade>().configuration();
+      final refreshedView = switch (refreshed) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('real-provider readback failed: $failure'),
+      };
+      expect(
+        refreshedView
+            .configFor(FiatSettlementProduct.paymentPage)
+            .fiatPercentage,
+        50,
+      );
+
+      final disabled = await locator<FiatSettlementFacade>().disable(
+        product: FiatSettlementProduct.paymentPage,
+      );
+      final disabledView = switch (disabled) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('real-provider disable failed: $failure'),
+      };
+      expect(
+        disabledView.configFor(FiatSettlementProduct.paymentPage).isBitcoinOnly,
+        isTrue,
+      );
+      await clearScopedKey();
+    },
+    skip: realProviderSkip,
+    timeout: const Timeout(Duration(minutes: 2)),
   );
 
   // Fault cases run BEFORE the enable case: they rely on the keyless ->
