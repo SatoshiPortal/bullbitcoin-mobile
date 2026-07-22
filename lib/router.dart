@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/coldcard_firmware/ui/coldcard_firmware_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
@@ -165,6 +166,7 @@ class AppRouter {
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
+      ...ColdcardFirmwareRouter.routes,
       ...BitBoxRouter.routes,
       DcaRouter.route,
       ReplaceByFeeRouter.route,

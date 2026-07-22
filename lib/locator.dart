@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dar
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
+import 'package:bb_mobile/features/coldcard_firmware/coldcard_firmware_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
@@ -109,6 +110,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
+    ColdcardFirmwareLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
     ArkCoreLocator.setup(locator);
