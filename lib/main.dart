@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_deeplink_listener.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -330,29 +331,30 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           ? AppThemeType.dark
                           : AppThemeType.light;
                   }
-
-                  return MaterialApp.router(
-                    title: 'BullBitcoin Wallet',
-                    debugShowCheckedModeBanner: kDebugMode,
-                    routerConfig: AppRouter.router,
-                    theme: AppTheme.themeData(appThemeType),
-                    locale: language?.locale,
-                    localizationsDelegates:
-                        AppLocalizations.localizationsDelegates,
-                    supportedLocales: AppLocalizations.supportedLocales,
-                    builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
-                      // Mark beta-channel builds (`make android beta`) with a
-                      // corner banner. Release mode drops the Flutter debug
-                      // banner, so this is how testers tell beta from production.
-                      if (appFlavor != 'beta') return app;
-                      return Banner(
-                        message: 'BETA',
-                        location: BannerLocation.topEnd,
-                        color: Theme.of(context).colorScheme.error,
-                        child: app,
-                      );
-                    },
+                  return TrezorDeeplinkListener(
+                    child: MaterialApp.router(
+                      title: 'BullBitcoin Wallet',
+                      debugShowCheckedModeBanner: kDebugMode,
+                      routerConfig: AppRouter.router,
+                      theme: AppTheme.themeData(appThemeType),
+                      locale: language?.locale,
+                      localizationsDelegates:
+                          AppLocalizations.localizationsDelegates,
+                      supportedLocales: AppLocalizations.supportedLocales,
+                      builder: (context, child) {
+                        final app = AppStartupWidget(app: child!);
+                        // Mark beta-channel builds (`make android beta`) with a
+                        // corner banner. Release mode drops the Flutter debug
+                        // banner, so this is how testers tell beta from production.
+                        if (appFlavor != 'beta') return app;
+                        return Banner(
+                          message: 'BETA',
+                          location: BannerLocation.topEnd,
+                          color: Theme.of(context).colorScheme.error,
+                          child: app,
+                        );
+                      },
+                    ),
                   );
                 },
               ),

@@ -82,6 +82,19 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="bitcoin" />
             </intent-filter>
+            <!-- Custom-scheme callback for Trezor Connect deeplinks.
+                   Restricted to host="trezor-callback" so only the exact
+                   callback URI we issue (bullbitcoin://trezor-callback?...)
+                   is claimed at the platform level — other bullbitcoin://*
+                   URIs fall through to the system instead of being routed
+                   into the app and dropped in Dart. TrezorDeeplinkListener
+                   still validates scheme+host as belt-and-suspenders. -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="bullbitcoin" android:host="trezor-callback" />
+            </intent-filter>
             <!-- USB device attached intent filter for BitBox02 -->
             <intent-filter>
                 <action

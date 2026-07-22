@@ -30,6 +30,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
@@ -930,6 +931,8 @@ class _BottomButtons extends StatelessWidget {
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
                 ? const SignBitBoxButton()
+                : (wallet.signerDevice != null && wallet.signerDevice!.isTrezor)
+                ? const SignTrezorButton()
                 : const ShowPsbtButton()
           else
             const ConfirmSendButton(),
@@ -2075,6 +2078,52 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
+class SignTrezorButton extends StatelessWidget {
+  const SignTrezorButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final unsignedPsbt = context.select(
+      (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+    final scriptType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+    );
+    final isTestnet = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWallet?.network.isTestnet ?? false,
+    );
+
+    return BBButton.big(
+      label: context.loc.sendSignWithTrezor,
+      onPressed: () async {
+        if (unsignedPsbt == null || scriptType == null) {
+          return;
+        }
+
+        final result = await context.pushNamed<String>(
+          TrezorRoute.trezorSignTransaction.name,
+          extra: TrezorSignTransactionRouteParams(
+            psbt: unsignedPsbt,
+            isTestnet: isTestnet,
+            scriptType: scriptType,
+          ),
+        );
+
+        if (result != null && context.mounted) {
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.sendTransactionSignedTrezor,
+          );
+          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+        }
+      },
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
+    );
+  }
+}
+
 String _swapCreationErrorMessage(
   BuildContext context,
   SwapCreationException error,
@@ -2088,6 +2137,7 @@ String _swapCreationErrorMessage(
   return error.message;
 }
 
+/// Helper function to get localized error message for SwapLimitsException
 String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,

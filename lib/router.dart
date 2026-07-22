@@ -38,6 +38,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
@@ -59,6 +60,18 @@ class AppRouter {
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
+    // Block Trezor callback URIs at the navigation-guard layer so they
+    // never replace the navigation stack. Per GoRouter v17 docs:
+    // "When a deep link opens the app and onEnter returns Block, GoRouter
+    // will stay on the current route." The `app_links` listener delivers
+    // the URI to TrezorConnect.handleCallback separately.
+    onEnter: (context, current, next, router) {
+      final uri = next.uri;
+      if (uri.scheme == 'bullbitcoin' && uri.host == 'trezor-callback') {
+        return const Block.stop();
+      }
+      return const Allow();
+    },
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
@@ -168,6 +181,7 @@ class AppRouter {
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
+      ...TrezorRouter.routes,
       DcaRouter.route,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,

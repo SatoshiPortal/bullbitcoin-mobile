@@ -12463,6 +12463,174 @@
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
   },
+  "importWalletTrezor": "Trezor",
+  "@importWalletTrezor": {
+    "description": "Label for the Trezor entry on the import-wallet page (hardware section)"
+  },
+  "receiveVerifyAddressTrezor": "Verify Address on Trezor",
+  "@receiveVerifyAddressTrezor": {
+    "description": "Label for the verify-address button on the receive screen when the wallet is a Trezor"
+  },
+  "sendSignWithTrezor": "Sign with Trezor",
+  "@sendSignWithTrezor": {
+    "description": "Label for the sign-transaction button on the send screen when the wallet is a Trezor"
+  },
+  "sendTransactionSignedTrezor": "Transaction signed by Trezor",
+  "@sendTransactionSignedTrezor": {
+    "description": "Snackbar shown on the send screen confirming a successful Trezor signing handoff"
+  },
+  "trezorImportTitle": "Import Trezor Wallet",
+  "@trezorImportTitle": {
+    "description": "AppBar title for the Trezor import landing screen"
+  },
+  "trezorVerifyTitle": "Verify Address on Trezor",
+  "@trezorVerifyTitle": {
+    "description": "AppBar title for the Trezor verify-address screen"
+  },
+  "trezorSignTitle": "Sign Transaction",
+  "@trezorSignTitle": {
+    "description": "AppBar title and initial-state main text for the Trezor sign-transaction screen"
+  },
+  "trezorImportInitialTitle": "Connect Your Trezor",
+  "@trezorImportInitialTitle": {
+    "description": "Main text on the Trezor import screen when no operation has started"
+  },
+  "trezorVerifyInitialTitle": "Verify Receive Address",
+  "@trezorVerifyInitialTitle": {
+    "description": "Main text on the Trezor verify-address screen when no operation has started"
+  },
+  "trezorImportWaitingTitle": "Confirm in Trezor Suite",
+  "@trezorImportWaitingTitle": {
+    "description": "Main text on the Trezor import screen while waiting for the user to confirm in Trezor Suite"
+  },
+  "trezorVerifyWaitingTitle": "Confirm on your Trezor device",
+  "@trezorVerifyWaitingTitle": {
+    "description": "Main text on the Trezor verify-address screen while waiting for the user to confirm on the device"
+  },
+  "trezorSignWaitingTitle": "Confirm in Trezor Suite",
+  "@trezorSignWaitingTitle": {
+    "description": "Main text on the Trezor sign-transaction screen while waiting for the user to confirm in Trezor Suite"
+  },
+  "trezorImportFailedTitle": "Import Failed",
+  "@trezorImportFailedTitle": {
+    "description": "Main text on the Trezor import screen when the operation has failed"
+  },
+  "trezorVerifyFailedTitle": "Verification Failed",
+  "@trezorVerifyFailedTitle": {
+    "description": "Main text on the Trezor verify-address screen when the operation has failed"
+  },
+  "trezorSignFailedTitle": "Signing Failed",
+  "@trezorSignFailedTitle": {
+    "description": "Main text on the Trezor sign-transaction screen when the operation has failed"
+  },
+  "trezorImportInitialSubtitle": "Make sure Trezor Suite is installed on this device. You'll be redirected to authorize exporting your public key.",
+  "@trezorImportInitialSubtitle": {
+    "description": "Sub text on the Trezor import screen in the initial state, explaining the next step"
+  },
+  "trezorVerifyInitialSubtitle": "Tap \"Verify Address\" to display this address on your Trezor device and confirm it matches.",
+  "@trezorVerifyInitialSubtitle": {
+    "description": "Sub text on the Trezor verify-address screen in the initial state, explaining the next step"
+  },
+  "trezorSignInitialSubtitle": "Tap \"Start Signing\" to review and confirm the transaction on your Trezor device.",
+  "@trezorSignInitialSubtitle": {
+    "description": "Sub text on the Trezor sign-transaction screen in the initial state, explaining the next step"
+  },
+  "trezorImportWaitingSubtitle": "Confirm the export request in Trezor Suite to share your account public key.",
+  "@trezorImportWaitingSubtitle": {
+    "description": "Sub text on the Trezor import screen while waiting for the user to confirm in Trezor Suite"
+  },
+  "trezorVerifyWaitingSubtitle": "Compare the address shown on your Trezor device with the one shown here, then confirm on the device.",
+  "@trezorVerifyWaitingSubtitle": {
+    "description": "Sub text on the Trezor verify-address screen while the user compares and confirms on the device"
+  },
+  "trezorSignWaitingSubtitle": "Your Trezor device will show the transaction details. Review the destination, amount, and fee, then confirm on the device.",
+  "@trezorSignWaitingSubtitle": {
+    "description": "Sub text on the Trezor sign-transaction screen while the user reviews and confirms on the device"
+  },
+  "trezorImportFailedFallback": "Tap Try Again to start over.",
+  "@trezorImportFailedFallback": {
+    "description": "Sub text on the Trezor import screen when the operation failed and no specific error message is available"
+  },
+  "trezorVerifyFailedFallback": "Tap Try Again to retry verification.",
+  "@trezorVerifyFailedFallback": {
+    "description": "Sub text on the Trezor verify-address screen when the operation failed and no specific error message is available"
+  },
+  "trezorSignFailedFallback": "Tap Try Again to start over.",
+  "@trezorSignFailedFallback": {
+    "description": "Sub text on the Trezor sign-transaction screen when the operation failed and no specific error message is available"
+  },
+  "trezorImportStartButton": "Start Import",
+  "@trezorImportStartButton": {
+    "description": "Primary button label on the Trezor import screen that kicks off the Suite handoff"
+  },
+  "trezorVerifyStartButton": "Verify Address",
+  "@trezorVerifyStartButton": {
+    "description": "Primary button label on the Trezor verify-address screen that kicks off the Suite handoff"
+  },
+  "trezorSignStartButton": "Start Signing",
+  "@trezorSignStartButton": {
+    "description": "Primary button label on the Trezor sign-transaction screen that kicks off the Suite handoff"
+  },
+  "trezorTryAgain": "Try Again",
+  "@trezorTryAgain": {
+    "description": "Retry button label shown on Trezor screens after a failed operation"
+  },
+  "trezorVerifyAddressDisplayLabel": "Compare with the address shown on your Trezor device:",
+  "@trezorVerifyAddressDisplayLabel": {
+    "description": "Label above the in-app address on the Trezor verify-address screen, telling the user where the trusted comparison happens"
+  },
+  "trezorVerifyCopyHint": "Long-press to copy",
+  "@trezorVerifyCopyHint": {
+    "description": "Hint under the address display on the Trezor verify-address screen telling the user how to copy the raw address"
+  },
+  "trezorVerifySuccessSnackbar": "Address verified on Trezor",
+  "@trezorVerifySuccessSnackbar": {
+    "description": "Snackbar message shown when the address has been successfully verified on a Trezor"
+  },
+  "trezorVerifyErrorSnackbarFallback": "Verification failed",
+  "@trezorVerifyErrorSnackbarFallback": {
+    "description": "Snackbar message shown on Trezor verify-address failure when the cubit has not produced a specific error message"
+  },
+  "trezorSignErrorSnackbarFallback": "Signing failed",
+  "@trezorSignErrorSnackbarFallback": {
+    "description": "Snackbar message shown on Trezor sign-transaction failure when the cubit has not produced a specific error message"
+  },
+  "trezorImportErrorSnackbarFallback": "Something went wrong. Try again.",
+  "@trezorImportErrorSnackbarFallback": {
+    "description": "Snackbar message shown on Trezor import failure when the cubit has not produced a specific error message"
+  },
+  "trezorImportWalletTypeLabel": "Wallet Type:",
+  "@trezorImportWalletTypeLabel": {
+    "description": "Label above the script-type dropdown on the Trezor import screen"
+  },
+  "trezorImportWalletTypeBottomSheetTitle": "Select Wallet Type",
+  "@trezorImportWalletTypeBottomSheetTitle": {
+    "description": "Title of the bottom sheet that lets the user pick a script type on the Trezor import screen"
+  },
+  "trezorScriptTypeBip84Title": "Segwit (BIP84)",
+  "@trezorScriptTypeBip84Title": {
+    "description": "Display title for the BIP84 script type in the Trezor import screen"
+  },
+  "trezorScriptTypeBip84Subtitle": "Native SegWit — Recommended",
+  "@trezorScriptTypeBip84Subtitle": {
+    "description": "Sub-label for the BIP84 script type in the Trezor import bottom sheet"
+  },
+  "trezorScriptTypeBip49Title": "Nested Segwit (BIP49)",
+  "@trezorScriptTypeBip49Title": {
+    "description": "Display title for the BIP49 script type in the Trezor import screen"
+  },
+  "trezorScriptTypeBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@trezorScriptTypeBip49Subtitle": {
+    "description": "Sub-label for the BIP49 script type in the Trezor import bottom sheet"
+  },
+  "trezorScriptTypeBip44Title": "Legacy (BIP44)",
+  "@trezorScriptTypeBip44Title": {
+    "description": "Display title for the BIP44 script type in the Trezor import screen"
+  },
+  "trezorScriptTypeBip44Subtitle": "P2PKH — Older format",
+  "@trezorScriptTypeBip44Subtitle": {
+    "description": "Sub-label for the BIP44 script type in the Trezor import bottom sheet"
+  },
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
@@ -14400,6 +14568,34 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "@importWatchOnlyXpubLabel": {
     "description": "Label for the derived XPUB value in watch-only wallet details"
+  },
+  "trezorErrorUserRejected": "Request rejected in Trezor Suite",
+  "@trezorErrorUserRejected": {
+    "description": "User-facing message when the user rejects a Trezor Suite request"
+  },
+  "trezorErrorSuiteNotInstalled": "Trezor Suite is not installed. Install it from the App Store or Play Store to continue.",
+  "@trezorErrorSuiteNotInstalled": {
+    "description": "User-facing message when Trezor Suite is missing on the device"
+  },
+  "trezorErrorSuiteUnresponsive": "Trezor Suite didn't respond. Make sure it's installed, then try again.",
+  "@trezorErrorSuiteUnresponsive": {
+    "description": "User-facing message when Trezor Suite returns no callback within the grace window"
+  },
+  "trezorErrorTimeout": "Timed out waiting for Trezor Suite. Try again.",
+  "@trezorErrorTimeout": {
+    "description": "User-facing message when a Trezor operation exceeds its timeout"
+  },
+  "trezorErrorAddressMismatch": "Address mismatch — Trezor displayed a different address. Do not use this address.",
+  "@trezorErrorAddressMismatch": {
+    "description": "User-facing message when Trezor returns an address different from the one the app sent"
+  },
+  "trezorErrorMissingDescriptor": "Your Trezor didn't return the data needed to import this wallet. This can happen with older firmware. Update Trezor Suite and your device firmware to the latest versions, then try again.",
+  "@trezorErrorMissingDescriptor": {
+    "description": "User-facing message when Trezor's response lacks the BIP-380 descriptor needed for account import (commonly older firmware / Model One)"
+  },
+  "trezorErrorUnknown": "Something went wrong with Trezor. Try again.",
+  "@trezorErrorUnknown": {
+    "description": "Generic user-facing message for an unexpected Trezor failure. NEVER includes the raw dev error text — that goes to logs only."
   },
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {

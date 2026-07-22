@@ -1,0 +1,29 @@
+import 'package:bb_mobile/features/trezor/domain/trezor_error.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'trezor_operation_state.freezed.dart';
+
+enum TrezorOperationStatus {
+  initial,
+  launching,
+  waitingForSuite,
+  success,
+  error,
+}
+
+@freezed
+abstract class TrezorOperationState<T> with _$TrezorOperationState<T> {
+  const TrezorOperationState._();
+
+  const factory TrezorOperationState({
+    @Default(TrezorOperationStatus.initial) TrezorOperationStatus status,
+    TrezorError? error,
+    T? result,
+  }) = _TrezorOperationState<T>;
+
+  bool get isInitial => status == TrezorOperationStatus.initial;
+  bool get isLaunching => status == TrezorOperationStatus.launching;
+  bool get isWaiting => status == TrezorOperationStatus.waitingForSuite;
+  bool get isSuccess => status == TrezorOperationStatus.success;
+  bool get isError => status == TrezorOperationStatus.error;
+}

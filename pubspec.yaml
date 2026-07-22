@@ -42,6 +42,19 @@ dependencies:
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
+  app_links: ^7.0.0
+  # TODO(trezor-port): revert to cake-tech ref once both upstream
+  # PRs merge:
+  #   - https://github.com/cake-tech/trezor_connect/pull/1
+  #   - https://github.com/cake-tech/trezor_connect/pull/2
+  # The fork adds TrezorCallbackException + TrezorLaunchException so
+  # both callback errors AND launch failures (e.g. Suite not
+  # installed) surface immediately as typed exceptions instead of
+  # hanging until our app-side timeout fires.
+  trezor_connect:
+    git:
+      url: https://github.com/anipy1/trezor_connect
+      ref: b649c02
   image_picker: ^1.1.2
   file_picker: 10.3.6
   bull_sdk:
