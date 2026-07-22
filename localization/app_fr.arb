@@ -5242,5 +5242,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Redémarrez votre BitBox02 Nova et essayez de vous reconnecter.",
   "sendErrorInsufficientBalanceFrozenHint": "Solde disponible insuffisant — {amount} est gelé. Dégelez des pièces dans Gérer les pièces pour l'utiliser.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Terminé",
+  "consolidationFailedBody": "Une erreur inattendue s'est produite. Vos fonds sont en sécurité : aucune transaction n'a été diffusée. Veuillez réessayer.",
+  "consolidationFailedTitle": "Échec de la consolidation",
+  "consolidationInProgress": "Consolidation…",
+  "consolidationRequiredTitle": "Consolider le portefeuille",
+  "consolidationRequiredTitleNamed": "Consolider le portefeuille {walletName}",
+  "consolidationRowAmount": "Montant",
+  "consolidationRowNetworkFees": "Frais de réseau",
+  "consolidationRowOutputs": "Sorties",
+  "consolidationRowTransactions": "Transactions",
+  "consolidationScreenDescription": "Trop de sorties peuvent rendre le portefeuille instable. Les consolider les regroupe en moins pour que votre portefeuille fonctionne correctement.",
+  "consolidationScreenTitle": "Consolider",
+  "consolidationSuccessBody": "Vos pièces sont en cours de regroupement. Cela se terminera une fois confirmé par le réseau.",
+  "consolidationSuccessTitle": "Consolidation démarrée"
 }

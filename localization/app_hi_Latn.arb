@@ -13654,5 +13654,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Apna BitBox02 Nova restart karo aur phir se connect karne ki koshish karo.",
   "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Done",
+  "consolidationFailedBody": "Ek anapekshit truti hui. Aapka dhan surakshit hai: koi lenden prasarit nahi kiya gaya. Kripya punah prayas karein.",
+  "consolidationFailedTitle": "Samekan viphal",
+  "consolidationInProgress": "Samekit kiya ja raha hai…",
+  "consolidationRequiredTitle": "Wallet samekit karein",
+  "consolidationRequiredTitleNamed": "{walletName} wallet samekit karein",
+  "consolidationRowAmount": "Rashi",
+  "consolidationRowNetworkFees": "Network shulk",
+  "consolidationRowOutputs": "Output",
+  "consolidationRowTransactions": "Lenden",
+  "consolidationScreenDescription": "Bahut adhik output wallet ko asthir kar sakte hain. Samekan unhe kam mein jod deta hai taaki aapka wallet sahi se kaam kare.",
+  "consolidationScreenTitle": "Samekit karein",
+  "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
+  "consolidationSuccessTitle": "Samekan prarambh hua"
 }

@@ -7508,6 +7508,67 @@
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
   },
+  "consolidationRequiredTitle": "Consolidate the wallet",
+  "@consolidationRequiredTitle": {
+    "description": "Title of the message prompting the user to consolidate their Liquid wallet"
+  },
+  "consolidationFailedTitle": "Consolidation failed",
+  "@consolidationFailedTitle": {
+    "description": "Title of the error banner shown when a consolidation attempt fails"
+  },
+  "consolidationFailedBody": "An unexpected error occurred. Your funds are safe — no transaction was broadcast. Please try again.",
+  "@consolidationFailedBody": {
+    "description": "Body of the error banner shown when a consolidation attempt fails"
+  },
+  "consolidationInProgress": "Consolidating…",
+  "@consolidationInProgress": {
+    "description": "Shown while the consolidation transactions are being broadcast"
+  },
+  "consolidationSuccessTitle": "Consolidation started",
+  "@consolidationSuccessTitle": {
+    "description": "Title shown after the consolidation transactions are broadcast"
+  },
+  "consolidationSuccessBody": "Your coins are being combined. This will complete once the network confirms.",
+  "@consolidationSuccessBody": {
+    "description": "Body shown after the consolidation transactions are broadcast"
+  },
+  "consolidationDone": "Done",
+  "@consolidationDone": {
+    "description": "Button that dismisses the consolidation success screen"
+  },
+  "consolidationScreenTitle": "Consolidate",
+  "@consolidationScreenTitle": {
+    "description": "Title of the consolidation confirmation screen and its primary button"
+  },
+  "consolidationScreenDescription": "Too many outputs can lead to an unstable wallet. Consolidating combines them into fewer to keep your wallet working properly.",
+  "@consolidationScreenDescription": {
+    "description": "Explanation shown on the consolidation screen under the header"
+  },
+  "consolidationRowOutputs": "Outputs",
+  "@consolidationRowOutputs": {
+    "description": "Row label showing the wallet output count before and after consolidation"
+  },
+  "consolidationRowAmount": "Amount",
+  "@consolidationRowAmount": {
+    "description": "Row label for the total amount being consolidated"
+  },
+  "consolidationRowNetworkFees": "Network fees",
+  "@consolidationRowNetworkFees": {
+    "description": "Row label for the total network fee of the consolidation"
+  },
+  "consolidationRowTransactions": "Transactions",
+  "@consolidationRowTransactions": {
+    "description": "Row label for the number of transactions the consolidation will take"
+  },
+  "consolidationRequiredTitleNamed": "Consolidate the {walletName} wallet",
+  "@consolidationRequiredTitleNamed": {
+    "description": "Title prompting consolidation of a named wallet, shown on the home screen",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
   "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",

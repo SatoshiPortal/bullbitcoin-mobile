@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -74,6 +76,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._convertSatsToCurrencyAmountUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
+    required this._checkLiquidConsolidationUsecase,
   }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
@@ -122,6 +125,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
 
   /// Bumped by [_clearBitcoinFeePreviews]; a preview build captures it
   /// before its `await` and re-checks before writing back, so an
@@ -302,6 +306,25 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // descriptor + script type). Skip when the picker landed on the
     // same fromWallet.
     if (wasFromWalletChanged) _clearBitcoinFeePreviews(emit);
+
+    // Proactively flag consolidation when the source is a Liquid wallet with
+    // too many UTXOs, so the card shows before the swap build is attempted.
+    // The ConsolidationRequiredException remains the backstop on the build.
+    // Routed through CheckLiquidConsolidationUsecase (the same check the
+    // consolidation banner and `send` use) rather than re-deriving the
+    // comparison here from this bloc's own UTXO read, so all three surfaces
+    // can never disagree about whether the wallet needs consolidating.
+    if (newFromWallet.isLiquid) {
+      try {
+        final consolidationRequired = await _checkLiquidConsolidationUsecase
+            .execute(walletId: newFromWallet.id);
+        emit(state.copyWith(consolidationRequired: consolidationRequired));
+      } catch (_) {
+        // Best-effort: leave the flag as-is on a read failure.
+      }
+    } else if (state.consolidationRequired) {
+      emit(state.copyWith(consolidationRequired: false));
+    }
 
     final maxAmountSat = await getMaxAmountSat(newFromWallet);
     emit(state.copyWith(maxAmountSat: maxAmountSat));
@@ -682,6 +705,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           amount: event.amount,
         ),
       );
+    } on ConsolidationRequiredException {
+      emit(state.copyWith(consolidationRequired: true));
     } catch (e) {
       final swapCreationException = _isInsufficientFundsException(e)
           ? InsufficientFundsSwapException()

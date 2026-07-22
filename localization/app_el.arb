@@ -13259,5 +13259,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Επανεκκινήστε το BitBox02 Nova σας και δοκιμάστε να συνδεθείτε ξανά.",
   "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Τέλος",
+  "consolidationFailedBody": "Παρουσιάστηκε μη αναμενόμενο σφάλμα. Τα κεφάλαιά σας είναι ασφαλή: δεν μεταδόθηκε καμία συναλλαγή. Δοκιμάστε ξανά.",
+  "consolidationFailedTitle": "Η ενοποίηση απέτυχε",
+  "consolidationInProgress": "Ενοποίηση…",
+  "consolidationRequiredTitle": "Ενοποίηση πορτοφολιού",
+  "consolidationRequiredTitleNamed": "Ενοποίηση πορτοφολιού {walletName}",
+  "consolidationRowAmount": "Ποσό",
+  "consolidationRowNetworkFees": "Τέλη δικτύου",
+  "consolidationRowOutputs": "Έξοδοι",
+  "consolidationRowTransactions": "Συναλλαγές",
+  "consolidationScreenDescription": "Οι πάρα πολλές έξοδοι μπορούν να κάνουν το πορτοφόλι ασταθές. Η ενοποίηση τις συνδυάζει σε λιγότερες ώστε το πορτοφόλι σας να λειτουργεί σωστά.",
+  "consolidationScreenTitle": "Ενοποίηση",
+  "consolidationSuccessBody": "Τα νομίσματά σας συνδυάζονται. Θα ολοκληρωθεί μόλις το επιβεβαιώσει το δίκτυο.",
+  "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε"
 }

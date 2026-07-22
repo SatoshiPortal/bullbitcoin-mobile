@@ -13259,5 +13259,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova'nızı yeniden başlatın ve tekrar bağlanmayı deneyin.",
   "sendErrorInsufficientBalanceFrozenHint": "Yeterli harcanabilir bakiye yok — {amount} donduruldu. Kullanmak için Coin'leri yönet bölümünden dondurmayı kaldırın.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Tamam",
+  "consolidationFailedBody": "Beklenmeyen bir hata oluştu. Paranız güvende: hiçbir işlem yayınlanmadı. Lütfen tekrar deneyin.",
+  "consolidationFailedTitle": "Birleştirme başarısız",
+  "consolidationInProgress": "Birleştiriliyor…",
+  "consolidationRequiredTitle": "Cüzdanı birleştir",
+  "consolidationRequiredTitleNamed": "{walletName} cüzdanını birleştir",
+  "consolidationRowAmount": "Tutar",
+  "consolidationRowNetworkFees": "Ağ ücretleri",
+  "consolidationRowOutputs": "Çıkışlar",
+  "consolidationRowTransactions": "İşlemler",
+  "consolidationScreenDescription": "Çok fazla çıkış cüzdanı kararsız hale getirebilir. Birleştirmek onları daha aza indirir, böylece cüzdanınız düzgün çalışır.",
+  "consolidationScreenTitle": "Birleştir",
+  "consolidationSuccessBody": "Coinleriniz birleştiriliyor. Ağ onayladığında tamamlanacak.",
+  "consolidationSuccessTitle": "Birleştirme başladı"
 }

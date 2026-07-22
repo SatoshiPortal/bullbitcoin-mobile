@@ -5245,5 +5245,19 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Käynnistä BitBox02 Nova uudelleen ja yritä yhdistää uudelleen.",
   "sendErrorInsufficientBalanceFrozenHint": "Käytettävissä oleva saldo ei riitä — {amount} on jäädytetty. Vapauta kolikot kohdassa Hallinnoi kolikoita käyttääksesi niitä.",
   "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova"
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Valmis",
+  "consolidationFailedBody": "Tapahtui odottamaton virhe. Varasi ovat turvassa: mitään tapahtumaa ei lähetetty. Yritä uudelleen.",
+  "consolidationFailedTitle": "Yhdistäminen epäonnistui",
+  "consolidationInProgress": "Yhdistetään…",
+  "consolidationRequiredTitle": "Yhdistä lompakko",
+  "consolidationRequiredTitleNamed": "Yhdistä lompakko {walletName}",
+  "consolidationRowAmount": "Määrä",
+  "consolidationRowNetworkFees": "Verkkomaksut",
+  "consolidationRowOutputs": "Ulostulot",
+  "consolidationRowTransactions": "Tapahtumat",
+  "consolidationScreenDescription": "Liian monta ulostuloa voi tehdä lompakosta epävakaan. Yhdistäminen kokoaa ne harvemmiksi, jotta lompakkosi toimii oikein.",
+  "consolidationScreenTitle": "Yhdistä",
+  "consolidationSuccessBody": "Kolikoitasi yhdistetään. Tämä valmistuu, kun verkko vahvistaa sen.",
+  "consolidationSuccessTitle": "Yhdistäminen aloitettu"
 }
