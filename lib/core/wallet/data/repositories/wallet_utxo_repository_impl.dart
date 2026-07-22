@@ -59,46 +59,38 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         .map((row) => (txId: row.txId, vout: row.vout))
         .toSet();
 
-    final utxos = await Future.wait(
-      utxoModels.map((model) async {
-        // Get labels for the UTXO if any
-        final labelModels = await _labelsFacade.fetchByReference(
-          model.labelRef,
-        );
-        final txLabels = await _labelsFacade.fetchByReference(model.txId);
-        // Check if the UTXO is frozen
-        final isFrozen = frozenOutpoints.contains((
-          txId: model.txId,
-          vout: model.vout,
-        ));
-        // Get the possible address labels for the UTXO
-        List<Label> addressLabels;
-        switch (model) {
-          case LiquidWalletUtxoModel _:
-            final (standardAddressLabels, confidentialAddressLabels) = await (
-              _labelsFacade.fetchByReference(model.standardAddress),
-              _labelsFacade.fetchByReference(model.confidentialAddress),
-            ).wait;
+    // fetchByReference is an unindexed full scan of the labels table (there is
+    // no index on reference), so the previous per-UTXO fetch ran 3-4 such scans
+    // per coin. Read every label once and index by reference in memory instead.
+    final labelsByReference = <String, List<Label>>{};
+    for (final label in await _labelsFacade.fetchAll()) {
+      (labelsByReference[label.reference] ??= <Label>[]).add(label);
+    }
 
-            addressLabels = [
-              ...standardAddressLabels,
-              ...confidentialAddressLabels,
-            ];
-          case BitcoinWalletUtxoModel _:
-            final labels = await _labelsFacade.fetchByReference(model.address);
-            addressLabels = labels;
-        }
+    final utxos = utxoModels.map((model) {
+      final isFrozen = frozenOutpoints.contains((
+        txId: model.txId,
+        vout: model.vout,
+      ));
 
-        return WalletUtxoMapper.toEntity(
-          model,
-          walletId: walletId,
-          labels: labelModels,
-          txLabels: txLabels,
-          addressLabels: addressLabels,
-          isFrozen: isFrozen,
-        );
-      }).toList(),
-    );
+      final List<Label> addressLabels = switch (model) {
+        LiquidWalletUtxoModel _ => [
+          ...?labelsByReference[model.standardAddress],
+          ...?labelsByReference[model.confidentialAddress],
+        ],
+        BitcoinWalletUtxoModel _ =>
+          labelsByReference[model.address] ?? const [],
+      };
+
+      return WalletUtxoMapper.toEntity(
+        model,
+        walletId: walletId,
+        labels: labelsByReference[model.labelRef] ?? const [],
+        txLabels: labelsByReference[model.txId] ?? const [],
+        addressLabels: addressLabels,
+        isFrozen: isFrozen,
+      );
+    }).toList();
 
     return utxos;
   }
