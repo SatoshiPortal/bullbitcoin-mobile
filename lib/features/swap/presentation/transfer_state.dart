@@ -17,6 +17,9 @@ sealed class TransferState with _$TransferState {
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
+    // Set when the Liquid swap-funding build fails because the wallet has too
+    // many UTXOs to spend in a single transaction and needs consolidating.
+    @Default(false) bool consolidationRequired,
     ChainSwap? swap,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
