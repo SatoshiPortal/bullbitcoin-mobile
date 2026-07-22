@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 
 /// The runtime signals a trigger can read to decide whether it fires.
 ///
@@ -45,7 +44,7 @@ final List<AnnouncementCatalogEntry> announcementCatalog = [
       id: AnnouncementId.payjoinPrivacy,
       priority: 0,
       tone: AnnouncementTone.info,
-      action: NavigateAction(SettingsRoute.payjoinSettings.name),
+      action: const NavigateAction(),
       dismissPolicy: const PermanentDismiss(),
     ),
     // Show once the wallet has received/transacted (first UTXO or history after
@@ -57,7 +56,7 @@ final List<AnnouncementCatalogEntry> announcementCatalog = [
       id: AnnouncementId.autoswapActive,
       priority: 1,
       tone: AnnouncementTone.success,
-      action: NavigateAction(SettingsRoute.autoswapSettings.name),
+      action: const NavigateAction(),
       dismissPolicy: const PermanentDismiss(),
     ),
     // Show while autoswap is enabled, letting the user learn what it does.

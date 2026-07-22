@@ -7,7 +7,7 @@ void main() {
       id: AnnouncementId.payjoinPrivacy,
       priority: priority,
       tone: AnnouncementTone.info,
-      action: const NavigateAction('someRoute'),
+      action: const NavigateAction(),
       dismissPolicy: policy,
     );
   }
@@ -16,18 +16,14 @@ void main() {
     test('rejects a negative priority', () {
       expect(
         () => build(policy: const PermanentDismiss(), priority: -1),
-        throwsA(isA<AssertionError>()),
+        throwsA(isA<ArgumentError>()),
       );
-    });
-
-    test('NavigateAction rejects an empty route name', () {
-      expect(() => NavigateAction(''), throwsA(isA<AssertionError>()));
     });
 
     test('SnoozeDismiss rejects a non-positive interval', () {
       expect(
         () => SnoozeDismiss(const Duration(microseconds: 0)),
-        throwsA(isA<AssertionError>()),
+        throwsA(isA<ArgumentError>()),
       );
     });
   });

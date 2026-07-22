@@ -28,13 +28,11 @@ sealed class AnnouncementAction {
   const AnnouncementAction();
 }
 
-/// Navigate to a named GoRouter route (by route *name*, not path, to avoid
-/// coupling to another feature's path layout).
+/// Tapping the announcement navigates somewhere. The concrete destination is
+/// resolved in the ui layer (`ui/announcement_navigation.dart`) from the
+/// [Announcement]'s id, so `domain/` never imports another feature's router.
 final class NavigateAction extends AnnouncementAction {
-  final String routeName;
-
-  const NavigateAction(this.routeName)
-    : assert(routeName != '', 'routeName must not be empty');
+  const NavigateAction();
 }
 
 /// How re-display works after the user dismisses an announcement.
@@ -53,8 +51,15 @@ final class PermanentDismiss extends DismissPolicy {
 final class SnoozeDismiss extends DismissPolicy {
   final Duration interval;
 
-  SnoozeDismiss(this.interval)
-    : assert(interval.inMicroseconds > 0, 'snooze interval must be positive');
+  SnoozeDismiss(this.interval) {
+    if (interval.inMicroseconds <= 0) {
+      throw ArgumentError.value(
+        interval,
+        'interval',
+        'snooze interval must be positive',
+      );
+    }
+  }
 }
 
 /// A rich, self-validating announcement definition.
@@ -78,7 +83,11 @@ class Announcement {
     required this.tone,
     required this.action,
     required this.dismissPolicy,
-  }) : assert(priority >= 0, 'priority must be non-negative');
+  }) {
+    if (priority < 0) {
+      throw ArgumentError.value(priority, 'priority', 'must be non-negative');
+    }
+  }
 
   /// Whether a dismissal recorded at [dismissedAt] still suppresses this
   /// announcement as of [now]. Permanent dismissals always suppress; snooze
