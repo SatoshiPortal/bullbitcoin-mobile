@@ -11,6 +11,15 @@ on:
         type: choice
         options: [apk, aab]
         default: apk
+      profile:
+        description: "Endpoint profile (fiat-certification is fixed and branch-bound)"
+        type: choice
+        options: [default, fiat-certification]
+        default: default
+      expected_commit:
+        description: "Required full commit SHA for fiat-certification"
+        type: string
+        required: false
 
 jobs:
   build:
@@ -27,7 +36,30 @@ jobs:
       # `github` context has no short-SHA field; compute it from the checkout.
       - name: Resolve short commit SHA
         id: meta
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "sha_full=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Validate fiat certification request
+        if: ${{ inputs.profile == 'fiat-certification' }}
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.mode }}" != "beta" ] || [ "${{ inputs.format }}" != "apk" ]; then
+            echo "::error::fiat-certification requires mode=beta and format=apk."
+            exit 1
+          fi
+          if [ "$GITHUB_REF_NAME" != "getpaid-2-51-bullnym-fiat-ux" ]; then
+            echo "::error::fiat-certification is restricted to getpaid-2-51-bullnym-fiat-ux."
+            exit 1
+          fi
+          if ! [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]] \
+            || [ "$EXPECTED_COMMIT" != "$GITHUB_SHA" ]; then
+            echo "::error::expected_commit must be the exact 40-character SHA checked out by this run."
+            exit 1
+          fi
+          test -z "$(git status --porcelain)"
 
       - name: Free disk space
         # Pinned to a commit SHA (not the mutable v1.3.1 tag): this third-party
@@ -73,10 +105,56 @@ jobs:
 
       - name: Build
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
-        run: make android ${{ inputs.mode }} FORMAT=${{ inputs.format }}
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.profile }}" = "fiat-certification" ]; then
+            # Fixed profile by design: no workflow input can redirect a signed
+            # certification build to an arbitrary service.
+            make android beta FORMAT=apk DART_DEFINES='BB_API_BASE_URL=https://staging-vibe-bbx.bull-wallet.com BB_AUTH_BASE_URL=https://staging-vibe.bull-wallet.com BULLNYM_BASE_URL=https://pay2.bull-wallet.com BULLNYM_PUBLIC_BASE_URL=https://pay2.bull-wallet.com'
+          else
+            make android ${{ inputs.mode }} FORMAT=${{ inputs.format }}
+          fi
 
-      - uses: actions/upload-artifact@v7
+      - name: Verify signed fiat certification APK
+        if: ${{ inputs.profile == 'fiat-certification' }}
+        run: |
+          set -euo pipefail
+          tools/verify_fiat_certification_apk.sh BULL-beta.apk
+          podman run --rm \
+            --volume "$PWD/BULL-beta.apk:/tmp/BULL-beta.apk:ro" \
+            bull-app bash -c '
+              set -euo pipefail
+              apksigner=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)
+              test -n "$apksigner"
+              "$apksigner" verify --verbose /tmp/BULL-beta.apk
+            '
+          apk_sha256=$(sha256sum BULL-beta.apk | cut -d' ' -f1)
+          cat > fiat-certification-manifest.txt <<EOF
+          profile=fiat-certification
+          commit=${GITHUB_SHA}
+          apk_sha256=${apk_sha256}
+          api_origin=https://staging-vibe-bbx.bull-wallet.com
+          accounts_origin=https://staging-vibe.bull-wallet.com
+          bullnym_base_origin=https://pay2.bull-wallet.com
+          bullnym_public_origin=https://pay2.bull-wallet.com
+          android_signature_verified=true
+          EOF
+          echo "APK_SHA256=$apk_sha256" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload standard Android artifact
+        if: ${{ inputs.profile == 'default' }}
+        uses: actions/upload-artifact@v7
         with:
           name: BULL-${{ inputs.mode }}-${{ steps.meta.outputs.sha_short }}-${{ inputs.format }}
           path: BULL-${{ inputs.mode }}.${{ inputs.format }}
+          retention-days: 30
+
+      - name: Upload signed fiat certification APK
+        if: ${{ inputs.profile == 'fiat-certification' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: BULL-fiat-certification-${{ steps.meta.outputs.sha_short }}-apk
+          path: |
+            BULL-beta.apk
+            fiat-certification-manifest.txt
           retention-days: 30
