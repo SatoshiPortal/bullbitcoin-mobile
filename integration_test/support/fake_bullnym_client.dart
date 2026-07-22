@@ -58,12 +58,12 @@ enum FakeFiatSettlementMode {
   normal,
 
   /// Server has NO stored credential: a PUT without api_key answers
-  /// BULL_BITCOIN_CREDENTIAL_REQUIRED; a retry carrying a key succeeds and activates
+  /// FIAT_CREDENTIAL_REQUIRED; a retry carrying a key succeeds and activates
   /// the credential (the optimistic-save / key-on-demand path).
   credentialRequired,
 
-  /// Any delivered key is rejected as BULL_BITCOIN_CREDENTIAL_INVALID; a PUT without
-  /// a key still answers BULL_BITCOIN_CREDENTIAL_REQUIRED.
+  /// Any delivered key is rejected as FIAT_CREDENTIAL_INVALID; a PUT without
+  /// a key still answers FIAT_CREDENTIAL_REQUIRED.
   credentialInvalid,
 
   /// Fiat conversion needs more KYC: FIAT_CONVERSION_KYC_REQUIRED.
@@ -869,8 +869,8 @@ class FakeBullnymClient implements BullnymClientPort {
         return Err(
           BullnymFailure.serverRejectedRequest(
             code: apiKey == null
-                ? 'BULL_BITCOIN_CREDENTIAL_REQUIRED'
-                : 'BULL_BITCOIN_CREDENTIAL_INVALID',
+                ? 'FIAT_CREDENTIAL_REQUIRED'
+                : 'FIAT_CREDENTIAL_INVALID',
             logMessage: 'fake: scoped credential rejected',
             statusCode: 403,
             retryable: false,
@@ -880,7 +880,7 @@ class FakeBullnymClient implements BullnymClientPort {
         if (apiKey == null && fiatPercentage > 0) {
           return const Err(
             BullnymFailure.serverRejectedRequest(
-              code: 'BULL_BITCOIN_CREDENTIAL_REQUIRED',
+              code: 'FIAT_CREDENTIAL_REQUIRED',
               logMessage: 'fake: no stored scoped credential',
               statusCode: 403,
               retryable: false,

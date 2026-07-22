@@ -14,9 +14,9 @@ import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.d
 ///
 /// 1. Submit WITHOUT the scoped key — the server's stored credential is the
 ///    source of truth, so normal edits read and transmit the key zero times.
-/// 2. Only when the server answers `BULL_BITCOIN_CREDENTIAL_REQUIRED` (no stored
+/// 2. Only when the server answers `FIAT_CREDENTIAL_REQUIRED` (no stored
 ///    credential) read the local key and retry exactly once with it attached.
-/// 3. No local key, or the key is rejected (`BULL_BITCOIN_CREDENTIAL_INVALID`) →
+/// 3. No local key, or the key is rejected (`FIAT_CREDENTIAL_INVALID`) →
 ///    credentialProblem (UI offers "Reconnect Bull Bitcoin").
 ///
 /// Percentage 0 (Bitcoin-only) is handled by [DisableFiatSettlementUsecase].

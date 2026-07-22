@@ -3,13 +3,11 @@ import 'package:bb_mobile/features/fiat_settlement/domain/fiat_settlement_failur
 
 /// Stable Bullnym application error codes for fiat settlement. These wire
 /// strings match the Bullnym server contract (PRs #197/#198) exactly: the
-/// credential codes are the `BULL_BITCOIN_*` names the server emits; KYC is
+/// credential codes are the `FIAT_CREDENTIAL_*` names the server emits; KYC is
 /// `FIAT_CONVERSION_KYC_REQUIRED`.
 const String fiatSettlementKycRequiredCode = 'FIAT_CONVERSION_KYC_REQUIRED';
-const String fiatSettlementCredentialRequiredCode =
-    'BULL_BITCOIN_CREDENTIAL_REQUIRED';
-const String fiatSettlementCredentialInvalidCode =
-    'BULL_BITCOIN_CREDENTIAL_INVALID';
+const String fiatSettlementCredentialRequiredCode = 'FIAT_CREDENTIAL_REQUIRED';
+const String fiatSettlementCredentialInvalidCode = 'FIAT_CREDENTIAL_INVALID';
 
 /// Maps a transport-level [BullnymFailure] to the closed feature failure set,
 /// preserving exactly the distinctions the validated error outcomes require:

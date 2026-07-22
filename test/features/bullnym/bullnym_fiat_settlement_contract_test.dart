@@ -291,8 +291,8 @@ void main() {
 
     for (final code in const [
       'FIAT_CONVERSION_KYC_REQUIRED',
-      'BULL_BITCOIN_CREDENTIAL_REQUIRED',
-      'BULL_BITCOIN_CREDENTIAL_INVALID',
+      'FIAT_CREDENTIAL_REQUIRED',
+      'FIAT_CREDENTIAL_INVALID',
     ]) {
       test('passes through the stable server code $code', () async {
         final stub = _stubDio([

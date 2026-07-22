@@ -29,7 +29,7 @@ const _okConfig = BullnymFiatSettlementConfiguration(
 );
 
 const _credentialRequired = BullnymFailure.serverRejectedRequest(
-  code: 'BULL_BITCOIN_CREDENTIAL_REQUIRED',
+  code: 'FIAT_CREDENTIAL_REQUIRED',
   logMessage: 'no stored credential',
   retryable: false,
 );
@@ -118,7 +118,7 @@ void main() {
   });
 
   test(
-    'BULL_BITCOIN_CREDENTIAL_REQUIRED triggers exactly one retry with the local key',
+    'FIAT_CREDENTIAL_REQUIRED triggers exactly one retry with the local key',
     () async {
       stubSet(
         withoutKey: const Err(_credentialRequired),
@@ -177,14 +177,14 @@ void main() {
   );
 
   test(
-    'a rejected retry key (BULL_BITCOIN_CREDENTIAL_INVALID) maps to credentialProblem '
+    'a rejected retry key (FIAT_CREDENTIAL_INVALID) maps to credentialProblem '
     'and never loops',
     () async {
       stubSet(
         withoutKey: const Err(_credentialRequired),
         withKey: const Err(
           BullnymFailure.serverRejectedRequest(
-            code: 'BULL_BITCOIN_CREDENTIAL_INVALID',
+            code: 'FIAT_CREDENTIAL_INVALID',
             logMessage: 'revoked',
             retryable: false,
           ),
