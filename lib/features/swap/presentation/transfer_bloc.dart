@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -72,12 +73,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getReceiveAddressUsecase,
     required this._getWalletUtxosUsecase,
     required this._convertSatsToCurrencyAmountUsecase,
+    required this._getAvailableCurrenciesUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
   }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
     on<TransferAmountChanged>(_onAmountChanged);
+    on<TransferAmountCurrencyChanged>(_onAmountCurrencyChanged);
+    on<TransferMaxAmountSelected>(_onMaxAmountSelected);
     on<TransferSwapCreated>(_onSwapCreated);
     on<TransferConfirmed>(_onConfirmed);
     on<TransferSendToExternalToggled>(_onSendToExternalToggled);
@@ -120,6 +124,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
 
@@ -147,6 +152,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         liquidNetworkFees,
         bitcoinNetworkFees,
         exchangeRate,
+        fiatCurrencyCodes,
       ) = await (
         _getWalletsUsecase.execute(),
         _getNetworkFeesUsecase.execute(isLiquid: true),
@@ -154,6 +160,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         _convertSatsToCurrencyAmountUsecase.execute(
           currencyCode: settings.currencyCode,
         ),
+        _loadAvailableCurrencies(),
       ).wait;
       final liquidWallets = wallets
           .where(
@@ -179,6 +186,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       emit(
         state.copyWith(
           bitcoinUnit: settings.bitcoinUnit,
+          inputAmountCurrencyCode: settings.currencyCode,
+          fiatCurrencyCodes: fiatCurrencyCodes,
           wallets: wallets,
           fromWallet: fromWallet,
           toWallet: toWallet,
@@ -213,6 +222,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       emit(state.copyWith(startError: Exception(e.toString())));
     } finally {
       emit(state.copyWith(isStarting: false));
+    }
+  }
+
+  Future<List<String>> _loadAvailableCurrencies() async {
+    try {
+      return await _getAvailableCurrenciesUsecase.execute();
+    } catch (e) {
+      log.warning(
+        'Could not load fiat currencies for the transfer amount input',
+        error: e,
+      );
+      return const [];
     }
   }
 
@@ -296,6 +317,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         // Since the from wallet is changed, there will be a new balance and thus a
         //  new max amount to calculate. Set to null while recalculating.
         maxAmountSat: null,
+        exactInputAmountSat: state.isMaxSelected
+            ? null
+            : state.exactInputAmountSat,
       ),
     );
     // Wallet swap invalidates every cached preview (different UTXOs +
@@ -318,6 +342,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (state.amount == event.amount) return;
     var updated = state.copyWith(
       amount: event.amount,
+      exactInputAmountSat: null,
       swapCreationException: null,
     );
     // Sending the max drains the wallet, so an exact receivable amount can
@@ -328,6 +353,60 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
     emit(updated);
     // Amount is part of the cache fingerprint (see _clearBitcoinFeePreviews).
+    _clearBitcoinFeePreviews(emit);
+  }
+
+  Future<void> _onAmountCurrencyChanged(
+    TransferAmountCurrencyChanged event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (state.inputAmountCurrencyCode == event.currencyCode) return;
+
+    var exchangeRate = state.exchangeRate;
+    var fiatCurrencyCode = state.fiatCurrencyCode;
+    if (![
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+    ].contains(event.currencyCode)) {
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: event.currencyCode,
+      );
+      fiatCurrencyCode = event.currencyCode;
+    } else {
+      final settings = await _getSettingsUsecase.execute();
+      fiatCurrencyCode = settings.currencyCode;
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: settings.currencyCode,
+      );
+    }
+
+    emit(
+      state.copyWith(
+        inputAmountCurrencyCode: event.currencyCode,
+        fiatCurrencyCode: fiatCurrencyCode,
+        exchangeRate: exchangeRate,
+        amount: '',
+        exactInputAmountSat: null,
+        swapCreationException: null,
+        continueClicked: false,
+      ),
+    );
+    _clearBitcoinFeePreviews(emit);
+  }
+
+  void _onMaxAmountSelected(
+    TransferMaxAmountSelected event,
+    Emitter<TransferState> emit,
+  ) {
+    if (state.maxAmountSat == null || state.maxAmountSat! <= 0) return;
+    emit(
+      state.copyWith(
+        amount: state.maxAmountInput,
+        exactInputAmountSat: state.maxAmountSat,
+        receiveExactAmount: false,
+        swapCreationException: null,
+      ),
+    );
     _clearBitcoinFeePreviews(emit);
   }
 
@@ -347,9 +426,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       ),
     );
     try {
-      final inputAmountSat = state.bitcoinUnit == BitcoinUnit.sats
-          ? int.parse(event.amount)
-          : ConvertAmount.btcToSats(double.parse(event.amount));
+      final inputAmountSat = state
+          .copyWith(amount: event.amount)
+          .inputAmountSat;
 
       // Insufficient balance is surfaced as an inline form error on the
       // amount field (see SwapAmountInput); stop here so no swap is created.
@@ -815,9 +894,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         String? bip21AmountText;
         if (bip21AmountSat != null) {
           try {
-            bip21AmountText = state.bitcoinUnit == BitcoinUnit.sats
-                ? bip21AmountSat.toString()
-                : ConvertAmount.satsToBtc(bip21AmountSat).toString();
+            if (state.isInputAmountFiat) {
+              bip21AmountText = ConvertAmount.btcToFiat(
+                ConvertAmount.satsToBtc(bip21AmountSat),
+                state.exchangeRate ?? 0,
+              ).toString();
+            } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+              bip21AmountText = bip21AmountSat.toString();
+            } else {
+              bip21AmountText = ConvertAmount.satsToBtc(
+                bip21AmountSat,
+              ).toString();
+            }
           } catch (e) {
             bip21AmountText = null;
           }
@@ -831,6 +919,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                 // ignore: avoid_bool_literals_in_conditional_expressions
                 bip21AmountSat != null ? true : state.receiveExactAmount,
             amount: bip21AmountText ?? state.amount,
+            exactInputAmountSat: bip21AmountSat ?? state.exactInputAmountSat,
           ),
         );
       } catch (e) {

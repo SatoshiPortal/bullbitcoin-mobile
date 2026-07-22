@@ -9,6 +9,9 @@ sealed class TransferEvent with _$TransferEvent {
   }) = TransferWalletsChanged;
   const factory TransferEvent.amountChanged(String amount) =
       TransferAmountChanged;
+  const factory TransferEvent.amountCurrencyChanged(String currencyCode) =
+      TransferAmountCurrencyChanged;
+  const factory TransferEvent.maxAmountSelected() = TransferMaxAmountSelected;
   const factory TransferEvent.swapCreated(String amount) = TransferSwapCreated;
   const factory TransferEvent.confirmed() = TransferConfirmed;
   const factory TransferEvent.sendToExternalToggled(bool enabled) =
