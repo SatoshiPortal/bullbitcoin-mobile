@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_config.dart';
+import 'package:bb_mobile/features/fiat_settlement/public/fiat_settlement_facade.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_identity_port.dart';
 import 'package:bb_mobile/features/invoices/application/ports/invoices_pay_service_port.dart';
 import 'package:bb_mobile/features/invoices/application/usecases/cancel_invoice_usecase.dart';
@@ -18,6 +19,7 @@ import 'package:bb_mobile/features/invoices/data/private_invoice_link_repository
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_identity_datasource.dart';
 import 'package:bb_mobile/features/invoices/data/datasources/invoices_pay_service_datasource.dart';
 import 'package:bb_mobile/features/invoices/domain/private_invoice_cipher.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_invoice_settlement_constraints_usecase.dart';
 import 'package:bb_mobile/features/invoices/domain/repositories/private_invoice_link_repository.dart';
 import 'package:bb_mobile/features/invoices/domain/usecases/get_private_invoice_link_usecase.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
@@ -88,6 +90,11 @@ class InvoicesLocator {
       () =>
           GetPrivateInvoiceLinkUsecase(locator<PrivateInvoiceLinkRepository>()),
     );
+    locator.registerFactory<GetInvoiceSettlementConstraintsUsecase>(
+      () => GetInvoiceSettlementConstraintsUsecase(
+        locator<FiatSettlementFacade>(),
+      ),
+    );
     locator.registerFactory<InvoicesFacade>(
       () => InvoicesFacade(
         create: locator<CreateInvoiceUsecase>(),
@@ -108,7 +115,11 @@ class InvoicesLocator {
       () => InvoicesListCubit(facade: locator<InvoicesFacade>()),
     );
     locator.registerFactory<InvoiceCreateCubit>(
-      () => InvoiceCreateCubit(facade: locator<InvoicesFacade>()),
+      () => InvoiceCreateCubit(
+        facade: locator<InvoicesFacade>(),
+        settlementConstraints:
+            locator<GetInvoiceSettlementConstraintsUsecase>(),
+      ),
     );
   }
 }

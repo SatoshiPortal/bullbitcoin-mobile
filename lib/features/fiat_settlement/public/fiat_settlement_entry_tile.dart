@@ -18,9 +18,14 @@ import 'package:go_router/go_router.dart';
 /// stays inert in isolated product-screen widget tests where those services are
 /// not registered.
 class FiatSettlementEntryTile extends StatefulWidget {
-  const FiatSettlementEntryTile({super.key, required this.product});
+  const FiatSettlementEntryTile({
+    super.key,
+    required this.product,
+    this.onConfigurationChanged,
+  });
 
   final FiatSettlementProduct product;
+  final Future<void> Function()? onConfigurationChanged;
 
   @override
   State<FiatSettlementEntryTile> createState() =>
@@ -89,6 +94,7 @@ class _FiatSettlementEntryTileState extends State<FiatSettlementEntryTile> {
           pathParameters: {'product': widget.product.pathId},
         );
         await _load();
+        await widget.onConfigurationChanged?.call();
         if (mounted) setState(() {});
       },
       padding: const EdgeInsets.all(16),

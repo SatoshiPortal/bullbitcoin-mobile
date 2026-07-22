@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_invoice_settlement_constraints_usecase.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockFacade extends Mock implements InvoicesFacade {}
+
+class _MockSettlementConstraints extends Mock
+    implements GetInvoiceSettlementConstraintsUsecase {}
 
 void main() {
   final invoiceId = InvoiceId('inv-1');
@@ -172,6 +176,44 @@ void main() {
     await cubit.submit();
 
     verify(() => facade.create(any())).called(1);
+    await cubit.close();
+  });
+
+  test('mixed invoice settlement disables direct Liquid', () async {
+    final settlementConstraints = _MockSettlementConstraints();
+    when(() => settlementConstraints.execute()).thenAnswer(
+      (_) async =>
+          const InvoiceSettlementConstraints(directLiquidAvailable: false),
+    );
+    final cubit = InvoiceCreateCubit(
+      facade: facade,
+      settlementConstraints: settlementConstraints,
+    );
+
+    await cubit.initialize();
+
+    expect(cubit.state.directLiquidAvailable, isFalse);
+    expect(cubit.state.acceptLiquid, isFalse);
+    cubit.acceptLiquidChanged(true);
+    expect(cubit.state.acceptLiquid, isFalse);
+    await cubit.close();
+  });
+
+  test('fiat-only invoice settlement keeps direct Liquid available', () async {
+    final settlementConstraints = _MockSettlementConstraints();
+    when(() => settlementConstraints.execute()).thenAnswer(
+      (_) async =>
+          const InvoiceSettlementConstraints(directLiquidAvailable: true),
+    );
+    final cubit = InvoiceCreateCubit(
+      facade: facade,
+      settlementConstraints: settlementConstraints,
+    );
+
+    await cubit.initialize();
+
+    expect(cubit.state.directLiquidAvailable, isTrue);
+    expect(cubit.state.acceptLiquid, isTrue);
     await cubit.close();
   });
 }

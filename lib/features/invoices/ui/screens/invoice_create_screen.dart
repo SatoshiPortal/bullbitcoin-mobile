@@ -178,8 +178,13 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
         ),
         SwitchListTile(
           value: state.acceptLiquid,
-          onChanged: state.submitting ? null : cubit.acceptLiquidChanged,
+          onChanged: state.submitting || !state.directLiquidAvailable
+              ? null
+              : cubit.acceptLiquidChanged,
           title: Text(context.loc.invoiceAcceptLiquid),
+          subtitle: state.directLiquidAvailable
+              ? null
+              : Text(context.loc.invoiceLiquidUnavailableForMixedSettlement),
         ),
         SwitchListTile(
           value: state.acceptBtc,
@@ -219,7 +224,10 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
         ),
         const Gap(16),
         // Account-scoped: applies to invoices created afterward.
-        const FiatSettlementEntryTile(product: FiatSettlementProduct.invoice),
+        FiatSettlementEntryTile(
+          product: FiatSettlementProduct.invoice,
+          onConfigurationChanged: cubit.refreshFiatSettlement,
+        ),
       ],
     );
   }

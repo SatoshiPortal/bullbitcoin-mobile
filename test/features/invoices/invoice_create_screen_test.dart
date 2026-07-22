@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_invoice_settlement_constraints_usecase.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_cubit.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:bb_mobile/features/invoices/ui/screens/invoice_create_screen.dart';
@@ -10,6 +11,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockFacade extends Mock implements InvoicesFacade {}
+
+class _MockSettlementConstraints extends Mock
+    implements GetInvoiceSettlementConstraintsUsecase {}
 
 void main() {
   late _MockFacade facade;
@@ -86,5 +90,46 @@ void main() {
     await tester.pump();
     expect(find.text('Jane'), findsOneWidget);
     expect(find.text('Example Corp'), findsOneWidget);
+  });
+
+  testWidgets('mixed settlement explains and disables direct Liquid', (
+    tester,
+  ) async {
+    await cubit.close();
+    final constraints = _MockSettlementConstraints();
+    when(() => constraints.execute()).thenAnswer(
+      (_) async =>
+          const InvoiceSettlementConstraints(directLiquidAvailable: false),
+    );
+    cubit = InvoiceCreateCubit(
+      facade: facade,
+      settlementConstraints: constraints,
+    );
+    await cubit.initialize();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: BlocProvider<InvoiceCreateCubit>.value(
+          value: cubit,
+          child: const InvoiceCreateScreen(),
+        ),
+      ),
+    );
+
+    final liquid = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Liquid'),
+    );
+    expect(liquid.value, isFalse);
+    expect(liquid.onChanged, isNull);
+    expect(
+      find.text(
+        'Direct Liquid payments are unavailable when this invoice is split between Bitcoin and fiat.',
+      ),
+      findsOneWidget,
+    );
   });
 }

@@ -35,6 +35,7 @@ class InvoiceCreateState {
   final bool acceptBtc;
   final bool acceptLn;
   final bool acceptLiquid;
+  final bool directLiquidAvailable;
   final String payerName;
   final String payerCorporateName;
   final String payerAddress;
@@ -66,6 +67,7 @@ class InvoiceCreateState {
     this.acceptBtc = false,
     this.acceptLn = true,
     this.acceptLiquid = true,
+    this.directLiquidAvailable = true,
     this.payerName = '',
     this.payerCorporateName = '',
     this.payerAddress = '',
@@ -119,6 +121,7 @@ class InvoiceCreateState {
     bool? acceptBtc,
     bool? acceptLn,
     bool? acceptLiquid,
+    bool? directLiquidAvailable,
     String? payerName,
     String? payerCorporateName,
     String? payerAddress,
@@ -152,6 +155,8 @@ class InvoiceCreateState {
       acceptBtc: acceptBtc ?? this.acceptBtc,
       acceptLn: acceptLn ?? this.acceptLn,
       acceptLiquid: acceptLiquid ?? this.acceptLiquid,
+      directLiquidAvailable:
+          directLiquidAvailable ?? this.directLiquidAvailable,
       payerName: payerName ?? this.payerName,
       payerCorporateName: payerCorporateName ?? this.payerCorporateName,
       payerAddress: payerAddress ?? this.payerAddress,

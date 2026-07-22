@@ -1,17 +1,23 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/invoices/domain/entities/private_invoice_presentation.dart';
+import 'package:bb_mobile/features/invoices/domain/usecases/get_invoice_settlement_constraints_usecase.dart';
 import 'package:bb_mobile/features/invoices/presentation/invoice_create_state.dart';
 import 'package:bb_mobile/features/invoices/public/invoices_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
   final InvoicesFacade _facade;
+  final GetInvoiceSettlementConstraintsUsecase? _settlementConstraints;
   int _operationId = 0;
 
-  InvoiceCreateCubit({required InvoicesFacade facade}) : this._(facade);
+  InvoiceCreateCubit({
+    required InvoicesFacade facade,
+    GetInvoiceSettlementConstraintsUsecase? settlementConstraints,
+  }) : this._(facade, settlementConstraints);
 
-  InvoiceCreateCubit._(this._facade) : super(const InvoiceCreateState());
+  InvoiceCreateCubit._(this._facade, this._settlementConstraints)
+    : super(const InvoiceCreateState());
 
   Future<void> initialize() async {
     final result = await _facade.resumeCreate();
@@ -34,6 +40,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
     }
     emit(state.copyWith(initializing: false));
     await _loadCurrencies();
+    await refreshFiatSettlement();
   }
 
   Future<void> retryPending() async {
@@ -53,6 +60,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
             ),
           );
           await _loadCurrencies();
+          await refreshFiatSettlement();
         } else {
           emit(state.copyWith(submitting: false, result: value));
         }
@@ -105,8 +113,26 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
   );
   void acceptBtcChanged(bool value) => _emit(state.copyWith(acceptBtc: value));
   void acceptLnChanged(bool value) => _emit(state.copyWith(acceptLn: value));
-  void acceptLiquidChanged(bool value) =>
-      _emit(state.copyWith(acceptLiquid: value));
+  void acceptLiquidChanged(bool value) {
+    if (!state.directLiquidAvailable) return;
+    _emit(state.copyWith(acceptLiquid: value));
+  }
+
+  Future<void> refreshFiatSettlement() async {
+    final usecase = _settlementConstraints;
+    if (usecase == null) return;
+    final constraints = await usecase.execute();
+    if (isClosed) return;
+    if (constraints == null) return;
+    emit(
+      state.copyWith(
+        directLiquidAvailable: constraints.directLiquidAvailable,
+        acceptLiquid: constraints.directLiquidAvailable
+            ? state.acceptLiquid
+            : false,
+      ),
+    );
+  }
 
   void detailChanged(InvoiceCreateField field, String value) {
     final next = switch (field) {
@@ -211,7 +237,7 @@ class InvoiceCreateCubit extends Cubit<InvoiceCreateState> {
         presentation: presentation,
         acceptBtc: state.acceptBtc,
         acceptLn: state.acceptLn,
-        acceptLiquid: state.acceptLiquid,
+        acceptLiquid: state.directLiquidAvailable && state.acceptLiquid,
       ),
     );
     if (isClosed || op != _operationId) return;
