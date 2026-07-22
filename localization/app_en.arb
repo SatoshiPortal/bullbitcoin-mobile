@@ -67,7 +67,9 @@
   "@swapRestoreActionable": {
     "description": "Header count of restorable swaps with locked, unresolved funds",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "swapRestoreNoSwaps": "No swaps found to restore",
@@ -15008,5 +15010,35 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
+  "@receivePayjoinNoUtxos": {
+    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
+  },
+  "receivePayjoinActivated": "Payjoin activated",
+  "@receivePayjoinActivated": {
+    "description": "Message indicating that payjoin is activated for the receive transaction"
+  },
+  "consolidationPartialFailureBody": "{count, plural, =1{1 transaction was} other{{count} transactions were}} already broadcast before this failed. Your funds are safe. Try again to consolidate the rest.",
+  "@consolidationPartialFailureBody": {
+    "description": "Body of the error banner when some but not all consolidation transactions broadcast before a later one failed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "consolidationUnfrozenDecoyWarning": "{count, plural, =1{1 decoy output} other{{count} decoy outputs}} could not be frozen automatically — you can freeze it manually from the Coins screen.",
+  "@consolidationUnfrozenDecoyWarning": {
+    "description": "Warning shown on the consolidation success screen when one or more decoy outputs failed to auto-freeze",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "consolidationSyncRetryFailedBody": "Couldn't refresh your wallet's data before retrying. Please check your connection and try again.",
+  "@consolidationSyncRetryFailedBody": {
+    "description": "Shown when consolidation retries after a previous failure, but refreshing the wallet's local data first fails (so nothing was built or broadcast this round)."
   }
 }
