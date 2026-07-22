@@ -11,6 +11,8 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
@@ -88,6 +90,7 @@ class SendCubit extends Cubit<SendState>
     required this._verifyChainSwapAmountSendUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
+    required this._checkLiquidConsolidationUsecase,
   }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -135,6 +138,7 @@ class SendCubit extends Cubit<SendState>
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
@@ -1158,7 +1162,25 @@ class SendCubit extends Cubit<SendState>
       // broadcast. Guarded so a no-op refresh doesn't needlessly
       // re-shimmer an open modal.
       final utxosChanged = !setEquals(state.utxos.toSet(), utxos.toSet());
-      emit(state.copyWith(utxos: utxos));
+      // Proactively flag consolidation for Liquid wallets whose UTXO count is
+      // over the threshold, so the card shows before a build is attempted. The
+      // ConsolidationRequiredException remains the backstop on the build path.
+      // Routed through CheckLiquidConsolidationUsecase (the same check the
+      // consolidation banner uses) rather than re-deriving the comparison
+      // here from a possibly-differently-filtered UTXO list, so this and the
+      // banner can never disagree about whether the wallet needs
+      // consolidating.
+      final consolidationRequired =
+          (state.selectedWallet?.isLiquid ?? false) &&
+          await _checkLiquidConsolidationUsecase.execute(
+            walletId: state.selectedWallet!.id,
+          );
+      emit(
+        state.copyWith(
+          utxos: utxos,
+          consolidationRequired: consolidationRequired,
+        ),
+      );
       if (utxosChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -1825,6 +1847,15 @@ class SendCubit extends Cubit<SendState>
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+      if (e is ConsolidationRequiredException) {
+        emit(
+          state.copyWith(
+            consolidationRequired: true,
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
