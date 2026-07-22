@@ -6,8 +6,12 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/liquid_tx_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_build_tx_exceptions.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
@@ -15,6 +19,8 @@ class AutoSwapExecutionUsecase {
   final BoltzSwapRepository _repository;
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
+  final WalletUtxoRepository _walletUtxoRepository;
+  final WalletAddressRepository _walletAddressRepository;
   final BlockchainPort _blockchainPort;
   final WalletTransactionRepository _walletTxRepository;
   final LabelsFacade _labelsFacade;
@@ -23,6 +29,8 @@ class AutoSwapExecutionUsecase {
     required this._repository,
     required this._walletRepository,
     required this._liquidWalletRepository,
+    required this._walletUtxoRepository,
+    required this._walletAddressRepository,
     required this._blockchainPort,
     required this._walletTxRepository,
     required this._labelsFacade,
@@ -130,10 +138,44 @@ class AutoSwapExecutionUsecase {
     );
 
     log.fine('Building PSET...');
-    final pset = await _liquidWalletRepository.buildPset(
+    // Built via buildCustomTx (an explicit UTXO list), not buildPset (LWK's
+    // own coin selection, which is known to add every L-BTC UTXO regardless
+    // of amount — see PrepareLiquidSendUsecase) — this is a background,
+    // unattended payment, so a frozen UTXO (e.g. a consolidation decoy,
+    // which must never be re-spent) must never be able to slip in here
+    // either, same as an ordinary user-initiated send.
+    final confirmed = await _liquidWalletRepository.getConfirmedLbtcOutpoints(
       walletId: defaultLiquidWallet.id,
-      address: swap.paymentAddress,
-      amountSat: swap.paymentAmount,
+    );
+    final frozen = (await _walletUtxoRepository.getAllFrozenOutpoints())
+        .toSet();
+    final usable = confirmed.where((o) => !frozen.contains(o)).toList();
+
+    if (usable.isEmpty) {
+      throw NoSpendableUtxoException(
+        'Wallet ${defaultLiquidWallet.id} has no spendable (confirmed, '
+        'unfrozen) L-BTC UTXOs',
+      );
+    }
+    if (_liquidWalletRepository.exceedsLiquidInputLimit(usable.length)) {
+      throw LiquidInputLimitExceededException(
+        'Wallet ${defaultLiquidWallet.id} exceeds the Liquid confidential-tx '
+        'input limit',
+      );
+    }
+
+    final changeAddress = await _walletAddressRepository
+        .generateNewReceiveAddress(walletId: defaultLiquidWallet.id);
+    final pset = await _liquidWalletRepository.buildCustomTx(
+      walletId: defaultLiquidWallet.id,
+      utxos: usable,
+      outputs: [
+        LiquidTxOutput(
+          address: swap.paymentAddress,
+          satoshi: swap.paymentAmount,
+        ),
+      ],
+      drainToAddress: changeAddress.address,
       // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
       feeRate: const RelativeFee(25),
     );
