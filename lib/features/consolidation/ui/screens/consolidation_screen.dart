@@ -7,19 +7,13 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
+import 'package:bb_mobile/features/consolidation/presentation/consolidation_failure_l10n.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
-/// Confirmation + progress screen for consolidating a Liquid wallet. Styled to
-/// match the Send confirm screen (top bar, header, info rows, primary button).
-///
-/// Consolidation is a set of self-transactions (many outputs → a few), so it
-/// broadcasts through the same Liquid pipeline as a normal send: review →
-/// broadcasting → success (or the failure banner). All logic lives in
-/// [ConsolidationCubit].
 class ConsolidationScreen extends StatelessWidget {
   const ConsolidationScreen({super.key});
 
@@ -65,7 +59,7 @@ class _Body extends StatelessWidget {
       case ConsolidationStatus.broadcasting:
         return const _BroadcastingView();
       case ConsolidationStatus.success:
-        return const _SuccessView();
+        return _SuccessView(unfrozenDecoyCount: state.unfrozenDecoyCount);
       case ConsolidationStatus.idle:
       case ConsolidationStatus.failed:
         return _ReviewView(state: state);
@@ -80,15 +74,7 @@ class _ReviewView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc bloc) {
-      try {
-        return bloc.state.wallets.firstWhere((w) => w.id == state.walletId);
-      } catch (_) {
-        return null;
-      }
-    });
-
-    final balanceSat = wallet?.balanceSat.toInt() ?? 0;
+    final balanceSat = state.balanceSat;
     final before = state.utxoCount;
     final after = state.transactionCount;
     final feeSat = state.feeSat;
@@ -104,7 +90,9 @@ class _ReviewView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: ConsolidationRequiredCard(
                 title: context.loc.consolidationFailedTitle,
-                body: context.loc.consolidationFailedBody,
+                body:
+                    state.failure?.toTranslated(context) ??
+                    context.loc.consolidationFailedBody,
               ),
             ),
             const Gap(24),
@@ -173,6 +161,7 @@ class _ReviewView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: BBButton.big(
               label: context.loc.consolidationScreenTitle,
+              disabled: state.status == ConsolidationStatus.broadcasting,
               onPressed: () => context.read<ConsolidationCubit>().consolidate(),
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
@@ -194,7 +183,6 @@ class _ReviewView extends StatelessWidget {
       Container(height: 1, color: context.appColors.secondaryFixedDim);
 }
 
-/// Label/value row matching the Send confirm screen's `InfoRow`.
 class _InfoRow extends StatelessWidget {
   const _InfoRow({required this.title, required this.details});
 
@@ -279,7 +267,9 @@ class _BroadcastingView extends StatelessWidget {
 }
 
 class _SuccessView extends StatelessWidget {
-  const _SuccessView();
+  const _SuccessView({required this.unfrozenDecoyCount});
+
+  final int unfrozenDecoyCount;
 
   @override
   Widget build(BuildContext context) {
@@ -303,10 +293,22 @@ class _SuccessView extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 4,
             ),
+            if (unfrozenDecoyCount > 0) ...[
+              const Gap(16),
+              BBText(
+                context.loc.consolidationUnfrozenDecoyWarning(
+                  unfrozenDecoyCount,
+                ),
+                style: context.font.bodySmall,
+                color: context.appColors.error,
+                textAlign: TextAlign.center,
+                maxLines: 4,
+              ),
+            ],
             const Gap(24),
             BBButton.big(
               label: context.loc.consolidationDone,
-              onPressed: () => Navigator.of(context).maybePop(),
+              onPressed: () => context.go('/wallet'),
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
             ),

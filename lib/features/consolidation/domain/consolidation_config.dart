@@ -20,4 +20,11 @@ class ConsolidationConfig {
   /// Max inputs per consolidation transaction. Uniform in 230–250 (never above
   /// the 250 safety cap).
   static final int maximumInputs = 230 + _rng.nextInt(21);
+
+  /// Amount (in sats) of the decoy output added to each consolidation batch
+  /// alongside the real drained output, so the transaction looks like an
+  /// ordinary 2-output payment rather than an obvious many-in/one-out
+  /// self-transfer. Liquid's confidential amounts mean this value is never
+  /// visible on-chain to anyone but the wallet itself.
+  static const int decoySats = 1;
 }

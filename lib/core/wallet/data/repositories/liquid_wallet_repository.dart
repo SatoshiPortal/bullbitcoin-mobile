@@ -129,22 +129,6 @@ class LiquidWalletRepository {
     );
   }
 
-  Future<int> getLbtcUtxoCount({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
-    }
-    final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
-      id: metadata.id,
-    );
-    return _lwkWallet.getLbtcUtxoCount(wallet: wallet);
-  }
-
   Future<List<String>> consolidate({
     required String walletId,
     required RelativeFee feeRate,

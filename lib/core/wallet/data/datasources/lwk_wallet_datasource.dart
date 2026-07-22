@@ -504,34 +504,6 @@ class LwkWalletDatasource {
     }
   }
 
-  /// Number of confidential-tx inputs above which a Liquid transaction can no
-  /// longer be built (the true protocol maximum is 256).
-  static const int maxLiquidTxInputs = 256;
-
-  /// Number of L-BTC UTXOs in the wallet — the count that matters for the
-  /// 256-input limit (asset-filtered, mirroring lwk's `utxoStatus`). Drives
-  /// consolidation detection.
-  Future<int> getLbtcUtxoCount({required WalletModel wallet}) async {
-    try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final utxos = await lwkWallet.utxos();
-      final network = wallet.isTestnet
-          ? Network.liquidTestnet
-          : Network.liquidMainnet;
-      final lbtcAssetId = _lBtcAssetId(network);
-      final lbtcCount = utxos
-          .where((u) => u.unblinded.asset == lbtcAssetId)
-          .length;
-      return lbtcCount;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   Future<bool> _exceedsLiquidInputLimit(WalletModel wallet) async {
     try {
       return await getLbtcUtxoCount(wallet: wallet) > maxLiquidTxInputs;

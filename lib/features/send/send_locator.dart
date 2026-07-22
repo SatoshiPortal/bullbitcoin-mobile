@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -63,6 +64,8 @@ class SendLocator {
     locator.registerFactory<PrepareLiquidSendUsecase>(
       () => PrepareLiquidSendUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
     locator.registerFactory<SignLiquidTxUsecase>(
