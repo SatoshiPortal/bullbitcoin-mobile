@@ -152,6 +152,11 @@ container-app: container-tools
 MODE ?= debug
 FORMAT ?= apk
 FLAVOR ?= production
+# Optional build-time service origins, expressed as whitespace-separated
+# KEY=VALUE entries. Production builds omit this and retain the app defaults.
+# Example: make android beta DART_DEFINES='BB_API_BASE_URL=https://example.test BB_AUTH_BASE_URL=https://accounts.example.test'
+DART_DEFINES ?=
+DART_DEFINE_ARGS = $(addprefix --dart-define=,$(DART_DEFINES))
 
 # Allow "make android release", "make android debug" or "make android beta".
 # release/debug build the production flavor; beta is the tester channel — the
@@ -197,11 +202,11 @@ endif
 ifeq ($(FORMAT),aab)
   CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(FLAVOR)$(MODE_CAP)/app-$(FLAVOR)-$(MODE).aab
   HOST_OUTPUT := ./BULL-$(HOST_NAME).aab
-  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR)
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR) $(DART_DEFINE_ARGS)
 else
   CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
   HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR) $(DART_DEFINE_ARGS)
 endif
 
 android: container-app

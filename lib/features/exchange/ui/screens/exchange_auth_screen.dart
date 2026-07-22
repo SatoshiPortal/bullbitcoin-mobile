@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_auth_navigation_policy.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
@@ -206,13 +207,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             await _refreshAccountAfterCredentialImport(exchangeCubit);
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://accounts')) {
-              return NavigationDecision.navigate;
-            }
-
-            if (request.url.startsWith('https://www.bullbitcoin.com') &&
-                (request.url.contains('terms') ||
-                    request.url.contains('privacy'))) {
+            if (isAllowedExchangeAuthNavigation(
+              requestUrl: request.url,
+              authBaseUrl: _bbAuthUrl,
+            )) {
               return NavigationDecision.navigate;
             }
 

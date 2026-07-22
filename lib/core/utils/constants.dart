@@ -125,19 +125,37 @@ class ApiServiceConstants {
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
-  static const String bbApiUrl = 'https://api.bullbitcoin.com';
-  static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';
+  static const String _bbApiUrl = String.fromEnvironment(
+    'BB_API_BASE_URL',
+    defaultValue: 'https://api.bullbitcoin.com',
+  );
+  static const String _bbApiTestUrl = String.fromEnvironment(
+    'BB_API_TEST_BASE_URL',
+    defaultValue: 'https://api05.bullbitcoin.dev',
+  );
   // The mainnet exchange auth (BB-Accounts) origin the login WebView loads.
   // Overridable at build time via --dart-define, following the BULLNYM_BASE_URL
   // precedent, so a staging BB-Accounts can be pointed at without a code change.
   // Configuration plumbing only: the default preserves production behaviour.
-  static const String bbAuthUrl = String.fromEnvironment(
+  static const String _bbAuthUrl = String.fromEnvironment(
     'BB_AUTH_BASE_URL',
     defaultValue: 'https://accounts.bullbitcoin.com',
   );
-  static const String bbAuthTestUrl = String.fromEnvironment(
+  static const String _bbAuthTestUrl = String.fromEnvironment(
     'BB_AUTH_TEST_BASE_URL',
     defaultValue: 'https://accounts05.bullbitcoin.dev',
+  );
+  static String get bbApiUrl =>
+      validateHttpsOrigin(_bbApiUrl, configurationName: 'BB_API_BASE_URL');
+  static String get bbApiTestUrl => validateHttpsOrigin(
+    _bbApiTestUrl,
+    configurationName: 'BB_API_TEST_BASE_URL',
+  );
+  static String get bbAuthUrl =>
+      validateHttpsOrigin(_bbAuthUrl, configurationName: 'BB_AUTH_BASE_URL');
+  static String get bbAuthTestUrl => validateHttpsOrigin(
+    _bbAuthTestUrl,
+    configurationName: 'BB_AUTH_TEST_BASE_URL',
   );
   static const String bbAppUrl = 'https://app.bullbitcoin.com';
   static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
@@ -148,6 +166,28 @@ class ApiServiceConstants {
   // Error reports
   static const String sentryDsn =
       'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
+}
+
+/// Validates a build-time service origin before it is handed to an HTTP client
+/// or WebView. Service paths are deliberately rejected: callers append their
+/// own versioned paths and must not silently discard a configured prefix.
+String validateHttpsOrigin(String value, {required String configurationName}) {
+  if (value != value.trim()) {
+    throw FormatException('$configurationName must not contain whitespace');
+  }
+
+  final uri = Uri.tryParse(value);
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty ||
+      (uri.path.isNotEmpty && uri.path != '/') ||
+      uri.hasQuery ||
+      uri.hasFragment) {
+    throw FormatException('$configurationName must be an HTTPS origin');
+  }
+
+  return uri.origin;
 }
 
 class LocatorInstanceNameConstants {
