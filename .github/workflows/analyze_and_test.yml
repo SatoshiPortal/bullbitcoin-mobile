@@ -44,6 +44,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
+      # Pure ripgrep, no Flutter toolchain needed, so run it first for a fast
+      # fail before the heavy build steps below.
+      - name: SP no-autoscan invariant audit
+        run: make sp-audit
+
       # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
       # runner has ~21GB free, so dropping this risks turning every PR red on
       # "No space left on device". The setup action logs `df -h` — only drop

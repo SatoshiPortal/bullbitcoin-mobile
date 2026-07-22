@@ -1,0 +1,469 @@
+import 'dart:collection';
+
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_config.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
+import 'package:bb_mobile/features/sp/router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+class SpWalletDetailScreen extends StatelessWidget {
+  const SpWalletDetailScreen({super.key, this.onSend});
+
+  final VoidCallback? onSend;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<SpCubit>();
+    final state = context.watch<SpCubit>().state;
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+        ),
+        title: Text(
+          context.loc.spWalletDetailTitle,
+          style: context.font.headlineMedium,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => context.pushNamed(SpRoute.spSettings.name),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: BBPullableBody(
+          onRefresh: cubit.load,
+          slivers: [
+            SliverToBoxAdapter(
+              child: WalletDetailBalanceCard(
+                isLiquid: false,
+                signer: SignerEntity.local,
+                balanceText: CurrencyText(
+                  state.totalBalance.toInt(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: context.appColors.onPrimary,
+                  ),
+                  showFiat: false,
+                ),
+                eyeToggle: const EyeToggle(),
+                fiatBalance: HomeFiatBalance(
+                  balanceSat: state.totalBalance.toInt(),
+                ),
+              ),
+            ),
+            if (state.isLoading)
+              SliverToBoxAdapter(
+                child: LinearProgressIndicator(
+                  backgroundColor: context.appColors.surface,
+                  color: context.appColors.primary,
+                ),
+              ),
+            if (state.isScanning)
+              SliverToBoxAdapter(child: _SpScanStatusStrip(state: state))
+            else if (state.lastScannedHeight != null)
+              SliverToBoxAdapter(
+                child: _SpLastScannedStrip(
+                  height: state.lastScannedHeight!,
+                  chainTip: state.chainTip,
+                ),
+              ),
+            if (state.headerValidationStatus ==
+                    SpHeaderValidationStatus.validating ||
+                state.headerValidationStatus ==
+                    SpHeaderValidationStatus.failed) ...[
+              const SliverToBoxAdapter(child: Gap(16)),
+              SliverToBoxAdapter(child: _HeaderValidationCard(state: state)),
+              const SliverToBoxAdapter(child: Gap(16)),
+            ] else
+              const SliverToBoxAdapter(child: Gap(16)),
+            _SpActivitySection(state: state),
+          ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
+          child: _SpBottomButtons(onSend: onSend),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderValidationCard extends StatelessWidget {
+  const _HeaderValidationCard({required this.state});
+
+  final SpState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final failed =
+        state.headerValidationStatus == SpHeaderValidationStatus.failed;
+    final progress = state.headerValidationProgress;
+    final percent = (progress * 100).round();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: failed
+                ? context.appColors.errorContainer
+                : context.appColors.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                failed ? Icons.warning_amber_rounded : Icons.verified_outlined,
+                color: failed
+                    ? context.appColors.error
+                    : context.appColors.primary,
+              ),
+              const Gap(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _title(context),
+                            style: context.font.bodyMedium?.copyWith(
+                              color: failed ? context.appColors.error : null,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        if (!failed)
+                          Text(
+                            context.loc.spHeaderValidationPercent('$percent'),
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.textMuted,
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (!failed) ...[
+                      const Gap(6),
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 3,
+                        backgroundColor:
+                            context.appColors.surfaceContainerHighest,
+                        color: context.appColors.success,
+                      ),
+                      const Gap(4),
+                      Text(
+                        _progressLabel(context),
+                        style: context.font.bodySmall?.copyWith(
+                          color: context.appColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Gap(8),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _title(BuildContext context) {
+    if (state.headerValidationStatus == SpHeaderValidationStatus.failed) {
+      return context.loc.spHeaderValidationFailed;
+    }
+    return switch (state.headerValidationPhase) {
+      SpHeaderValidationPhase.replay => context.loc.spHeaderValidationReplay,
+      SpHeaderValidationPhase.initialSync =>
+        context.loc.spHeaderValidationInitialSync,
+      null => context.loc.spHeaderValidationTitle,
+    };
+  }
+
+  String _progressLabel(BuildContext context) {
+    final current = state.headerValidationCurrent;
+    final total = state.headerValidationTo;
+    if (current == null || total == null) return '';
+    return context.loc.spHeaderValidationProgress('$current', '$total');
+  }
+}
+
+class _SpScanStatusStrip extends StatelessWidget {
+  const _SpScanStatusStrip({required this.state});
+  final SpState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.pushNamed(SpRoute.spScan.name),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LinearProgressIndicator(
+              value: state.scanProgress,
+              backgroundColor: context.appColors.surface,
+              color: context.appColors.primary,
+            ),
+            const Gap(4),
+            Text(
+              context.loc.spScanBlockProgress(
+                '${state.scanCurrent ?? state.scanFrom}',
+                '${state.scanTo}',
+              ),
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SpLastScannedStrip extends StatelessWidget {
+  const _SpLastScannedStrip({required this.height, this.chainTip});
+  final int height;
+  final int? chainTip;
+
+  @override
+  Widget build(BuildContext context) {
+    final tip = chainTip;
+    final String label;
+    if (tip != null) {
+      // Estimate the scanned-tip age from how far behind the chain tip it is
+      // (no per-block timestamp is stored).
+      final blocksBehind = (tip - height) > 0 ? tip - height : 0;
+      final est = DateTime.now().subtract(
+        Duration(minutes: blocksBehind * SpConfig.minutesPerBlock),
+      );
+      label = context.loc.spLastScannedAtBlockAgo(
+        '$height',
+        timeago.format(est),
+      );
+    } else {
+      label = context.loc.spLastScannedAtBlockTapToRescan('$height');
+    }
+    return GestureDetector(
+      onTap: () => context.pushNamed(SpRoute.spScan.name),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Text(
+          label,
+          style: context.font.bodySmall?.copyWith(
+            color: context.appColors.outline,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpActivitySection extends StatelessWidget {
+  const _SpActivitySection({required this.state});
+  final SpState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              context.loc.spActivityTitle,
+              style: context.font.titleSmall,
+            ),
+          ),
+          const Gap(8),
+          if (state.history.isEmpty && !state.isLoading)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.search_off,
+                      size: 48,
+                      color: context.appColors.textMuted,
+                    ),
+                    const Gap(8),
+                    Text(
+                      context.loc.spActivityEmpty,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else ...[
+            const Gap(8),
+            ..._paymentsByDay().entries.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BBText(
+                      _dayLabel(entry.key),
+                      style: context.font.titleSmall?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(16),
+                    ...entry.value.map((payment) => TxListItem.sp(payment)),
+                    const Gap(16),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Map<int, List<SpPayment>> _paymentsByDay() {
+    final grouped = <int, List<SpPayment>>{};
+
+    for (final payment in state.history) {
+      final timestamp = payment.timestamp;
+      final day = timestamp == null
+          ? 8640000000000000
+          : _dayStart(_paymentDate(timestamp));
+      grouped.putIfAbsent(day, () => []).add(payment);
+    }
+
+    for (final payments in grouped.values) {
+      payments.sort((a, b) {
+        final aTime = a.timestamp == null
+            ? DateTime.fromMillisecondsSinceEpoch(0)
+            : _paymentDate(a.timestamp!);
+        final bTime = b.timestamp == null
+            ? DateTime.fromMillisecondsSinceEpoch(0)
+            : _paymentDate(b.timestamp!);
+        return bTime.compareTo(aTime);
+      });
+    }
+
+    final sorted = SplayTreeMap<int, List<SpPayment>>.from(
+      grouped,
+      (a, b) => b.compareTo(a),
+    );
+    return LinkedHashMap<int, List<SpPayment>>.from(sorted);
+  }
+
+  String _dayLabel(int day) {
+    final date = DateTime.fromMillisecondsSinceEpoch(day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
+
+    return date.compareTo(today) > 0
+        ? 'Pending'
+        : date.isAtSameMomentAs(today)
+        ? 'Today'
+        : date.isAtSameMomentAs(yesterday)
+        ? 'Yesterday'
+        : date.year == DateTime.now().year
+        ? DateFormat.MMMMd().format(date)
+        : DateFormat.yMMMMd().format(date);
+  }
+
+  int _dayStart(DateTime date) =>
+      DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
+
+  DateTime _paymentDate(BigInt timestamp) =>
+      DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+}
+
+class _SpBottomButtons extends StatelessWidget {
+  const _SpBottomButtons({this.onSend});
+
+  final VoidCallback? onSend;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: BBButton.big(
+            iconData: Icons.arrow_downward,
+            iconFirst: true,
+            label: context.loc.spReceive,
+            onPressed: () => context.pushNamed(SpRoute.spReceive.name),
+            bgColor: context.appColors.secondaryFixed,
+            textColor: context.appColors.onSecondaryFixed,
+            outlined: true,
+            borderColor: context.appColors.onSecondaryFixed,
+          ),
+        ),
+        const Gap(4),
+        Expanded(
+          child: BBButton.big(
+            iconData: Icons.crop_free,
+            iconFirst: true,
+            label: context.loc.spSend,
+            onPressed: onSend ?? () {},
+            bgColor: context.appColors.secondaryFixed,
+            textColor: context.appColors.onSecondaryFixed,
+            outlined: true,
+            borderColor: context.appColors.onSecondaryFixed,
+          ),
+        ),
+        const Gap(4),
+        Expanded(
+          child: BBButton.big(
+            iconData: Icons.search,
+            iconFirst: true,
+            label: context.loc.spScan,
+            // Navigate only: the scan view itself starts the scan on an
+            // explicit tap (preserves the no-auto-scan invariant).
+            onPressed: () => context.pushNamed(SpRoute.spScan.name),
+            bgColor: context.appColors.secondaryFixed,
+            textColor: context.appColors.onSecondaryFixed,
+            outlined: true,
+            borderColor: context.appColors.onSecondaryFixed,
+          ),
+        ),
+      ],
+    );
+  }
+}

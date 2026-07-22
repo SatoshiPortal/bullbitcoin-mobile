@@ -1,6 +1,12 @@
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
@@ -19,7 +25,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -34,12 +40,34 @@ class WalletLocator {
         ),
       ),
     );
+    locator.registerFactory<CheckSpWalletSetupForWalletUsecase>(
+      () => CheckSpWalletSetupForWalletUsecase(spFacade: locator<SpFacade>()),
+    );
+    locator.registerFactory<CheckSpFeatureGateForWalletUsecase>(
+      () => CheckSpFeatureGateForWalletUsecase(spFacade: locator<SpFacade>()),
+    );
+    locator.registerFactory<CheckSpScanningForWalletUsecase>(
+      () => CheckSpScanningForWalletUsecase(spFacade: locator<SpFacade>()),
+    );
+    locator.registerFactory<RefreshSpWalletForWalletUsecase>(
+      () => RefreshSpWalletForWalletUsecase(spFacade: locator<SpFacade>()),
+    );
+    locator.registerFactory<WatchSpWalletUsecase>(
+      () => WatchSpWalletUsecase(spFacade: locator<SpFacade>()),
+    );
 
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
         getArkWalletUsecase: locator<GetArkWalletUsecase>(),
         checkArkWalletSetupUsecase: locator<CheckArkWalletSetupUsecase>(),
+        checkSpWalletSetupForWalletUsecase:
+            locator<CheckSpWalletSetupForWalletUsecase>(),
+        checkSpScanningForWalletUsecase:
+            locator<CheckSpScanningForWalletUsecase>(),
+        refreshSpWalletForWalletUsecase:
+            locator<RefreshSpWalletForWalletUsecase>(),
+        watchSpWalletUsecase: locator<WatchSpWalletUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchStartedWalletSyncsUsecase:
@@ -63,6 +91,8 @@ class WalletLocator {
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         ensureSwapMasterKeyUsecase: locator<EnsureSwapMasterKeyUsecase>(),
+        checkSpFeatureGateForWalletUsecase:
+            locator<CheckSpFeatureGateForWalletUsecase>(),
       ),
     );
   }

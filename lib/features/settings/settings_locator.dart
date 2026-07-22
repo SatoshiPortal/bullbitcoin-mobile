@@ -2,6 +2,9 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -77,6 +80,14 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<RevokeSpWalletForSettingsUsecase>(
+      () => RevokeSpWalletForSettingsUsecase(spFacade: locator<SpFacade>()),
+    );
+
+    locator.registerFactory<CheckSpWalletSetupForSettingsUsecase>(
+      () => CheckSpWalletSetupForSettingsUsecase(spFacade: locator<SpFacade>()),
+    );
+
     // Blocs
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
@@ -91,6 +102,9 @@ class SettingsLocator {
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
+        revokeSpWalletUsecase: locator<RevokeSpWalletForSettingsUsecase>(),
+        checkSpWalletSetupUsecase:
+            locator<CheckSpWalletSetupForSettingsUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),

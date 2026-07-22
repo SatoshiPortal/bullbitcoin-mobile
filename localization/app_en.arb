@@ -4848,6 +4848,58 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
+  "spFailureRequiresSuperuser": "Silent Payments requires superuser mode.",
+  "@spFailureRequiresSuperuser": {
+    "description": "Silent Payments failure: superuser mode is not enabled"
+  },
+  "spFailureRequiresDevMode": "Silent Payments requires developer mode.",
+  "@spFailureRequiresDevMode": {
+    "description": "Silent Payments failure: developer mode is not enabled"
+  },
+  "spFailureNotSetUp": "Your Silent Payments wallet is not set up.",
+  "@spFailureNotSetUp": {
+    "description": "Silent Payments failure: no wallet is set up"
+  },
+  "spFailureAlreadySetUp": "A Silent Payments wallet is already set up.",
+  "@spFailureAlreadySetUp": {
+    "description": "Silent Payments failure: a wallet already exists"
+  },
+  "spFailureSessionBusy": "The Silent Payments wallet is busy. Please try again.",
+  "@spFailureSessionBusy": {
+    "description": "Silent Payments failure: the session is busy tearing down"
+  },
+  "spFailureScanBusy": "A scan is already running.",
+  "@spFailureScanBusy": {
+    "description": "Silent Payments failure: a scan is already in progress"
+  },
+  "spFailureSimulationDrifted": "The transaction changed since you confirmed it. Please review and try again.",
+  "@spFailureSimulationDrifted": {
+    "description": "Silent Payments failure: the coin set drifted from the confirmed simulation"
+  },
+  "spFailureBackendUnreachable": "Could not reach the Silent Payments server.",
+  "@spFailureBackendUnreachable": {
+    "description": "Silent Payments failure: a backend could not be reached"
+  },
+  "spFailureConfigInvalid": "The Silent Payments server settings are invalid.",
+  "@spFailureConfigInvalid": {
+    "description": "Silent Payments failure: the backend config is invalid"
+  },
+  "spFailureSetupCleanupFailed": "Could not clear the previous Silent Payments wallet state.",
+  "@spFailureSetupCleanupFailed": {
+    "description": "Silent Payments failure: clearing stale on-disk state failed"
+  },
+  "spFailureAmountBelowMinimum": "Enter an amount greater than zero.",
+  "@spFailureAmountBelowMinimum": {
+    "description": "Silent Payments send failure: amount must be greater than zero"
+  },
+  "spFailureAmountExceedsBalance": "Amount exceeds your available balance.",
+  "@spFailureAmountExceedsBalance": {
+    "description": "Silent Payments send failure: amount exceeds the available balance"
+  },
+  "spFailureAddressNetworkMismatch": "This silent payment address is for a different network than your wallet.",
+  "@spFailureAddressNetworkMismatch": {
+    "description": "Silent Payments send failure: SP address network does not match the wallet"
+  },
   "bip85NoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
   "@bip85NoDefaultWalletError": {
     "description": "Error shown when BIP85 derivation fails because no default wallet is configured"
@@ -14771,5 +14823,785 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletSpTitle": "Silent Payments",
+  "@walletSpTitle": {
+    "description": "Title for the Silent Payments wallet card"
+  },
+  "walletSpExperimental": "Experimental",
+  "@walletSpExperimental": {
+    "description": "Label on the Silent Payments wallet card indicating experimental status"
+  },
+  "spReceive": "Receive",
+  "@spReceive": {
+    "description": "Silent Payments: receive action label"
+  },
+  "spSend": "Send",
+  "@spSend": {
+    "description": "Silent Payments: send action label"
+  },
+  "spScan": "Scan",
+  "@spScan": {
+    "description": "Silent Payments: scan action label"
+  },
+  "spBlockLabel": "Block {height}",
+  "@spBlockLabel": {
+    "description": "Silent Payments: block height label",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spUnconfirmed": "Unconfirmed",
+  "@spUnconfirmed": {
+    "description": "Silent Payments: unconfirmed status"
+  },
+  "spConfirmed": "Confirmed",
+  "@spConfirmed": {
+    "description": "Silent Payments: confirmed status"
+  },
+  "spVerifying": "Verifying",
+  "@spVerifying": {
+    "description": "Silent Payments: confirmed but still verifying status"
+  },
+  "spBlockVerifying": "Block {height} (Verifying)",
+  "@spBlockVerifying": {
+    "description": "Silent Payments: confirmed at a block but still verifying status",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spVerificationFailed": "Verification failed",
+  "@spVerificationFailed": {
+    "description": "Silent Payments: failed transaction verification status"
+  },
+  "spHeaderValidationTitle": "Header validation",
+  "@spHeaderValidationTitle": {
+    "description": "Silent Payments: header validation screen title"
+  },
+  "spHeaderValidationDescription": "Bitcoin headers and transaction inclusion proofs are being verified. Payments remain in Verifying until this process completes.",
+  "@spHeaderValidationDescription": {
+    "description": "Silent Payments: header validation process explanation"
+  },
+  "spHeaderValidationReplay": "Checking saved headers",
+  "@spHeaderValidationReplay": {
+    "description": "Silent Payments: header validation replay phase"
+  },
+  "spHeaderValidationInitialSync": "Syncing headers",
+  "@spHeaderValidationInitialSync": {
+    "description": "Silent Payments: header validation initial sync phase"
+  },
+  "spHeaderValidationValid": "Headers are verified",
+  "@spHeaderValidationValid": {
+    "description": "Silent Payments: header validation valid state"
+  },
+  "spHeaderValidationFailed": "Header verification failed",
+  "@spHeaderValidationFailed": {
+    "description": "Silent Payments: header validation failed state"
+  },
+  "spHeaderValidationIdle": "Waiting for header validation",
+  "@spHeaderValidationIdle": {
+    "description": "Silent Payments: header validation idle state"
+  },
+  "spHeaderValidationProgress": "Block {current} / {total}",
+  "@spHeaderValidationProgress": {
+    "description": "Silent Payments: header validation progress",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spHeaderValidationPercent": "{percent}%",
+  "@spHeaderValidationPercent": {
+    "description": "Silent Payments: header validation percent progress",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "spAddressLabel": "Address",
+  "@spAddressLabel": {
+    "description": "Silent Payments: address label"
+  },
+  "spSent": "Sent",
+  "@spSent": {
+    "description": "Silent Payments: sent status"
+  },
+  "spReceived": "Received",
+  "@spReceived": {
+    "description": "Silent Payments: received status"
+  },
+  "spSelfSend": "Self-send",
+  "@spSelfSend": {
+    "description": "Silent Payments: self-send status"
+  },
+  "spBitcoin": "Bitcoin",
+  "@spBitcoin": {
+    "description": "Silent Payments: Bitcoin recipient type label"
+  },
+  "spWalletDetailTitle": "Silent Payment Wallet",
+  "@spWalletDetailTitle": {
+    "description": "Silent Payments wallet detail screen title"
+  },
+  "spScanBlockProgress": "Block {current} / {total}",
+  "@spScanBlockProgress": {
+    "description": "Silent Payments: scan block progress",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spLastScannedAtBlockAgo": "Last scanned at block {height}, {ago}",
+  "@spLastScannedAtBlockAgo": {
+    "description": "Silent Payments: last scanned block with relative time",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      },
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "spLastScannedAtBlockTapToRescan": "Last scanned at block {height}. Tap to rescan",
+  "@spLastScannedAtBlockTapToRescan": {
+    "description": "Silent Payments: last scanned block, prompt to rescan",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spActivityTitle": "Activity",
+  "@spActivityTitle": {
+    "description": "Silent Payments: activity section title"
+  },
+  "spActivityEmpty": "Tap Scan to look for incoming silent payments",
+  "@spActivityEmpty": {
+    "description": "Silent Payments: empty activity hint"
+  },
+  "spReceiveTabSilentPayment": "Silent Payment",
+  "@spReceiveTabSilentPayment": {
+    "description": "Silent Payments: receive tab for the reusable address"
+  },
+  "spReceiveTabTaproot": "Taproot",
+  "@spReceiveTabTaproot": {
+    "description": "Silent Payments: receive tab for the taproot address"
+  },
+  "spReceiveManualScanRequired": "Manual scan required",
+  "@spReceiveManualScanRequired": {
+    "description": "Silent Payments: reusable address manual scan notice title"
+  },
+  "spReceiveReusableInfo": "This address is reusable. Funds arrive after you tap Scan.",
+  "@spReceiveReusableInfo": {
+    "description": "Silent Payments: reusable address info"
+  },
+  "spReceiveReusableUnavailable": "Reusable address unavailable. Pull to refresh or reopen the wallet.",
+  "@spReceiveReusableUnavailable": {
+    "description": "Silent Payments: reusable address unavailable message"
+  },
+  "spReceiveTaprootInfo": "Standard Bitcoin address. Funds appear immediately on-chain. Generate a new one for each payment to avoid address reuse.",
+  "@spReceiveTaprootInfo": {
+    "description": "Silent Payments: taproot address info"
+  },
+  "spReceiveTaprootEmpty": "Tap below to generate a fresh taproot receive address.",
+  "@spReceiveTaprootEmpty": {
+    "description": "Silent Payments: taproot address empty hint"
+  },
+  "spReceiveGenerateNewAddress": "Generate new address",
+  "@spReceiveGenerateNewAddress": {
+    "description": "Silent Payments: generate a new taproot address button"
+  },
+  "spReceiveGenerateAddress": "Generate address",
+  "@spReceiveGenerateAddress": {
+    "description": "Silent Payments: generate the first taproot address button"
+  },
+  "spScanStopButton": "Stop",
+  "@spScanStopButton": {
+    "description": "Silent Payments: stop scan button"
+  },
+  "spScanCaughtUpAtBlock": "Caught up at block {tip}",
+  "@spScanCaughtUpAtBlock": {
+    "description": "Silent Payments: caught up message",
+    "placeholders": {
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanScannedIn": "Scanned in {duration}",
+  "@spScanScannedIn": {
+    "description": "Silent Payments: scan duration message",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanStartButton": "Start scan",
+  "@spScanStartButton": {
+    "description": "Silent Payments: start scan button"
+  },
+  "spScanBlocksBehind": "{count, plural, =1{1 block behind} other{{count} blocks behind}}",
+  "@spScanBlocksBehind": {
+    "description": "Silent Payments: how many blocks behind the chain tip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spScanApproxDuration": "~{duration}",
+  "@spScanApproxDuration": {
+    "description": "Silent Payments: approximate scan duration",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanEtaRemaining": "~{duration} remaining",
+  "@spScanEtaRemaining": {
+    "description": "Silent Payments: estimated time remaining",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanReadyMessage": "Ready to scan for incoming silent payments.",
+  "@spScanReadyMessage": {
+    "description": "Silent Payments: first scan ready message"
+  },
+  "spScanChooseStartMessage": "Choose where to start scanning. Earlier means a longer scan; pick after the wallet first received funds.",
+  "@spScanChooseStartMessage": {
+    "description": "Silent Payments: start-height chooser message"
+  },
+  "spScanBlockHeightLabel": "Block height",
+  "@spScanBlockHeightLabel": {
+    "description": "Silent Payments: block height field label"
+  },
+  "spScanStartFromButton": "Start scan from {height}",
+  "@spScanStartFromButton": {
+    "description": "Silent Payments: start scan from a chosen height button",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanPhaseReceiving": "Receiving",
+  "@spScanPhaseReceiving": {
+    "description": "Silent Payments: scan receive phase label"
+  },
+  "spScanPhaseCheckingSpends": "Checking spends",
+  "@spScanPhaseCheckingSpends": {
+    "description": "Silent Payments: scan spend phase label"
+  },
+  "spScanStep": "Step {step} of {total}: {phase}",
+  "@spScanStep": {
+    "description": "Silent Payments: two-step scan phase header",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanPercent": "{percent}%",
+  "@spScanPercent": {
+    "description": "Silent Payments: scan progress percent",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanProgressCount": "{current} / {total}",
+  "@spScanProgressCount": {
+    "description": "Silent Payments: scan block count progress",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanScanning": "Scanning",
+  "@spScanScanning": {
+    "description": "Silent Payments: scanning label when counts are unknown"
+  },
+  "spScanBlocksLabel": "blocks",
+  "@spScanBlocksLabel": {
+    "description": "Silent Payments: blocks unit label under the scan count"
+  },
+  "spScanElapsed": "Elapsed {duration}",
+  "@spScanElapsed": {
+    "description": "Silent Payments: elapsed scan time",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanTickEarliest": "Earliest",
+  "@spScanTickEarliest": {
+    "description": "Silent Payments: earliest scan-start ruler stop"
+  },
+  "spDurationYears": "{count, plural, =1{1 year} other{{count} years}}",
+  "@spDurationYears": {
+    "description": "Silent Payments: duration in years",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@spDurationMonths": {
+    "description": "Silent Payments: duration in months",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationWeeks": "{count, plural, =1{1 week} other{{count} weeks}}",
+  "@spDurationWeeks": {
+    "description": "Silent Payments: duration in weeks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@spDurationDays": {
+    "description": "Silent Payments: duration in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@spDurationHours": {
+    "description": "Silent Payments: duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationLessThanHour": "less than an hour",
+  "@spDurationLessThanHour": {
+    "description": "Silent Payments: duration under one hour"
+  },
+  "spDurationHoursMinutes": "{hours}h {minutes}m",
+  "@spDurationHoursMinutes": {
+    "description": "Silent Payments: compact hours and minutes",
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "spDurationMinutesSeconds": "{minutes}m {seconds}s",
+  "@spDurationMinutesSeconds": {
+    "description": "Silent Payments: compact minutes and seconds",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "spDurationSeconds": "{seconds}s",
+  "@spDurationSeconds": {
+    "description": "Silent Payments: compact seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "spSendRecipientLabel": "Recipient address",
+  "@spSendRecipientLabel": {
+    "description": "Silent Payments: recipient address field label"
+  },
+  "spSendRecipientHint": "Silent payment address or Bitcoin address",
+  "@spSendRecipientHint": {
+    "description": "Silent Payments: recipient address field hint"
+  },
+  "spSendScanQrButton": "Scan QR code",
+  "@spSendScanQrButton": {
+    "description": "Silent Payments: scan QR code button"
+  },
+  "spAddressTypeSilentPayment": "Silent Payment",
+  "@spAddressTypeSilentPayment": {
+    "description": "Silent Payments: address type badge for a silent payment address"
+  },
+  "spAddressTypeBitcoin": "Bitcoin Address",
+  "@spAddressTypeBitcoin": {
+    "description": "Silent Payments: address type badge for a Bitcoin address"
+  },
+  "spAddressTypeUnrecognized": "Unrecognized",
+  "@spAddressTypeUnrecognized": {
+    "description": "Silent Payments: address type badge for an unrecognized address"
+  },
+  "spSendAmountFieldLabel": "Amount (sats)",
+  "@spSendAmountFieldLabel": {
+    "description": "Silent Payments: amount field label in sats"
+  },
+  "spSendAmountMax": "MAX (all funds)",
+  "@spSendAmountMax": {
+    "description": "Silent Payments: amount display when sending the maximum"
+  },
+  "spSendAvailableSats": "Available: {amount} sats",
+  "@spSendAvailableSats": {
+    "description": "Silent Payments: available balance in sats",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spSendMaxChip": "MAX",
+  "@spSendMaxChip": {
+    "description": "Silent Payments: send maximum chip label"
+  },
+  "spSendFeeRateLabel": "Fee rate",
+  "@spSendFeeRateLabel": {
+    "description": "Silent Payments: fee rate label"
+  },
+  "spFeeratePresetSlow": "Slow",
+  "@spFeeratePresetSlow": {
+    "description": "Silent Payments: slow feerate preset label"
+  },
+  "spFeeratePresetNormal": "Normal",
+  "@spFeeratePresetNormal": {
+    "description": "Silent Payments: normal feerate preset label"
+  },
+  "spFeeratePresetFast": "Fast",
+  "@spFeeratePresetFast": {
+    "description": "Silent Payments: fast feerate preset label"
+  },
+  "spSatPerVbValue": "{value} sat/vB",
+  "@spSatPerVbValue": {
+    "description": "Silent Payments: feerate value in sat/vB",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "spSatPerVbUnit": "sat/vB",
+  "@spSatPerVbUnit": {
+    "description": "Silent Payments: feerate unit label"
+  },
+  "spSendCustomFeerateHint": "Custom",
+  "@spSendCustomFeerateHint": {
+    "description": "Silent Payments: custom feerate field hint"
+  },
+  "spSendSatsAmount": "{amount} sats",
+  "@spSendSatsAmount": {
+    "description": "Silent Payments: amount in sats",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spSendToLabel": "To",
+  "@spSendToLabel": {
+    "description": "Silent Payments: recipient row label on confirm"
+  },
+  "spSendInputsCount": "Inputs ({count})",
+  "@spSendInputsCount": {
+    "description": "Silent Payments: inputs section header with count",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "spSendOutputsCount": "Outputs ({count})",
+  "@spSendOutputsCount": {
+    "description": "Silent Payments: outputs section header with count",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "spFeeLabel": "Fee",
+  "@spFeeLabel": {
+    "description": "Silent Payments: fee label"
+  },
+  "spSendFeeValue": "{fee} sats ({feerate} sat/vB)",
+  "@spSendFeeValue": {
+    "description": "Silent Payments: fee amount with rate",
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      },
+      "feerate": {
+        "type": "String"
+      }
+    }
+  },
+  "spChangeLabel": "Change",
+  "@spChangeLabel": {
+    "description": "Silent Payments: change label"
+  },
+  "spSendSignBroadcastButton": "Sign & Broadcast",
+  "@spSendSignBroadcastButton": {
+    "description": "Silent Payments: sign and broadcast button"
+  },
+  "spCoinSourceSp": "SP",
+  "@spCoinSourceSp": {
+    "description": "Silent Payments: coin source badge for silent payment coins"
+  },
+  "spCoinSourceSegwit": "SW",
+  "@spCoinSourceSegwit": {
+    "description": "Silent Payments: coin source badge for segwit coins"
+  },
+  "spCoinSourceTaproot": "TR",
+  "@spCoinSourceTaproot": {
+    "description": "Silent Payments: coin source badge for taproot coins"
+  },
+  "spCoinSourceOther": "OTHER",
+  "@spCoinSourceOther": {
+    "description": "Silent Payments: coin source badge for other coins"
+  },
+  "spDotAmountSats": "{label} · {amount} sats",
+  "@spDotAmountSats": {
+    "description": "Silent Payments: label and amount in sats",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spCoinsEmpty": "No coins yet",
+  "@spCoinsEmpty": {
+    "description": "Silent Payments: empty coins message"
+  },
+  "spCoinSubtitle": "{outpoint} · {status}",
+  "@spCoinSubtitle": {
+    "description": "Silent Payments: coin list subtitle",
+    "placeholders": {
+      "outpoint": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "spCoinStatusUnspent": "Unspent",
+  "@spCoinStatusUnspent": {
+    "description": "Silent Payments: unspent coin status"
+  },
+  "spCoinStatusSpent": "Spent",
+  "@spCoinStatusSpent": {
+    "description": "Silent Payments: spent coin status"
+  },
+  "spTransactionTitle": "Transaction",
+  "@spTransactionTitle": {
+    "description": "Silent Payments: transaction details screen title"
+  },
+  "spDirectionLabel": "Direction",
+  "@spDirectionLabel": {
+    "description": "Silent Payments: transaction direction label"
+  },
+  "spTransactionDateLabel": "Date",
+  "@spTransactionDateLabel": {
+    "description": "Silent Payments: transaction date label"
+  },
+  "spTransactionIdLabel": "Transaction ID",
+  "@spTransactionIdLabel": {
+    "description": "Silent Payments: transaction id label"
+  },
+  "spSettingsTitle": "Silent Payments Wallet Settings",
+  "@spSettingsTitle": {
+    "description": "Silent Payments: settings screen title"
+  },
+  "spSettingsBackendConfig": "Server settings",
+  "@spSettingsBackendConfig": {
+    "description": "Silent Payments: backend config section title"
+  },
+  "spNetworkLabel": "Network",
+  "@spNetworkLabel": {
+    "description": "Silent Payments: network field label"
+  },
+  "spSettingsNetworkHelper": "Network is fixed after wallet creation",
+  "@spSettingsNetworkHelper": {
+    "description": "Silent Payments: network field helper text"
+  },
+  "spFetchRegtestDefaults": "Fetch regtest defaults",
+  "@spFetchRegtestDefaults": {
+    "description": "Silent Payments: fetch regtest backend defaults button"
+  },
+  "spBlindbitUrlLabel": "Blindbit URL",
+  "@spBlindbitUrlLabel": {
+    "description": "Silent Payments: blindbit URL field label"
+  },
+  "spElectrumUrlLabel": "Electrum URL",
+  "@spElectrumUrlLabel": {
+    "description": "Silent Payments: electrum URL field label"
+  },
+  "spFetchConcurrencyFactorLabel": "Fetch factor",
+  "@spFetchConcurrencyFactorLabel": {
+    "description": "Silent Payments: fetch concurrency factor field label"
+  },
+  "spFetchConcurrencyFactorHelper": "1 to {max}; workers = CPUs x factor",
+  "@spFetchConcurrencyFactorHelper": {
+    "description": "Silent Payments: fetch concurrency factor helper text",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spMatchConcurrencyFactorLabel": "Match factor",
+  "@spMatchConcurrencyFactorLabel": {
+    "description": "Silent Payments: match concurrency factor field label"
+  },
+  "spMatchConcurrencyFactorHelper": "1 to {max}; workers = CPUs x factor",
+  "@spMatchConcurrencyFactorHelper": {
+    "description": "Silent Payments: match concurrency factor helper text",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "spSaveBackendConfigTitle": "Save server settings?",
+  "@spSaveBackendConfigTitle": {
+    "description": "Silent Payments: save backend config dialog title"
+  },
+  "spSaveBackendConfigContent": "The Silent Payments wallet will be recreated with the selected server settings.",
+  "@spSaveBackendConfigContent": {
+    "description": "Silent Payments: save backend config dialog content"
+  },
+  "spSaveBackendConfigButton": "Save server settings",
+  "@spSaveBackendConfigButton": {
+    "description": "Silent Payments: save backend config button"
+  },
+  "spWalletManagement": "Wallet management",
+  "@spWalletManagement": {
+    "description": "Silent Payments: wallet management section title"
+  },
+  "spOpenWallet": "Open wallet",
+  "@spOpenWallet": {
+    "description": "Silent Payments: open wallet settings entry"
+  },
+  "spScanNow": "Scan now",
+  "@spScanNow": {
+    "description": "Silent Payments: scan now settings entry"
+  },
+  "spClearScanStateEntry": "Clear scan state",
+  "@spClearScanStateEntry": {
+    "description": "Silent Payments: clear scan state settings entry"
+  },
+  "spClearScanStateTitle": "Clear scan state?",
+  "@spClearScanStateTitle": {
+    "description": "Silent Payments: clear scan state confirmation title"
+  },
+  "spClearScanStateContent": "This keeps your wallet data, payments, and settings. The next scan will start from a height you choose.",
+  "@spClearScanStateContent": {
+    "description": "Silent Payments: clear scan state confirmation content"
+  },
+  "spClearScanStateSuccess": "Scan state cleared.",
+  "@spClearScanStateSuccess": {
+    "description": "Silent Payments: clear scan state success message"
+  },
+  "spDeleteWalletEntry": "Delete Silent Payments wallet",
+  "@spDeleteWalletEntry": {
+    "description": "Silent Payments: delete wallet settings entry"
+  },
+  "spDeleteWalletTitle": "Delete Silent Payments wallet?",
+  "@spDeleteWalletTitle": {
+    "description": "Silent Payments: delete wallet dialog title"
+  },
+  "spDeleteWalletContent": "This removes the local Silent Payments wallet and revokes its secret.",
+  "@spDeleteWalletContent": {
+    "description": "Silent Payments: delete wallet dialog content"
+  },
+  "spBackendOnline": "Server online",
+  "@spBackendOnline": {
+    "description": "Silent Payments: backend reachable status"
+  },
+  "spBackendOffline": "Server offline",
+  "@spBackendOffline": {
+    "description": "Silent Payments: backend unreachable status"
+  },
+  "spNotificationsDebug": "Notifications (debug)",
+  "@spNotificationsDebug": {
+    "description": "Silent Payments: notifications debug console title"
+  },
+  "spClearButton": "Clear",
+  "@spClearButton": {
+    "description": "Silent Payments: clear notifications console button"
+  },
+  "spNoNotifications": "No notifications yet.",
+  "@spNoNotifications": {
+    "description": "Silent Payments: empty notifications console message"
+  },
+  "spSetupTitle": "Create Silent Payments Wallet",
+  "@spSetupTitle": {
+    "description": "Silent Payments: create wallet screen title"
+  },
+  "spCreateButton": "Create",
+  "@spCreateButton": {
+    "description": "Silent Payments: create wallet button"
+  },
+  "spTestButton": "Test",
+  "@spTestButton": {
+    "description": "Silent Payments: test backend connection button"
+  },
+  "spTestingConnection": "Testing connection...",
+  "@spTestingConnection": {
+    "description": "Silent Payments: backend connection testing status"
+  },
+  "spConnected": "Connected",
+  "@spConnected": {
+    "description": "Silent Payments: backend connection success status"
+  },
+  "spConnectionFailed": "Connection failed",
+  "@spConnectionFailed": {
+    "description": "Silent Payments: backend connection failure status"
+  },
+  "spBlockRowLabel": "Block",
+  "@spBlockRowLabel": {
+    "description": "Silent Payments: block row label on the transaction details screen"
   }
 }

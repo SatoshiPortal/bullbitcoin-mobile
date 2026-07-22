@@ -40,13 +40,19 @@ void main() {
   tearDown(() => coordinator.dispose());
 
   // Each kind's work is gated behind a Completer so the test controls exactly
-  // when bitcoin / liquid / swaps finish. The wallet list is empty, so no real
-  // Wallet needs constructing — the gate alone paces the drain.
-  ({Completer<void> bitcoin, Completer<void> liquid, Completer<void> swaps})
+  // when bitcoin / liquid / swaps / sp finish. The wallet list is empty, so no
+  // real Wallet needs constructing; the gate alone paces the drain.
+  ({
+    Completer<void> bitcoin,
+    Completer<void> liquid,
+    Completer<void> swaps,
+    Completer<void> sp,
+  })
   wireGates() {
     final bitcoin = Completer<void>();
     final liquid = Completer<void>();
     final swaps = Completer<void>();
+    final sp = Completer<void>();
     when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
       await bitcoin.future;
       return <Wallet>[];
@@ -58,7 +64,10 @@ void main() {
     when(() => restartSwaps.execute()).thenAnswer((_) async {
       await swaps.future;
     });
-    return (bitcoin: bitcoin, liquid: liquid, swaps: swaps);
+    coordinator.resyncSpListener = () async {
+      await sp.future;
+    };
+    return (bitcoin: bitcoin, liquid: liquid, swaps: swaps, sp: sp);
   }
 
   test('sync resolves only after every requested kind has settled', () async {
@@ -81,6 +90,10 @@ void main() {
     expect(done, isFalse, reason: 'swaps still in flight');
 
     gates.swaps.complete();
+    await pumpEventQueue();
+    expect(done, isFalse, reason: 'sp still in flight');
+
+    gates.sp.complete();
     await future;
     expect(done, isTrue);
   });
@@ -131,7 +144,7 @@ void main() {
     when(() => restartSwaps.execute()).thenAnswer((_) async {});
 
     await coordinator.sync(trigger: SyncTrigger.automatic);
-    // Immediately again (well within the 2s window) — every kind is throttled.
+    // Immediately again (well within the 2s window); every kind is throttled.
     await coordinator.sync(trigger: SyncTrigger.automatic);
 
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
@@ -144,5 +157,71 @@ void main() {
     verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
     verify(() => getWallets.execute(onlyLiquid: true)).called(1);
     verify(() => restartSwaps.execute()).called(1);
+  });
+
+  group('SyncKind.sp', () {
+    test('sync() invokes the registered resyncSpListener once', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(() => restartSwaps.execute()).thenAnswer((_) async {});
+      var spCalls = 0;
+      coordinator.resyncSpListener = () async => spCalls++;
+
+      await coordinator.sync(only: {SyncKind.sp}, trigger: SyncTrigger.user);
+
+      expect(spCalls, 1);
+    });
+
+    test('a resyncSpListener throw does not sink bitcoin/liquid/swaps and '
+        'surfaces as the sp failure', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(() => restartSwaps.execute()).thenAnswer((_) async {});
+      coordinator.resyncSpListener = () async => throw Exception('sp boom');
+
+      Object? thrown;
+      try {
+        await coordinator.sync(trigger: SyncTrigger.user);
+      } catch (e) {
+        thrown = e;
+      }
+
+      // The other three kinds still ran to completion despite sp failing.
+      verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
+      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      verify(() => restartSwaps.execute()).called(1);
+      // sp's failure is reported, not swallowed, and is the only failed kind.
+      expect(thrown, isA<SyncCoordinatorException>());
+      final failures = (thrown! as SyncCoordinatorException).failures;
+      expect(failures.keys, [SyncKind.sp]);
+    });
+
+    test('sp is throttled like the others: an automatic re-sync within the '
+        'window is skipped; a user sync bypasses it', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => <Wallet>[]);
+      when(() => restartSwaps.execute()).thenAnswer((_) async {});
+      var spCalls = 0;
+      coordinator.resyncSpListener = () async => spCalls++;
+
+      await coordinator.sync(trigger: SyncTrigger.automatic);
+      await coordinator.sync(trigger: SyncTrigger.automatic);
+      expect(spCalls, 1, reason: 'second automatic sp sync is throttled');
+
+      await coordinator.sync(trigger: SyncTrigger.user);
+      expect(spCalls, 2, reason: 'a user sync bypasses the sp throttle');
+    });
   });
 }

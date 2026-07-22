@@ -34,11 +34,16 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
@@ -120,6 +125,18 @@ class SendLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
       ),
     );
+    locator.registerFactory<ValidateSpRecipientForSendUsecase>(
+      () => ValidateSpRecipientForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<PrepareSpPaymentForSendUsecase>(
+      () => PrepareSpPaymentForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<RefreshSpWalletForSendUsecase>(
+      () => RefreshSpWalletForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<SendSpPaymentForSendUsecase>(
+      () => SendSpPaymentForSendUsecase(locator<SpFacade>()),
+    );
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
       () => CreateChainSwapToExternalUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -145,9 +162,10 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<SendCubit, Wallet?, void>(
-      (wallet, _) => SendCubit(
+    locator.registerFactoryParam<SendCubit, Wallet?, bool?>(
+      (wallet, isSpMode) => SendCubit(
         wallet: wallet,
+        isSpMode: isSpMode ?? false,
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
@@ -191,6 +209,12 @@ class SendLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),
+        validateSpRecipientForSendUsecase:
+            locator<ValidateSpRecipientForSendUsecase>(),
+        prepareSpPaymentForSendUsecase:
+            locator<PrepareSpPaymentForSendUsecase>(),
+        sendSpPaymentForSendUsecase: locator<SendSpPaymentForSendUsecase>(),
+        refreshSpWalletForSendUsecase: locator<RefreshSpWalletForSendUsecase>(),
       ),
     );
   }

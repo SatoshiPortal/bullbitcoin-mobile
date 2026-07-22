@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -34,6 +37,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setThemeModeUsecase,
     required this._getOldSeedsUsecase,
     required this._revokeArkUsecase,
+    required this._revokeSpWalletUsecase,
+    required this._checkSpWalletSetupUsecase,
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
   }) : super(const SettingsState());
@@ -49,6 +54,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
+  final RevokeSpWalletForSettingsUsecase _revokeSpWalletUsecase;
+  final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
 
@@ -63,6 +70,19 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
     await checkHasLegacySeeds();
+    await checkSpWalletSetup();
+  }
+
+  /// Refresh whether the SP wallet is set up (read through the facade). Called
+  /// on init, after a dev-mode toggle, and when the bitcoin-settings screen is
+  /// (re)entered so its SP entry reflects the current state.
+  Future<void> checkSpWalletSetup() async {
+    try {
+      final isSpWalletSetup = await _checkSpWalletSetupUsecase.execute();
+      emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
+    } catch (e) {
+      log.warning('SettingsCubit.checkSpWalletSetup failed: $e');
+    }
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -148,7 +168,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleDevMode(bool isEnabled, {WalletBloc? walletBloc}) async {
     final settings = state.storedSettings;
 
-    // If disabling dev mode, revoke Ark first
+    // Clear any previously surfaced SP revoke failure whenever the user
+    // re-toggles dev mode; they're acknowledging / retrying.
+    var revokeSpFailed = false;
+
+    // If disabling dev mode, revoke Ark and SP first
     if (!isEnabled && settings?.isDevModeEnabled == true) {
       try {
         await _revokeArkUsecase.execute();
@@ -161,14 +185,35 @@ class SettingsCubit extends Cubit<SettingsState> {
           trace: StackTrace.current,
         );
       }
+      // The revoke use case disposes the live session, deletes the wallet, and
+      // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
+      // so settings never drives the wallet for SP.
+      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
+        // RevokeSpWalletUsecase writes a `.revoked` sentinel BEFORE attempting
+        // the recursive delete, so even if delete failed the partial state is
+        // no longer dangerous: GetSpWalletUsecase refuses to load any wallet
+        // from a sentinel-marked directory. It also emits SpSetupChanged on the
+        // failure path, so the wallet still drops the SP card. Therefore it is
+        // safe to flip dev-mode off below; we flag the failure so the UI can
+        // show a generic retry prompt. The raw cause stays in the log only.
+        log.severe(
+          message: 'Failed to revoke SP wallet (sentinel left in place)',
+          error: failure,
+          trace: StackTrace.current,
+        );
+        revokeSpFailed = true;
+      }
     }
 
     await _setIsDevModeUsecase.execute(isEnabled);
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        revokeSpFailed: revokeSpFailed,
       ),
     );
+    // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.
+    await checkSpWalletSetup();
   }
 
   Future<void> setExchangeTestnetBasicAuth({

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
@@ -124,7 +124,7 @@ class TransactionsByDayList extends StatelessWidget {
               ),
             ),
             const Gap(16),
-            ...txs.map((tx) => TxListItem(tx: tx)),
+            ...txs.map((tx) => TxListItem.transaction(tx)),
             const Gap(16),
           ],
         );

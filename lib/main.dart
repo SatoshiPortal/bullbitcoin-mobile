@@ -293,6 +293,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
             BlocListener<SettingsCubit, SettingsState>(
               listenWhen: (previous, current) =>
+                  previous.environment != null &&
                   previous.environment != current.environment,
               listener: (context, settings) async {
                 // Re-fetch user summary (re-init exchange bloc) and wallets

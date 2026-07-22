@@ -19,6 +19,14 @@ class FormatAmount {
     return NumberFormat('#,##0.##').format(satsAmount);
   }
 
+  /// Space-grouped satoshi digits, e.g. `99 000 000`. No unit and locale-
+  /// independent: the surrounding localized string supplies the " sats" unit.
+  /// Differs from [sats] on purpose: [sats] bundles a comma-grouped number and
+  /// the unit for general (non-SP) use; the SP screens carry the unit in their
+  /// own localized strings, so this returns the bare grouped number.
+  static String satsGrouped(int satsAmount) =>
+      NumberFormat('#,##0').format(satsAmount).replaceAll(',', ' ');
+
   static String btc(double btcAmount) {
     const maxDecimals = 8;
     if (btcAmount >= 0.1 || btcAmount == 0.0) {

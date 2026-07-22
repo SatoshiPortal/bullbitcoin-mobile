@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
-// import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
@@ -10,12 +9,26 @@ import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/features/sp/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BitcoinSettingsScreen extends StatelessWidget {
+class BitcoinSettingsScreen extends StatefulWidget {
   const BitcoinSettingsScreen({super.key});
+
+  @override
+  State<BitcoinSettingsScreen> createState() => _BitcoinSettingsScreenState();
+}
+
+class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the SP setup flag on entry so the SP entry reflects a setup that
+    // happened elsewhere (the settings cubit is a singleton).
+    context.read<SettingsCubit>().checkSpWalletSetup();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +40,9 @@ class BitcoinSettingsScreen extends StatelessWidget {
     );
     final isDevModeEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
+    );
+    final isSpWalletSetup = context.select(
+      (SettingsCubit cubit) => cubit.state.isSpWalletSetup,
     );
 
     return Scaffold(
@@ -128,6 +144,20 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     title: context.loc.settingsArkTitle,
                     isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
+                  ),
+                if (isSuperuser && isDevModeEnabled && !isSpWalletSetup)
+                  SettingsEntryItem(
+                    icon: Icons.science,
+                    title: context.loc.spSetupTitle,
+                    isSuperUser: true,
+                    onTap: () => context.pushNamed(SpSetupRoute.spSetup.name),
+                  ),
+                if (isSuperuser && isDevModeEnabled && isSpWalletSetup)
+                  SettingsEntryItem(
+                    icon: Icons.currency_bitcoin,
+                    title: context.loc.spSettingsTitle,
+                    isSuperUser: true,
+                    onTap: () => context.pushNamed(SpRoute.spSettings.name),
                   ),
               ],
             ),

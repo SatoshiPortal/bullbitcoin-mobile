@@ -14,6 +14,7 @@ class DetailsTableItem extends StatefulWidget {
     this.isUnderline = false,
     this.expandableChild,
     this.displayWidget,
+    this.initiallyExpanded = false,
   });
 
   final String label;
@@ -22,13 +23,14 @@ class DetailsTableItem extends StatefulWidget {
   final bool isUnderline;
   final Widget? expandableChild;
   final Widget? displayWidget;
+  final bool initiallyExpanded;
 
   @override
   State<DetailsTableItem> createState() => _DetailsTableItemState();
 }
 
 class _DetailsTableItemState extends State<DetailsTableItem> {
-  bool _expanded = false;
+  late bool _expanded = widget.initiallyExpanded;
 
   @override
   Widget build(BuildContext context) {
