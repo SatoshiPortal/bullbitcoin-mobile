@@ -146,6 +146,9 @@ abstract class SendState with _$SendState {
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
+    // Set when a Liquid build fails because the wallet has too many UTXOs to
+    // spend in a single transaction and needs consolidating first.
+    @Default(false) bool consolidationRequired,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,

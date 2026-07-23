@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -174,6 +175,11 @@ class WalletLocator {
     locator.registerLazySingleton<GetWalletUtxosUsecase>(
       () => GetWalletUtxosUsecase(
         utxoRepository: locator<WalletUtxoRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(
+      () => CheckLiquidConsolidationUsecase(
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
     locator.registerFactory<GetReceiveAddressUsecase>(

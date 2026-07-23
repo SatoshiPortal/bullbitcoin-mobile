@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -318,6 +319,9 @@ class ReceiveLnInfoDetails extends StatelessWidget {
     );
     final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
     final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
+    final showsLiquidDisclosure = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.wallet?.isLiquid ?? false,
+    );
 
     return AnimatedContainer(
       duration: 300.ms,
@@ -426,6 +430,15 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ],
           const ReceiveLnFeesDetails(),
+          if (showsLiquidDisclosure) ...[
+            Container(color: context.appColors.surface, height: 1),
+            DisclosureLink(
+              label: context.loc.receiveLiquidRiskDisclosureLabel,
+              semanticLabel: context.loc.liquidRiskDisclosureSemanticLabel,
+              title: context.loc.liquidRiskDisclosureTitle,
+              body: context.loc.liquidRiskDisclosureBody,
+            ),
+          ],
         ],
       ),
     );

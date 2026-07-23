@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -36,6 +37,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
@@ -619,6 +621,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       walletLabel: selectedWallet.label,
                                     ),
                                   ),
+                                  if (state.consolidationRequired) ...[
+                                    const Gap(16),
+                                    ConsolidationRequiredCard(
+                                      title: context
+                                          .loc
+                                          .consolidationRequiredTitle,
+                                      onTap: () => context.pushNamed(
+                                        ConsolidationRoute.consolidation.name,
+                                        pathParameters: {
+                                          'walletId': selectedWallet.id,
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                   if (buildError != null) ...[
                                     const Gap(16),
                                     const _SendError(),
