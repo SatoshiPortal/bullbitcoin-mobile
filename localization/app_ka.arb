@@ -3820,5 +3820,6 @@
   "settingsSearchStartTyping": "შედეგების სანახავად დაიწყეთ აკრეფა.",
   "exchangeSupportChatLoadMessagesError": "შეტყობინებების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeSupportChatSendMessageError": "თქვენი შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
-  "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
+  "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "statusCheckNoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ."
 }

@@ -5036,5 +5036,6 @@
   "settingsSearchStartTyping": "Inizia a digitare per vedere i risultati.",
   "exchangeSupportChatLoadMessagesError": "Impossibile caricare i messaggi. Riprova.",
   "exchangeSupportChatSendMessageError": "Impossibile inviare il messaggio. Riprova.",
-  "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova."
+  "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova.",
+  "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova."
 }

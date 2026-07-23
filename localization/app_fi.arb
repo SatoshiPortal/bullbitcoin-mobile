@@ -5027,5 +5027,6 @@
   "settingsSearchStartTyping": "Aloita kirjoittaminen nähdäksesi tulokset.",
   "exchangeSupportChatLoadMessagesError": "Viestien lataaminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen."
+  "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
+  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen."
 }

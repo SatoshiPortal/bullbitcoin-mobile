@@ -12585,5 +12585,6 @@
   "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
   "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى."
+  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
+  "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى."
 }
