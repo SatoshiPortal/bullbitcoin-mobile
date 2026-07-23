@@ -6,6 +6,7 @@ import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 part 'payment_request.freezed.dart';
 
@@ -78,6 +79,18 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (result != null) return result;
       }
 
+      if (trimmed.toLowerCase().startsWith('lightning:')) {
+        final lightningPayload = trimmed.substring('lightning:'.length);
+        if (lightningPayload.toLowerCase().startsWith('lnurl') ||
+            lightningPayload.contains('@')) {
+          final lnurl = await _tryParseLnAddress(trimmed);
+          if (lnurl != null) return lnurl;
+        } else {
+          final bolt11 = await _tryParseBolt11(lightningPayload.toLowerCase());
+          if (bolt11 != null) return bolt11;
+        }
+      }
+
       final re = RegExp(r'lnurl[0-9a-z]+', caseSensitive: false);
       final m = re.firstMatch(trimmed);
 
@@ -98,24 +111,9 @@ sealed class PaymentRequest with _$PaymentRequest {
       }
 
       if (trimmed.toLowerCase().startsWith('lnbc') ||
-          trimmed.toLowerCase().startsWith('lntb') ||
-          trimmed.toLowerCase().startsWith('lightning:')) {
-        if (trimmed.toLowerCase().startsWith('lightning:')) {
-          final withoutPrefix = trimmed
-              .replaceAll("lightning:", "")
-              .replaceAll("LIGHTNING:", "");
-          if (withoutPrefix.toLowerCase().startsWith('lnurl') ||
-              withoutPrefix.contains('@')) {
-            final result = await _tryParseLnAddress(withoutPrefix);
-            if (result != null) return result;
-          } else {
-            final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
-            if (result != null) return result;
-          }
-        } else {
-          final result = await _tryParseBolt11(trimmed.toLowerCase());
-          if (result != null) return result;
-        }
+          trimmed.toLowerCase().startsWith('lntb')) {
+        final result = await _tryParseBolt11(trimmed.toLowerCase());
+        if (result != null) return result;
       }
 
       if (trimmed.toLowerCase().startsWith('lnurl') || trimmed.contains('@')) {
@@ -300,21 +298,11 @@ sealed class PaymentRequest with _$PaymentRequest {
   }
 
   static Future<PaymentRequest?> _tryParseLnAddress(String data) async {
-    final bool isEmailStyle = data.contains('@');
-    final bool isLnurlPrefix = data.toLowerCase().startsWith('lnurl');
-
-    if (!isEmailStyle && !isLnurlPrefix) {
-      return null;
-    }
-
     try {
-      final lnurl = boltz.Lnurl(value: data);
-      final valid = await lnurl.validate();
-      if (!valid) {
-        throw 'Invalid lnurl';
+      final result = await satoshifier.LnurlParser.parse(data);
+      if (result case satoshifier.Lnurl(address: final address)) {
+        return PaymentRequest.lnAddress(address: address);
       }
-
-      return PaymentRequest.lnAddress(address: data);
     } catch (e) {
       log.warning(e.toString());
     }

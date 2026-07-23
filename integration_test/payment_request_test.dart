@@ -5,7 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    await Bull.initLogs();
+    await Bull.initFlutterRustBridgeDependencies();
+  }
 
   const btcAddress = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
 
@@ -15,9 +18,11 @@ Future<void> main({bool isInitialized = false}) async {
       'mnserxfq5fns';
 
   const bolt11Invoice =
-      'lnbc2500u1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq'
-      'dq5xysxxatsyp3k7enxv4jsxqzpuaztrnwngzn3kdzw5hydlzf03qdgm2hdq27cqv3agm2aw'
-      'hz5se903vruatfhq77w3ls4evs3ch9zw97j25emudupq63nyw24cg27h2rspfj9srp';
+      'lnbc10u1p59tufasp53yuqahahgct058zglxvhezp9nyz5fvt2kn2lsl6mg9qgsts8c72s'
+      'pp56hym2dpcyy0878h7q5h4t30cwclp9vd0tqpn4dns0a3mmspzkh9qdqqxqyp2xqcqz95r'
+      'zjqg2n4jluz7ty6mn96krzje43zm7ylttjvcxcccg99tmm30s6lm4d6zzxeyqq28qqqqqqq'
+      'qqqqqqqq9gq2y9qyysgqpmw883kkclyxpr2u8mg9pl47909yhtt83pjvt3qz3s9puyf39v'
+      'dp4ar7zu47r4mfawkc2s99vm292udx9n3s5fnrjyngnsxkxn2l60qpn65s0t';
 
   group('PaymentRequest.parse', () {
     test('BIP21 with LNURL lightning param, label, and message', () async {
@@ -41,6 +46,25 @@ Future<void> main({bool isInitialized = false}) async {
       expect(bip21.address.toLowerCase(), btcAddress);
       expect(bip21.lightning, bolt11Invoice);
       expect(bip21.network, Network.bitcoinMainnet);
+    });
+
+    test('Lightning URI with uppercase LNURL', () async {
+      final result = await PaymentRequest.parse(
+        'lightning:${lnurlStr.toUpperCase()}',
+      );
+
+      expect(result, isA<LnAddressPaymentRequest>());
+      expect(
+        (result as LnAddressPaymentRequest).address,
+        lnurlStr.toUpperCase(),
+      );
+    });
+
+    test('Lightning URI with Bolt11 invoice', () async {
+      final result = await PaymentRequest.parse('lightning:$bolt11Invoice');
+
+      expect(result, isA<Bolt11PaymentRequest>());
+      expect((result as Bolt11PaymentRequest).invoice, bolt11Invoice);
     });
 
     test(
