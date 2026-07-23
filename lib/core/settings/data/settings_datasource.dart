@@ -97,4 +97,10 @@ class SettingsDatasource {
       ),
     );
   }
+
+  Future<void> setHideExchangeFeatures(bool hide) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), hideExchangeFeatures: Value(hide)),
+    );
+  }
 }

@@ -16,6 +16,7 @@ class SettingsModel {
   final bool isErrorReportingEnabled;
   final String? exchangeTestnetBasicAuthUsername;
   final String? exchangeTestnetBasicAuthPassword;
+  final bool hideExchangeFeatures;
 
   const SettingsModel({
     required this.id,
@@ -32,6 +33,7 @@ class SettingsModel {
     required this.isErrorReportingEnabled,
     this.exchangeTestnetBasicAuthUsername,
     this.exchangeTestnetBasicAuthPassword,
+    required this.hideExchangeFeatures,
   });
 
   SettingsRow toSqlite() {
@@ -50,6 +52,7 @@ class SettingsModel {
       isErrorReportingEnabled: isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
+      hideExchangeFeatures: hideExchangeFeatures,
     );
   }
 
@@ -69,6 +72,7 @@ class SettingsModel {
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: row.exchangeTestnetBasicAuthPassword,
+      hideExchangeFeatures: row.hideExchangeFeatures,
     );
   }
 }

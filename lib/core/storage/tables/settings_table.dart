@@ -18,4 +18,6 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   TextColumn get exchangeTestnetBasicAuthUsername => text().nullable()();
   TextColumn get exchangeTestnetBasicAuthPassword => text().nullable()();
+  BoolColumn get hideExchangeFeatures =>
+      boolean().withDefault(const Constant(false))();
 }

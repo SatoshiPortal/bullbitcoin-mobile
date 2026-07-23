@@ -22,4 +22,5 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>
       storedSettings?.exchangeTestnetBasicAuthPassword;
+  bool? get hideExchangeFeatures => storedSettings?.hideExchangeFeatures;
 }

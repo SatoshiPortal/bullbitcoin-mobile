@@ -338,6 +338,10 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
+  "settingsHideExchangeFeaturesTitle": "Hide Exchange Features",
+  "@settingsHideExchangeFeaturesTitle": {
+    "description": "Title for the toggle that hides exchange features (buy/sell/pay) for restricted regions"
+  },
   "settingsWalletBackupTitle": "Wallet Backup",
   "@settingsWalletBackupTitle": {
     "description": "Title for the wallet backup section in the settings menu"

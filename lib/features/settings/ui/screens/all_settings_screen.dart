@@ -53,6 +53,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
+    final hideExchangeFeatures = context.select(
+      (SettingsCubit cubit) => cubit.state.hideExchangeFeatures ?? false,
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
@@ -61,39 +65,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SettingsEntryItem(
-                  icon: Icons.currency_exchange,
-                  title: Platform.isIOS && !isSuperuser
-                      ? context.loc.settingsAccountSettingsTitle
-                      : context.loc.settingsExchangeSettingsTitle,
-                  onTap: () {
-                    if (Platform.isIOS) {
-                      if (isSuperuser) {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      } else {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(ExchangeRoute.exchangeLanding.name);
-                        } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
-                        }
-                      }
-                    } else {
+                if (!hideExchangeFeatures)
+                  SettingsEntryItem(
+                    icon: Icons.currency_exchange,
+                    title: Platform.isIOS && !isSuperuser
+                        ? context.loc.settingsAccountSettingsTitle
+                        : context.loc.settingsExchangeSettingsTitle,
+                    onTap: () {
                       final notLoggedIn = context
                           .read<ExchangeCubit>()
                           .state
@@ -103,9 +81,8 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                       } else {
                         context.pushNamed(SettingsRoute.exchangeSettings.name);
                       }
-                    }
-                  },
-                ),
+                    },
+                  ),
                 SettingsEntryItem(
                   icon: Icons.save,
                   title: context.loc.settingsWalletBackupTitle,
