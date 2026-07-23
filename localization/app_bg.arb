@@ -10962,5 +10962,6 @@
   "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
   "consolidationScreenTitle": "Консолидиране",
   "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
-  "consolidationSuccessTitle": "Консолидацията започна"
+  "consolidationSuccessTitle": "Консолидацията започна",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC работи по-добре с Coldcard MK5 и може да бъде ненадеждно с Coldcard MK4."
 }

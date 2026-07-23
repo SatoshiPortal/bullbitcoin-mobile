@@ -13668,5 +13668,6 @@
   "consolidationScreenDescription": "Bahut adhik output wallet ko asthir kar sakte hain. Samekan unhe kam mein jod deta hai taaki aapka wallet sahi se kaam kare.",
   "consolidationScreenTitle": "Samekit karein",
   "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
-  "consolidationSuccessTitle": "Samekan prarambh hua"
+  "consolidationSuccessTitle": "Samekan prarambh hua",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC Coldcard MK5 ke saath behtar kaam karta hai aur Coldcard MK4 ke saath unreliable ho sakta hai."
 }

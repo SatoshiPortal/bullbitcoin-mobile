@@ -5267,5 +5267,6 @@
   "consolidationScreenDescription": "Troppe uscite possono rendere instabile il portafoglio. Consolidarle le combina in meno per mantenere il portafoglio funzionante.",
   "consolidationScreenTitle": "Consolida",
   "consolidationSuccessBody": "Le tue monete vengono combinate. Sarà completato una volta confermato dalla rete.",
-  "consolidationSuccessTitle": "Consolidamento avviato"
+  "consolidationSuccessTitle": "Consolidamento avviato",
+  "coldcardMk4Mk5NfcReliabilityNotice": "L'NFC funziona meglio con Coldcard MK5 e può essere inaffidabile con Coldcard MK4."
 }

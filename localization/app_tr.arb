@@ -13273,5 +13273,6 @@
   "consolidationScreenDescription": "Çok fazla çıkış cüzdanı kararsız hale getirebilir. Birleştirmek onları daha aza indirir, böylece cüzdanınız düzgün çalışır.",
   "consolidationScreenTitle": "Birleştir",
   "consolidationSuccessBody": "Coinleriniz birleştiriliyor. Ağ onayladığında tamamlanacak.",
-  "consolidationSuccessTitle": "Birleştirme başladı"
+  "consolidationSuccessTitle": "Birleştirme başladı",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC, Coldcard MK5 ile daha iyi çalışır ve Coldcard MK4 ile güvenilir olmayabilir."
 }

@@ -13483,5 +13483,6 @@
   "consolidationScreenDescription": "অতিরিক্ত আউটপুট ওয়ালেটকে অস্থির করে তুলতে পারে। একত্রীকরণ সেগুলিকে কম সংখ্যায় একত্র করে যাতে আপনার ওয়ালেট সঠিকভাবে কাজ করে।",
   "consolidationScreenTitle": "একত্রিত করুন",
   "consolidationSuccessBody": "আপনার কয়েনগুলি একত্রিত করা হচ্ছে। নেটওয়ার্ক নিশ্চিত করলে এটি সম্পন্ন হবে।",
-  "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে"
+  "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC Coldcard MK5-এর সাথে ভালো কাজ করে এবং Coldcard MK4-এর সাথে অনির্ভরযোগ্য হতে পারে।"
 }

@@ -5267,5 +5267,6 @@
   "consolidationScreenDescription": "过多的输出可能导致钱包不稳定。整合会将它们合并为更少的输出，以保持钱包正常运行。",
   "consolidationScreenTitle": "整合",
   "consolidationSuccessBody": "你的币正在被合并。网络确认后将完成。",
-  "consolidationSuccessTitle": "整合已开始"
+  "consolidationSuccessTitle": "整合已开始",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC 在 Coldcard MK5 上效果更好，在 Coldcard MK4 上可能不稳定。"
 }

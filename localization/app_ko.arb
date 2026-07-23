@@ -13273,5 +13273,6 @@
   "consolidationScreenDescription": "출력이 너무 많으면 지갑이 불안정해질 수 있습니다. 통합하면 더 적은 수로 합쳐져 지갑이 제대로 작동합니다.",
   "consolidationScreenTitle": "통합",
   "consolidationSuccessBody": "코인이 합쳐지고 있습니다. 네트워크가 확인되면 완료됩니다.",
-  "consolidationSuccessTitle": "통합 시작됨"
+  "consolidationSuccessTitle": "통합 시작됨",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC는 Coldcard MK5에서 더 잘 작동하며 Coldcard MK4에서는 불안정할 수 있습니다."
 }

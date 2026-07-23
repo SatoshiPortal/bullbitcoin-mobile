@@ -3737,5 +3737,6 @@
   "consolidationScreenDescription": "Չափազանց շատ ելքերը կարող են դրամապանակն անկայուն դարձնել։ Համախմբումը դրանք միավորում է ավելի քիչ քանակի, որպեսզի ձեր դրամապանակը ճիշտ աշխատի։",
   "consolidationScreenTitle": "Համախմբել",
   "consolidationSuccessBody": "Ձեր մետաղադրամները միավորվում են։ Կավարտվի ցանցի հաստատումից հետո։",
-  "consolidationSuccessTitle": "Համախմբումը սկսվեց"
+  "consolidationSuccessTitle": "Համախմբումը սկսվեց",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC-ն ավելի լավ է աշխատում Coldcard MK5-ի հետ և կարող է անվստահելի լինել Coldcard MK4-ի հետ։"
 }

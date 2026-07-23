@@ -5179,5 +5179,6 @@
   "consolidationScreenDescription": "Zu viele Ausgänge können die Wallet instabil machen. Beim Konsolidieren werden sie zu weniger zusammengefasst, damit deine Wallet richtig funktioniert.",
   "consolidationScreenTitle": "Konsolidieren",
   "consolidationSuccessBody": "Deine Coins werden zusammengefasst. Dies wird abgeschlossen, sobald das Netzwerk es bestätigt.",
-  "consolidationSuccessTitle": "Konsolidierung gestartet"
+  "consolidationSuccessTitle": "Konsolidierung gestartet",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC funktioniert besser mit Coldcard MK5 und kann bei Coldcard MK4 unzuverlässig sein."
 }

@@ -10314,5 +10314,6 @@
   "consolidationScreenDescription": "অতি বেছি আউটপুটে ৱালেটক অস্থিৰ কৰিব পাৰে। একত্ৰীকৰণে সেইবোৰক কম সংখ্যাত একত্ৰিত কৰে যাতে আপোনাৰ ৱালেট শুদ্ধকৈ কাম কৰে।",
   "consolidationScreenTitle": "একত্ৰিত কৰক",
   "consolidationSuccessBody": "আপোনাৰ কইনসমূহ একত্ৰিত কৰা হৈছে। নেটৱৰ্কে নিশ্চিত কৰিলে সম্পূৰ্ণ হ'ব।",
-  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে"
+  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC এ Coldcard MK5 ৰ সৈতে ভালদৰে কাম কৰে আৰু Coldcard MK4 ৰ সৈতে অবিশ্বাসী হ'ব পাৰে।"
 }

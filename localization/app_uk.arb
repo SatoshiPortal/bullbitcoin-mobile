@@ -5264,5 +5264,6 @@
   "consolidationScreenDescription": "Забагато виходів можуть зробити гаманець нестабільним. Консолідація об’єднує їх у меншу кількість, щоб гаманець працював належно.",
   "consolidationScreenTitle": "Консолідувати",
   "consolidationSuccessBody": "Ваші монети об’єднуються. Це завершиться після підтвердження мережею.",
-  "consolidationSuccessTitle": "Консолідацію розпочато"
+  "consolidationSuccessTitle": "Консолідацію розпочато",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC працює краще з Coldcard MK5 і може бути ненадійним із Coldcard MK4."
 }

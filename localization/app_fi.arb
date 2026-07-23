@@ -5259,5 +5259,6 @@
   "consolidationScreenDescription": "Liian monta ulostuloa voi tehdä lompakosta epävakaan. Yhdistäminen kokoaa ne harvemmiksi, jotta lompakkosi toimii oikein.",
   "consolidationScreenTitle": "Yhdistä",
   "consolidationSuccessBody": "Kolikoitasi yhdistetään. Tämä valmistuu, kun verkko vahvistaa sen.",
-  "consolidationSuccessTitle": "Yhdistäminen aloitettu"
+  "consolidationSuccessTitle": "Yhdistäminen aloitettu",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC toimii paremmin Coldcard MK5:n kanssa ja voi olla epäluotettava Coldcard MK4:n kanssa."
 }

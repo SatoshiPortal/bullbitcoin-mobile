@@ -3752,5 +3752,6 @@
   "consolidationScreenDescription": "Matokeo mengi mno yanaweza kufanya pochi isiwe thabiti. Kuunganisha huyachanganya kuwa machache ili pochi yako ifanye kazi vizuri.",
   "consolidationScreenTitle": "Unganisha",
   "consolidationSuccessBody": "Sarafu zako zinaunganishwa. Itakamilika mara mtandao utakapothibitisha.",
-  "consolidationSuccessTitle": "Uunganishaji umeanza"
+  "consolidationSuccessTitle": "Uunganishaji umeanza",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC inafanya kazi vizuri zaidi na Coldcard MK5 na inaweza kutokuwa ya kutegemewa na Coldcard MK4."
 }

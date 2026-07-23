@@ -5259,5 +5259,6 @@
   "consolidationScreenDescription": "Demasiadas salidas pueden desestabilizar la billetera. Consolidarlas las combina en menos para que tu billetera funcione correctamente.",
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "Tus monedas se están combinando. Se completará cuando la red lo confirme.",
-  "consolidationSuccessTitle": "Consolidación iniciada"
+  "consolidationSuccessTitle": "Consolidación iniciada",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC funciona mejor con Coldcard MK5 y puede ser poco fiable con Coldcard MK4."
 }

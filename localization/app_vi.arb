@@ -3737,5 +3737,6 @@
   "consolidationScreenDescription": "Quá nhiều đầu ra có thể khiến ví không ổn định. Việc hợp nhất gộp chúng thành ít hơn để ví của bạn hoạt động đúng cách.",
   "consolidationScreenTitle": "Hợp nhất",
   "consolidationSuccessBody": "Các đồng coin của bạn đang được gộp lại. Sẽ hoàn tất khi mạng xác nhận.",
-  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất"
+  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC hoạt động tốt hơn với Coldcard MK5 và có thể không ổn định với Coldcard MK4."
 }
