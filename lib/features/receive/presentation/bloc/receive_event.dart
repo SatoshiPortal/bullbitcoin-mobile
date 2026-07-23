@@ -21,6 +21,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveNewAddressGenerated;
   const factory ReceiveEvent.receivePayjoinUpdated(PayjoinReceiver payjoin) =
       ReceivePayjoinUpdated;
+  const factory ReceiveEvent.receivePayjoinEnabledChanged(bool isEnabled) =
+      ReceivePayjoinEnabledChanged;
   const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
       ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =

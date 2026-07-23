@@ -21,6 +21,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    bool? isPayjoinEnabled,
     @Default(false) bool isBroadcastingOriginalTransaction,
     ReceivePayjoinException? receivePayjoinException,
     @Default(false) bool isAddressOnly,
@@ -233,9 +234,15 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
+      // isPayjoinEnabled is null until the settings fetch in
+      // ReceiveBloc._onBitcoinStarted completes; treat that as "still
+      // waiting" the same as before. Once it's explicitly false, there is
+      // nothing to wait for — paymentRequest must fall through to the
+      // plain address/BIP21 immediately instead of blocking forever.
       return wallet != null &&
           wallet!.signsLocally &&
           !isAddressOnly &&
+          isPayjoinEnabled != false &&
           payjoin == null &&
           receivePayjoinException == null;
     }

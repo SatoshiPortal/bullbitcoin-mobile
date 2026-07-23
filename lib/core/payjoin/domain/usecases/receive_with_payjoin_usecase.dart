@@ -13,13 +13,17 @@ class ReceiveWithPayjoinUsecase {
     required this._settingsRepository,
   });
 
-  Future<PayjoinReceiver> execute({
+  /// Returns null if payjoin is disabled in settings — the caller should
+  /// treat that the same as "no payjoin for this address", not an error.
+  Future<PayjoinReceiver?> execute({
     required String walletId,
     required String address,
     int? expireAfterSec,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
+      if (!settings.isPayjoinEnabled) return null;
+
       final environment = settings.environment;
 
       final payjoinReceiver = await _payjoinRepository.createPayjoinReceiver(
