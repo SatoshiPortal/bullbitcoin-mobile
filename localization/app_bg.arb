@@ -10962,5 +10962,6 @@
   "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
   "consolidationScreenTitle": "Консолидиране",
   "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
-  "consolidationSuccessTitle": "Консолидацията започна"
+  "consolidationSuccessTitle": "Консолидацията започна",
+  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново."
 }

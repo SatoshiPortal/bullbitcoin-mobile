@@ -3737,5 +3737,6 @@
   "consolidationScreenDescription": "Quá nhiều đầu ra có thể khiến ví không ổn định. Việc hợp nhất gộp chúng thành ít hơn để ví của bạn hoạt động đúng cách.",
   "consolidationScreenTitle": "Hợp nhất",
   "consolidationSuccessBody": "Các đồng coin của bạn đang được gộp lại. Sẽ hoàn tất khi mạng xác nhận.",
-  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất"
+  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất",
+  "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại."
 }

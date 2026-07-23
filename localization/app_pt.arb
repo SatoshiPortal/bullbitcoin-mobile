@@ -5322,5 +5322,6 @@
   "consolidationScreenDescription": "Demasiadas saídas podem tornar a carteira instável. Consolidá-las combina-as em menos para manter a carteira a funcionar corretamente.",
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "As tuas moedas estão a ser combinadas. Ficará concluído assim que a rede confirmar.",
-  "consolidationSuccessTitle": "Consolidação iniciada"
+  "consolidationSuccessTitle": "Consolidação iniciada",
+  "statusCheckNoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente."
 }

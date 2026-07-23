@@ -13463,5 +13463,6 @@
   "consolidationScreenDescription": "बहुत अधिक आउटपुट वॉलेट को अस्थिर कर सकते हैं। समेकन उन्हें कम में जोड़ देता है ताकि आपका वॉलेट सही ढंग से काम करे।",
   "consolidationScreenTitle": "समेकित करें",
   "consolidationSuccessBody": "आपके सिक्के जोड़े जा रहे हैं। नेटवर्क पुष्टि करने पर यह पूरा होगा।",
-  "consolidationSuccessTitle": "समेकन प्रारंभ हुआ"
+  "consolidationSuccessTitle": "समेकन प्रारंभ हुआ",
+  "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।"
 }

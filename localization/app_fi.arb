@@ -5259,5 +5259,6 @@
   "consolidationScreenDescription": "Liian monta ulostuloa voi tehdä lompakosta epävakaan. Yhdistäminen kokoaa ne harvemmiksi, jotta lompakkosi toimii oikein.",
   "consolidationScreenTitle": "Yhdistä",
   "consolidationSuccessBody": "Kolikoitasi yhdistetään. Tämä valmistuu, kun verkko vahvistaa sen.",
-  "consolidationSuccessTitle": "Yhdistäminen aloitettu"
+  "consolidationSuccessTitle": "Yhdistäminen aloitettu",
+  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen."
 }

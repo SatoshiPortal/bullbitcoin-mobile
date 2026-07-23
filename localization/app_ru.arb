@@ -5276,5 +5276,6 @@
   "consolidationScreenDescription": "Слишком много выходов может привести к нестабильности кошелька. Консолидация объединяет их в меньшее число, чтобы кошелёк работал правильно.",
   "consolidationScreenTitle": "Консолидировать",
   "consolidationSuccessBody": "Ваши монеты объединяются. Это завершится после подтверждения сетью.",
-  "consolidationSuccessTitle": "Консолидация начата"
+  "consolidationSuccessTitle": "Консолидация начата",
+  "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова."
 }

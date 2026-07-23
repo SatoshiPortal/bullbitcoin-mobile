@@ -5259,5 +5259,6 @@
   "consolidationScreenDescription": "Demasiadas salidas pueden desestabilizar la billetera. Consolidarlas las combina en menos para que tu billetera funcione correctamente.",
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "Tus monedas se están combinando. Se completará cuando la red lo confirme.",
-  "consolidationSuccessTitle": "Consolidación iniciada"
+  "consolidationSuccessTitle": "Consolidación iniciada",
+  "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo."
 }

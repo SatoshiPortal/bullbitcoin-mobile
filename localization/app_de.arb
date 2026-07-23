@@ -5179,5 +5179,6 @@
   "consolidationScreenDescription": "Zu viele Ausgänge können die Wallet instabil machen. Beim Konsolidieren werden sie zu weniger zusammengefasst, damit deine Wallet richtig funktioniert.",
   "consolidationScreenTitle": "Konsolidieren",
   "consolidationSuccessBody": "Deine Coins werden zusammengefasst. Dies wird abgeschlossen, sobald das Netzwerk es bestätigt.",
-  "consolidationSuccessTitle": "Konsolidierung gestartet"
+  "consolidationSuccessTitle": "Konsolidierung gestartet",
+  "statusCheckNoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut."
 }

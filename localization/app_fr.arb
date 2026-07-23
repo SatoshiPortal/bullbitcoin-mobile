@@ -5256,5 +5256,6 @@
   "consolidationScreenDescription": "Trop de sorties peuvent rendre le portefeuille instable. Les consolider les regroupe en moins pour que votre portefeuille fonctionne correctement.",
   "consolidationScreenTitle": "Consolider",
   "consolidationSuccessBody": "Vos pièces sont en cours de regroupement. Cela se terminera une fois confirmé par le réseau.",
-  "consolidationSuccessTitle": "Consolidation démarrée"
+  "consolidationSuccessTitle": "Consolidation démarrée",
+  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer."
 }
