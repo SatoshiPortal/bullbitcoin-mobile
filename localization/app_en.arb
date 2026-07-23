@@ -14833,7 +14833,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "coldcardMk4Mk5NfcReliabilityNotice": "NFC works better with Coldcard MK5 and can be unreliable with Coldcard MK4.",
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC works better with Coldcard MK5 and can be unreliable with Coldcard MK4. Don't forget to turn on NFC in your Coldcard's hardware settings. You need to turn this on every time you use the device.",
   "@coldcardMk4Mk5NfcReliabilityNotice": {
     "description": "Notice about NFC reliability on Coldcard MK4 and MK5 devices"
   }
