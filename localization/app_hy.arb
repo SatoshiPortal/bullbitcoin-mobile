@@ -3738,5 +3738,6 @@
   "consolidationScreenTitle": "Համախմբել",
   "consolidationSuccessBody": "Ձեր մետաղադրամները միավորվում են։ Կավարտվի ցանցի հաստատումից հետո։",
   "consolidationSuccessTitle": "Համախմբումը սկսվեց",
-  "statusCheckNoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։"
+  "statusCheckNoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
+  "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել"
 }

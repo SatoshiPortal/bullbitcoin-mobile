@@ -3753,5 +3753,6 @@
   "consolidationScreenTitle": "Unganisha",
   "consolidationSuccessBody": "Sarafu zako zinaunganishwa. Itakamilika mara mtandao utakapothibitisha.",
   "consolidationSuccessTitle": "Uunganishaji umeanza",
-  "statusCheckNoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena."
+  "statusCheckNoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
+  "statusCheckResultsMayBeOutdated": "Matokeo yanaweza kuwa ya zamani"
 }

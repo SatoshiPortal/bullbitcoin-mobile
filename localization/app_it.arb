@@ -5268,5 +5268,6 @@
   "consolidationScreenTitle": "Consolida",
   "consolidationSuccessBody": "Le tue monete vengono combinate. Sarà completato una volta confermato dalla rete.",
   "consolidationSuccessTitle": "Consolidamento avviato",
-  "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova."
+  "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
+  "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti"
 }

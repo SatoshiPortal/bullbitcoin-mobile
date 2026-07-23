@@ -13274,5 +13274,6 @@
   "consolidationScreenTitle": "Ενοποίηση",
   "consolidationSuccessBody": "Τα νομίσματά σας συνδυάζονται. Θα ολοκληρωθεί μόλις το επιβεβαιώσει το δίκτυο.",
   "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε",
-  "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά."
+  "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
+  "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα"
 }

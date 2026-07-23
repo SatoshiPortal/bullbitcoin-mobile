@@ -13274,5 +13274,6 @@
   "consolidationScreenTitle": "تجمیع",
   "consolidationSuccessBody": "سکه‌های شما در حال ترکیب هستند. پس از تأیید شبکه کامل می‌شود.",
   "consolidationSuccessTitle": "تجمیع آغاز شد",
-  "statusCheckNoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید."
+  "statusCheckNoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
+  "statusCheckResultsMayBeOutdated": "نتایج ممکن است قدیمی باشند"
 }

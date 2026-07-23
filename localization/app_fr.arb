@@ -5257,5 +5257,6 @@
   "consolidationScreenTitle": "Consolider",
   "consolidationSuccessBody": "Vos pièces sont en cours de regroupement. Cela se terminera une fois confirmé par le réseau.",
   "consolidationSuccessTitle": "Consolidation démarrée",
-  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer."
+  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
+  "statusCheckResultsMayBeOutdated": "Les résultats peuvent être obsolètes"
 }

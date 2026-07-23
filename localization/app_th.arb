@@ -13274,5 +13274,6 @@
   "consolidationScreenTitle": "รวม",
   "consolidationSuccessBody": "เหรียญของคุณกำลังถูกรวมเข้าด้วยกัน จะเสร็จสมบูรณ์เมื่อเครือข่ายยืนยัน",
   "consolidationSuccessTitle": "เริ่มการรวมแล้ว",
-  "statusCheckNoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง"
+  "statusCheckNoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
+  "statusCheckResultsMayBeOutdated": "ผลลัพธ์อาจล้าสมัย"
 }

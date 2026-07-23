@@ -5277,5 +5277,6 @@
   "consolidationScreenTitle": "Консолидировать",
   "consolidationSuccessBody": "Ваши монеты объединяются. Это завершится после подтверждения сетью.",
   "consolidationSuccessTitle": "Консолидация начата",
-  "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова."
+  "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
+  "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими"
 }

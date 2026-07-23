@@ -5268,5 +5268,6 @@
   "consolidationScreenTitle": "整合",
   "consolidationSuccessBody": "你的币正在被合并。网络确认后将完成。",
   "consolidationSuccessTitle": "整合已开始",
-  "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。"
+  "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
+  "statusCheckResultsMayBeOutdated": "结果可能已过时"
 }

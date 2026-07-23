@@ -13277,5 +13277,6 @@
   "consolidationScreenTitle": "دمج",
   "consolidationSuccessBody": "يتم دمج عملاتك. سيكتمل بمجرد تأكيد الشبكة.",
   "consolidationSuccessTitle": "بدأ الدمج",
-  "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى."
+  "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
+  "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة"
 }

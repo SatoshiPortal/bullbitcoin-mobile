@@ -13271,5 +13271,6 @@
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "Suas moedas estão sendo combinadas. Será concluído assim que a rede confirmar.",
   "consolidationSuccessTitle": "Consolidação iniciada",
-  "statusCheckNoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente."
+  "statusCheckNoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente.",
+  "statusCheckResultsMayBeOutdated": "Os resultados podem estar desatualizados"
 }

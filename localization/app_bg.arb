@@ -10963,5 +10963,6 @@
   "consolidationScreenTitle": "Консолидиране",
   "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
   "consolidationSuccessTitle": "Консолидацията започна",
-  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново."
+  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
+  "statusCheckResultsMayBeOutdated": "Резултатите може да са остарели"
 }

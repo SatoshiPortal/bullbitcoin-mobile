@@ -13669,5 +13669,6 @@
   "consolidationScreenTitle": "Samekit karein",
   "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
   "consolidationSuccessTitle": "Samekan prarambh hua",
-  "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein."
+  "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
+  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain"
 }

@@ -10315,5 +10315,6 @@
   "consolidationScreenTitle": "একত্ৰিত কৰক",
   "consolidationSuccessBody": "আপোনাৰ কইনসমূহ একত্ৰিত কৰা হৈছে। নেটৱৰ্কে নিশ্চিত কৰিলে সম্পূৰ্ণ হ'ব।",
   "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে",
-  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।"
+  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে"
 }

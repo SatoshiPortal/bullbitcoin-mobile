@@ -13484,5 +13484,6 @@
   "consolidationScreenTitle": "একত্রিত করুন",
   "consolidationSuccessBody": "আপনার কয়েনগুলি একত্রিত করা হচ্ছে। নেটওয়ার্ক নিশ্চিত করলে এটি সম্পন্ন হবে।",
   "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে",
-  "statusCheckNoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।"
+  "statusCheckNoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
+  "statusCheckResultsMayBeOutdated": "ফলাফল পুরনো হতে পারে"
 }

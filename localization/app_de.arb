@@ -5180,5 +5180,6 @@
   "consolidationScreenTitle": "Konsolidieren",
   "consolidationSuccessBody": "Deine Coins werden zusammengefasst. Dies wird abgeschlossen, sobald das Netzwerk es bestätigt.",
   "consolidationSuccessTitle": "Konsolidierung gestartet",
-  "statusCheckNoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut."
+  "statusCheckNoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut.",
+  "statusCheckResultsMayBeOutdated": "Die Ergebnisse könnten veraltet sein"
 }

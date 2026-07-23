@@ -3738,5 +3738,6 @@
   "consolidationScreenTitle": "Hợp nhất",
   "consolidationSuccessBody": "Các đồng coin của bạn đang được gộp lại. Sẽ hoàn tất khi mạng xác nhận.",
   "consolidationSuccessTitle": "Đã bắt đầu hợp nhất",
-  "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại."
+  "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại.",
+  "statusCheckResultsMayBeOutdated": "Kết quả có thể đã lỗi thời"
 }

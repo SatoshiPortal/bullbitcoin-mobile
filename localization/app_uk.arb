@@ -5265,5 +5265,6 @@
   "consolidationScreenTitle": "Консолідувати",
   "consolidationSuccessBody": "Ваші монети об’єднуються. Це завершиться після підтвердження мережею.",
   "consolidationSuccessTitle": "Консолідацію розпочато",
-  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову."
+  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
+  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими"
 }

@@ -5260,5 +5260,6 @@
   "consolidationScreenTitle": "Yhdistä",
   "consolidationSuccessBody": "Kolikoitasi yhdistetään. Tämä valmistuu, kun verkko vahvistaa sen.",
   "consolidationSuccessTitle": "Yhdistäminen aloitettu",
-  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen."
+  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
+  "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita"
 }

@@ -3897,5 +3897,6 @@
   "consolidationScreenTitle": "კონსოლიდაცია",
   "consolidationSuccessBody": "თქვენი მონეტები ერთიანდება. დასრულდება ქსელის დადასტურების შემდეგ.",
   "consolidationSuccessTitle": "კონსოლიდაცია დაიწყო",
-  "statusCheckNoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ."
+  "statusCheckNoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ.",
+  "statusCheckResultsMayBeOutdated": "შედეგები შეიძლება მოძველებული იყოს"
 }
