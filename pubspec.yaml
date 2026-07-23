@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.13.0+200
+version: 6.12.4+200
 
 environment:
   sdk: "3.12.2"
@@ -181,7 +181,12 @@ flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).
   # Without an explicit --flavor (e.g. `flutter run`, IDE launches, integration
   # tests) Flutter builds this default, so existing workflows keep working.
-  default-flavor: production
+  # Commented out: it also gets applied to iOS runs, where there's no
+  # matching flavor scheme (iOS only has the plain "Runner" scheme), so any
+  # `flutter run`/`flutter build ios` without an explicit --flavor fails with
+  # "You must specify a --flavor option". Re-enable if a way to scope this to
+  # Android only is found.
+  # default-flavor: production
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
 
