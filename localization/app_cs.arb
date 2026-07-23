@@ -12583,5 +12583,6 @@
   "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
   "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
   "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
-  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu."
+  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
+  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé"
 }

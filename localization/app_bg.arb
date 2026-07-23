@@ -10490,5 +10490,6 @@
   "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
   "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
   "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
-  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново."
+  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
+  "statusCheckResultsMayBeOutdated": "Резултатите може да са остарели"
 }

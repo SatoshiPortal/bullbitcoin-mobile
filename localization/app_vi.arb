@@ -3674,5 +3674,6 @@
   "exchangeSupportChatLoadMessagesError": "Không thể tải tin nhắn. Vui lòng thử lại.",
   "exchangeSupportChatSendMessageError": "Không thể gửi tin nhắn của bạn. Vui lòng thử lại.",
   "exchangeSupportChatLoadAttachmentError": "Không thể mở tệp đính kèm. Vui lòng thử lại.",
-  "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại."
+  "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại.",
+  "statusCheckResultsMayBeOutdated": "Kết quả có thể đã lỗi thời"
 }

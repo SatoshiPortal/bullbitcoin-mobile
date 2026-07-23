@@ -5077,5 +5077,6 @@
   "exchangeSupportChatLoadMessagesError": "Impossible de charger les messages. Veuillez réessayer.",
   "exchangeSupportChatSendMessageError": "Impossible d'envoyer votre message. Veuillez réessayer.",
   "exchangeSupportChatLoadAttachmentError": "Impossible d'ouvrir la pièce jointe. Veuillez réessayer.",
-  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer."
+  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
+  "statusCheckResultsMayBeOutdated": "Les résultats peuvent être obsolètes"
 }

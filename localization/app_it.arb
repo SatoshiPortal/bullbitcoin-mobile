@@ -5037,5 +5037,6 @@
   "exchangeSupportChatLoadMessagesError": "Impossibile caricare i messaggi. Riprova.",
   "exchangeSupportChatSendMessageError": "Impossibile inviare il messaggio. Riprova.",
   "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova.",
-  "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova."
+  "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
+  "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti"
 }

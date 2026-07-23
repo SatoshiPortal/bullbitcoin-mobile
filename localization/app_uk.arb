@@ -5034,5 +5034,6 @@
   "exchangeSupportChatLoadMessagesError": "Не вдалося завантажити повідомлення. Спробуйте ще раз.",
   "exchangeSupportChatSendMessageError": "Не вдалося надіслати повідомлення. Спробуйте ще раз.",
   "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
-  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову."
+  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
+  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими"
 }

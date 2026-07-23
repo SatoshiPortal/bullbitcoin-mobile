@@ -5037,5 +5037,6 @@
   "exchangeSupportChatLoadMessagesError": "无法加载消息。请重试。",
   "exchangeSupportChatSendMessageError": "无法发送您的消息。请重试。",
   "exchangeSupportChatLoadAttachmentError": "无法打开附件。请重试。",
-  "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。"
+  "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
+  "statusCheckResultsMayBeOutdated": "结果可能已过时"
 }
