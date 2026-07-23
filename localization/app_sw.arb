@@ -3752,5 +3752,7 @@
   "consolidationScreenDescription": "Matokeo mengi mno yanaweza kufanya pochi isiwe thabiti. Kuunganisha huyachanganya kuwa machache ili pochi yako ifanye kazi vizuri.",
   "consolidationScreenTitle": "Unganisha",
   "consolidationSuccessBody": "Sarafu zako zinaunganishwa. Itakamilika mara mtandao utakapothibitisha.",
-  "consolidationSuccessTitle": "Uunganishaji umeanza"
+  "consolidationSuccessTitle": "Uunganishaji umeanza",
+  "statusCheckNoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
+  "statusCheckResultsMayBeOutdated": "Matokeo yanaweza kuwa ya zamani"
 }

@@ -13273,5 +13273,7 @@
   "consolidationScreenDescription": "Çok fazla çıkış cüzdanı kararsız hale getirebilir. Birleştirmek onları daha aza indirir, böylece cüzdanınız düzgün çalışır.",
   "consolidationScreenTitle": "Birleştir",
   "consolidationSuccessBody": "Coinleriniz birleştiriliyor. Ağ onayladığında tamamlanacak.",
-  "consolidationSuccessTitle": "Birleştirme başladı"
+  "consolidationSuccessTitle": "Birleştirme başladı",
+  "statusCheckNoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
+  "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir"
 }

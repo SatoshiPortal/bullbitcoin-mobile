@@ -10314,5 +10314,7 @@
   "consolidationScreenDescription": "অতি বেছি আউটপুটে ৱালেটক অস্থিৰ কৰিব পাৰে। একত্ৰীকৰণে সেইবোৰক কম সংখ্যাত একত্ৰিত কৰে যাতে আপোনাৰ ৱালেট শুদ্ধকৈ কাম কৰে।",
   "consolidationScreenTitle": "একত্ৰিত কৰক",
   "consolidationSuccessBody": "আপোনাৰ কইনসমূহ একত্ৰিত কৰা হৈছে। নেটৱৰ্কে নিশ্চিত কৰিলে সম্পূৰ্ণ হ'ব।",
-  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে"
+  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে",
+  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে"
 }

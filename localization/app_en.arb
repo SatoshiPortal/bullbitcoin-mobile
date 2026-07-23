@@ -14832,5 +14832,13 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "statusCheckNoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@statusCheckNoDefaultWalletError": {
+    "description": "Error shown when service status cannot be checked because no default wallet is configured"
+  },
+  "statusCheckResultsMayBeOutdated": "Results may be outdated",
+  "@statusCheckResultsMayBeOutdated": {
+    "description": "Short warning shown next to the last-checked time when the most recent service status refresh failed"
   }
 }

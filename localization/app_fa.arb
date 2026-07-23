@@ -13273,5 +13273,7 @@
   "consolidationScreenDescription": "خروجی‌های بیش از حد می‌توانند کیف پول را ناپایدار کنند. تجمیع آن‌ها را در تعداد کمتری ترکیب می‌کند تا کیف پول شما درست کار کند.",
   "consolidationScreenTitle": "تجمیع",
   "consolidationSuccessBody": "سکه‌های شما در حال ترکیب هستند. پس از تأیید شبکه کامل می‌شود.",
-  "consolidationSuccessTitle": "تجمیع آغاز شد"
+  "consolidationSuccessTitle": "تجمیع آغاز شد",
+  "statusCheckNoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
+  "statusCheckResultsMayBeOutdated": "نتایج ممکن است قدیمی باشند"
 }

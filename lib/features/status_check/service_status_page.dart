@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
+import 'package:bb_mobile/features/status_check/presentation/status_check_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,6 +48,14 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
+                    if (state.failure != null) ...[
+                      BBText(
+                        state.failure!.toTranslated(context),
+                        style: context.font.bodyMedium,
+                        color: context.appColors.error,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     _ServiceStatusItem(
                       service: serviceStatus.internetConnection,
                     ),
@@ -82,6 +91,20 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                           ),
                       ],
                     ),
+                    if (state.failure != null &&
+                        serviceStatus.lastChecked != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          BBText(
+                            context.loc.statusCheckResultsMayBeOutdated,
+                            style: context.font.bodySmall,
+                            color: context.appColors.warning,
+                          ),
+                        ],
+                      ),
+                    ],
                   ]),
                 ),
               ),

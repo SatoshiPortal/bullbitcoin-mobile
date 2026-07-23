@@ -13668,5 +13668,7 @@
   "consolidationScreenDescription": "Bahut adhik output wallet ko asthir kar sakte hain. Samekan unhe kam mein jod deta hai taaki aapka wallet sahi se kaam kare.",
   "consolidationScreenTitle": "Samekit karein",
   "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
-  "consolidationSuccessTitle": "Samekan prarambh hua"
+  "consolidationSuccessTitle": "Samekan prarambh hua",
+  "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
+  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain"
 }

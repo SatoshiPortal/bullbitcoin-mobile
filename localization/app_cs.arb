@@ -13273,5 +13273,7 @@
   "consolidationScreenDescription": "Příliš mnoho výstupů může způsobit nestabilitu peněženky. Konsolidace je sloučí do menšího počtu, aby peněženka správně fungovala.",
   "consolidationScreenTitle": "Konsolidovat",
   "consolidationSuccessBody": "Vaše mince se slučují. Dokončí se, jakmile to síť potvrdí.",
-  "consolidationSuccessTitle": "Konsolidace zahájena"
+  "consolidationSuccessTitle": "Konsolidace zahájena",
+  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
+  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé"
 }
