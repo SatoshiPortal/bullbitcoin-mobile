@@ -19,6 +19,7 @@ enum SignerDeviceEntity {
 
   String get displayName => switch (this) {
     SignerDeviceEntity.bitbox02 => 'BitBox02',
+    SignerDeviceEntity.coldcardMk4 => 'Coldcard MK4/MK5',
     _ => StringFormatting.camelCaseToTitleCase(name, separator: ' '),
   };
 

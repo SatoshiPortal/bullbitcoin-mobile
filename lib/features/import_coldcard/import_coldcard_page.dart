@@ -32,7 +32,7 @@ class ImportColdcardPage extends StatelessWidget {
       throw ArgumentError.value(
         signerDevice,
         'signerDevice',
-        'Only Coldcard Q and Coldcard Mk4 are supported',
+        'Only Coldcard Q and Coldcard MK4/MK5 are supported',
       );
     }
 
