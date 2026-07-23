@@ -2038,43 +2038,6 @@
           "vout"
         ]
       }
-    },
-    {
-      "id": 16,
-      "references": [],
-      "type": "table",
-      "data": {
-        "name": "dismissed_announcements",
-        "was_declared_in_moor": false,
-        "columns": [
-          {
-            "name": "announcement_id",
-            "getter_name": "announcementId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "dismissed_at",
-            "getter_name": "dismissedAt",
-            "moor_type": "dateTime",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": [],
-        "explicit_pk": [
-          "announcement_id"
-        ]
-      }
     }
   ],
   "fixed_sql": [
@@ -2219,15 +2182,6 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"frozen_utxos\" (\"wallet_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\", \"tx_id\", \"vout\"));"
-        }
-      ]
-    },
-    {
-      "name": "dismissed_announcements",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"dismissed_announcements\" (\"announcement_id\" TEXT NOT NULL, \"dismissed_at\" TEXT NOT NULL, PRIMARY KEY (\"announcement_id\"));"
         }
       ]
     }
