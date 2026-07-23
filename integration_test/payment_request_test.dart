@@ -17,6 +17,8 @@ Future<void> main({bool isInitialized = false}) async {
       'mkvv34x5ekzd3ev56nyd3hxqurzepexejxxepnxscrvwfnv9nxzcn9xq6xyefhvgcxxcmyxy'
       'mnserxfq5fns';
 
+  // This decoder-compatible vector includes payment-secret metadata. Parsing
+  // extracts its expiry timestamp but deliberately does not enforce wall time.
   const bolt11Invoice =
       'lnbc10u1p59tufasp53yuqahahgct058zglxvhezp9nyz5fvt2kn2lsl6mg9qgsts8c72s'
       'pp56hym2dpcyy0878h7q5h4t30cwclp9vd0tqpn4dns0a3mmspzkh9qdqqxqyp2xqcqz95r'
@@ -57,6 +59,30 @@ Future<void> main({bool isInitialized = false}) async {
       expect(
         (result as LnAddressPaymentRequest).address,
         lnurlStr.toUpperCase(),
+      );
+    });
+
+    test('Uppercase Lightning URI with uppercase LNURL', () async {
+      final result = await PaymentRequest.parse(
+        'LIGHTNING:${lnurlStr.toUpperCase()}',
+      );
+
+      expect(result, isA<LnAddressPaymentRequest>());
+      expect(
+        (result as LnAddressPaymentRequest).address,
+        lnurlStr.toUpperCase(),
+      );
+    });
+
+    test('Lightning URI with Lightning Address', () async {
+      final result = await PaymentRequest.parse(
+        'lightning:ishi@walletofsatoshi.com',
+      );
+
+      expect(result, isA<LnAddressPaymentRequest>());
+      expect(
+        (result as LnAddressPaymentRequest).address,
+        'ishi@walletofsatoshi.com',
       );
     });
 
