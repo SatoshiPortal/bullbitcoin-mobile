@@ -1,42 +1,24 @@
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ServiceStatusCubit extends Cubit<ServiceStatusState> {
-  final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final CheckServiceStatusUsecase _checkServiceStatusUsecase;
 
-  ServiceStatusCubit({
-    required this._checkAllServiceStatusUsecase,
-    required this._getWalletsUsecase,
-  }) : super(const ServiceStatusState());
+  ServiceStatusCubit({required this._checkServiceStatusUsecase})
+    : super(const ServiceStatusState());
 
   Future<void> checkStatus() async {
-    try {
-      emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-      final wallets = await _getWalletsUsecase.execute();
-      final defaultWallet = wallets.firstWhere((w) => w.isDefault);
-      final network = defaultWallet.network;
-
-      final serviceStatus = await _checkAllServiceStatusUsecase.execute(
-        network: network,
-      );
-
-      if (isClosed) return;
-      emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
-    } catch (e) {
-      log.severe(
-        message: '[ServiceStatusCubit] Failed to check service status',
-        error: e,
-        trace: StackTrace.current,
-      );
-      if (isClosed) return;
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+    switch (await _checkServiceStatusUsecase.execute()) {
+      case Ok(:final value):
+        if (isClosed) return;
+        emit(state.copyWith(serviceStatus: value, isLoading: false));
+      case Err(:final failure):
+        if (isClosed) return;
+        emit(state.copyWith(isLoading: false, failure: failure));
     }
   }
-
-  void clearError() => emit(state.copyWith(error: null));
 }
