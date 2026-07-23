@@ -9247,7 +9247,7 @@
   "@psbtFlowColdcardQInstructionsTitle": {
     "description": "Title for Coldcard Q PSBT signing instructions"
   },
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard MK4/MK5 Instructions",
   "@psbtFlowColdcardMk4InstructionsTitle": {
     "description": "Title for Coldcard Mk4 PSBT signing instructions"
   },
@@ -9343,7 +9343,7 @@
   "@psbtFlowColdcardQStep23": {
     "description": "Coldcard Q PSBT signing instruction step 23"
   },
-  "psbtFlowColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "psbtFlowColdcardMk4Step1": "Login to your Coldcard MK4/MK5 device",
   "@psbtFlowColdcardMk4Step1": {
     "description": "Coldcard Mk4 PSBT signing instruction step 1"
   },
@@ -9351,11 +9351,11 @@
   "@psbtFlowColdcardMk4Step2": {
     "description": "Coldcard Mk4 PSBT signing instruction step 2"
   },
-  "psbtFlowColdcardMk4Step3": "Select \"Ready to Sign\" on your Coldcard Mk4, then tap the number 3 button",
+  "psbtFlowColdcardMk4Step3": "Select \"Ready to Sign\" on your Coldcard MK4/MK5, then tap the number 3 button",
   "@psbtFlowColdcardMk4Step3": {
     "description": "Coldcard Mk4 PSBT signing instruction step 3"
   },
-  "psbtFlowColdcardMk4Step4": "Tap your phone to the Coldcard Mk4",
+  "psbtFlowColdcardMk4Step4": "Tap your phone to the Coldcard MK4/MK5",
   "@psbtFlowColdcardMk4Step4": {
     "description": "Coldcard Mk4 PSBT signing instruction step 4"
   },
@@ -9363,15 +9363,15 @@
   "@psbtFlowColdcardMk4Step5": {
     "description": "Coldcard Mk4 PSBT signing instruction step 5"
   },
-  "psbtFlowColdcardMk4Step6": "Once the transaction is imported in your Coldcard Mk4, review the destination address and amount.",
+  "psbtFlowColdcardMk4Step6": "Once the transaction is imported in your Coldcard MK4/MK5, review the destination address and amount.",
   "@psbtFlowColdcardMk4Step6": {
     "description": "Coldcard Mk4 PSBT signing instruction step 6"
   },
-  "psbtFlowColdcardMk4Step7": "Click the buttons to sign the transaction on your Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step7": "Click the buttons to sign the transaction on your Coldcard MK4/MK5.",
   "@psbtFlowColdcardMk4Step7": {
     "description": "Coldcard Mk4 PSBT signing instruction step 7"
   },
-  "psbtFlowColdcardMk4Step8": "The Coldcard Mk4 will then prepare the signed transaction for NFC transfer.",
+  "psbtFlowColdcardMk4Step8": "The Coldcard MK4/MK5 will then prepare the signed transaction for NFC transfer.",
   "@psbtFlowColdcardMk4Step8": {
     "description": "Coldcard Mk4 PSBT signing instruction step 8"
   },
@@ -9379,7 +9379,7 @@
   "@psbtFlowColdcardMk4Step9": {
     "description": "Coldcard Mk4 PSBT signing instruction step 9"
   },
-  "psbtFlowColdcardMk4Step10": "Tap your phone to the Coldcard Mk4 to receive the signed transaction.",
+  "psbtFlowColdcardMk4Step10": "Tap your phone to the Coldcard MK4/MK5 to receive the signed transaction.",
   "@psbtFlowColdcardMk4Step10": {
     "description": "Coldcard Mk4 PSBT signing instruction step 10"
   },
@@ -9946,7 +9946,7 @@
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
   },
-  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardMk4": "Coldcard MK4/MK5",
   "@importWalletColdcardMk4": {
     "description": "Button label for Coldcard Mk4 hardware wallet"
   },
@@ -10861,11 +10861,11 @@
   "@importColdcardQStep13": {
     "description": "Coldcard Q import instruction step 13"
   },
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
+  "importColdcardMk4InstructionsTitle": "Coldcard MK4/MK5 Instructions",
   "@importColdcardMk4InstructionsTitle": {
     "description": "Title for Coldcard Mk4 import instructions"
   },
-  "importColdcardMk4Step1": "Login to your Coldcard Mk4 device",
+  "importColdcardMk4Step1": "Login to your Coldcard MK4/MK5 device",
   "@importColdcardMk4Step1": {
     "description": "Coldcard Mk4 import instruction step 1"
   },
@@ -14832,5 +14832,9 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "coldcardMk4Mk5NfcReliabilityNotice": "NFC works better with Coldcard MK5 and can be unreliable with Coldcard MK4.",
+  "@coldcardMk4Mk5NfcReliabilityNotice": {
+    "description": "Notice about NFC reliability on Coldcard MK4 and MK5 devices"
   }
 }

@@ -31,6 +31,7 @@ class ColdcardMk4InstructionsBottomSheet {
     return InstructionsBottomSheet.show(
       context,
       title: context.loc.importColdcardMk4InstructionsTitle,
+      subtitle: context.loc.coldcardMk4Mk5NfcReliabilityNotice,
       instructions: [
         context.loc.importColdcardMk4Step1,
         context.loc.importColdcardMk4Step2,

@@ -157,6 +157,7 @@ class QrDeviceInstructions {
     return InstructionsBottomSheet.show(
       context,
       title: context.loc.psbtFlowColdcardMk4InstructionsTitle,
+      subtitle: context.loc.coldcardMk4Mk5NfcReliabilityNotice,
       instructions: [
         context.loc.psbtFlowColdcardMk4Step1,
         context.loc.psbtFlowColdcardMk4Step2,
