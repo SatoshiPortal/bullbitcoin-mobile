@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_u
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:meta/meta.dart';
@@ -28,9 +29,14 @@ class CheckServiceStatusUsecase {
   @useResult
   Future<Result<AllServicesStatus, StatusCheckFailure>> execute() async {
     try {
-      final wallets = await _getWalletsUsecase.execute();
-      final defaultWallet = wallets.firstWhereOrNull((w) => w.isDefault);
+      final List<Wallet> wallets;
+      try {
+        wallets = await _getWalletsUsecase.execute();
+      } on NoWalletsFoundException {
+        return const Err(NoDefaultWalletFailure());
+      }
 
+      final defaultWallet = wallets.firstWhereOrNull((w) => w.isDefault);
       if (defaultWallet == null) {
         return const Err(NoDefaultWalletFailure());
       }
@@ -40,10 +46,6 @@ class CheckServiceStatusUsecase {
       );
 
       return Ok(serviceStatus);
-    } on NoWalletsFoundException {
-      // No wallets exist at all — same user-facing condition as having no
-      // default wallet: there is nothing to check service status against.
-      return const Err(NoDefaultWalletFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to check service status',

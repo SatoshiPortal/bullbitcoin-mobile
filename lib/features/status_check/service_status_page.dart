@@ -91,6 +91,20 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                           ),
                       ],
                     ),
+                    if (state.failure != null &&
+                        serviceStatus.lastChecked != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          BBText(
+                            context.loc.statusCheckResultsMayBeOutdated,
+                            style: context.font.bodySmall,
+                            color: context.appColors.warning,
+                          ),
+                        ],
+                      ),
+                    ],
                   ]),
                 ),
               ),

@@ -115,6 +115,29 @@ void main() {
       );
     });
 
+    test('does NOT misattribute a NoWalletsFoundException thrown by '
+        'CheckAllServiceStatusUsecase as NoDefaultWalletFailure — the narrow '
+        'catch only wraps the wallet-fetch call, so this falls through to the '
+        'generic (logged) catch-all instead', () async {
+      when(() => getWalletsUsecase.execute()).thenAnswer(
+        (_) async => [
+          walletWith(isDefault: true, network: Network.bitcoinMainnet),
+        ],
+      );
+      when(
+        () => checkAllServiceStatusUsecase.execute(
+          network: any(named: 'network'),
+        ),
+      ).thenThrow(NoWalletsFoundException('unexpected: no wallets found'));
+
+      final result = await usecase.execute();
+
+      expect(
+        (result as Err<AllServicesStatus, StatusCheckFailure>).failure,
+        isA<StatusCheckUnexpectedFailure>(),
+      );
+    });
+
     test('returns Ok with the service status on success', () async {
       when(() => getWalletsUsecase.execute()).thenAnswer(
         (_) async => [
