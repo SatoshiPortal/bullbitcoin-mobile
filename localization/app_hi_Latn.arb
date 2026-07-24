@@ -12972,5 +12972,6 @@
   "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
   "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
-  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain"
+  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
+  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein."
 }

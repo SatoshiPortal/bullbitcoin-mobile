@@ -13,10 +13,17 @@ sealed class OnboardingFailure extends Failure {
   const OnboardingFailure([super.logMessage]);
 }
 
-final class OnboardingWalletCreationFailure extends OnboardingFailure {
-  const OnboardingWalletCreationFailure();
+/// The wallet-setup step (creating or recovering the default wallets)
+/// failed — used by both the create and the recover flow, since both wrap
+/// the same core [CreateDefaultWalletsUsecase].
+final class OnboardingWalletSetupFailure extends OnboardingFailure {
+  const OnboardingWalletSetupFailure();
 }
 
+/// The wallet itself was recovered successfully, but marking the physical
+/// backup as verified failed afterwards — distinct from
+/// [OnboardingWalletSetupFailure] so the user isn't told wallet setup failed
+/// when it didn't.
 final class OnboardingBackupVerificationFailure extends OnboardingFailure {
   const OnboardingBackupVerificationFailure();
 }

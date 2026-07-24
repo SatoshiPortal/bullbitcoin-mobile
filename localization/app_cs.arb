@@ -12584,5 +12584,6 @@
   "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
   "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
   "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
-  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé"
+  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
+  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu."
 }

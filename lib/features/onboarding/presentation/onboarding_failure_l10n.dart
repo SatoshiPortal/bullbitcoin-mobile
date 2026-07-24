@@ -7,8 +7,8 @@ import 'package:flutter/widgets.dart';
 /// `logMessage`.
 extension OnboardingFailureL10n on OnboardingFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    OnboardingWalletCreationFailure() => context.loc.walletSetupErrorTryAgain,
+    OnboardingWalletSetupFailure() => context.loc.walletSetupErrorTryAgain,
     OnboardingBackupVerificationFailure() =>
-      context.loc.walletSetupErrorTryAgain,
+      context.loc.onboardingBackupVerificationError,
   };
 }

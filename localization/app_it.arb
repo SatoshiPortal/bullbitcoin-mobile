@@ -5038,5 +5038,6 @@
   "exchangeSupportChatSendMessageError": "Impossibile inviare il messaggio. Riprova.",
   "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova.",
   "statusCheckNoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
-  "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti"
+  "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti",
+  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova."
 }
