@@ -44,7 +44,34 @@ void main() {
       );
     });
 
-    test('accepts a well-formed publicKey reference (txid:vout)', () {
+    test('accepts a well-formed publicKey reference (compressed pubkey) — '
+        'per BIP-329 a pubkey ref is a public key, not txid:vout', () {
+      expect(
+        () => LabelEntity(
+          id: 1,
+          type: LabelType.publicKey,
+          label: 'test',
+          reference:
+              '0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('accepts a well-formed publicKey reference (x-only pubkey)', () {
+      expect(
+        () => LabelEntity(
+          id: 1,
+          type: LabelType.publicKey,
+          label: 'test',
+          reference:
+              '50863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('rejects a publicKey reference that is not hex or key-length', () {
       expect(
         () => LabelEntity(
           id: 1,
@@ -52,7 +79,20 @@ void main() {
           label: 'test',
           reference: '$validTxid:1',
         ),
-        returnsNormally,
+        throwsA(isA<LabelValidationException>()),
+      );
+    });
+
+    test('rejects an input reference with no txid:vout separator with a '
+        'LabelValidationException, not a RangeError', () {
+      expect(
+        () => LabelEntity(
+          id: 1,
+          type: LabelType.input,
+          label: 'test',
+          reference: validTxid,
+        ),
+        throwsA(isA<LabelValidationException>()),
       );
     });
 
