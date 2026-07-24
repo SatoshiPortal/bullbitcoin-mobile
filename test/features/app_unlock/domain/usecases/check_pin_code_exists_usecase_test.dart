@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -51,6 +52,21 @@ void main() {
       expect(failure, isA<AppUnlockPinCheckFailure>());
       // Raw message must not surface as a new typed failure — it stays in logMessage only
       expect(failure, isNot(isA<AppUnlockUnexpectedFailure>()));
+    },
+  );
+
+  test(
+    'lets KeychainLockedException propagate uncaught — AppStartupBloc relies '
+    'on this to retry on resume instead of showing a permanent startup error',
+    () async {
+      when(
+        () => pinCodeRepository.isPinCodeSet(),
+      ).thenThrow(const KeychainLockedException());
+
+      await expectLater(
+        () => usecase.execute(),
+        throwsA(isA<KeychainLockedException>()),
+      );
     },
   );
 }
