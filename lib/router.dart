@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -75,8 +76,13 @@ class AppRouter {
               location.contains('/support-chat') ||
               location.contains('/login-support');
 
-          return BlocProvider(
-            create: (_) => locator<PriceChartCubit>(),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => locator<PriceChartCubit>()),
+              BlocProvider(
+                create: (_) => locator<AnnouncementsCubit>()..refresh(),
+              ),
+            ],
             child: PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, _) {

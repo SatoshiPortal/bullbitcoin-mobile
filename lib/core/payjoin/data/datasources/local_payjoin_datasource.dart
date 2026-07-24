@@ -58,8 +58,15 @@ class LocalPayjoinDatasource {
       Expression<bool> expr = const Constant(true); // identity
 
       if (onlyUnfinished) {
+        // isAborted is a terminal outcome too (we already broadcast the
+        // original in its place) — excluded here for the same reason
+        // isCompleted/isExpired are, otherwise an aborted session would
+        // keep being "resumed" on every app start.
         expr =
-            expr & row.isExpired.equals(false) & row.isCompleted.equals(false);
+            expr &
+            row.isExpired.equals(false) &
+            row.isCompleted.equals(false) &
+            row.isAborted.equals(false);
       }
 
       if (walletId != null) {
@@ -78,7 +85,10 @@ class LocalPayjoinDatasource {
 
       if (onlyUnfinished) {
         expr =
-            expr & row.isExpired.equals(false) & row.isCompleted.equals(false);
+            expr &
+            row.isExpired.equals(false) &
+            row.isCompleted.equals(false) &
+            row.isAborted.equals(false);
       }
 
       if (walletId != null) {
@@ -103,10 +113,24 @@ class LocalPayjoinDatasource {
     ];
   }
 
+  /// Fetches the payjoin session(s) a transaction id belongs to, matching
+  /// BOTH the payjoin transaction id and the original transaction id. The
+  /// original matters as much as the payjoin one: an aborted session (we
+  /// broadcast the original instead of completing a real payjoin — see
+  /// PayjoinStatus.aborted) has no [txId] at all, so the transaction that
+  /// actually hit the chain IS the original — matching only [txId] made
+  /// that transaction's details lose its payjoin context entirely, hiding
+  /// the very "aborted" outcome the status exists to communicate. The
+  /// transactions LIST already joins on both ids
+  /// (GetTransactionsUsecase); this keeps the details path consistent.
   Future<List<PayjoinModel>> fetchByTxId(String txId) async {
     final (receivers, senders) = await (
-      _db.managers.payjoinReceivers.filter((f) => f.txId(txId)).get(),
-      _db.managers.payjoinSenders.filter((f) => f.txId(txId)).get(),
+      _db.managers.payjoinReceivers
+          .filter((f) => f.txId(txId) | f.originalTxId(txId))
+          .get(),
+      _db.managers.payjoinSenders
+          .filter((f) => f.txId(txId) | f.originalTxId(txId))
+          .get(),
     ).wait;
 
     return [
@@ -124,6 +148,7 @@ class LocalPayjoinDatasource {
       receivers = await receiversTable
           .filter((f) => f.isExpired(false))
           .filter((f) => f.isCompleted(false))
+          .filter((f) => f.isAborted(false))
           .get();
     } else {
       receivers = await receiversTable.get();
@@ -147,6 +172,7 @@ class LocalPayjoinDatasource {
       senders = await sendersTable
           .filter((f) => f.isExpired(false))
           .filter((f) => f.isCompleted(false))
+          .filter((f) => f.isAborted(false))
           .get();
     } else {
       senders = await sendersTable.get();
