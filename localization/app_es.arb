@@ -5263,5 +5263,6 @@
   "transactionStatusPayjoinAborted": "Payjoin cancelado",
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo."
 }

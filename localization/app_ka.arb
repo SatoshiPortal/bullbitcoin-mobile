@@ -3900,5 +3900,6 @@
   "transactionStatusPayjoinAborted": "Payjoin გაუქმდა",
   "transactionDetailLabelPayjoinAborted": "გაუქმებულია",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin საკომისიოს შენატანი",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin-ი კონფიდენციალურობის გასაუმჯობესებლად ამატებს თქვენს ერთ მონეტას გადახდაში, როგორც დამატებით შენატანს. ამ დამატებული შენატანის მოპოვების საკომისიო აკლდება თანხას, რომელსაც იღებთ (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ი კონფიდენციალურობის გასაუმჯობესებლად ამატებს თქვენს ერთ მონეტას გადახდაში, როგორც დამატებით შენატანს. ამ დამატებული შენატანის მოპოვების საკომისიო აკლდება თანხას, რომელსაც იღებთ (BIP78).",
+  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა."
 }

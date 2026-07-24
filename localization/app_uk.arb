@@ -5268,5 +5268,6 @@
   "transactionStatusPayjoinAborted": "Payjoin скасовано",
   "transactionDetailLabelPayjoinAborted": "Скасовано",
   "transactionDetailLabelPayjoinFeeContribution": "Внесок комісії Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78).",
+  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз."
 }
