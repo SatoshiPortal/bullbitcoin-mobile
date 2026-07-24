@@ -6270,6 +6270,7 @@ final class Schema14 extends i0.VersionedSchema {
     recoverbull,
     prices,
     frozenUtxos,
+    dismissedAnnouncements,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -6610,6 +6611,17 @@ final class Schema14 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape43 dismissedAnnouncements = Shape43(
+    source: i0.VersionedTable(
+      entityName: 'dismissed_announcements',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(announcement_id)'],
+      columns: [_column_246, _column_247],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
 }
 
 class Shape40 extends i0.VersionedTable {
@@ -6761,6 +6773,30 @@ class Shape42 extends i0.VersionedTable {
       columnsByName['is_aborted']! as i1.GeneratedColumn<int>;
 }
 
+class Shape43 extends i0.VersionedTable {
+  Shape43({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get announcementId =>
+      columnsByName['announcement_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get dismissedAt =>
+      columnsByName['dismissed_at']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_246(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'announcement_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_247(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'dismissed_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
