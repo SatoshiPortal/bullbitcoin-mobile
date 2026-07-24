@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_dismissal.dart';
-import 'package:bb_mobile/features/announcements/domain/get_visible_announcements_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,5 +1,8 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:bb_mobile/features/announcements/presentation/announcements_failure_l10n.dart';
+import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -16,26 +19,41 @@ class AnnouncementCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Narrow rebuild: only when the visible set changes.
-    return BlocSelector<
-      AnnouncementsCubit,
-      AnnouncementsState,
-      List<Announcement>
-    >(
-      selector: (state) => state.announcements,
-      builder: (context, announcements) {
-        return AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          alignment: Alignment.topCenter,
-          child: announcements.isEmpty
-              ? const SizedBox(width: double.infinity)
-              : Padding(
-                  padding: const EdgeInsets.only(left: 13, right: 13, top: 13),
-                  child: _CarouselBody(announcements: announcements),
-                ),
-        );
-      },
+    return BlocListener<AnnouncementsCubit, AnnouncementsState>(
+      // Surface a dismissal/refresh failure (the card otherwise just stays).
+      // Fires only when a new failure appears, not on every rebuild.
+      listenWhen: (previous, current) =>
+          current.failure != null && previous.failure != current.failure,
+      listener: (context, state) => SnackBarUtils.showSnackBar(
+        context,
+        state.failure!.toTranslated(context),
+      ),
+      // Narrow rebuild: only when the visible set changes.
+      child:
+          BlocSelector<
+            AnnouncementsCubit,
+            AnnouncementsState,
+            List<Announcement>
+          >(
+            selector: (state) => state.announcements,
+            builder: (context, announcements) {
+              return AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: announcements.isEmpty
+                    ? const SizedBox(width: double.infinity)
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                          left: 13,
+                          right: 13,
+                          top: 13,
+                        ),
+                        child: _CarouselBody(announcements: announcements),
+                      ),
+              );
+            },
+          ),
     );
   }
 }
@@ -72,8 +90,8 @@ class _CarouselBodyState extends State<_CarouselBody> {
 
   void _onTap(Announcement announcement) {
     switch (announcement.action) {
-      case NavigateAction(:final routeName):
-        context.pushNamed(routeName);
+      case NavigateAction():
+        context.pushNamed(announcement.route.name);
     }
   }
 

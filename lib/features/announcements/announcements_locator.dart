@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_us
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/announcements/data/announcement_dismissal_repository_impl.dart';
 import 'package:bb_mobile/features/announcements/data/datasources/announcement_dismissal_datasource.dart';
-import 'package:bb_mobile/features/announcements/domain/dismiss_announcement_usecase.dart';
-import 'package:bb_mobile/features/announcements/domain/get_visible_announcements_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:get_it/get_it.dart';

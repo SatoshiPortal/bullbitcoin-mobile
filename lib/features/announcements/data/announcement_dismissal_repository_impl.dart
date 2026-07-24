@@ -22,6 +22,7 @@ class AnnouncementDismissalRepositoryImpl
 
   @override
   Future<void> dismiss(AnnouncementId id) async {
-    await _datasource.upsert(id.name, DateTime.now());
+    // Persist in UTC, per the `dismissed_announcements.dismissedAt` contract.
+    await _datasource.upsert(id.name, DateTime.now().toUtc());
   }
 }

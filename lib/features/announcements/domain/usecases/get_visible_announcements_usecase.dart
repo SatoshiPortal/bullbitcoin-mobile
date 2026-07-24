@@ -30,10 +30,13 @@ class GetVisibleAnnouncementsUsecase {
 
   Future<Result<List<Announcement>, AnnouncementsFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final transactions = await _getWalletTransactionsUsecase.execute();
-      final autoSwap = await _getAutoSwapSettingsUsecase.execute();
-      final dismissals = await _dismissalRepository.getDismissals();
+      // The four sources are independent, so gather them concurrently.
+      final (settings, transactions, autoSwap, dismissals) = await (
+        _settingsRepository.fetch(),
+        _getWalletTransactionsUsecase.execute(),
+        _getAutoSwapSettingsUsecase.execute(),
+        _dismissalRepository.getDismissals(),
+      ).wait;
 
       final signals = AnnouncementSignals(
         isPayjoinEnabled: settings.isPayjoinEnabled,
@@ -42,7 +45,7 @@ class GetVisibleAnnouncementsUsecase {
       );
 
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};
-      final now = DateTime.now();
+      final now = DateTime.now().toUtc();
 
       final visible = <Announcement>[];
       for (final entry in announcementCatalog) {
@@ -60,7 +63,9 @@ class GetVisibleAnnouncementsUsecase {
       visible.sort((a, b) => a.priority.compareTo(b.priority));
       return Ok(visible);
     } catch (e) {
-      return Err(AnnouncementStorageFailure(e.toString()));
+      // Sources span settings/tx/autoswap/storage, so this is a genuine
+      // catch-all rather than a storage-only failure.
+      return Err(AnnouncementUnexpectedFailure(e.toString()));
     }
   }
 }

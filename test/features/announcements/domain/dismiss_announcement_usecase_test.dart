@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/announcements/domain/dismiss_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
