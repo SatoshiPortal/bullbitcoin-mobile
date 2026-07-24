@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.12.0+191
+version: 6.13.0+200
 
 environment:
   sdk: "3.12.2"
@@ -47,17 +47,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
+      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
+      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
+      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   hex: ^0.2.0
@@ -112,7 +112,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 507c54893f561a339b8da787cf9b2e0cd9ab9659
+      ref: 3dcd008d1ca5233a65f2f354c03b3975e2ab33f7
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -156,6 +156,7 @@ dev_dependencies:
   # Direct dep for the webview test fake: the Platform* types and callback typedefs it extends are not re-exported by webview_flutter.
   webview_flutter_platform_interface: ^2.15.1
   flutter_launcher_icons: ^0.14.4
+  path_provider_platform_interface: ^2.1.2
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0

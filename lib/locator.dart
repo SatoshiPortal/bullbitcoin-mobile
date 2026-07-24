@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
@@ -16,6 +19,7 @@ import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
+import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
@@ -65,6 +69,15 @@ class AppLocator {
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);
+
+    // Every dependency PayjoinRepositoryImpl needs (wallet repositories,
+    //  settings, the labels facade) is now guaranteed registered — resume any
+    //  unfinished payjoin sessions left over from a previous run. Not awaited:
+    //  this is background work (relay polling, wallet syncs) that must not
+    //  delay app startup. See resumePayjoinsOnStartup's doc for why this
+    //  can't just run in the repository's constructor.
+    unawaited(locator<PayjoinRepository>().resumePayjoinsOnStartup());
+
     SyncLocator.setup(locator);
 
     // Register feature-specific dependencies
@@ -87,6 +100,7 @@ class AppLocator {
     ReceiveLocator.setup(locator);
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
+    ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
     AnnouncementsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);

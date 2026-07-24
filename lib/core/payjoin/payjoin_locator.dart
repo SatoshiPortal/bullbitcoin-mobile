@@ -17,6 +17,9 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -39,7 +42,19 @@ class PayjoinLocator {
           BaseOptions(
             connectTimeout: const Duration(seconds: 10),
             sendTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 30),
+            // receiveTimeout MUST exceed the payjoin directory's long-poll
+            // hold: payjo.in (payjoin-mailroom) keeps an empty-mailbox poll
+            // open for ~30s before answering 202 Accepted. A timeout at or
+            // below that hold races it and loses every time — each empty
+            // poll aborts just before the 202, is misread as a relay
+            // failure, and cascades through all three relays, so a payjoin
+            // never completes and every send falls back to the original
+            // transaction (a real, previously-shipped bug). 35s = the ~30s
+            // hold + a minimal margin for relay forwarding and OHTTP/TLS
+            // overhead. The session's own expiry (default 24h — see
+            // PayjoinConstants) sits far above this, so the poll budget is
+            // bounded purely by this long-poll-hold floor plus margin.
+            receiveTimeout: const Duration(seconds: 35),
           ),
         ),
       ),
@@ -47,8 +62,10 @@ class PayjoinLocator {
   }
 
   static void registerRepositories(GetIt locator) {
-    // Not a lazy singleton, because it should resume payjoins from the
-    // moment the app starts.
+    // Eager (not lazy) singleton: it subscribes to the datasource's event
+    // streams at construction. Resuming unfinished sessions is deferred to
+    // an explicit resumePayjoinsOnStartup() call from AppLocator.setup (see
+    // that method), once every dependency it needs is registered.
     locator.registerSingleton<PayjoinRepository>(
       PayjoinRepositoryImpl(
         localPayjoinDatasource: locator<LocalPayjoinDatasource>(),
@@ -58,6 +75,19 @@ class PayjoinLocator {
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        // Lazy: WalletLocator registers these AFTER
+        // PayjoinLocator.registerRepositories (see core_locator.dart), and
+        // this repository is an eager registerSingleton. They are only
+        // called from broadcast/completion watchers, well after startup.
+        walletRepository: () => locator<WalletRepository>(),
+        walletTransactionRepository: () =>
+            locator<WalletTransactionRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        // Lazy: LabelsLocator.registerFacade runs after
+        // PayjoinLocator.registerRepositories (see core_locator.dart), and
+        // this repository is an eager registerSingleton — see
+        // PayjoinRepositoryImpl's _labelsFacade doc comment.
+        labelsFacade: () => locator<LabelsFacade>(),
       ),
     );
   }
@@ -85,6 +115,7 @@ class PayjoinLocator {
       () => SendWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 

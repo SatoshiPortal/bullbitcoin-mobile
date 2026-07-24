@@ -42,12 +42,20 @@ void main(List<String> args) {
         _cmdCheck(rest);
       case 'missing':
         _cmdMissing(rest);
+      case 'missing-detail':
+        _cmdMissingDetail(rest);
       case 'dead':
         _cmdDead(rest);
       case 'add':
         _cmdAdd(rest);
       case 'set':
         _cmdSet(rest);
+      case 'fill':
+        _cmdFill(rest);
+      case 'audit-identical':
+        _cmdAuditIdentical(rest);
+      case 'audit-placeholders':
+        _cmdAuditPlaceholders(rest);
       case 'set-meta':
         _cmdSetMeta(rest);
       case 'rename':
@@ -177,6 +185,223 @@ void _cmdMissing(List<String> args) {
       '\nPass --list to print the missing keys, or --locale <code> to '
       'focus on one locale.',
     );
+  }
+}
+
+void _cmdMissingDetail(List<String> args) {
+  final positional = _positional(args);
+  if (positional.length != 1) {
+    throw UsageException('missing-detail expects exactly one LOCALE argument.');
+  }
+  final locale = positional.first;
+  _requireLocale(locale);
+  if (locale == templateLocale) {
+    throw UsageException(
+      'The template locale ("$templateLocale") defines the key set; it '
+      'cannot be missing keys relative to itself.',
+    );
+  }
+
+  final template = _readMap(_fileFor(templateLocale));
+  final templateKeys = _realKeys(template);
+  final localeKeys = _readMap(_fileFor(locale)).keys.toSet();
+  final missing = templateKeys.where((k) => !localeKeys.contains(k)).toList();
+
+  final out = <String, dynamic>{};
+  for (final key in missing) {
+    final meta = template['@$key'];
+    out[key] = {
+      'en': template[key],
+      if (meta is Map && meta['description'] is String)
+        'description': meta['description'],
+      if (meta is Map && meta['placeholders'] is Map)
+        'placeholders': meta['placeholders'],
+    };
+  }
+  print(const JsonEncoder.withIndent('  ').convert(out));
+}
+
+void _cmdFill(List<String> args) {
+  final positional = _positional(args);
+  if (positional.length != 1) {
+    throw UsageException('fill expects exactly one LOCALE argument.');
+  }
+  final locale = positional.first;
+  _requireLocale(locale);
+  if (locale == templateLocale) {
+    throw UsageException(
+      'Refusing to bulk-fill the template locale ("$templateLocale") '
+      'itself.',
+    );
+  }
+
+  final translations = _readJsonMapOption(
+    args,
+    '--translations',
+    '--translations-file',
+  );
+  if (translations == null || translations.isEmpty) {
+    throw UsageException(
+      'fill requires --translations-file PATH (or --translations '
+      '\'{"key":"value",...}\') mapping keys to their translated value.',
+    );
+  }
+  final overwrite = _flag(args, '--overwrite');
+
+  final template = _readMap(_fileFor(templateLocale));
+  for (final entry in translations.entries) {
+    if (!template.containsKey(entry.key)) {
+      throw UsageException(
+        'Key "${entry.key}" is not in the "$templateLocale" template. '
+        'Add it first with `add` so a getter is generated.',
+      );
+    }
+    if (entry.value is! String) {
+      throw UsageException('translation for "${entry.key}" must be a string.');
+    }
+  }
+
+  final file = _fileFor(locale);
+  _assertInvariant(file);
+  final existing = _readMap(file);
+
+  final toAppend = <String, dynamic>{};
+  final toReplace = <String, dynamic>{};
+  final skipped = <String>[];
+  for (final entry in translations.entries) {
+    if (existing.containsKey(entry.key)) {
+      if (overwrite) {
+        toReplace[entry.key] = entry.value;
+      } else {
+        skipped.add(entry.key);
+      }
+    } else {
+      toAppend[entry.key] = entry.value;
+    }
+  }
+
+  if (toAppend.isNotEmpty) {
+    _appendBlocks(file, [
+      for (final entry in toAppend.entries)
+        _valueBlock(entry.key, entry.value as String),
+    ]);
+  }
+  for (final entry in toReplace.entries) {
+    _replaceValue(file, entry.key, entry.value as String);
+  }
+
+  print(
+    '$locale: added ${toAppend.length}, replaced ${toReplace.length}'
+    '${skipped.isNotEmpty ? ', skipped ${skipped.length} (already present, use --overwrite)' : ''}',
+  );
+  if (skipped.isNotEmpty && _flag(args, '--list')) {
+    for (final k in skipped) {
+      print('  skipped: $k');
+    }
+  }
+}
+
+void _cmdAuditIdentical(List<String> args) {
+  final localeFilter = _option(args, '--locale');
+  final list = _flag(args, '--list');
+  if (localeFilter != null) _requireLocale(localeFilter);
+
+  final template = _readMap(_fileFor(templateLocale));
+  final locales = (localeFilter != null ? [localeFilter] : _allLocales())
+      .where((l) => l != templateLocale)
+      .toList();
+
+  for (final locale in locales) {
+    final map = _readMap(_fileFor(locale));
+    final identical = <String>[];
+    for (final key in _realKeys(template)) {
+      final en = template[key];
+      final other = map[key];
+      if (other == null) continue; // handled by `missing`
+      if (en is String &&
+          other is String &&
+          en == other &&
+          en.trim().isNotEmpty) {
+        identical.add(key);
+      }
+    }
+    print('$locale: ${identical.length} values identical to en');
+    if (list) {
+      for (final k in identical) {
+        print('  $k: ${_display(template[k])}');
+      }
+    }
+  }
+}
+
+final _identChar = RegExp(r'[a-zA-Z0-9_]');
+
+/// Extracts only the *top-level* `{placeholder}` names from an ARB/ICU value,
+/// ignoring anything nested inside a plural/select block. A naive
+/// `\{(\w+)\}` regex misidentifies the literal case bodies of
+/// `{count, plural, =1{File} other{Files}}` as two extra placeholders named
+/// "File" and "Files" — which then never match a translation that actually
+/// translates those words, producing a false mismatch on every locale. This
+/// walks brace depth instead: a placeholder name is only recorded for a `{`
+/// at depth 0, and its whole nested body (case arms, sub-messages, etc.) is
+/// then skipped without being scanned for further names.
+Set<String> _topLevelPlaceholders(String s) {
+  final names = <String>{};
+  var i = 0;
+  while (i < s.length) {
+    if (s[i] != '{') {
+      i++;
+      continue;
+    }
+    var j = i + 1;
+    while (j < s.length && _identChar.hasMatch(s[j])) {
+      j++;
+    }
+    if (j > i + 1) names.add(s.substring(i + 1, j));
+    // Skip to this brace's matching close, ignoring nested identifiers.
+    var depth = 1;
+    var k = i + 1;
+    while (k < s.length && depth > 0) {
+      if (s[k] == '{') depth++;
+      if (s[k] == '}') depth--;
+      k++;
+    }
+    i = k;
+  }
+  return names;
+}
+
+void _cmdAuditPlaceholders(List<String> args) {
+  final localeFilter = _option(args, '--locale');
+  final list = _flag(args, '--list');
+  if (localeFilter != null) _requireLocale(localeFilter);
+
+  final template = _readMap(_fileFor(templateLocale));
+  final locales = (localeFilter != null ? [localeFilter] : _allLocales())
+      .where((l) => l != templateLocale)
+      .toList();
+
+  for (final locale in locales) {
+    final map = _readMap(_fileFor(locale));
+    final mismatches = <String>[];
+    for (final key in _realKeys(template)) {
+      final en = template[key];
+      final other = map[key];
+      if (en is! String || other is! String) continue;
+      final enTokens = _topLevelPlaceholders(en);
+      if (enTokens.isEmpty) continue;
+      final otherTokens = _topLevelPlaceholders(other);
+      if (!enTokens.containsAll(otherTokens) ||
+          !otherTokens.containsAll(enTokens)) {
+        mismatches.add(key);
+      }
+    }
+    print('$locale: ${mismatches.length} placeholder mismatches');
+    if (list) {
+      for (final k in mismatches) {
+        print('  $k: en=${_display(template[k])} $locale=${_display(map[k])}');
+      }
+    }
   }
 }
 
@@ -866,7 +1091,7 @@ const _valueOptions = {
   '--description',
   '--placeholders',
 };
-const _booleanFlags = {'--list', '--dry-run'};
+const _booleanFlags = {'--list', '--dry-run', '--overwrite'};
 
 // Which options each command actually accepts. Passing a globally-known option
 // that is meaningless for the command (e.g. `get KEY --description x`) is a
@@ -878,6 +1103,7 @@ const _commandOptions = <String, Set<String>>{
   'get': {'--locale'},
   'check': {},
   'missing': {'--locale', '--list'},
+  'missing-detail': {},
   'dead': {'--list'},
   'add': {
     '--translations',
@@ -887,10 +1113,19 @@ const _commandOptions = <String, Set<String>>{
     '--dry-run',
   },
   'set': {'--dry-run'},
+  'fill': {
+    '--translations',
+    '--translations-file',
+    '--overwrite',
+    '--list',
+    '--dry-run',
+  },
   'set-meta': {'--description', '--placeholders', '--dry-run'},
   'rename': {'--dry-run'},
   'delete': {'--dry-run'},
   'validate': {},
+  'audit-identical': {'--locale', '--list'},
+  'audit-placeholders': {'--locale', '--list'},
 };
 
 // Set once in main from the parsed args; read by _editLines to skip the write.
@@ -1073,6 +1308,20 @@ Read commands:
       Report keys present in the template (en) but missing per locale.
       --locale focuses on one locale; --list prints the missing keys.
 
+  missing-detail LOCALE
+      Print a JSON object {key: {en, description, placeholders}} for every
+      key missing in LOCALE — feed straight to a translator, then to `fill`.
+
+  audit-identical [--locale L] [--list]
+      Report values that are byte-identical to the en template — a likely
+      untranslated / copy-pasted string (some overlap, e.g. brand names or
+      numbers, is expected and not itself a bug).
+
+  audit-placeholders [--locale L] [--list]
+      Report values whose {placeholder} tokens don't match the en template's
+      (missing, extra, or renamed) — a near-certain translation bug since a
+      missing placeholder silently drops data at render time.
+
   dead [--list]
       List template keys with no apparent reference in lib/ or test/
       (heuristic).
@@ -1090,6 +1339,12 @@ Write commands (surgical; other keys are left byte-for-byte unchanged):
   set KEY LOCALE VALUE
       Set or update the value of KEY for a single locale. KEY must already
       exist in the template.
+
+  fill LOCALE --translations-file PATH [--overwrite]
+      Bulk-add many key/value translations to one locale in a single pass
+      (PATH is a JSON object {"key":"value",...}, as produced — after
+      translation — from `missing-detail`). Keys already present in LOCALE
+      are left untouched unless --overwrite is given.
 
   set-meta KEY [--description TEXT] [--placeholders '{...}']
       Update the template metadata (description / placeholders) of an existing

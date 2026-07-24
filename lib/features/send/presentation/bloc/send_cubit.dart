@@ -9,8 +9,12 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
@@ -67,6 +71,7 @@ class SendCubit extends Cubit<SendState>
     required this._prepareBitcoinSendUsecase,
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
+    required this._watchPayjoinUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
     required this._createSendSwapUsecase,
@@ -88,6 +93,7 @@ class SendCubit extends Cubit<SendState>
     required this._verifyChainSwapAmountSendUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
+    required this._checkLiquidConsolidationUsecase,
   }) : super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -117,6 +123,7 @@ class SendCubit extends Cubit<SendState>
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
+  final WatchPayjoinUsecase _watchPayjoinUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
@@ -135,10 +142,12 @@ class SendCubit extends Cubit<SendState>
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
+  StreamSubscription<Payjoin>? _payjoinSubscription;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
   /// captures it before its `await` and re-checks before writing results
@@ -154,6 +163,7 @@ class SendCubit extends Cubit<SendState>
       _swapSubscription?.cancel() ?? Future.value(),
       _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
       _txSubscription?.cancel() ?? Future.value(),
+      _payjoinSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
   }
@@ -849,6 +859,7 @@ class SendCubit extends Cubit<SendState>
         exchangeRate: exchangeRate,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
+        payjoinGloballyEnabled: settings.isPayjoinEnabled,
       ),
     );
   }
@@ -942,6 +953,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> onCurrencyChanged(String currencyCode) async {
     double exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
+    bool payjoinGloballyEnabled = state.payjoinGloballyEnabled;
 
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
@@ -958,8 +970,10 @@ class SendCubit extends Cubit<SendState>
         _convertSatsToCurrencyAmountUsecase.execute(),
       ]);
 
-      fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
+      final settings = currencyValues[0] as SettingsEntity;
+      fiatCurrencyCode = settings.currencyCode;
       exchangeRate = currencyValues[1] as double;
+      payjoinGloballyEnabled = settings.isPayjoinEnabled;
     }
 
     emit(
@@ -967,6 +981,7 @@ class SendCubit extends Cubit<SendState>
         inputAmountCurrencyCode: currencyCode,
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
+        payjoinGloballyEnabled: payjoinGloballyEnabled,
         amount: '', // Clear the amount when changing the currency
       ),
     );
@@ -1158,7 +1173,25 @@ class SendCubit extends Cubit<SendState>
       // broadcast. Guarded so a no-op refresh doesn't needlessly
       // re-shimmer an open modal.
       final utxosChanged = !setEquals(state.utxos.toSet(), utxos.toSet());
-      emit(state.copyWith(utxos: utxos));
+      // Proactively flag consolidation for Liquid wallets whose UTXO count is
+      // over the threshold, so the card shows before a build is attempted. The
+      // ConsolidationRequiredException remains the backstop on the build path.
+      // Routed through CheckLiquidConsolidationUsecase (the same check the
+      // consolidation banner uses) rather than re-deriving the comparison
+      // here from a possibly-differently-filtered UTXO list, so this and the
+      // banner can never disagree about whether the wallet needs
+      // consolidating.
+      final consolidationRequired =
+          (state.selectedWallet?.isLiquid ?? false) &&
+          await _checkLiquidConsolidationUsecase.execute(
+            walletId: state.selectedWallet!.id,
+          );
+      emit(
+        state.copyWith(
+          utxos: utxos,
+          consolidationRequired: consolidationRequired,
+        ),
+      );
       if (utxosChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -1825,6 +1858,15 @@ class SendCubit extends Cubit<SendState>
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
+      if (e is ConsolidationRequiredException) {
+        emit(
+          state.copyWith(
+            consolidationRequired: true,
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -1867,11 +1909,8 @@ class SendCubit extends Cubit<SendState>
           state.copyWith(signedLiquidTx: signedPset, signingTransaction: false),
         );
       } else {
-        final paymentRequest = state.paymentRequest;
-        if (state.isToSelf != true &&
-            paymentRequest != null &&
-            paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.pj.isNotEmpty) {
+        if (state.willAttemptPayjoin) {
+          final paymentRequest = state.paymentRequest! as Bip21PaymentRequest;
           final payjoinSender = await _sendWithPayjoinUsecase.execute(
             walletId: state.selectedWallet!.id,
             isTestnet: state.selectedWallet!.network.isTestnet,
@@ -1881,18 +1920,20 @@ class SendCubit extends Cubit<SendState>
             networkFeesSatPerVb: state.selectedFee!.isRelative
                 ? state.selectedFee!.value as double
                 : 1,
-            expireAfterSec: PayjoinConstants.defaultExpireAfterSec,
           );
-          // TODO: Watch the payjoin and transaction to update the txId with the
-          //  payjoin txId if it is completed.
-          final txId = payjoinSender.originalTxId;
+          // Show originalTxId provisionally; the payjoin runs asynchronously
+          //  in the repository (poll → sign → broadcast, or fallback to the
+          //  original on expiry). Watch its stream so the send flow resolves
+          //  to success with the final txid instead of hanging on the
+          //  "coordinating" screen (#2246).
           emit(
             state.copyWith(
-              txId: txId,
+              txId: payjoinSender.originalTxId,
               payjoinSender: payjoinSender,
               signingTransaction: false,
             ),
           );
+          _watchPayjoin(payjoinSender.id);
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
@@ -1952,19 +1993,15 @@ class SendCubit extends Cubit<SendState>
         );
         emit(state.copyWith(txId: txId));
       } else {
-        final paymentRequest = state.paymentRequest;
-        if (state.isToSelf != true &&
-            paymentRequest != null &&
-            paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.pj.isNotEmpty) {
-          emit(state.copyWith(broadcastingTransaction: false));
-        } else {
-          final txId = await _broadcastBitcoinTxUsecase.execute(
-            isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
-            isPsbt: isPsbt,
-          );
-          emit(state.copyWith(txId: txId));
-        }
+        // Payjoin sends are already broadcast asynchronously by the repository
+        // (and their state.txId is set in signTransaction), so they never
+        // reach here — the guard at the top of this method returns first. Only
+        // plain bitcoin sends broadcast at this point.
+        final txId = await _broadcastBitcoinTxUsecase.execute(
+          isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
+          isPsbt: isPsbt,
+        );
+        emit(state.copyWith(txId: txId));
       }
 
       if (state.lightningSwap != null) {
@@ -2047,7 +2084,16 @@ class SendCubit extends Cubit<SendState>
         await signTransaction();
         // if (!state.isLightning) {
         if (state.confirmTransactionException == null) {
-          emit(state.copyWith(step: SendStep.sending));
+          // _watchPayjoin (armed inside signTransaction's payjoin branch)
+          //  can resolve the flow to success before this line, if a
+          //  terminal payjoin event arrives in the gap between arming and
+          //  here. Don't clobber an already-resolved success with
+          //  "sending" — that would strand the flow on the sending screen
+          //  despite having actually completed (the exact symptom #2246
+          //  fixes, just a narrower window of it).
+          if (state.step != SendStep.success) {
+            emit(state.copyWith(step: SendStep.sending));
+          }
         } else {
           emit(state.copyWith(step: SendStep.confirm));
           return;
@@ -2059,11 +2105,17 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(step: SendStep.confirm));
         return;
       }
-      // Start watching the transaction to have the latest status
-      _watchWalletTransactionByTxId(
-        walletId: state.selectedWallet!.id,
-        txId: state.txId!,
-      );
+      // For a payjoin, _watchPayjoin (started in signTransaction) owns
+      // resolving the flow to success — it watches the payjoin session and
+      // sets the final txid. Starting the tx watcher here too would race it
+      // (both emit) and briefly surface the original txid. For all other
+      // sends, watch the broadcast tx for its latest status.
+      if (state.payjoinSender == null) {
+        _watchWalletTransactionByTxId(
+          walletId: state.selectedWallet!.id,
+          txId: state.txId!,
+        );
+      }
     } catch (e) {
       emit(state.copyWith(step: SendStep.confirm));
       log.severe(error: e, trace: StackTrace.current);
@@ -2146,6 +2198,113 @@ class SendCubit extends Cubit<SendState>
         }
       }
     });
+  }
+
+  /// Watches the sender side of an in-flight payjoin and resolves the send
+  /// flow once it terminates. The payjoin negotiation runs asynchronously in
+  /// the repository; without this the UI would sit on the "coordinating"
+  /// screen forever (#2246).
+  ///
+  /// - completed: the receiver responded and the payjoin transaction was
+  ///   broadcast — move to success with the payjoin txid.
+  /// - aborted: the repository fell back to broadcasting the original
+  ///   transaction (below-minimum decline, failed negotiation, or the
+  ///   counterparty's own fallback observed on-chain) — move to success
+  ///   with the original txid.
+  /// - expired: terminal with nothing broadcast — the original-transaction
+  ///   fallback itself also failed — return to confirm with a
+  ///   broadcast-failure exception so the user can retry.
+  void _watchPayjoin(String payjoinId) {
+    _payjoinSubscription?.cancel();
+    // Captured up front: the completion event fires arbitrarily later on a
+    // background poll, so read these off state now rather than closing over
+    // state (which may have moved on) inside the async callback.
+    final walletId = state.selectedWallet?.id;
+    final userLabel = state.label;
+    _payjoinSubscription = _watchPayjoinUsecase
+        .execute(ids: [payjoinId])
+        .where((payjoin) => payjoin is PayjoinSender)
+        .cast<PayjoinSender>()
+        .listen((payjoin) {
+          // The payjoin poll lives in the repository and outlives this cubit;
+          // an event can arrive after the send flow is torn down. Never emit
+          // on a closed cubit (it throws).
+          if (isClosed) return;
+          // logRef, never id: a sender payjoin id is the full BIP21 URI
+          // (address + amount), which must not reach logs.
+          log.info(
+            '[SendCubit] Watched payjoin ${payjoin.logRef} updated: '
+            '${payjoin.status}',
+          );
+          if (payjoin.isCompleted || payjoin.isAborted) {
+            emit(
+              state.copyWith(
+                payjoinSender: payjoin,
+                // Prefer the payjoin txid; fall back to the original tx that
+                //  was broadcast when the negotiation didn't complete.
+                txId: payjoin.txId ?? payjoin.originalTxId,
+                step: SendStep.success,
+              ),
+            );
+            _payjoinSubscription?.cancel();
+            if (walletId != null) {
+              unawaited(
+                _getWalletUsecase.execute(walletId, sync: true).catchError((e) {
+                  log.warning('Failed to sync wallet after payjoin: $e');
+                  return null;
+                }),
+              );
+            }
+            // broadcastTransaction never reaches its own label-store call for
+            //  a payjoin (it early-returns because txId is already set), so
+            //  the user's typed label has to be stored here instead, once the
+            //  final txid is known.
+            // originalTxId is always set for a sender, so this is never null.
+            final finalTxId = payjoin.txId ?? payjoin.originalTxId;
+            if (userLabel.isNotEmpty && walletId != null) {
+              unawaited(
+                _labelsFacade.store(
+                  NewLabel.tx(
+                    transactionId: finalTxId,
+                    label: userLabel,
+                    origin: walletId,
+                  ),
+                ),
+              );
+            }
+          } else if (payjoin.isExpired) {
+            // Terminal without a broadcast: either the session expired and the
+            // original-transaction fallback failed too, or a received proposal
+            // failed to sign/broadcast and the original fallback also failed
+            // (the repository only emits the raw expired-marked entity on one
+            // of these unrecoverable paths). Nothing hit the chain, so surface
+            // a broadcast failure and return to confirm so the user can retry,
+            // instead of hanging on "coordinating".
+            log.warning(
+              '[SendCubit] Payjoin ${payjoin.logRef} expired without broadcast',
+            );
+            _payjoinSubscription?.cancel();
+            // Clear the provisional txId AND payjoinSender so a retry starts
+            //  clean: signTransaction set state.txId = originalTxId up front,
+            //  and broadcastTransaction early-returns while txId != null — so
+            //  leaving them set would permanently short-circuit the retry's
+            //  broadcast. Nulling both lets createTransaction/signTransaction
+            //  re-run the payjoin branch from scratch.
+            emit(
+              state.copyWith(
+                txId: null,
+                payjoinSender: null,
+                step: SendStep.confirm,
+                confirmTransactionException: ConfirmTransactionException(
+                  'Payjoin expired and the transaction could not be broadcast',
+                  isBroadcastFailure: true,
+                ),
+              ),
+            );
+          } else {
+            emit(state.copyWith(payjoinSender: payjoin));
+          }
+        });
   }
 
   void _watchWalletTransactionByTxId({

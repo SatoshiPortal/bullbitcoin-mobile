@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -213,6 +216,33 @@ class SwapPageState extends State<SwapPage> {
                     const Gap(12),
                     SwapBalanceRow(amountController: _amountController),
                     const Gap(12),
+                    BlocSelector<TransferBloc, TransferState, bool>(
+                      selector: (state) => state.consolidationRequired,
+                      builder: (context, consolidationRequired) {
+                        if (!consolidationRequired) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: ConsolidationRequiredCard(
+                            title: context.loc.consolidationRequiredTitle,
+                            onTap: () {
+                              final walletId = context
+                                  .read<TransferBloc>()
+                                  .state
+                                  .fromWallet
+                                  ?.id;
+                              if (walletId != null) {
+                                context.pushNamed(
+                                  ConsolidationRoute.consolidation.name,
+                                  pathParameters: {'walletId': walletId},
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
                     BlocSelector<
                       TransferBloc,
                       TransferState,

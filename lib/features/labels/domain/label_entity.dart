@@ -42,14 +42,20 @@ class LabelEntity {
   }
 
   void _validateTxid(String input) {
-    if (reference.length != 64) {
+    // Validates the passed slice, not the full `reference` field: for
+    // LabelType.input/output/publicKey, reference is `txid:vout` and would
+    // never pass a 64-hex-char check on its own — every well-formed label
+    // of those three types was being rejected unconditionally before this
+    // fix (the txid slice was already split out by the caller into
+    // `input`, but validation looked at the untouched full field instead).
+    if (input.length != 64) {
       throw LabelValidationException(
         'Invalid transaction reference: must be 64 hex characters',
       );
     }
 
     try {
-      hex.decode(reference);
+      hex.decode(input);
     } catch (e) {
       throw LabelValidationException(
         'Invalid transaction reference: must be valid hex',

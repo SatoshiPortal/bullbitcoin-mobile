@@ -115,6 +115,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -154,6 +155,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -199,6 +201,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -229,6 +232,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
       latestEncryptedBackup: metadata.latestEncryptedBackup != null
@@ -290,6 +294,7 @@ class WalletRepository {
             signer: entry.value.signer.toEntity(),
             signerDevice: entry.value.signerDevice?.toEntity(),
             balanceSat: balances[entry.key].totalSat,
+            confirmedBalanceSat: balances[entry.key].confirmedSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
             latestEncryptedBackup: entry.value.latestEncryptedBackup != null
