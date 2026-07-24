@@ -1145,6 +1145,50 @@ void main() {
       expect(emitted, isEmpty);
       await sub.cancel();
     });
+
+    test('a DB throw in the proposal handler is caught and logged, never '
+        'escaping the stream listener as an unhandled zone error', () async {
+      // The re-fetch guard sits OUTSIDE the handler's inner try/catch: a
+      // throw here used to escape .listen() straight into the zone.
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(
+        () => localDatasource.fetchSender(model.uri),
+      ).thenThrow(Exception('db unavailable'));
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      proposalsController.add(model);
+      await Future<void>.delayed(Duration.zero);
+
+      // Surviving to here IS the assertion (an escaped async error fails the
+      // test); the repository must also still process later events.
+      when(
+        () => localDatasource.fetchSender(model.uri),
+      ).thenAnswer((_) async => model.copyWith(isAborted: true));
+      proposalsController.add(model);
+      await Future<void>.delayed(Duration.zero);
+    });
+
+    test('a DB throw in the expiry handler is caught and logged, never '
+        'escaping the stream listener as an unhandled zone error', () async {
+      final model = _senderModel(
+        originalTxId: 'sender-orig-txid',
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(
+        () => localDatasource.fetchSender(model.uri),
+      ).thenThrow(Exception('db unavailable'));
+
+      final repository = buildRepository();
+      addTearDown(repository.dispose);
+
+      expiredController.add(model.copyWith(isExpired: true));
+      await Future<void>.delayed(Duration.zero);
+    });
   });
 
   group('resumePayjoinsOnStartup', () {

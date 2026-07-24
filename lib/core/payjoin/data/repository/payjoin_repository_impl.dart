@@ -632,6 +632,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) => amountSat != null && amountSat < minAmountSat;
 
   Future<void> _processPayjoinProposal(PayjoinSenderModel payjoinModel) async {
+    // Same hardening as _processPayjoinRequest: this runs as a bare stream
+    // .listen() callback, so any await throwing outside a try (the re-fetch
+    // and update below, or the terminal-persist tail) would surface as an
+    // unhandled zone error — and with the sender poll already cancelled by
+    // the time this fires, nothing else would ever emit a terminal event,
+    // stranding the session until the app restarts.
+    try {
+      await _processPayjoinProposalInner(payjoinModel);
+    } catch (e) {
+      log.severe(
+        message: 'Error processing payjoin proposal event',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  }
+
+  Future<void> _processPayjoinProposalInner(
+    PayjoinSenderModel payjoinModel,
+  ) async {
     // The proposal event carries the datasource's own in-memory copy, which
     // may have resolved since (e.g. the fallback watcher aborted the session
     // when the counterparty broadcast the original while this proposal was in
@@ -738,6 +758,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _processExpiredPayjoin(PayjoinModel payjoinModel) async {
+    // Same hardening as _processPayjoinRequest/_processPayjoinProposal: a
+    // bare stream .listen() callback — a DB throw here must be logged, not
+    // escape as an unhandled zone error that strands the session.
+    try {
+      await _processExpiredPayjoinInner(payjoinModel);
+    } catch (e) {
+      log.severe(
+        message: 'Error processing expired payjoin event',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  }
+
+  Future<void> _processExpiredPayjoinInner(PayjoinModel payjoinModel) async {
     // The expiry event carries the emitter's own in-memory copy of the
     // session (the PDK poll's model from when polling started, or a resume's
     // fetch) — not the persisted row, which may have resolved in the
