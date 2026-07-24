@@ -68,10 +68,15 @@ class _CarouselBody extends StatefulWidget {
 }
 
 class _CarouselBodyState extends State<_CarouselBody> {
-  /// Base height (at textScale 1.0) that fits a two-line title+description card
-  /// plus the reserved dots strip at the bottom. Scales with the user's text
-  /// size so larger accessibility settings never overflow.
-  static const double _baseCardHeight = 112;
+  /// Base height (at textScale 1.0) that fits a two-line title+description
+  /// card. Scales with the user's text size so larger accessibility settings
+  /// never overflow.
+  static const double _baseCardHeight = 90;
+
+  /// Extra height reserved for the page-indicator dots strip, only when more
+  /// than one announcement is shown — reserving it for a single card renders
+  /// as dead space between the card and the content below it.
+  static const double _dotsStripHeight = 22;
 
   late final PageController _controller;
   int _page = 0;
@@ -118,7 +123,8 @@ class _CarouselBodyState extends State<_CarouselBody> {
     // Adapt to the user's text-scale setting so the card grows with larger
     // accessibility font sizes instead of overflowing.
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final cardHeight = _baseCardHeight * textScale;
+    final cardHeight =
+        (_baseCardHeight + (showDots ? _dotsStripHeight : 0)) * textScale;
 
     return SizedBox(
       height: cardHeight,
@@ -133,7 +139,9 @@ class _CarouselBodyState extends State<_CarouselBody> {
               // Reserve the dots strip at the bottom so the card's centered
               // content never collides with the indicator.
               return Padding(
-                padding: EdgeInsets.only(bottom: showDots ? 22 : 0),
+                padding: EdgeInsets.only(
+                  bottom: showDots ? _dotsStripHeight : 0,
+                ),
                 child: AnnouncementCard(
                   announcement: announcement,
                   onTap: () => _onTap(announcement),
