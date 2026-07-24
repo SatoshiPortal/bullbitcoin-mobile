@@ -14961,16 +14961,20 @@
   "@receivePayjoinFallbackCountdown": {
     "description": "Label preceding a countdown until the payjoin falls back to a normal payment."
   },
-  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
-  "@receivePayjoinNoUtxos": {
-    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
-  },
-  "receivePayjoinActivated": "Payjoin activated",
-  "@receivePayjoinActivated": {
-    "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
   "statusCheckDisabled": "Disabled",
   "@statusCheckDisabled": {
     "description": "Status label on the service status page for a service the user has intentionally turned off (e.g. payjoin disabled in settings)."
+  },
+  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no confirmed balance yet to contribute. It will activate once you receive funds.",
+  "@receivePayjoinAwaitingFunds": {
+    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no confirmed balance."
+  },
+  "receivePayjoinQrBadge": "Payjoin",
+  "@receivePayjoinQrBadge": {
+    "description": "Short badge shown on the receive QR code corner when the address advertises a payjoin endpoint, signalling the sender may propose a payjoin."
+  },
+  "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
+  "@receivePayjoinBelowMinimumAmount": {
+    "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
   }
 }

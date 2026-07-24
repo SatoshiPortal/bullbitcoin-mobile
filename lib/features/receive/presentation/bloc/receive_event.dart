@@ -15,18 +15,18 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveNoteChanged(String note) =
       ReceiveNoteChanged;
   const factory ReceiveEvent.receiveNoteSaved() = ReceiveNoteSaved;
-  const factory ReceiveEvent.receiveAddressOnlyToggled(bool isAddressOnly) =
-      ReceiveAddressOnlyToggled;
   const factory ReceiveEvent.receiveNewAddressGenerated() =
       ReceiveNewAddressGenerated;
   const factory ReceiveEvent.receivePayjoinUpdated(PayjoinReceiver payjoin) =
       ReceivePayjoinUpdated;
-  const factory ReceiveEvent.receivePayjoinEnabledChanged(bool isEnabled) =
-      ReceivePayjoinEnabledChanged;
   const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
       ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =
       ReceiveTransactionReceived;
   const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
       ReceiveLightningSwapUpdated;
+  const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
+      ReceivePayjoinSettingChanged;
+  const factory ReceiveEvent.receivePayjoinToggled(bool enabled) =
+      ReceivePayjoinToggled;
 }

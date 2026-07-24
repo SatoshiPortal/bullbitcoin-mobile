@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 
 class ReceiveWithPayjoinUsecase {
   final PayjoinRepository _payjoinRepository;
@@ -13,17 +12,13 @@ class ReceiveWithPayjoinUsecase {
     required this._settingsRepository,
   });
 
-  /// Returns null if payjoin is disabled in settings — the caller should
-  /// treat that the same as "no payjoin for this address", not an error.
-  Future<PayjoinReceiver?> execute({
+  Future<PayjoinReceiver> execute({
     required String walletId,
     required String address,
     int? expireAfterSec,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      if (!settings.isPayjoinEnabled) return null;
-
       final environment = settings.environment;
 
       final payjoinReceiver = await _payjoinRepository.createPayjoinReceiver(
@@ -31,8 +26,9 @@ class ReceiveWithPayjoinUsecase {
         address: address,
         isTestnet: environment.isTestnet,
         maxFeeRateSatPerVb: BigInt.from(10000),
-        expireAfterSec:
-            expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec,
+        // The user-configured session lifetime (see the payjoin settings
+        // screen) unless the caller explicitly overrides it (e.g. tests).
+        expireAfterSec: expireAfterSec ?? settings.payjoinExpireAfterSec,
       );
 
       return payjoinReceiver;

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
@@ -65,6 +68,15 @@ class AppLocator {
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);
+
+    // Every dependency PayjoinRepositoryImpl needs (wallet repositories,
+    //  settings, the labels facade) is now guaranteed registered — resume any
+    //  unfinished payjoin sessions left over from a previous run. Not awaited:
+    //  this is background work (relay polling, wallet syncs) that must not
+    //  delay app startup. See resumePayjoinsOnStartup's doc for why this
+    //  can't just run in the repository's constructor.
+    unawaited(locator<PayjoinRepository>().resumePayjoinsOnStartup());
+
     SyncLocator.setup(locator);
 
     // Register feature-specific dependencies
