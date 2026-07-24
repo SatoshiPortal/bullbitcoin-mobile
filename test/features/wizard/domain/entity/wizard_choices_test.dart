@@ -10,6 +10,7 @@ void main() {
       expect(c.themeMode, AppThemeMode.system);
       expect(c.defaultCurrency, 'USD');
       expect(c.reportingConsent, isNull);
+      expect(c.privateBitcoinSync, isFalse);
       expect(c.touched, isEmpty);
     });
   });
@@ -55,6 +56,27 @@ void main() {
       expect(next.touched, contains(WizardField.reportingConsent));
     });
 
+    test('privateBitcoinSync change marks privateBitcoinSync touched', () {
+      const c = WizardChoices();
+      final next = c.copyWith(privateBitcoinSync: true);
+      expect(next.privateBitcoinSync, isTrue);
+      expect(next.touched, contains(WizardField.privateBitcoinSync));
+      expect(next.touched, hasLength(1));
+    });
+
+    test('explicit privateBitcoinSync: false still marks touched', () {
+      // A user who flips the switch on then back off before advancing
+      // should still have their explicit "no" committed, not silently
+      // dropped as if they'd never touched it.
+      const c = WizardChoices(
+        privateBitcoinSync: true,
+        touched: {WizardField.privateBitcoinSync},
+      );
+      final next = c.copyWith(privateBitcoinSync: false);
+      expect(next.privateBitcoinSync, isFalse);
+      expect(next.touched, contains(WizardField.privateBitcoinSync));
+    });
+
     test('omitting reportingConsent leaves touched + value unchanged', () {
       const c = WizardChoices(
         reportingConsent: true,
@@ -71,11 +93,13 @@ void main() {
       final after = c
           .copyWith(language: Language.franceFrench)
           .copyWith(themeMode: AppThemeMode.dark)
-          .copyWith(defaultCurrency: 'EUR');
+          .copyWith(defaultCurrency: 'EUR')
+          .copyWith(privateBitcoinSync: true);
       expect(after.touched, {
         WizardField.language,
         WizardField.themeMode,
         WizardField.defaultCurrency,
+        WizardField.privateBitcoinSync,
       });
     });
   });
@@ -97,6 +121,16 @@ void main() {
       expect(next.touched, {WizardField.defaultCurrency});
       expect(next.themeMode, AppThemeMode.dark);
       expect(next.defaultCurrency, 'CAD');
+    });
+
+    test('preserves privateBitcoinSync unchanged', () {
+      const c = WizardChoices(
+        privateBitcoinSync: true,
+        touched: {WizardField.privateBitcoinSync},
+      );
+      final next = c.copyWithSilent(themeMode: AppThemeMode.dark);
+      expect(next.privateBitcoinSync, isTrue);
+      expect(next.touched, {WizardField.privateBitcoinSync});
     });
   });
 }

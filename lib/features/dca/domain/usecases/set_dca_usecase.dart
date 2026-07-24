@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/await_cbf_sync_inactive_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 class SetDcaUsecase {
@@ -13,6 +14,7 @@ class SetDcaUsecase {
   final WalletRepository _wallet;
   final SettingsRepository _settingsRepository;
   final WalletAddressRepository _walletAddressRepository;
+  final AwaitCbfSyncInactiveUsecase _awaitCbfSyncInactive;
 
   SetDcaUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
@@ -20,8 +22,10 @@ class SetDcaUsecase {
     required this._wallet,
     required this._settingsRepository,
     required this._walletAddressRepository,
+    required AwaitCbfSyncInactiveUsecase awaitCbfSyncInactiveUsecase,
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
-       _testnetDcaRepository = testnetExchangeOrderRepository;
+       _testnetDcaRepository = testnetExchangeOrderRepository,
+       _awaitCbfSyncInactive = awaitCbfSyncInactiveUsecase;
 
   Future<Dca> execute({
     required double amount,
@@ -53,6 +57,10 @@ class SetDcaUsecase {
       }
 
       final defaultWallet = wallets.first;
+      // Waits, never cancels, for any active CBF sync on this wallet to
+      // settle before revealing (and persisting) a new address — see
+      // AwaitCbfSyncInactiveUsecase's class doc.
+      await _awaitCbfSyncInactive.execute(walletId: defaultWallet.id);
       final walletAddress = await _walletAddressRepository
           .generateNewReceiveAddress(walletId: defaultWallet.id);
       address = walletAddress.address;

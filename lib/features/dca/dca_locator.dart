@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_us
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/await_cbf_sync_inactive_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
@@ -44,6 +45,7 @@ class DcaLocator {
         wallet: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         walletAddressRepository: locator<WalletAddressRepository>(),
+        awaitCbfSyncInactiveUsecase: locator<AwaitCbfSyncInactiveUsecase>(),
       ),
     );
   }

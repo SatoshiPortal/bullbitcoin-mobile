@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/wallet_birthday_picker.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
@@ -10,7 +13,6 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
   final String input;
@@ -80,8 +82,10 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             current.decryptedVault != null &&
                 previous.decryptedVault != current.decryptedVault ||
             current.vaultKey != null && previous.vaultKey != current.vaultKey ||
-            previous.isFlowFinished != current.isFlowFinished,
-        listener: (context, state) {
+            previous.isFlowFinished != current.isFlowFinished ||
+            previous.needsBitcoinBirthdaySelection !=
+                current.needsBitcoinBirthdaySelection,
+        listener: (context, state) async {
           if (state.failure != null) {
             SnackBarUtils.showSnackBar(
               context,
@@ -89,11 +93,34 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();
+            return;
           }
+
+          if (state.needsBitcoinBirthdaySelection) {
+            final bloc = context.read<RecoverBullBloc>();
+            final checkpoint = await WalletBirthdayPicker.show(
+              context,
+              isTestnet: state.pendingRestoreIsTestnet,
+              onResolve: bloc.resolveBitcoinBirthdayCheckpoint,
+            );
+            if (!context.mounted) return;
+            bloc.add(OnBitcoinBirthdayResolved(checkpoint: checkpoint));
+            return;
+          }
+
           if (state.flow == RecoverBullFlow.recoverVault &&
               state.isFlowFinished) {
             _hasNavigatedAway = true;
-            context.goNamed(WalletRoute.walletHome.name);
+            // Lands on the dedicated CBF sync screen instead of wallet
+            // home when the restored default Bitcoin wallet opted into
+            // compact block filters; every other wallet keeps this exact
+            // navigation — see that helper.
+            unawaited(
+              WalletRouter.goToWalletHomeOrInitialSyncForDefaultBitcoinWallet(
+                context,
+                isRecoveryOrImport: true,
+              ),
+            );
             return;
           }
           if (state.decryptedVault != null && state.vaultKey != null) {

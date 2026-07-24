@@ -829,6 +829,16 @@ class _SendError extends StatelessWidget {
                 textAlign: .center,
               ),
             ],
+            if (confirmError.isPayjoinDisabledForCbf) ...[
+              const Gap(8),
+              BBText(
+                context.loc.sendErrorPayjoinDisabledForCbf,
+                style: context.font.bodyMedium,
+                color: context.appColors.error,
+                maxLines: 5,
+                textAlign: .center,
+              ),
+            ],
           ],
         ),
       );

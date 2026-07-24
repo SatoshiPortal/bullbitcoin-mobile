@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
@@ -86,6 +87,30 @@ void main() {
   });
 
   test(
+    'Bitcoin and Liquid run concurrently, then swaps starts after both',
+    () async {
+      final gates = wireGates();
+      final future = coordinator.sync(trigger: SyncTrigger.user);
+
+      await pumpEventQueue();
+      verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
+      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      verifyNever(() => restartSwaps.execute());
+
+      gates.liquid.complete();
+      await pumpEventQueue();
+      verifyNever(() => restartSwaps.execute());
+
+      gates.bitcoin.complete();
+      await pumpEventQueue();
+      verify(() => restartSwaps.execute()).called(1);
+
+      gates.swaps.complete();
+      await future;
+    },
+  );
+
+  test(
     'a sync awaits the kinds IT requested even when it joins an in-flight '
     'drain that is about to finish (regression: spinner stopped after bitcoin)',
     () async {
@@ -116,6 +141,43 @@ void main() {
       gates.swaps.complete();
       await second;
       expect(secondDone, isTrue);
+    },
+  );
+
+  test(
+    'one bitcoin wallet failing does not starve sibling wallets — every '
+    'wallet is still attempted, and the kind still surfaces as failed',
+    () async {
+      final walletA = Wallet(
+        origin: 'wallet-a',
+        network: Network.bitcoinMainnet,
+        xpubFingerprint: '11111111',
+        scriptType: ScriptType.bip84,
+        xpub: 'xpub-fake-a',
+        externalPublicDescriptor: 'wpkh([11111111/84h/0h/0h]xpub-fake-a/0/*)',
+        internalPublicDescriptor: 'wpkh([11111111/84h/0h/0h]xpub-fake-a/1/*)',
+        signer: SignerEntity.local,
+        signerDevice: null,
+        balanceSat: BigInt.zero,
+      );
+      final walletB = walletA.copyWith(origin: 'wallet-b');
+
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => [walletA, walletB]);
+      when(() => restartSwaps.execute()).thenAnswer((_) async {});
+      when(
+        () => syncWallet.execute(walletA),
+      ).thenThrow(Exception('bitcoin wallet A sync failed'));
+      when(() => syncWallet.execute(walletB)).thenAnswer((_) async {});
+
+      await expectLater(
+        coordinator.sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+
+      verify(() => syncWallet.execute(walletA)).called(1);
+      verify(() => syncWallet.execute(walletB)).called(1);
     },
   );
 

@@ -11,9 +11,12 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/resolve_wallet_birthday_checkpoint_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -67,6 +70,11 @@ class RecoverBullRouter {
               locator<UpdateLatestEncryptedVaultTestUsecase>(),
           torStatusUsecase: locator<TorStatusUsecase>(),
           torConfigPort: locator<TorConfigPort>(),
+          getSettingsUsecase: locator<GetSettingsUsecase>(),
+          checkCompactBlockFiltersAvailableUsecase:
+              locator<CheckCompactBlockFiltersAvailableUsecase>(),
+          resolveWalletBirthdayCheckpointUsecase:
+              locator<ResolveWalletBirthdayCheckpointUsecase>(),
         ),
         child: const RecoverBullFlowNavigator(),
       );

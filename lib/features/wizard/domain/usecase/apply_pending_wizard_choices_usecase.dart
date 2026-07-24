@@ -33,6 +33,11 @@ class ApplyPendingWizardChoicesUsecase {
         consent != null) {
       await _settingsRepository.setErrorReportingEnabled(consent);
     }
+    if (choices.touched.contains(WizardField.privateBitcoinSync)) {
+      await _settingsRepository.setUseCompactBlockFiltersByDefault(
+        choices.privateBitcoinSync,
+      );
+    }
     await _wizardRepository.clearPending();
     await _wizardRepository.markComplete();
   }

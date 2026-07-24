@@ -145,6 +145,7 @@ class AppRouter {
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
+      WalletRouter.walletInitialSyncRoute,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,

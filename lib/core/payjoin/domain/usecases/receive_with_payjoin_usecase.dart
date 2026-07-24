@@ -33,11 +33,20 @@ class ReceiveWithPayjoinUsecase {
 
       return payjoinReceiver;
     } catch (e) {
-      throw ReceivePayjoinException(e.toString());
+      throw ReceivePayjoinException(
+        e.toString(),
+        isDisabledForCbf: e is PayjoinDisabledForCbfException,
+      );
     }
   }
 }
 
 class ReceivePayjoinException extends BullException {
-  ReceivePayjoinException(super.message);
+  ReceivePayjoinException(super.message, {this.isDisabledForCbf = false});
+
+  /// True when the wallet is currently synced via Compact Block Filters,
+  /// for which Payjoin creation is deliberately disabled — see
+  /// [PayjoinDisabledForCbfException]. Lets the UI show a specific message
+  /// instead of a generic failure.
+  final bool isDisabledForCbf;
 }

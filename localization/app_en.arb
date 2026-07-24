@@ -14771,5 +14771,277 @@
   "coinsErrorUnexpected": "Something went wrong. Please try again.",
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletOptionsSyncBackendTileTitle": "Compact block filter sync",
+  "@walletOptionsSyncBackendTileTitle": {
+    "description": "Title of the developer-only switch to sync a Bitcoin wallet via compact block filters instead of Electrum"
+  },
+  "walletOptionsSyncBackendWarningTitle": "Enable compact block filter sync?",
+  "@walletOptionsSyncBackendWarningTitle": {
+    "description": "Title of the confirmation shown before enabling compact block filter sync for a wallet"
+  },
+  "walletOptionsSyncBackendWarningMessage": "This is a developer-only feature. Addresses are matched locally instead of using a single scan server, but connections do not go through Tor, so peers can see your IP address. Incoming transactions only become visible after their first confirmation, not immediately. Once a sync starts, it keeps running in the background until it finishes — it is not stopped just by leaving the app.",
+  "@walletOptionsSyncBackendWarningMessage": {
+    "description": "Warning explaining the privacy and behaviour tradeoffs of enabling compact block filter sync, shown before the user confirms"
+  },
+  "walletOptionsSyncBackendWarningConfirmButton": "I understand, enable",
+  "@walletOptionsSyncBackendWarningConfirmButton": {
+    "description": "Confirm button label on the compact block filter sync warning"
+  },
+  "walletOptionsSyncBackendStatusConnecting": "Connecting to peers…",
+  "@walletOptionsSyncBackendStatusConnecting": {
+    "description": "Progress label while a compact block filter sync attempt is connecting to peers"
+  },
+  "walletOptionsSyncBackendStatusScanning": "Scanning the blockchain…",
+  "@walletOptionsSyncBackendStatusScanning": {
+    "description": "Progress label while a compact block filter sync attempt is scanning with no determinate percent available"
+  },
+  "walletOptionsSyncBackendStatusScanningPercent": "Scanning the blockchain… {percent}%",
+  "@walletOptionsSyncBackendStatusScanningPercent": {
+    "description": "Progress label while a compact block filter sync attempt is scanning with a determinate percent",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "walletOptionsSyncBackendStatusCompleted": "Sync completed",
+  "@walletOptionsSyncBackendStatusCompleted": {
+    "description": "Shown when a compact block filter sync attempt finished successfully"
+  },
+  "walletOptionsSyncBackendStatusFailed": "Sync failed. Retry or turn off compact block filter sync.",
+  "@walletOptionsSyncBackendStatusFailed": {
+    "description": "Generic message shown when a compact block filter sync attempt failed for a retriable reason (e.g. the compact filter backend itself)"
+  },
+  "walletOptionsSyncBackendStatusFailedTorUnsupported": "Compact block filter sync doesn't work while Tor is enabled. Turn off Tor, or turn off compact block filter sync.",
+  "@walletOptionsSyncBackendStatusFailedTorUnsupported": {
+    "description": "Non-retriable message shown when a compact block filter sync attempt failed because the user has Tor proxy enabled"
+  },
+  "walletOptionsSyncBackendStatusFailedUnavailable": "Compact block filter sync isn't available on this build.",
+  "@walletOptionsSyncBackendStatusFailedUnavailable": {
+    "description": "Non-retriable message shown when a compact block filter sync attempt failed because the developer/beta gate is closed"
+  },
+  "walletOptionsSyncBackendTurnOffButton": "Turn off",
+  "@walletOptionsSyncBackendTurnOffButton": {
+    "description": "Button shown while a compact block filter sync attempt is in progress that cancels it and reverts the wallet to Electrum"
+  },
+  "walletOptionsSyncBackendRetryButton": "Retry",
+  "@walletOptionsSyncBackendRetryButton": {
+    "description": "Retry button shown after a retriable compact block filter sync attempt failed"
+  },
+  "wizardPrivacyTitle": "Compact Block Filters (enhanced privacy)",
+  "@wizardPrivacyTitle": {
+    "description": "Title of the wizard's privacy step, offering to enable compact block filter sync for the new Bitcoin wallet"
+  },
+  "wizardPrivacyBody": "Use Compact Block Filters (CBF) for the Bitcoin wallet we are about to create. You can change this later from the wallet's own settings.",
+  "@wizardPrivacyBody": {
+    "description": "Intro body copy on the wizard's privacy step, above the enhanced-privacy toggle card"
+  },
+  "wizardPrivacyToggleTitle": "Compact Block Filters (CBF)",
+  "@wizardPrivacyToggleTitle": {
+    "description": "Title of the wizard's privacy step toggle card that opts a new Bitcoin wallet into compact block filter sync"
+  },
+  "wizardPrivacyToggleDescription": "Addresses are matched locally instead of using a single scan server. Incoming payments only appear after their first confirmation, sync keeps running in the background even if you leave the app, and your IP address is visible to peers since connections do not go through Tor.",
+  "@wizardPrivacyToggleDescription": {
+    "description": "Explanatory copy on the wizard privacy step's toggle card, describing the privacy and behaviour tradeoffs of enabling compact block filter sync for the new Bitcoin wallet"
+  },
+  "walletSyncProgressNonFatalNotice": "A temporary connection issue occurred. The sync is continuing.",
+  "@walletSyncProgressNonFatalNotice": {
+    "description": "Generic, non-fatal notice shown on the wallet sync progress card when a CBF sync raises an advisory warning but keeps running. Never shows the warning's raw detail."
+  },
+  "walletSyncProgressStopButton": "Stop for now",
+  "@walletSyncProgressStopButton": {
+    "description": "Button on the wallet sync progress card that cancels only the current sync attempt, without changing the wallet's persisted sync backend choice"
+  },
+  "sendErrorPayjoinDisabledForCbf": "Payjoin isn't available yet for wallets using the fast (Compact Block Filters) sync backend.",
+  "@sendErrorPayjoinDisabledForCbf": {
+    "description": "Shown under sendErrorConfirmationFailed when the send failed because Payjoin is disabled for the wallet's Compact Block Filters sync backend."
+  },
+  "receivePayjoinDisabledForCbf": "Payjoin isn't available yet for wallets using the fast (Compact Block Filters) sync backend. You can still receive normally.",
+  "@receivePayjoinDisabledForCbf": {
+    "description": "Snackbar shown on the receive screen when Payjoin could not be created because the wallet uses the Compact Block Filters sync backend."
+  },
+  "walletSyncProgressStageConnecting": "Finding peers…",
+  "@walletSyncProgressStageConnecting": {
+    "description": "Compact block filter sync is finding peers."
+  },
+  "walletSyncProgressStageConnected": "Connected to peers…",
+  "@walletSyncProgressStageConnected": {
+    "description": "Compact block filter sync has established peer connections and completed a handshake."
+  },
+  "walletSyncProgressStageDownloadingFilters": "Downloading compact block filters…",
+  "@walletSyncProgressStageDownloadingFilters": {
+    "description": "Compact block filter sync is downloading filters."
+  },
+  "walletSyncProgressStageMatchingBlocks": "Scanning matching blocks…",
+  "@walletSyncProgressStageMatchingBlocks": {
+    "description": "Compact block filter sync is matching downloaded filters against the wallet's scripts."
+  },
+  "walletSyncProgressDiagnosticsTitle": "CBF session details",
+  "@walletSyncProgressDiagnosticsTitle": {
+    "description": "Title for compact block filter sync diagnostics."
+  },
+  "walletSyncProgressConnected": "Connected to peers",
+  "@walletSyncProgressConnected": {
+    "description": "Compact block filter sync has connected to peers and completed a handshake at some point during this attempt."
+  },
+  "walletSyncProgressFiltersStarted": "Compact filter download started",
+  "@walletSyncProgressFiltersStarted": {
+    "description": "Compact block filter download started."
+  },
+  "walletSyncProgressChainHeight": "Chain height: {height}",
+  "@walletSyncProgressChainHeight": {
+    "description": "Public blockchain height reported during compact block filter sync.",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "walletSyncProgressBlocksMatched": "Matching blocks received: {count}",
+  "@walletSyncProgressBlocksMatched": {
+    "description": "Count of matching block notifications during compact block filter sync.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletSyncProgressStageSyncingHeaders": "Syncing block headers…",
+  "@walletSyncProgressStageSyncingHeaders": {
+    "description": "Compact block filter sync is syncing block headers, before any compact filter has started downloading."
+  },
+  "walletSyncProgressStageApplyingUpdate": "Applying wallet update…",
+  "@walletSyncProgressStageApplyingUpdate": {
+    "description": "Compact block filter sync is awaiting, applying, and persisting its native update — emitted once, immediately before that opaque call."
+  },
+  "walletSyncProgressApplyingUpdate": "Applying wallet update",
+  "@walletSyncProgressApplyingUpdate": {
+    "description": "Diagnostic line on the wallet sync progress card noting the attempt reached the applying-update stage at some point, kept visible even if the attempt later fails."
+  },
+  "walletInitialSyncBackgroundNotice": "This sync keeps running even if you leave this screen or the app — it is not automatically stopped by backgrounding the app or navigating away.",
+  "@walletInitialSyncBackgroundNotice": {
+    "description": "Shown on the dedicated first-run compact block filter sync screen while the attempt has not yet completed, so the user knows leaving does not cancel it — only wallet deletion or enabling Tor mid-session ever tears the session down."
+  },
+  "walletBirthdayPickerTitle": "Wallet birthday",
+  "@walletBirthdayPickerTitle": {
+    "description": "Title of the bottom sheet letting the user narrow (or skip) the compact block filter recovery scan by an approximate wallet creation date."
+  },
+  "walletBirthdayPickerChooseDateButton": "Choose a date",
+  "@walletBirthdayPickerChooseDateButton": {
+    "description": "Button in the wallet birthday picker that opens the platform date picker."
+  },
+  "walletBirthdayPickerGenesisDateLabel": "Earliest possible date (scans entire chain)",
+  "@walletBirthdayPickerGenesisDateLabel": {
+    "description": "Shown instead of a calendar date when the wallet birthday picker's selected date is still the network's genesis block default."
+  },
+  "walletBirthdayPickerUseGenesisButton": "Use earliest possible date",
+  "@walletBirthdayPickerUseGenesisButton": {
+    "description": "Fallback action in the wallet birthday picker after a resolver failure — retries the lookup pinned to the network genesis block, which always succeeds locally with no network round-trip."
+  },
+  "walletBirthdayPickerContinueButton": "Continue",
+  "@walletBirthdayPickerContinueButton": {
+    "description": "Primary confirm button in the wallet birthday picker."
+  },
+  "walletBirthdayPickerResolutionFailedMessage": "We could not verify that date right now. You can try again or continue with the earliest possible date.",
+  "@walletBirthdayPickerResolutionFailedMessage": {
+    "description": "Generic error shown in the wallet birthday picker when the checkpoint resolver fails — never the raw failure detail."
+  },
+  "walletBirthdayPickerBody": "If you know roughly when this wallet was first used, entering that date can speed up the compact block filter recovery scan. If you are not sure, leave it at the earliest possible date to scan the entire chain.",
+  "@walletBirthdayPickerBody": {
+    "description": "Explanatory body text in the wallet birthday picker bottom sheet."
+  },
+  "walletBirthdayPickerDateLabel": "Estimated creation date",
+  "@walletBirthdayPickerDateLabel": {
+    "description": "Label above the selected/selectable date row in the wallet birthday picker."
+  },
+  "importMnemonicSyncBackendTitle": "Sync method",
+  "@importMnemonicSyncBackendTitle": {
+    "description": "Section title for choosing the sync backend (Electrum or compact block filters) when importing a mnemonic."
+  },
+  "importMnemonicSyncBackendElectrum": "Electrum",
+  "@importMnemonicSyncBackendElectrum": {
+    "description": "Label for the Electrum sync backend option in the import-mnemonic sync method choice."
+  },
+  "importMnemonicSyncBackendCompactBlockFilters": "Compact Block Filters (Beta)",
+  "@importMnemonicSyncBackendCompactBlockFilters": {
+    "description": "Label for the compact-block-filters sync backend option in the import-mnemonic sync method choice."
+  },
+  "importMnemonicBirthdayTitle": "Wallet birthday",
+  "@importMnemonicBirthdayTitle": {
+    "description": "Section title for choosing the wallet birthday used for compact-block-filter recovery when importing a mnemonic."
+  },
+  "importMnemonicBirthdayDescription": "Pick the earliest date this wallet may have been used, or scan from the very beginning of the blockchain.",
+  "@importMnemonicBirthdayDescription": {
+    "description": "Description shown under the wallet birthday section title when importing a mnemonic with compact block filters."
+  },
+  "importMnemonicBirthdayGenesisLabel": "Earliest possible",
+  "@importMnemonicBirthdayGenesisLabel": {
+    "description": "Label for the option to use the network's genesis block as the wallet birthday when importing a mnemonic."
+  },
+  "importMnemonicBirthdayPickDate": "Choose a date",
+  "@importMnemonicBirthdayPickDate": {
+    "description": "Label for the button that opens a date picker for the wallet birthday when importing a mnemonic."
+  },
+  "importMnemonicBirthdayCheckpointError": "Couldn't verify the wallet's start date. Try again or use the earliest possible date.",
+  "@importMnemonicBirthdayCheckpointError": {
+    "description": "Error shown when the requested wallet birthday could not be resolved to a block checkpoint while importing a mnemonic."
+  },
+  "importMnemonicBirthdayRetry": "Try again",
+  "@importMnemonicBirthdayRetry": {
+    "description": "Button to retry resolving the wallet birthday checkpoint with the same date when importing a mnemonic."
+  },
+  "importMnemonicBirthdayUseGenesis": "Use earliest date",
+  "@importMnemonicBirthdayUseGenesis": {
+    "description": "Button to fall back to the earliest possible birthday (genesis) and retry the import after a checkpoint resolution failure."
+  },
+  "importWatchOnlySyncBackendTitle": "Sync method",
+  "@importWatchOnlySyncBackendTitle": {
+    "description": "Section title for choosing the sync backend (Electrum or compact block filters) when importing a watch-only wallet."
+  },
+  "importWatchOnlySyncBackendElectrum": "Electrum",
+  "@importWatchOnlySyncBackendElectrum": {
+    "description": "Label for the Electrum sync backend option in the watch-only import sync method choice."
+  },
+  "importWatchOnlySyncBackendCompactBlockFilters": "Compact Block Filters (Beta)",
+  "@importWatchOnlySyncBackendCompactBlockFilters": {
+    "description": "Label for the compact-block-filters sync backend option in the watch-only import sync method choice."
+  },
+  "importWatchOnlyBirthdayTitle": "Wallet birthday",
+  "@importWatchOnlyBirthdayTitle": {
+    "description": "Section title for choosing the wallet birthday used for compact-block-filter recovery when importing a watch-only wallet."
+  },
+  "importWatchOnlyBirthdayDescription": "Pick the earliest date this wallet may have been used, or scan from the very beginning of the blockchain.",
+  "@importWatchOnlyBirthdayDescription": {
+    "description": "Description shown under the wallet birthday section title when importing a watch-only wallet with compact block filters."
+  },
+  "importWatchOnlyBirthdayGenesisLabel": "Earliest possible",
+  "@importWatchOnlyBirthdayGenesisLabel": {
+    "description": "Label for the option to use the network's genesis block as the wallet birthday when importing a watch-only wallet."
+  },
+  "importWatchOnlyBirthdayPickDate": "Choose a date",
+  "@importWatchOnlyBirthdayPickDate": {
+    "description": "Label for the button that opens a date picker for the wallet birthday when importing a watch-only wallet."
+  },
+  "importWatchOnlyErrorBirthdayCheckpoint": "Couldn't verify the wallet's start date. Try again or use the earliest possible date.",
+  "@importWatchOnlyErrorBirthdayCheckpoint": {
+    "description": "Error shown when the requested wallet birthday could not be resolved to a block checkpoint while importing a watch-only wallet."
+  },
+  "importWatchOnlyBirthdayRetry": "Try again",
+  "@importWatchOnlyBirthdayRetry": {
+    "description": "Button to retry resolving the wallet birthday checkpoint with the same date when importing a watch-only wallet."
+  },
+  "importWatchOnlyBirthdayUseGenesis": "Use earliest date",
+  "@importWatchOnlyBirthdayUseGenesis": {
+    "description": "Button to fall back to the earliest possible birthday (genesis) and retry the watch-only import after a checkpoint resolution failure."
+  },
+  "walletSyncProgressPeerHandshakes": "Peer handshakes: {count}",
+  "@walletSyncProgressPeerHandshakes": {
+    "description": "Number of successful compact block filter peer handshakes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

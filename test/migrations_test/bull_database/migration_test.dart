@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v13.dart' as v13;
+import 'generated/schema_v14.dart' as v14;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -115,6 +117,94 @@ void main() {
           await newDb.select(newDb.electrumServers).get(),
         );
         expect(expectedNewSwapsData, await newDb.select(newDb.swaps).get());
+      },
+    );
+  });
+
+  test('migration from v13 to v14 backfills CBF defaults', () async {
+    final oldWalletMetadatasData = <v13.WalletMetadatasData>[
+      v13.WalletMetadatasData(
+        id: '[abcdef12/84h/0h/0h]',
+        masterFingerprint: 'abcdef12',
+        xpubFingerprint: '12345678',
+        isEncryptedVaultTested: 0,
+        isPhysicalBackupTested: 0,
+        xpub: 'xpub-fake',
+        externalPublicDescriptor: 'wpkh([abcdef12/84h/0h/0h]xpub-fake/0/*)',
+        internalPublicDescriptor: 'wpkh([abcdef12/84h/0h/0h]xpub-fake/1/*)',
+        signer: 'local',
+        isDefault: 1,
+      ),
+    ];
+    final oldSettingsData = <v13.SettingsData>[
+      const v13.SettingsData(
+        id: 1,
+        environment: 'mainnet',
+        bitcoinUnit: 'sats',
+        language: 'unitedStatesEnglish',
+        currency: 'USD',
+        hideAmounts: 0,
+        isSuperuser: 0,
+        isDevModeEnabled: 0,
+        useTorProxy: 0,
+        torProxyPort: 9050,
+        themeMode: 'system',
+        isErrorReportingEnabled: 0,
+      ),
+    ];
+    final expectedNewWalletMetadatasData = <v14.WalletMetadatasData>[
+      v14.WalletMetadatasData(
+        id: '[abcdef12/84h/0h/0h]',
+        masterFingerprint: 'abcdef12',
+        xpubFingerprint: '12345678',
+        isEncryptedVaultTested: 0,
+        isPhysicalBackupTested: 0,
+        xpub: 'xpub-fake',
+        externalPublicDescriptor: 'wpkh([abcdef12/84h/0h/0h]xpub-fake/0/*)',
+        internalPublicDescriptor: 'wpkh([abcdef12/84h/0h/0h]xpub-fake/1/*)',
+        signer: 'local',
+        isDefault: 1,
+        bitcoinSyncBackend: 'electrum',
+        lastReceiveAddressIndex: 0,
+      ),
+    ];
+    final expectedNewSettingsData = <v14.SettingsData>[
+      const v14.SettingsData(
+        id: 1,
+        environment: 'mainnet',
+        bitcoinUnit: 'sats',
+        language: 'unitedStatesEnglish',
+        currency: 'USD',
+        hideAmounts: 0,
+        isSuperuser: 0,
+        isDevModeEnabled: 0,
+        useTorProxy: 0,
+        torProxyPort: 9050,
+        themeMode: 'system',
+        isErrorReportingEnabled: 0,
+        useCompactBlockFiltersByDefault: 0,
+      ),
+    ];
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 13,
+      newVersion: 14,
+      createOld: v13.DatabaseAtV13.new,
+      createNew: v14.DatabaseAtV14.new,
+      openTestedDatabase: SqliteDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insertAll(oldDb.walletMetadatas, oldWalletMetadatasData);
+        batch.insertAll(oldDb.settings, oldSettingsData);
+      },
+      validateItems: (newDb) async {
+        expect(
+          expectedNewWalletMetadatasData,
+          await newDb.select(newDb.walletMetadatas).get(),
+        );
+        expect(
+          expectedNewSettingsData,
+          await newDb.select(newDb.settings).get(),
+        );
       },
     );
   });

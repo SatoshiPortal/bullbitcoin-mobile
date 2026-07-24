@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
@@ -14,10 +15,15 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_birthday_checkpoint.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/resolve_wallet_birthday_checkpoint_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -59,7 +65,24 @@ class _MockTorStatus extends Mock implements TorStatusUsecase {}
 
 class _MockTorConfig extends Mock implements TorConfigPort {}
 
+class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+
+class _MockCheckCompactBlockFiltersAvailableUsecase extends Mock
+    implements CheckCompactBlockFiltersAvailableUsecase {}
+
+class _MockResolveWalletBirthdayCheckpointUsecase extends Mock
+    implements ResolveWalletBirthdayCheckpointUsecase {}
+
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
+
+SettingsEntity _buildSettings({bool useCompactBlockFiltersByDefault = false}) {
+  return SettingsEntity(
+    environment: Environment.mainnet,
+    bitcoinUnit: BitcoinUnit.sats,
+    currencyCode: 'USD',
+    useCompactBlockFiltersByDefault: useCompactBlockFiltersByDefault,
+  );
+}
 
 void main() {
   late _MockPickVault pickVault;
@@ -78,9 +101,16 @@ void main() {
   late _MockUpdateLatest updateLatest;
   late _MockTorStatus torStatus;
   late _MockTorConfig torConfig;
+  late _MockGetSettingsUsecase getSettings;
+  late _MockCheckCompactBlockFiltersAvailableUsecase
+  checkCompactBlockFiltersAvailable;
+  late _MockResolveWalletBirthdayCheckpointUsecase
+  resolveWalletBirthdayCheckpoint;
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
+    registerFallbackValue(WalletBirthdayLookupMode.recovery);
+    registerFallbackValue(DecryptedVault(mnemonic: const ['abandon']));
   });
 
   setUp(() {
@@ -100,6 +130,16 @@ void main() {
     updateLatest = _MockUpdateLatest();
     torStatus = _MockTorStatus();
     torConfig = _MockTorConfig();
+    getSettings = _MockGetSettingsUsecase();
+    checkCompactBlockFiltersAvailable =
+        _MockCheckCompactBlockFiltersAvailableUsecase();
+    resolveWalletBirthdayCheckpoint =
+        _MockResolveWalletBirthdayCheckpointUsecase();
+    // None of the existing tests below exercise the `recoverVault` vault
+    // decryption path (the only place these are consulted — see
+    // `RecoverBullBloc._onVaultDecryption`), but the constructor still
+    // requires them; default to the gate being off.
+    when(() => getSettings.execute()).thenAnswer((_) async => _buildSettings());
   });
 
   // The bloc constructor does not auto-dispatch any event, so unstubbed mocks
@@ -126,6 +166,9 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     torStatusUsecase: torStatus,
     torConfigPort: torConfig,
+    getSettingsUsecase: getSettings,
+    checkCompactBlockFiltersAvailableUsecase: checkCompactBlockFiltersAvailable,
+    resolveWalletBirthdayCheckpointUsecase: resolveWalletBirthdayCheckpoint,
   );
 
   group('OnVaultPasswordSet guard', () {
@@ -227,6 +270,186 @@ void main() {
           (bloc.state.failure as VaultRateLimitedFailure).retryIn,
           cooldown,
         );
+
+        await bloc.close();
+      },
+    );
+  });
+
+  group('CBF birthday picker (recoverVault flow)', () {
+    final decryptedVault = DecryptedVault(mnemonic: const ['abandon']);
+    final fakeCheckpoint = WalletBirthdayCheckpoint(
+      requestedBirthday: DateTime.utc(2020),
+      blockTimestamp: DateTime.utc(2020),
+      blockHeight: 600000,
+      blockHash: 'a' * 64,
+    );
+
+    setUp(() {
+      when(
+        () => decrypt.execute(
+          vault: any(named: 'vault'),
+          vaultKey: any(named: 'vaultKey'),
+        ),
+      ).thenReturn(Ok(decryptedVault));
+      when(
+        () =>
+            updateLatest.execute(decryptedVault: any(named: 'decryptedVault')),
+      ).thenAnswer((_) async => const Ok(null));
+    });
+
+    test('the preference on and CBF available pauses on '
+        'needsBitcoinBirthdaySelection — RestoreVaultUsecase is never called '
+        'yet', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => _buildSettings(useCompactBlockFiltersByDefault: true),
+      );
+      when(
+        () => checkCompactBlockFiltersAvailable.execute(),
+      ).thenAnswer((_) async => true);
+
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      bloc.add(const OnVaultDecryption(vaultKey: 'key'));
+      await bloc.stream.firstWhere((s) => s.needsBitcoinBirthdaySelection);
+
+      expect(bloc.state.decryptedVault, decryptedVault);
+      verifyNever(
+        () => restore.execute(
+          decryptedVault: any(named: 'decryptedVault'),
+          bitcoinBirthdayCheckpoint: any(named: 'bitcoinBirthdayCheckpoint'),
+        ),
+      );
+
+      await bloc.close();
+    });
+
+    test('the preference off restores and starts immediately, exactly as '
+        'before this feature existed', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => _buildSettings(useCompactBlockFiltersByDefault: false),
+      );
+      when(
+        () => restore.execute(
+          decryptedVault: any(named: 'decryptedVault'),
+          bitcoinBirthdayCheckpoint: any(named: 'bitcoinBirthdayCheckpoint'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      bloc.add(const OnVaultDecryption(vaultKey: 'key'));
+      await bloc.stream.firstWhere((s) => s.isFlowFinished);
+
+      expect(bloc.state.needsBitcoinBirthdaySelection, isFalse);
+      verify(
+        () => restore.execute(
+          decryptedVault: decryptedVault,
+          bitcoinBirthdayCheckpoint: null,
+        ),
+      ).called(1);
+      verify(() => walletBloc.add(const WalletStarted())).called(1);
+      verifyNever(() => checkCompactBlockFiltersAvailable.execute());
+
+      await bloc.close();
+    });
+
+    test('resolveBitcoinBirthdayCheckpoint always resolves with '
+        'WalletBirthdayLookupMode.recovery', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => _buildSettings(useCompactBlockFiltersByDefault: true),
+      );
+      when(
+        () => checkCompactBlockFiltersAvailable.execute(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => resolveWalletBirthdayCheckpoint.execute(
+          requestedBirthday: any(named: 'requestedBirthday'),
+          isTestnet: any(named: 'isTestnet'),
+          lookupMode: any(named: 'lookupMode'),
+        ),
+      ).thenAnswer((_) async => Ok(fakeCheckpoint));
+
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      bloc.add(const OnVaultDecryption(vaultKey: 'key'));
+      await bloc.stream.firstWhere((s) => s.needsBitcoinBirthdaySelection);
+
+      final requestedBirthday = DateTime.utc(2015);
+      final result = await bloc.resolveBitcoinBirthdayCheckpoint(
+        requestedBirthday,
+      );
+
+      expect(result, isA<Ok<WalletBirthdayCheckpoint, dynamic>>());
+      verify(
+        () => resolveWalletBirthdayCheckpoint.execute(
+          requestedBirthday: requestedBirthday,
+          isTestnet: false,
+          lookupMode: WalletBirthdayLookupMode.recovery,
+        ),
+      ).called(1);
+
+      await bloc.close();
+    });
+
+    test('OnBitcoinBirthdayResolved with a checkpoint resumes restore, passing '
+        'it through to RestoreVaultUsecase, and starts the real WalletBloc '
+        'sync on success', () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => _buildSettings(useCompactBlockFiltersByDefault: true),
+      );
+      when(
+        () => checkCompactBlockFiltersAvailable.execute(),
+      ).thenAnswer((_) async => true);
+
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      bloc.add(const OnVaultDecryption(vaultKey: 'key'));
+      await bloc.stream.firstWhere((s) => s.needsBitcoinBirthdaySelection);
+
+      when(
+        () => restore.execute(
+          decryptedVault: any(named: 'decryptedVault'),
+          bitcoinBirthdayCheckpoint: any(named: 'bitcoinBirthdayCheckpoint'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+
+      bloc.add(OnBitcoinBirthdayResolved(checkpoint: fakeCheckpoint));
+      await bloc.stream.firstWhere((s) => s.isFlowFinished);
+
+      verify(
+        () => restore.execute(
+          decryptedVault: decryptedVault,
+          bitcoinBirthdayCheckpoint: fakeCheckpoint,
+        ),
+      ).called(1);
+      verify(() => walletBloc.add(const WalletStarted())).called(1);
+
+      await bloc.close();
+    });
+
+    test(
+      'OnBitcoinBirthdayResolved with no checkpoint (user backed out of the '
+      'picker) aborts — no wallet is ever restored, never a partial pair',
+      () async {
+        when(() => getSettings.execute()).thenAnswer(
+          (_) async => _buildSettings(useCompactBlockFiltersByDefault: true),
+        );
+        when(
+          () => checkCompactBlockFiltersAvailable.execute(),
+        ).thenAnswer((_) async => true);
+
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        bloc.add(const OnVaultDecryption(vaultKey: 'key'));
+        await bloc.stream.firstWhere((s) => s.needsBitcoinBirthdaySelection);
+
+        bloc.add(const OnBitcoinBirthdayResolved());
+        await bloc.stream.firstWhere((s) => !s.needsBitcoinBirthdaySelection);
+
+        expect(bloc.state.isFlowFinished, isFalse);
+        verifyNever(
+          () => restore.execute(
+            decryptedVault: any(named: 'decryptedVault'),
+            bitcoinBirthdayCheckpoint: any(named: 'bitcoinBirthdayCheckpoint'),
+          ),
+        );
+        verifyNever(() => walletBloc.add(const WalletStarted()));
 
         await bloc.close();
       },

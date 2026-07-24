@@ -11,10 +11,10 @@ import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.da
 /// WARNING: bumping this re-shows the wizard. The bloc stages choices
 /// in prefs on completion; `ApplyPendingWizardChoicesUsecase` flushes
 /// them to SQLite via `setLanguage` / `setThemeMode` / `setCurrency` /
-/// `setErrorReportingEnabled` — but only for fields the user explicitly
-/// touched (see [WizardChoices.touched]). A user who taps Skip without
-/// changing anything therefore preserves their existing settings
-/// unchanged.
+/// `setErrorReportingEnabled` / `setUseCompactBlockFiltersByDefault` —
+/// but only for fields the user explicitly touched (see
+/// [WizardChoices.touched]). A user who taps Skip without changing
+/// anything therefore preserves their existing settings unchanged.
 const int kCurrentWizardVersion = 1;
 
 class WizardRepositoryImpl implements WizardRepository {
@@ -51,6 +51,11 @@ class WizardRepositoryImpl implements WizardRepository {
         consent != null) {
       await _datasource.writePendingErrorReporting(consent);
     }
+    if (choices.touched.contains(WizardField.privateBitcoinSync)) {
+      await _datasource.writePendingPrivateBitcoinSync(
+        choices.privateBitcoinSync,
+      );
+    }
   }
 
   /// Returns `null` when nothing is staged OR when the staged blob was
@@ -63,10 +68,13 @@ class WizardRepositoryImpl implements WizardRepository {
     final themeName = await _datasource.readPendingThemeMode();
     final currency = await _datasource.readPendingCurrency();
     final errorReporting = await _datasource.readPendingErrorReporting();
+    final privateBitcoinSync = await _datasource
+        .readPendingPrivateBitcoinSync();
     if (languageName == null &&
         themeName == null &&
         currency == null &&
-        errorReporting == null) {
+        errorReporting == null &&
+        privateBitcoinSync == null) {
       return null;
     }
     final pendingVersion = await _datasource.readPendingVersion() ?? 0;
@@ -79,6 +87,9 @@ class WizardRepositoryImpl implements WizardRepository {
     if (themeName != null) touched.add(WizardField.themeMode);
     if (currency != null) touched.add(WizardField.defaultCurrency);
     if (errorReporting != null) touched.add(WizardField.reportingConsent);
+    if (privateBitcoinSync != null) {
+      touched.add(WizardField.privateBitcoinSync);
+    }
     return WizardChoices(
       language: languageName == null
           ? Language.unitedStatesEnglish
@@ -88,6 +99,7 @@ class WizardRepositoryImpl implements WizardRepository {
           : AppThemeMode.fromName(themeName),
       defaultCurrency: currency ?? 'USD',
       reportingConsent: errorReporting,
+      privateBitcoinSync: privateBitcoinSync ?? false,
       touched: touched,
     );
   }

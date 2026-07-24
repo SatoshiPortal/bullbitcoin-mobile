@@ -35,6 +35,9 @@ void main() {
     when(
       () => settings.setErrorReportingEnabled(any()),
     ).thenAnswer((_) async {});
+    when(
+      () => settings.setUseCompactBlockFiltersByDefault(any()),
+    ).thenAnswer((_) async {});
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -67,8 +70,43 @@ void main() {
       verify(() => settings.setErrorReportingEnabled(true)).called(1);
       verifyNever(() => settings.setLanguage(any()));
       verifyNever(() => settings.setCurrency(any()));
+      verifyNever(() => settings.setUseCompactBlockFiltersByDefault(any()));
       verify(() => wizard.clearPending()).called(1);
       verify(() => wizard.markComplete()).called(1);
+    },
+  );
+
+  test('flushes privateBitcoinSync only when touched', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        privateBitcoinSync: true,
+        touched: {WizardField.privateBitcoinSync},
+      ),
+    );
+
+    await usecase.execute();
+
+    verify(() => settings.setUseCompactBlockFiltersByDefault(true)).called(1);
+    verifyNever(() => settings.setThemeMode(any()));
+    verifyNever(() => settings.setLanguage(any()));
+    verifyNever(() => settings.setCurrency(any()));
+    verifyNever(() => settings.setErrorReportingEnabled(any()));
+  });
+
+  test(
+    'does not flush privateBitcoinSync when untouched, even if true',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          themeMode: AppThemeMode.dark,
+          privateBitcoinSync: true,
+          touched: {WizardField.themeMode},
+        ),
+      );
+
+      await usecase.execute();
+
+      verifyNever(() => settings.setUseCompactBlockFiltersByDefault(any()));
     },
   );
 
@@ -91,18 +129,20 @@ void main() {
     },
   );
 
-  test('flushes all four fields when all are touched', () async {
+  test('flushes all five fields when all are touched', () async {
     when(() => wizard.readPending()).thenAnswer(
       (_) async => const WizardChoices(
         language: Language.franceFrench,
         themeMode: AppThemeMode.light,
         defaultCurrency: 'CAD',
         reportingConsent: false,
+        privateBitcoinSync: true,
         touched: {
           WizardField.language,
           WizardField.themeMode,
           WizardField.defaultCurrency,
           WizardField.reportingConsent,
+          WizardField.privateBitcoinSync,
         },
       ),
     );
@@ -113,6 +153,7 @@ void main() {
     verify(() => settings.setThemeMode(AppThemeMode.light)).called(1);
     verify(() => settings.setCurrency('CAD')).called(1);
     verify(() => settings.setErrorReportingEnabled(false)).called(1);
+    verify(() => settings.setUseCompactBlockFiltersByDefault(true)).called(1);
     verify(() => wizard.clearPending()).called(1);
     verify(() => wizard.markComplete()).called(1);
   });

@@ -10,7 +10,10 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/await_cbf_sync_inactive_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 class FakeBoltzSwapRepository implements BoltzSwapRepository {
   Swap swap;
@@ -157,10 +160,36 @@ class FakeFeesRepository implements FeesRepository {
 }
 
 class FakeWalletAddressRepository implements WalletAddressRepository {
+  /// Records the order in which this fake and any other collaborator are
+  /// invoked (shared with a mocked [AwaitCbfSyncInactiveUsecase]) so a test
+  /// can assert the CBF wait always happens first.
+  final List<String> callOrder;
+  String? generatedAddress = 'lq1qqgenerated';
+
+  FakeWalletAddressRepository({List<String>? callOrder})
+    : callOrder = callOrder ?? [];
+
+  @override
+  Future<WalletAddress> generateNewReceiveAddress({
+    required String walletId,
+  }) async {
+    callOrder.add('generateNewReceiveAddress');
+    return WalletAddress(
+      walletId: walletId,
+      index: 0,
+      address: generatedAddress!,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName}');
 }
+
+class _MockAwaitCbfSyncInactiveUsecase extends Mock
+    implements AwaitCbfSyncInactiveUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -176,6 +205,20 @@ void main() {
             receiveWalletId: 'w1',
             invoice: 'lnbc10u1invoice',
             receiveAddress: 'lq1qqaddress',
+            fees: const SwapFees(claimFee: 100),
+          )
+          as LnReceiveSwap;
+
+  LnReceiveSwap claimableSwapWithoutReceiveAddress() =>
+      Swap.lnReceive(
+            id: 'rcv123456789',
+            keyIndex: 0,
+            type: SwapType.lightningToLiquid,
+            status: SwapStatus.claimable,
+            environment: Environment.mainnet,
+            creationTime: DateTime(2026, 6, 12),
+            receiveWalletId: 'w1',
+            invoice: 'lnbc10u1invoice',
             fees: const SwapFees(claimFee: 100),
           )
           as LnReceiveSwap;
@@ -197,13 +240,46 @@ void main() {
           )
           as LnSendSwap;
 
-  SwapWatcherService watcher(FakeBoltzSwapRepository repo) =>
-      SwapWatcherService(
-        boltzRepo: repo,
-        walletAddressRepository: FakeWalletAddressRepository(),
-        feesRepository: FakeFeesRepository(),
-        autoStart: false,
-      );
+  LnSendSwap refundableSwapWithoutRefundAddress() =>
+      Swap.lnSend(
+            id: 'snd123456789',
+            keyIndex: 0,
+            type: SwapType.liquidToLightning,
+            status: SwapStatus.refundable,
+            environment: Environment.mainnet,
+            creationTime: DateTime(2026, 6, 12),
+            sendWalletId: 'w1',
+            invoice: 'lnbc10u1invoice',
+            paymentAddress: 'lq1qqlockup',
+            paymentAmount: 10000,
+            sendTxid: 'lockup-txid',
+          )
+          as LnSendSwap;
+
+  SwapWatcherService watcher(
+    FakeBoltzSwapRepository repo, {
+    WalletAddressRepository? walletAddressRepository,
+    AwaitCbfSyncInactiveUsecase? awaitCbfSyncInactiveUsecase,
+  }) {
+    AwaitCbfSyncInactiveUsecase awaitCbfSyncInactive;
+    if (awaitCbfSyncInactiveUsecase != null) {
+      awaitCbfSyncInactive = awaitCbfSyncInactiveUsecase;
+    } else {
+      final mock = _MockAwaitCbfSyncInactiveUsecase();
+      when(
+        () => mock.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async {});
+      awaitCbfSyncInactive = mock;
+    }
+    return SwapWatcherService(
+      boltzRepo: repo,
+      walletAddressRepository:
+          walletAddressRepository ?? FakeWalletAddressRepository(),
+      feesRepository: FakeFeesRepository(),
+      awaitCbfSyncInactiveUsecase: awaitCbfSyncInactive,
+      autoStart: false,
+    );
+  }
 
   group('claim execution', () {
     test(
@@ -334,6 +410,98 @@ void main() {
       await service.processSwap(repo.swap);
 
       expect(repo.refundCalls, 0);
+    });
+  });
+
+  group('CBF-safe address reveal', () {
+    test('claiming without a stored receive address awaits the active CBF '
+        'sync before deriving (and persisting) a new one', () async {
+      final callOrder = <String>[];
+      final awaitCbfSyncInactive = _MockAwaitCbfSyncInactiveUsecase();
+      when(
+        () => awaitCbfSyncInactive.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async {
+        callOrder.add('awaitCbfSyncInactive');
+      });
+      final addressRepository = FakeWalletAddressRepository(
+        callOrder: callOrder,
+      );
+      final repo = FakeBoltzSwapRepository(
+        claimableSwapWithoutReceiveAddress(),
+      );
+      final service = watcher(
+        repo,
+        walletAddressRepository: addressRepository,
+        awaitCbfSyncInactiveUsecase: awaitCbfSyncInactive,
+      );
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => awaitCbfSyncInactive.execute(walletId: 'w1')).called(1);
+      expect(callOrder, ['awaitCbfSyncInactive', 'generateNewReceiveAddress']);
+      expect(
+        (repo.swap as LnReceiveSwap).receiveAddress,
+        addressRepository.generatedAddress,
+      );
+      expect(repo.claimCalls, 1);
+    });
+
+    test('refunding without a stored refund address awaits the active CBF '
+        'sync before deriving (and persisting) a new one', () async {
+      final callOrder = <String>[];
+      final awaitCbfSyncInactive = _MockAwaitCbfSyncInactiveUsecase();
+      when(
+        () => awaitCbfSyncInactive.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async {
+        callOrder.add('awaitCbfSyncInactive');
+      });
+      final addressRepository = FakeWalletAddressRepository(
+        callOrder: callOrder,
+      );
+      final repo = FakeBoltzSwapRepository(
+        refundableSwapWithoutRefundAddress(),
+      );
+      final service = watcher(
+        repo,
+        walletAddressRepository: addressRepository,
+        awaitCbfSyncInactiveUsecase: awaitCbfSyncInactive,
+      );
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => awaitCbfSyncInactive.execute(walletId: 'w1')).called(1);
+      expect(callOrder, ['awaitCbfSyncInactive', 'generateNewReceiveAddress']);
+      expect(repo.refundCalls, 1);
+    });
+
+    test('a stored receive address never triggers the CBF wait or a new '
+        'address derivation', () async {
+      final callOrder = <String>[];
+      final awaitCbfSyncInactive = _MockAwaitCbfSyncInactiveUsecase();
+      when(
+        () => awaitCbfSyncInactive.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async {
+        callOrder.add('awaitCbfSyncInactive');
+      });
+      final addressRepository = FakeWalletAddressRepository(
+        callOrder: callOrder,
+      );
+      final repo = FakeBoltzSwapRepository(claimableSwap());
+      final service = watcher(
+        repo,
+        walletAddressRepository: addressRepository,
+        awaitCbfSyncInactiveUsecase: awaitCbfSyncInactive,
+      );
+
+      await service.processSwap(repo.swap);
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(
+        () => awaitCbfSyncInactive.execute(walletId: any(named: 'walletId')),
+      );
+      expect(callOrder, isEmpty);
     });
   });
 }

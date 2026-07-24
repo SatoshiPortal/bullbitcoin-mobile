@@ -42,9 +42,14 @@ class BumpFeeUsecase {
         txid: txid,
         newFeeRate: newFeeRate,
       );
+      // Passing walletId routes the replacement transaction through the
+      // same local-persistence path as any other broadcast (see
+      // UnconfirmedBitcoinTransactionRepository's RBF/replacement note) —
+      // no separate eviction handling is invented here.
       final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
         psbt,
         isPsbt: true,
+        walletId: walletId,
       );
       return Ok(broadcastedTxid);
     } on bdk.FeeRateTooLowCreateTxException {

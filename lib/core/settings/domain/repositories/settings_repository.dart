@@ -5,6 +5,14 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 abstract class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
+  /// Emits every time [setUseTorProxy] is called, with the new value.
+  /// `CbfWalletDatasource` subscribes to this (via `WalletLocator`) to
+  /// cancel every active compact-filter session the instant the user
+  /// enables Tor mid-session — CBF never routes through Tor (V1 has no
+  /// `socks5Proxy` support for it), so a session left running would keep
+  /// making direct P2P connections against the user's expectation.
+  Stream<bool> get torProxyChangeStream;
+
   Future<void> close();
 
   Future<void> store({
@@ -22,6 +30,7 @@ abstract class SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    bool useCompactBlockFiltersByDefault = false,
   });
 
   Future<SettingsEntity> fetch();
@@ -52,4 +61,10 @@ abstract class SettingsRepository {
     String? username,
     String? password,
   });
+
+  /// Global default sync backend choice for a newly created default
+  /// Bitcoin wallet. Read by `CreateDefaultWalletsUsecase`; never touches
+  /// an already-existing wallet. Set by the wizard's privacy step, or by
+  /// `ApplyPendingWizardChoicesUsecase` only when the user touched it.
+  Future<void> setUseCompactBlockFiltersByDefault(bool enabled);
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/mnemonic_page.dart';
@@ -20,7 +22,7 @@ enum ImportMnemonicRoute {
 class ImportMnemonicRouter {
   static final route = ShellRoute(
     builder: (context, state, child) => BlocProvider<ImportMnemonicCubit>(
-      create: (_) => locator<ImportMnemonicCubit>(),
+      create: (_) => locator<ImportMnemonicCubit>()..init(),
       child: child,
     ),
     routes: [
@@ -48,7 +50,17 @@ class ImportMnemonicRouter {
             listener: (context, state) {
               // Trigger wallet refresh before navigating to home
               context.read<WalletBloc>().add(const WalletStarted());
-              context.goNamed(WalletRoute.walletHome.name);
+              // Lands on the dedicated CBF sync screen instead of wallet
+              // home when the imported wallet opted into compact block
+              // filters; every other wallet keeps this exact navigation —
+              // see that helper.
+              unawaited(
+                WalletRouter.goToWalletHomeOrInitialSync(
+                  context,
+                  walletId: state.wallet!.id,
+                  isRecoveryOrImport: true,
+                ),
+              );
             },
             child: const SelectScriptTypePage(),
           );

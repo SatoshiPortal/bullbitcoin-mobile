@@ -14,12 +14,17 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_birthday_checkpoint.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/resolve_wallet_birthday_checkpoint_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_birthday_checkpoint_failure.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,6 +53,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final TorStatusUsecase _torStatusUsecase;
   final TorConfigPort _torConfigPort;
 
+  // The three collaborators below exist solely to gate/resolve the
+  // compact-block-filter birthday picker for the `recoverVault` flow — see
+  // `_onVaultDecryption` and `_onBitcoinBirthdayResolved`.
+  final GetSettingsUsecase _getSettingsUsecase;
+  final CheckCompactBlockFiltersAvailableUsecase
+  _checkCompactBlockFiltersAvailableUsecase;
+  final ResolveWalletBirthdayCheckpointUsecase
+  _resolveWalletBirthdayCheckpointUsecase;
+
   RecoverBullBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -67,6 +81,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._updateLatestEncryptedVaultTestUsecase,
     required this._torStatusUsecase,
     required this._torConfigPort,
+    required this._getSettingsUsecase,
+    required this._checkCompactBlockFiltersAvailableUsecase,
+    required this._resolveWalletBirthdayCheckpointUsecase,
   }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -76,6 +93,22 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnServerCheck>(_onServerCheck);
     on<OnTorInitialization>(_onTorInitialization);
     on<OnClearError>(_onClearError);
+    on<OnBitcoinBirthdayResolved>(_onBitcoinBirthdayResolved);
+  }
+
+  /// The single call point `WalletBirthdayPicker` (via `FetchVaultKeyPage`)
+  /// uses to resolve a candidate birthday while the user is still choosing
+  /// one. Mirrors `OnboardingBloc.resolveBitcoinBirthdayCheckpoint` — see
+  /// that method's doc for why this is a plain method rather than an
+  /// `on<Event>` handler. Always `WalletBirthdayLookupMode.recovery`: this
+  /// method only ever runs for the `recoverVault` flow.
+  Future<Result<WalletBirthdayCheckpoint, WalletBirthdayCheckpointFailure>>
+  resolveBitcoinBirthdayCheckpoint(DateTime requestedBirthday) {
+    return _resolveWalletBirthdayCheckpointUsecase.execute(
+      requestedBirthday: requestedBirthday,
+      isTestnet: state.pendingRestoreIsTestnet,
+      lookupMode: WalletBirthdayLookupMode.recovery,
+    );
   }
 
   Future<void> _onTorInitialization(
@@ -393,6 +426,24 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));
             return;
           }
+
+          // Same CBF-preference gate as `OnboardingBloc._onRecoverWalletClicked`
+          // — see that handler's doc.
+          final settings = await _getSettingsUsecase.execute();
+          final needsBirthdayPicker =
+              settings.useCompactBlockFiltersByDefault &&
+              await _checkCompactBlockFiltersAvailableUsecase.execute();
+
+          if (needsBirthdayPicker) {
+            emit(
+              state.copyWith(
+                needsBitcoinBirthdaySelection: true,
+                pendingRestoreIsTestnet: settings.environment.isTestnet,
+              ),
+            );
+            return;
+          }
+
           await _restoreAndStart(decryptedVault, emit);
           return;
         case RecoverBullFlow.secureVault:
@@ -417,10 +468,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // showed a balance/tx preview gated behind a manual "Continue" button.
   Future<void> _restoreAndStart(
     DecryptedVault decryptedVault,
-    Emitter<RecoverBullState> emit,
-  ) async {
+    Emitter<RecoverBullState> emit, {
+    WalletBirthdayCheckpoint? bitcoinBirthdayCheckpoint,
+  }) async {
     switch (await _restoreVaultUsecase.execute(
       decryptedVault: decryptedVault,
+      bitcoinBirthdayCheckpoint: bitcoinBirthdayCheckpoint,
     )) {
       case Ok():
         _walletBloc.add(const WalletStarted());
@@ -434,6 +487,33 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           ),
         );
     }
+  }
+
+  Future<void> _onBitcoinBirthdayResolved(
+    OnBitcoinBirthdayResolved event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    final decryptedVault = state.decryptedVault;
+    // Defensive only — `FetchVaultKeyPage` never dispatches this without
+    // first observing `needsBitcoinBirthdaySelection`, which is only ever
+    // set once `decryptedVault` is already in state.
+    if (decryptedVault == null) return;
+
+    if (event.checkpoint == null) {
+      // The user backed out of `WalletBirthdayPicker` (see its class doc)
+      // without a resolved checkpoint — no wallet is restored, never a
+      // partial (Bitcoin-only or Liquid-only) pair. `decryptedVault` stays
+      // in state so the page can offer to retry.
+      emit(state.copyWith(needsBitcoinBirthdaySelection: false));
+      return;
+    }
+
+    emit(state.copyWith(needsBitcoinBirthdaySelection: false, isLoading: true));
+    await _restoreAndStart(
+      decryptedVault,
+      emit,
+      bitcoinBirthdayCheckpoint: event.checkpoint,
+    );
   }
 
   Future<void> _onClearError(

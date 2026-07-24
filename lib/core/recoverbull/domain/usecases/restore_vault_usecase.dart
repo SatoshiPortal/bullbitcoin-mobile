@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_birthday_checkpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -20,6 +21,12 @@ class RestoreVaultUsecase {
   // the boundary, mapping any failure to a sanitized core failure.
   Future<Result<Null, RecoverBullCoreFailure>> execute({
     required DecryptedVault decryptedVault,
+    // Forwarded as-is to `CreateDefaultWalletsUsecase.execute` — see that
+    // param's own doc. `RecoverBullBloc` resolves this (via its own
+    // birthday-picker UI, `WalletBirthdayLookupMode.recovery`) only when the
+    // restored default Bitcoin wallet is about to opt into compact block
+    // filters; `null` otherwise, which this use-case never second-guesses.
+    WalletBirthdayCheckpoint? bitcoinBirthdayCheckpoint,
   }) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
@@ -30,6 +37,7 @@ class RestoreVaultUsecase {
 
       final restoredWallets = await _createDefaultWallets.execute(
         mnemonicWords: mnemonic.words,
+        bitcoinBirthdayCheckpoint: bitcoinBirthdayCheckpoint,
       );
 
       for (final wallet in restoredWallets) {

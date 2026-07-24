@@ -599,7 +599,17 @@ class BuildTransactionException extends BullException {
 /// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
 /// The message parameter is for debugging/logging only.
 class ConfirmTransactionException extends BullException {
-  ConfirmTransactionException(super.message, {this.isBroadcastFailure = false});
+  ConfirmTransactionException(
+    super.message, {
+    this.isBroadcastFailure = false,
+    this.isPayjoinDisabledForCbf = false,
+  });
 
   final bool isBroadcastFailure;
+
+  /// True when confirmation failed because Payjoin is disabled for the
+  /// current wallet's Compact Block Filters sync backend — see
+  /// `PayjoinDisabledForCbfException`. Lets the UI show a specific message
+  /// instead of the generic confirmation-failed one.
+  final bool isPayjoinDisabledForCbf;
 }

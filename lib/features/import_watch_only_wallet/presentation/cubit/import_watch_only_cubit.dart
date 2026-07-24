@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -15,18 +17,41 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
   final ImportWatchOnlyXpubUsecase _importWatchOnlyXpubUsecase;
   final ParseWatchOnlyInputUsecase _parseWatchOnlyInputUsecase;
+  final CheckCompactBlockFiltersAvailableUsecase
+  _checkCompactBlockFiltersAvailableUsecase;
 
   ImportWatchOnlyCubit({
     WatchOnlyWalletEntity? watchOnlyWallet,
     required this._importWatchOnlyDescriptorUsecase,
     required this._importWatchOnlyXpubUsecase,
     required this._parseWatchOnlyInputUsecase,
+    required this._checkCompactBlockFiltersAvailableUsecase,
   }) : super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
-  void init() {
+  Future<void> init() async {
     if (state.watchOnlyWallet != null) {
       emit(state.copyWith(watchOnlyWallet: state.watchOnlyWallet));
     }
+    final available = await _checkCompactBlockFiltersAvailableUsecase.execute();
+    if (isClosed) return;
+    emit(state.copyWith(isCbfAvailable: available));
+  }
+
+  void selectSyncBackend(BitcoinSyncBackend backend) =>
+      emit(state.copyWith(syncBackend: backend, failure: null));
+
+  /// `null` means "the earliest possible date" (this network's genesis
+  /// block) — see [ImportWatchOnlyState.birthday]'s own doc.
+  void updateBirthday(DateTime? birthday) =>
+      emit(state.copyWith(birthday: birthday, failure: null));
+
+  /// Falls back to the earliest possible birthday (genesis), which never
+  /// requires a network lookup, and retries the import — the recovery path
+  /// offered alongside a plain retry when [BirthdayCheckpointFailure] is
+  /// surfaced.
+  Future<void> retryImportWithGenesisBirthday() async {
+    updateBirthday(null);
+    await import();
   }
 
   void updateLabel(String label) {
@@ -52,9 +77,15 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     if (wallet is WatchOnlyDescriptorEntity) {
       result = await _importWatchOnlyDescriptorUsecase.execute(
         watchOnlyDescriptor: wallet,
+        requestedSyncBackend: state.syncBackend,
+        birthday: state.birthday,
       );
     } else if (wallet is WatchOnlyXpubEntity) {
-      result = await _importWatchOnlyXpubUsecase.execute(watchOnlyXpub: wallet);
+      result = await _importWatchOnlyXpubUsecase.execute(
+        watchOnlyXpub: wallet,
+        requestedSyncBackend: state.syncBackend,
+        birthday: state.birthday,
+      );
     } else {
       return;
     }

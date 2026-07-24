@@ -26,6 +26,7 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
     on<_WizardConsentPicked>(_onConsentPicked);
+    on<_WizardPrivacyPicked>(_onPrivacyPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
     on<_WizardCompleted>(_onCompleted);
   }
@@ -65,6 +66,14 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
         choices: state.choices.copyWith(
           reportingConsent: ConsentValue(event.consent),
         ),
+      ),
+    );
+  }
+
+  void _onPrivacyPicked(_WizardPrivacyPicked event, Emitter<WizardState> emit) {
+    emit(
+      state.copyWith(
+        choices: state.choices.copyWith(privateBitcoinSync: event.enabled),
       ),
     );
   }

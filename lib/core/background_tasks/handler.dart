@@ -2,10 +2,14 @@ import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_bitcoin_sync_backend_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -40,42 +44,15 @@ Future<bool> tasksHandler(String task) async {
     final locator = GetIt.asNewInstance();
     await AppLocator.setup(locator, sqlite);
 
-    final syncWalletUsecase = locator<SyncWalletUsecase>();
-    final getWalletsUsecase = locator<GetWalletsUsecase>();
-    final processOngoingSwapsUsecase = locator<ProcessOngoingSwapsUsecase>();
-
     final backgroundTask = BackgroundTask.fromName(task);
 
-    switch (backgroundTask) {
-      case BackgroundTask.bitcoinSync:
-        final wallets = await getWalletsUsecase.execute(onlyBitcoin: true);
-        for (final wallet in wallets) {
-          await syncWalletUsecase.execute(wallet);
-          log.fine('Bitcoin Wallet ${wallet.id} synced');
-        }
-      case BackgroundTask.liquidSync:
-        final wallets = await getWalletsUsecase.execute(onlyLiquid: true);
-        for (final wallet in wallets) {
-          await syncWalletUsecase.execute(wallet);
-          log.fine('Liquid Wallet ${wallet.id} synced');
-        }
-      case BackgroundTask.swapsSync:
-        final wallets = await getWalletsUsecase.execute();
-        if (wallets.isEmpty) {
-          log.warning('No wallets to sync');
-        } else {
-          // Poll + act to completion: the BG isolate dies right after this
-          // returns, so a websocket-based restart would never see an event.
-          // Bounded to respect the iOS background budget.
-          await processOngoingSwapsUsecase.execute().timeout(
-            const Duration(seconds: 25),
-            onTimeout: () =>
-                log.warning('Swaps background processing hit time budget'),
-          );
-        }
-      case BackgroundTask.logsPrune:
-        await log.prune();
-    }
+    await runBackgroundTask(
+      backgroundTask,
+      getWalletsUsecase: locator<GetWalletsUsecase>(),
+      syncWalletUsecase: locator<SyncWalletUsecase>(),
+      getBitcoinSyncBackendUsecase: locator<GetBitcoinSyncBackendUsecase>(),
+      processOngoingSwapsUsecase: locator<ProcessOngoingSwapsUsecase>(),
+    );
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
     log.config('Background task $task completed in $elapsedTime seconds');
@@ -100,5 +77,71 @@ Future<bool> tasksHandler(String task) async {
     // (see `_enqueue` in logger.dart), so it can't change the return
     // value or throw past the `finally`.
     await log.flush();
+  }
+}
+
+/// The dispatch table for a single [BackgroundTask] run, split out of
+/// [tasksHandler] so it can be exercised directly in tests with fake
+/// use-cases instead of the real GetIt/sqlite-isolate wiring above.
+@visibleForTesting
+Future<void> runBackgroundTask(
+  BackgroundTask backgroundTask, {
+  required GetWalletsUsecase getWalletsUsecase,
+  required SyncWalletUsecase syncWalletUsecase,
+  required GetBitcoinSyncBackendUsecase getBitcoinSyncBackendUsecase,
+  required ProcessOngoingSwapsUsecase processOngoingSwapsUsecase,
+}) async {
+  switch (backgroundTask) {
+    case BackgroundTask.bitcoinSync:
+      final wallets = await getWalletsUsecase.execute(onlyBitcoin: true);
+      for (final wallet in wallets) {
+        final backendResult = await getBitcoinSyncBackendUsecase.execute(
+          walletId: wallet.id,
+        );
+        final isCompactBlockFilters = switch (backendResult) {
+          Ok(:final value) => value == BitcoinSyncBackend.compactBlockFilters,
+          Err() => false,
+        };
+        if (isCompactBlockFilters) {
+          // Compact block filters is foreground-only (see
+          // SyncWalletUsecase's allowCompactBlockFilters doc): never route
+          // a CBF-configured wallet through Electrum, and never open its
+          // BDK database, from the background isolate.
+          log.fine(
+            'Background Bitcoin sync skipped for CBF wallet ${wallet.id}',
+          );
+          continue;
+        }
+        // Bypasses the CBF-aware router and forces the legacy Electrum
+        // sync directly, which is safe here since the wallet above was
+        // confirmed to be Electrum-backed.
+        await syncWalletUsecase.execute(
+          wallet,
+          allowCompactBlockFilters: false,
+        );
+        log.fine('Bitcoin Wallet ${wallet.id} synced');
+      }
+    case BackgroundTask.liquidSync:
+      final wallets = await getWalletsUsecase.execute(onlyLiquid: true);
+      for (final wallet in wallets) {
+        await syncWalletUsecase.execute(wallet);
+        log.fine('Liquid Wallet ${wallet.id} synced');
+      }
+    case BackgroundTask.swapsSync:
+      final wallets = await getWalletsUsecase.execute();
+      if (wallets.isEmpty) {
+        log.warning('No wallets to sync');
+      } else {
+        // Poll + act to completion: the BG isolate dies right after this
+        // returns, so a websocket-based restart would never see an event.
+        // Bounded to respect the iOS background budget.
+        await processOngoingSwapsUsecase.execute().timeout(
+          const Duration(seconds: 25),
+          onTimeout: () =>
+              log.warning('Swaps background processing hit time budget'),
+        );
+      }
+    case BackgroundTask.logsPrune:
+      await log.prune();
   }
 }

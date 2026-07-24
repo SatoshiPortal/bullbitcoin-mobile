@@ -14,6 +14,7 @@ class WalletCard extends StatelessWidget {
     required this.balanceSat,
     this.onTap,
     this.isSyncing = false,
+    this.syncProgressPercent,
     this.fiatCurrency,
   });
 
@@ -22,6 +23,12 @@ class WalletCard extends StatelessWidget {
   final String description;
   final int balanceSat;
   final bool isSyncing;
+
+  /// A 0-100 determinate sync estimate, when the active backend reports
+  /// one (compact block filters); null while indeterminate (Electrum, or
+  /// no estimate reported yet). Ignored when [isSyncing] is false.
+  final double? syncProgressPercent;
+
   final void Function()? onTap;
   final String? fiatCurrency;
 
@@ -111,12 +118,21 @@ class WalletCard extends StatelessWidget {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: FadingLinearProgress(
-                    trigger: isSyncing,
-                    backgroundColor: context.appColors.transparent,
-                    foregroundColor: context.appColors.secondary,
-                    height: 3.0,
-                  ),
+                  child: isSyncing && syncProgressPercent != null
+                      ? SizedBox(
+                          height: 3.0,
+                          child: LinearProgressIndicator(
+                            value: (syncProgressPercent! / 100).clamp(0.0, 1.0),
+                            backgroundColor: context.appColors.transparent,
+                            color: context.appColors.secondary,
+                          ),
+                        )
+                      : FadingLinearProgress(
+                          trigger: isSyncing,
+                          backgroundColor: context.appColors.transparent,
+                          foregroundColor: context.appColors.secondary,
+                          height: 3.0,
+                        ),
                 ),
               ],
             ),

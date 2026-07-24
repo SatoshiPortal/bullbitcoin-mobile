@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/domain/electrum_broadcast_error_classifier.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
@@ -28,6 +29,7 @@ class BitcoinBlockchainRepository {
       ),
       operation: (connection) =>
           _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
+      isTransient: isTransientBroadcastError,
     );
   }
 
@@ -44,6 +46,7 @@ class BitcoinBlockchainRepository {
         Uint8List.fromList(transaction),
         connection: connection,
       ),
+      isTransient: isTransientBroadcastError,
     );
   }
 }

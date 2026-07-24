@@ -221,8 +221,9 @@ class WalletMetadataService {
   }
 
   static Future<WalletMetadataModel> fromDescriptor(
-    WatchOnlyDescriptorEntity entity,
-  ) async {
+    WatchOnlyDescriptorEntity entity, {
+    DateTime? birthday,
+  }) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: entity.masterFingerprint,
@@ -242,6 +243,7 @@ class WalletMetadataService {
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: entity.label,
+      birthday: birthday,
     );
   }
 }

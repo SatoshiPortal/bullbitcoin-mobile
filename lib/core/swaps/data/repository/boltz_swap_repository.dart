@@ -539,10 +539,11 @@ class BoltzSwapRepository {
       swapMasterKey.fingerprint,
       current + count,
     );
-    log.info(
-      'SWAP_KEY: reserved index $current (count=$count) '
-      'fp=${swapMasterKey.fingerprint}',
-    );
+    // The swap master key's fingerprint is deliberately omitted: it is a
+    // stable per-wallet identifier derived from the seed and must not
+    // appear in logs, which can be shared to support or forwarded to
+    // Sentry breadcrumbs.
+    log.info('SWAP_KEY: reserved index $current (count=$count)');
     return current;
   }
 

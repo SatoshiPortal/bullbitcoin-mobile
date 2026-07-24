@@ -5,10 +5,30 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart';
 
 class BdkFacade {
   // Standard lookahead value for address discovery
   static const int _lookahead = 25;
+
+  /// Per-wallet-id serialization for a full load→mutate→persist sequence
+  /// against a wallet's BDK sqlite db, shared across every subsystem that
+  /// can independently load a `bdk.Wallet` handle for the same id — a CBF
+  /// session's own build→scan→apply→persist span
+  /// (`CbfWalletDatasource._run`) and `BdkWalletDatasource
+  /// .applyUnconfirmedTransaction`'s fallback path. Without this, two
+  /// independently-loaded `bdk.Wallet` handles pointed at the same sqlite
+  /// file can each track their own changeset and silently drop the
+  /// other's already-persisted change when they persist out of order.
+  ///
+  /// Keyed by the wallet's logical id (`WalletModel.id` /
+  /// `WalletMetadataModel.id`), never its hex-encoded db-path form. Not
+  /// used by every BDK-touching method — see the two call sites above for
+  /// the specific lost-update this guards against.
+  static final _walletLocks = <String, Lock>{};
+
+  static Lock walletLock(String walletId) =>
+      _walletLocks.putIfAbsent(walletId, () => Lock());
 
   static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {

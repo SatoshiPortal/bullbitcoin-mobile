@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
 import 'package:drift/drift.dart';
 
 enum Signer {
@@ -90,6 +91,21 @@ class WalletMetadatas extends Table {
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   DateTimeColumn get birthday => dateTime().nullable()();
+  TextColumn get bitcoinSyncBackend => textEnum<BitcoinSyncBackend>()
+      .withDefault(Constant(BitcoinSyncBackend.electrum.name))();
+  IntColumn get lastReceiveAddressIndex =>
+      integer().withDefault(const Constant(0))();
+
+  /// The three columns below persist the concrete block a wallet's
+  /// requested [birthday] was resolved to (CBF or Electrum birthday-block
+  /// lookup). They are atomic — always written and read together as a
+  /// single [WalletBirthdayCheckpoint] (`domain/entities/`) — never set
+  /// individually. All three are nullable because resolution happens after
+  /// wallet creation and may never complete for a wallet with no
+  /// `birthday`.
+  DateTimeColumn get birthdayBlockTimestamp => dateTime().nullable()();
+  IntColumn get birthdayBlockHeight => integer().nullable()();
+  TextColumn get birthdayBlockHash => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

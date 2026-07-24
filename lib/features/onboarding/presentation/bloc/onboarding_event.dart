@@ -25,11 +25,15 @@ class OnboardingRecoveryWordChanged extends OnboardingEvent {
 class OnboardingRecoverWalletClicked extends OnboardingEvent {
   const OnboardingRecoverWalletClicked({required this.mnemonic});
 
-  final ({
-    List<String> words,
-    String passphrase,
-    String label,
-    bip39.Language language,
-  })
-  mnemonic;
+  final RecoveryMnemonic mnemonic;
+}
+
+/// Dispatched by `OnboardingPhysicalRecovery` once `WalletBirthdayPicker`
+/// (shown after `state.needsBitcoinBirthdaySelection` turns true) settles —
+/// [checkpoint] is the resolved value, or `null` if the user backed out of
+/// the picker entirely. See `OnboardingBloc._onBitcoinBirthdayResolved`.
+class OnboardingBitcoinBirthdayResolved extends OnboardingEvent {
+  const OnboardingBitcoinBirthdayResolved({this.checkpoint});
+
+  final WalletBirthdayCheckpoint? checkpoint;
 }

@@ -15,11 +15,10 @@ import 'package:flutter/widgets.dart'
 /// Schedules per-kind sync work (bitcoin, liquid, swaps) so that:
 ///  - the same kind is **never** run concurrently — duplicate requests are
 ///    dropped while one is queued or running;
-///  - different kinds are **queued** and executed sequentially in FIFO order
-///    (matching the [SyncKind] enum declaration), avoiding concurrent writes
-///    to the shared drift database (e.g. a wallet sync committing
-///    wallet_metadata while the swap watcher restart writes swaps_table)
-///    which were observed to cause "database is locked" errors;
+///  - Bitcoin and Liquid run concurrently: their native wallet databases are
+///    separate and their shared Drift writes are per-wallet metadata updates;
+///  - swaps always waits for every queued Bitcoin/Liquid sync, because swaps
+///    can derive addresses and write state for either chain;
 ///  - sync requests issued while the app is not foreground-`resumed` (i.e.
 ///    `inactive`/`hidden`/`paused`/`detached`) are dropped — there is no point
 ///    burning bandwidth/CPU for a UI no-one is interacting with;
@@ -74,7 +73,7 @@ class SyncCoordinator {
 
   final Queue<SyncKind> _queue = Queue<SyncKind>();
   final Set<SyncKind> _enqueued = <SyncKind>{};
-  SyncKind? _running;
+  final Set<SyncKind> _running = <SyncKind>{};
   bool _draining = false;
   Future<void>? _activeDrain;
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
@@ -164,7 +163,7 @@ class SyncCoordinator {
         return 'throttled';
       }
     }
-    if (_running == kind || _enqueued.contains(kind)) return 'pending';
+    if (_running.contains(kind) || _enqueued.contains(kind)) return 'pending';
     _enqueued.add(kind);
     _queue.add(kind);
     return null;
@@ -189,23 +188,41 @@ class SyncCoordinator {
     _draining = true;
     try {
       while (_queue.isNotEmpty) {
-        final kind = _queue.removeFirst();
-        _enqueued.remove(kind);
-        _running = kind;
-        try {
-          await _runTask(kind);
-          _lastSuccessAt[kind] = DateTime.now();
-          _settle(kind, null);
-        } catch (e) {
-          // Delivered to any sync() awaiting this kind; the single sanitized
-          // summary is logged by sync().
-          _settle(kind, e);
-        } finally {
-          _running = null;
+        // Drain every wallet-chain kind currently queued as one concurrent
+        // batch. This also lets a Liquid request arriving while Bitcoin runs
+        // overtake a queued swap restart, preserving swaps' "after both
+        // chains" safety boundary.
+        final walletKinds = _queue
+            .where(
+              (kind) => kind == SyncKind.bitcoin || kind == SyncKind.liquid,
+            )
+            .toList(growable: false);
+        if (walletKinds.isNotEmpty) {
+          _queue.removeWhere(walletKinds.contains);
+          await Future.wait(walletKinds.map(_runAndSettle));
+          continue;
         }
+
+        await _runAndSettle(_queue.removeFirst());
       }
     } finally {
       _draining = false;
+    }
+  }
+
+  Future<void> _runAndSettle(SyncKind kind) async {
+    _enqueued.remove(kind);
+    _running.add(kind);
+    try {
+      await _runTask(kind);
+      _lastSuccessAt[kind] = DateTime.now();
+      _settle(kind, null);
+    } catch (e) {
+      // Delivered to any sync() awaiting this kind; the single sanitized
+      // summary is logged by sync().
+      _settle(kind, e);
+    } finally {
+      _running.remove(kind);
     }
   }
 
@@ -224,9 +241,26 @@ class SyncCoordinator {
     switch (kind) {
       case SyncKind.bitcoin:
         final wallets = await _getWallets.execute(onlyBitcoin: true);
+        // One wallet's sync failing (e.g. a CBF-backend wallet hitting its
+        // developer/Tor gate, or the CBF backend itself) must never starve
+        // every sibling Bitcoin wallet queued behind it — attempt every
+        // wallet regardless, and only surface a failure (so this kind's
+        // completion semantics — no `_lastSuccessAt` update, `sync()`
+        // waiters settled with an error — are unchanged) once the whole
+        // loop has run.
+        Object? firstError;
         for (final wallet in wallets) {
-          await _syncWallet.execute(wallet);
+          try {
+            await _syncWallet.execute(wallet);
+          } catch (e) {
+            log.warning(
+              '[SyncCoordinator] bitcoin wallet sync failed: '
+              '${e.runtimeType}',
+            );
+            firstError ??= e;
+          }
         }
+        if (firstError != null) throw firstError;
       case SyncKind.liquid:
         final wallets = await _getWallets.execute(onlyLiquid: true);
         for (final wallet in wallets) {

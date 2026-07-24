@@ -18,4 +18,14 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   TextColumn get exchangeTestnetBasicAuthUsername => text().nullable()();
   TextColumn get exchangeTestnetBasicAuthPassword => text().nullable()();
+
+  /// Global default sync backend choice for a newly created Bitcoin
+  /// wallet: when `true`, a fresh default Bitcoin wallet is created with
+  /// [BitcoinSyncBackend.compactBlockFilters] instead of
+  /// [BitcoinSyncBackend.electrum] (see `CreateDefaultWalletsUsecase`).
+  /// Set by the wizard's privacy step; never touches an already-existing
+  /// wallet. Existing installs upgrading from schema 14 backfill to
+  /// `false` (schema 14 -> 15), preserving today's Electrum-only default.
+  BoolColumn get useCompactBlockFiltersByDefault =>
+      boolean().withDefault(const Constant(false))();
 }

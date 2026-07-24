@@ -40,6 +40,7 @@ void main() {
       expect(prefs.getString('wizard_pending_theme_mode'), isNull);
       expect(prefs.getString('wizard_pending_currency'), isNull);
       expect(prefs.getBool('wizard_pending_error_reporting'), isNull);
+      expect(prefs.getBool('wizard_pending_private_bitcoin_sync'), isNull);
       expect(prefs.getInt('wizard_pending_version'), isNull);
     });
 
@@ -75,6 +76,29 @@ void main() {
       expect(prefs.getString('wizard_pending_currency'), isNull);
       expect(prefs.getString('wizard_pending_theme_mode'), 'dark');
     });
+
+    test(
+      // A user who flips the switch on then back off before completing
+      // the wizard should still have their explicit "no" persisted, not
+      // silently dropped as if untouched.
+      'writes privateBitcoinSync: false when explicitly touched',
+      () async {
+        const c = WizardChoices(touched: {WizardField.privateBitcoinSync});
+        await _build().savePending(c);
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getBool('wizard_pending_private_bitcoin_sync'), isFalse);
+      },
+    );
+
+    test('writes privateBitcoinSync: true when enabled and touched', () async {
+      const c = WizardChoices(
+        privateBitcoinSync: true,
+        touched: {WizardField.privateBitcoinSync},
+      );
+      await _build().savePending(c);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getBool('wizard_pending_private_bitcoin_sync'), isTrue);
+    });
   });
 
   group('readPending — version invalidation', () {
@@ -87,10 +111,12 @@ void main() {
         language: Language.franceFrench,
         defaultCurrency: 'CAD',
         reportingConsent: true,
+        privateBitcoinSync: true,
         touched: {
           WizardField.language,
           WizardField.defaultCurrency,
           WizardField.reportingConsent,
+          WizardField.privateBitcoinSync,
         },
       );
       final repo = _build();
@@ -100,10 +126,12 @@ void main() {
       expect(read!.language, Language.franceFrench);
       expect(read.defaultCurrency, 'CAD');
       expect(read.reportingConsent, true);
+      expect(read.privateBitcoinSync, isTrue);
       expect(read.touched, {
         WizardField.language,
         WizardField.defaultCurrency,
         WizardField.reportingConsent,
+        WizardField.privateBitcoinSync,
       });
     });
 

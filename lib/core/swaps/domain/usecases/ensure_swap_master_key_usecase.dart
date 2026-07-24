@@ -57,6 +57,9 @@ class EnsureSwapMasterKeyUsecase {
       mnemonic: seed.mnemonicWords.join(' '),
       walletFingerprint: fingerprint,
     );
-    log.fine('SWAP_KEY: swap master key derived for wallet $fingerprint');
+    // Fingerprint deliberately omitted: it is a stable per-wallet identifier
+    // derived from the seed and must not appear in logs, which can be
+    // shared to support or forwarded to Sentry breadcrumbs.
+    log.fine('SWAP_KEY: swap master key derived');
   }
 }

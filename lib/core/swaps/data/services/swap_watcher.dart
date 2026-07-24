@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/await_cbf_sync_inactive_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
@@ -17,6 +18,7 @@ class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
+  final AwaitCbfSyncInactiveUsecase _awaitCbfSyncInactive;
 
   StreamSubscription<Swap>? _swapStreamSubscription;
 
@@ -40,8 +42,9 @@ class SwapWatcherService {
     required this._boltzRepo,
     required this._walletAddressRepository,
     required this._feesRepository,
+    required AwaitCbfSyncInactiveUsecase awaitCbfSyncInactiveUsecase,
     bool autoStart = true,
-  }) {
+  }) : _awaitCbfSyncInactive = awaitCbfSyncInactiveUsecase {
     if (autoStart) {
       unawaited(startWatching());
     }
@@ -738,6 +741,10 @@ class SwapWatcherService {
     final existing = swap.receiveAddress;
     if (existing != null) return existing;
     try {
+      // Waits, never cancels, for any active CBF sync on this wallet to
+      // settle before revealing (and persisting) a new address — see
+      // AwaitCbfSyncInactiveUsecase's class doc.
+      await _awaitCbfSyncInactive.execute(walletId: swap.receiveWalletId);
       final claimAddress = await _walletAddressRepository
           .generateNewReceiveAddress(walletId: swap.receiveWalletId);
       await _boltzRepo.updateSwapFields(
@@ -767,6 +774,10 @@ class SwapWatcherService {
     }
     final receiveWalletId = swap.receiveWalletId;
     if (receiveWalletId == null) return null;
+    // Waits, never cancels, for any active CBF sync on this wallet to
+    // settle before revealing (and persisting) a new address — see
+    // AwaitCbfSyncInactiveUsecase's class doc.
+    await _awaitCbfSyncInactive.execute(walletId: receiveWalletId);
     final claimAddress = await _walletAddressRepository
         .generateNewReceiveAddress(walletId: receiveWalletId);
     await _boltzRepo.updateSwapFields(
@@ -782,6 +793,10 @@ class SwapWatcherService {
     String? existing,
   ) async {
     if (existing != null) return existing;
+    // Waits, never cancels, for any active CBF sync on this wallet to
+    // settle before revealing (and persisting) a new address — see
+    // AwaitCbfSyncInactiveUsecase's class doc.
+    await _awaitCbfSyncInactive.execute(walletId: sendWalletId);
     final address = await _walletAddressRepository.generateNewReceiveAddress(
       walletId: sendWalletId,
     );

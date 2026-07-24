@@ -1148,6 +1148,7 @@ class BoltzDatasource {
         log.warning('[Boltz] websocket error: $error');
       },
     );
+    _suppressUnhandledChannelReadyError();
 
     _boltzWebSocket.stream.listen(
       (event) {
@@ -1180,6 +1181,7 @@ class BoltzDatasource {
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), () async {
       try {
         _boltzWebSocket.reconnect();
+        _suppressUnhandledChannelReadyError();
         final ids = _subscribedSwapIds.toList();
         _subscribedSwapIds.clear();
         subscribeToSwaps(ids);
@@ -1189,6 +1191,21 @@ class BoltzDatasource {
         _scheduleReconnect();
       }
     });
+  }
+
+  /// `IOWebSocketChannel.connect` exposes a `ready` future that completes
+  /// with an error on a DNS/connect failure (see `web_socket_channel`'s
+  /// `AdapterWebSocketChannel`). Nothing in `boltz_stream` or here ever
+  /// awaits that future, so an unhandled error on it is reported to the
+  /// current zone as an uncaught error — surfacing in `main.dart`'s
+  /// `runZonedGuarded` handler as a "Global Unhandled Error" that
+  /// duplicates the `[Boltz] websocket error` / reconnect warnings already
+  /// logged above for the exact same failure. The failure is recoverable
+  /// (handled by `onDone`/`onError` above and the reconnect backoff), so
+  /// attach a no-op handler to mark it as handled without changing the
+  /// reconnect warnings or swallowing genuinely unhandled errors elsewhere.
+  void _suppressUnhandledChannelReadyError() {
+    unawaited(_boltzWebSocket.channel?.ready.catchError((_) {}));
   }
 
   Future<void> _enqueueEvent(

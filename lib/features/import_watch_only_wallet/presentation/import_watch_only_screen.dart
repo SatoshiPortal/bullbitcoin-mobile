@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -35,6 +38,8 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
+        checkCompactBlockFiltersAvailableUsecase:
+            locator<CheckCompactBlockFiltersAvailableUsecase>(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(
@@ -48,7 +53,17 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             if (state.importedWallet != null) {
               // Trigger wallet refresh before navigating to home
               context.read<WalletBloc>().add(const WalletStarted());
-              context.goNamed(WalletRoute.walletHome.name);
+              // Lands on the dedicated CBF sync screen instead of wallet
+              // home when the imported wallet opted into compact block
+              // filters; every other wallet keeps this exact navigation —
+              // see that helper.
+              unawaited(
+                WalletRouter.goToWalletHomeOrInitialSync(
+                  context,
+                  walletId: state.importedWallet!.id,
+                  isRecoveryOrImport: true,
+                ),
+              );
             }
             if (state.failure != null) {
               SnackBarUtils.showSnackBar(

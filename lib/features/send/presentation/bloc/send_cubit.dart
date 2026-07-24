@@ -1926,6 +1926,16 @@ class SendCubit extends Cubit<SendState>
           }
         }
       }
+    } on SendPayjoinException catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+            isPayjoinDisabledForCbf: e.isDisabledForCbf,
+          ),
+          signingTransaction: false,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -1962,6 +1972,7 @@ class SendCubit extends Cubit<SendState>
           final txId = await _broadcastBitcoinTxUsecase.execute(
             isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
             isPsbt: isPsbt,
+            walletId: state.selectedWallet!.id,
           );
           emit(state.copyWith(txId: txId));
         }

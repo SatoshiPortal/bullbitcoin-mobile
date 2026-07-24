@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
@@ -50,7 +52,19 @@ class OnboardingRouter {
                 // navigating.
                 context.read<WalletBloc>().add(const WalletStarted());
                 if (state.step == OnboardingStep.create) {
-                  context.goNamed(WalletRoute.walletHome.name);
+                  // Always straight to wallet home for a newly created
+                  // wallet — the dedicated CBF sync screen is reserved for
+                  // a recovery/import operation, never a new wallet (see
+                  // isRecoveryOrImport below).
+                  unawaited(
+                    WalletRouter.goToWalletHomeOrInitialSyncForDefaultBitcoinWallet(
+                      context,
+                      // Onboarding's create wizard only — never a
+                      // recovery/import, so this dedicated CBF screen must
+                      // never be reached here, regardless of backend.
+                      isRecoveryOrImport: false,
+                    ),
+                  );
                 }
               },
             ),

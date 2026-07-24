@@ -10,16 +10,22 @@ import 'package:bb_mobile/core/utils/report.dart';
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
+  final StreamController<bool> _torProxyChangeController;
 
   SettingsRepository({required this._settingsDatasource})
-    : _currencyChangeController = StreamController<String>.broadcast();
+    : _currencyChangeController = StreamController<String>.broadcast(),
+      _torProxyChangeController = StreamController<bool>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
+  Stream<bool> get torProxyChangeStream => _torProxyChangeController.stream;
+
+  @override
   Future<void> close() async {
     await _currencyChangeController.close();
+    await _torProxyChangeController.close();
   }
 
   @override
@@ -38,6 +44,7 @@ class SettingsRepository implements domain.SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    bool useCompactBlockFiltersByDefault = false,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -55,6 +62,7 @@ class SettingsRepository implements domain.SettingsRepository {
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
+        useCompactBlockFiltersByDefault: useCompactBlockFiltersByDefault,
       ),
     );
   }
@@ -77,6 +85,7 @@ class SettingsRepository implements domain.SettingsRepository {
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
+      useCompactBlockFiltersByDefault: s.useCompactBlockFiltersByDefault,
     );
   }
 
@@ -119,6 +128,7 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setUseTorProxy(bool useTorProxy) async {
     await _settingsDatasource.setUseTorProxy(useTorProxy);
+    _torProxyChangeController.add(useTorProxy);
   }
 
   @override
@@ -148,5 +158,10 @@ class SettingsRepository implements domain.SettingsRepository {
     // Sync [Report]'s boot-time mirror so the next cold start's Sentry
     // init can seed consent before the locator is available.
     await Report.updateConsent(enabled);
+  }
+
+  @override
+  Future<void> setUseCompactBlockFiltersByDefault(bool enabled) async {
+    await _settingsDatasource.setUseCompactBlockFiltersByDefault(enabled);
   }
 }

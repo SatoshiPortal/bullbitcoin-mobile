@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/bitcoin_sync_backend_tile.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +21,18 @@ class WalletOptionsScreen extends StatelessWidget {
       (WalletBloc bloc) =>
           bloc.state.wallets.where((w) => w.id == walletId).firstOrNull,
     );
+    final isDevModeEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
+    );
+    // Shown in developer mode, or unconditionally on a build compiled with
+    // --dart-define=ENABLE_CBF=true (e.g. `make android-cbf-debug`) — a
+    // pure compile-time const, so a demo/beta APK can offer this tile
+    // without also turning on unrelated developer features.
+    final showSyncBackendTile =
+        wallet != null &&
+        wallet.isBitcoin &&
+        (isDevModeEnabled ||
+            CheckCompactBlockFiltersAvailableUsecase.enableCbfFlag);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +70,7 @@ class WalletOptionsScreen extends StatelessWidget {
                             );
                           },
                         ),
+                        if (showSyncBackendTile) const BitcoinSyncBackendTile(),
                       ],
                     ),
                   ),

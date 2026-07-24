@@ -46,27 +46,38 @@ class ReceiveQrPage extends StatelessWidget {
     final showAddressVerification = !isLightning && (isLedger || isBitBox);
 
     final gap = Device.screen.height * 0.02;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          // const Gap(10),
-          // const ReceiveNetworkSelection(),
-          Gap(gap),
-          const ReceiveQRDetails(),
-          Gap(gap),
-          ReceiveInfoDetails(wallet: wallet),
-          Gap(gap),
-          if (showAddressVerification) ...[
-            if (isLedger)
-              const Column(children: [VerifyAddressOnLedgerButton()]),
-            if (isBitBox)
-              const Column(children: [VerifyAddressOnBitBoxButton()]),
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          previous.receivePayjoinException != current.receivePayjoinException &&
+          current.receivePayjoinException?.isDisabledForCbf == true,
+      listener: (context, state) {
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.receivePayjoinDisabledForCbf,
+        );
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            // const Gap(10),
+            // const ReceiveNetworkSelection(),
             Gap(gap),
+            const ReceiveQRDetails(),
+            Gap(gap),
+            ReceiveInfoDetails(wallet: wallet),
+            Gap(gap),
+            if (showAddressVerification) ...[
+              if (isLedger)
+                const Column(children: [VerifyAddressOnLedgerButton()]),
+              if (isBitBox)
+                const Column(children: [VerifyAddressOnBitBoxButton()]),
+              Gap(gap),
+            ],
+            if (!isLightning) const ReceiveNewAddressButton(),
+            const Gap(40),
           ],
-          if (!isLightning) const ReceiveNewAddressButton(),
-          const Gap(40),
-        ],
+        ),
       ),
     );
   }

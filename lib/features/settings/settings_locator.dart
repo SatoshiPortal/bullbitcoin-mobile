@@ -2,6 +2,12 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/await_cbf_sync_inactive_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_cbf_sync_active_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_bitcoin_sync_backend_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/set_bitcoin_sync_backend_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/start_wallet_sync_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_sync_progress_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -13,6 +19,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/bitcoin_sync_backend_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -94,6 +101,19 @@ class SettingsLocator {
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
+      ),
+    );
+
+    locator.registerFactoryParam<BitcoinSyncBackendCubit, String, void>(
+      (walletId, _) => BitcoinSyncBackendCubit(
+        walletId: walletId,
+        getBitcoinSyncBackendUsecase: locator<GetBitcoinSyncBackendUsecase>(),
+        setBitcoinSyncBackendUsecase: locator<SetBitcoinSyncBackendUsecase>(),
+        startWalletSyncUsecase: locator<StartWalletSyncUsecase>(),
+        checkCbfSyncActiveUsecase: locator<CheckCbfSyncActiveUsecase>(),
+        awaitCbfSyncInactiveUsecase: locator<AwaitCbfSyncInactiveUsecase>(),
+        watchWalletSyncProgressUsecase:
+            locator<WatchWalletSyncProgressUsecase>(),
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_compact_block_filters_available_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -12,16 +14,46 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   final ImportWalletUsecase _importWalletUsecase;
   final CheckWalletStatusUsecase _checkWalletUsecase;
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
+  final CheckCompactBlockFiltersAvailableUsecase
+  _checkCompactBlockFiltersAvailableUsecase;
 
   ImportMnemonicCubit({
     required this._importWalletUsecase,
     required this._checkWalletUsecase,
     required this._checkDuplicateMnemonicUsecase,
+    required this._checkCompactBlockFiltersAvailableUsecase,
   }) : super(const ImportMnemonicState());
+
+  /// Loads whether the compact-block-filter choice should be offered at
+  /// all. Fire-and-forget from the route's `BlocProvider.create` — a
+  /// pending check simply keeps [ImportMnemonicState.isCbfAvailable] at its
+  /// safe `false` default (Electrum-only UI) until this resolves.
+  Future<void> init() async {
+    final available = await _checkCompactBlockFiltersAvailableUsecase.execute();
+    if (isClosed) return;
+    emit(state.copyWith(isCbfAvailable: available));
+  }
 
   void clearFailure() => emit(state.copyWith(failure: null));
 
   void reset() => emit(const ImportMnemonicState());
+
+  void selectSyncBackend(BitcoinSyncBackend backend) =>
+      emit(state.copyWith(syncBackend: backend, failure: null));
+
+  /// `null` means "the earliest possible date" (this network's genesis
+  /// block) — see [ImportMnemonicState.birthday]'s own doc.
+  void updateBirthday(DateTime? birthday) =>
+      emit(state.copyWith(birthday: birthday, failure: null));
+
+  /// Falls back to the earliest possible birthday (genesis), which never
+  /// requires a network lookup, and retries the import — the recovery path
+  /// offered alongside a plain retry when
+  /// [ImportMnemonicBirthdayCheckpointFailure] is surfaced.
+  Future<void> retryImportWithGenesisBirthday() async {
+    updateBirthday(null);
+    await import();
+  }
 
   Future<void> updateMnemonic(Mnemonic mnemonic) async {
     if (mnemonic.label.isEmpty) {
@@ -97,6 +129,8 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       label: mnemonic.label,
       passphrase: mnemonic.passphrase,
       scriptType: state.scriptType,
+      requestedSyncBackend: state.syncBackend,
+      birthday: state.birthday,
     )) {
       case Ok(:final value):
         emit(state.copyWith(wallet: value, isLoading: false));

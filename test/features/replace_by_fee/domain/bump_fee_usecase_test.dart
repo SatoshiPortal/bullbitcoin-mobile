@@ -48,7 +48,11 @@ void main() {
         ),
       ).thenAnswer((_) async => 'signed-psbt');
       when(
-        () => broadcastUsecase.execute('signed-psbt', isPsbt: true),
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       ).thenAnswer((_) async => 'new-txid');
 
       final result = await usecase.execute(
@@ -59,6 +63,15 @@ void main() {
 
       expect(result, isA<Ok<String, ReplaceByFeeFailure>>());
       expect((result as Ok).value, 'new-txid');
+      // The replacement transaction is broadcast through the same walletId
+      // path as any other broadcast — no separate RBF/eviction handling.
+      verify(
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: 'w1',
+        ),
+      ).called(1);
     });
 
     test(

@@ -10,13 +10,17 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/cbf_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/cbf_sync_activity_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_birthday_checkpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -25,7 +29,9 @@ class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
+  final CbfWalletDatasource _cbfWallet;
   final ElectrumServersPort _serversPort;
+  final CbfSyncActivityPort _cbfSyncActivity;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -34,9 +40,13 @@ class WalletRepository {
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
+    required CbfWalletDatasource cbfWalletDatasource,
     required this._serversPort,
+    required CbfSyncActivityPort cbfSyncActivityPort,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource {
+       _lwkWallet = lwkWalletDatasource,
+       _cbfWallet = cbfWalletDatasource,
+       _cbfSyncActivity = cbfSyncActivityPort {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -67,6 +77,8 @@ class WalletRepository {
     bool isDefault = false,
     bool sync = false,
     DateTime? birthday,
+    BitcoinSyncBackend bitcoinSyncBackend = BitcoinSyncBackend.electrum,
+    WalletBirthdayCheckpoint? birthdayCheckpoint,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -80,7 +92,7 @@ class WalletRepository {
         ? 'Instant Payments'
         : label;
 
-    final metadata = await WalletMetadataService.deriveFromSeed(
+    var metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
@@ -88,6 +100,15 @@ class WalletRepository {
       isDefault: isDefault,
       birthday: birthday,
     );
+    metadata = metadata.copyWith(bitcoinSyncBackend: bitcoinSyncBackend);
+    // Folded into the same metadata object as the sync backend above —
+    // both are written by the single `store()` call below, so a caller's
+    // resolved checkpoint is persisted atomically with wallet creation
+    // rather than through a separate follow-up update that could leave a
+    // wallet momentarily persisted without its checkpoint.
+    if (birthdayCheckpoint != null) {
+      metadata = metadata.copyWithBirthdayCheckpoint(birthdayCheckpoint);
+    }
 
     if (isDefault) {
       final allWallets = await getWallets(onlyDefaults: true);
@@ -121,10 +142,36 @@ class WalletRepository {
   Future<Wallet> importDescriptor({
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     bool sync = false,
+    BitcoinSyncBackend bitcoinSyncBackend = BitcoinSyncBackend.electrum,
+    DateTime? birthday,
+    WalletBirthdayCheckpoint? birthdayCheckpoint,
   }) async {
-    final metadata = await WalletMetadataService.fromDescriptor(
+    var metadata = await WalletMetadataService.fromDescriptor(
       watchOnlyDescriptor,
+      birthday: birthday,
     );
+    // A requested backend is only ever persisted for a Bitcoin wallet —
+    // Liquid has no CBF datasource and always stays on
+    // `BitcoinSyncBackend.electrum`, the model's own default.
+    if (metadata.isBitcoin) {
+      metadata = metadata.copyWith(bitcoinSyncBackend: bitcoinSyncBackend);
+      // Same atomicity rationale as `createWallet`: folded into the same
+      // metadata object written by the single `store()` call below, so a
+      // caller's resolved checkpoint is persisted together with the
+      // wallet rather than through a separate follow-up update.
+      //
+      // `birthday` itself is set here from the checkpoint's own
+      // `requestedBirthday` (not just the three `birthdayBlock*` fields) —
+      // `WalletMetadataModelBirthdayCheckpoint.birthdayCheckpoint`'s getter
+      // requires all four together (its all-or-none invariant), so leaving
+      // `birthday` unset here would silently make that getter return null
+      // even though the checkpoint was otherwise persisted.
+      if (birthdayCheckpoint != null) {
+        metadata = metadata
+            .copyWith(birthday: birthdayCheckpoint.requestedBirthday)
+            .copyWithBirthdayCheckpoint(birthdayCheckpoint);
+      }
+    }
 
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
@@ -163,13 +210,33 @@ class WalletRepository {
     required ScriptType scriptType,
     required String label,
     bool sync = false,
+    BitcoinSyncBackend bitcoinSyncBackend = BitcoinSyncBackend.electrum,
+    WalletBirthdayCheckpoint? birthdayCheckpoint,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromXpub(
+    var metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
       label: label,
     );
+    // Xpub import is Bitcoin-only (`WalletMetadataService.deriveFromXpub`
+    // rejects Liquid), but the same guard as `importDescriptor` is kept
+    // here for symmetry and defense in depth: a requested backend is only
+    // ever persisted for a Bitcoin wallet.
+    if (metadata.isBitcoin) {
+      metadata = metadata.copyWith(bitcoinSyncBackend: bitcoinSyncBackend);
+      // Same atomicity rationale as `createWallet`: folded into the same
+      // metadata object written by the single `store()` call below.
+      //
+      // `birthday` itself is set here from the checkpoint's own
+      // `requestedBirthday` — see `importDescriptor`'s identical comment
+      // for why this must accompany the three `birthdayBlock*` fields.
+      if (birthdayCheckpoint != null) {
+        metadata = metadata
+            .copyWith(birthday: birthdayCheckpoint.requestedBirthday)
+            .copyWithBirthdayCheckpoint(birthdayCheckpoint);
+      }
+    }
 
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
@@ -369,10 +436,55 @@ class WalletRepository {
     if (metadata == null) throw WalletError.notFound(walletId);
 
     if (metadata.isBitcoin) {
+      final isCbfBackend =
+          metadata.bitcoinSyncBackend == BitcoinSyncBackend.compactBlockFilters;
+
+      if (isCbfBackend && _cbfSyncActivity.isActive(walletId: walletId)) {
+        // Blocked, never a shutdown: normal app code must not kill an
+        // active CBF session (see CbfSyncActivityPort's class doc). The
+        // caller must retry once the wallet's compact block filter sync
+        // settles on its own — nothing below (the BDK sqlite db, the CBF
+        // dataDir, or the wallet metadata) is touched.
+        throw const WalletError.cannotDeleteWalletWithActiveCbfSync();
+      }
+
+      if (isCbfBackend) {
+        // Defense in depth against the check above racing a session that
+        // starts in between: must complete — and must not be caught here
+        // — before either the BDK sqlite db below or the CBF dataDir
+        // further down is touched. A CBF session that has not actually
+        // stopped yet can still be writing to those files, and deleting
+        // them out from under it risks a crash or a corrupt partial
+        // delete. `cancelAndWait` itself already logs a fixed, sanitized
+        // message on timeout; letting its exception propagate here —
+        // instead of swallowing it — surfaces the failure to
+        // `deleteWallet`'s caller rather than silently skipping the
+        // deletion or deleting unsafe files. In the common case this is a
+        // no-op: the check above already refused a genuinely active
+        // session.
+        await _cbfWallet.cancelAndWait(walletId: walletId);
+      }
+
       try {
         await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
       } on WalletNotFound {
         log.warning('deleteWallet: BDK file already absent for $walletId');
+      }
+
+      // Always attempted for a Bitcoin wallet, regardless of its *current*
+      // backend: a wallet that ran on CBF at some point and later switched
+      // to Electrum can still have a leftover dataDir (headers, peers,
+      // filters) on disk under its stable per-wallet/network path — see
+      // CbfWalletDatasource.deleteDataDir's doc. That data must not survive
+      // this wallet's deletion just because the backend field on today's
+      // metadata reads Electrum. A missing directory (CBF never used, or
+      // already cleaned) is not an error.
+      try {
+        await _cbfWallet.deleteDataDir(metadata: metadata);
+      } catch (e) {
+        log.warning(
+          'deleteWallet: CBF dataDir cleanup failed: ${e.runtimeType}',
+        );
       }
     }
 

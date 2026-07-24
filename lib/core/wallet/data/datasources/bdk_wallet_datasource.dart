@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -717,6 +718,48 @@ class BdkWalletDatasource {
   Future<void> delete({required WalletModel wallet}) async {
     await BdkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} BDK database');
+  }
+
+  /// Applies [transaction] (a signed PSBT when [isPsbt], otherwise a raw
+  /// hex-encoded transaction) to the wallet built from [wallet] as an
+  /// unconfirmed transaction last seen at [lastSeen] (unix epoch seconds),
+  /// then persists the updated wallet state.
+  ///
+  /// Used only to give a CBF (compact block filter) wallet immediate local
+  /// visibility into its own just-broadcast spend: compact block filters
+  /// alone cannot observe an unconfirmed mempool transaction, so without
+  /// this the wallet would show a stale balance/history until the
+  /// transaction is mined and picked up by the next sync. See
+  /// `UnconfirmedBitcoinTransactionRepository` for the RBF/replacement and
+  /// eviction notes — this method never calls `Wallet.applyEvictedTxs` and
+  /// never manually marks an output trusted or spendable.
+  ///
+  /// Serialized on [BdkFacade.walletLock] for [wallet]'s id: this method
+  /// loads its own independent `bdk.Wallet` handle from the same sqlite db
+  /// a CBF session for the same wallet may be using, so without the lock
+  /// the two could race to persist and silently drop each other's change.
+  /// Callers should only reach this fallback once
+  /// `CbfWalletDatasource.applyUnconfirmedTransactionIfActive` has already
+  /// reported no session is active for this wallet — see
+  /// `UnconfirmedBitcoinTransactionRepositoryImpl`.
+  Future<void> applyUnconfirmedTransaction({
+    required WalletModel wallet,
+    required String transaction,
+    required bool isPsbt,
+    required int lastSeen,
+  }) async {
+    await BdkFacade.walletLock(wallet.id).synchronized(() async {
+      final bdkWallet = await BdkFacade.createWallet(wallet);
+      final tx = isPsbt
+          ? bdk.Psbt(psbtBase64: transaction).extractTx()
+          : bdk.Transaction(
+              transactionBytes: Uint8List.fromList(hex.decode(transaction)),
+            );
+      bdkWallet.applyUnconfirmedTxs(
+        unconfirmedTxs: [bdk.UnconfirmedTx(tx: tx, lastSeen: lastSeen)],
+      );
+      await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
+    });
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/record_unconfirmed_bitcoin_transaction_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 class BlockchainLocator {
@@ -41,6 +42,8 @@ class BlockchainLocator {
       () => BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        recordUnconfirmedBitcoinTransactionUsecase:
+            locator<RecordUnconfirmedBitcoinTransactionUsecase>(),
       ),
     );
 

@@ -23,6 +23,9 @@ abstract class WizardLocalDatasource {
   Future<bool?> readPendingErrorReporting();
   Future<void> writePendingErrorReporting(bool enabled);
 
+  Future<bool?> readPendingPrivateBitcoinSync();
+  Future<void> writePendingPrivateBitcoinSync(bool enabled);
+
   Future<void> clearAllPending();
 }
 
@@ -33,6 +36,8 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   static const _pendingThemeKey = 'wizard_pending_theme_mode';
   static const _pendingCurrencyKey = 'wizard_pending_currency';
   static const _pendingErrorReportingKey = 'wizard_pending_error_reporting';
+  static const _pendingPrivateBitcoinSyncKey =
+      'wizard_pending_private_bitcoin_sync';
 
   @override
   Future<int?> readCompletedVersion() async {
@@ -107,6 +112,18 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   }
 
   @override
+  Future<bool?> readPendingPrivateBitcoinSync() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_pendingPrivateBitcoinSyncKey);
+  }
+
+  @override
+  Future<void> writePendingPrivateBitcoinSync(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_pendingPrivateBitcoinSyncKey, enabled);
+  }
+
+  @override
   Future<void> clearAllPending() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_pendingVersionKey);
@@ -114,5 +131,6 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
     await prefs.remove(_pendingThemeKey);
     await prefs.remove(_pendingCurrencyKey);
     await prefs.remove(_pendingErrorReportingKey);
+    await prefs.remove(_pendingPrivateBitcoinSyncKey);
   }
 }

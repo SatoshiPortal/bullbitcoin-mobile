@@ -47,3 +47,13 @@ class OnTorInitialization extends RecoverBullEvent {
 class OnClearError extends RecoverBullEvent {
   const OnClearError();
 }
+
+/// Dispatched by `FetchVaultKeyPage` once `WalletBirthdayPicker` (shown
+/// after `state.needsBitcoinBirthdaySelection` turns true) settles —
+/// [checkpoint] is the resolved value, or `null` if the user backed out of
+/// the picker entirely. See `RecoverBullBloc._onBitcoinBirthdayResolved`.
+class OnBitcoinBirthdayResolved extends RecoverBullEvent {
+  const OnBitcoinBirthdayResolved({this.checkpoint});
+
+  final WalletBirthdayCheckpoint? checkpoint;
+}

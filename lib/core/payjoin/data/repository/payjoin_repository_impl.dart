@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/domain/electrum_broadcast_error_classifier.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
@@ -21,7 +22,9 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_sync_backend.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/unconfirmed_bitcoin_transaction_repository.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -32,6 +35,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _serversPort;
+  final UnconfirmedBitcoinTransactionRepository _unconfirmedBitcoinTx;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
@@ -45,9 +49,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required this._serversPort,
+    required UnconfirmedBitcoinTransactionRepository
+    unconfirmedBitcoinTransactionRepository,
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _blockchain = blockchainDatasource,
+       _unconfirmedBitcoinTx = unconfirmedBitcoinTransactionRepository,
        _lock = Lock(),
        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the datasource and process them
@@ -161,6 +168,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
   }) async {
+    await _rejectIfCbfBackend(walletId);
+
     final model = await _pdkPayjoinDatasource.createReceiver(
       walletId: walletId,
       address: address,
@@ -187,6 +196,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
+    await _rejectIfCbfBackend(walletId);
+
     // Create the payjoin sender session
     final model = await _pdkPayjoinDatasource.createSender(
       walletId: walletId,
@@ -223,8 +234,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             payjoin.originalTxBytes!,
             connection: connection,
           ),
+          isTransient: isTransientBroadcastError,
         );
 
+        // This re-broadcasts the SENDER's original transaction (captured
+        // before the payjoin proposal was made), which spends the
+        // sender's inputs, not this wallet's — nothing to record locally
+        // for this (receiver's) wallet.
         model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       } else {
         payjoin as PayjoinSender;
@@ -234,12 +250,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             payjoin.originalPsbt,
             connection: connection,
           ),
+          isTransient: isTransientBroadcastError,
+        );
+        // Unlike the receiver branch above, this is the sender's own
+        // signed transaction (the fallback broadcast when the payjoin
+        // proposal never completed) — wallet-owned, so record it the same
+        // way as a normal payjoin proposal broadcast.
+        await _recordUnconfirmedSenderTransaction(
+          walletId: payjoin.walletId,
+          psbt: payjoin.originalPsbt,
         );
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
       }
-      log.info(
-        'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.originalTxId}',
-      );
+      // Fixed, non-sensitive message: never log the payjoin id and txid
+      // together — that pair correlates a specific Payjoin session to its
+      // on-chain transaction, which is exactly the linkability Payjoin
+      // exists to break.
+      log.info('Payjoin original transaction broadcast succeeded');
 
       // Update the local database with the completed payjoin
 
@@ -313,9 +340,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             ? Network.bitcoinTestnet
             : Network.bitcoinMainnet,
       );
-      log.info(
-        'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
-      );
+      // Fixed, non-sensitive message: never log the payjoin id and txid
+      // together — that pair correlates a specific Payjoin session to its
+      // on-chain transaction, which is exactly the linkability Payjoin
+      // exists to break.
+      log.info('Payjoin proposal broadcast succeeded');
     } catch (e) {
       log.severe(
         message: 'Error broadcasting payjoin proposal',
@@ -382,6 +411,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           await _processPayjoinProposal(model);
         }
       }
+    }
+  }
+
+  /// Blocks starting a *new* Payjoin session for a wallet currently synced
+  /// via Compact Block Filters (bdk-kyoto). CBF cannot yet verify that the
+  /// counterparty-contributed inputs of a Payjoin proposal aren't
+  /// unconfirmed/foreign prevouts the way an Electrum server's mempool
+  /// lookup can (bdk-kyoto#136 tracks adding that check) — until it's
+  /// validated, creating a Payjoin under CBF risks silently accepting a
+  /// proposal BDK can't fully verify.
+  ///
+  /// Deliberately scoped to session *creation* only: a Payjoin already
+  /// created while the wallet was on Electrum must keep running (proposal
+  /// processing, broadcast fallback) even if the user switches the wallet to
+  /// CBF afterwards — this guard is never consulted outside
+  /// [createPayjoinReceiver] / [createPayjoinSender].
+  Future<void> _rejectIfCbfBackend(String walletId) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata?.bitcoinSyncBackend ==
+        BitcoinSyncBackend.compactBlockFilters) {
+      throw PayjoinDisabledForCbfException();
     }
   }
 
@@ -461,6 +511,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       ),
       operation: (connection) =>
           _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
+      isTransient: isTransientBroadcastError,
     );
 
     // Update the local database with the completed payjoin
@@ -468,10 +519,49 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (model == null) {
       throw Exception('Payjoin sender not found');
     }
+
+    // Best-effort: this is the sender's own finalized, wallet-owned
+    // transaction — record it locally the same way a regular Bitcoin
+    // broadcast does. Must never turn the already-successful broadcast
+    // above into a failure.
+    await _recordUnconfirmedSenderTransaction(
+      walletId: model.walletId,
+      psbt: finalizedPsbt,
+    );
+
     final completedModel = model.copyWith(isCompleted: true);
     await _localPayjoinDatasource.update(completedModel);
 
     return completedModel.toEntity() as PayjoinSender;
+  }
+
+  /// Best-effort local persistence of a just-broadcast, sender-owned
+  /// finalized PSBT — see [UnconfirmedBitcoinTransactionRepository]. Never
+  /// lets a local recording failure escape: the Electrum broadcast has
+  /// already succeeded by the time this is called, and retrying it would
+  /// risk a double-broadcast for no benefit.
+  Future<void> _recordUnconfirmedSenderTransaction({
+    required String walletId,
+    required String psbt,
+  }) async {
+    try {
+      final result = await _unconfirmedBitcoinTx.record(
+        walletId: walletId,
+        transaction: psbt,
+        isPsbt: true,
+      );
+      result.fold((_) {}, (failure) {
+        log.warning(
+          'Recording payjoin unconfirmed local broadcast failed: '
+          '${failure.runtimeType}',
+        );
+      });
+    } catch (e) {
+      log.warning(
+        'Recording payjoin unconfirmed local broadcast failed: '
+        '${e.runtimeType}',
+      );
+    }
   }
 }
 

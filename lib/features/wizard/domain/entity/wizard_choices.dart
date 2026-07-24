@@ -6,7 +6,13 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 /// the wizard merely *displayed* (e.g. brightness-detected theme,
 /// keyboard-detected language) stay out of the touched set and never
 /// clobber existing user values when `kCurrentWizardVersion` bumps.
-enum WizardField { language, themeMode, defaultCurrency, reportingConsent }
+enum WizardField {
+  language,
+  themeMode,
+  defaultCurrency,
+  reportingConsent,
+  privateBitcoinSync,
+}
 
 /// Tagged variant for the `reportingConsent` parameter of
 /// [WizardChoices.copyWith].
@@ -38,6 +44,7 @@ class WizardChoices {
     this.themeMode = AppThemeMode.system,
     this.defaultCurrency = 'USD',
     this.reportingConsent,
+    this.privateBitcoinSync = false,
     this.touched = const <WizardField>{},
   });
 
@@ -48,6 +55,14 @@ class WizardChoices {
   // Page 3 of the wizard requires an explicit Yes/No before the wizard can
   // be completed via Next/Skip/Get started.
   final bool? reportingConsent;
+
+  /// Opt-in to a Bitcoin default wallet created with compact block filter
+  /// (BIP157/158) sync instead of Electrum. Unlike [reportingConsent], this
+  /// is not a required question — leaving it untouched (Skip, or simply
+  /// not tapping the switch) keeps it `false` and never joins [touched],
+  /// so `ApplyPendingWizardChoicesUsecase` leaves the existing/default
+  /// setting alone.
+  final bool privateBitcoinSync;
 
   /// Tracks which fields the user explicitly picked via the wizard's UI
   /// controls (theme/language/currency pickers, mission Yes/No buttons).
@@ -65,6 +80,7 @@ class WizardChoices {
     AppThemeMode? themeMode,
     String? defaultCurrency,
     ConsentArg reportingConsent = _consentUnset,
+    bool? privateBitcoinSync,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
@@ -72,6 +88,9 @@ class WizardChoices {
     if (defaultCurrency != null) t.add(WizardField.defaultCurrency);
     if (reportingConsent is ConsentValue) {
       t.add(WizardField.reportingConsent);
+    }
+    if (privateBitcoinSync != null) {
+      t.add(WizardField.privateBitcoinSync);
     }
     return WizardChoices(
       language: language ?? this.language,
@@ -81,6 +100,7 @@ class WizardChoices {
         ConsentValue(:final value) => value,
         _ConsentUnset() => this.reportingConsent,
       },
+      privateBitcoinSync: privateBitcoinSync ?? this.privateBitcoinSync,
       touched: t,
     );
   }
@@ -95,6 +115,7 @@ class WizardChoices {
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,
       reportingConsent: reportingConsent,
+      privateBitcoinSync: privateBitcoinSync,
       touched: touched,
     );
   }

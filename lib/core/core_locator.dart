@@ -57,12 +57,17 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
+    // WalletLocator must run before PayjoinLocator: PayjoinRepositoryImpl is
+    // registered eagerly (registerSingleton, so it resumes in-flight
+    // payjoins as soon as the app starts) and depends on
+    // UnconfirmedBitcoinTransactionRepository, which WalletLocator
+    // registers.
+    WalletLocator.registerRepositories(locator);
     PayjoinLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
     StorageLocator.registerRepositories(locator);
     await RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
-    WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);

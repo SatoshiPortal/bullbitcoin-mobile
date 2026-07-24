@@ -13,7 +13,7 @@ ENV USER=$USERNAME
 # defaults in sync with .fvmrc / android/gradle.properties so the dev container
 # and the reproducible release build never diverge on toolchain versions.
 ARG FVM_VERSION="4.1.1"
-ARG FLUTTER_VERSION="3.44.2"
+ARG FLUTTER_VERSION="3.44.6"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)

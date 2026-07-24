@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_sync_progress_card.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +89,12 @@ class WalletDetailScreen extends StatelessWidget {
                           body: context.loc.liquidRiskDisclosureBody,
                         ),
                       ),
+                    ),
+                  // CBF is Bitcoin-only (see WalletSyncProgressCard's class
+                  // doc) — never rendered for a Liquid wallet.
+                  if (wallet.isBitcoin)
+                    SliverToBoxAdapter(
+                      child: WalletSyncProgressCard(walletId: walletId),
                     ),
                   const SliverToBoxAdapter(child: Gap(16)),
                   const WalletDetailTxsList(sliver: true),

@@ -7,6 +7,7 @@ sealed class WizardEvent with _$WizardEvent {
       _WizardLanguagePicked;
   const factory WizardEvent.currencyPicked(String code) = _WizardCurrencyPicked;
   const factory WizardEvent.consentPicked(bool consent) = _WizardConsentPicked;
+  const factory WizardEvent.privacyPicked(bool enabled) = _WizardPrivacyPicked;
   const factory WizardEvent.themeDetected(AppThemeMode mode) =
       _WizardThemeDetected;
   const factory WizardEvent.completed() = _WizardCompleted;

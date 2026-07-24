@@ -121,6 +121,7 @@ export 'src/feedback/bull_fading_linear_progress.dart';
 export 'src/feedback/bull_refresh_indicator.dart';
 export 'src/feedback/bull_shimmer.dart';
 export 'src/feedback/bull_snack_bar.dart';
+export 'src/feedback/bull_sync_progress.dart';
 
 // Layout.
 export 'src/layout/bull_pullable_body.dart';

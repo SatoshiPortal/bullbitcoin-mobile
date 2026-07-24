@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/privacy_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
@@ -87,7 +88,7 @@ class _WizardScreenState extends State<WizardScreen> {
   void _tryFinish(WizardChoices choices) {
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
-        WizardPage.mission.index,
+        WizardPage.mission.pageViewIndex,
         duration: _pageDuration,
         curve: _pageCurve,
       );
@@ -150,8 +151,9 @@ class _WizardScreenState extends State<WizardScreen> {
                           Expanded(
                             child: PageView(
                               controller: _controller,
-                              onPageChanged: (i) =>
-                                  setState(() => _page = WizardPage.values[i]),
+                              onPageChanged: (i) => setState(
+                                () => _page = WizardPage.available[i],
+                              ),
                               children: [
                                 const WelcomeStep(),
                                 CustomizeStep(
@@ -167,6 +169,20 @@ class _WizardScreenState extends State<WizardScreen> {
                                   ),
                                 ),
                                 const MissionStep(),
+                                // Hidden on a plain production build (see
+                                // WizardPage.available's doc) — the wizard's
+                                // children must mirror `available` exactly
+                                // so onPageChanged's index lookup stays
+                                // aligned.
+                                if (WizardPage.available.contains(
+                                  WizardPage.privacy,
+                                ))
+                                  PrivacyStep(
+                                    enabled: c.privateBitcoinSync,
+                                    onChanged: (enabled) => bloc.add(
+                                      WizardEvent.privacyPicked(enabled),
+                                    ),
+                                  ),
                                 const JourneyStep(),
                               ],
                             ),
@@ -201,7 +217,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                   ),
                                   child: WizardDots(
                                     count: WizardPage.total,
-                                    index: _page.index,
+                                    index: _page.pageViewIndex,
                                   ),
                                 ),
                                 SizedBox(height: vGap),

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -68,6 +69,10 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
       labels = await _labelsFacade.fetchByReference(address);
+    }
+
+    if (walletModel is PublicBdkWalletModel) {
+      await _persistRevealedIndexIfHigher(metadata: metadata, index: index);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -139,6 +144,10 @@ class WalletAddressRepository {
       labels = await _labelsFacade.fetchByReference(address);
     }
 
+    if (walletModel is PublicBdkWalletModel) {
+      await _persistRevealedIndexIfHigher(metadata: metadata, index: index);
+    }
+
     final walletAddressModel = WalletAddressModel(
       walletId: walletId,
       index: index,
@@ -153,6 +162,28 @@ class WalletAddressRepository {
     );
 
     return walletAddress;
+  }
+
+  /// Persists [WalletMetadataModel.lastReceiveAddressIndex] whenever
+  /// [index] moves the wallet's stored high-water mark forward.
+  /// Bitcoin-only (only ever called for a [PublicBdkWalletModel]):
+  /// `CbfScanTypeResolver` is this field's only consumer today, and a
+  /// Liquid wallet has no compact-filter equivalent to size a recovery
+  /// scan for.
+  ///
+  /// Never moves the stored index backwards — a call that resolves to a
+  /// lower index than what is already persisted (e.g.
+  /// [getLastRevealedReceiveAddress] running after a higher index was
+  /// already revealed by [generateNewReceiveAddress]) leaves the existing,
+  /// higher value alone rather than overwriting it with a stale one.
+  Future<void> _persistRevealedIndexIfHigher({
+    required WalletMetadataModel metadata,
+    required int index,
+  }) async {
+    if (index <= metadata.lastReceiveAddressIndex) return;
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(lastReceiveAddressIndex: index),
+    );
   }
 
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(

@@ -41,11 +41,20 @@ class SendWithPayjoinUsecase {
 
       return pjSender;
     } catch (e) {
-      throw SendPayjoinException(e.toString());
+      throw SendPayjoinException(
+        e.toString(),
+        isDisabledForCbf: e is PayjoinDisabledForCbfException,
+      );
     }
   }
 }
 
 class SendPayjoinException extends BullException {
-  SendPayjoinException(super.message);
+  SendPayjoinException(super.message, {this.isDisabledForCbf = false});
+
+  /// True when the wallet is currently synced via Compact Block Filters,
+  /// for which Payjoin creation is deliberately disabled — see
+  /// [PayjoinDisabledForCbfException]. Lets the UI show a specific message
+  /// instead of a generic failure.
+  final bool isDisabledForCbf;
 }

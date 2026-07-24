@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update drift-migrations devcontainer devcontainer-up container-tools container-app android android-cbf-debug release debug beta verify test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -152,6 +152,7 @@ container-app: container-tools
 MODE ?= debug
 FORMAT ?= apk
 FLAVOR ?= production
+DART_DEFINES ?=
 
 # Allow "make android release", "make android debug" or "make android beta".
 # release/debug build the production flavor; beta is the tester channel — the
@@ -169,6 +170,28 @@ ifneq (,$(filter beta,$(MAKECMDGOALS)))
 endif
 release debug beta:
 	@:
+
+# `make android-cbf-debug` — a debug, production-flavor APK compiled with
+# ENABLE_CBF=true, so the wizard's compact-filter step and the developer
+# per-wallet sync-backend tile (WalletOptionsScreen) are reachable without
+# also enabling unrelated developer-mode features. See
+# CheckCompactBlockFiltersAvailableUsecase and
+# docs/compact-block-filters-pr-roadmap.md. This flag is never set for
+# `android`/`release`/`debug`/`beta` — only this goal sets DART_DEFINES, and
+# only debug mode is ever built this way, so it cannot reach a release
+# target.
+#
+# `override` is the guard: command-line variables normally win over a plain
+# `VAR := ...` assignment in the makefile (e.g. `make android-cbf-debug
+# MODE=release` would otherwise silently produce a release build). `override`
+# makes these three assignments win over the command line too, so this goal
+# is pinned to a debug, production-flavor, ENABLE_CBF build no matter what
+# MODE/FLAVOR/DART_DEFINES are passed on the command line.
+ifneq (,$(filter android-cbf-debug,$(MAKECMDGOALS)))
+  override MODE := debug
+  override FLAVOR := production
+  override DART_DEFINES := --dart-define=ENABLE_CBF=true
+endif
 
 # Gradle appbundle output dir is camelCase <flavor><BuildType> (e.g. productionRelease).
 MODE_CAP := $(if $(filter release,$(MODE)),Release,Debug)
@@ -193,15 +216,21 @@ else
   HOST_NAME := $(FLAVOR)
 endif
 
+# Distinct output name so a CBF debug build never collides with (or is
+# mistaken for) a plain `make android debug` artifact.
+ifneq (,$(filter android-cbf-debug,$(MAKECMDGOALS)))
+  HOST_NAME := cbf-debug
+endif
+
 # Flutter writes APK and AAB to different, flavor-namespaced paths
 ifeq ($(FORMAT),aab)
   CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(FLAVOR)$(MODE_CAP)/app-$(FLAVOR)-$(MODE).aab
   HOST_OUTPUT := ./BULL-$(HOST_NAME).aab
-  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR)
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR) $(DART_DEFINES)
 else
   CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
   HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR) $(DART_DEFINES)
 endif
 
 android: container-app
@@ -224,6 +253,15 @@ android: container-app
 	@$(CONTAINER) rm bull-build > /dev/null
 	@echo "✅ Output extracted: $(HOST_OUTPUT)"
 	@sha256sum $(HOST_OUTPUT)
+
+# Single-word convenience alias: `make android-cbf-debug` builds the same
+# way as `android` above, but the ifneq($(MAKECMDGOALS)) blocks (near
+# MODE/FORMAT/FLAVOR and near HOST_NAME) detect this goal's name and pin
+# MODE=debug, FLAVOR=production, DART_DEFINES=--dart-define=ENABLE_CBF=true,
+# and HOST_NAME=cbf-debug before android's recipe runs — output is
+# ./BULL-cbf-debug.apk (see docs/compact-block-filters-spike-runbook.md).
+android-cbf-debug: android
+	@:
 
 verify:
 	@echo "🔍 Verifying reproducible build"
