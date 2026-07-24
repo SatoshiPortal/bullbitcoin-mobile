@@ -184,7 +184,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         'App startup blocked on keychain (device not unlocked since '
         'boot) — staying on splash, will retry on lifecycle resumed',
       );
-    } catch (e) {
+    } catch (e, st) {
+      log.severe(message: 'App startup failed', error: e, trace: st);
+
       bool hasBackup;
       try {
         // Check if there is a backup available

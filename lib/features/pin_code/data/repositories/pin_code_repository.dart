@@ -17,7 +17,12 @@ class PinCodeRepository {
       final pin = await _storage.getValue(_key);
       return Ok(pin != null);
     } on KeychainLockedException {
-      return const Err(PinCodeUnexpectedFailure('Keychain locked'));
+      // Let this propagate uncaught: AppStartupBloc has a dedicated
+      // KeychainLockedException handler that stays on splash and retries
+      // on resume, instead of showing a permanent "Startup Error". Wrapping
+      // it into a generic Err here (as before) discarded that type before
+      // it reached the bloc.
+      rethrow;
     } catch (e, st) {
       log.severe(
         message: 'Unexpected failure checking PIN code status',
