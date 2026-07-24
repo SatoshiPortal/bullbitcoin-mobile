@@ -274,12 +274,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         PayjoinReceiver? payjoin;
         Object? error;
         try {
-          payjoin = await _receiveWithPayjoinUsecase.execute(
+          final created = await _receiveWithPayjoinUsecase.execute(
             walletId: wallet.id,
             address: bitcoinAddress.address,
           );
-          // The payjoin receiver is created, now we can watch it for updates
-          _watchPayjoin(payjoin.id);
+          // Same belt-and-suspenders re-check as _onPayjoinSettingChanged:
+          //  the setting could have been toggled off while the directory
+          //  round trip above was in flight — never arm a watcher and
+          //  surface a pj= QR that the (already-updated) chip says is
+          //  disabled.
+          if (state.payjoinGloballyEnabled == payjoinEnabled) {
+            payjoin = created;
+            _watchPayjoin(payjoin.id);
+          }
         } catch (e) {
           log.severe(
             message: 'Payjoin receiver creation failed',
@@ -794,12 +801,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           if (_isPayjoinEligible(state.wallet!, payjoinEnabled)) {
             try {
-              payjoin = await _receiveWithPayjoinUsecase.execute(
+              final created = await _receiveWithPayjoinUsecase.execute(
                 walletId: walletId,
                 address: address.address,
               );
-              // The payjoin receiver is created, now we can watch it for updates
-              _watchPayjoin(payjoin.id);
+              // Same belt-and-suspenders re-check as
+              //  _onPayjoinSettingChanged: the setting could have been
+              //  toggled off while the directory round trip above was in
+              //  flight — never arm a watcher and surface a pj= QR that the
+              //  (already-updated) chip says is disabled.
+              if (state.payjoinGloballyEnabled == payjoinEnabled) {
+                payjoin = created;
+                _watchPayjoin(payjoin.id);
+              }
             } catch (e) {
               log.severe(
                 message: 'Payjoin receiver creation failed',

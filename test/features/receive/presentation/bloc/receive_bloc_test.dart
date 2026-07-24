@@ -338,6 +338,38 @@ void main() {
       expect(bloc.state.payjoinGloballyEnabled, isTrue);
     });
 
+    test(
+      'a toggle-off arriving while _onBitcoinStarted\'s session creation '
+      'is in flight wins: no payjoin surfaces and no watcher is armed',
+      () async {
+        // Session creation blocks until we complete it, simulating the
+        // directory round trip during which the user flips the setting off.
+        final creation = Completer<PayjoinReceiver>();
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) => creation.future);
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
+
+        // Toggle off mid-flight, then let the stale creation resolve.
+        bloc.add(const ReceivePayjoinSettingChanged(false));
+        await Future<void>.delayed(Duration.zero);
+        creation.complete(_receiver());
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.payjoinGloballyEnabled, isFalse);
+        expect(bloc.state.payjoin, isNull);
+        verifyNever(() => watchPayjoin.execute(ids: any(named: 'ids')));
+      },
+    );
+
     test('does NOT create a payjoin receiver session for a wallet with no '
         'confirmed balance, even though payjoin is enabled globally — a '
         'payjoin proposal needs at least one UTXO to contribute', () async {
