@@ -10966,5 +10966,6 @@
   "transactionStatusPayjoinAborted": "Payjoin отменен",
   "transactionDetailLabelPayjoinAborted": "Отменен",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново."
 }

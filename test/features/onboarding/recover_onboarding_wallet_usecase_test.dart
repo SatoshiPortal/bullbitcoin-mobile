@@ -35,7 +35,7 @@ void main() {
 
   group('RecoverOnboardingWalletUsecase', () {
     test(
-      'maps a foreign wallet-recovery failure to OnboardingWalletCreationFailure '
+      'maps a foreign wallet-setup failure during recovery to OnboardingWalletSetupFailure '
       'without leaking the raw exception',
       () async {
         when(
@@ -48,7 +48,7 @@ void main() {
 
         expect(result, isA<Err<void, OnboardingFailure>>());
         final failure = (result as Err<void, OnboardingFailure>).failure;
-        expect(failure, isA<OnboardingWalletCreationFailure>());
+        expect(failure, isA<OnboardingWalletSetupFailure>());
         expect(failure.logMessage, isNull);
         verifyNever(() => completePhysicalBackupVerificationUsecase.execute());
       },

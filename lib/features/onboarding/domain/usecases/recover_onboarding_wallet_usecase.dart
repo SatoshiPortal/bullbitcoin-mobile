@@ -27,7 +27,7 @@ class RecoverOnboardingWalletUsecase {
         error: e,
         trace: st,
       );
-      return const Err(OnboardingWalletCreationFailure());
+      return const Err(OnboardingWalletSetupFailure());
     }
 
     try {

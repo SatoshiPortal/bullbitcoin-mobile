@@ -23,24 +23,20 @@ void main() {
   });
 
   group('CreateOnboardingWalletUsecase', () {
-    test(
-      'maps a foreign wallet-creation failure to OnboardingWalletCreationFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => createDefaultWalletsUsecase.execute(),
-        ).thenThrow(Exception('BDK: descriptor derivation failed 0xdeadbeef'));
+    test('maps a foreign wallet-setup failure to OnboardingWalletSetupFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => createDefaultWalletsUsecase.execute(),
+      ).thenThrow(Exception('BDK: descriptor derivation failed 0xdeadbeef'));
 
-        final result = await usecase.execute();
+      final result = await usecase.execute();
 
-        expect(result, isA<Err<List<Wallet>, OnboardingFailure>>());
-        final failure =
-            (result as Err<List<Wallet>, OnboardingFailure>).failure;
-        expect(failure, isA<OnboardingWalletCreationFailure>());
-        // The sanitized failure carries no raw reason for the UI to render.
-        expect(failure.logMessage, isNull);
-      },
-    );
+      expect(result, isA<Err<List<Wallet>, OnboardingFailure>>());
+      final failure = (result as Err<List<Wallet>, OnboardingFailure>).failure;
+      expect(failure, isA<OnboardingWalletSetupFailure>());
+      // The sanitized failure carries no raw reason for the UI to render.
+      expect(failure.logMessage, isNull);
+    });
 
     test('returns Ok with the wallets on success', () async {
       final wallets = [_MockWallet()];

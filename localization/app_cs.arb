@@ -13277,5 +13277,6 @@
   "transactionStatusPayjoinAborted": "Payjoin přerušen",
   "transactionDetailLabelPayjoinAborted": "Přerušeno",
   "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu."
 }

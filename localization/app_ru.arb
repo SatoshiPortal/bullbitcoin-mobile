@@ -5280,5 +5280,6 @@
   "transactionStatusPayjoinAborted": "Payjoin отменён",
   "transactionDetailLabelPayjoinAborted": "Отменено",
   "transactionDetailLabelPayjoinFeeContribution": "Комиссия за участие в Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавляет одну из ваших монет в качестве дополнительного входа к платежу для повышения конфиденциальности. Комиссия за майнинг этого добавленного входа вычитается из суммы, которую вы получаете (BIP78).",
+  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова."
 }

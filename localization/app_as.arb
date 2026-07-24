@@ -10318,5 +10318,6 @@
   "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

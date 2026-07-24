@@ -15008,5 +15008,9 @@
   "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
   "@receivePayjoinBelowMinimumAmount": {
     "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
+  },
+  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
+  "@onboardingBackupVerificationError": {
+    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   }
 }

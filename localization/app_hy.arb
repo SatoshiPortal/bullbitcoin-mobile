@@ -3741,5 +3741,6 @@
   "transactionStatusPayjoinAborted": "Payjoin-ը չեղարկվել է",
   "transactionDetailLabelPayjoinAborted": "Չեղարկված",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-ի միջնորդավճարի ներդրում",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։"
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։",
+  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։"
 }

@@ -5271,5 +5271,6 @@
   "transactionStatusPayjoinAborted": "Payjoin annullato",
   "transactionDetailLabelPayjoinAborted": "Annullato",
   "transactionDetailLabelPayjoinFeeContribution": "Contributo commissione Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Un payjoin aggiunge una delle tue monete come input aggiuntivo al pagamento per migliorare la privacy. La commissione di mining per quell'input aggiunto viene detratta dall'importo che ricevi (BIP78)."
+  "transactionPayjoinFeeContributionExplanation": "Un payjoin aggiunge una delle tue monete come input aggiuntivo al pagamento per migliorare la privacy. La commissione di mining per quell'input aggiunto viene detratta dall'importo che ricevi (BIP78).",
+  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova."
 }
