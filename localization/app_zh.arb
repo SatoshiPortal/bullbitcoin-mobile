@@ -5267,5 +5267,9 @@
   "consolidationScreenDescription": "过多的输出可能导致钱包不稳定。整合会将它们合并为更少的输出，以保持钱包正常运行。",
   "consolidationScreenTitle": "整合",
   "consolidationSuccessBody": "你的币正在被合并。网络确认后将完成。",
-  "consolidationSuccessTitle": "整合已开始"
+  "consolidationSuccessTitle": "整合已开始",
+  "transactionStatusPayjoinAborted": "Payjoin 已中止",
+  "transactionDetailLabelPayjoinAborted": "已中止",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin 手续费分摊",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin 会将您的一枚币作为额外输入添加到付款中，以提高隐私性。该额外输入产生的挖矿手续费会从您收到的金额中扣除 (BIP78)。"
 }

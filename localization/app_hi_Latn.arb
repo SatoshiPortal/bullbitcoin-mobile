@@ -13668,5 +13668,9 @@
   "consolidationScreenDescription": "Bahut adhik output wallet ko asthir kar sakte hain. Samekan unhe kam mein jod deta hai taaki aapka wallet sahi se kaam kare.",
   "consolidationScreenTitle": "Samekit karein",
   "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
-  "consolidationSuccessTitle": "Samekan prarambh hua"
+  "consolidationSuccessTitle": "Samekan prarambh hua",
+  "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78)."
 }

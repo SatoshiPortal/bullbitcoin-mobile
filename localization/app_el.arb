@@ -13273,5 +13273,9 @@
   "consolidationScreenDescription": "Οι πάρα πολλές έξοδοι μπορούν να κάνουν το πορτοφόλι ασταθές. Η ενοποίηση τις συνδυάζει σε λιγότερες ώστε το πορτοφόλι σας να λειτουργεί σωστά.",
   "consolidationScreenTitle": "Ενοποίηση",
   "consolidationSuccessBody": "Τα νομίσματά σας συνδυάζονται. Θα ολοκληρωθεί μόλις το επιβεβαιώσει το δίκτυο.",
-  "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε"
+  "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε",
+  "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
+  "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
+  "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78)."
 }

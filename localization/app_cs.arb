@@ -13273,5 +13273,9 @@
   "consolidationScreenDescription": "Příliš mnoho výstupů může způsobit nestabilitu peněženky. Konsolidace je sloučí do menšího počtu, aby peněženka správně fungovala.",
   "consolidationScreenTitle": "Konsolidovat",
   "consolidationSuccessBody": "Vaše mince se slučují. Dokončí se, jakmile to síť potvrdí.",
-  "consolidationSuccessTitle": "Konsolidace zahájena"
+  "consolidationSuccessTitle": "Konsolidace zahájena",
+  "transactionStatusPayjoinAborted": "Payjoin přerušen",
+  "transactionDetailLabelPayjoinAborted": "Přerušeno",
+  "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78)."
 }

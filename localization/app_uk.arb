@@ -5264,5 +5264,9 @@
   "consolidationScreenDescription": "Забагато виходів можуть зробити гаманець нестабільним. Консолідація об’єднує їх у меншу кількість, щоб гаманець працював належно.",
   "consolidationScreenTitle": "Консолідувати",
   "consolidationSuccessBody": "Ваші монети об’єднуються. Це завершиться після підтвердження мережею.",
-  "consolidationSuccessTitle": "Консолідацію розпочато"
+  "consolidationSuccessTitle": "Консолідацію розпочато",
+  "transactionStatusPayjoinAborted": "Payjoin скасовано",
+  "transactionDetailLabelPayjoinAborted": "Скасовано",
+  "transactionDetailLabelPayjoinFeeContribution": "Внесок комісії Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78)."
 }

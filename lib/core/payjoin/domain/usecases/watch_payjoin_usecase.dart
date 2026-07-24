@@ -7,12 +7,15 @@ class WatchPayjoinUsecase {
 
   const WatchPayjoinUsecase({required this._payjoinRepository});
 
-  Stream<PayjoinReceiver> execute({List<String>? ids}) {
+  /// Emits every payjoin update (both [PayjoinReceiver] and [PayjoinSender]),
+  /// optionally scoped to [ids]. Consumers that only care about one side
+  /// filter the concrete type themselves — the sender send-flow needs sender
+  /// completion events, which a receiver-only filter here would swallow.
+  Stream<Payjoin> execute({List<String>? ids}) {
     try {
-      return _payjoinRepository.payjoinStream
-          .where((payjoin) => payjoin is PayjoinReceiver)
-          .cast<PayjoinReceiver>()
-          .where((payjoin) => ids == null || ids.contains(payjoin.id));
+      return _payjoinRepository.payjoinStream.where(
+        (payjoin) => ids == null || ids.contains(payjoin.id),
+      );
     } catch (e) {
       throw WatchPayjoinException(e.toString());
     }

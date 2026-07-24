@@ -11,6 +11,9 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -77,6 +80,22 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetPayjoinEnabledUsecase>(
+      () => SetPayjoinEnabledUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<SetPayjoinMinAmountUsecase>(
+      () => SetPayjoinMinAmountUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<SetPayjoinExpireAfterSecUsecase>(
+      () => SetPayjoinExpireAfterSecUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
@@ -94,6 +113,10 @@ class SettingsLocator {
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
+        setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
+        setPayjoinMinAmountUsecase: locator<SetPayjoinMinAmountUsecase>(),
+        setPayjoinExpireAfterSecUsecase:
+            locator<SetPayjoinExpireAfterSecUsecase>(),
       ),
     );
   }

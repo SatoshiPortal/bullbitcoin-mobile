@@ -3737,5 +3737,9 @@
   "consolidationScreenDescription": "Quá nhiều đầu ra có thể khiến ví không ổn định. Việc hợp nhất gộp chúng thành ít hơn để ví của bạn hoạt động đúng cách.",
   "consolidationScreenTitle": "Hợp nhất",
   "consolidationSuccessBody": "Các đồng coin của bạn đang được gộp lại. Sẽ hoàn tất khi mạng xác nhận.",
-  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất"
+  "consolidationSuccessTitle": "Đã bắt đầu hợp nhất",
+  "transactionStatusPayjoinAborted": "Payjoin đã bị hủy",
+  "transactionDetailLabelPayjoinAborted": "Đã hủy",
+  "transactionDetailLabelPayjoinFeeContribution": "Khoản phí đóng góp Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin thêm một trong các đồng coin của bạn làm đầu vào bổ sung cho khoản thanh toán để cải thiện quyền riêng tư. Phí khai thác cho đầu vào bổ sung đó sẽ được trừ vào số tiền bạn nhận được (BIP78)."
 }

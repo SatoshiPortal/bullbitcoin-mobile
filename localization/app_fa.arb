@@ -13273,5 +13273,9 @@
   "consolidationScreenDescription": "خروجی‌های بیش از حد می‌توانند کیف پول را ناپایدار کنند. تجمیع آن‌ها را در تعداد کمتری ترکیب می‌کند تا کیف پول شما درست کار کند.",
   "consolidationScreenTitle": "تجمیع",
   "consolidationSuccessBody": "سکه‌های شما در حال ترکیب هستند. پس از تأیید شبکه کامل می‌شود.",
-  "consolidationSuccessTitle": "تجمیع آغاز شد"
+  "consolidationSuccessTitle": "تجمیع آغاز شد",
+  "transactionStatusPayjoinAborted": "Payjoin لغو شد",
+  "transactionDetailLabelPayjoinAborted": "لغو شده",
+  "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78)."
 }

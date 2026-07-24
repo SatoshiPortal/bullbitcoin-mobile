@@ -13270,5 +13270,9 @@
   "consolidationScreenDescription": "Saídas em excesso podem deixar a carteira instável. Consolidá-las as combina em menos para manter sua carteira funcionando corretamente.",
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "Suas moedas estão sendo combinadas. Será concluído assim que a rede confirmar.",
-  "consolidationSuccessTitle": "Consolidação iniciada"
+  "consolidationSuccessTitle": "Consolidação iniciada",
+  "transactionStatusPayjoinAborted": "Payjoin cancelado",
+  "transactionDetailLabelPayjoinAborted": "Cancelado",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78)."
 }

@@ -13483,5 +13483,9 @@
   "consolidationScreenDescription": "অতিরিক্ত আউটপুট ওয়ালেটকে অস্থির করে তুলতে পারে। একত্রীকরণ সেগুলিকে কম সংখ্যায় একত্র করে যাতে আপনার ওয়ালেট সঠিকভাবে কাজ করে।",
   "consolidationScreenTitle": "একত্রিত করুন",
   "consolidationSuccessBody": "আপনার কয়েনগুলি একত্রিত করা হচ্ছে। নেটওয়ার্ক নিশ্চিত করলে এটি সম্পন্ন হবে।",
-  "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে"
+  "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।"
 }

@@ -10314,5 +10314,9 @@
   "consolidationScreenDescription": "অতি বেছি আউটপুটে ৱালেটক অস্থিৰ কৰিব পাৰে। একত্ৰীকৰণে সেইবোৰক কম সংখ্যাত একত্ৰিত কৰে যাতে আপোনাৰ ৱালেট শুদ্ধকৈ কাম কৰে।",
   "consolidationScreenTitle": "একত্ৰিত কৰক",
   "consolidationSuccessBody": "আপোনাৰ কইনসমূহ একত্ৰিত কৰা হৈছে। নেটৱৰ্কে নিশ্চিত কৰিলে সম্পূৰ্ণ হ'ব।",
-  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে"
+  "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।"
 }

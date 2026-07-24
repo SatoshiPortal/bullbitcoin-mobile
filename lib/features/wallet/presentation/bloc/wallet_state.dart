@@ -79,8 +79,4 @@ sealed class WalletState with _$WalletState {
       liquidWallet.balanceSat.toInt(),
     );
   }
-
-  bool showAutoSwapActiveStatus() {
-    return autoSwapSettings != null && autoSwapSettings!.enabled;
-  }
 }

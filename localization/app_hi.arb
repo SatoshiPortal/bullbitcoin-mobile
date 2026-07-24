@@ -13463,5 +13463,9 @@
   "consolidationScreenDescription": "बहुत अधिक आउटपुट वॉलेट को अस्थिर कर सकते हैं। समेकन उन्हें कम में जोड़ देता है ताकि आपका वॉलेट सही ढंग से काम करे।",
   "consolidationScreenTitle": "समेकित करें",
   "consolidationSuccessBody": "आपके सिक्के जोड़े जा रहे हैं। नेटवर्क पुष्टि करने पर यह पूरा होगा।",
-  "consolidationSuccessTitle": "समेकन प्रारंभ हुआ"
+  "consolidationSuccessTitle": "समेकन प्रारंभ हुआ",
+  "transactionStatusPayjoinAborted": "Payjoin रद्द किया गया",
+  "transactionDetailLabelPayjoinAborted": "रद्द किया गया",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin शुल्क योगदान",
+  "transactionPayjoinFeeContributionExplanation": "गोपनीयता बेहतर बनाने के लिए Payjoin भुगतान में आपका एक सिक्का अतिरिक्त इनपुट के रूप में जोड़ता है। उस जोड़े गए इनपुट का माइनिंग शुल्क आपको मिलने वाली राशि से काट लिया जाता है (BIP78)।"
 }

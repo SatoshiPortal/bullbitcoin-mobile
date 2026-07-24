@@ -10962,5 +10962,9 @@
   "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
   "consolidationScreenTitle": "Консолидиране",
   "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
-  "consolidationSuccessTitle": "Консолидацията започна"
+  "consolidationSuccessTitle": "Консолидацията започна",
+  "transactionStatusPayjoinAborted": "Payjoin отменен",
+  "transactionDetailLabelPayjoinAborted": "Отменен",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78)."
 }

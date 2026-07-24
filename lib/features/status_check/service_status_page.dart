@@ -137,6 +137,7 @@ class _ServiceStatusItem extends StatelessWidget {
       case ServiceStatus.offline:
         return context.appColors.error;
       case ServiceStatus.unknown:
+      case ServiceStatus.disabled:
         return context.appColors.textMuted;
     }
   }
@@ -149,6 +150,8 @@ class _ServiceStatusItem extends StatelessWidget {
         return context.loc.statusCheckOffline;
       case ServiceStatus.unknown:
         return context.loc.statusCheckUnknown;
+      case ServiceStatus.disabled:
+        return context.loc.statusCheckDisabled;
     }
   }
 }

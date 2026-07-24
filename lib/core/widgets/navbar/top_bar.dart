@@ -12,6 +12,7 @@ class TopBar extends StatelessWidget {
     this.onAction,
     this.color,
     this.actionIcon,
+    this.action,
     this.bullLogo = false,
   });
 
@@ -19,6 +20,11 @@ class TopBar extends StatelessWidget {
   final Function? onBack;
   final Function? onAction;
   final IconData? actionIcon;
+
+  /// Optional custom trailing widget on the right of the bar. Used instead of
+  /// [onAction]/[actionIcon] when the trailing affordance isn't a plain icon
+  /// button (e.g. the receive screen's payjoin toggle chip).
+  final Widget? action;
   final Color? color;
   final bool bullLogo;
 
@@ -38,7 +44,7 @@ class TopBar extends StatelessWidget {
               color: context.appColors.onSurface,
               visualDensity: VisualDensity.compact,
             ),
-          ] else if (onAction != null)
+          ] else if (onAction != null || action != null)
             const Gap(40),
           Expanded(
             child: Container(
@@ -57,7 +63,15 @@ class TopBar extends StatelessWidget {
                     ),
             ),
           ),
-          if (onAction != null) ...[
+          if (action != null) ...[
+            // No extra bottom padding here (unlike the title's Container,
+            //  which needs it because it has none of its own): the action
+            //  widget is expected to carry its own internal padding, same as
+            //  the plain IconButton case below (Material's default padding),
+            //  so its bottom aligns with the title/icon without a second
+            //  offset stacking on top of it.
+            action!,
+          ] else if (onAction != null) ...[
             IconButton(
               icon: Icon(actionIcon ?? Icons.close),
               onPressed: () => onAction!(),

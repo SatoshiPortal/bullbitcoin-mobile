@@ -13276,5 +13276,9 @@
   "consolidationScreenDescription": "قد يؤدي وجود عدد كبير من المخرجات إلى عدم استقرار المحفظة. يؤدي الدمج إلى جمعها في عدد أقل للحفاظ على عمل محفظتك بشكل صحيح.",
   "consolidationScreenTitle": "دمج",
   "consolidationSuccessBody": "يتم دمج عملاتك. سيكتمل بمجرد تأكيد الشبكة.",
-  "consolidationSuccessTitle": "بدأ الدمج"
+  "consolidationSuccessTitle": "بدأ الدمج",
+  "transactionStatusPayjoinAborted": "تم إلغاء Payjoin",
+  "transactionDetailLabelPayjoinAborted": "ملغى",
+  "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78)."
 }

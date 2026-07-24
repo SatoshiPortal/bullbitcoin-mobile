@@ -13273,5 +13273,9 @@
   "consolidationScreenDescription": "Çok fazla çıkış cüzdanı kararsız hale getirebilir. Birleştirmek onları daha aza indirir, böylece cüzdanınız düzgün çalışır.",
   "consolidationScreenTitle": "Birleştir",
   "consolidationSuccessBody": "Coinleriniz birleştiriliyor. Ağ onayladığında tamamlanacak.",
-  "consolidationSuccessTitle": "Birleştirme başladı"
+  "consolidationSuccessTitle": "Birleştirme başladı",
+  "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
+  "transactionDetailLabelPayjoinAborted": "İptal edildi",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78)."
 }

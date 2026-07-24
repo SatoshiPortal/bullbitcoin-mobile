@@ -3737,5 +3737,9 @@
   "consolidationScreenDescription": "Չափազանց շատ ելքերը կարող են դրամապանակն անկայուն դարձնել։ Համախմբումը դրանք միավորում է ավելի քիչ քանակի, որպեսզի ձեր դրամապանակը ճիշտ աշխատի։",
   "consolidationScreenTitle": "Համախմբել",
   "consolidationSuccessBody": "Ձեր մետաղադրամները միավորվում են։ Կավարտվի ցանցի հաստատումից հետո։",
-  "consolidationSuccessTitle": "Համախմբումը սկսվեց"
+  "consolidationSuccessTitle": "Համախմբումը սկսվեց",
+  "transactionStatusPayjoinAborted": "Payjoin-ը չեղարկվել է",
+  "transactionDetailLabelPayjoinAborted": "Չեղարկված",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-ի միջնորդավճարի ներդրում",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin-ը գաղտնիությունը բարելավելու համար վճարմանը որպես լրացուցիչ մուտք ավելացնում է ձեր մետաղադրամներից մեկը։ Այդ ավելացված մուտքի հանութային վճարը հանվում է ձեր ստացած գումարից (BIP78)։"
 }
