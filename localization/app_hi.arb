@@ -11603,10 +11603,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "राशि (वैकल्पिक)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "सभी शब्दों का चयन करें",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

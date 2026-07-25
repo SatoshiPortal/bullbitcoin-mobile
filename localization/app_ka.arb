@@ -1153,7 +1153,6 @@
   "receiveLightningInvoice": "Lightning ინვოისი",
   "receiveLiquidRiskDisclosureLabel": "გადახდები კონვერტირდება Liquid L-BTC-ში (არა BTC). გაიგეთ მეტი.",
   "receiveAddress": "მიღების მისამართი",
-  "receiveAmount": "თანხა (არასავალდებულო)",
   "receiveEnterHere": "შეიყვანეთ აქ...",
   "receiveSwapID": "სვაპის ID",
   "receiveTotalFee": "ჯამური საკომისიო",

@@ -10884,10 +10884,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "المبلغ (اختياري)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "الرجاء اختيار كل الكلمات",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

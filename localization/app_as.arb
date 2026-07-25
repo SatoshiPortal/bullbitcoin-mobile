@@ -621,7 +621,6 @@
   "receivePayjoinActivated": "Payjoin সক্ৰিয় কৰা হৈছে",
   "receiveLightningInvoice": "Lightning invoice",
   "receiveAddress": "গ্ৰহণ ঠিকনা",
-  "receiveAmount": "পৰিমাণ (ঐচ্ছিক)",
   "receiveNoteLabel": "টোকা",
   "receiveEnterHere": "ইয়াত দিয়ক...",
   "receiveSwapID": "Swap ID",

@@ -1,22 +1,17 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_dismissal.dart';
-import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
-class _MockGetWalletTransactionsUsecase extends Mock
-    implements GetWalletTransactionsUsecase {}
+class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockGetAutoSwapSettingsUsecase extends Mock
     implements GetAutoSwapSettingsUsecase {}
@@ -24,80 +19,70 @@ class _MockGetAutoSwapSettingsUsecase extends Mock
 class _MockDismissalRepository extends Mock
     implements AnnouncementDismissalRepository {}
 
-WalletTransaction _tx() => const WalletTransaction(
-  walletId: 'w1',
-  network: Network.bitcoinMainnet,
-  direction: WalletTransactionDirection.incoming,
-  status: WalletTransactionStatus.confirmed,
-  txId: 'txid',
-  amountSat: 1000,
-  feeSat: 100,
-  vsize: 110,
-  inputs: [],
-  outputs: [],
-  isRbf: false,
-);
-
-SettingsEntity _settings({required bool payjoinEnabled}) => SettingsEntity(
-  environment: Environment.mainnet,
-  bitcoinUnit: BitcoinUnit.btc,
-  currencyCode: 'USD',
-  isPayjoinEnabled: payjoinEnabled,
+Wallet _liquidWallet({required int balanceSat}) => Wallet(
+  origin: 'lw1',
+  network: Network.liquidMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.from(balanceSat),
 );
 
 void main() {
-  late _MockSettingsRepository settingsRepository;
-  late _MockGetWalletTransactionsUsecase getWalletTransactionsUsecase;
+  late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockGetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase;
   late _MockDismissalRepository dismissalRepository;
   late GetVisibleAnnouncementsUsecase usecase;
 
   setUp(() {
-    settingsRepository = _MockSettingsRepository();
-    getWalletTransactionsUsecase = _MockGetWalletTransactionsUsecase();
+    getWalletsUsecase = _MockGetWalletsUsecase();
     getAutoSwapSettingsUsecase = _MockGetAutoSwapSettingsUsecase();
     dismissalRepository = _MockDismissalRepository();
     usecase = GetVisibleAnnouncementsUsecase(
-      settingsRepository: settingsRepository,
-      getWalletTransactionsUsecase: getWalletTransactionsUsecase,
+      getWalletsUsecase: getWalletsUsecase,
       getAutoSwapSettingsUsecase: getAutoSwapSettingsUsecase,
       dismissalRepository: dismissalRepository,
     );
   });
 
   void stub({
-    required bool payjoinEnabled,
-    required bool hasHistory,
-    bool autoswapEnabled = false,
+    required bool autoswapEnabled,
+    required int liquidBalanceSat,
+    int triggerBalanceSats = 1000000,
     List<AnnouncementDismissal> dismissals = const [],
   }) {
     when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(payjoinEnabled: payjoinEnabled));
-    when(
-      () => getWalletTransactionsUsecase.execute(),
-    ).thenAnswer((_) async => hasHistory ? [_tx()] : <WalletTransaction>[]);
-    when(
-      () => getAutoSwapSettingsUsecase.execute(),
-    ).thenAnswer((_) async => AutoSwap(enabled: autoswapEnabled));
+      () => getWalletsUsecase.execute(onlyLiquid: true, onlyDefaults: true),
+    ).thenAnswer((_) async => [_liquidWallet(balanceSat: liquidBalanceSat)]);
+    when(() => getAutoSwapSettingsUsecase.execute()).thenAnswer(
+      (_) async => AutoSwap(
+        enabled: autoswapEnabled,
+        triggerBalanceSats: triggerBalanceSats,
+      ),
+    );
     when(
       () => dismissalRepository.getDismissals(),
     ).thenAnswer((_) async => dismissals);
   }
 
-  test('shows the payjoin-privacy announcement when there is history and '
-      'payjoin is disabled', () async {
-    stub(payjoinEnabled: false, hasHistory: true);
+  test('shows the autoswap announcement when autoswap is enabled AND the '
+      'Liquid balance has reached the trigger threshold', () async {
+    stub(autoswapEnabled: true, liquidBalanceSat: 1000000);
 
     final result = await usecase.execute();
 
     final list = (result as Ok<List<Announcement>, dynamic>).value;
     expect(list, hasLength(1));
-    expect(list.single.id, AnnouncementId.payjoinPrivacy);
+    expect(list.single.id, AnnouncementId.autoswapActive);
   });
 
-  test('hides it when payjoin is already enabled', () async {
-    stub(payjoinEnabled: true, hasHistory: true);
+  test('hides it when autoswap is enabled but the balance is below the '
+      'trigger threshold — no imminent swap to inform about', () async {
+    stub(autoswapEnabled: true, liquidBalanceSat: 999999);
 
     final result = await usecase.execute();
 
@@ -105,8 +90,8 @@ void main() {
     expect(list, isEmpty);
   });
 
-  test('hides it when the wallet has no transaction history', () async {
-    stub(payjoinEnabled: false, hasHistory: false);
+  test('hides it when autoswap is disabled, regardless of balance', () async {
+    stub(autoswapEnabled: false, liquidBalanceSat: 5000000);
 
     final result = await usecase.execute();
 
@@ -116,12 +101,12 @@ void main() {
 
   test('hides it when permanently dismissed', () async {
     stub(
-      payjoinEnabled: false,
-      hasHistory: true,
+      autoswapEnabled: true,
+      liquidBalanceSat: 5000000,
       dismissals: [
         AnnouncementDismissal(
-          id: AnnouncementId.payjoinPrivacy,
-          dismissedAt: DateTime(2020),
+          id: AnnouncementId.autoswapActive,
+          dismissedAt: DateTime.utc(2020),
         ),
       ],
     );
@@ -132,33 +117,43 @@ void main() {
     expect(list, isEmpty);
   });
 
-  test('shows the autoswap announcement when autoswap is enabled', () async {
-    stub(payjoinEnabled: true, hasHistory: false, autoswapEnabled: true);
+  test('the payjoin-privacy announcement is gone from the catalog — payjoin '
+      'education lives in settings, never on home (product decision '
+      '2026-07-25)', () async {
+    stub(autoswapEnabled: true, liquidBalanceSat: 5000000);
 
     final result = await usecase.execute();
 
     final list = (result as Ok<List<Announcement>, dynamic>).value;
-    expect(list, hasLength(1));
-    expect(list.single.id, AnnouncementId.autoswapActive);
+    expect(
+      list.map((a) => a.id),
+      isNot(contains(AnnouncementId.payjoinPrivacy)),
+    );
   });
 
-  test('shows both announcements, ordered by priority', () async {
-    stub(payjoinEnabled: false, hasHistory: true, autoswapEnabled: true);
-
-    final result = await usecase.execute();
-
-    final list = (result as Ok<List<Announcement>, dynamic>).value;
-    expect(list.map((a) => a.id), [
-      AnnouncementId.payjoinPrivacy,
-      AnnouncementId.autoswapActive,
-    ]);
-  });
-
-  test('returns a storage failure when a source throws', () async {
-    when(() => settingsRepository.fetch()).thenThrow(Exception('boom'));
+  test('an environment with no default liquid wallet is a zero balance, not a '
+      'failure — GetWalletsUsecase throws on an empty result, which would '
+      'otherwise put an error snackbar on home at every wallet sync', () async {
     when(
-      () => getWalletTransactionsUsecase.execute(),
-    ).thenAnswer((_) async => <WalletTransaction>[]);
+      () => getWalletsUsecase.execute(onlyLiquid: true, onlyDefaults: true),
+    ).thenThrow(NoWalletsFoundException('no liquid wallet'));
+    when(
+      () => getAutoSwapSettingsUsecase.execute(),
+    ).thenAnswer((_) async => const AutoSwap(enabled: true));
+    when(
+      () => dismissalRepository.getDismissals(),
+    ).thenAnswer((_) async => const []);
+
+    final result = await usecase.execute();
+
+    final list = (result as Ok<List<Announcement>, dynamic>).value;
+    expect(list, isEmpty);
+  });
+
+  test('returns a failure when a source throws', () async {
+    when(
+      () => getWalletsUsecase.execute(onlyLiquid: true, onlyDefaults: true),
+    ).thenThrow(Exception('boom'));
     when(
       () => getAutoSwapSettingsUsecase.execute(),
     ).thenAnswer((_) async => const AutoSwap(enabled: false));

@@ -280,7 +280,6 @@
   "receivePayjoinActivated": "Payjoin aktivoitu",
   "receiveLightningInvoice": "Lightning-lasku",
   "receiveAddress": "Vastaanottajan osoite",
-  "receiveAmount": "Määrä (ei välttämätön)",
   "receiveNoteLabel": "Kuvaus",
   "receiveEnterHere": "(on antamatta)",
   "receiveSwapID": "Swap-tunniste",

@@ -11507,10 +11507,6 @@
   "@bitboxActionPairDeviceTitle": {
     "description": "Title for pair device action"
   },
-  "receiveAmount": "(Selam)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Lütfen tüm kelimeleri seçin",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

@@ -1440,10 +1440,6 @@
   "@receiveAddress": {
     "description": "Label for generated address"
   },
-  "receiveAmount": "Raashi (optional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "receiveNoteLabel": "Note",
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"

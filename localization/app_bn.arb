@@ -11311,10 +11311,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "পরিমাণ (ঐচ্ছিক)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "অনুগ্রহ করে সব শব্দ বেছে নিন।",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

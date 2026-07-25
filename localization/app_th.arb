@@ -11595,10 +11595,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "ปริมาณ (อุปกรณ์เสริม)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "เลือกคําพูดทั้งหมด",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

@@ -11603,10 +11603,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "(선택 사항)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "모든 단어를 선택",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

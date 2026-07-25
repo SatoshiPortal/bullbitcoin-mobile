@@ -3870,7 +3870,6 @@
   "allWordsSelectedMessage": "Вы выбрали все слова",
   "bitboxActionPairDeviceTitle": "Устройство BitBox",
   "buyKYCLevel2": "Уровень 2 - Повышение",
-  "receiveAmount": "Сумма (факультативно)",
   "testBackupErrorSelectAllWords": "Выберите все слова",
   "buyLevel1Limit": "Предел уровня 1: {amount}",
   "@buyLevel1Limit": {

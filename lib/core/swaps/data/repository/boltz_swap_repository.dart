@@ -11,13 +11,16 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
+import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-class BoltzSwapRepository {
+class BoltzSwapRepository implements AutoSwapSettingsRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
+  final StreamController<AutoSwap> _autoSwapSettingsController =
+      StreamController<AutoSwap>.broadcast();
 
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
@@ -1229,6 +1232,7 @@ class BoltzSwapRepository {
     }
   }
 
+  @override
   Future<AutoSwap> getAutoSwapParams() async {
     final model = _isTestnet
         ? await _boltz.storage.getAutoSwapSettingsTestnet()
@@ -1236,6 +1240,7 @@ class BoltzSwapRepository {
     return model.toEntity();
   }
 
+  @override
   Future<void> updateAutoSwapParams(AutoSwap params) async {
     final model = AutoSwapModel.fromEntity(params);
     if (_isTestnet) {
@@ -1243,7 +1248,11 @@ class BoltzSwapRepository {
     } else {
       await _boltz.storage.storeAutoSwapSettings(model);
     }
+    _autoSwapSettingsController.add(params);
   }
+
+  @override
+  Stream<AutoSwap> watchAutoSwapParams() => _autoSwapSettingsController.stream;
 
   /// Checks the outspend status of a swap's lockup transaction
   Future<SwapTxOutspend> checkSwapLockupOutspend({

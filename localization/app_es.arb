@@ -318,7 +318,6 @@
   "receivePayjoinActivated": "Payjoin activado",
   "receiveLightningInvoice": "Factura Lightning",
   "receiveAddress": "Dirección de Recepción",
-  "receiveAmount": "Cantidad (opcional)",
   "receiveNoteLabel": "Nota",
   "receiveEnterHere": "Ingrese aquí…",
   "receiveSwapID": "ID de intercambio",

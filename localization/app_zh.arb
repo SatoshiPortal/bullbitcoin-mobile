@@ -3872,7 +3872,6 @@
   "allWordsSelectedMessage": "你选择了所有字句",
   "bitboxActionPairDeviceTitle": "Pair BiBox 设备",
   "buyKYCLevel2": "2级:强化",
-  "receiveAmount": "数额(备选案文)",
   "testBackupErrorSelectAllWords": "请选择所有语文",
   "buyLevel1Limit": "1级限制:{amount}",
   "@buyLevel1Limit": {

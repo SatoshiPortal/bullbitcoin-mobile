@@ -948,7 +948,6 @@
   "receiveLightningInvoice": "Hóa đơn Lightning",
   "receiveLiquidRiskDisclosureLabel": "Khoản thanh toán sẽ được chuyển đổi sang Liquid L-BTC (không phải BTC). Tìm hiểu thêm.",
   "receiveAddress": "Địa chỉ nhận",
-  "receiveAmount": "Số tiền (tùy chọn)",
   "receiveNoteLabel": "Ghi chú",
   "receiveEnterHere": "Nhập tại đây...",
   "receiveSwapID": "Mã swap",

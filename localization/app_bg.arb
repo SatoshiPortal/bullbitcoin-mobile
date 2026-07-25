@@ -8823,10 +8823,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Сума (по избор)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Моля, изберете всички думи.",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

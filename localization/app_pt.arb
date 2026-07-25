@@ -3846,7 +3846,6 @@
   "allWordsSelectedMessage": "Selecionou todas as palavras",
   "bitboxActionPairDeviceTitle": "Dispositivo de BitBox de par",
   "buyKYCLevel2": "Nível 2 - Melhorado",
-  "receiveAmount": "Montante (opcional)",
   "testBackupErrorSelectAllWords": "Por favor, selecione todas as palavras",
   "buyLevel1Limit": "Limite de nível 1: {amount}",
   "@buyLevel1Limit": {

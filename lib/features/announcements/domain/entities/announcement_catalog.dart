@@ -5,15 +5,13 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 /// Extend this (and the gathering in `GetVisibleAnnouncementsUsecase`) as new
 /// announcements need new signals.
 class AnnouncementSignals {
-  final bool isPayjoinEnabled;
-  final bool hasTransactionHistory;
-  final bool isAutoswapEnabled;
+  /// Whether autoswap is enabled AND the Liquid balance has actually reached
+  /// its trigger threshold (`AutoSwap.passedRequiredBalance`) — the card
+  /// informs about an imminent/behaving swap, so a balance that can't
+  /// trigger one shouldn't surface it (product decision 2026-07-25).
+  final bool isAutoswapTriggerable;
 
-  const AnnouncementSignals({
-    required this.isPayjoinEnabled,
-    required this.hasTransactionHistory,
-    required this.isAutoswapEnabled,
-  });
+  const AnnouncementSignals({required this.isAutoswapTriggerable});
 }
 
 /// A catalog entry: an [Announcement] definition paired with the predicate that
@@ -38,28 +36,22 @@ class AnnouncementCatalogEntry {
 /// To add an announcement: append an [AnnouncementId] value, add a catalog
 /// entry here with its trigger, and add the title/description l10n mapping in
 /// `presentation/announcement_l10n.dart`.
+///
+/// The payjoin-privacy nudge was removed on purpose (product decision
+/// 2026-07-25): payjoin education lives in the enable-time disclaimer and the
+/// payjoin settings screen, not on home. Its [AnnouncementId] value stays so
+/// persisted dismissals of it keep mapping cleanly.
 final List<AnnouncementCatalogEntry> announcementCatalog = [
   AnnouncementCatalogEntry(
     announcement: Announcement(
-      id: AnnouncementId.payjoinPrivacy,
-      priority: 0,
-      tone: AnnouncementTone.info,
-      action: const NavigateAction(),
-      dismissPolicy: const PermanentDismiss(),
-    ),
-    // Show once the wallet has received/transacted (first UTXO or history after
-    // create/recover) AND payjoin is still off — nudging the privacy upgrade.
-    trigger: (s) => s.hasTransactionHistory && !s.isPayjoinEnabled,
-  ),
-  AnnouncementCatalogEntry(
-    announcement: Announcement(
       id: AnnouncementId.autoswapActive,
-      priority: 1,
+      priority: 0,
       tone: AnnouncementTone.success,
       action: const NavigateAction(),
       dismissPolicy: const PermanentDismiss(),
     ),
-    // Show while autoswap is enabled, letting the user learn what it does.
-    trigger: (s) => s.isAutoswapEnabled,
+    // Show while autoswap is enabled AND the balance can actually trigger a
+    // swap, letting the user learn what is about to happen to their funds.
+    trigger: (s) => s.isAutoswapTriggerable,
   ),
 ];

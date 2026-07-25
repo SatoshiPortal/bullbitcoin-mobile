@@ -3807,7 +3807,6 @@
   "allWordsSelectedMessage": "Sie haben alle Wörter ausgewählt.",
   "bitboxActionPairDeviceTitle": "BitBox-Gerät",
   "buyKYCLevel2": "Stufe 2 – Erweitert",
-  "receiveAmount": "Betrag (optional)",
   "testBackupErrorSelectAllWords": "Bitte wählen Sie alle Wörter.",
   "buyLevel1Limit": "Grenzwert: {amount}",
   "@buyLevel1Limit": {

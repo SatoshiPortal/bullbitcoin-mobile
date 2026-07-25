@@ -323,7 +323,6 @@
   "receivePayjoinActivated": "Payjoin активований",
   "receiveLightningInvoice": "Освітлювальний рахунок",
   "receiveAddress": "Отримати адресу",
-  "receiveAmount": "Сума (за бажанням)",
   "receiveNoteLabel": "Зареєструватися",
   "receiveEnterHere": "Увійти.",
   "receiveSwapID": "Обмін ID",

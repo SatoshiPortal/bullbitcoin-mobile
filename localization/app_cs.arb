@@ -11303,10 +11303,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Množství (volitelné)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Prosím vyberte všechny slova",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"

@@ -138,14 +138,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// Whether a payjoin receiver session should exist for [wallet] right now:
   /// it must be able to sign locally (payjoin needs to sign a proposal
   /// non-interactively), the global setting must be on, AND the wallet must
-  /// already have a confirmed balance — a payjoin proposal needs at least
-  /// one UTXO to contribute as an input, so creating (and then polling for
-  /// requests on) a session that could never actually payjoin is pointless
-  /// and needlessly exposes the anti-probing surface for no benefit.
+  /// have a balance — a payjoin proposal needs at least one UTXO to
+  /// contribute as an input. Unconfirmed counts: the contribution path draws
+  /// from BDK's listUnspent (which includes unconfirmed outputs), so waiting
+  /// for a confirmation only delays payjoin activation on fresh wallets;
+  /// worst case a strict sender rejects a proposal spending an unconfirmed
+  /// input and the payment falls back to a normal broadcast.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
-      wallet.signsLocally &&
-      payjoinEnabled &&
-      (wallet.confirmedBalanceSat ?? BigInt.zero) > BigInt.zero;
+      wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
 
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,

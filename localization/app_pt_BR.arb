@@ -11036,10 +11036,6 @@
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
   },
-  "receiveAmount": "Montante (opcional)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "sendHardwareWallet": "Carteira de hardware",
   "@sendHardwareWallet": {
     "description": "Option to sign with hardware device"

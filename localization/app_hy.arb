@@ -948,7 +948,6 @@
   "receiveLightningInvoice": "Lightning ապրանքագիր",
   "receiveLiquidRiskDisclosureLabel": "Վճարումները կփոխարկվեն Liquid L-BTC-ի (ոչ BTC)։ Իմանալ ավելին։",
   "receiveAddress": "Ստացման հասցե",
-  "receiveAmount": "Գումար (ընտրովի)",
   "receiveNoteLabel": "Նշում",
   "receiveEnterHere": "Մուտքագրեք այստեղ...",
   "receiveSwapID": "Փոխանակման ID",
