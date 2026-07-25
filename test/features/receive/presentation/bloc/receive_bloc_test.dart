@@ -371,7 +371,7 @@ void main() {
     );
 
     test('does NOT create a payjoin receiver session for a wallet with no '
-        'confirmed balance, even though payjoin is enabled globally — a '
+        'balance at all, even though payjoin is enabled globally — a '
         'payjoin proposal needs at least one UTXO to contribute', () async {
       final bloc = buildBloc(wallet: _testWallet(balanceSat: BigInt.zero));
       addTearDown(bloc.close);
@@ -390,33 +390,35 @@ void main() {
       );
     });
 
-    test('does NOT create a payjoin receiver session for a wallet with '
-        'ONLY unconfirmed balance (balanceSat > 0 but confirmedBalanceSat == '
-        '0) — a payjoin proposal needs a genuinely confirmed UTXO, an '
-        'unconfirmed one is not filtered out anywhere downstream and could '
-        'be replaced/invalidated (regression pin: _isPayjoinEligible must '
-        'check confirmedBalanceSat, not balanceSat)', () async {
-      final bloc = buildBloc(
-        wallet: _testWallet(
-          balanceSat: BigInt.from(50000),
-          confirmedBalanceSat: BigInt.zero,
-        ),
-      );
-      addTearDown(bloc.close);
+    test(
+      'DOES create a payjoin receiver session for a wallet with ONLY '
+      'unconfirmed balance (balanceSat > 0, confirmedBalanceSat == 0) — '
+      'the contribution path draws from listUnspent which includes '
+      'unconfirmed outputs, so waiting for a confirmation only delays '
+      'payjoin activation on fresh wallets (product decision 2026-07-25)',
+      () async {
+        final createdPayjoin = _receiver();
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => createdPayjoin);
+        final bloc = buildBloc(
+          wallet: _testWallet(
+            balanceSat: BigInt.from(50000),
+            confirmedBalanceSat: BigInt.zero,
+          ),
+        );
+        addTearDown(bloc.close);
 
-      bloc.add(const ReceiveBitcoinStarted(null));
-      await Future<void>.delayed(Duration.zero);
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await Future<void>.delayed(Duration.zero);
 
-      expect(bloc.state.payjoin, isNull);
-      expect(bloc.state.payjoinGloballyEnabled, isTrue);
-      expect(bloc.state.isPayjoinAwaitingFunds, isTrue);
-      verifyNever(
-        () => receiveWithPayjoin.execute(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-        ),
-      );
-    });
+        expect(bloc.state.payjoin, createdPayjoin);
+        expect(bloc.state.isPayjoinAwaitingFunds, isFalse);
+      },
+    );
   });
 
   group('payjoin reacts live to the global setting changing', () {

@@ -1013,14 +1013,6 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (willAttemptPayjoin) ...[
-          InfoCard(
-            description: context.loc.sendPayjoinWillBeAttempted,
-            tagColor: context.appColors.secondary,
-            bgColor: context.appColors.onSecondary,
-          ),
-          const Gap(16),
-        ],
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
@@ -1029,6 +1021,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
+          isPayjoin: willAttemptPayjoin,
           note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null

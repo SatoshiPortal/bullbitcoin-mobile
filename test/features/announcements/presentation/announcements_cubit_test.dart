@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/settings/domain/watch_payjoin_enabled_changes_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -16,9 +15,6 @@ class _MockGetVisibleAnnouncementsUsecase extends Mock
 class _MockDismissAnnouncementUsecase extends Mock
     implements DismissAnnouncementUsecase {}
 
-class _MockWatchPayjoinEnabledChangesUsecase extends Mock
-    implements WatchPayjoinEnabledChangesUsecase {}
-
 class _MockWatchFinishedWalletSyncsUsecase extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
 
@@ -33,7 +29,6 @@ Announcement _announcement() => Announcement(
 void main() {
   late _MockGetVisibleAnnouncementsUsecase getVisible;
   late _MockDismissAnnouncementUsecase dismiss;
-  late _MockWatchPayjoinEnabledChangesUsecase watchPayjoin;
   late _MockWatchFinishedWalletSyncsUsecase watchSyncs;
 
   setUpAll(() {
@@ -43,12 +38,8 @@ void main() {
   setUp(() {
     getVisible = _MockGetVisibleAnnouncementsUsecase();
     dismiss = _MockDismissAnnouncementUsecase();
-    watchPayjoin = _MockWatchPayjoinEnabledChangesUsecase();
     watchSyncs = _MockWatchFinishedWalletSyncsUsecase();
-    // The cubit subscribes to both watchers on construction.
-    when(
-      () => watchPayjoin.execute(),
-    ).thenAnswer((_) => const Stream<bool>.empty());
+    // The cubit subscribes to the sync watcher on construction.
     when(
       () => watchSyncs.execute(),
     ).thenAnswer((_) => const Stream<Wallet>.empty());
@@ -57,7 +48,6 @@ void main() {
   AnnouncementsCubit build() => AnnouncementsCubit(
     getVisibleAnnouncementsUsecase: getVisible,
     dismissAnnouncementUsecase: dismiss,
-    watchPayjoinEnabledChangesUsecase: watchPayjoin,
     watchFinishedWalletSyncsUsecase: watchSyncs,
   );
 

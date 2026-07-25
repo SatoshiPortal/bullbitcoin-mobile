@@ -4,12 +4,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/payjoin_disclaimer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -160,20 +161,6 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  InfoCard(
-                    description:
-                        context.loc.settingsPayjoinPrivacyGainExplanation,
-                    bgColor: context.appColors.tertiaryContainer,
-                    tagColor: context.appColors.tertiary,
-                  ),
-                  const Gap(12),
-                  InfoCard(
-                    description:
-                        context.loc.settingsPayjoinV1DirectoryLeakExplanation,
-                    bgColor: context.appColors.tertiaryContainer,
-                    tagColor: context.appColors.tertiary,
-                  ),
-                  const Gap(24),
                   Row(
                     children: [
                       Expanded(
@@ -188,95 +175,130 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                           context.read<SettingsCubit>().togglePayjoinEnabled(
                             value,
                           );
+                          // One-time disclaimer, only when turning ON.
+                          if (value) {
+                            PayjoinDisclaimerDialog.showIfNeverShown(context);
+                          }
                         },
                       ),
                     ],
                   ),
+                  const Gap(16),
+                  BorderedTappableTile(
+                    onTap: () => PayjoinDisclaimerDialog.show(context),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BBText(
+                            context.loc.settingsPayjoinDisclaimerRowLabel,
+                            style: context.font.bodyLarge,
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
+                  ),
                   if (isEnabled) ...[
-                    const Gap(24),
-                    BBText(
-                      context.loc.settingsPayjoinMinAmountTitle,
-                      style: context.font.bodyLarge,
-                    ),
-                    const Gap(8),
-                    BBInputText(
-                      value: _minAmountController.text,
-                      controller: _minAmountController,
-                      focusNode: _minAmountNode,
-                      onlyNumbers: true,
-                      onChanged: _onMinAmountChanged,
-                    ),
-                    if (_minAmountError != null) ...[
-                      const Gap(4),
-                      BBText(
-                        _minAmountError!,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.error,
+                    const Gap(16),
+                    // Everything operational lives under a collapsed
+                    // Advanced section (product decision 2026-07-25): the
+                    // default screen is just the toggle + disclaimer row.
+                    ExpansionTile(
+                      title: BBText(
+                        context.loc.settingsPayjoinAdvancedTitle,
+                        style: context.font.bodyLarge,
+                      ),
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.only(bottom: 16),
+                      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+                      shape: const Border(),
+                      collapsedShape: const Border(),
+                      children: [
+                        BBText(
+                          context.loc.settingsPayjoinMinAmountTitle,
+                          style: context.font.bodyLarge,
                         ),
-                      ),
-                    ],
-                    const Gap(4),
-                    BBText(
-                      context.loc.settingsPayjoinMinAmountDescription,
-                      style: context.font.labelSmall?.copyWith(
-                        color: context.appColors.onSurfaceVariant,
-                      ),
-                    ),
-                    const Gap(24),
-                    BBText(
-                      context.loc.settingsPayjoinExpireTitle,
-                      style: context.font.bodyLarge,
-                    ),
-                    const Gap(8),
-                    BBInputText(
-                      value: _expireController.text,
-                      controller: _expireController,
-                      focusNode: _expireNode,
-                      onlyNumbers: true,
-                      onChanged: _onExpireChanged,
-                    ),
-                    if (_expireError != null) ...[
-                      const Gap(4),
-                      BBText(
-                        _expireError!,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.error,
+                        const Gap(8),
+                        BBInputText(
+                          value: _minAmountController.text,
+                          controller: _minAmountController,
+                          focusNode: _minAmountNode,
+                          onlyNumbers: true,
+                          onChanged: _onMinAmountChanged,
                         ),
-                      ),
-                    ],
-                    const Gap(4),
-                    BBText(
-                      context.loc.settingsPayjoinExpireDescription,
-                      style: context.font.labelSmall?.copyWith(
-                        color: context.appColors.onSurfaceVariant,
-                      ),
+                        if (_minAmountError != null) ...[
+                          const Gap(4),
+                          BBText(
+                            _minAmountError!,
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.error,
+                            ),
+                          ),
+                        ],
+                        const Gap(4),
+                        BBText(
+                          context.loc.settingsPayjoinMinAmountDescription,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
+                        ),
+                        const Gap(24),
+                        BBText(
+                          context.loc.settingsPayjoinExpireTitle,
+                          style: context.font.bodyLarge,
+                        ),
+                        const Gap(8),
+                        BBInputText(
+                          value: _expireController.text,
+                          controller: _expireController,
+                          focusNode: _expireNode,
+                          onlyNumbers: true,
+                          onChanged: _onExpireChanged,
+                        ),
+                        if (_expireError != null) ...[
+                          const Gap(4),
+                          BBText(
+                            _expireError!,
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.error,
+                            ),
+                          ),
+                        ],
+                        const Gap(4),
+                        BBText(
+                          context.loc.settingsPayjoinExpireDescription,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
+                        ),
+                        const Gap(24),
+                        BBText(
+                          context.loc.settingsPayjoinServersTitle,
+                          style: context.font.bodyLarge,
+                        ),
+                        const Gap(8),
+                        BBText(
+                          context.loc.settingsPayjoinDirectoryLabel,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
+                        ),
+                        BBText(
+                          PayjoinConstants.directoryUrl,
+                          style: context.font.bodyMedium,
+                        ),
+                        const Gap(12),
+                        BBText(
+                          context.loc.settingsPayjoinRelaysLabel,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
+                        ),
+                        for (final relay in PayjoinConstants.ohttpRelayUrlsBase)
+                          BBText(relay, style: context.font.bodyMedium),
+                      ],
                     ),
                   ],
-                  const Gap(24),
-                  BBText(
-                    context.loc.settingsPayjoinServersTitle,
-                    style: context.font.bodyLarge,
-                  ),
-                  const Gap(8),
-                  BBText(
-                    context.loc.settingsPayjoinDirectoryLabel,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                  ),
-                  BBText(
-                    PayjoinConstants.directoryUrl,
-                    style: context.font.bodyMedium,
-                  ),
-                  const Gap(12),
-                  BBText(
-                    context.loc.settingsPayjoinRelaysLabel,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                  ),
-                  for (final relay in PayjoinConstants.ohttpRelayUrlsBase)
-                    BBText(relay, style: context.font.bodyMedium),
                 ],
               ),
             ),

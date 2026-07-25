@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_datasource.dart';
 import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -80,6 +81,9 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerLazySingleton<PayjoinDisclaimerDatasource>(
+      PayjoinDisclaimerDatasourceImpl.new,
+    );
     locator.registerFactory<SetPayjoinEnabledUsecase>(
       () => SetPayjoinEnabledUsecase(
         settingsRepository: locator<SettingsRepository>(),

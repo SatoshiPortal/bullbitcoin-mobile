@@ -14837,6 +14837,18 @@
   "@settingsPayjoinV1DirectoryLeakExplanation": {
     "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
   },
+  "settingsPayjoinDisclaimerTitle": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerTitle": {
+    "description": "Title of the one-time payjoin disclaimer pop-up (also reachable from the payjoin settings screen)."
+  },
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerRowLabel": {
+    "description": "Settings row that re-opens the payjoin disclaimer pop-up."
+  },
+  "settingsPayjoinAdvancedTitle": "Advanced settings",
+  "@settingsPayjoinAdvancedTitle": {
+    "description": "Collapsed section on the payjoin settings screen containing minimum amount, session expiry and servers."
+  },
   "settingsPayjoinEnabledLabel": "Payjoin enabled",
   "@settingsPayjoinEnabledLabel": {
     "description": "Label next to the global payjoin enable/disable switch"
@@ -14913,6 +14925,10 @@
   "@transactionPayjoinFeeContributionExplanation": {
     "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
   },
+  "sendPayjoinLabel": "Payjoin",
+  "@sendPayjoinLabel": {
+    "description": "Row title on the send confirmation details showing (with a tick) that this send will attempt a payjoin."
+  },
   "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
   "@sendPayjoinWillBeAttempted": {
     "description": "Confirm-screen indicator shown when a payjoin will be attempted for the send."
@@ -14977,7 +14993,7 @@
   "@announcementAutoswapTitle": {
     "description": "Title of the home announcement informing the user that autoswap is currently enabled."
   },
-  "announcementAutoswapDescription": "Your Bitcoin is automatically swapped to Liquid.",
+  "announcementAutoswapDescription": "Your Liquid is automatically swapped to Bitcoin.",
   "@announcementAutoswapDescription": {
     "description": "Description of the home announcement informing the user that autoswap is enabled."
   },
@@ -14997,9 +15013,9 @@
   "@announcementDismissConfirmRead": {
     "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   },
-  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no confirmed balance yet to contribute. It will activate once you receive funds.",
+  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
   "@receivePayjoinAwaitingFunds": {
-    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no confirmed balance."
+    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no balance."
   },
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {
