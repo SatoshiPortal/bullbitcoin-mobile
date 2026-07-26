@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/payjoin_disclaimer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 /// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
@@ -36,46 +35,43 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.payjoinGloballyEnabled ?? false,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Gap(topGap),
-        BorderedTappableTile(
-          backgroundColor: context.appColors.surfaceContainerHighest,
-          onTap: () {
-            context.read<ReceiveBloc>().add(
-              ReceiveEvent.receivePayjoinToggled(!enabled),
-            );
-            // One-time disclaimer, only when turning ON.
-            if (!enabled) PayjoinDisclaimerDialog.showIfNeverShown(context);
-          },
-          onLongPress: () =>
-              context.pushNamed(SettingsRoute.payjoinSettings.name),
-          child: Row(
-            children: [
-              Expanded(
-                child: BBText(
-                  context.loc.receivePayjoinQrBadge,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
-                ),
+    // A slim single-line box (product decision 2026-07-26): bordered like
+    // the other tiles but with minimal vertical padding, so the whole
+    // receive screen — QR, address, additional info, this box and the
+    // bottom button — fits without scrolling. Long-press opens the payjoin
+    // settings screen.
+    return Padding(
+      padding: EdgeInsets.only(top: topGap / 2),
+      child: BorderedTappableTile(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+        backgroundColor: context.appColors.surfaceContainerHighest,
+        onLongPress: () =>
+            context.pushNamed(SettingsRoute.payjoinSettings.name),
+        child: Row(
+          children: [
+            Expanded(
+              child: BBText(
+                context.loc.receivePayjoinQrBadge,
+                style: context.font.bodyMedium,
+                color: context.appColors.secondary,
               ),
-              Switch(
-                value: enabled,
-                onChanged: (value) {
-                  context.read<ReceiveBloc>().add(
-                    ReceiveEvent.receivePayjoinToggled(value),
-                  );
-                  // One-time disclaimer, only when turning ON.
-                  if (value) {
-                    PayjoinDisclaimerDialog.showIfNeverShown(context);
-                  }
-                },
-              ),
-            ],
-          ),
+            ),
+            Switch(
+              value: enabled,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              onChanged: (value) {
+                context.read<ReceiveBloc>().add(
+                  ReceiveEvent.receivePayjoinToggled(value),
+                );
+                // One-time disclaimer, only when turning ON.
+                if (value) {
+                  PayjoinDisclaimerDialog.showIfNeverShown(context);
+                }
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

@@ -15009,6 +15009,18 @@
   "@announcementDismissConfirmRead": {
     "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   },
+  "receiveAdditionalInformation": "Additional Information",
+  "receiveMessageForSender": "Message For Sender",
+  "@receiveMessageForSender": {
+    "description": "Field on the receive additional-information page for the counterparty-visible message — becomes the BIP21 message= parameter (and the lightning swap description). Formerly called Note."
+  },
+  "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
+  "@receiveAdditionalInformationPlaceholder": {
+    "description": "Placeholder on the Additional Information receive tile when neither amount nor label is set yet."
+  },
+  "@receiveAdditionalInformation": {
+    "description": "Receive-screen tile unifying the optional amount and note; tapping opens a bottom sheet to set both."
+  },
   "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
   "@receivePayjoinAwaitingFunds": {
     "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no balance."
