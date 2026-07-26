@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -56,7 +57,7 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
             ),
-            Switch(
+            BBSwitch(
               value: enabled,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               onChanged: (value) {

@@ -1656,10 +1656,6 @@
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
-  "receiveNotePlaceholder": "Note",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
-  },
   "receiveReceiveAmount": "Receive Amount",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -14924,10 +14920,6 @@
   "sendPayjoinLabel": "Payjoin",
   "@sendPayjoinLabel": {
     "description": "Row title on the send confirmation details showing (with a tick) that this send will attempt a payjoin."
-  },
-  "sendPayjoinWillBeAttempted": "A payjoin will be attempted for this payment.",
-  "@sendPayjoinWillBeAttempted": {
-    "description": "Confirm-screen indicator shown when a payjoin will be attempted for the send."
   },
   "sendSentWithoutPayjoin": "Sent without Payjoin: the recipient did not complete the Payjoin, so a standard transaction was broadcast instead.",
   "@sendSentWithoutPayjoin": {

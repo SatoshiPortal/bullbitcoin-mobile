@@ -22,9 +22,12 @@ abstract final class PayjoinDisclaimerDialog {
   static Future<void> showIfNeverShown(BuildContext context) async {
     final datasource = locator<PayjoinDisclaimerDatasource>();
     if (await datasource.readDisclaimerShown()) return;
-    await datasource.writeDisclaimerShown();
+    // Mark shown only once the dialog was actually displayed — writing
+    // first would permanently skip the one-time disclosure if the context
+    // is unmounted by the time the async read resolves.
     if (!context.mounted) return;
     await show(context);
+    await datasource.writeDisclaimerShown();
   }
 }
 

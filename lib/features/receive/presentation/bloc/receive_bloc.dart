@@ -142,8 +142,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// contribute as an input. Unconfirmed counts: the contribution path draws
   /// from BDK's listUnspent (which includes unconfirmed outputs), so waiting
   /// for a confirmation only delays payjoin activation on fresh wallets;
-  /// worst case a strict sender rejects a proposal spending an unconfirmed
-  /// input and the payment falls back to a normal broadcast.
+  /// worst case is not just a strict sender rejecting the proposal (falling
+  /// back to a normal broadcast): a payjoin tx spending our unconfirmed
+  /// input can be invalidated by an RBF of that input's parent after both
+  /// sides consider the payment done. _filterAvailableUtxos preferring
+  /// confirmed UTXOs when available is the cheap mitigation.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
       wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
 
@@ -236,7 +239,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       // If the payjoin receiver is not set yet, we need to create it, but only
       //  if the wallet is eligible (see _isPayjoinEligible: not watch-only,
-      //  payjoin enabled globally, and a confirmed balance to contribute) —
+      //  payjoin enabled globally, and a balance to contribute) —
       //  when disabled the QR must never advertise a pj= endpoint, or the
       //  sender's wallet would attempt a payjoin nobody here will process.
       //

@@ -285,7 +285,7 @@ abstract class ReceiveState with _$ReceiveState {
       // would create the session.
       //
       // Also gated on [hasUtxos]: ReceiveBloc only creates a session for a
-      // wallet with a confirmed balance to contribute (see
+      // wallet with a balance to contribute (unconfirmed counts, see
       // ReceiveBloc._isPayjoinEligible — a payjoin proposal needs at least
       // one UTXO), so an empty wallet would otherwise hit the exact same
       // "stuck loading forever" bug as the disabled case.

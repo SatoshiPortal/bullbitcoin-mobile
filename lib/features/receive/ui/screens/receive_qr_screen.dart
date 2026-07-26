@@ -32,9 +32,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
 class ReceiveQrPage extends StatelessWidget {
-  const ReceiveQrPage({super.key, this.wallet});
-
-  final Wallet? wallet;
+  const ReceiveQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +59,7 @@ class ReceiveQrPage extends StatelessWidget {
           // Half-gaps below the address block: matches the address→payjoin
           // spacing inside ReceiveQRDetails so the stack reads evenly.
           Gap(gap / 2),
-          ReceiveInfoDetails(wallet: wallet),
+          const ReceiveInfoDetails(),
           Gap(gap / 2),
           if (showAddressVerification) ...[
             if (isLedger)
@@ -235,9 +233,7 @@ class ReceiveQRDetails extends StatelessWidget {
 }
 
 class ReceiveInfoDetails extends StatelessWidget {
-  const ReceiveInfoDetails({super.key, this.wallet});
-
-  final Wallet? wallet;
+  const ReceiveInfoDetails({super.key});
 
   /// Suffix showing the unit the user entered in, when it wasn't BTC:
   /// sats → " (N sats)", fiat → " (~X CUR)". Entered-in-BTC shows nothing —
