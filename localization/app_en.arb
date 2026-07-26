@@ -14841,7 +14841,7 @@
   "@settingsPayjoinDisclaimerRowLabel": {
     "description": "Settings row that re-opens the payjoin disclaimer pop-up."
   },
-  "settingsPayjoinAdvancedTitle": "Advanced settings",
+  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
   "@settingsPayjoinAdvancedTitle": {
     "description": "Collapsed section on the payjoin settings screen containing minimum amount, session expiry and servers."
   },

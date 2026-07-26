@@ -434,7 +434,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               child: Row(
                 children: [
                   BBText(
-                    context.loc.receiveMessageForSender,
+                    context.loc.receiveNote,
                     style: context.font.labelSmall,
                     color: context.appColors.onSurfaceVariant,
                   ),

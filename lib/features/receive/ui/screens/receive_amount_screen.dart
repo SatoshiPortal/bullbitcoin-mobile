@@ -80,6 +80,14 @@ class _MessageForSenderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final note = context.select((ReceiveBloc bloc) => bloc.state.note);
+    // On lightning the value is the invoice description, not a BIP21
+    // message= — "Note" reads better there.
+    final isLightning = context.select(
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
+    );
+    final title = isLightning
+        ? context.loc.receiveNote
+        : context.loc.receiveMessageForSender;
     final hPad = Device.screen.width * 0.04;
 
     return Padding(
@@ -89,7 +97,7 @@ class _MessageForSenderTile extends StatelessWidget {
           final bloc = context.read<ReceiveBloc>();
           final saved = await LabelEntryBottomSheet.note(
             context,
-            title: context.loc.receiveMessageForSender,
+            title: title,
             initialValue: note.isEmpty ? null : note,
             hint: context.loc.transactionNoteHint,
             suggestionsFuture: bloc.fetchDistinctLabels(),
@@ -108,7 +116,7 @@ class _MessageForSenderTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
-                    context.loc.receiveMessageForSender,
+                    title,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                   ),
