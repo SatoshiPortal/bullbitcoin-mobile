@@ -14,7 +14,10 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveAmountConfirmed() = ReceiveAmountConfirmed;
   const factory ReceiveEvent.receiveNoteChanged(String note) =
       ReceiveNoteChanged;
-  const factory ReceiveEvent.receiveNoteSaved() = ReceiveNoteSaved;
+  const factory ReceiveEvent.receiveInternalLabelSaved(String label) =
+      ReceiveInternalLabelSaved;
+  const factory ReceiveEvent.receiveInternalLabelDeleted(Label label) =
+      ReceiveInternalLabelDeleted;
   const factory ReceiveEvent.receiveNewAddressGenerated() =
       ReceiveNewAddressGenerated;
   const factory ReceiveEvent.receivePayjoinUpdated(PayjoinReceiver payjoin) =

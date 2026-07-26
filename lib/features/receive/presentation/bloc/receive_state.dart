@@ -20,6 +20,11 @@ abstract class ReceiveState with _$ReceiveState {
     SwapLimits? swapLimits,
     WalletAddress? liquidAddress,
     @Default('') String note,
+    // Private labels on the receive address: stored via the labels facade
+    // only and never part of the BIP21 string — the counterpart of [note]
+    // (the "Message For Sender"), which goes into the URI's message= and is
+    // never stored as a label.
+    @Default([]) List<Label> addressLabels,
     PayjoinReceiver? payjoin,
     // The global payjoin setting as last read by the bloc. Tri-state on
     // purpose: null = settings not fetched yet (treat as "may become

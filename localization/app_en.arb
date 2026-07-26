@@ -15018,6 +15018,10 @@
   "@receiveMessageForSender": {
     "description": "Field on the receive additional-information page for the counterparty-visible message — becomes the BIP21 message= parameter (and the lightning swap description). Formerly called Note."
   },
+  "receiveInternalLabel": "Labels",
+  "@receiveInternalLabel": {
+    "description": "Field on the receive additional-information page for a private label on the address — never part of the BIP21 string, only stored locally (and shown on the UTXO received there)."
+  },
   "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
   "@receiveAdditionalInformationPlaceholder": {
     "description": "Placeholder on the Additional Information receive tile when neither amount nor label is set yet."

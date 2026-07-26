@@ -22,6 +22,8 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,7 +72,11 @@ class ReceiveQrPage extends StatelessWidget {
               const Column(children: [VerifyAddressOnBitBoxButton()]),
             Gap(gap),
           ],
-          if (!isLightning) const ReceiveNewAddressButton(),
+          if (!isLightning) ...[
+            const ReceiveInternalLabelTile(),
+            Gap(gap / 2),
+            const ReceiveNewAddressButton(),
+          ],
           Gap(gap / 2),
         ],
       ),
@@ -650,6 +656,67 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           const Gap(16),
         ],
       ],
+    );
+  }
+}
+
+/// A private label for the receive address: stored via the labels facade
+/// (and inherited by the UTXO received on the address), never part of the
+/// BIP21 string — unlike the Message For Sender edited behind the
+/// Additional Information tile.
+class ReceiveInternalLabelTile extends StatelessWidget {
+  const ReceiveInternalLabelTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = context.select<ReceiveBloc, List<Label>>(
+      (bloc) => bloc.state.addressLabels,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BorderedTappableTile(
+        onTap: () async {
+          final bloc = context.read<ReceiveBloc>();
+          final saved = await LabelEntryBottomSheet.label(
+            context,
+            title: context.loc.receiveInternalLabel,
+            suggestionsFuture: bloc.fetchDistinctLabels(),
+          );
+          if (saved == null) return;
+          bloc.add(ReceiveInternalLabelSaved(saved));
+        },
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  BBText(
+                    context.loc.receiveInternalLabel,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                  ),
+                  const Gap(4),
+                  if (labels.isEmpty)
+                    BBText(
+                      context.loc.receiveEnterHere,
+                      style: context.font.bodyMedium,
+                    )
+                  else
+                    LabelsWidget(
+                      labels: labels,
+                      onDelete: (label) async => context
+                          .read<ReceiveBloc>()
+                          .add(ReceiveInternalLabelDeleted(label)),
+                    ),
+                ],
+              ),
+            ),
+            Icon(Icons.edit, size: 20, color: context.appColors.secondary),
+          ],
+        ),
+      ),
     );
   }
 }

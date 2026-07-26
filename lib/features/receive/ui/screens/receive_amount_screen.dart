@@ -73,7 +73,8 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
 }
 
 /// The counterparty-visible message: goes into the BIP21 `message=` (and the
-/// lightning swap description).
+/// lightning swap description). Never stored as a label — private annotations
+/// are the QR screen's Internal Label element.
 class _MessageForSenderTile extends StatelessWidget {
   const _MessageForSenderTile();
 
@@ -92,14 +93,9 @@ class _MessageForSenderTile extends StatelessWidget {
             title: context.loc.receiveMessageForSender,
             initialValue: note.isEmpty ? null : note,
             hint: context.loc.transactionNoteHint,
-            suggestionsFuture: bloc.fetchDistinctLabels(),
           );
           if (saved == null) return;
           bloc.add(ReceiveNoteChanged(saved));
-          // Persist as an address label too (same as the QR screen's note
-          // flow) — without this, notes set from this page ended up in the
-          // BIP21 string but never in the labels store.
-          bloc.add(const ReceiveNoteSaved());
         },
         child: Row(
           children: [

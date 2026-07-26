@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -65,7 +66,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveAmountConfirmed>(_onAmountConfirmed);
     on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
     on<ReceiveNoteChanged>(_onNoteChanged);
-    on<ReceiveNoteSaved>(_onNoteSaved);
+    on<ReceiveInternalLabelSaved>(_onInternalLabelSaved);
+    on<ReceiveInternalLabelDeleted>(_onInternalLabelDeleted);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
@@ -177,6 +179,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          addressLabels: [],
           amountException: null,
           error: null,
         ),
@@ -230,8 +233,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
         );
         bitcoinAddress = address;
-        final note = await _loadAddressLabel(bitcoinAddress.address);
-        emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
+        // Stored address labels are the private Internal Label element —
+        // they must never preload into note, which would leak them into the
+        // BIP21 message=.
+        final labels = await _loadAddressLabels(bitcoinAddress.address);
+        emit(
+          state.copyWith(bitcoinAddress: bitcoinAddress, addressLabels: labels),
+        );
       }
 
       // If the payjoin receiver is not set yet, we need to create it, but only
@@ -350,6 +358,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          addressLabels: [],
           amountException: null,
         ),
       );
@@ -432,6 +441,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          addressLabels: [],
           amountException: null,
           error: null,
         ),
@@ -484,8 +494,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
         );
         liquidAddress = address;
-        final note = await _loadAddressLabel(liquidAddress.address);
-        emit(state.copyWith(liquidAddress: liquidAddress, note: note));
+        // Same as the bitcoin flow: stored address labels preload the
+        // private Internal Label element, never the counterparty-visible
+        // note.
+        final labels = await _loadAddressLabels(liquidAddress.address);
+        emit(
+          state.copyWith(liquidAddress: liquidAddress, addressLabels: labels),
+        );
       }
 
       if (state.exchangeRate == 0) {
@@ -710,38 +725,53 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
-  Future<void> _onNoteSaved(
-    ReceiveNoteSaved event,
+  WalletAddress? get _currentReceiveAddress => switch (state.type) {
+    ReceiveType.bitcoin => state.bitcoinAddress,
+    ReceiveType.liquid => state.liquidAddress,
+    _ => null,
+  };
+
+  Future<void> _onInternalLabelSaved(
+    ReceiveInternalLabelSaved event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      final note = state.note;
-      switch (state.type) {
-        case ReceiveType.bitcoin:
-          if (state.bitcoinAddress == null) return;
-          await _labelsFacade.store(
-            NewLabel.addr(
-              address: state.bitcoinAddress!.address,
-              origin: state.bitcoinAddress!.walletId,
-              label: note,
-            ),
-          );
-        case ReceiveType.liquid:
-          if (state.liquidAddress == null) return;
-          await _labelsFacade.store(
-            NewLabel.addr(
-              address: state.liquidAddress!.address,
-              origin: state.liquidAddress!.walletId,
-              label: note,
-            ),
-          );
-        case _:
-          break;
-      }
-    } catch (e) {
-      emit(state.copyWith(error: e));
+    final label = event.label.trim();
+    if (label.isEmpty) return;
+    final validationResult = NoteValidator.validate(label);
+    if (!validationResult.isValid) {
+      emit(state.copyWith(error: validationResult.errorMessage));
       return;
     }
+    final address = _currentReceiveAddress;
+    if (address == null) return;
+    final result = await _labelsFacade.store(
+      NewLabel.addr(
+        address: address.address,
+        origin: address.walletId,
+        label: label,
+      ),
+    );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(error: failure));
+      return;
+    }
+    final labels = await _loadAddressLabels(address.address);
+    emit(state.copyWith(addressLabels: labels, error: null));
+  }
+
+  Future<void> _onInternalLabelDeleted(
+    ReceiveInternalLabelDeleted event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final result = await _labelsFacade.trash(event.label.id);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(error: failure));
+      return;
+    }
+    final address = _currentReceiveAddress;
+    if (address == null) return;
+    final labels = await _loadAddressLabels(address.address);
+    emit(state.copyWith(addressLabels: labels));
   }
 
   Future<void> _onNewAddressGenerated(
@@ -756,7 +786,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     emit(
-      state.copyWith(bitcoinAddress: null, liquidAddress: null, payjoin: null),
+      state.copyWith(
+        bitcoinAddress: null,
+        liquidAddress: null,
+        payjoin: null,
+        // A freshly generated address has no labels yet.
+        addressLabels: [],
+      ),
     );
 
     try {
@@ -1019,22 +1055,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// Loads the most recent user-defined label stored against [address] so
   /// the receive note tile and the note bottom sheet pre-fill with the saved
   /// value. System labels (e.g. seed-injected metadata) are ignored.
-  Future<String> _loadAddressLabel(String address) async {
+  Future<List<Label>> _loadAddressLabels(String address) async {
     try {
       final labels = await _labelsFacade.fetchByReference(address);
-      for (final label in labels) {
-        if (!LabelSystem.isSystemLabel(label.label)) {
-          return label.label;
-        }
-      }
+      return labels
+          .where((label) => !LabelSystem.isSystemLabel(label.label))
+          .toList();
     } catch (e) {
       log.severe(
-        message: 'Failed to load address label',
+        message: 'Failed to load address labels',
         error: e,
         trace: StackTrace.current,
       );
     }
-    return '';
+    return const [];
   }
 
   /// Distinct user-defined address labels for the suggestion chips in
