@@ -144,7 +144,14 @@ class ReceiveRouter {
           //  in the bitcoin flow.
           final bloc = context.read<ReceiveBloc>();
           final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
-          bloc.add(ReceiveBitcoinStarted(wallet));
+          // Same guard as the lightning and liquid routes: this pageBuilder
+          // re-runs when popping back from the child amount route, and an
+          // unconditional restart wipes the confirmed amount, message and
+          // label the user just entered there.
+          if (bloc.state.type != ReceiveType.bitcoin ||
+              (wallet != null && bloc.state.wallet?.id != wallet.id)) {
+            bloc.add(ReceiveBitcoinStarted(wallet));
+          }
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [

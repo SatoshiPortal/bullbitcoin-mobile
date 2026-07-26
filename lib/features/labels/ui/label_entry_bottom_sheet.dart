@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -150,11 +152,17 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
     final hPad = Device.screen.width * 0.04;
 
     return Padding(
+      // max(): the keyboard inset already covers the home-indicator area
+      // when open; when closed, the indicator inset keeps the save button
+      // off the screen edge.
       padding: EdgeInsets.fromLTRB(
         hPad,
         0,
         hPad,
-        MediaQuery.of(context).viewInsets.bottom,
+        math.max(
+          MediaQuery.of(context).viewInsets.bottom,
+          MediaQuery.of(context).viewPadding.bottom,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

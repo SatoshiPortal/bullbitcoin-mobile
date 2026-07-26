@@ -51,11 +51,16 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
           disableScroll: true,
           focusNodes: [_amountNode],
           child: Column(
-            mainAxisAlignment: .spaceEvenly,
             crossAxisAlignment: .stretch,
             children: [
+              // Amount and message grouped together in the upper half, the
+              // button pinned to the bottom — spaceEvenly scattered the
+              // three elements across the full height with large voids.
+              const Spacer(),
               ReceiveAmountInput(focusNode: _amountNode),
-              const _NoteTile(),
+              const Gap(24),
+              const _MessageForSenderTile(),
+              const Spacer(flex: 2),
               ReceiveAmountContinueButton(
                 onContinueNavigation: widget.onContinueNavigation,
               ),
@@ -67,8 +72,10 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
   }
 }
 
-class _NoteTile extends StatelessWidget {
-  const _NoteTile();
+/// The counterparty-visible message: goes into the BIP21 `message=` (and the
+/// lightning swap description).
+class _MessageForSenderTile extends StatelessWidget {
+  const _MessageForSenderTile();
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +89,17 @@ class _NoteTile extends StatelessWidget {
           final bloc = context.read<ReceiveBloc>();
           final saved = await LabelEntryBottomSheet.note(
             context,
-            title: context.loc.transactionNoteAddTitle,
+            title: context.loc.receiveMessageForSender,
             initialValue: note.isEmpty ? null : note,
             hint: context.loc.transactionNoteHint,
             suggestionsFuture: bloc.fetchDistinctLabels(),
           );
           if (saved == null) return;
           bloc.add(ReceiveNoteChanged(saved));
+          // Persist as an address label too (same as the QR screen's note
+          // flow) — without this, notes set from this page ended up in the
+          // BIP21 string but never in the labels store.
+          bloc.add(const ReceiveNoteSaved());
         },
         child: Row(
           children: [
@@ -97,7 +108,7 @@ class _NoteTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
-                    '${context.loc.receiveNote} (optional)',
+                    '${context.loc.receiveMessageForSender} (optional)',
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
                   ),
@@ -130,7 +141,12 @@ class ReceiveAmountContinueButton extends StatelessWidget {
     final amountException = context.watch<ReceiveBloc>().state.amountException;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.of(context).viewPadding.bottom,
+      ),
       child: BBButton.big(
         label: context.loc.receiveContinue,
         onPressed: () {
