@@ -85,6 +85,14 @@ class _Screen extends StatelessWidget {
                         ),
                       ),
                       if (hero != null) ...[const Gap(32), hero],
+                      // The create-backup action sits between the hero and the
+                      // settings list: it is an action, not a setting, and it
+                      // stays available in every state except the zero-backup
+                      // one, where the hero already offers it.
+                      if (!_heroOffersStartBackup(state)) ...[
+                        const Gap(24),
+                        const _StartBackupButton(),
+                      ],
                       const Gap(24),
                       ..._menuRows(state),
                     ],
@@ -144,12 +152,8 @@ class _Screen extends StatelessWidget {
   /// The settings rows. Insertion point for the fork's metadata backup menu
   /// row: add one [SettingsEntryItem] to this list.
   List<Widget> _menuRows(BackupSettingsState state) => [
-    // Availability is not encouragement. The hero never asks for another
-    // backup once a physical one is fresh, but adding one deliberately has to
-    // stay possible from here in every state — EXCEPT the one state where the
-    // hero is already offering this exact action, where a second identical
-    // entry a few pixels below it is just noise.
-    if (!_heroOffersStartBackup(state)) const _StartBackupButton(),
+    // Start-backup is NOT here: it is an action, rendered as a button above
+    // this list (see the body), not a settings row.
     if (state.lastEncryptedBackup != null) const _ViewVaultKeyButton(),
     if (state.lastEncryptedBackup != null || state.lastPhysicalBackup != null)
       const _TestBackupButton(),
@@ -341,18 +345,31 @@ class _TestBackupHero extends StatelessWidget {
   }
 }
 
+/// Creating a backup is an ACTION, not a setting, so it is a button rather
+/// than a menu row — obvious at a glance even when a backup already exists.
+/// Outlined rather than filled: it must not compete with a hero's own CTA when
+/// one is present, and it is an offer, never a warning.
 class _StartBackupButton extends StatelessWidget {
   const _StartBackupButton();
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.save_as,
-      iconColor: context.appColors.primary,
-      title: context.loc.backupSettingsStartBackup,
-      onTap: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBButton.big(
+        // The translated row label (27 locales), not the hero's EN-only CTA
+        // string: a button in the user's own language beats an English one.
+        label: context.loc.backupSettingsStartBackup,
+        iconData: Icons.save_as,
+        iconFirst: true,
+        onPressed: () => context.pushNamed(
+          BackupSettingsSubroute.backupOptions.name,
+          extra: BackupSettingsFlow.backup,
+        ),
+        outlined: true,
+        bgColor: context.appColors.transparent,
+        textColor: context.appColors.onSurface,
+        borderColor: context.appColors.outline,
       ),
     );
   }

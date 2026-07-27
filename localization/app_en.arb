@@ -15069,5 +15069,9 @@
   "recoverbullServerCustomWarning": "You are about to use a custom Recoverbull server. Make sure you trust this server.",
   "@recoverbullServerCustomWarning": {
     "description": "Warning shown before saving a custom key server URL in the encrypted vault settings"
+  },
+  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
+  "@backupWalletEncryptedVaultUsesTorTag": {
+    "description": "Tag on the encrypted vault option card indicating the key server is reached over Tor"
   }
 }

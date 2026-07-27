@@ -59,7 +59,10 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 ),
                 title: context.loc.backupWalletEncryptedVaultTitle,
                 description: context.loc.backupWalletEncryptedVaultDescription,
-                tag: context.loc.backupWalletEncryptedVaultTag,
+                tags: [
+                  context.loc.backupWalletEncryptedVaultTag,
+                  context.loc.backupWalletEncryptedVaultUsesTorTag,
+                ],
                 onTap: () => context.pushNamed(
                   RecoverBullRoute.recoverbullFlows.name,
                   extra: RecoverBullFlowsExtra(
@@ -82,7 +85,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 ),
                 title: context.loc.backupWalletPhysicalBackupTitle,
                 description: context.loc.backupWalletPhysicalBackupDescription,
-                tag: context.loc.backupWalletPhysicalBackupTag,
+                tags: [context.loc.backupWalletPhysicalBackupTag],
                 onTap: () {
                   context.pushNamed(
                     TestWalletBackupRoute.testPhysicalBackupFlow.name,

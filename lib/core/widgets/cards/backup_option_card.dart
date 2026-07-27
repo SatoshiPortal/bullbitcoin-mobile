@@ -8,7 +8,10 @@ class BackupOptionCard extends StatelessWidget {
   final Widget icon;
   final String title;
   final String description;
-  final String? tag;
+
+  /// Zero or more short labels shown under the description. A card may carry
+  /// several (e.g. how easy an option is AND how it reaches the network).
+  final List<String> tags;
   final VoidCallback onTap;
 
   const BackupOptionCard({
@@ -16,7 +19,7 @@ class BackupOptionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
-    this.tag,
+    this.tags = const [],
     required this.onTap,
   });
 
@@ -60,7 +63,16 @@ class BackupOptionCard extends StatelessWidget {
                           maxLines: 3,
                         ),
                         const Gap(10),
-                        if (tag != null) OptionsTag(text: tag!),
+                        // Tags wrap so a card can carry more than one without
+                        // overflowing on narrow screens.
+                        if (tags.isNotEmpty)
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final tag in tags) OptionsTag(text: tag),
+                            ],
+                          ),
                       ],
                     ),
                   ),
